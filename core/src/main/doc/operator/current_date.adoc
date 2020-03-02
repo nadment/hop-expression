@@ -1,0 +1,14 @@
+= CURRENT_DATE, SYSDATE
+
+Returns the current date of the system in the context time zone (UTC by default).
+
+== Syntax
+----
+CURRENT_DATE()
+----
+----
+SYSDATE()
+----
+== Usage
+
+This function always return the same value within a execution context like running a pipeline.

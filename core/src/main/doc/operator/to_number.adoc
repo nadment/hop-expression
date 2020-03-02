@@ -1,0 +1,25 @@
+= TO_NUMBER
+
+This function converts a string into a number. [DEV IN PROGREES]
+
+== Syntax
+----
+TO_NUMBER(text [,format])
+----
+
+== Usage
+
+
+[cols="<2,<2,<5", options="header"]
+|===
+|Element|Repeatable|Description
+|. (period)||Decimal fraction separator
+|, (comma)|&#10003;|Digit group separator
+|0|&#10003;|Leading or trailing zeroes
+|9|&#10003;|Digit
+|D||Decimal fraction separator (use locale symbol)
+|G|&#10003;|Digit group separator (use locale symbol)
+|MI||Explicit numeric sign place holder
+|S||
+|FM||Fill mode modifier; toggles between compact and fill modes for any elements following the modifier in the model.
+|===

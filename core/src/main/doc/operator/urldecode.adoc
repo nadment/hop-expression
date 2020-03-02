@@ -1,0 +1,16 @@
+= URLDECODE
+
+The function onverts a encoded string using the Java string literal encoding format.
+
+== Syntax
+----
+URLDECODE(string)
+----
+
+== Usage
+
+
+
+Returns::
+
+String

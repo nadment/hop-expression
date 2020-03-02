@@ -1,0 +1,26 @@
+= LIKE
+
+Case-sensitive matching of strings based on comparison with a pattern.
+
+== Syntax
+[source,sql]
+----
+string [NOT] LIKE pattern [ESCAPE escape]
+----
+
+== Usage
+
+Wildcards are supported in pattern
+
+*	An underscore(_) matches any single character.
+*	A percent sign (%) matches any sequence of zero or more characters.
+	
+The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
+
+TIP: See ILIKE insensitive case operator
+
+== Example
+
+----
+customer_name LIKE '%/_%' ESCAPE '/'
+----

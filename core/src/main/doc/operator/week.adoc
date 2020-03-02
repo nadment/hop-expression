@@ -1,0 +1,16 @@
+= WEEK, WEEKOFYEAR
+
+This function return the week of the year.
+
+== Syntax
+----
+WEEK(date)
+----
+----
+WEEKOFYEAR(date)
+----
+
+== Usage
+
+* Returns an integer between 1 and 53.
+* Equivalent to xref:extract.adoc[EXTRACT](WEEK FROM date). 

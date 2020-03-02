@@ -1,0 +1,13 @@
+= SUBTRACT, -
+
+Subtract of 2 numeric values.
+
+== Syntax
+----
+SUBTRACT(numeric_expression, numeric_expression)
+----
+The - operator provides alternative syntax.
+----
+numeric_expression - numeric_expression
+----
+

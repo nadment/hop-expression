@@ -1,0 +1,12 @@
+= DIVIDE, /
+
+Divide 2 numeric values.
+
+== Syntax
+
+----
+DIVIDE(numeric_expression, numeric_expression)
+----
+----
+numeric_expression / numeric_expression
+----

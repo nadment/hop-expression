@@ -1,0 +1,13 @@
+= QUARTER
+
+Return the quarter of the year.
+
+== Syntax
+----
+QUARTER(date)
+----
+
+== Usage
+
+* Returns an integer between 1 and 4.
+* Equivalent to xref:extract.adoc[EXTRACT](QUARTER FROM date). 

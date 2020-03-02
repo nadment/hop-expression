@@ -1,0 +1,12 @@
+= DATE
+
+This function create date.
+		
+== Syntax
+----
+DATE(year, month, day)
+----
+The literal value with ISO format provides alternative syntax.
+----
+DATE 'YYYY-MM-DD'
+----

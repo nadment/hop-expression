@@ -1,0 +1,16 @@
+= TANH
+
+Calculates the hyperbolic tangent of its argument.
+
+== Syntax
+----
+TANH(numeric_expression)
+----
+
+== Usage
+
+
+
+Returns::
+
+numeric

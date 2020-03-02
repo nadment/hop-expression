@@ -1,0 +1,12 @@
+= SECONDS_BETWEEN
+
+This function returns the number of seconds between two timestamps.
+
+== Syntax
+----
+SECONDS_BETWEEN(datetime1, datetime2)
+----
+
+== Usage
+
+If the first timestamp is earlier than second timestamp, then the result is negative. 

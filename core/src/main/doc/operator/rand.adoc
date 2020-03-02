@@ -1,0 +1,16 @@
+= RAND
+
+Return a random number between 0 (inclusive) and 1 (exclusive). If seed is specified, it returns a repeatable sequence of random numbers.
+
+== Syntax
+----
+RAND([seed])
+----
+
+== Usage
+
+
+
+Returns::
+
+Number

@@ -1,0 +1,157 @@
+= Expression
+
+An expression is a combination of one or more values, operators and functions that evaluate to a value.
+
+Expression are not case-sensitive, excepted for identifier.
+
+Expression is optimized immediately after parsing, so the 24 * 60 expression is optimized in 1440.
+
+== Comments
+
+Comments are sections of code text to aid readability.
+
+
+----
+// Single line-comment <1>
+
+/* 
+ * Multi line	<2>
+ * comment 
+ */
+----
+<1> A single -line comment begins with double slash // and ends with a new line.
+
+<2> A multi-line comment begins with a slash asterick /* and ends with asterick slash.
+
+NOTE: A comment is removed when parsing expression before evaluation, therefore has no influence on performance.
+
+
+== Literals
+
+The following types of literals (constant values) can be used in expression.
+
+=== String
+
+String literals are always surrounded by single quotes (').
+
+----
+'test value'
+'O''Reilly' <1>
+'O' || CHR(13) || 'Reilly' <2>
+----
+<1> The simplest method to escape single quotes in expression is to use two single quotes.
+<2> Use fucntion CHR to add special characters
+
+
+[Options below are removed to be more like SLQ], use chr(13) 
+
+- Support backslash escape sequences \t, \r, \n \b, \f, \\, \'#
+- Unicode character +\uNNNN+ or 32-bit Unicode character +\UNNNNNNNN+#<
+
+=== Boolean
+
+A Boolean constant specifies the keyword TRUE or FALSE.
+----
+TRUE
+FALSE
+----
+
+=== Integer
+
+Integer literals can be either positive numbers or negative numbers, but do not contain decimals.
+----
+536
++536
+-536
+----
+
+=== Number
+
+Literals can be either positive numbers or negative numbers and contain decimals. In addition, scientific notation can be used.
+----
+24.7
++0.5
+-24.7
+0.5E-2
+----
+
+NOTE: The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
+
+=== Binary
+
+Binary can be a sequence of hexadecimal digits with 0x prefix.
+----
+0xAE  
+0x12Ef  
+0x69048AEFDD010E 
+----
+Or also be composed by 0 and 1 digits with 0b prefix. 
+----
+0b1000001011110
+----
+
+NOTE:  A leading 0x is case-sensitive and cannot be written as 0X, but the case of the digits does not matter.
+ 
+
+TIP: To convert a binary literal into an integer, just add 0.
+
+=== Date
+
+Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a YYYY-MM-DD format. 
+
+----
+Date '2020-05-18'
+----
+----
+Date(2020,5,18)
+----
+
+
+=== Timestamp
+
+----
+Timestamp '2020-05-18 23:48:59'
+----
+
+== Identifier
+
+When a field name contains one or more space, the field name must be enclosed in square brackets.
+ 
+You can use reserved words as identifiers enclosing them in a couple of square brackets. 
+For example, YEAR is a reserved word and cannot be used whereas [YEAR] can be accepted. 
+
+== Operator
+
+Expression supports most of the arithmetic, bitwise, logical and comparison operators.
+
+
+
+The operator precedence and associativity, highest to lowest.
+
+[cols="^1,<5", options="header"]
+|===
+|Associativity|Operator
+|-|Function
+|right|+ (Positive), - (Negative)
+|right|~ (Bitwise NOT)
+|left|* (Multiplication), / (Division), % (Modulus)
+|left|& (Bitwise AND)
+|left|^ (Bitwise Exclusive OR)
+|left|\| (Bitwise OR) 
+|left| + (Addition), - (subtraction)
+|left| \|\| (Concatenation)
+|-|BETWEEN, IN, LIKE, ILIKE
+|left|=, >, <, >=, <=, <>, != (Comparison operators) 
+|-|IS NULL, IS FALSE, IS NOT TRUE etc.
+|right|NOT
+|left|AND
+|left|XOR
+|left|OR
+|===
+
+NOTE: An operator on higher levels is evaluated before an operator on a lower level.
+
+== Function
+
+Expression support scalar function.
+

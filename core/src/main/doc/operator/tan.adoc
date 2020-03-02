@@ -1,0 +1,16 @@
+= TAN
+
+Calculates the tangent of its argument, the argument should be expressed in radians.
+
+== Syntax
+----
+TAN(numeric_expression)
+----
+
+== Usage
+
+
+
+Returns::
+
+numeric

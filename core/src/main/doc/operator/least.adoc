@@ -1,0 +1,11 @@
+= LEAST
+
+The function returns the smallest value in a set of expressions.
+		
+
+== Syntax
+----
+LEAST(expression [,expression...])
+----
+
+See also xref:greatest.adoc[GREATEST]

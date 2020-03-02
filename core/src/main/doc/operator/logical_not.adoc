@@ -1,0 +1,8 @@
+= NOT
+
+Does not match the expression.
+
+== Syntax
+----
+NOT boolean
+----

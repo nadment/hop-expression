@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>hop-expression</artifactId>
+        <groupId>org.hop</groupId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>hop-expression-assemblies</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Hop Expression Assemblies</name>
+    <description></description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hop</groupId>
+            <artifactId>hop-expression-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hop</groupId>
+            <artifactId>hop-expression-plugins</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+    </dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<echo
+									message="Installed the plugin in HOP installation in ${hop.home}." />
+
+								<!-- remove previous installations -->								
+								<delete dir="${hop.home}/plugins/transforms/expression" />
+								<!-- put fresh files in place -->
+								<mkdir dir="${hop.home}/plugins/transforms/expression" />
+								<unzip
+									src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
+									dest="${hop.home}/plugins/" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

@@ -1,0 +1,16 @@
+= SIN
+
+Calculates the trigonometric sine of the angle in radians.
+
+== Syntax
+----
+SIN(float_expression)
+----
+
+== Usage
+
+
+
+Returns::
+
+numeric

@@ -1,0 +1,14 @@
+= REPEAT
+
+Returns a string repeated some number of times.
+
+== Syntax
+----
+REPEAT(string, n)
+----
+
+== Usage
+
+string:: The input string to repeat.
+
+n:: The number of times the input string should be repeated. The minimum valid number is 0 (which results in an empty string).

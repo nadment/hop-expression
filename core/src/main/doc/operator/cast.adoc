@@ -1,0 +1,48 @@
+= CAST
+
+Converts a value of one data type into another data type:
+
+== Syntax
+----
+CAST(value AS dataType [FORMAT format])
+----
+
+== Usage
+
+==== Supported data type:
+
+* BigNumber		
+*	Binary
+*	Boolean
+*	Date
+*	Integer
+*	Number
+*	String
+
+==== Rules
+
+* When converting a number to a boolean, 0 is false and every other value is true. 
+* When converting a boolean to a number, false is 0 and true is 1. 
+* When converting a number to a number of another type, the value is checked for overflow. 
+* When converting a string to binary, it is hex encoded (every byte two characters).
+
+==== Format
+
+[DEV] What to use java format or SQL format ? For now SQL except for String to Number
+
+
+If the cast is not possible, an error is raised.
+
+== Example
+
+----
+CAST('yes' AS BOOLEAN)
+CAST('-1234.56' AS INTEGER FORMAT '###0')
+CAST('-1234.56' AS NUMBER FORMAT '###0.00')
+CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss')
+CAST(Date(2020,5,24) AS STRING FORMAT 'yyyy-q')
+----
+
+
+
+See also xref:to_boolean.adoc[TO_BOOLEAN], xref:to_char.adoc[TO_CHAR]

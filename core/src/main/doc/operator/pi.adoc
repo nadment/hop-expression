@@ -1,0 +1,8 @@
+= PI
+
+This function returns the constant value of pi.
+
+== Syntax
+----
+PI()
+----

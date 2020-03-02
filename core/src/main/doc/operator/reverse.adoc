@@ -1,0 +1,16 @@
+= REVERSE
+
+Reverses the order of characters in a string.
+
+== Syntax
+----
+REVERSE(string)
+----
+
+== Usage
+
+
+
+Returns::
+
+String

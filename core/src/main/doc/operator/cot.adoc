@@ -1,0 +1,8 @@
+= COT
+
+Returns the trigonometric cotangent of the angle in radians specified by float expression.
+
+== Syntax
+----
+COT(numeric_expression)
+----

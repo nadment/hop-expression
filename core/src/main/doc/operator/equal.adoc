@@ -1,0 +1,10 @@
+= =
+
+First expression is equal than second expression.
+
+== Syntax
+----
+expression = expression
+----
+
+See also xref:equal_null.adoc[EQUAL_NULL]

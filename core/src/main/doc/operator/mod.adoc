@@ -1,0 +1,19 @@
+= MOD, %
+
+This function returns the remainder of the division of m by n.
+
+== Syntax
+----
+MOD(m, n)
+----
+The % operator provides alternative syntax.
+----
+m % n
+----
+
+== Example
+
+----
+MOD(16,5)
+----
+

@@ -1,0 +1,16 @@
+= SHA512
+
+The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128 characters hex-encoded string.
+
+== Syntax
+----
+SHA512(string)
+----
+
+== Usage
+
+
+
+Returns::
+
+Number

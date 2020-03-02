@@ -1,0 +1,13 @@
+= CONCAT, ||
+
+This function returns the result of concatenation of two or more string.
+
+The || operator provides alternative syntax.
+
+== Syntax
+----
+CONCAT(string1, string2[, string3...])
+----
+----
+string1 || string2
+----

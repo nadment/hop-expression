@@ -1,0 +1,15 @@
+= REGEXP_LIKE
+
+
+
+== Syntax
+----
+
+----
+
+== Usage
+
+
+
+Returns::
+

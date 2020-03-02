@@ -1,0 +1,18 @@
+= ASCII
+
+This function returns the numeric value of the first character in a string that is the numeric representation of the ASCII character.
+
+== Syntax
+----
+ASCII(char)
+----
+
+== Usage
+
+* If the string is empty, a value of 0 is returned.
+
+== Example
+
+----
+ASCII('X')
+----

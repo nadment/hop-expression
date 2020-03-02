@@ -1,0 +1,16 @@
+= SINH
+
+Calculates the hyperbolic sine of its argument.
+
+== Syntax
+----
+SINH(numeric_expression)
+----
+
+== Usage
+
+
+
+Returns::
+
+numeric

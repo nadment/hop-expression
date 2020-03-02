@@ -1,0 +1,12 @@
+= LN
+
+This function calculates the natural logarithm of n.
+
+== Syntax
+----
+LN(n)
+----
+
+== Usage
+
+If the input expression is less than or equal to 0, an error is returned.

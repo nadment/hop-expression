@@ -1,0 +1,18 @@
+= ABS
+
+This fucntion returns the absolute (positive) value of the number n.
+
+== Syntax
+----
+ABS(n)
+----
+
+== Usage
+
+The returned value is of the same data type as the parameter.
+
+== Example
+
+----
+ABS(-123)
+----

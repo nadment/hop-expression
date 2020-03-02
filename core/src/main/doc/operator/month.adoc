@@ -1,0 +1,13 @@
+= MONTH
+
+Returns the month of the specified date or timestamp.
+
+== Syntax
+----
+MONTH(date)
+----
+
+== Usage
+
+* The result is an integer between 1 and 12.
+* Equivalent to xref:extract.adoc[EXTRACT](MONTH FROM date)

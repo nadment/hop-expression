@@ -1,0 +1,8 @@
+= WEEKOFMONTH
+
+This function return the week of month where week 1 starts on the first day of the month and ends on the seventh (integer between 0 to 5).
+
+== Syntax
+----
+WEEKOFMONTH(date_or_timestamp)
+----

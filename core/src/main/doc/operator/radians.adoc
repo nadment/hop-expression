@@ -1,0 +1,16 @@
+= RADIANS
+
+Converts degrees to radians.
+
+== Syntax
+----
+RADIANS(numeric_expression)
+----
+
+== Usage
+
+
+
+Returns::
+
+Number

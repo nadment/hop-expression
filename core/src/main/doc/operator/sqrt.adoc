@@ -1,0 +1,16 @@
+= SQRT
+
+Calculates the square-root of a non-negative numeric expression.
+
+== Syntax
+----
+SQRT(numeric_expression)
+----
+
+== Usage
+
+If the input expression is negative, an error will be reported.
+
+Returns::
+
+numeric

@@ -1,0 +1,8 @@
+= IN
+
+The IN operator is a shorthand for multiple OR conditions.
+
+== Syntax
+----
+field [NOT] IN (expression [,expression ,...])
+----

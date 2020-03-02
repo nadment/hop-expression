@@ -1,0 +1,12 @@
+= LENGTH
+
+Returns the number of characters of the specified string.
+
+== Syntax
+----
+LENGTH(string)
+----
+
+== Usage
+
+* Returns NULL if expression is NULL. 

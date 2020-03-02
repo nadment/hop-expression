@@ -1,0 +1,11 @@
+= GREATEST
+
+The function returns the largest value in a set of expressions.
+		
+
+== Syntax
+----
+GREATEST(expression [,expression...])
+----
+
+See also xref:least.adoc[LEAST]

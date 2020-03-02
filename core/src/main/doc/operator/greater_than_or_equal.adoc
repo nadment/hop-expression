@@ -1,0 +1,8 @@
+= >=
+
+First expression is greater than or equal to the second expression.
+
+== Syntax
+----
+expression >= expression
+----

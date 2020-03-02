@@ -1,0 +1,16 @@
+= URLENCODE
+
+The function encode special characters in a string using the Java string literal encoding format.
+
+== Syntax
+----
+URLENCODE(string)
+----
+
+== Usage
+
+
+
+Returns::
+
+String
