@@ -1,0 +1,1093 @@
+<expression>
+
+	<!-- LOGICAL OPERATORS -->
+
+	<operator>
+		<name>NOT_OPERATOR</name>
+		<category>Logical</category>
+		<description>Does not match the expression.</description>
+		<syntax>NOT boolean</syntax>
+		<returns>boolean</returns>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>AND_OPERATOR</name>
+		<category>Logical</category>
+		<description>Matches both expression.</description>
+		<syntax>boolean AND boolean</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>OR_OPERATOR</name>
+		<category>Logical</category>
+		<description>Matches either expression.</description>
+		<syntax>boolean OR boolean</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>XOR_OPERATOR</name>
+		<category>Logical</category>
+		<description>Returns TRUE if one or the other but not both is TRUE.</description>
+		<syntax>boolean XOR boolean</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<!-- ARITHMETIC OPERATORS -->
+
+	<operator>
+		<name>ADD_OPERATOR</name>
+		<category>Arithmetic</category>
+		<description>Sum of 2 numeric values.</description>
+		<syntax>numeric_expression + numeric_expression</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SUBTRACT_OPERATOR</name>
+		<category>Arithmetic</category>
+		<description>Subtract of 2 numeric values.</description>
+		<syntax>numeric_expression - numeric_expression</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>MULTIPLY_OPERATOR</name>
+		<category>Arithmetic</category>
+		<description>Multiply 2 numeric values.</description>
+		<syntax>numeric_expression * numeric_expression</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>DIVIDE_OPERATOR</name>
+		<category>Arithmetic</category>
+		<description>Divide 2 numeric values.</description>
+		<syntax>numeric_expression / numeric_expression</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>MODULUS_OPERATOR</name>
+		<category>Arithmetic</category>
+		<description></description>
+		<syntax>numeric_expression % numeric_expression</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>POWER_OPERATOR</name>
+		<category>Arithmetic</category>
+		<description>Calculates a number to the nth power, for example 2^6 resolves to 64.
+			This operator are evaluated from right to left, the expression 2**3**4 is evaluated as (2^(3^4)).
+		</description>
+		<syntax>numeric_expression ^ numeric_expression</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<!-- COMPARISON OPERATORS -->
+
+	<operator>
+		<name>EQUAL_OPERATOR</name>
+		<category>Comparison</category>
+		<description>First expression is equal than second expression.</description>
+		<syntax>expression = expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>NOT_EQUAL_OPERATOR</name>
+		<category>Comparison</category>
+		<description>First expression is not equal than second expression.</description>
+		<syntax>expression != expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LESS_THAN_OPERATOR</name>
+		<category>Comparison</category>
+		<description>First expression is less than second expression.</description>
+		<syntax>expression &lt; expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LESS_THAN_OR_EQUAL_OPERATOR</name>
+		<category>Comparison</category>
+		<description>First expression is less than or equal to the second expression.</description>
+		<syntax>expression &lt;= expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>GREATER_THAN_OPERATOR</name>
+		<category>Comparison</category>
+		<description>First expression is greater than second expression.</description>
+		<syntax>expression &gt; expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>GREATER_THAN_OR_EQUAL_OPERATOR</name>
+		<category>Comparison</category>
+		<description>First expression is greater than or equal to the second expression.</description>
+		<syntax>expression &gt;= expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>CONTAINS_OPERATOR</name>
+		<category>Comparison</category>
+		<description></description>
+		<syntax>string_expression =~ string_expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>IN_OPERATOR</name>
+		<category>Comparison</category>
+		<description>The IN operator is a shorthand for multiple OR conditions.</description>
+		<syntax>field [NOT] IN (expression [,expression ,...])</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>IS_OPERATOR</name>
+		<category>Comparison</category>
+		<description></description>
+		<syntax></syntax>
+		<returns>boolean</returns>
+		<constraints>IS [NOT] TRUE|FALSE|NULL</constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BETWEEN_OPERATOR</name>
+		<category>Comparison</category>
+		<description>Determines whether the value of one expression is in an interval defined by two other expressions.</description>
+		<syntax>BETWEEN expression AND expression</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LIKE_OPERATOR</name>
+		<category>Comparison</category>
+		<description>Case-sensitive matching of strings based on comparison with a pattern.
+SQL wildcards are supported in pattern:
+	An underscore(_) matches any single character.
+	A percent sign (%) matches any sequence of zero or more characters.
+	
+The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
+		</description>
+		<syntax>string [NOT] LIKE pattern [ESCAPE escape]</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
+	
+
+	<!-- SPECIAL OPERATORS -->
+	<operator>
+		<name>CONCAT_OPERATOR</name>
+		<category>Special</category>
+		<description>Returns the result of concatenation of two string. The	CONCAT function provides alternative syntax.</description>
+		<syntax>string_expression || string_expression</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>CAST_OPERATOR</name>
+		<category>Special</category>
+		<description>Converts a value of one data type into another data type:
+	BigNumber		
+	Binary
+	Boolean
+	Date
+	Integer
+	Number
+	String
+		</description>
+		<syntax>CAST(value AS dataType)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
+	<operator>
+		<name>CASE_WHEN_OPERATOR</name>
+		<category>Special</category>
+		<description>The CASE operator is a shorthand for multiple OR conditions.</description>
+		<syntax>CASE WHEN expression THEN expression [WHEN expression THEN
+			expression] ELSE expression END
+		</syntax>
+		<returns>expression value</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<!-- BITWISE FUNCTIONS -->
+	<operator>
+		<name>BITAND</name>
+		<category>Bitwise</category>
+		<description></description>
+		<syntax>{0}(integer,integer)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BITNOT</name>
+		<category>Bitwise</category>
+		<description></description>
+		<syntax>{0}(integer)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>		
+	<operator>
+		<name>BITOR</name>
+		<category>Bitwise</category>
+		<description></description>
+		<syntax>{0}(integer,integer)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BITXOR</name>
+		<category>Bitwise</category>
+		<description></description>
+		<syntax>{0}(integer,integer)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	
+	<!-- NUMERIC FUNCTIONS -->
+
+	<operator>
+		<name>ABS</name>
+		<category>Numeric</category>
+		<description>Returns the absolute (positive) value of the numeric value.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>CEIL</name>
+		<category>Numeric</category>
+		<description>Returns the value rounded to the nearest equal or larger integer.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>COS</name>
+		<category>Numeric</category>
+		<description>Returns the trigonometric cosine of the specified angle in radians in the specified number.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>COSH</name>
+		<category>Numeric</category>
+		<description>Returns the hyperbolic cosine of its argument.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>ACOS</name>
+		<category>Numeric</category>
+		<description>Returns the arc cosine, the angle in radians whose cosine is the specified float expression.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>ACOSH</name>
+		<category>Numeric</category>
+		<description>Returns the inverse arc hyperbolic cosine of its input.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints>Arguments should be number greater than or equal to 1.0.
+		</constraints>
+		<semantics></semantics>
+	</operator>
+
+	<operator>
+		<name>ASIN</name>
+		<category>Numeric</category>
+		<description></description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>ATAN</name>
+		<category>Numeric</category>
+		<description></description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>COT</name>
+		<category>Numeric</category>
+		<description>Returns the trigonometric cotangent of the angle in radians specified by float expression.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SIGN</name>
+		<category>Numeric</category>
+		<description>The function SIGN returns the sign for the numeric expression. It returns a value of -1 for negative expressions, a value of 0 for zero expressions and a value of +1 for positive expressions. If the expression is NULL then the return value is also NULL.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SIN</name>
+		<category>Numeric</category>
+		<description>Calculates the trigonometric sine of the angle in radians.</description>
+		<syntax>{0}(float_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SINH</name>
+		<category>Numeric</category>
+		<description>Calculates the hyperbolic sine of its argument.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SQRT</name>
+		<category>Numeric</category>
+		<description>Calculates the square-root of a non-negative numeric expression.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints>If the input expression is negative, an error will be reported.</constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>TAN</name>
+		<category>Numeric</category>
+		<description>Calculates the tangent of its argument, the argument should be expressed in radians.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>TANH</name>
+		<category>Numeric</category>
+		<description>Calculates the hyperbolic tangent of its argument.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>FLOOR</name>
+		<category>Numeric</category>
+		<description>Returns the values rounded to the nearest equal or smaller integer.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>ROUND</name>
+		<category>Numeric</category>
+		<description>Returns the values rounded to the nearest integer.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>EXP</name>
+		<category>Numeric</category>
+		<description>Returns the exponential value of a numeric expression.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<semantics></semantics>
+	</operator>	
+	<operator>
+		<name>MOD</name>
+		<category>Numeric</category>
+		<description>Returns the remainder division. Equivalent to the modulo arithmetic operator (e.g. expr1 % expr2).</description>
+		<syntax>{0}(numeric_expression, numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<semantics></semantics>
+	</operator>		
+	<operator>
+		<name>LN</name>
+		<category>Numeric</category>
+		<description>Returns the constant value of pi.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<constraints>If the input expression is less than or equal to 0, an	error is returned.</constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LOG10</name>
+		<category>Numeric</category>
+		<description>TODO:</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>PI</name>
+		<category>Numeric</category>
+		<description>Returns the natural logarithm of a numeric expression.</description>
+		<syntax>{0}()</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>DEGREES</name>
+		<category>Numeric</category>
+		<description>Converts radians to degrees.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>number</returns>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>POWER</name>
+		<category>Numeric</category>
+		<description>Returns a number raised to the specified power.</description>
+		<syntax>{0}(numeric, exponent)</syntax>
+		<returns>numeric</returns>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>RADIANS</name>
+		<category>Numeric</category>
+		<description>Converts degrees to radians.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>number</returns>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>TO_NUMBER</name>
+		<category>Numeric</category>
+		<description>Converts a string to a number.</description>
+		<syntax>{0}(string, format)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	
+	<!-- STRING FUNCTIONS -->
+
+	<operator>
+		<name>ASCII</name>
+		<category>String</category>
+		<description>Returns the ASCII value of the first character in a string.
+If the string is empty, a value of 0 is returned.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>numeric</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	
+	<operator>
+		<name>TO_CHAR</name>
+		<category>String</category>
+		<description>Converts a number or date to a string.</description>
+		<syntax>{0}(number | datetime, format)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	
+	<operator>
+		<name>CHR</name>
+		<category>String</category>
+		<description>Converts a Unicode code point (including 7-bit ASCII) into the character that matches the input Unicode.
+		</description>
+		<syntax>{0}(integer)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>UNICODE</name>
+		<category>String</category>
+		<description>Returns the Unicode code point for the first Unicode character in a string. If the string is empty, a value of 0 is returned.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>CONCAT</name>
+		<category>String</category>
+		<description>Returns the result of concatenation of two or more	string. The || operator provides alternative syntax for CONCAT.</description>
+		<syntax>{0}(string, string[, string...])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>CONTAINS</name>
+		<category>String</category>
+		<description>Returns true if string contains pattern.</description>
+		<syntax>{0}(string, pattern)</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LENGTH</name>
+		<category>String</category>
+		<description>Returns the number of characters of the specified string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BIT_LENGTH</name>
+		<category>String</category>
+		<description>Returns the number of characters of the specified string (8*OCTET_LENGTH).</description>
+		<syntax>{0}(string_or_binary)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>OCTET_LENGTH</name>
+		<category>String</category>
+		<description>Returns the length of a string or binary value in bytes.</description>
+		<syntax>{0}(string_or_binary)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	
+	<operator>
+		<name>INITCAP</name>
+		<category>String</category>
+		<description>Returns a string with the first letter of each word in	uppercase and the subsequent letters in lowercase.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>INSTR</name>
+		<category>String</category>
+		<description>Returns the position in the string that is the first character of a specified occurrence of the substring.
+The first position in the string is 1. 
+If substring is not found in string, then the INSTR function will return 0.			
+If the start_position is negative, the INSTR function counts back start_position number of characters from the end of string and then searches towards the beginning of string.
+		</description>
+		<syntax>{0}(string, pattern[, start_position])</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SUBSTR</name>
+		<category>String</category>
+		<description>Returns the portion of the string from string, starting
+			from the character/byte specified by start, with optionally limited
+			length.
+		</description>
+		<syntax>{0}(string, start[, length])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>REPLACE</name>
+		<category>String</category>
+		<description>Removes all occurrences of a specified substring, and
+			optionally replaces them with another string.
+		</description>
+		<syntax>{0}(string, pattern[, replacement])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>STARTSWITH</name>
+		<category>String</category>
+		<description>Returns TRUE if the first expression starts with second
+			expression.\nBoth expressions must be text.
+		</description>
+		<syntax>{0}(string, string)</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>ENDSWITH</name>
+		<category>String</category>
+		<description>Returns TRUE if the first expression ends with second
+			expression.\nBoth expressions must be text.
+		</description>
+		<syntax>{0}(string, string)</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LEFT</name>
+		<category>String</category>
+		<description>Extracts a number of characters from a string (starting
+			from left).
+		</description>
+		<syntax>{0}(string[, length])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>RIGHT</name>
+		<category>String</category>
+		<description>Extracts a number of characters from a string (starting
+			from right).
+		</description>
+		<syntax>{0}(string[, length])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<operator>
+		<name>SPACE</name>
+		<category>String</category>
+		<description>Returns a string consisting of a the specified number of
+			blank spaces.
+		</description>
+		<syntax>{0}(length)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<operator>
+		<name>TRANSLATE</name>
+		<category>String</category>
+		<description>Translates original from the characters in findChars to
+			the characters in replaceChars.
+		</description>
+		<syntax>{0}(original, findChars, replaceChars)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<operator>
+		<name>LPAD</name>
+		<category>String</category>
+		<description>Left-pads a string with another string, to a certain length.</description>
+		<syntax>{0}(string, length[, pad_string])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>RPAD</name>
+		<category>String</category>
+		<description>Right-pads a string with another string, to a certain length.</description>
+		<syntax>{0}(string, length[, pad_string])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LOWER</name>
+		<category>String</category>
+		<description>Returns a character string converted to lower case.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>UPPER</name>
+		<category>String</category>
+		<description>Returns a character string converted to upper case.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>TRIM</name>
+		<category>String</category>
+		<description>Returns the string with leading and trailing characters removed. If the characters parameter is omitted, the function will remove space characters.</description>
+		<syntax>{0}(string[, characters])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LTRIM</name>
+		<category>String</category>
+		<description>Returns the string with leading characters removed. If the characters parameter is omitted, the function will remove space characters.</description>
+		<syntax>{0}(string[, characters])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>RTRIM</name>
+		<category>String</category>
+		<description>Returns the string with trailing characters removed. If the characters parameter is omitted, the function will remove space characters.</description>
+		<syntax>{0}(string[, characters])</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>REVERSE</name>
+		<category>String</category>
+		<description>Reverses the order of characters in a string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SOUNDEX</name>
+		<category>String</category>
+		<description>Returns a string that contains a phonetic representation of the input string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>URLENCODE</name>
+		<category>String</category>
+		<description>The function encode the URL to a string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>URLDECODE</name>
+		<category>String</category>
+		<description>The function decode the URL to a string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+
+
+	<!-- OTHER FUNCTIONS -->
+
+	<operator>
+		<name>COALESCE</name>
+		<category>Other</category>
+		<description>Returns the first of its arguments that is not	null. Null is returned only if all arguments are null.</description>
+		<syntax>{0}(expression, expression[, expression...])</syntax>
+		<returns>expression value</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<operator>
+		<name>NVL</name>
+		<category>Other</category>
+		<description>Returns the second value if first value is null. This function replace the null with value.
+		</description>
+		<syntax>{0}(expression, expression)</syntax>
+		<returns>expression value</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
+	<operator>
+		<name>NULLIF</name>
+		<category>Other</category>
+		<description>Returns null if expression1 equals to expression2, or
+			expression1 otherwise.
+		</description>
+		<syntax>{0}(expression1,expression2)</syntax>
+		<returns>expression value</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>EQUAL_NULL</name>
+		<category>Other</category>
+		<description>Compares whether two expressions are equal. The function
+			is NULL-safe, meaning it treats NULLs as known values for comparing
+			equality. Note that this is different from the EQUAL comparison
+			operator (=), which treats NULLs as unknown values.
+		</description>
+		<syntax>{0}(expression,expression)</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>GREATEST</name>
+		<category>Other</category>
+		<description>Returns the largest value that is not NULL, or NULL if all values are NULL.
+		</description>
+		<syntax>{0}(expression[,expression])</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LEAST</name>
+		<category>Other</category>
+		<description>Returns the smallest value that is not NULL, or NULL if all values are NULL.
+		</description>
+		<syntax>{0}(expression[,expression])</syntax>
+		<returns>boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
+	<operator>
+		<name>RAND</name>
+		<category>Other</category>
+		<description>Return a random number between 0 (inclusive) and 1 (exclusive). If seed is specified, it returns a repeatable sequence of random numbers.</description>
+		<syntax>{0}([seed])</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>MD5</name>
+		<category>Other</category>
+		<description>The function calculate the MD5 hash of a data value. The hash will be returned as a 40 characters hex-encoded string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
+	<operator>
+		<name>SHA1</name>
+		<category>Other</category>
+		<description>The function calculate the SHA1 hash of a data value. The hash will be returned as a 40 characters hex-encoded string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SHA256</name>
+		<category>Other</category>
+		<description>The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64 characters hex-encoded string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
+	<operator>
+		<name>SHA384</name>
+		<category>Other</category>
+		<description>The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96 characters hex-encoded string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>		
+	<operator>
+		<name>SHA512</name>
+		<category>Other</category>
+		<description>The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128 characters hex-encoded string.</description>
+		<syntax>{0}(string)</syntax>
+		<returns>number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>		
+	<!-- DATE FUNCTIONS -->
+
+	<operator>
+		<name>NOW</name>
+		<category>Date</category>
+		<description>Returns the current date value.</description>
+		<syntax>{0}()</syntax>
+		<returns>date</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LAST_DAY</name>
+		<category>Date</category>
+		<description>Returns the last day of the month.</description>
+		<syntax>{0}(date | timestamp)</syntax>
+		<returns>date</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
+	<operator>
+		<name>ADD_MONTHS</name>
+		<category>Date</category>
+		<description>Adds or subtracts a specified number of months to a date
+			or timestamp.
+		</description>
+		<syntax>{0}(date | timestamp,num_months)</syntax>
+		<returns>date</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>DAY_OF_MONTH</name>
+		<category>Date</category>
+		<description>Returns the day of month of the date/timestamp (The result is an integer between 1 and 31).
+		</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>DAY_OF_WEEK</name>
+		<category>Date</category>
+		<description>Returns the day of week of the date/timestamp (The result is an integer between 1 and 7).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>expression value</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>DAY_OF_YEAR</name>
+		<category>Date</category>
+		<description>Returns the day of year of the date/timestamp (The result is an integer between 1 and 366).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>DAY_NAME</name>
+		<category>Date</category>
+		<description>Returns the name of the day of week (in English).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>MONTH_NAME</name>
+		<category>Date</category>
+		<description>Returns the name of the month (in English).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>MONTH</name>
+		<category>Date</category>
+		<description>Returns the month component of the date/timestamp.</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>WEEK_OF_YEAR</name>
+		<category>Date</category>
+		<description>Return the week of the year (number in the range 1 to 54).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>QUARTER</name>
+		<category>Date</category>
+		<description>Return the quarter of the year (number in the range 1 to 4).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>YEAR</name>
+		<category>Date</category>
+		<description>Returns the integer that specifies the year of the	specified date/timestamp.</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>HOUR</name>
+		<category>Date</category>
+		<description>Returns the hour component of the timestamp (The result is an integer between 0 and 23).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>MINUTE</name>
+		<category>Date</category>
+		<description>Returns the minute component of the timestamp (The result is an integer between 0 and 59).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>SECOND</name>
+		<category>Date</category>
+		<description>Returns the second component of the timestamp (The result is an integer between 0 and 59).</description>
+		<syntax>{0}(date_or_timestamp)</syntax>
+		<returns>integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>TO_DATE</name>
+		<category>Date</category>
+		<description>Converts a string to a date time.</description>
+		<syntax>{0}(string, format)</syntax>
+		<returns>string</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+</expression>	
