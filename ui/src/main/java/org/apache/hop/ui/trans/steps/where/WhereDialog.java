@@ -16,6 +16,7 @@
 
 package org.apache.hop.ui.trans.steps.where;
 
+import org.apache.hop.core.annotations.PluginDialog;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowMetaInterface;
 import org.apache.hop.i18n.BaseMessages;
@@ -31,7 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-//@PluginDialog(id = "ExpressionFilter", image = "ExpressionFilter.svg", pluginType = PluginDialog.PluginType.STEP)
+@PluginDialog(id = "ExpressionFilter", image = "ExpressionFilter.svg", pluginType = PluginDialog.PluginType.STEP)
 public class WhereDialog extends AbstractStepDialog<WhereMeta> {
 
 	private static Class<?> PKG = WhereMeta.class; // for i18n purposes

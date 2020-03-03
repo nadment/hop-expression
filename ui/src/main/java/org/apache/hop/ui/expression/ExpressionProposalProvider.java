@@ -3,8 +3,10 @@ package org.apache.hop.ui.expression;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.RowMetaInterface;
 import org.apache.hop.core.row.ValueMetaInterface;
@@ -14,133 +16,163 @@ import org.apache.hop.ui.expression.ExpressionProposal.Type;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 
-import com.google.common.base.Strings;
-
 public class ExpressionProposalProvider implements IContentProposalProvider {
 
-	private static IContentProposal[] EMPTY_PROPOSAL = new IContentProposal[0];
-	
 	private Set<ExpressionProposal> elements = new HashSet<>();
+
+	private VariableSpace space;
+
+	private RowMetaInterface rowMeta;
 
 	public ExpressionProposalProvider() {
 
-		for (String keyword : ExpressionEditor.KEYWORDS) {
-			elements.add(new ExpressionProposal(Type.Operator, keyword, keyword, null));
-		}
-
-		for (Function function : Function.getFunctions()) {
-			elements.add(new ExpressionProposal(Type.Function, function.getName(), function.getSyntax(),
-					function.getDescription()));
-		}
 	}
 
-	public void init(final RowMetaInterface rowMeta) {
-		for (int i = 0; i < rowMeta.size(); i++) {
-			ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-
-			StringBuffer description = new StringBuffer();
-			description.append("Type: ");
-			description.append(valueMeta.getTypeDesc());
-			description.append("\nStep origin: ");
-			description.append(valueMeta.getOrigin());
-			description.append("\nComment: ");
-			description.append(Strings.nullToEmpty(valueMeta.getComments()));
-
-			ExpressionProposal.Type type = ExpressionProposal.Type.FieldString;
-			switch (valueMeta.getType()) {
-			case ValueMetaInterface.TYPE_BOOLEAN:
-				type = ExpressionProposal.Type.FieldBoolean;
-				break;
-			case ValueMetaInterface.TYPE_BINARY:
-				type = ExpressionProposal.Type.FieldBinary;
-				break;				
-			case ValueMetaInterface.TYPE_DATE:
-			case ValueMetaInterface.TYPE_TIMESTAMP:				
-				type = ExpressionProposal.Type.FieldDate;
-				break;
-			case ValueMetaInterface.TYPE_NUMBER:
-			case ValueMetaInterface.TYPE_BIGNUMBER:
-				type = ExpressionProposal.Type.FieldNumber;
-				break;
-			case ValueMetaInterface.TYPE_STRING:
-				type = ExpressionProposal.Type.FieldString;
-				break;
-			default:
-			}
-
-			elements.add(
-					new ExpressionProposal(type, valueMeta.getName(), valueMeta.getName(), description.toString()));
-		}
+	public void setRowMeta(final RowMetaInterface rowMeta) {
+		this.rowMeta = rowMeta;
 	}
 
-	public void init(final VariableSpace space) {
-
-		for (String variable : space.listVariables()) {
-			boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(variable);
-
-			String content = "${" + variable + '}';
-			String description = (isDeprecated) ? Const.getDeprecatedPrefix() : null;
-
-			elements.add(new ExpressionProposal(Type.Variable, content, variable, description));
-		}
-
+	public void setVariables(final VariableSpace space) {
+		this.space = space;
 	}
 
 	@Override
 	public IContentProposal[] getProposals(String contents, int position) {
 
-		System.out.println(position+">"+contents);
-		
-		// Find significant characters entered by the user to restrict the number of proposals
+		System.out.println(position + ":>" + contents);
+
+		// Find significant characters entered by the user to restrict the number of
+		// proposals
 		String qualifier = contents.substring(0, position);
+
 		int start = position;
-		
 		while (start > 0) {
-			char ch = contents.charAt(--start);
-			if ( !Character.isAlphabetic(ch) )
-//			if (Character.isWhitespace(ch) || ch == '(' || ch == ')' || ch == ',')
+			char ch = contents.charAt(start-1);
+			if (!Character.isAlphabetic(ch) && ch!='.' )
 				break;
-		}
-		if (start > 0 && start < position) {
-			qualifier = qualifier.substring(start + 1, position);
-			start = position - start - 1;
-		}
-		if (qualifier.length() == 0) {
-			return EMPTY_PROPOSAL;			
+			start--;
 		}
 
-		System.out.println("["+qualifier+"]");
-		
-//		int start = cursorPosition;
-//		while ( start>0 && !Character.isWhitespace(contents.charAt(start-1)) && contents.charAt(start-1)!='(' ) start--;
-//		int end = cursorPosition;
-//		while ( end<contents.length() && !Character.isWhitespace(contents.charAt(end)) && contents.charAt(end)!=')' ) end++;
+		if ( start>0 && contents.charAt(start-1)=='{' )  start--;
+		if ( start>0 && contents.charAt(start-1)=='$' )  start--;
 
-//		String word = contents.substring(0, cursorPosition);
-//		int start = word.lastIndexOf(" ", cursorPosition);
-//		if (start > 0) {
-//			word = word.substring(start + 1, cursorPosition);
-//		}
+		qualifier = qualifier.substring(start, position);
 
-//		int end = cursorPosition;
-//		while ( end<contents.length() && !Character.isWhitespace(contents.charAt(end)) && contents.charAt(end)!=')' ) end++;
+		int end = position;
+		while (end < contents.length() && !Character.isWhitespace(contents.charAt(end)) && contents.charAt(end) != '}')
+			end++;
 
 		ArrayList<IContentProposal> list = new ArrayList<IContentProposal>();
-		for (ExpressionProposal proposal : elements) {
-			String content = proposal.getContent();
 
-			// Only allow the contents that start with the qualifier
-			if (content.length() >= qualifier.length()
-					&& content.substring(0, qualifier.length()).equalsIgnoreCase(qualifier)) {
-				ExpressionProposal p = new ExpressionProposal(proposal.getType(), content.substring(start),
-						proposal.getLabel(), proposal.getDescription());
-				
-				System.out.println("\t>>>>"+proposal);
-				list.add(p);
-			}
+		if ( qualifier.length()>0 &&  qualifier.charAt(0) == '$')
+			this.buildVariableProposals(list, qualifier, position - start);
+		//else if (start > 2 && contents.charAt(start - 1) == '{')
+//			this.buildVariableProposals(list, qualifier, position - start - 1);
+
+		else {
+			this.buildFieldProposals(list, qualifier, position - start);
+			this.buildFunctionProposals(list, qualifier, position - start);
 		}
-		
+
 		System.out.println('\r');
 		return list.toArray(new IContentProposal[list.size()]);
+	}
+
+	protected void buildVariableProposals(List<IContentProposal> list, String qualifier, int position) {
+
+		System.out.println("list variables [" + qualifier + "] " + position);
+
+		if (space != null) {
+			
+			String name = qualifier;
+			if ( name.startsWith("${") ) name = name.substring(2); 
+			else if ( name.startsWith("$") ) name = name.substring(1); 
+			 
+			
+			for (String variable : space.listVariables()) {
+				// Add to proposal if variable name start with the qualifier
+				
+				if (variable.length() >= name.length()
+						&& variable.substring(0, name.length()).equalsIgnoreCase(name)) {
+					boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(variable);
+
+					String content = "${" + variable + '}';
+					String description = (isDeprecated) ? Const.getDeprecatedPrefix() : null;
+					Type type = (isDeprecated) ? Type.VariableDeprecated : Type.Variable;
+
+					list.add(new ExpressionProposal(type, content.substring(position), variable, description));
+				}
+			}
+		}
+	}
+
+	protected void buildFunctionProposals(List<IContentProposal> list, String qualifier, int position) {
+
+		System.out.println("list functions [" + qualifier + "] " + position);
+
+		for (Function function : Function.getFunctions()) {
+			elements.add(new ExpressionProposal(Type.Function, function.getName(), function.getSyntax(),
+					function.getDescription()));
+
+			String name = function.getName();
+
+			// Add to proposal if function name start with the qualifier
+			if (name.length() >= qualifier.length()
+					&& name.substring(0, qualifier.length()).equalsIgnoreCase(qualifier)) {
+
+				list.add(new ExpressionProposal(Type.Function, name.substring(position), function.getSyntax(),
+						function));
+			}
+		}
+	}
+
+	protected void buildFieldProposals(List<IContentProposal> list, String qualifier, int position) {
+
+		System.out.println("list field [" + qualifier + "] " + position);
+
+		if (rowMeta != null) {
+			for (int i = 0; i < rowMeta.size(); i++) {
+				ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
+
+				String name = valueMeta.getName();
+
+				// Add to proposal if field name start with the qualifier
+				if (name.length() >= qualifier.length()
+						&& name.substring(0, qualifier.length()).equalsIgnoreCase(qualifier)) {
+
+					StringBuilder description = new StringBuilder();
+					description.append("Type: ");
+					description.append(valueMeta.getTypeDesc());
+					description.append("\nStep origin: ");
+					description.append(valueMeta.getOrigin());
+					description.append("\nComment: ");
+					description.append(StringUtils.defaultString(valueMeta.getComments()));
+
+					ExpressionProposal.Type type = ExpressionProposal.Type.FieldString;
+					switch (valueMeta.getType()) {
+					case ValueMetaInterface.TYPE_BOOLEAN:
+						type = ExpressionProposal.Type.FieldBoolean;
+						break;
+					case ValueMetaInterface.TYPE_BINARY:
+						type = ExpressionProposal.Type.FieldBinary;
+						break;
+					case ValueMetaInterface.TYPE_DATE:
+					case ValueMetaInterface.TYPE_TIMESTAMP:
+						type = ExpressionProposal.Type.FieldDate;
+						break;
+					case ValueMetaInterface.TYPE_NUMBER:
+					case ValueMetaInterface.TYPE_BIGNUMBER:
+						type = ExpressionProposal.Type.FieldNumber;
+						break;
+					case ValueMetaInterface.TYPE_STRING:
+						type = ExpressionProposal.Type.FieldString;
+						break;
+					default:
+					}
+
+					list.add(new ExpressionProposal(type, name.substring(position), name, description.toString()));
+				}
+			}
+		}
 	}
 }

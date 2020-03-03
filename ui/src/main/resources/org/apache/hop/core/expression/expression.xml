@@ -808,8 +808,7 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>GREATEST</name>
 		<category>Other</category>
-		<description>Returns the greatest value in a list of expressions.
-		</description>
+		<description>Returns the greatest value in a list of expressions.</description>
 		<syntax>{0}(expression[,expression])</syntax>
 		<returns>boolean</returns>
 		<constraints></constraints>
@@ -847,9 +846,7 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>ADD_MONTHS</name>
 		<category>Date</category>
-		<description>Adds or subtracts a specified number of months to a date
-			or timestamp.
-		</description>
+		<description>Adds or subtracts a specified number of months to a date or timestamp.</description>
 		<syntax>{0}(date | timestamp,num_months)</syntax>
 		<returns>date</returns>
 		<constraints></constraints>
@@ -858,8 +855,7 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>DAY_OF_MONTH</name>
 		<category>Date</category>
-		<description>Returns the day of month of the date/timestamp (The result is an integer between 1 and 31).
-		</description>
+		<description>Returns the day of month of the date/timestamp (The result is an integer between 1 and 31).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
 		<returns>integer</returns>
 		<constraints></constraints>

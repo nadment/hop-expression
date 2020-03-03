@@ -19,6 +19,15 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 
 public class ExpressionSyntaxHighlight implements LineStyleListener {
+	
+	static final String[] KEYWORDS = { "%", "+", "-", "*", "^", "/", "=", "<>", "!=", "<", "<=", ">", ">=", "(", ")",
+			"||", "AS", "AND", "BETWEEN", "CASE", "CAST", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "IN", "IS", "LIKE",
+			"NOT", "NULL", "OR", "THEN", "TRUE", "WHEN", "XOR" };
+// TODO: Java 9
+//	private static final Set<String> KEYWORDS = Set.of( "%", "+", "-", "*", "**", "/", "<", "<=", ">", ">=", "(", ")", "||", "AND", "BETWEEN", "CASE", "DATE", "ELSE",
+//			"END", "ESCAPE", "FALSE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TRUE", "WHEN" ,"XOR");
+
+	
 	Scanner scanner = new Scanner();
 	int[] tokenColors;
 	Color[] colors;
@@ -269,7 +278,7 @@ public class ExpressionSyntaxHighlight implements LineStyleListener {
 		void initialize() {
 			fgKeys = new Hashtable<String, Integer>();
 			Integer k = new Integer(KEY);
-			for (String keyword : ExpressionEditor.KEYWORDS) {
+			for (String keyword : KEYWORDS) {
 				fgKeys.put(keyword, k);
 			}
 

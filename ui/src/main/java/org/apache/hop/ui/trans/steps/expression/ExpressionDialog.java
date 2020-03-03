@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hop.core.Const;
+import org.apache.hop.core.annotations.PluginDialog;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowMetaInterface;
 import org.apache.hop.core.row.value.ValueMetaFactory;
@@ -27,7 +28,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
-//@PluginDialog(id = "ExpressionValue", image = "ExpressionValue.svg", pluginType = PluginDialog.PluginType.STEP)
+@PluginDialog(id = "ExpressionValue", image = "ExpressionValue.svg", pluginType = PluginDialog.PluginType.STEP)
 public class ExpressionDialog extends AbstractStepDialog<ExpressionMeta> {
 	private static Class<?> PKG = ExpressionMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -140,20 +141,16 @@ public class ExpressionDialog extends AbstractStepDialog<ExpressionMeta> {
 		tblFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
 
 		// Search the fields in the background
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				StepMeta stepMeta = transMeta.findStep(stepname);
-				if (stepMeta != null) {
-					try {
-						rowMeta = transMeta.getPrevStepFields(stepMeta);
-					} catch (HopException e) {
-						logError(BaseMessages.getString(PKG, "ExpressionDialog.Log.UnableToFindInput"));
-					}
+		new Thread(() -> {
+			StepMeta stepMeta = transMeta.findStep(stepname);
+			if (stepMeta != null)
+				try {
+
+					rowMeta = transMeta.getPrevStepFields(stepMeta);
+				} catch (HopException e) {
+					logError(BaseMessages.getString(PKG, "ExpressionDialog.Log.UnableToFindInput"));
 				}
-			}
-		};
-		new Thread(runnable).start();
+		}).start();
 
 		return tblFields;
 	}

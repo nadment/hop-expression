@@ -37,7 +37,7 @@ public abstract class Expression implements Cloneable {
 	}
 
 	/**
-	 * Return the resulting value for the current row.
+	 * Return the resulting value for the current context.
 	 *
 	 * @param context the context
 	 * @return the result

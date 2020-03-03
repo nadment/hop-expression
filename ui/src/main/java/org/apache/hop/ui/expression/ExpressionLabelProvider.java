@@ -21,6 +21,7 @@ public class ExpressionLabelProvider implements ILabelProvider {
 	private Image imgInet;
 	private Image imgFunction;
 	private Image imgVariable;
+	private Image imgVariableDeprecated;
 
 	public ExpressionLabelProvider() {
 		super();
@@ -34,6 +35,7 @@ public class ExpressionLabelProvider implements ILabelProvider {
 		imgInet = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Inet.png"); //$NON-NLS-1$
 		imgFunction = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Function.png"); //$NON-NLS-1$
 		imgVariable = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Variable.png"); //$NON-NLS-1$
+		imgVariableDeprecated = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "VariableDeprecated.png"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -58,6 +60,8 @@ public class ExpressionLabelProvider implements ILabelProvider {
 			imgFunction.dispose();
 		if (imgVariable != null)
 			imgVariable.dispose();
+		if (imgVariableDeprecated != null)
+			imgVariableDeprecated.dispose();
 	}
 
 	@Override
@@ -124,6 +128,8 @@ public class ExpressionLabelProvider implements ILabelProvider {
 				return imgBinary;
 			case Variable:
 				return imgVariable;
+			case VariableDeprecated:
+				return imgVariableDeprecated;
 			default:
 				break;
 			}

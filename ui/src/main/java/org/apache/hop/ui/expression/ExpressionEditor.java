@@ -39,19 +39,10 @@ import org.eclipse.swt.widgets.TreeItem;
 public class ExpressionEditor extends SashForm {
 	private static final Class<?> PKG = ExpressionEditor.class;
 
-	static final String[] KEYWORDS = { "%", "+", "-", "*", "^", "/", "=", "<>", "!=", "<", "<=", ">", ">=", "(", ")",
-			"||", "AS", "AND", "BETWEEN", "CASE", "CAST", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "IN", "IS", "LIKE",
-			"NOT", "NULL", "OR", "THEN", "TRUE", "WHEN", "XOR" };
-// TODO: Java 9
-//	private static final Set<String> KEYWORDS = Set.of( "%", "+", "-", "*", "**", "/", "<", "<=", ">", ">=", "(", ")", "||", "AND", "BETWEEN", "CASE", "DATE", "ELSE",
-//			"END", "ESCAPE", "FALSE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TRUE", "WHEN" ,"XOR");
-
+	private ExpressionLabelProvider labelProvider;
 	private ExpressionProposalProvider contentProposalProvider;
 	private VariableSpace variables;
 	private RowMetaInterface rowMeta;
-
-	private ExpressionLabelProvider labelProvider;
-
 	private StyledTextComp txtEditor;
 	private Tree tree;
 	private TreeItem treeItemField;
@@ -72,10 +63,9 @@ public class ExpressionEditor extends SashForm {
 		txtEditor = new StyledTextComp(variables, parent,
 				SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, "", false);
 
-		// wEditor.setText(expression);
 		txtEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
 		txtEditor.addLineStyleListener(new ExpressionSyntaxHighlight());
-		// wEditor.addLineStyleListener(new LineNumber(wEditor.getStyledText()));
+		//txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
 		// wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
 		PropsUI.getInstance().setLook(txtEditor, Props.WIDGET_STYLE_FIXED);
@@ -249,10 +239,7 @@ public class ExpressionEditor extends SashForm {
 
 	@Override
 	public void dispose() {
-
 		this.labelProvider.dispose();
-		// this.imgVariable.dispose();
-
 		super.dispose();
 	}
 
@@ -264,7 +251,7 @@ public class ExpressionEditor extends SashForm {
 		this.variables = variables;
 
 		if (variables != null) {
-			this.contentProposalProvider.init(variables);
+			this.contentProposalProvider.setVariables(variables);
 
 			String[] names = this.variables.listVariables();
 			Arrays.sort(names);
@@ -293,7 +280,7 @@ public class ExpressionEditor extends SashForm {
 		this.rowMeta = rowMeta;
 
 		if (rowMeta != null) {
-			this.contentProposalProvider.init(rowMeta);
+			this.contentProposalProvider.setRowMeta(rowMeta);
 
 			Display.getDefault().asyncExec(() -> {
 				treeItemField.removeAll();

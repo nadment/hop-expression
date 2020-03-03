@@ -2,12 +2,13 @@ package org.apache.hop.ui.expression;
 
 import java.util.Objects;
 
+import org.apache.hop.expression.Operator;
 import org.eclipse.jface.fieldassist.IContentProposal;
 
 public class ExpressionProposal implements IContentProposal {
 
 	enum Type {
-		FieldBoolean, FieldBinary, FieldDate, FieldNumber, FieldString, Operator, Function, Variable
+		FieldBoolean, FieldBinary, FieldDate, FieldNumber, FieldString, Operator, Function, Variable, VariableDeprecated
 	}
 
 	private Type type;
@@ -61,8 +62,11 @@ public class ExpressionProposal implements IContentProposal {
 
 	@Override
 	public String getDescription() {
-		// TODO: fix me
-		return this.toString();
+		if ( data instanceof String )
+			return (String) data;
+		if ( data instanceof Operator )
+			return ((Operator) data).getDescription();
+		return null;
 	}
 
 	public Type getType() {
