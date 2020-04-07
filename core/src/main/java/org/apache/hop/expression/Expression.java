@@ -9,22 +9,12 @@ import java.io.StringWriter;
  * @author Nicolas ADMENT
  *
  */
-public abstract class Expression implements Cloneable {
+public abstract class Expression implements IExpression {
 
 	public static Expression parse(String source) throws ExpressionException {
 		ExpressionParser parser = new ExpressionParser(source);
 
 		return parser.parse();
-	}
-
-	public Expression clone() {
-		Expression expression = null;
-		try {
-			expression = (Expression) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return expression;
 	}
 
 	/**
@@ -42,7 +32,7 @@ public abstract class Expression implements Cloneable {
 	 * @param context the context
 	 * @return the result
 	 */
-	public abstract Value eval(ExpressionContext context) throws ExpressionException;
+	public abstract Value eval(IExpressionContext context) throws ExpressionException;
 
 	/**
 	 * Try to optimize the expression.
@@ -50,7 +40,7 @@ public abstract class Expression implements Cloneable {
 	 * @param context the context
 	 * @return the optimized expression
 	 */
-	public Expression optimize(ExpressionContext context) throws ExpressionException {
+	public Expression optimize(IExpressionContext context) throws ExpressionException {
 		return this;
 	}
 

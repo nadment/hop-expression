@@ -12,11 +12,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +20,7 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.hop.expression.util.Bytes;
 import org.apache.hop.expression.util.DateParser;
 import org.apache.hop.expression.util.Soundex;
+import org.apache.hop.expression.util.StringEncoder;
 import org.apache.hop.expression.util.ToChar;
 
 /**
@@ -31,6 +28,9 @@ import org.apache.hop.expression.util.ToChar;
  * function-call syntax.
  */
 
+//TODO: implement MONTHS_BETWEEN
+//TODO: implement YEARS_BETWEEN
+//TODO: implement TRY_TO_NUMBER
 //TODO: implement TRUNCATE
 //TODO: implement DATEPART, NANO
 //TODO: implement EXTRACT, NANO
@@ -44,147 +44,8 @@ public class Function extends Operator {
 
 	private final boolean isDeterministic;
 
-	/**
-	 * Set of functions or alias.
-	 */
-	private static final TreeSet<Function> FUNCTIONS_BY_ID = new TreeSet<>(Comparator.comparing(Function::getName));
-
-	/**
-	 * Set of functions or alias by name.
-	 */
-	private static final HashMap<String, Function> FUNCTIONS_BY_NAME = new HashMap<>(256);
-
-	// -------------------------------------------------------------
-	// FUNCTIONS
-	// -------------------------------------------------------------
-	static {
-		addFunction(Kind.ABS);
-		addFunction(Kind.ADD_MONTHS);
-		addFunction(Kind.ACOS);
-		addFunction(Kind.ASCII);
-		addFunction(Kind.ASIN);
-		addFunction(Kind.ATAN);
-		//addFunction(Kind.BIT_LENGTH);
-		addFunction(Kind.BITAND);
-		addFunction(Kind.BITNOT);
-		addFunction(Kind.BITOR);
-		addFunction(Kind.BITXOR);
-		addFunction(Kind.CEIL, "CEIL", "CEILING");
-		addFunction(Kind.CHR);
-		addFunction(Kind.COALESCE);
-		addFunction(Kind.CONCAT);
-		addFunction(Kind.COS);
-		addFunction(Kind.COSH);
-		addFunction(Kind.COT);
-		addFunction(Kind.CONTAINS);
-		addFunction(Kind.DAY_NAME, "DAYNAME");
-		addFunction(Kind.DAY_OF_MONTH, "DAY", "DAYOFMONTH", "DAY_OF_MONTH");
-		addFunction(Kind.DAY_OF_WEEK, "DAY_OF_WEEK", "DAYOFWEEK");
-		addFunction(Kind.DAY_OF_YEAR, "DAY_OF_YEAR", "DAYOFYEAR");
-		addFunction(Kind.DEGREES);
-		addFunction(Kind.EQUAL_NULL);
-		addFunction(Kind.ENDSWITH);
-		addFunction(Kind.EXP);
-		addFunction(Kind.FLOOR);
-		addFunction(Kind.GREATEST);
-		addFunction(Kind.HOUR);
-		addFunction(Kind.INITCAP);
-		addFunction(Kind.INSTR);
-		addFunction(Kind.LAST_DAY);
-		addFunction(Kind.LEAST);
-		addFunction(Kind.LEFT);
-		addFunction(Kind.LENGTH, "LENGTH", "LEN", "CHAR_LENGTH");
-		addFunction(Kind.LN);
-		addFunction(Kind.LOG10);
-		addFunction(Kind.LOWER, "LOWER", "LCASE");
-		addFunction(Kind.LPAD);
-		addFunction(Kind.LTRIM);
-		addFunction(Kind.MD5);
-		addFunction(Kind.MINUTE);
-		addFunction(Kind.MOD);
-		addFunction(Kind.MONTH);
-		addFunction(Kind.MONTH_NAME, "MONTH_NAME", "MONTHNAME");
-		addFunction(Kind.NULLIF);
-		addFunction(Kind.NVL);
-		//addFunction(Kind.OCTET_LENGTH);
-		addFunction(Kind.PI);
-		addFunction(Kind.POWER, "POWER", "POW");
-		addFunction(Kind.QUARTER);
-		addFunction(Kind.UPPER, "UPPER", "UCASE");
-		addFunction(Kind.RADIANS);
-		addFunction(Kind.REPLACE);
-		addFunction(Kind.REVERSE);
-		addFunction(Kind.RIGHT);
-		addFunction(Kind.ROUND);
-		addFunction(Kind.RPAD);
-		addFunction(Kind.RTRIM);
-		addFunction(Kind.SHA1);
-		addFunction(Kind.SHA256);
-		addFunction(Kind.SHA384);
-		addFunction(Kind.SHA512);
-		addFunction(Kind.SECOND);
-		addFunction(Kind.SIGN);
-		addFunction(Kind.SIN);
-		addFunction(Kind.SINH);
-		addFunction(Kind.SOUNDEX);
-		addFunction(Kind.SPACE);
-		addFunction(Kind.SQRT);
-		addFunction(Kind.STARTSWITH);
-		addFunction(Kind.SUBSTR, "SUBSTR", "SUBSTRING");
-		addFunction(Kind.TAN);
-		addFunction(Kind.TANH);
-		addFunction(Kind.TO_CHAR);
-		addFunction(Kind.TO_DATE);
-		addFunction(Kind.TO_NUMBER);
-		addFunction(Kind.TRIM);
-		addFunction(Kind.TRANSLATE);
-		addFunction(Kind.UNICODE);
-		addFunction(Kind.URLDECODE);
-		addFunction(Kind.URLENCODE);
-		addFunction(Kind.WEEK_OF_YEAR, "WEEK_OF_YEAR", "WEEK");
-		addFunction(Kind.YEAR);
-
-		addFunctionNotDeterministic(Kind.NOW, "NOW", "CURRENT_DATE", "CURDATE", "SYSDATE", "TODAY");
-		addFunctionNotDeterministic(Kind.RAND);
-	}
-
-	private static void addFunction(Kind kind) {
-		addFunction(kind, kind.name());
-	}
-
-	private static void addFunction(Kind kind, String... alias) {
-		for (String name : alias) {
-			Function function = new Function(kind, name, true);
-			FUNCTIONS_BY_ID.add(function);
-			FUNCTIONS_BY_NAME.put(name, function);
-		}
-	}
-
-	private static void addFunctionNotDeterministic(Kind kind) {
-		addFunctionNotDeterministic(kind, kind.name());
-	}
-
-	private static void addFunctionNotDeterministic(Kind kind, String... alias) {
-		for (String name : alias) {
-			Function function = new Function(kind, name, false);
-			FUNCTIONS_BY_ID.add(function);
-			FUNCTIONS_BY_NAME.put(name, function);
-		}
-	}
-
-	public static Set<Function> getFunctions() {
-		return FUNCTIONS_BY_ID;
-	}
-
-	public static Function getFunction(final String name) {
-		if (name == null)
-			return null;
-
-		return FUNCTIONS_BY_NAME.get(name.toUpperCase());
-	}
-
-	protected Function(Kind kind, String name, boolean isDeterministic) {
-		super(kind, name, 100, 100);
+	protected Function(Kind kind, String name, Category category, boolean isDeterministic) {
+		super(kind, name, category, 10, 10);
 		this.isDeterministic = isDeterministic;
 	}
 
@@ -202,7 +63,7 @@ public class Function extends Operator {
 		writer.append(this.getName());
 		writer.append('(');
 		boolean first = true;
-		for (Expression operand : call.getParameters()) {
+		for (Expression operand : call.getOperands()) {
 			if (!first)
 				writer.append(',');
 			else
@@ -217,7 +78,7 @@ public class Function extends Operator {
 
 		int min = 0, max = Integer.MAX_VALUE;
 		switch (kind) {
-		case NOW:
+		case CURRENT_DATE:
 		case PI:
 			max = 0;
 			break;
@@ -226,10 +87,11 @@ public class Function extends Operator {
 		case ASCII:
 		case ASIN:
 		case ATAN:
-		case BITNOT:
+
 		case CEIL:
 		case BIT_LENGTH:
 		case OCTET_LENGTH:
+		case CBRT:
 		case CHR:
 		case COS:
 		case COSH:
@@ -277,6 +139,9 @@ public class Function extends Operator {
 		case SHA256:
 		case SHA384:
 		case SHA512:
+		case STRINGENCODE:
+		case STRINGDECODE:
+		case TO_BOOLEAN:
 			min = 1;
 			max = 1;
 			break;
@@ -287,15 +152,14 @@ public class Function extends Operator {
 			max = 2;
 			break;
 		case ADD_MONTHS:
-		case BITAND:
+		case ATAN2:
 		case BITGET:
-		case BITOR:
-		case BITXOR:
 		case CONTAINS:
-		case NVL:
+		case IFNULL:
 		case POWER:
 		case MOD:
 		case LEFT:
+		case REPEAT:
 		case RIGHT:
 		case NULLIF:
 		case EQUAL_NULL:
@@ -303,7 +167,7 @@ public class Function extends Operator {
 		case STARTSWITH:
 			min = 2;
 			max = 2;
-			break;
+			break;			
 		case INSTR:
 		case LPAD:
 		case REPLACE:
@@ -312,6 +176,7 @@ public class Function extends Operator {
 			min = 2;
 			max = 3;
 			break;
+		case IFF:
 		case TRANSLATE:
 			min = 3;
 			max = 3;
@@ -330,6 +195,10 @@ public class Function extends Operator {
 			min = 1;
 			max = Integer.MAX_VALUE;
 			break;
+		case DECODE:
+			min = 4;
+			max = Integer.MAX_VALUE;
+			break;
 		case RAND:
 			min = 0;
 			max = 1;
@@ -344,21 +213,21 @@ public class Function extends Operator {
 
 	@Override
 	@SuppressWarnings("incomplete-switch")
-	public Value eval(final ExpressionContext context, final Expression... operands) throws ExpressionException {
+	public Value eval(final IExpressionContext context, final IExpression... args) throws ExpressionException {
 
 		switch (kind) {
 		case MOD:
 		case CONTAINS:
 		case POWER: // use operator implementation
-			return super.eval(context, operands);
+			return super.eval(context, args);
 
-		case NOW:
+		case CURRENT_DATE:
 			return Value.of(LocalDateTime.now());
 		case ADD_MONTHS: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			Value months = operands[1].eval(context);
+			Value months = args[1].eval(context);
 			if (months.isNull())
 				return value;
 
@@ -368,7 +237,7 @@ public class Function extends Operator {
 		}
 
 		case LAST_DAY: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			LocalDateTime dt = value.toDate().withDayOfMonth(value.toDate().toLocalDate().lengthOfMonth());
@@ -376,7 +245,7 @@ public class Function extends Operator {
 		}
 
 		case DAY_NAME: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -385,7 +254,7 @@ public class Function extends Operator {
 		}
 
 		case MONTH_NAME: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -394,7 +263,7 @@ public class Function extends Operator {
 		}
 
 		case MONTH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -402,14 +271,14 @@ public class Function extends Operator {
 		}
 
 		case YEAR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toDate().get(ChronoField.YEAR));
 		}
 
 		case QUARTER: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			int month = value.toDate().get(ChronoField.MONTH_OF_YEAR);
@@ -417,14 +286,14 @@ public class Function extends Operator {
 		}
 
 		case ISO_DAY_OF_WEEK: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toDate().get(ChronoField.DAY_OF_WEEK));
 		}
 
 		case DAY_OF_WEEK: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -436,14 +305,14 @@ public class Function extends Operator {
 		}
 
 		case DAY_OF_MONTH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toDate().get(ChronoField.DAY_OF_MONTH));
 		}
 
 		case DAY_OF_YEAR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -451,7 +320,7 @@ public class Function extends Operator {
 		}
 
 		case WEEK_OF_YEAR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -459,7 +328,7 @@ public class Function extends Operator {
 		}
 
 		case HOUR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -467,21 +336,21 @@ public class Function extends Operator {
 		}
 
 		case MINUTE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toDate().get(ChronoField.MINUTE_OF_HOUR));
 		}
 
 		case SECOND: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toDate().get(ChronoField.SECOND_OF_MINUTE));
 		}
 
 		case ABS: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -495,7 +364,7 @@ public class Function extends Operator {
 		}
 
 		case ACOS: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			Double d = value.toNumber();
@@ -506,7 +375,7 @@ public class Function extends Operator {
 		}
 
 		case ASIN: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -514,67 +383,35 @@ public class Function extends Operator {
 		}
 
 		case ATAN: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
 			return Value.of(Math.atan(value.toNumber()));
 		}
 
+		case ATAN2: {
+			Value x = args[0].eval(context);
+			Value y = args[0].eval(context);
+			if (x.isNull() || y.isNull())
+				return Value.NULL;
+
+			return Value.of(Math.atan2(x.toNumber(), y.toNumber()));
+		}
+
 		case BITGET: {
-			Value v0 = operands[0].eval(context);
+			Value v0 = args[0].eval(context);
 			if (v0.isNull())
 				return v0;
-			Value v1 = operands[1].eval(context);
+			Value v1 = args[1].eval(context);
 			if (v1.isNull())
 				return v1;
 
 			return Value.of((v0.toInteger() & (1L << v1.toInteger())) != 0);
 		}
 
-		case BITAND: {
-			Value left = operands[0].eval(context);
-			if (left.isNull())
-				return left;
-			Value right = operands[1].eval(context);
-			if (right.isNull())
-				return right;
-
-			return Value.of(left.toInteger() & right.toInteger());
-		}
-
-		case BITNOT: {
-			Value value = operands[0].eval(context);
-			if (value.isNull())
-				return value;
-
-			return Value.of(~value.toInteger());
-		}
-
-		case BITOR: {
-			Value left = operands[0].eval(context);
-			if (left.isNull())
-				return left;
-			Value right = operands[1].eval(context);
-			if (right.isNull())
-				return right;
-
-			return Value.of(left.toInteger() | right.toInteger());
-		}
-
-		case BITXOR: {
-			Value left = operands[0].eval(context);
-			if (left.isNull())
-				return left;
-			Value right = operands[1].eval(context);
-			if (right.isNull())
-				return right;
-
-			return Value.of(left.toInteger() ^ right.toInteger());
-		}
-
 		case CEIL: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			if (value.isInteger())
@@ -586,21 +423,21 @@ public class Function extends Operator {
 		}
 
 		case COS: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.cos(value.toNumber()));
 		}
 
 		case COSH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.cosh(value.toNumber()));
 		}
 
 		case COT: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -612,14 +449,14 @@ public class Function extends Operator {
 		}
 
 		case DEGREES: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.toDegrees(value.toNumber()));
 		}
 
 		case FLOOR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			if (value.isInteger())
@@ -630,13 +467,13 @@ public class Function extends Operator {
 			return Value.of(Math.floor(value.toNumber()));
 		}
 		case EXP: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.exp(value.toNumber()));
 		}
 		case LN: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			if (value.signum() <= 0)
@@ -645,7 +482,7 @@ public class Function extends Operator {
 		}
 
 		case LOG10: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			if (value.signum() <= 0)
@@ -657,50 +494,58 @@ public class Function extends Operator {
 			return Value.PI;
 
 		case RADIANS: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.toRadians(value.toNumber()));
 		}
 
 		case RAND: {
-			if (operands.length == 1) {
-				Value value = operands[0].eval(context);
+			if (args.length == 1) {
+				Value value = args[0].eval(context);
 				context.getRandom().setSeed(value.toInteger());
 			}
 			return Value.of(context.getRandom().nextDouble());
 		}
 
 		case ROUND: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.round(value.toNumber()));
 		}
 
 		case SIGN: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.signum());
 		}
 
 		case SIN: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.sin(value.toNumber()));
 		}
 
 		case SINH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.sinh(value.toNumber()));
 		}
 
+		case CBRT: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+
+			return Value.of(Math.cbrt(value.toNumber()));
+		}
+
 		case SQRT: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			if (value.signum() < 0)
@@ -709,21 +554,21 @@ public class Function extends Operator {
 		}
 
 		case TAN: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.tan(value.toNumber()));
 		}
 
 		case TANH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.tanh(value.toNumber()));
 		}
 
 		case ASCII: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			String string = value.toString();
@@ -735,7 +580,7 @@ public class Function extends Operator {
 		}
 
 		case CHR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			int codePoint = (int) value.toInteger();
@@ -747,15 +592,23 @@ public class Function extends Operator {
 			return Value.of(new String(Character.toChars(codePoint)));
 		}
 
-		case NVL: {
-			Value value = operands[0].eval(context);
+		case IFF: {
+			Value value = args[0].eval(context);
 			if (value.isNull())
-				value = operands[1].eval(context);
+				return Value.NULL;
+			
+			return args[(value.toBoolean()) ? 1:2].eval(context);
+		}
+		
+		case IFNULL: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				value = args[1].eval(context);
 			return value;
 		}
 
 		case COALESCE: {
-			for (Expression operand : operands) {
+			for (IExpression operand : args) {
 				Value value = operand.eval(context);
 				if (!value.isNull())
 					return value;
@@ -764,9 +617,29 @@ public class Function extends Operator {
 			return Value.NULL;
 		}
 
+		case DECODE: {
+			Value value = args[0].eval(context);
+
+			int index = -1;
+			for (int i = 1, len = args.length - 1; i < len; i += 2) {
+				Value search = args[i].eval(context);
+				if (value.compareTo(search) == 0) {
+					index = i + 1;
+					break;
+				}
+			}
+			if (index < 0 && args.length % 2 == 0) {
+				index = args.length - 1;
+			}
+			if (index < 0)
+				return Value.NULL;
+
+			return args[index].eval(context);
+		}
+
 		case GREATEST: {
 			Value result = Value.NULL;
-			for (Expression operand : operands) {
+			for (IExpression operand : args) {
 				Value value = operand.eval(context);
 				if (result.compareTo(value) < 0)
 					result = value;
@@ -777,7 +650,7 @@ public class Function extends Operator {
 
 		case LEAST: {
 			Value result = Value.NULL;
-			for (Expression operand : operands) {
+			for (IExpression operand : args) {
 				Value value = operand.eval(context);
 				// null is always smaller
 				if (value.isNull())
@@ -792,7 +665,7 @@ public class Function extends Operator {
 
 		case CONCAT: {
 			StringBuilder builder = new StringBuilder();
-			for (Expression operand : operands) {
+			for (IExpression operand : args) {
 				Value value = operand.eval(context);
 				if (!value.isNull())
 					builder.append(value);
@@ -812,49 +685,57 @@ public class Function extends Operator {
 //		}
 
 		case LENGTH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			return this.getLenght(value, 1);
 		}
 
 		case BIT_LENGTH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			return this.getLenght(value, 16);
 		}
 
 		case OCTET_LENGTH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			return this.getLenght(value, 2);
 		}
 
 		case UPPER: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toString().toUpperCase(context.getLocale()));
 		}
 
 		case LOWER: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(value.toString().toLowerCase(context.getLocale()));
 		}
 
 		case INITCAP: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(WordUtils.capitalizeFully(value.toString()));
 		}
 
+		case TO_BOOLEAN: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+
+			return value.convertTo(ValueType.BOOLEAN);
+		}
+
 		case TO_CHAR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
 			String format = null;
-			if (operands.length > 1) {
-				Value v = operands[1].eval(context);
+			if (args.length > 1) {
+				Value v = args[1].eval(context);
 				if (!v.isNull())
 					format = v.toString();
 			}
@@ -873,13 +754,13 @@ public class Function extends Operator {
 			}
 		}
 		case TO_NUMBER: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
 			String format = null;
-			if (operands.length > 1) {
-				Value v = operands[1].eval(context);
+			if (args.length > 1) {
+				Value v = args[1].eval(context);
 				if (!v.isNull())
 					format = v.toString();
 
@@ -890,13 +771,13 @@ public class Function extends Operator {
 		}
 
 		case TO_DATE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
 			String format = null;
-			if (operands.length > 1) {
-				Value v = operands[1].eval(context);
+			if (args.length > 1) {
+				Value v = args[1].eval(context);
 				if (!v.isNull())
 					format = v.toString();
 			}
@@ -911,17 +792,17 @@ public class Function extends Operator {
 		}
 
 		case SOUNDEX: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Soundex.getSoundex(value.toString()));
 		}
 
 		case LEFT: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return Value.NULL;
-			Value count = operands[1].eval(context);
+			Value count = args[1].eval(context);
 			if (count.isNull())
 				return Value.NULL;
 
@@ -937,8 +818,8 @@ public class Function extends Operator {
 		}
 
 		case NULLIF: {
-			Value value = operands[0].eval(context);
-			Value compare = operands[1].eval(context);
+			Value value = args[0].eval(context);
+			Value compare = args[1].eval(context);
 
 			if (value.compareTo(compare) == 0)
 				return Value.NULL;
@@ -947,10 +828,10 @@ public class Function extends Operator {
 		}
 
 		case RIGHT: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			Value count = operands[1].eval(context);
+			Value count = args[1].eval(context);
 			if (count.isNull())
 				return Value.NULL;
 
@@ -966,15 +847,15 @@ public class Function extends Operator {
 		}
 
 		case TRIM: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
 			String string = value.toString();
 			String characters = null;
 
-			if (operands.length == 2) {
-				Value strip = operands[1].eval(context);
+			if (args.length == 2) {
+				Value strip = args[1].eval(context);
 				if (!strip.isNull())
 					characters = strip.toString();
 			}
@@ -983,7 +864,7 @@ public class Function extends Operator {
 		}
 
 		case LTRIM: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
@@ -991,8 +872,8 @@ public class Function extends Operator {
 			String characters = null;
 			// int i = 0;
 
-			if (operands.length == 2) {
-				Value stripChars = operands[1].eval(context);
+			if (args.length == 2) {
+				Value stripChars = args[1].eval(context);
 				if (!stripChars.isNull())
 					characters = stripChars.toString();
 			}
@@ -1001,15 +882,15 @@ public class Function extends Operator {
 		}
 
 		case RTRIM: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
 			String string = value.toString();
 			String characters = null;
 
-			if (operands.length == 2) {
-				Value stripChars = operands[1].eval(context);
+			if (args.length == 2) {
+				Value stripChars = args[1].eval(context);
 				if (!stripChars.isNull())
 					characters = stripChars.toString();
 			}
@@ -1021,11 +902,26 @@ public class Function extends Operator {
 			// return new StringValue(string.substring(0, i + 1));
 		}
 
-		case REPLACE: {
-			Value value = operands[0].eval(context);
+		case REPEAT: {
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			Value param2 = operands[1].eval(context);
+			Value number = args[1].eval(context);
+
+			String s = value.toString();
+			int count = (int) number.toInteger();
+			StringBuilder builder = new StringBuilder(s.length() * count);
+			while (count-- > 0) {
+				builder.append(s);
+			}
+			return Value.of(builder.toString());
+		}
+
+		case REPLACE: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value param2 = args[1].eval(context);
 
 			if (param2.isNull()) {
 				return Value.NULL;
@@ -1034,8 +930,8 @@ public class Function extends Operator {
 			String string = value.toString();
 			String search = param2.toString();
 
-			if (operands.length == 3) {
-				Value param3 = operands[2].eval(context);
+			if (args.length == 3) {
+				Value param3 = args[2].eval(context);
 
 				String replacement = param3.toString();
 				return Value.of(string.replace(search, replacement));
@@ -1046,8 +942,8 @@ public class Function extends Operator {
 		}
 
 		case INSTR: {
-			Value param1 = operands[0].eval(context);
-			Value param2 = operands[1].eval(context);
+			Value param1 = args[0].eval(context);
+			Value param2 = args[1].eval(context);
 
 			if (param1.isNull() || param2.isNull()) {
 				return Value.NULL;
@@ -1058,8 +954,8 @@ public class Function extends Operator {
 
 			// If 3 operands
 			int start = 0;
-			if (operands.length == 3) {
-				start = (int) operands[2].eval(context).toInteger();
+			if (args.length == 3) {
+				start = (int) args[2].eval(context).toInteger();
 
 				if (start > 0)
 					start -= 1;
@@ -1072,9 +968,9 @@ public class Function extends Operator {
 		}
 
 		case SUBSTR: {
-			String string = operands[0].eval(context).toString();
+			String string = args[0].eval(context).toString();
 			int length = string.length();
-			int start = (int) operands[1].eval(context).toInteger();
+			int start = (int) args[1].eval(context).toInteger();
 
 			// These compatibility conditions violate the Standard
 			if (start == 0) {
@@ -1084,11 +980,11 @@ public class Function extends Operator {
 			}
 
 			// Only 2 operands
-			if (operands.length == 2) {
+			if (args.length == 2) {
 				return Value.of(string.substring(start - 1));
 			}
 
-			int end = start + (int) operands[2].eval(context).toInteger();
+			int end = start + (int) args[2].eval(context).toInteger();
 			// SQL Standard requires "data exception - substring error" when
 			// end < start but expression does not throw it for compatibility
 			start = Math.max(start, 1);
@@ -1102,8 +998,8 @@ public class Function extends Operator {
 		}
 
 		case EQUAL_NULL: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			// Treats NULLs as known values
 			if (left.isNull() && right.isNull()) {
@@ -1117,35 +1013,35 @@ public class Function extends Operator {
 		}
 
 		case ENDSWITH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			Value prefix = operands[1].eval(context);
+			Value prefix = args[1].eval(context);
 
-			if ( value.isBinary() ) {			
+			if (value.isBinary()) {
 				return Value.of(Bytes.endsWith(value.toBinary(), prefix.toBinary()));
 			}
-			
+
 			return Value.of(value.toString().endsWith(prefix.toString()));
 		}
 
 		case STARTSWITH: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			Value prefix = operands[1].eval(context);
+			Value prefix = args[1].eval(context);
 
-			if ( value.isBinary() ) {
-				return Value.of(Bytes.startsWith(value.toBinary(), prefix.toBinary()));				
+			if (value.isBinary()) {
+				return Value.of(Bytes.startsWith(value.toBinary(), prefix.toBinary()));
 			}
-			
+
 			return Value.of(value.toString().startsWith(prefix.toString()));
 		}
 
 		case TRANSLATE: {
-			Value stringValue = operands[0].eval(context);
-			Value findCharsValue = operands[1].eval(context);
-			Value replaceCharsValue = operands[2].eval(context);
+			Value stringValue = args[0].eval(context);
+			Value findCharsValue = args[1].eval(context);
+			Value replaceCharsValue = args[2].eval(context);
 
 			if (stringValue.isNull() || findCharsValue.isNull()) {
 				return Value.NULL;
@@ -1182,8 +1078,21 @@ public class Function extends Operator {
 			return Value.of(buffer == null ? string : buffer.toString());
 		}
 
+		case STRINGENCODE: {
+			Value value = args[0].eval(context);
+	        String result = StringEncoder.encode(value.toString());	        
+	        return Value.of(result);
+			
+		}
+		
+		case STRINGDECODE: {
+			Value value = args[0].eval(context);
+	        String result = StringEncoder.decode(value.toString());	        
+	        return Value.of(result);
+		}
+		
 		case URLENCODE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			try {
 				return Value.of(URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.name()));
 			} catch (Exception e) {
@@ -1192,7 +1101,7 @@ public class Function extends Operator {
 		}
 
 		case URLDECODE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			try {
 				return Value.of(URLDecoder.decode(value.toString(), StandardCharsets.UTF_8.name()));
 			} catch (Exception e) {
@@ -1201,7 +1110,7 @@ public class Function extends Operator {
 		}
 
 		case UNICODE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			String string = value.toString();
@@ -1213,9 +1122,9 @@ public class Function extends Operator {
 		}
 
 		case LPAD: {
-			Value param1 = operands[0].eval(context);
-			Value param2 = operands[1].eval(context);
-			Value param3 = operands[2].eval(context);
+			Value param1 = args[0].eval(context);
+			Value param2 = args[1].eval(context);
+			Value param3 = args[2].eval(context);
 
 			if (param1.isNull()) {
 				return Value.NULL;
@@ -1257,9 +1166,9 @@ public class Function extends Operator {
 		}
 
 		case RPAD: {
-			Value param1 = operands[0].eval(context);
-			Value param2 = operands[1].eval(context);
-			Value param3 = operands[2].eval(context);
+			Value param1 = args[0].eval(context);
+			Value param2 = args[1].eval(context);
+			Value param3 = args[2].eval(context);
 
 			if (param1.isNull()) {
 				return Value.NULL;
@@ -1301,7 +1210,7 @@ public class Function extends Operator {
 		}
 
 		case SPACE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			int length = Math.max(0, (int) value.toInteger());
@@ -1314,45 +1223,40 @@ public class Function extends Operator {
 		}
 
 		case REVERSE: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			
-			if ( value.isBinary() ) {
-				return Value.of(Bytes.reverse(value.toBinary()));				
+
+			if (value.isBinary()) {
+				return Value.of(Bytes.reverse(value.toBinary()));
 			}
-			
+
 			StringBuilder sb = new StringBuilder(value.toString()).reverse();
 			return Value.of(sb.toString());
 		}
 
 		case MD5: {
-			Value value = operands[0].eval(context);
-
+			Value value = args[0].eval(context);
 			return getHash(value, "MD5");
 		}
 
 		case SHA1: {
-			Value value = operands[0].eval(context);
-
+			Value value = args[0].eval(context);
 			return getHash(value, "SHA-1");
 		}
 
 		case SHA256: {
-			Value value = operands[0].eval(context);
-
+			Value value = args[0].eval(context);
 			return getHash(value, "SHA-256");
 		}
 
 		case SHA384: {
-			Value value = operands[0].eval(context);
-
-			return getHash(value, "SHA-384");
+			Value value = args[0].eval(context);
+			return getHash(value,  "SHA-384");
 		}
 
 		case SHA512: {
-			Value value = operands[0].eval(context);
-
+			Value value = args[0].eval(context);
 			return getHash(value, "SHA-512");
 		}
 
@@ -1362,7 +1266,7 @@ public class Function extends Operator {
 	}
 
 	@Override
-	public Expression optimize(ExpressionContext context, Expression... operands) throws ExpressionException {
+	public Expression optimize(IExpressionContext context, Expression... operands) throws ExpressionException {
 
 		Expression[] args = new Expression[operands.length];
 
@@ -1392,10 +1296,10 @@ public class Function extends Operator {
 		return Value.of(value.toString().length() * size);
 	}
 
-	private Value getHash(Value value, String algorithm) {		
+	private Value getHash(Value value, String algorithm) {
 		if (value.isNull())
 			return value;
-		
+
 		try {
 			MessageDigest md = MessageDigest.getInstance(algorithm);
 			md.update(value.toBinary());
@@ -1404,7 +1308,6 @@ public class Function extends Operator {
 		} catch (NoSuchAlgorithmException e) {
 			new ExpressionException("Unknow algorithm: " + algorithm);
 		}
-
 		return Value.NULL;
 	}
 }

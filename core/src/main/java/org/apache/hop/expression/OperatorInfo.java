@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
  * This class contains information about a built-in function.
  */
 /* protected */ class OperatorInfo {
+	public static final String EXPRESSION_TAG = "expression";
 	public static final String OPERATOR_TAG = "operator";
 	public static final String CATEGORY_TAG = "category";
 	public static final String NAME_TAG = "name";

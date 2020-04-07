@@ -2,8 +2,6 @@ package org.apache.hop.expression;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.EnumSet;
-import java.util.Set;
 
 import org.apache.hop.expression.value.ValueBigNumber;
 import org.apache.hop.expression.value.ValueBinary;
@@ -144,7 +142,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 *
 	 * @return the type of this Value
 	 */
-	public abstract DataType getType();
+	public abstract ValueType getType();
 
 	
 	/**
@@ -201,7 +199,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 *
 	 * @return the converted value
 	 */
-	public Value convertTo(final DataType targetType) {
+	public Value convertTo(final ValueType targetType) {
 
 		if (this.getType() == targetType)
 			return this;
@@ -266,7 +264,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if the value is a String.
 	 */
 	public boolean isString() {
-		return this.getType() == DataType.STRING;
+		return this.getType() == ValueType.STRING;
 	}
 
 	/**
@@ -285,7 +283,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value has type boolean.
 	 */
 	public boolean isBoolean() {
-		return this.getType() == DataType.BOOLEAN;
+		return this.getType() == ValueType.BOOLEAN;
 	}
 
 	/**
@@ -294,7 +292,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value is an integer
 	 */
 	public boolean isInteger() {
-		return this.getType() == DataType.INTEGER;
+		return this.getType() == ValueType.INTEGER;
 	}
 
 	/**
@@ -303,7 +301,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true is this value is a number
 	 */
 	public boolean isNumber() {
-		return this.getType() == DataType.NUMBER;
+		return this.getType() == ValueType.NUMBER;
 	}
 
 	/**
@@ -312,7 +310,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true is this value is a big number
 	 */
 	public boolean isBigNumber() {
-		return this.getType() == DataType.BIGNUMBER;
+		return this.getType() == ValueType.BIGNUMBER;
 	}
 
 	/**
@@ -321,7 +319,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if the value is a Date
 	 */
 	public boolean isDate() {
-		return this.getType() == DataType.DATE;
+		return this.getType() == ValueType.DATE;
 	}
 
 	/**
@@ -330,7 +328,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value has type Binary
 	 */
 	public boolean isBinary() {
-		return this.getType() == DataType.BINARY;
+		return this.getType() == ValueType.BINARY;
 	}
 
 	/**
@@ -444,7 +442,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @param targetType Target data type.
 	 * @return instance of the ExpressionException.
 	 */
-	protected final ExpressionException createDataConversionError(DataType targetType) {
+	protected final ExpressionException createDataConversionError(ValueType targetType) {
 		return new ExpressionException("Error converting {0} value {2} to type {1}", this.getType(), targetType, this);
 	}
 

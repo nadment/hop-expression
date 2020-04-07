@@ -17,15 +17,28 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("Coalesce(null,null,null)");
 		evalFails("Coalesce()");
 	}
+	
 
 	@Test
-	public void Nvl() throws Exception {
-		evalEquals("Nvl(1,2)", 1);
-		evalEquals("Nvl(null,1)", 1);
-		evalEquals("Nvl(null,'TEST')", "TEST");
-		evalFails("Nvl()");
-		evalFails("Nvl(1)");
-		evalFails("Nvl(1,2,3)");
+	public void Iff() throws Exception {
+		evalEquals("Iff(True,'True','False')", "True");
+		evalEquals("Iff(False,'True','False')", "False");
+		evalFails("Iff()");
+		evalFails("Iff(true)");
+		evalFails("Iff(true,2)");
+	}
+
+	@Test
+	public void IfNull() throws Exception {
+		evalEquals("IfNull(1,2)", 1);
+		evalEquals("IfNull(null,1)", 1);
+		evalEquals("IfNull(null,'TEST')", "TEST");
+		evalFails("IfNull()");
+		evalFails("IfNull(1)");
+		evalFails("IfNull(1,2,3)");
+		
+		// Alias
+		//evalEquals("NVL(null,1)", 1);
 	}
 
 	@Test
@@ -40,6 +53,18 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("NullIf(Date '2019-01-01',Date '2018-12-31')", LocalDate.of(2019, Month.JANUARY, 1));
 	}
 
+	@Test
+	public void Decode() throws Exception {
+		evalEquals("Decode(1,1,'one',2,'two',Null,'<NULL>','other')", "one");
+		evalEquals("Decode(2,1,'one',2,'two',Null,'<NULL>','other')", "two");
+		evalEquals("Decode(NULL,1,'one',2,'two',Null,'<NULL>','other')","<NULL>");
+		evalEquals("Decode(9,1,'one',2,'two',Null,'<NULL>','other')", "other");		
+		evalNull("Decode(9,1,'one',2,'two',Null,'<NULL>')");		
+		evalFails("Decode()");
+		evalFails("Decodo(1)");
+		evalFails("Decode(1,2)");
+	}
+	
 	@Test
 	public void Pi() throws Exception {
 		evalEquals("Pi()", Math.PI);
@@ -74,7 +99,7 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Upper()");
 
 		// Alias
-		evalEquals("UCase('test')", "TEST");
+		//evalEquals("UCase('test')", "TEST");
 	}
 
 	@Test
@@ -125,16 +150,16 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void MonthName() throws Exception {
-		evalEquals("MonthName(Date '2019-01-01')", "January");
-		evalEquals("MonthName(Date '2019-12-28')", "December");
-		evalFails("MonthName()");
+		evalEquals("Month_Name(Date '2019-01-01')", "January");
+		evalEquals("Month_Name(Date '2019-12-28')", "December");
+		evalFails("Month_Name()");
 	}
 
 	@Test
 	public void DayName() throws Exception {
-		evalEquals("DayName(Date '2019-01-01')", "Tuesday");
-		evalEquals("DayName(Date '2019-12-28')", "Saturday");
-		evalFails("DayName()");
+		evalEquals("Day_Name(Date '2019-01-01')", "Tuesday");
+		evalEquals("Day_Name(Date '2019-12-28')", "Saturday");
+		evalFails("Day_Name()");
 	}
 
 	@Test
@@ -157,19 +182,19 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void DayOfWeek() throws Exception {
-		evalEquals("DayOfWeek(Date '2019-01-01')", 3);
-		evalEquals("DayOfWeek(Date '2019-07-27')", 7);
-		evalEquals("DayOfWeek(Date '2019-07-28')", 1);
-		evalEquals("DayOfWeek(Date '2019-12-31')", 3);
-		evalFails("DayOfWeek()");
+		evalEquals("Day_Of_Week(Date '2019-01-01')", 3);
+		evalEquals("Day_Of_Week(Date '2019-07-27')", 7);
+		evalEquals("Day_Of_Week(Date '2019-07-28')", 1);
+		evalEquals("Day_Of_Week(Date '2019-12-31')", 3);
+		evalFails("Day_Of_Week()");
 	}
 
 	@Test
 	public void DayOfMonth() throws Exception {
-		evalEquals("DayOfMonth(Date '2019-01-01')", 1);
-		evalEquals("DayOfMonth(Date '2019-02-28')", 28);
-		evalEquals("DayOfMonth(Date '2019-12-28')", 28);
-		evalFails("DayOfMonth()");
+		evalEquals("Day_Of_Month(Date '2019-01-01')", 1);
+		evalEquals("Day_Of_Month(Date '2019-02-28')", 28);
+		evalEquals("Day_Of_Month(Date '2019-12-28')", 28);
+		evalFails("Day_Of_Month()");
 
 		// Alias
 		evalEquals("Day(Date '2019-01-01')", 1);
@@ -177,9 +202,9 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void DayOfYear() throws Exception {
-		evalEquals("DayOfYear(Date '2019-01-01')", 1);
-		evalEquals("DayOfYear(Date '2019-02-02')", 33);
-		evalEquals("DayOfYear(Date '2019-12-31')", 365);
+		evalEquals("Day_Of_Year(Date '2019-01-01')", 1);
+		evalEquals("Day_Of_Year(Date '2019-02-02')", 33);
+		evalEquals("Day_Of_Year(Date '2019-12-31')", 365);
 	}
 
 	@Test
@@ -203,7 +228,7 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Lower('Test','Test')");
 
 		// Alias
-		evalEquals("LCase('TesT')", "test");
+		//evalEquals("LCase('TesT')", "test");
 	}
 
 	@Test
@@ -277,6 +302,15 @@ public class FunctionTest extends ExpressionTest {
 	}
 	
 	@Test
+	public void Cbrt() throws Exception {
+		evalEquals("Cbrt(0)", 0);
+		evalEquals("Cbrt(-343)",-7);
+		evalFails("Cbrt()");
+		evalNull("Cbrt(NULL)");
+	}
+	
+	
+	@Test
 	public void Sqrt() throws Exception {
 		evalEquals("Sqrt(10)", 3.1622776601683795);
 		evalFails("Sqrt(-5)");
@@ -332,8 +366,8 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Length('TEST')", 4);
 		
 		// Alias
-		evalEquals("Char_Length('TEST')", 4);
-		evalEquals("Len('TEST')", 4);
+		//evalEquals("Char_Length('TEST')", 4);
+		//evalEquals("Len('TEST')", 4);
 	}
 	
 	@Test
@@ -375,6 +409,31 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("Replace('ABCD',NULL,'EF')");
 	}
 
+
+	@Test
+	public void ToBoolean() throws Exception {
+		evalTrue("To_Boolean('True')");
+		evalTrue("To_Boolean('t')");
+		evalTrue("To_Boolean('yes')");
+		evalTrue("To_Boolean('on')");
+		evalTrue("To_Boolean('1')");
+		evalTrue("To_Boolean(5)");
+		evalTrue("To_Boolean(-1)");
+
+		evalFalse("To_Boolean('False')");
+		evalFalse("To_Boolean('off')");
+		evalFalse("To_Boolean('NO')");
+		evalFalse("To_Boolean('F')");
+		evalFalse("To_Boolean('n')");
+		evalFalse("To_Boolean('0')");
+		evalFalse("To_Boolean(0)");
+		
+		evalNull("To_Boolean(NULL)");
+		evalFails("To_Boolean()");
+		evalFails("To_Boolean(1,2,3)");
+	}
+
+	
 	@Test
 	public void ToChar() throws Exception {
 		Currency currency = Currency.getInstance(Locale.getDefault());
@@ -537,42 +596,21 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Chr(233)", "é");
 		evalEquals("Chr(945)", "α");
 		evalEquals("Chr(8364)", "€");
+		evalEquals("Chr(33288)", "興");
 		evalNull("Chr(NULL)");
 		evalFails("Chr()");
 		evalFails("Chr(-1)");
 		evalFails("Chr(999999999999)");
 	}
 	
-	@Test
-	public void BitNot() throws Exception {
-		// TODO: evalEquals("BitNot(0xE)", 0x1);
-	}
 
-	@Test
-	public void BitAnd() throws Exception {
-		evalEquals("BitAnd(3,2)", 2);
-		evalEquals("BitAnd(100,2)", 0);
-	}
-	
-	@Test
-	public void BitOr() throws Exception {
-		evalEquals("BitOr(100,2)", 102);
-		evalEquals("BitOr(3,2)", 3);
-	}
-
-	@Test
-	public void BitXor() throws Exception {
-		evalEquals("BitXor(2,2)", 0);
-		evalEquals("BitXor(2,1)", 3);
-		evalEquals("BitXor(100,2)", 102);
-	}
 	
 	@Test
 	public void Ascii() throws Exception {
 		evalEquals("Ascii('ABC')", 65);
 		evalEquals("Ascii('é')", 233);
 		evalEquals("Ascii('€')", 8364);
-		evalEquals("Ascii('興味深�?�例')", 33288);
+		evalEquals("Ascii('興')", 33288);
 		evalEquals("Ascii('')", 0);
 		evalNull("Ascii(NULL)");
 		evalFails("Ascii()");
@@ -581,12 +619,23 @@ public class FunctionTest extends ExpressionTest {
 	@Test
 	public void Unicode() throws Exception {
 		evalEquals("Unicode('SSSS')", 83);
+		evalEquals("Unicode('é')", 233);
 		evalEquals("Unicode('€')", 8364);
 		evalEquals("Unicode('')", 0);
 		evalNull("Unicode(NULL)");
 		evalFails("Unicode()");
 	}
 
+	@Test
+	public void StringEncode() throws Exception {
+		evalEquals("StringEncode('	')", "\\t");		
+	}
+	
+	@Test
+	public void StringDecode() throws Exception {
+		evalEquals("StringDecode('\t')", "\t");		
+	}
+	
 	@Test
 	public void UrlEncode() throws Exception {
 		evalEquals("UrlEncode('a b')", "a+b");
@@ -610,8 +659,6 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Ceil()");
 		evalFails("Ceil(1,2,3)");
 		evalFails("Ceil('x')");
-
-		evalEquals("Ceiling(32.65)", 33);
 	}
 
 	@Test

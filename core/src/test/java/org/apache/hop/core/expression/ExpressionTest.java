@@ -4,20 +4,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
-import org.apache.hop.core.row.RowMetaInterface;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
-import org.apache.hop.core.variables.VariableSpace;
+import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Expression;
-import org.apache.hop.expression.RowExpressionEvaluator;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,12 +28,12 @@ public class ExpressionTest {
 
 	protected Value eval(String e) throws Exception {
 		
-		Expression expression = Expression.parse(e);
+		IExpression expression = Expression.parse(e);
 
-		VariableSpace variables = new Variables();
+		IVariables variables = new Variables();
 		variables.setVariable("TEST", "12345");
 
-		RowMetaInterface rowMeta = new RowMeta();
+		IRowMeta rowMeta = new RowMeta();
 		rowMeta.addValueMeta(new ValueMetaString("NOM"));
 		rowMeta.addValueMeta(new ValueMetaString("SEXE"));
 		rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
@@ -50,7 +52,7 @@ public class ExpressionTest {
 		//DefaultExpressionContext contextOptimize = new DefaultExpressionContext();	
 		//Expression result =  expression.optimize(contextOptimize);
 
-		RowExpressionEvaluator context = new RowExpressionEvaluator(rowMeta);
+		RowExpressionContext context = new RowExpressionContext(rowMeta);
 		context.setRow(row);
 		return expression.eval(context);
 	}
@@ -80,6 +82,11 @@ public class ExpressionTest {
 		assertEquals(expected, value.toNumber(),0);
 	}
 
+	protected void evalEquals(String e, BigDecimal expected) throws Exception {
+		Value value =  eval(e);
+		assertEquals(expected, value.toBigNumber());
+	}
+	
 	protected void evalEquals(String e, LocalDate expected) throws Exception {
 		assertEquals(expected.atStartOfDay(), eval(e).toDate());
 	}
@@ -98,6 +105,7 @@ public class ExpressionTest {
 
 	@Test
 	public void parser() throws Exception {
+		evalEquals("100 | 2", 102);
 		//evalFails("Year())");
 		//evalFails("Year(()");
 		//evalFails("Year(1,2)");

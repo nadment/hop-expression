@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
 
@@ -19,8 +19,8 @@ public class ValueDate extends Value {
 	}
 
 	@Override
-	public DataType getType() {
-		return DataType.DATE;
+	public ValueType getType() {
+		return ValueType.DATE;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class ValueDate extends Value {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		return this;
 	}
 

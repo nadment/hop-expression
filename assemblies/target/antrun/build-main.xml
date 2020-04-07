@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <echo message="Installed the plugin in HOP installation in C:\hop."/>
+  <delete dir="C:\hop/plugins/transforms/expression"/>
+  <mkdir dir="C:\hop/plugins/transforms/expression"/>
+  <unzip src="C:\Users\Nico\git\hop-expression\assemblies\target/hop-expression-assemblies-0.1.0-SNAPSHOT.zip" dest="C:\hop/plugins/"/>
+</target>
+</project>

@@ -1,5 +1,6 @@
 package org.apache.hop.core.expression;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -8,11 +9,22 @@ import org.junit.Test;
 public class OperatorTest extends ExpressionTest {
 
 	@Test
+	public void precedence() throws Exception {
+		evalEquals("3*5/2", ( ( 3 * 5 ) / 2 ));
+		evalTrue("( 3 > 5 ) IS FALSE");
+	}
+
+	@Test
 	public void LitteralDate() throws Exception {
 		evalEquals("Date '2019-02-25'", LocalDate.of(2019, 2, 25));
 		evalEquals("Timestamp '2019-02-25 23:59:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 59));
 	}
 
+	@Test
+	public void LitteralBigNumber() throws Exception {
+		evalEquals("12345678901234567890123456789012345678901234567890", new BigDecimal("12345678901234567890123456789012345678901234567890"));
+	}
+	
 	@Test
 	public void LitteralBinary() throws Exception {
 		evalEquals("0b10", 2);
@@ -63,9 +75,10 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void NotEquals() throws Exception {
-		evalTrue("'bar' != 'foo'");
+		evalTrue("'bar' != 'foo'");		
 		evalTrue("NOM <> 'tEST'");
 		evalFalse("Age <> 40");
+		evalFalse("Age != 40");
 		evalTrue("1 <> 2");
 		evalTrue("10 <> 0x10");
 		evalFalse("1 <> '1'");
@@ -190,6 +203,7 @@ public class OperatorTest extends ExpressionTest {
 	public void Is() throws Exception {
 		evalTrue("True IS True");
 		evalTrue("True IS NOT False");
+		evalTrue("FLAG is True");
 		evalFalse("True IS False");
 		evalTrue("False IS False");
 		evalFalse("False IS Null");
@@ -207,10 +221,10 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("42%(3+2)", 2);
 		
 		evalEquals("Age-(10+3*10+50-2*25)", 0);
-		evalEquals("10^2+5", 105);
-		evalEquals("5+10^2", 105);
-		evalEquals("3*10^2", 300);
-		evalEquals("10^2*3", 300);
+		//evalEquals("10^2+5", 105);
+		//evalEquals("5+10^2", 105);
+		//evalEquals("3*10^2", 300);
+		//evalEquals("10^2*3", 300);
 		
 		// evalEquals("2*'1.23'",2.46); // TODO: Should be casted to number and not
 		// integer
@@ -230,29 +244,36 @@ public class OperatorTest extends ExpressionTest {
 		evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
 
 		// precedence of BETWEEN is higher than AND and OR, but lower than '+'
-		// evaluateTrue("10 between 5 and 8 + 2 or False and True");
+		//evalTrue("10 between 5 and 8 + 2 or False and True");
 	}
 
 	@Test
 	public void Cast() throws Exception {
+		// String to boolean
+		evalTrue("Cast('Yes' as Boolean)");
+		evalFalse("Cast('No' as Boolean)");
+		evalTrue("Cast('Y' as Boolean)");	
+		evalFalse("Cast('n' as Boolean)");		
+		evalTrue("Cast('On' as Boolean)");
+		evalFalse("Cast('Off' as Boolean)");
+		evalTrue("Cast('True' as Boolean)");
+		evalFalse("Cast('False' as Boolean)");
+
+		// Number to boolean
 		evalTrue("Cast(1 as Boolean)");
 		evalTrue("Cast(-12.1 as Boolean)");
-		evalTrue("Cast('Yes' as Boolean)");
-		evalTrue("Cast('Y' as Boolean)");
-		evalTrue("Cast('True' as Boolean)");
-
-		evalFalse("Cast('No' as Boolean)");
 		evalFalse("Cast(0 as Boolean)");	
-		evalFalse("Cast('n' as Boolean)");
-		evalFalse("Cast('False' as Boolean)");
+		
 
 		evalEquals("Cast(true as String)", "TRUE");
 		evalEquals("Cast(123.6 as String)", "123.6");
 
 		 
-		//evalEquals("Cast('1234.567' as Integer)", new Long(1234));
+		evalEquals("Cast('1234.567' as Integer)", new Long(1234));
 		evalEquals("Cast('1234' as Number)", new Double(1234));
 		// TODO: evalEquals("Cast('0x123' as Integer)", new Long(291));
+		
+		evalEquals("Cast(12345678901234567890123456789012345678901234567890 as BigNumber)", new BigDecimal("12345678901234567890123456789012345678901234567890"));
 	}
 
 	@Test
@@ -280,23 +301,49 @@ public class OperatorTest extends ExpressionTest {
 		evalFails("40/0");
 	}
 
-	@Test
+    // TODO: remove or implement power operator
 	public void Power() throws Exception {
-		evalEquals("4^2", 16);
-		evalEquals("-4^2", -16);
-		evalNull("null^1");
-		evalEquals("4^0", 1);
-		evalEquals("-4^0", -1);
-		evalEquals("(-2)^0", 1);
-		evalEquals("2^(3^2)",512);
-		// TODO: fix evalEquals("2^3^2",512);
-		// -2^2=-(2^2)=-4
-		evalEquals("-2^2", -4);
+		evalEquals("4**2", 16);
+		evalEquals("-4**2", -16);
+		evalNull("null**1");
+		evalEquals("4**0", 1);
+		evalEquals("-4**0", -1);
+		evalEquals("(-2)**0", 1);
+		evalEquals("2**(3**2)",512);
+		evalEquals("2**3**2",512);
+		//-2**2=-(2**2)=-4
+		evalEquals("-2**2", -4);
 	}
 
 	@Test
-	public void Not() throws Exception {
-		evalTrue("FLAG is True");
+	public void BitwiseNot() throws Exception {
+		//evalEquals("~1", -2);
+		//evalEquals("~0", -1);
+		//evalEquals("~0xFF", 0x1);
+	}
+
+	@Test
+	public void BitwiseAnd() throws Exception {
+		evalEquals("3 & 2", 2);
+		evalEquals("100 & 2", 0);
+	}
+	
+	@Test
+	public void BitwiseOr() throws Exception {
+		evalEquals("100 | 2", 102);
+		evalEquals("3 | 2", 3);
+	}
+
+	@Test
+	public void BitwiseXor() throws Exception {
+		evalEquals("2 ^ 2", 0);
+		evalEquals("2 ^1", 3);
+		evalEquals("100 ^ 2", 102);
+	}
+	
+	@Test
+	public void LogicalNot() throws Exception {
+
 		evalTrue("FLAG is not false");
 		evalTrue("NULLIS is null");
 		evalTrue("NOT (NULLIS is not null)");

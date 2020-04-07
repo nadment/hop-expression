@@ -2,14 +2,15 @@ package org.apache.hop.core.expression;
 
 import java.util.Date;
 
+import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
-import org.apache.hop.core.row.RowMetaInterface;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.Expression;
-import org.apache.hop.expression.RowExpressionEvaluator;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.junit.Test;
 
@@ -22,9 +23,9 @@ public class ExpressionPerformance {
 		long cycle = 1000000;
 		long startTime = System.currentTimeMillis();
 
-		Expression expression = Expression.parse("NOM||left(to_char(AGE+5,'000'),2)");
+		IExpression expression = Expression.parse("NOM||left(to_char(AGE+5,'000'),2)");
 
-		RowMetaInterface rowMeta = new RowMeta();
+		IRowMeta rowMeta = new RowMeta();
 		rowMeta.addValueMeta(new ValueMetaString("NOM"));
 		rowMeta.addValueMeta(new ValueMetaString("SEXE"));
 		rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
@@ -40,7 +41,7 @@ public class ExpressionPerformance {
 		row[4] = true;
 		row[5] = null;
 
-		RowExpressionEvaluator evaluator = new RowExpressionEvaluator(rowMeta);
+		RowExpressionContext evaluator = new RowExpressionContext(rowMeta);
 		evaluator.setRow(row);
 		System.out.println(expression.toString());
 

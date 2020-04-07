@@ -7,7 +7,7 @@ import java.util.Random;
 // OR optimization:
 // If a clause consists of multiple predicates that are connected by the OR operator, optimization occurs only if the same column and comparison operator are used in every predicate, and the comparison operator is LIKE or equal to (=).
 
-public class DefaultExpressionContext implements ExpressionContext {
+public class DefaultExpressionContext implements IExpressionContext {
 
 	private ZoneId zone;
 	private Locale locale;

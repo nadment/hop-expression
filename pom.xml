@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <artifactId>hop-expression</artifactId>
-  <packaging>pom</packaging>
-  <name>Hop Expression</name>
+	<artifactId>hop-expression</artifactId>
+	<packaging>pom</packaging>
+	<name>Hop Expression</name>
 
-  <parent>
-    <artifactId>hop-assemblies</artifactId>
-    <groupId>org.hop</groupId>
-    <version>0.1.0-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<artifactId>hop</artifactId>
+		<groupId>org.hop</groupId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
 
-  <modules>
-    <module>core</module>
-    <module>ui</module>
-    <module>assembly</module>
-  </modules>
+	<properties>
+		<license.licenseName>apache_v2</license.licenseName>
+		<hop.home>C:\hop</hop.home>
+	</properties>
 
+	<modules>
+		<module>core</module>
+		<module>plugins</module>
+		<module>assemblies</module>
+	</modules>
 
 </project>

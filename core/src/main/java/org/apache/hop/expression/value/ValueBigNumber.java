@@ -4,8 +4,8 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
 
@@ -38,8 +38,8 @@ public class ValueBigNumber extends Value {
 	}
 
 	@Override
-	public DataType getType() {
-		return DataType.BIGNUMBER;
+	public ValueType getType() {
+		return ValueType.BIGNUMBER;
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ValueBigNumber extends Value {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		return this;
 	}
 

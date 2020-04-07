@@ -17,7 +17,7 @@ public class ExpressionIdentifier extends Expression {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		return context.resolve(this.name);
 	}
 

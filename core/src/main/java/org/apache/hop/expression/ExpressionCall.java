@@ -29,12 +29,12 @@ public class ExpressionCall extends Expression {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		return operator.eval(context, operands);
 	}
 
 	@Override
-	public Expression optimize(ExpressionContext context) throws ExpressionException {
+	public Expression optimize(IExpressionContext context) throws ExpressionException {
 		return operator.optimize(context, operands);
 	}
 
@@ -47,19 +47,19 @@ public class ExpressionCall extends Expression {
 		return operator;
 	}
 
-	public Expression[] getParameters() {
+	public Expression[] getOperands() {
 		return operands;
 	}
 
-	public Expression getParameter(int index) {
-		return operands[index];
-	}
+//	public Expression getOperand(int index) {
+//		return operands[index];
+//	}
 
 	/**
 	 * Returns a count of operands of this expression. In real life there are unary
 	 * (count == 1), binary (count == 2) and ternary (count == 3) expressions.
 	 */
-	public int getParameterCount() {
+	public int getOperandCount() {
 		return operands.length;
 	}
 
@@ -68,8 +68,17 @@ public class ExpressionCall extends Expression {
 
 		final Operator operator = this.getOperator();
 
-		if (leftPrec > operator.getLeftPrecedence()
-				|| (operator.getRightPrecedence() <= rightPrec && (rightPrec != 0))) {
+//		if (leftPrec > operator.getLeftPrecedence()
+//				|| (operator.getRightPrecedence() <= rightPrec && (rightPrec != 0))) {
+//			writer.append('(');
+//			operator.unparse(writer, this, 0, 0);
+//			writer.append(')');
+//		} else {
+//			operator.unparse(writer, this, leftPrec, rightPrec);
+//		}
+		
+		if (leftPrec < operator.getLeftPrecedence()
+				|| (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
 			writer.append('(');
 			operator.unparse(writer, this, 0, 0);
 			writer.append(')');

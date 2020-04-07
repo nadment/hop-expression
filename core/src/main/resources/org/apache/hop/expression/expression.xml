@@ -1,42 +1,122 @@
 <expression>
 
+	<!-- BITWISE OPERATORS -->
+	<operator>
+		<name>BITWISE_AND_OPERATOR</name>
+		<category>Bitwise</category>
+		<description>Performs a bitwise logical AND operation between two integer values.</description>
+		<syntax>integer &amp; integer</syntax>
+		<returns>Integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BITWISE_NOT_OPERATOR</name>
+		<category>Bitwise</category>
+		<description>Performs a bitwise logical NOT operation on an integer value.</description>
+		<syntax>~ integer</syntax>
+		<returns>Integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>		
+	<operator>
+		<name>BITWISE_OR_OPERATOR</name>
+		<category>Bitwise</category>
+		<description>Performs a bitwise logical OR operation between two integer values.</description>
+		<syntax>integer | integer)</syntax>
+		<returns>Integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BITWISE_XOR_OPERATOR</name>
+		<category>Bitwise</category>
+		<description>Performs a bitwise logical XOR operation between two integer values.</description>
+		<syntax>integer ^ integer</syntax>
+		<returns>Integer</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+
 	<!-- LOGICAL OPERATORS -->
 
 	<operator>
-		<name>NOT_OPERATOR</name>
+		<name>LOGICAL_NOT_OPERATOR</name>
 		<category>Logical</category>
 		<description>Does not match the expression.</description>
 		<syntax>NOT boolean</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<semantics></semantics>
 	</operator>
 	<operator>
-		<name>AND_OPERATOR</name>
+		<name>LOGICAL_AND_OPERATOR</name>
 		<category>Logical</category>
 		<description>Matches both expression.</description>
 		<syntax>boolean AND boolean</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
-		<name>OR_OPERATOR</name>
+		<name>LOGICAL_OR_OPERATOR</name>
 		<category>Logical</category>
 		<description>Matches either expression.</description>
 		<syntax>boolean OR boolean</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
-		<name>XOR_OPERATOR</name>
+		<name>LOGICAL_XOR_OPERATOR</name>
 		<category>Logical</category>
 		<description>Returns TRUE if one or the other but not both is TRUE.</description>
 		<syntax>boolean XOR boolean</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
+	<operator>
+		<name>IN_OPERATOR</name>
+		<category>Logical</category>
+		<description>The IN operator is a shorthand for multiple OR conditions.</description>
+		<syntax>field [NOT] IN (expression [,expression ,...])</syntax>
+		<returns>Boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>IS_OPERATOR</name>
+		<category>Logical</category>
+		<description></description>
+		<syntax>IS [NOT] TRUE|FALSE|NULL</syntax>
+		<returns>Boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>BETWEEN_OPERATOR</name>
+		<category>Logical</category>
+		<description>Determines whether the value of one expression is in an interval defined by two other expressions.</description>
+		<syntax>expression [NOT] BETWEEN expression AND expression</syntax>
+		<returns>Boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>LIKE_OPERATOR</name>
+		<category>Logical</category>
+		<description>Case-sensitive matching of strings based on comparison with a pattern.
+SQL wildcards are supported in pattern:
+	An underscore(_) matches any single character.
+	A percent sign (%) matches any sequence of zero or more characters.
+	
+The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
+		</description>
+		<syntax>string [NOT] LIKE pattern [ESCAPE escape]</syntax>
+		<returns>Boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
 
 	<!-- ARITHMETIC OPERATORS -->
 
@@ -79,7 +159,7 @@
 	<operator>
 		<name>MODULUS_OPERATOR</name>
 		<category>Arithmetic</category>
-		<description></description>
+		<description>Returns the remainder division. Equivalent to the modulo function MOD.</description>
 		<syntax>numeric_expression % numeric_expression</syntax>
 		<returns>numeric</returns>
 		<constraints></constraints>
@@ -88,10 +168,10 @@
 	<operator>
 		<name>POWER_OPERATOR</name>
 		<category>Arithmetic</category>
-		<description>Calculates a number to the nth power, for example 2^6 resolves to 64.
-			This operator are evaluated from right to left, the expression 2**3**4 is evaluated as (2^(3^4)).
+		<description>Calculates a number to the nth power, for example 2**6 resolves to 64.
+			This operator are evaluated from right to left, the expression 2**3**4 is evaluated as (2**(3**4)).
 		</description>
-		<syntax>numeric_expression ^ numeric_expression</syntax>
+		<syntax>numeric_expression ** numeric_expression</syntax>
 		<returns>numeric</returns>
 		<constraints></constraints>
 		<semantics></semantics>
@@ -104,25 +184,34 @@
 		<category>Comparison</category>
 		<description>First expression is equal than second expression.</description>
 		<syntax>expression = expression</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>NOT_EQUAL_OPERATOR</name>
 		<category>Comparison</category>
-		<description>First expression is not equal than second expression.</description>
+		<description>First expression is not equal than second expression. Equivalent to &lt;&gt; operator.</description>
 		<syntax>expression != expression</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
+	<operator>
+		<name>LESS_THAN_OR_GREATER_THEN</name>
+		<category>Comparison</category>
+		<description>First expression is not equal than second expression. Equivalent to != operator.</description>
+		<syntax>expression &lt;&gt; expression</syntax>
+		<returns>Boolean</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
 	<operator>
 		<name>LESS_THAN_OPERATOR</name>
 		<category>Comparison</category>
 		<description>First expression is less than second expression.</description>
 		<syntax>expression &lt; expression</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -131,7 +220,7 @@
 		<category>Comparison</category>
 		<description>First expression is less than or equal to the second expression.</description>
 		<syntax>expression &lt;= expression</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -140,7 +229,7 @@
 		<category>Comparison</category>
 		<description>First expression is greater than second expression.</description>
 		<syntax>expression &gt; expression</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -149,61 +238,20 @@
 		<category>Comparison</category>
 		<description>First expression is greater than or equal to the second expression.</description>
 		<syntax>expression &gt;= expression</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
-	<operator>
-		<name>CONTAINS_OPERATOR</name>
-		<category>Comparison</category>
-		<description></description>
-		<syntax>string_expression =~ string_expression</syntax>
-		<returns>boolean</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
-	<operator>
-		<name>IN_OPERATOR</name>
-		<category>Comparison</category>
-		<description>The IN operator is a shorthand for multiple OR conditions.</description>
-		<syntax>field [NOT] IN (expression [,expression ,...])</syntax>
-		<returns>boolean</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
-	<operator>
-		<name>IS_OPERATOR</name>
-		<category>Comparison</category>
-		<description></description>
-		<syntax></syntax>
-		<returns>boolean</returns>
-		<constraints>IS [NOT] TRUE|FALSE|NULL</constraints>
-		<semantics></semantics>
-	</operator>
-	<operator>
-		<name>BETWEEN_OPERATOR</name>
-		<category>Comparison</category>
-		<description>Determines whether the value of one expression is in an interval defined by two other expressions.</description>
-		<syntax>BETWEEN expression AND expression</syntax>
-		<returns>boolean</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
-	<operator>
-		<name>LIKE_OPERATOR</name>
-		<category>Comparison</category>
-		<description>Case-sensitive matching of strings based on comparison with a pattern.
-SQL wildcards are supported in pattern:
-	An underscore(_) matches any single character.
-	A percent sign (%) matches any sequence of zero or more characters.
-	
-The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
-		</description>
-		<syntax>string [NOT] LIKE pattern [ESCAPE escape]</syntax>
-		<returns>boolean</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>	
+<!-- 	<operator> -->
+<!-- 		<name>CONTAINS_OPERATOR</name> -->
+<!-- 		<category>Comparison</category> -->
+<!-- 		<description></description> -->
+<!-- 		<syntax>string_expression =~ string_expression</syntax> -->
+<!-- 		<returns>Boolean</returns> -->
+<!-- 		<constraints></constraints> -->
+<!-- 		<semantics></semantics> -->
+<!-- 	</operator> -->
+
 	
 
 	<!-- SPECIAL OPERATORS -->
@@ -212,7 +260,7 @@ The escape character instructs the operator to treat the wildcard characters as 
 		<category>Special</category>
 		<description>Returns the result of concatenation of two string. The	CONCAT function provides alternative syntax.</description>
 		<syntax>string_expression || string_expression</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -229,7 +277,7 @@ The escape character instructs the operator to treat the wildcard characters as 
 	String
 		</description>
 		<syntax>CAST(value AS dataType)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>	
@@ -241,44 +289,6 @@ The escape character instructs the operator to treat the wildcard characters as 
 			expression] ELSE expression END
 		</syntax>
 		<returns>expression value</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
-
-	<!-- BITWISE FUNCTIONS -->
-	<operator>
-		<name>BITAND</name>
-		<category>Bitwise</category>
-		<description></description>
-		<syntax>{0}(integer,integer)</syntax>
-		<returns>integer</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
-	<operator>
-		<name>BITNOT</name>
-		<category>Bitwise</category>
-		<description></description>
-		<syntax>{0}(integer)</syntax>
-		<returns>integer</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>		
-	<operator>
-		<name>BITOR</name>
-		<category>Bitwise</category>
-		<description></description>
-		<syntax>{0}(integer,integer)</syntax>
-		<returns>integer</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
-	<operator>
-		<name>BITXOR</name>
-		<category>Bitwise</category>
-		<description></description>
-		<syntax>{0}(integer,integer)</syntax>
-		<returns>integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -294,6 +304,14 @@ The escape character instructs the operator to treat the wildcard characters as 
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
+	<operator>
+		<name>CBRT</name>
+		<category>Numeric</category>
+		<description>Calculates the cubic root of numeric expression.</description>
+		<syntax>{0}(numeric_expression)</syntax>
+		<returns>numeric</returns>	
+		<semantics></semantics>
+	</operator>	
 	<operator>
 		<name>CEIL</name>
 		<category>Numeric</category>
@@ -340,7 +358,6 @@ The escape character instructs the operator to treat the wildcard characters as 
 		</constraints>
 		<semantics></semantics>
 	</operator>
-
 	<operator>
 		<name>ASIN</name>
 		<category>Numeric</category>
@@ -478,7 +495,7 @@ The escape character instructs the operator to treat the wildcard characters as 
 		<category>Numeric</category>
 		<description>Returns the natural logarithm of a numeric expression.</description>
 		<syntax>{0}()</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -487,7 +504,7 @@ The escape character instructs the operator to treat the wildcard characters as 
 		<category>Numeric</category>
 		<description>Converts radians to degrees.</description>
 		<syntax>{0}(numeric_expression)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<semantics></semantics>
 	</operator>
 	<operator>
@@ -503,7 +520,7 @@ The escape character instructs the operator to treat the wildcard characters as 
 		<category>Numeric</category>
 		<description>Converts degrees to radians.</description>
 		<syntax>{0}(numeric_expression)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<semantics></semantics>
 	</operator>
 	<operator>
@@ -511,10 +528,19 @@ The escape character instructs the operator to treat the wildcard characters as 
 		<category>Numeric</category>
 		<description>Converts a string to a number.</description>
 		<syntax>{0}(string, format)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
+	<operator>
+		<name>RAND</name>
+		<category>Other</category>
+		<description>Return a random number between 0 (inclusive) and 1 (exclusive). If seed is specified, it returns a repeatable sequence of random numbers.</description>
+		<syntax>{0}([seed])</syntax>
+		<returns>Number</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
 	
 	<!-- STRING FUNCTIONS -->
 
@@ -534,7 +560,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Converts a number or date to a string.</description>
 		<syntax>{0}(number | datetime, format)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -542,10 +568,9 @@ If the string is empty, a value of 0 is returned.</description>
 	<operator>
 		<name>CHR</name>
 		<category>String</category>
-		<description>Converts a Unicode code point (including 7-bit ASCII) into the character that matches the input Unicode.
-		</description>
+		<description>Converts a Unicode code point (including 7-bit ASCII) into the character that matches the input Unicode.</description>
 		<syntax>{0}(integer)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -554,7 +579,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns the Unicode code point for the first Unicode character in a string. If the string is empty, a value of 0 is returned.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -563,7 +588,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns the result of concatenation of two or more	string. The || operator provides alternative syntax for CONCAT.</description>
 		<syntax>{0}(string, string[, string...])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -572,7 +597,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns true if string contains pattern.</description>
 		<syntax>{0}(string, pattern)</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -581,7 +606,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns the number of characters of the specified string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -590,7 +615,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns the number of characters of the specified string (8*OCTET_LENGTH).</description>
 		<syntax>{0}(string_or_binary)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -599,7 +624,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns the length of a string or binary value in bytes.</description>
 		<syntax>{0}(string_or_binary)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -609,7 +634,7 @@ If the string is empty, a value of 0 is returned.</description>
 		<category>String</category>
 		<description>Returns a string with the first letter of each word in	uppercase and the subsequent letters in lowercase.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -622,7 +647,7 @@ If substring is not found in string, then the INSTR function will return 0.
 If the start_position is negative, the INSTR function counts back start_position number of characters from the end of string and then searches towards the beginning of string.
 		</description>
 		<syntax>{0}(string, pattern[, start_position])</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -634,40 +659,34 @@ If the start_position is negative, the INSTR function counts back start_position
 			length.
 		</description>
 		<syntax>{0}(string, start[, length])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>REPLACE</name>
 		<category>String</category>
-		<description>Removes all occurrences of a specified substring, and
-			optionally replaces them with another string.
-		</description>
+		<description>Removes all occurrences of a specified substring, and optionally replaces them with another string.</description>
 		<syntax>{0}(string, pattern[, replacement])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>STARTSWITH</name>
 		<category>String</category>
-		<description>Returns TRUE if the first expression starts with second
-			expression.\nBoth expressions must be text.
-		</description>
+		<description>Returns TRUE if the first expression starts with second expression. Both values must be data type string or binary.</description>
 		<syntax>{0}(string, string)</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>ENDSWITH</name>
 		<category>String</category>
-		<description>Returns TRUE if the first expression ends with second
-			expression.\nBoth expressions must be text.
-		</description>
+		<description>Returns TRUE if the first expression ends with second expression. Both values must be data type string or binary.</description>
 		<syntax>{0}(string, string)</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -678,7 +697,7 @@ If the start_position is negative, the INSTR function counts back start_position
 			from left).
 		</description>
 		<syntax>{0}(string[, length])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -689,7 +708,7 @@ If the start_position is negative, the INSTR function counts back start_position
 			from right).
 		</description>
 		<syntax>{0}(string[, length])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -697,11 +716,9 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>SPACE</name>
 		<category>String</category>
-		<description>Returns a string consisting of a the specified number of
-			blank spaces.
-		</description>
+		<description>Returns a string consisting of a the specified number of	blank spaces.</description>
 		<syntax>{0}(length)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -709,11 +726,9 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>TRANSLATE</name>
 		<category>String</category>
-		<description>Translates original from the characters in findChars to
-			the characters in replaceChars.
-		</description>
+		<description>Translates original from the characters in findChars to the characters in replaceChars.</description>
 		<syntax>{0}(original, findChars, replaceChars)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -723,7 +738,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Left-pads a string with another string, to a certain length.</description>
 		<syntax>{0}(string, length[, pad_string])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -732,7 +747,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Right-pads a string with another string, to a certain length.</description>
 		<syntax>{0}(string, length[, pad_string])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -741,7 +756,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Returns a character string converted to lower case.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -750,7 +765,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Returns a character string converted to upper case.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -759,7 +774,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Returns the string with leading and trailing characters removed. If the characters parameter is omitted, the function will remove space characters.</description>
 		<syntax>{0}(string[, characters])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -768,7 +783,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Returns the string with leading characters removed. If the characters parameter is omitted, the function will remove space characters.</description>
 		<syntax>{0}(string[, characters])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -777,7 +792,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Returns the string with trailing characters removed. If the characters parameter is omitted, the function will remove space characters.</description>
 		<syntax>{0}(string[, characters])</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -786,7 +801,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Reverses the order of characters in a string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -795,25 +810,43 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>String</category>
 		<description>Returns a string that contains a phonetic representation of the input string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>STRINGENCODE</name>
+		<category>String</category>
+		<description>The function encode special characters in a string using the Java string literal encoding format.  Special characters are \b, \t, \n, \f, \r, \", \\, \(octal), \\u(unicode).</description>
+		<syntax>{0}(string)</syntax>
+		<returns>String</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>
+	<operator>
+		<name>STRINGDECODE</name>
+		<category>String</category>
+		<description> The function decode string using the Java string literal encoding format.  Special characters are \b, \t, \n, \f, \r, \", \\, \(octal), \\u(unicode).</description>
+		<syntax>{0}(string)</syntax>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>URLENCODE</name>
 		<category>String</category>
-		<description>The function encode the URL to a string.</description>
+		<description>The function encode special characters in a string using the Java string literal encoding format.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>URLDECODE</name>
 		<category>String</category>
-		<description>The function decode the URL to a string.</description>
+		<description>The function onverts a encoded string using the Java string literal encoding format.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -825,15 +858,14 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>COALESCE</name>
 		<category>Other</category>
-		<description>Returns the first of its arguments that is not	null. Null is returned only if all arguments are null.</description>
+		<description>Returns the first of its arguments that is not null. Null is returned only if all arguments are null.</description>
 		<syntax>{0}(expression, expression[, expression...])</syntax>
 		<returns>expression value</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
-
 	<operator>
-		<name>NVL</name>
+		<name>IFNULL</name>
 		<category>Other</category>
 		<description>Returns the second value if first value is null. This function replace the null with value.
 		</description>
@@ -842,18 +874,24 @@ If the start_position is negative, the INSTR function counts back start_position
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
-
 	<operator>
 		<name>NULLIF</name>
 		<category>Other</category>
-		<description>Returns null if expression1 equals to expression2, or
-			expression1 otherwise.
-		</description>
+		<description>Returns a null value if the two specified expressions are equal, or expression1 otherwise.</description>
 		<syntax>{0}(expression1,expression2)</syntax>
 		<returns>expression value</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
+	<operator>
+		<name>DECODE</name>
+		<category>Conditional</category>
+		<description>Compares the select expression to each search expression in order. As soon as a search expression matches the selection expression, the corresponding result expression is returned.</description>
+		<syntax>{0}(expr, search1 , result1 [, search2, result2 ... ][, default ])</syntax>
+		<returns>expression value</returns>
+		<constraints></constraints>
+		<semantics></semantics>
+	</operator>	
 	<operator>
 		<name>EQUAL_NULL</name>
 		<category>Other</category>
@@ -863,7 +901,7 @@ If the start_position is negative, the INSTR function counts back start_position
 			operator (=), which treats NULLs as unknown values.
 		</description>
 		<syntax>{0}(expression,expression)</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -873,7 +911,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<description>Returns the largest value that is not NULL, or NULL if all values are NULL.
 		</description>
 		<syntax>{0}(expression[,expression])</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -883,25 +921,20 @@ If the start_position is negative, the INSTR function counts back start_position
 		<description>Returns the smallest value that is not NULL, or NULL if all values are NULL.
 		</description>
 		<syntax>{0}(expression[,expression])</syntax>
-		<returns>boolean</returns>
+		<returns>Boolean</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>	
-	<operator>
-		<name>RAND</name>
-		<category>Other</category>
-		<description>Return a random number between 0 (inclusive) and 1 (exclusive). If seed is specified, it returns a repeatable sequence of random numbers.</description>
-		<syntax>{0}([seed])</syntax>
-		<returns>number</returns>
-		<constraints></constraints>
-		<semantics></semantics>
-	</operator>
+
+	
+		<!-- CRYPTOGRAPHIC FUNCTIONS -->
+	
 	<operator>
 		<name>MD5</name>
 		<category>Other</category>
 		<description>The function calculate the MD5 hash of a data value. The hash will be returned as a 40 characters hex-encoded string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>	
@@ -910,7 +943,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Other</category>
 		<description>The function calculate the SHA1 hash of a data value. The hash will be returned as a 40 characters hex-encoded string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -919,7 +952,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Other</category>
 		<description>The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64 characters hex-encoded string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>	
@@ -928,7 +961,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Other</category>
 		<description>The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96 characters hex-encoded string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>		
@@ -937,10 +970,11 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Other</category>
 		<description>The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128 characters hex-encoded string.</description>
 		<syntax>{0}(string)</syntax>
-		<returns>number</returns>
+		<returns>Number</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>		
+	
 	<!-- DATE FUNCTIONS -->
 
 	<operator>
@@ -948,7 +982,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Returns the current date value.</description>
 		<syntax>{0}()</syntax>
-		<returns>date</returns>
+		<returns>Date</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -957,7 +991,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Returns the last day of the month.</description>
 		<syntax>{0}(date | timestamp)</syntax>
-		<returns>date</returns>
+		<returns>Date</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>	
@@ -968,24 +1002,24 @@ If the start_position is negative, the INSTR function counts back start_position
 			or timestamp.
 		</description>
 		<syntax>{0}(date | timestamp,num_months)</syntax>
-		<returns>date</returns>
+		<returns>Date</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>DAY_OF_MONTH</name>
 		<category>Date</category>
-		<description>Returns the day of month of the date/timestamp (The result is an integer between 1 and 31).
+		<description>Returns the day of month of the date/timestamp (integer between 1 and 31).
 		</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>DAY_OF_WEEK</name>
 		<category>Date</category>
-		<description>Returns the day of week of the date/timestamp (The result is an integer between 1 and 7).</description>
+		<description>Returns the day of week of the date/timestamp (integer between 1 and 7).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
 		<returns>expression value</returns>
 		<constraints></constraints>
@@ -994,9 +1028,9 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>DAY_OF_YEAR</name>
 		<category>Date</category>
-		<description>Returns the day of year of the date/timestamp (The result is an integer between 1 and 366).</description>
+		<description>Returns the day of year of the date/timestamp (integer between 1 and 366).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -1005,7 +1039,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Returns the name of the day of week (in English).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -1014,34 +1048,34 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Returns the name of the month (in English).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>MONTH</name>
 		<category>Date</category>
-		<description>Returns the month component of the date/timestamp.</description>
+		<description>Returns the month of the date/timestamp (integer between 1 and 12).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>WEEK_OF_YEAR</name>
 		<category>Date</category>
-		<description>Return the week of the year (number in the range 1 to 54).</description>
+		<description>Return the week of the year (integer between 1 to 54).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>QUARTER</name>
 		<category>Date</category>
-		<description>Return the quarter of the year (number in the range 1 to 4).</description>
+		<description>Return the quarter of the year (integer between 1 to 4).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -1050,25 +1084,25 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Returns the integer that specifies the year of the	specified date/timestamp.</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>HOUR</name>
 		<category>Date</category>
-		<description>Returns the hour component of the timestamp (The result is an integer between 0 and 23).</description>
+		<description>Returns the hour component of the timestamp (integer between 0 and 23).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
 	<operator>
 		<name>MINUTE</name>
 		<category>Date</category>
-		<description>Returns the minute component of the timestamp (The result is an integer between 0 and 59).</description>
+		<description>Returns the minute component of the timestamp (integer between 0 and 59).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -1077,7 +1111,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Returns the second component of the timestamp (The result is an integer between 0 and 59).</description>
 		<syntax>{0}(date_or_timestamp)</syntax>
-		<returns>integer</returns>
+		<returns>Integer</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>
@@ -1086,7 +1120,7 @@ If the start_position is negative, the INSTR function counts back start_position
 		<category>Date</category>
 		<description>Converts a string to a date time.</description>
 		<syntax>{0}(string, format)</syntax>
-		<returns>string</returns>
+		<returns>String</returns>
 		<constraints></constraints>
 		<semantics></semantics>
 	</operator>

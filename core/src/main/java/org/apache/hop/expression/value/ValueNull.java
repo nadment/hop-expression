@@ -2,8 +2,8 @@ package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
 
@@ -16,8 +16,8 @@ public class ValueNull extends Value {
 	}
 
 	@Override
-	public DataType getType() {
-		return DataType.NONE;
+	public ValueType getType() {
+		return ValueType.NONE;
 	}
 	
 	@Override
@@ -65,7 +65,7 @@ public class ValueNull extends Value {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		return this;
 	}
 

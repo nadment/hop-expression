@@ -1,28 +1,64 @@
 package org.apache.hop.expression;
 
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.hop.core.Const;
-import org.apache.hop.core.exception.HopXMLException;
 import org.apache.hop.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-// TODO: implement REGEXP, RLIKE operator
+//TODO: implement REGEXP, RLIKE operator
 //TODO: implement CONTAINING
-// TODO: implement STARTING [WITH]
+//TODO: implement STARTING [WITH]
 //TODO: implement ENDING [WITH]
-// TODO: implement the square brackets with a character range (MS SQL): like '[A-C]%'
-
+//TODO: implement the square brackets with a character range (MS SQL): like '[A-C]%'
+/**
+ * Operators have the precedence levels.
+ * An operator on higher levels is evaluated before an operator on a lower level
+ * 
+ * 	 
+ *   1			Functions
+ *	 2  		Cast
+ *   3	Right	+ (Positive), - (Negative)	
+ * 	 4			~ (Bitwise NOT)
+ *   5	Left	* (Multiplication), / (Division), % (Modulus)
+ *   6			<<, >>  
+ *   7 			& (Bitwise AND)      
+ *   8  		^ (Bitwise Exclusive OR)      
+ *   9  		| (Bitwise OR)
+ *  10	Left	+ (Addition), - (Subtraction)
+ *  11  		|| (Concatenation)
+ *  12	-		BETWEEN, IN, LIKE
+ *  13	-		=, >, <, >=, <=, <>, !=, !>, !< (Comparison operators)
+ *  14  -		IS
+ *  15	Right	NOT
+ *  16	Left	AND
+ *  17  Left	XOR
+ * 	18  Left	OR	
+ * 
+ * @author Nicolas ADMENT
+ *
+ */
 public class Operator implements Comparable<Operator> {
 
+	public enum Category {
+		Arithmetic,
+		Bitwise,
+		Comparison,
+		Conditional,
+		Conversion,
+		Cryptographic,
+		Date,
+		Logical,
+		Mathematical,
+		String,
+		Other
+	}
+	
 	private static final String JAVA_REGEX_SPECIALS = "[]()|^-+*?{}$\\.";
 
 	protected final Kind kind;
@@ -48,24 +84,25 @@ public class Operator implements Comparable<Operator> {
 	private static final ConcurrentHashMap<String, OperatorInfo> infos = new ConcurrentHashMap<>();
 
 	static {
-		try {
-			Document document = XMLHandler.loadXMLFile(Expression.class.getResourceAsStream("expression.xml"));
-			Node rootNode = XMLHandler.getSubNode(document, "expression");
-			int nrFunctions = XMLHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
-			for (int i = 0; i < nrFunctions; i++) {
+		try (InputStream is = Expression.class.getResourceAsStream("expression.xml")) {
+			Document document = XMLHandler.loadXMLFile(is);
+			Node rootNode = XMLHandler.getSubNode(document, OperatorInfo.EXPRESSION_TAG);
+			int count = XMLHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
+			for (int i = 0; i < count; i++) {
 				Node node = XMLHandler.getSubNodeByNr(rootNode, OperatorInfo.OPERATOR_TAG, i);
 				OperatorInfo info = new OperatorInfo(node);
 				infos.put(info.getName(), info);
 
 				//System.out.println(info.getName());
 			}
-
-			//System.out.println(nrFunctions + " operators or functions");
-		} catch (HopXMLException e) {
+		} catch (Exception e) {
 
 		}
 	}
 
+
+
+	
 	/**
 	 * Creates an operator specifying left and right precedence.
 	 * 
@@ -73,17 +110,18 @@ public class Operator implements Comparable<Operator> {
 	 * @param leftPrecedence  Left precedence
 	 * @param rightPrecedence Right precedence
 	 */
-	protected Operator(Kind kind, String name, int leftPrecedence, int rightPrecedence) {
+	protected Operator(Kind kind,  String name, Category category, int leftPrecedence, int rightPrecedence) {
 		super();
 		this.kind = kind;
 		this.name = name;
 		this.leftPrecedence = leftPrecedence;
 		this.rightPrecedence = rightPrecedence;
+		this.category = category.name();
 
 		OperatorInfo info = infos.get(kind.name());
 		if (info != null) {
 			this.syntax = MessageFormat.format(Const.NVL(info.getSyntax(), ""), name);
-			this.category = Const.NVL(info.getCategory(), "");
+			//this.category = Const.NVL(info.getCategory(), "");
 			this.description = info.getDescription();
 			this.constraints = info.getConstraints();
 			this.returns = info.getReturns();
@@ -98,13 +136,13 @@ public class Operator implements Comparable<Operator> {
 	 * @param leftAssociativity operators on the left evaluate before ones of the
 	 *                          right
 	 */
-	protected Operator(Kind kind, int precedence, boolean leftAssociativity) {
-		this(kind, kind.toString(), leftPrec(precedence, leftAssociativity), rightPrec(precedence, leftAssociativity));
+	protected Operator(Kind kind, Category category, int precedence, boolean leftAssociativity) {
+		this(kind, kind.toString(), category,  leftPrec(precedence, leftAssociativity), rightPrec(precedence, leftAssociativity));
 	}
 
 	protected static int leftPrec(int precedence, boolean leftAssociativity) {
 		assert (precedence % 2) == 0;
-		if (!leftAssociativity) {
+		if (leftAssociativity) {			
 			++precedence;
 		}
 		return precedence;
@@ -112,7 +150,7 @@ public class Operator implements Comparable<Operator> {
 
 	protected static int rightPrec(int precedence, boolean leftAssociativity) {
 		assert (precedence % 2) == 0;
-		if (leftAssociativity) {
+		if (!leftAssociativity) {
 			++precedence;
 		}
 		return precedence;
@@ -143,12 +181,54 @@ public class Operator implements Comparable<Operator> {
 		return syntax;
 	}
 
-	public Value eval(ExpressionContext context, Expression... operands) throws ExpressionException {
+	public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
 		switch (kind) {
+				
+		case BITWISE_AND_OPERATOR: {
+			Value left = args[0].eval(context);
+			if (left.isNull())
+				return left;
+			Value right = args[1].eval(context);
+			if (right.isNull())
+				return right;
+
+			return Value.of(left.toInteger() & right.toInteger());
+		}
+
+		case BITWISE_NOT_OPERATOR: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+
+			return Value.of(~value.toInteger());
+		}
+
+		case BITWISE_OR_OPERATOR: {
+			Value left = args[0].eval(context);
+			if (left.isNull())
+				return left;
+			Value right = args[1].eval(context);
+			if (right.isNull())
+				return right;
+
+			return Value.of(left.toInteger() | right.toInteger());
+		}
+
+		case BITWISE_XOR_OPERATOR: {
+			Value left = args[0].eval(context);
+			if (left.isNull())
+				return left;
+			Value right = args[1].eval(context);
+			if (right.isNull())
+				return right;
+
+			return Value.of(left.toInteger() ^ right.toInteger());
+		}
+			
 		case BETWEEN_OPERATOR: {
-			Value operand = operands[0].eval(context);
-			Value start = operands[1].eval(context);
-			Value end = operands[2].eval(context);
+			Value operand = args[0].eval(context);
+			Value start = args[1].eval(context);
+			Value end = args[2].eval(context);
 
 			if (operand.isNull() || start.isNull() || end.isNull()) {
 				return Value.NULL;
@@ -159,10 +239,10 @@ public class Operator implements Comparable<Operator> {
 
 		case CASE_WHEN_OPERATOR: {
 			int index = 0;
-			Expression switchExpression = operands[0];
-			ExpressionList whenList = (ExpressionList) operands[1];
-			ExpressionList thenList = (ExpressionList) operands[2];
-			Expression elseExpression = operands[3];
+			IExpression switchExpression = args[0];
+			ExpressionList whenList = (ExpressionList) args[1];
+			ExpressionList thenList = (ExpressionList) args[2];
+			IExpression elseExpression = args[3];
 
 			if (switchExpression == null) {
 				for (Expression whenOperand : whenList) {
@@ -186,22 +266,22 @@ public class Operator implements Comparable<Operator> {
 			return elseExpression.eval(context);
 		}
 		case CAST_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull())
 				return Value.NULL;
 			if (right.isNull())
 				return right;
 
-			DataType targetType = DataType.valueOf((int) right.toInteger());
+			ValueType targetType = ValueType.valueOf((int) right.toInteger());
 
 			return left.convertTo(targetType);
 		}
 
 		case CONCAT_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (right.isNull())
 				return left;
@@ -212,16 +292,16 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case LIKE_OPERATOR: {
-			Value subject = operands[0].eval(context);
-			Value pattern = operands[1].eval(context);
+			Value subject = args[0].eval(context);
+			Value pattern = args[1].eval(context);
 
 			if (subject.isNull() || pattern.isNull()) {
 				return Value.FALSE;
 			}
 
 			String escape = null;
-			if (operands.length == 3) {
-				Value escapeValue = operands[2].eval(context);
+			if (args.length == 3) {
+				Value escapeValue = args[2].eval(context);
 				escape = escapeValue.toString();
 			}
 
@@ -232,12 +312,12 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case MINUS_OPERATOR: {
-			Value value = operands[0].eval(context);
+			Value value = args[0].eval(context);
 			return value.negate();
 		}
 
-		case NOT_OPERATOR: {
-			Value operand = operands[0].eval(context);
+		case LOGICAL_NOT_OPERATOR: {
+			Value operand = args[0].eval(context);
 
 			if (operand.isNull()) {
 				return Value.NULL;
@@ -246,18 +326,18 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(!operand.toBoolean());
 		}
 
-		case AND_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+		case LOGICAL_AND_OPERATOR: {
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
 			}
 			return Value.of(left.toBoolean() && right.toBoolean());
 		}
 
-		case OR_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+		case LOGICAL_OR_OPERATOR: {
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 			if (left.isNull() && right.isNull()) {
 				return Value.NULL;
 			}
@@ -265,9 +345,9 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.toBoolean() || right.toBoolean());
 		}
 
-		case XOR_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+		case LOGICAL_XOR_OPERATOR: {
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
 			}
@@ -275,8 +355,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case ADD_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
@@ -285,8 +365,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case SUBTRACT_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
@@ -295,8 +375,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case MULTIPLY_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
@@ -305,8 +385,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case DIVIDE_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
@@ -318,10 +398,10 @@ public class Operator implements Comparable<Operator> {
 			return left.divide(right);
 		}
 
-		case MOD:
+		case MOD: // Same implementation for operator and function
 		case MODULUS_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
@@ -334,9 +414,10 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case POWER: // Same implementation for operator and function
-		case POWER_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+		//case POWER_OPERATOR: 
+		{
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
@@ -350,8 +431,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case EQUAL_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			// Treats NULLs as unknown values
 			if (left.isNull() || right.isNull()) {
@@ -361,9 +442,10 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.compareTo(right) == 0);
 		}
 
+		case LESS_THAN_OR_GREATER_THEN:
 		case NOT_EQUAL_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() && right.isNull()) {
 				return Value.FALSE;
@@ -376,8 +458,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case LESS_THAN_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.FALSE;
@@ -387,8 +469,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case LESS_THAN_OR_EQUAL_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.FALSE;
@@ -398,8 +480,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case GREATER_THAN_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.FALSE;
@@ -409,8 +491,8 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case GREATER_THAN_OR_EQUAL_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
 				return Value.FALSE;
@@ -420,19 +502,19 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case IS_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			return Value.of(left.equals(right));
 		}
 
 		case IN_OPERATOR: {
-			Value left = operands[0].eval(context);
+			Value left = args[0].eval(context);
 			if (left.isNull()) {
 				return Value.FALSE;
 			}
 
-			ExpressionList list = (ExpressionList) operands[1];
+			ExpressionList list = (ExpressionList) args[1];
 			for (Expression expression : list) {
 				Value value = expression.eval(context);
 				if (left.compareTo(value) == 0) {
@@ -445,8 +527,8 @@ public class Operator implements Comparable<Operator> {
 
 		case CONTAINS:
 		case CONTAINS_OPERATOR: {
-			Value left = operands[0].eval(context);
-			Value right = operands[1].eval(context);
+			Value left = args[0].eval(context);
+			Value right = args[1].eval(context);
 
 			if (left.isNull() && right.isNull())
 				return Value.TRUE;
@@ -465,10 +547,10 @@ public class Operator implements Comparable<Operator> {
 		}
 	}
 
-	public Expression optimize(ExpressionContext context, Expression... operands) throws ExpressionException {
+	public Expression optimize(IExpressionContext context, Expression... operands) throws ExpressionException {
 		switch (kind) {
 		case MINUS_OPERATOR:
-		case NOT_OPERATOR: {
+		case LOGICAL_NOT_OPERATOR: {
 			Expression operand = operands[0].optimize(context);
 
 			if (operand.isConstant()) {
@@ -478,7 +560,7 @@ public class Operator implements Comparable<Operator> {
 			return new ExpressionCall(this, operand);
 		}
 
-		case AND_OPERATOR: // Binary operator
+		case LOGICAL_AND_OPERATOR: // Binary operator
 		case CONCAT_OPERATOR:
 		case CONTAINS_OPERATOR:
 		case ADD_OPERATOR:
@@ -486,9 +568,9 @@ public class Operator implements Comparable<Operator> {
 		case MULTIPLY_OPERATOR:
 		case DIVIDE_OPERATOR:
 		case MODULUS_OPERATOR:
-		case POWER_OPERATOR:
-		case OR_OPERATOR:
-		case XOR_OPERATOR:
+		//case POWER_OPERATOR:
+		case LOGICAL_OR_OPERATOR:
+		case LOGICAL_XOR_OPERATOR:
 		case EQUAL_OPERATOR:
 		case NOT_EQUAL_OPERATOR:
 		case LIKE_OPERATOR:
@@ -535,21 +617,25 @@ public class Operator implements Comparable<Operator> {
 	public void unparse(StringWriter writer, ExpressionCall call, int leftPrec, int rightPrec) {
 		switch (kind) {
 
-		case BETWEEN_OPERATOR:
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+		case BETWEEN_OPERATOR: {
+			Expression[] operands = call.getOperands();
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
 			writer.append("BETWEEN");
 			writer.append(' ');
-			call.getParameter(1).unparse(writer, leftPrec, rightPrec);
+			operands[1].unparse(writer, leftPrec, rightPrec);
 			writer.append(" AND ");
-			call.getParameter(2).unparse(writer, leftPrec, rightPrec);
+			operands[2].unparse(writer, leftPrec, rightPrec);
 			break;
+		}
 
-		case CASE_WHEN_OPERATOR:
-			Expression switchExpression = call.getParameter(0);
-			ExpressionList whenList = (ExpressionList) call.getParameter(1);
-			ExpressionList thenList = (ExpressionList) call.getParameter(2);
-			Expression elseExpression = call.getParameter(3);
+		case CASE_WHEN_OPERATOR: {
+			Expression[] operands = call.getOperands();
+			
+			Expression switchExpression = operands[0];
+			ExpressionList whenList = (ExpressionList) operands[1];
+			ExpressionList thenList = (ExpressionList) operands[2];
+			Expression elseExpression = operands[3];
 
 			writer.append("CASE ");
 
@@ -571,75 +657,90 @@ public class Operator implements Comparable<Operator> {
 			}
 			writer.append("END");
 			break;
+		}
 
-		case CAST_OPERATOR:
+		case CAST_OPERATOR: {
+			Expression[] operands = call.getOperands();
 			writer.append(this.getName());
 			writer.append('(');
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(" AS ");
-			call.getParameter(1).unparse(writer, leftPrec, rightPrec);
+			operands[1].unparse(writer, leftPrec, rightPrec);
 			writer.append(')');
 			break;
+		}
 
-		case CONCAT_OPERATOR:
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+		case CONCAT_OPERATOR: {
+			Expression[] operands = call.getOperands();
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(this.getName());
-			call.getParameter(1).unparse(writer, leftPrec, rightPrec);
+			operands[1].unparse(writer, leftPrec, rightPrec);
 			break;
+		}
 
-		case LIKE_OPERATOR:
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+		case LIKE_OPERATOR: {
+			Expression[] operands = call.getOperands();
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
 			writer.append(this.getName());
 			writer.append(' ');
-			call.getParameter(1).unparse(writer, leftPrec, rightPrec);
-			if (call.getParameterCount() == 3) {
+			operands[1].unparse(writer, leftPrec, rightPrec);
+			if (call.getOperandCount() == 3) {
 				writer.append(" ESCAPE ");
-				call.getParameter(2).unparse(writer, leftPrec, rightPrec);
+				operands[2].unparse(writer, leftPrec, rightPrec);
 			}
 			break;
+		}
 
-		case MINUS_OPERATOR: // Unary postfix operator
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+		case MINUS_OPERATOR:  {
+			Expression[] operands = call.getOperands();
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
 			writer.append(this.getName());
 			break;
+		}
 
-		case NOT_OPERATOR: // Unary prefix operator
+		case LOGICAL_NOT_OPERATOR: { 
+			Expression[] operands = call.getOperands();
 			writer.append(this.getName());
 			writer.append(' ');
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			break;
+		}
 
-		case AND_OPERATOR: // Binary operator
-		case OR_OPERATOR:
-		case XOR_OPERATOR:
+		case LOGICAL_AND_OPERATOR:
+		case LOGICAL_OR_OPERATOR:
+		case LOGICAL_XOR_OPERATOR:
 		case EQUAL_OPERATOR:
 		case NOT_EQUAL_OPERATOR:
+		case LESS_THAN_OR_GREATER_THEN:
 		case LESS_THAN_OPERATOR:
 		case LESS_THAN_OR_EQUAL_OPERATOR:
 		case GREATER_THAN_OPERATOR:
 		case GREATER_THAN_OR_EQUAL_OPERATOR:
 		case IS_OPERATOR:
-		case IN_OPERATOR:
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+		case IN_OPERATOR: {
+			Expression[] operands = call.getOperands();
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
 			writer.append(this.getName());
 			writer.append(' ');
-			call.getParameter(1).unparse(writer, leftPrec, rightPrec);
+			operands[1].unparse(writer, leftPrec, rightPrec);
 			break;
+		}
 
 		case ADD_OPERATOR:
 		case SUBTRACT_OPERATOR:
 		case MULTIPLY_OPERATOR:
 		case DIVIDE_OPERATOR:
-		case MODULUS_OPERATOR:
-		case POWER_OPERATOR:
-			call.getParameter(0).unparse(writer, leftPrec, rightPrec);
+		case MODULUS_OPERATOR: {
+		//case POWER_OPERATOR:
+			Expression[] operands = call.getOperands();
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(this.getName());
-			call.getParameter(1).unparse(writer, leftPrec, rightPrec);
+			operands[1].unparse(writer, leftPrec, rightPrec);
 			break;
-
+		}
 		default:
 			throw createInternalError(kind.name());
 		}
@@ -656,6 +757,32 @@ public class Operator implements Comparable<Operator> {
 	}
 
 	// -------------------------------------------------------------
+	// BITWISE OPERATORS
+	// -------------------------------------------------------------
+	
+	/**
+	 * Bitwise AND operator "&".
+	 */
+	public static final Operator BITWISE_AND = new Operator(Kind.BITWISE_AND_OPERATOR, Category.Bitwise, 70, true);
+
+	/**
+	 * Bitwise OR operator "|".
+	 */
+	public static final Operator BITWISE_OR = new Operator(Kind.BITWISE_OR_OPERATOR, Category.Bitwise, 90, true);
+
+	/**
+	 * Bitwise NOT operator "~".
+	 */
+	public static final Operator BITWISE_NOT = new Operator(Kind.BITWISE_NOT_OPERATOR, Category.Bitwise, 40, true);
+
+	/**
+	 * Bitwise XOR operator "^".
+	 */
+	public static final Operator BITWISE_XOR = new Operator(Kind.BITWISE_XOR_OPERATOR, Category.Bitwise, 80, true);
+
+	
+	
+	// -------------------------------------------------------------
 	// LOGICAL OPERATORS
 	// -------------------------------------------------------------
 
@@ -671,52 +798,19 @@ public class Operator implements Comparable<Operator> {
 	 * </ul>
 	 * </p>
 	 */
-	public static final Operator NOT = new Operator(Kind.NOT_OPERATOR, 26, true);
+	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT_OPERATOR, Category.Logical, 150, false);
 	/**
-	 * Logical inclusion <code>OR</code> operator.
+	 * Logical disjunction <code>OR</code> operator.
 	 */
-	public static final Operator OR = new Operator(Kind.OR_OPERATOR, 24, true);
+	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR_OPERATOR, Category.Logical, 180, true);
 	/**
 	 * Logical conjunction <code>AND</code> operator.
 	 */
-	public static final Operator AND = new Operator(Kind.AND_OPERATOR, 20, true);
+	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND_OPERATOR, Category.Logical, 160, true);
 	/**
 	 * Logical <code>XOR</code> operator.
 	 */
-	public static final Operator XOR = new Operator(Kind.XOR_OPERATOR, 24, true);
-
-	// -------------------------------------------------------------
-	// COMPARISON OPERATORS
-	// -------------------------------------------------------------
-
-	/**
-	 * Comparison equals operator '<code>=</code>'.
-	 */
-	public static final Operator EQUALS = new Operator(Kind.EQUAL_OPERATOR, 30, true);
-	/**
-	 * Comparison not equals operator '<code><></code>'.
-	 */
-	public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUAL_OPERATOR, 30, true);
-	/**
-	 * Comparison less-than operator '<code>&lt;</code>'.
-	 */
-	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, 30, true);
-	/**
-	 * Comparison less-than-or-equal operator '<code>&lt;=</code>'.
-	 */
-	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR, 30, true);
-	/**
-	 * Comparison greater-than operator '<code>&gt;</code>'.
-	 */
-	public static final Operator GREATER_THAN = new Operator(Kind.GREATER_THAN_OPERATOR, 30, true);
-	/**
-	 * Comparison greater-than-or-equal operator '<code>&gt;=</code>'.
-	 */
-	public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL_OPERATOR, 30, true);
-	/**
-	 * Comparison contains operator '<code>=~</code>'.
-	 */
-	public static final Operator CONTAINS = new Operator(Kind.CONTAINS_OPERATOR, 30, true);
+	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR_OPERATOR, Category.Logical, 170, true);
 
 	/**
 	 * An operator describing the <code>IS</code> operator.
@@ -729,7 +823,7 @@ public class Operator implements Comparable<Operator> {
 	 * <li><code>field IS NULL</code></li>
 	 * </ul>
 	 */
-	public static final Operator IS = new Operator(Kind.IS_OPERATOR, 28, true);
+	public static final Operator IS = new Operator(Kind.IS_OPERATOR, Category.Logical, 140, true);
 
 	/**
 	 * Logical <code>IN</code> operator tests for a value's membership in a list of
@@ -746,7 +840,7 @@ public class Operator implements Comparable<Operator> {
 	 * {@link org.apache.hop.core.ExpressionParser parser} will generate a
 	 * equivalent to <code>NOT (field IN list of values ...)</code>
 	 */
-	public static final Operator IN = new Operator(Kind.IN_OPERATOR, 32, true);
+	public static final Operator IN = new Operator(Kind.IN_OPERATOR, Category.Logical, 120, true);
 	/**
 	 * An operator describing the <code>LIKE</code> operator.
 	 *
@@ -764,9 +858,49 @@ public class Operator implements Comparable<Operator> {
 	 * 
 	 * TODO: implement LIKE <pattern> ESCAPE <char>
 	 */
-	public static final Operator LIKE = new Operator(Kind.LIKE_OPERATOR, 32, true);
+	public static final Operator LIKE = new Operator(Kind.LIKE_OPERATOR, Category.Comparison, 120, true);
 
-	public static final Operator BETWEEN = new Operator(Kind.BETWEEN_OPERATOR, 32, true);
+	public static final Operator BETWEEN = new Operator(Kind.BETWEEN_OPERATOR, Category.Comparison, 120, true);
+
+	
+	// -------------------------------------------------------------
+	// COMPARISON OPERATORS
+	// -------------------------------------------------------------
+
+	/**
+	 * Comparison equals operator '<code>=</code>'.
+	 */
+	public static final Operator EQUALS = new Operator(Kind.EQUAL_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison not equals operator '<code><></code>'.
+	 */
+	public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUAL_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison not equals operator '<code>!=</code>'.
+	 */
+	public static final Operator LESS_THAN_OR_GREATER_THAN = new Operator(Kind.LESS_THAN_OR_GREATER_THEN, Category.Comparison, 130, true);
+	/**
+	 * Comparison less-than operator '<code>&lt;</code>'.
+	 */
+	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison less-than-or-equal operator '<code>&lt;=</code>'.
+	 */
+	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison greater-than operator '<code>&gt;</code>'.
+	 */
+	public static final Operator GREATER_THAN = new Operator(Kind.GREATER_THAN_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison greater-than-or-equal operator '<code>&gt;=</code>'.
+	 */
+	public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison contains operator '<code>=~</code>'.
+	 */
+	public static final Operator CONTAINS = new Operator(Kind.CONTAINS_OPERATOR, Category.Comparison, 130, true);
+
+
 
 	// -------------------------------------------------------------
 	// ARITHMETIC OPERATORS
@@ -775,37 +909,37 @@ public class Operator implements Comparable<Operator> {
 	/**
 	 * Arithmetic unary negate operator '<code>-</code>'.
 	 */
-	public static final Operator NEGATE = new Operator(Kind.MINUS_OPERATOR, 40, true);
+	public static final Operator NEGATE = new Operator(Kind.MINUS_OPERATOR, Category.Arithmetic, 30, true);
 
-	/**
-	 * Arithmetic power operator '<code>^</code>'.
-	 */
-	public static final Operator POWER = new Operator(Kind.POWER_OPERATOR, 70, true);
+//	/**
+//	 * Arithmetic power operator '<code>**</code>'.
+//	 */
+//	public static final Operator POWER = new Operator(Kind.POWER_OPERATOR, Category.Arithmetic, 70, true);
 
 	/**
 	 * Arithmetic multiplication operator '<code>*</code>'.
 	 */
-	public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY_OPERATOR, 60, true);
+	public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY_OPERATOR, Category.Arithmetic, 50, true);
 
 	/**
 	 * Arithmetic division operator '<code>/</code>'.
 	 */
-	public static final Operator DIVIDE = new Operator(Kind.DIVIDE_OPERATOR, 60, true);
+	public static final Operator DIVIDE = new Operator(Kind.DIVIDE_OPERATOR, Category.Arithmetic, 50, true);
 
 	/**
 	 * Arithmetic modulus operator '<code>%</code>'.
 	 */
-	public static final Operator MODULUS = new Operator(Kind.MODULUS_OPERATOR, 60, true);
+	public static final Operator MODULUS = new Operator(Kind.MODULUS_OPERATOR, Category.Arithmetic, 50, true);
 
 	/**
 	 * Arithmetic addition operator '<code>+</code>'.
 	 */
-	public static final Operator ADD = new Operator(Kind.ADD_OPERATOR, 40, true);
+	public static final Operator ADD = new Operator(Kind.ADD_OPERATOR, Category.Arithmetic, 100, true);
 
 	/**
 	 * Arithmetic subtraction operator '<code>-</code>'.
 	 */
-	public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT_OPERATOR, 40, true);
+	public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT_OPERATOR, Category.Arithmetic, 100, true);
 
 	// -------------------------------------------------------------
 	// SPECIAL OPERATORS
@@ -814,29 +948,19 @@ public class Operator implements Comparable<Operator> {
 	/**
 	 * Casting operator '<code>CAST(value AS dataType)</code>'.
 	 */
-	public static final Operator CAST = new Operator(Kind.CAST_OPERATOR, 90, true);
+	public static final Operator CAST = new Operator(Kind.CAST_OPERATOR, Category.Conversion,20, true);
 
 	/**
 	 * An operator describing the <code>CASE</code> operator.
 	 */
-	public static final Operator CASE = new Operator(Kind.CASE_WHEN_OPERATOR, 32, true);
+	public static final Operator CASE = new Operator(Kind.CASE_WHEN_OPERATOR, Category.Conditional, 120, true);
 
 	/**
 	 * String concatenation operator '<code>||</code>'.
 	 */
-	public static final Operator CONCAT = new Operator(Kind.CONCAT_OPERATOR, 40, true);
+	public static final Operator CONCAT = new Operator(Kind.CONCAT_OPERATOR, Category.Other, 110, true);
 
-	/**
-	 * Set of operators.
-	 */
-	/* TODO: Java 9 use unmodifiable Set.of(...) */
-	private static final Set<Operator> OPERATORS = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(ADD, CAST,
-			SUBTRACT, MULTIPLY, DIVIDE, POWER, MODULUS, EQUALS, CONTAINS, GREATER_THAN, GREATER_THAN_OR_EQUAL,
-			LESS_THAN, LESS_THAN_OR_EQUAL, NOT_EQUALS, AND, BETWEEN, CASE, CONCAT, IN, IS, LIKE, NOT, OR, XOR)));
-
-	public static Set<Operator> getOperators() {
-		return OPERATORS;
-	}
+	
 
 	public String getCategory() {
 		return category;

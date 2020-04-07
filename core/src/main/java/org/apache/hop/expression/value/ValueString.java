@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
 
@@ -21,8 +21,8 @@ public class ValueString extends Value {
 	}
 
 	@Override
-	public DataType getType() {
-		return DataType.STRING;
+	public ValueType getType() {
+		return ValueType.STRING;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class ValueString extends Value {
 			break;
 		case 2:
 			if (value.equalsIgnoreCase("on")) {
-				return false;
+				return true;
 			}
 
 			if (value.equalsIgnoreCase("no")) {
@@ -87,7 +87,7 @@ public class ValueString extends Value {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		return this;
 	}
 
@@ -109,7 +109,11 @@ public class ValueString extends Value {
 
 	@Override
 	public long toInteger() {
-		return Long.parseLong(value);
+		
+		if ( value.indexOf('.')<0 )
+			return Long.parseLong(value);
+		
+		return (long) Double.parseDouble(value);
 	}
 
 	@Override

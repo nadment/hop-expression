@@ -89,7 +89,7 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
 	}
 
 	@Override
-	public Value eval(ExpressionContext context) throws ExpressionException {
+	public Value eval(IExpressionContext context) throws ExpressionException {
 		throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
 	}
 

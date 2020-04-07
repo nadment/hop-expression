@@ -1,10 +1,34 @@
 package org.apache.hop.expression.util;
 
-public class DatePart {
+public enum DatePart {
 
+	// Date part
+	
+	YEAR,
+	MONTH,
+	DAY,
+	DAYOFWEEK,
+	//DAYOFWEEKISO,
+	DAYOFYEAR,
+	WEEK,
+	//WEEKISO,
+	QUARTER,
+	YEAROFWEEK,
+	YEAROFWEEKISO,
+	
+	// Time part
+	HOUR,
+	MINUTE,
+	SECOND,
+	MILLISECOND,
+	MICROSECOND,
+	NANOSECOND
+	
+	
+	
 	// private static final HashMap<String, Type> DATE_PART = new HashMap<>(128);
 
-	static {
+//	static {
 
 //			  // DATE_PART
 //	        DATE_PART.put("SQL_TSI_YEAR", TokenId.YEAR);
@@ -62,10 +86,8 @@ public class DatePart {
 //	        DATE_PART.put("CENTURY",  Kind.CENTURY);
 //	        DATE_PART.put("MILLENNIUM",  Kind.MILLENNIUM);
 
-	}
+//	}
 
-	private DatePart() {
-		// utility class
-	}
+
 
 }
