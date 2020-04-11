@@ -62,6 +62,10 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
 		this.list = expressions.toArray(new Expression[0]);
 	}
 
+	public Kind getKind() {
+		return Kind.LIST;
+	}
+	
 	public Expression get(int index) {
 		return list[index];
 	}

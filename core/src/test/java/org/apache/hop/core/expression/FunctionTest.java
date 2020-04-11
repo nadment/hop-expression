@@ -17,7 +17,6 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("Coalesce(null,null,null)");
 		evalFails("Coalesce()");
 	}
-	
 
 	@Test
 	public void Iff() throws Exception {
@@ -36,9 +35,9 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("IfNull()");
 		evalFails("IfNull(1)");
 		evalFails("IfNull(1,2,3)");
-		
+
 		// Alias
-		//evalEquals("NVL(null,1)", 1);
+		evalEquals("NVL(null,1)", 1);
 	}
 
 	@Test
@@ -57,14 +56,14 @@ public class FunctionTest extends ExpressionTest {
 	public void Decode() throws Exception {
 		evalEquals("Decode(1,1,'one',2,'two',Null,'<NULL>','other')", "one");
 		evalEquals("Decode(2,1,'one',2,'two',Null,'<NULL>','other')", "two");
-		evalEquals("Decode(NULL,1,'one',2,'two',Null,'<NULL>','other')","<NULL>");
-		evalEquals("Decode(9,1,'one',2,'two',Null,'<NULL>','other')", "other");		
-		evalNull("Decode(9,1,'one',2,'two',Null,'<NULL>')");		
+		evalEquals("Decode(NULL,1,'one',2,'two',Null,'<NULL>','other')", "<NULL>");
+		evalEquals("Decode(9,1,'one',2,'two',Null,'<NULL>','other')", "other");
+		evalNull("Decode(9,1,'one',2,'two',Null,'<NULL>')");
 		evalFails("Decode()");
 		evalFails("Decodo(1)");
 		evalFails("Decode(1,2)");
 	}
-	
+
 	@Test
 	public void Pi() throws Exception {
 		evalEquals("Pi()", Math.PI);
@@ -99,7 +98,7 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Upper()");
 
 		// Alias
-		//evalEquals("UCase('test')", "TEST");
+		// evalEquals("UCase('test')", "TEST");
 	}
 
 	@Test
@@ -145,7 +144,7 @@ public class FunctionTest extends ExpressionTest {
 	public void Year() throws Exception {
 		evalEquals("Year(Date '2019-01-01')", 2019);
 		evalFails("Year()");
-		
+
 	}
 
 	@Test
@@ -210,7 +209,7 @@ public class FunctionTest extends ExpressionTest {
 	@Test
 	public void WeekOfYear() throws Exception {
 		evalEquals("Week(Date '2019-01-01')", 1);
-    	evalEquals("Week(Date '2019-12-31')", 53);
+		evalEquals("Week(Date '2019-12-31')", 53);
 	}
 
 	@Test
@@ -228,7 +227,7 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Lower('Test','Test')");
 
 		// Alias
-		//evalEquals("LCase('TesT')", "test");
+		// evalEquals("LCase('TesT')", "test");
 	}
 
 	@Test
@@ -256,7 +255,7 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void Cot() throws Exception {
-		evalEquals("Cot(1)",0.6420926159343306);
+		evalEquals("Cot(1)", 0.6420926159343306);
 		evalFails("Cot(0)");
 		evalFails("Cot()");
 		evalNull("Cot(NULL)");
@@ -272,44 +271,43 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void Mod() throws Exception {
-		evalEquals("Mod(15,4)",3);
+		evalEquals("Mod(15,4)", 3);
 		evalNull("Mod(NULL,2)");
 		evalFails("Mod()");
 		evalFails("Mod(3)");
 	}
-	
+
 	@Test
 	public void Power() throws Exception {
-		evalEquals("Power(3,2)",9);
-		evalEquals("Power(100,0.5)",10);
-		evalEquals("Power(0,0)",1);
-		evalEquals("Power(123,0)",1);
+		evalEquals("Power(3,2)", 9);
+		evalEquals("Power(100,0.5)", 10);
+		evalEquals("Power(0,0)", 1);
+		evalEquals("Power(123,0)", 1);
 		evalFails("Power()");
 		evalFails("Power(3)");
 		evalFails("Power(1,2,3)");
 		evalNull("Power(NULL,2)");
 		evalNull("Power(3,NULL)");
 	}
-	
+
 	@Test
 	public void Sign() throws Exception {
-		evalEquals("Sign(0.3)",1);
-		evalEquals("Sign(0)",0);
-		evalEquals("Sign(-5)",-1);
+		evalEquals("Sign(0.3)", 1);
+		evalEquals("Sign(0)", 0);
+		evalEquals("Sign(-5)", -1);
 		evalFails("Sign()");
 		evalFails("Sign(1,2)");
 		evalNull("Sign(NULL)");
 	}
-	
+
 	@Test
 	public void Cbrt() throws Exception {
 		evalEquals("Cbrt(0)", 0);
-		evalEquals("Cbrt(-343)",-7);
+		evalEquals("Cbrt(-343)", -7);
 		evalFails("Cbrt()");
 		evalNull("Cbrt(NULL)");
 	}
-	
-	
+
 	@Test
 	public void Sqrt() throws Exception {
 		evalEquals("Sqrt(10)", 3.1622776601683795);
@@ -353,34 +351,34 @@ public class FunctionTest extends ExpressionTest {
 	@Test
 	public void Greatest() throws Exception {
 		evalEquals("Greatest(5,2,null,9,4)", 9);
-		evalEquals("Greatest('B','A','C')", "C");		 
+		evalEquals("Greatest('B','A','C')", "C");
 	}
 
 	@Test
 	public void Least() throws Exception {
 		evalEquals("Least(5,2,null,9,4)", 2);
 	}
-	
+
 	@Test
 	public void Length() throws Exception {
 		evalEquals("Length('TEST')", 4);
-		
+
 		// Alias
-		//evalEquals("Char_Length('TEST')", 4);
-		//evalEquals("Len('TEST')", 4);
+		// evalEquals("Char_Length('TEST')", 4);
+		// evalEquals("Len('TEST')", 4);
 	}
-	
+
 	@Test
 	public void Bit_Length() throws Exception {
 		// TODO: evalEquals("Bit_Length('TEST')", 64);
 	}
-	
+
 	@Test
 	public void Octet_Length() throws Exception {
 		// TODO: evalEquals("Octet_Length('TEST')",4 );
-		//evalEquals("Octet_Length(Unicode(392))", 2);			
+		// evalEquals("Octet_Length(Unicode(392))", 2);
 	}
-	
+
 	@Test
 	public void Left() throws Exception {
 		evalEquals("Left('TEST FROM',4)", "TEST");
@@ -409,7 +407,6 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("Replace('ABCD',NULL,'EF')");
 	}
 
-
 	@Test
 	public void ToBoolean() throws Exception {
 		evalTrue("To_Boolean('True')");
@@ -427,13 +424,12 @@ public class FunctionTest extends ExpressionTest {
 		evalFalse("To_Boolean('n')");
 		evalFalse("To_Boolean('0')");
 		evalFalse("To_Boolean(0)");
-		
+
 		evalNull("To_Boolean(NULL)");
 		evalFails("To_Boolean()");
 		evalFails("To_Boolean(1,2,3)");
 	}
 
-	
 	@Test
 	public void ToChar() throws Exception {
 		Currency currency = Currency.getInstance(Locale.getDefault());
@@ -535,8 +531,8 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void ToDate() throws Exception {
-		//evalEquals("To_Date('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
-		//evalEquals("To_Date('11:30:40','hh:mi:ss')",LocalDateTime.of(1970,1,1,11,30,40)); 
+		// evalEquals("To_Date('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
+		// evalEquals("To_Date('11:30:40','hh:mi:ss')",LocalDateTime.of(1970,1,1,11,30,40));
 	}
 
 	@Test
@@ -602,9 +598,7 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Chr(-1)");
 		evalFails("Chr(999999999999)");
 	}
-	
 
-	
 	@Test
 	public void Ascii() throws Exception {
 		evalEquals("Ascii('ABC')", 65);
@@ -628,14 +622,14 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void StringEncode() throws Exception {
-		evalEquals("StringEncode('	')", "\\t");		
+		evalEquals("StringEncode('	')", "\\t");
 	}
-	
+
 	@Test
 	public void StringDecode() throws Exception {
-		evalEquals("StringDecode('\t')", "\t");		
+		evalEquals("StringDecode('\t')", "\t");
 	}
-	
+
 	@Test
 	public void UrlEncode() throws Exception {
 		evalEquals("UrlEncode('a b')", "a+b");
@@ -646,15 +640,15 @@ public class FunctionTest extends ExpressionTest {
 	public void UrlDecode() throws Exception {
 		evalEquals("UrlDecode('a+b')", "a b");
 		evalEquals("UrlDecode('a%2Bb')", "a+b");
-	}	
-	
+	}
+
 	@Test
 	public void Ceil() throws Exception {
 		evalEquals("Ceil(1)", 1);
 		evalEquals("Ceil(125.9)", 126);
 		evalEquals("Ceil(0.4873)", 1.0);
 		evalEquals("Ceil(-0.65)", 0);
-		evalEquals("Ceil(-42.8)", -42);		
+		evalEquals("Ceil(-42.8)", -42);
 		evalNull("Ceil(null)");
 		evalFails("Ceil()");
 		evalFails("Ceil(1,2,3)");
@@ -706,12 +700,12 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Radians()");
 		evalFails("Radians(1,2)");
 	}
-	
+
 	@Test
 	public void MD5() throws Exception {
 		evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b");
 	}
-	
+
 	@Test
 	public void SHA1() throws Exception {
 		evalEquals("SHA1('Test')", "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa");
@@ -724,15 +718,16 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void SHA384() throws Exception {
-		evalEquals("SHA384('Test')", "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3");
+		evalEquals("SHA384('Test')",
+				"7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3");
 	}
-	
-	
+
 	@Test
 	public void SHA512() throws Exception {
-		evalEquals("SHA512('Test')", "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31");
+		evalEquals("SHA512('Test')",
+				"c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31");
 	}
-		
+
 	@Test
 	public void Rand() throws Exception {
 		evalEquals("Rand(180)", 0.7406425740713104);

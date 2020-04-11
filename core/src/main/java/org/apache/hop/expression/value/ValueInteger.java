@@ -4,7 +4,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.Type;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
@@ -18,8 +18,8 @@ public class ValueInteger extends Value {
 	}
 
 	@Override
-	public ValueType getType() {
-		return ValueType.INTEGER;
+	public Type getType() {
+		return Type.INTEGER;
 	}
 
 	@Override

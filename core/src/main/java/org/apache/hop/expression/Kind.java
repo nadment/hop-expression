@@ -5,11 +5,17 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Enumerates the possible types of {@link Operator}.
+ * Enumerates the possible types of {@link Expression}.
  */
 
 public enum Kind {
 
+	VALUE,
+
+	LIST,
+	IDENTIFIER,
+	
+	
 	BITGET,
 
 	/**
@@ -231,7 +237,7 @@ public enum Kind {
 	/**
 	 * Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
 	 */
-	IFF,
+	IF,
 	
 	/**
 	 * The IS NULL or <code>IS TRUE</code> operator.
@@ -449,7 +455,8 @@ public enum Kind {
 	 * Returns a string that contains a phonetic representation of the input string.
 	 */
 	SOUNDEX,
-
+	
+	
 	/**
 	 * The function convert a string value to lower case.
 	 * 

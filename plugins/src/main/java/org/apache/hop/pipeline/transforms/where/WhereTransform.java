@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.Expression;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.apache.hop.i18n.BaseMessages;
@@ -68,7 +68,11 @@ public class WhereTransform extends BaseTransform<WhereMeta,WhereData> {
 
 			first = false;
 
-			data.condition = Expression.parse(meta.getExpression());
+			// Substitute variable
+			String expression = environmentSubstitute( meta.getExpression() );
+			
+			// Parse expression
+			data.condition = ExpressionParser.parse(expression);
 
 			// clone the input row structure and place it in our data object
 			data.outputRowMeta = getInputRowMeta().clone();

@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.hop.core.Const;
-import org.apache.hop.core.xml.XMLHandler;
+import org.apache.hop.core.xml.XmlHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -75,7 +75,7 @@ public class Operator implements Comparable<Operator> {
 	 */
 	private final int rightPrecedence;
 
-	private String category = "";
+	private String category;
 	private String description = "";
 	private String syntax = "";
 	private String returns = "";
@@ -85,11 +85,11 @@ public class Operator implements Comparable<Operator> {
 
 	static {
 		try (InputStream is = Expression.class.getResourceAsStream("expression.xml")) {
-			Document document = XMLHandler.loadXMLFile(is);
-			Node rootNode = XMLHandler.getSubNode(document, OperatorInfo.EXPRESSION_TAG);
-			int count = XMLHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
+			Document document = XmlHandler.loadXmlFile(is);
+			Node rootNode = XmlHandler.getSubNode(document, OperatorInfo.EXPRESSION_TAG);
+			int count = XmlHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
 			for (int i = 0; i < count; i++) {
-				Node node = XMLHandler.getSubNodeByNr(rootNode, OperatorInfo.OPERATOR_TAG, i);
+				Node node = XmlHandler.getSubNodeByNr(rootNode, OperatorInfo.OPERATOR_TAG, i);
 				OperatorInfo info = new OperatorInfo(node);
 				infos.put(info.getName(), info);
 
@@ -274,7 +274,7 @@ public class Operator implements Comparable<Operator> {
 			if (right.isNull())
 				return right;
 
-			ValueType targetType = ValueType.valueOf((int) right.toInteger());
+			Type targetType = Type.valueOf((int) right.toInteger());
 
 			return left.convertTo(targetType);
 		}
@@ -549,12 +549,18 @@ public class Operator implements Comparable<Operator> {
 
 	public Expression optimize(IExpressionContext context, Expression... operands) throws ExpressionException {
 		switch (kind) {
+
 		case MINUS_OPERATOR:
 		case LOGICAL_NOT_OPERATOR: {
 			Expression operand = operands[0].optimize(context);
 
 			if (operand.isConstant()) {
 				return eval(context, operand);
+			}
+			else if ( operand.is(this.kind) ) {
+				// Eliminate double NOT or MINUS
+				ExpressionCall call = (ExpressionCall) operand;
+				return call.getOperands()[0];
 			}
 
 			return new ExpressionCall(this, operand);
@@ -694,9 +700,8 @@ public class Operator implements Comparable<Operator> {
 
 		case MINUS_OPERATOR:  {
 			Expression[] operands = call.getOperands();
-			operands[0].unparse(writer, leftPrec, rightPrec);
-			writer.append(' ');
 			writer.append(this.getName());
+			operands[0].unparse(writer, leftPrec, rightPrec);
 			break;
 		}
 

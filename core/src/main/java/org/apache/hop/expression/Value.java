@@ -16,6 +16,8 @@ import org.apache.hop.expression.value.ValueString;
  * An value represents a boolean, numeric, string, date or timestamp constant,
  * or the value NULL.
  * 
+ * Value is an immutable type.
+ * 
  * @author Nicolas ADMENT
  *
  */
@@ -50,8 +52,6 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * Number literal value of 1.
 	 */
 	public static final Value ONE = new ValueInteger(1L);
-
-
 
 	/**
 	 * Get the boolean value for the given boolean.
@@ -92,6 +92,9 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueInteger(value);
 	}
 
+	/** 
+	 * Returns an integer Value that equals to {@code value}. 
+	 */
 	public static Value of(Integer value) {
 		if (value == null)
 			return Value.NULL;
@@ -103,6 +106,9 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueInteger(value.longValue());
 	}
 
+	/** 
+	 * Returns an big number Value that equals to {@code value}. 
+	 */
 	public static Value of(BigDecimal value) {
 		if (value == null)
 			return Value.NULL;
@@ -114,6 +120,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueBigNumber(value);
 	}
 
+	
 	public static Value of(Double value) {
 		if (value == null || value.isNaN())
 			return Value.NULL;
@@ -125,6 +132,9 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueNumber(value);
 	}
 
+	/** 
+	 * Returns an string Value that equals to {@code value}. 
+	 */
 	public static Value of(String value) {
 		if (value == null)
 			return Value.NULL;
@@ -137,21 +147,24 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueDate(value);
 	}
 
+	public Kind getKind() {
+		return Kind.VALUE;
+	}
+
 	/**
 	 * Returns the type of this Value
 	 *
 	 * @return the type of this Value
 	 */
-	public abstract ValueType getType();
+	public abstract Type getType();
 
-	
 	/**
 	 * Returns the value object
 	 *
 	 * @return the value object
 	 */
 	public abstract Object getObject();
-	
+
 	/**
 	 * Compare this value against another value of the same data type.
 	 *
@@ -199,7 +212,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 *
 	 * @return the converted value
 	 */
-	public Value convertTo(final ValueType targetType) {
+	public Value convertTo(final Type targetType) {
 
 		if (this.getType() == targetType)
 			return this;
@@ -264,7 +277,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if the value is a String.
 	 */
 	public boolean isString() {
-		return this.getType() == ValueType.STRING;
+		return this.getType() == Type.STRING;
 	}
 
 	/**
@@ -283,7 +296,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value has type boolean.
 	 */
 	public boolean isBoolean() {
-		return this.getType() == ValueType.BOOLEAN;
+		return this.getType() == Type.BOOLEAN;
 	}
 
 	/**
@@ -292,7 +305,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value is an integer
 	 */
 	public boolean isInteger() {
-		return this.getType() == ValueType.INTEGER;
+		return this.getType() == Type.INTEGER;
 	}
 
 	/**
@@ -301,7 +314,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true is this value is a number
 	 */
 	public boolean isNumber() {
-		return this.getType() == ValueType.NUMBER;
+		return this.getType() == Type.NUMBER;
 	}
 
 	/**
@@ -310,7 +323,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true is this value is a big number
 	 */
 	public boolean isBigNumber() {
-		return this.getType() == ValueType.BIGNUMBER;
+		return this.getType() == Type.BIGNUMBER;
 	}
 
 	/**
@@ -319,7 +332,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if the value is a Date
 	 */
 	public boolean isDate() {
-		return this.getType() == ValueType.DATE;
+		return this.getType() == Type.DATE;
 	}
 
 	/**
@@ -328,7 +341,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value has type Binary
 	 */
 	public boolean isBinary() {
-		return this.getType() == ValueType.BINARY;
+		return this.getType() == Type.BINARY;
 	}
 
 	/**
@@ -442,7 +455,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @param targetType Target data type.
 	 * @return instance of the ExpressionException.
 	 */
-	protected final ExpressionException createDataConversionError(ValueType targetType) {
+	protected final ExpressionException createDataConversionError(Type targetType) {
 		return new ExpressionException("Error converting {0} value {2} to type {1}", this.getType(), targetType, this);
 	}
 

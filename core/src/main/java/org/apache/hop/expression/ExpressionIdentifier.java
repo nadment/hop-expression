@@ -12,6 +12,10 @@ public class ExpressionIdentifier extends Expression {
 		this.name = name;
 	}
 
+	public Kind getKind() {
+		return Kind.IDENTIFIER;
+	}
+	
 	public String getName() {
 		return name;
 	}

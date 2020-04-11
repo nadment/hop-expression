@@ -25,7 +25,7 @@ import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
-import org.apache.hop.core.exception.HopXMLException;
+import org.apache.hop.core.exception.HopXmlException;
 import org.apache.hop.core.injection.InjectionDeep;
 import org.apache.hop.core.injection.InjectionSupported;
 import org.apache.hop.core.row.IRowMeta;
@@ -33,8 +33,8 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.core.xml.XMLHandler;
-import org.apache.hop.expression.Expression;
+import org.apache.hop.core.xml.XmlHandler;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metastore.api.IMetaStore;
 import org.apache.hop.pipeline.Pipeline;
@@ -111,16 +111,16 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 	}
 
 	@Override
-	public String getXML() throws HopValueException {
+	public String getXml() throws HopValueException {
 
 		StringBuilder xml = new StringBuilder(500);
 
 		xml.append("<fields>");
 		for (ExpressionField value : this.getExpressionValues()) {
 			xml.append("<field>");
-			xml.append(XMLHandler.addTagValue(TAG_FIELD_NAME, value.getName()));
-			xml.append(XMLHandler.addTagValue(TAG_FIELD_EXPRESSION, value.getExpression()));
-			xml.append(XMLHandler.addTagValue(TAG_FIELD_TYPE, ValueMetaFactory.getValueMetaName(value.getType())));
+			xml.append(XmlHandler.addTagValue(TAG_FIELD_NAME, value.getName()));
+			xml.append(XmlHandler.addTagValue(TAG_FIELD_EXPRESSION, value.getExpression()));
+			xml.append(XmlHandler.addTagValue(TAG_FIELD_TYPE, ValueMetaFactory.getValueMetaName(value.getType())));
 			xml.append("</field>");
 		}
 		xml.append("</fields>");
@@ -129,25 +129,25 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 	}
 
 	@Override
-	public void loadXML(Node transformNode, IMetaStore metaStore) throws HopXMLException {
+	public void loadXml(Node transformNode, IMetaStore metaStore) throws HopXmlException {
 
 		try {
-			Node nodes = XMLHandler.getSubNode(transformNode, "fields");
-			int count = XMLHandler.countNodes(nodes, "field");
+			Node nodes = XmlHandler.getSubNode(transformNode, "fields");
+			int count = XmlHandler.countNodes(nodes, "field");
 
 			fields = new ArrayList<>(count);
 			for (int i = 0; i < count; i++) {
-				Node line = XMLHandler.getSubNodeByNr(nodes, "field", i);
+				Node line = XmlHandler.getSubNodeByNr(nodes, "field", i);
 
 				ExpressionField value = new ExpressionField();
-				value.setName(Const.NVL(XMLHandler.getTagValue(line, TAG_FIELD_NAME), ""));
-				value.setExpression(Const.NVL(XMLHandler.getTagValue(line, TAG_FIELD_EXPRESSION), ""));
-				value.setType(XMLHandler.getTagValue(line, TAG_FIELD_TYPE));
+				value.setName(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_NAME), ""));
+				value.setExpression(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_EXPRESSION), ""));
+				value.setType(XmlHandler.getTagValue(line, TAG_FIELD_TYPE));
 
 				fields.add(value);
 			}
 		} catch (Exception e) {
-			throw new HopXMLException(
+			throw new HopXmlException(
 					BaseMessages.getString(PKG, "ExpressionMeta.Exception.UnableToReadXML"), e);
 		}
 
@@ -215,7 +215,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 		// Check expression
 		for (ExpressionField field : this.fields) {
 			try {
-				Expression.parse(field.getExpression());
+				ExpressionParser.parse(field.getExpression());
 			} catch (Exception e) {
 				remarks.add(new CheckResult(
 						ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,

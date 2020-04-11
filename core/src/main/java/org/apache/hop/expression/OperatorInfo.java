@@ -1,6 +1,6 @@
 package org.apache.hop.expression;
 
-import org.apache.hop.core.xml.XMLHandler;
+import org.apache.hop.core.xml.XmlHandler;
 import org.w3c.dom.Node;
 
 /**
@@ -48,13 +48,13 @@ import org.w3c.dom.Node;
 	}
 
 	public OperatorInfo(Node node) {
-		this.category = XMLHandler.getTagValue(node, CATEGORY_TAG);
-		this.name = XMLHandler.getTagValue(node, NAME_TAG);
-		this.description = XMLHandler.getTagValue(node, DESCRIPTION_TAG);
-		this.syntax = XMLHandler.getTagValue(node, SYNTAX_TAG);
-		this.returns = XMLHandler.getTagValue(node, RETURNS_TAG);
-		this.constraints = XMLHandler.getTagValue(node, "constraints");
-		this.semantics = XMLHandler.getTagValue(node, "semantics");
+		this.category = XmlHandler.getTagValue(node, CATEGORY_TAG);
+		this.name = XmlHandler.getTagValue(node, NAME_TAG);
+		this.description = XmlHandler.getTagValue(node, DESCRIPTION_TAG);
+		this.syntax = XmlHandler.getTagValue(node, SYNTAX_TAG);
+		this.returns = XmlHandler.getTagValue(node, RETURNS_TAG);
+		this.constraints = XmlHandler.getTagValue(node, "constraints");
+		this.semantics = XmlHandler.getTagValue(node, "semantics");
 
 		// this.functionExamples = new ArrayList<FunctionExample>();
 

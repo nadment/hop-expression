@@ -12,7 +12,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.ExpressionRegistry;
 import org.apache.hop.ui.expression.ExpressionProposal.Type;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -111,7 +111,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
 		System.out.println("list functions [" + qualifier + "] " + position);
 
-		for (Function function : OperatorRegistry.getFunctions()) {
+		for (Function function : ExpressionRegistry.getFunctions()) {
 			elements.add(new ExpressionProposal(Type.Function, function.getName(), function.getSyntax(),
 					function.getDescription()));
 

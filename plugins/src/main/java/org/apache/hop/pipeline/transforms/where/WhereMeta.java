@@ -25,13 +25,13 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.exception.HopValueException;
-import org.apache.hop.core.exception.HopXMLException;
+import org.apache.hop.core.exception.HopXmlException;
 import org.apache.hop.core.injection.Injection;
 import org.apache.hop.core.injection.InjectionSupported;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.core.xml.XMLHandler;
+import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metastore.api.IMetaStore;
 import org.apache.hop.pipeline.Pipeline;
@@ -120,29 +120,29 @@ public class WhereMeta extends BaseTransformMeta implements ITransformMeta<Where
 	}
 
 	@Override
-	public String getXML() throws HopValueException {
+	public String getXml() throws HopValueException {
 
 		StringBuilder xml = new StringBuilder(500);
 
-		xml.append(XMLHandler.addTagValue(TAG_EXPRESSION, expression));
+		xml.append(XmlHandler.addTagValue(TAG_EXPRESSION, expression));
 		// if (getTrueStepName() != null) {
-		xml.append(XMLHandler.addTagValue(TAG_SEND_TRUE_TO, getTrueTransformName()));
+		xml.append(XmlHandler.addTagValue(TAG_SEND_TRUE_TO, getTrueTransformName()));
 		// }
 		// if (getFalseStepName() != null) {
-		xml.append(XMLHandler.addTagValue(TAG_SEND_FALSE_TO, getFalseTransformName()));
+		xml.append(XmlHandler.addTagValue(TAG_SEND_FALSE_TO, getFalseTransformName()));
 		// }
 		return xml.toString();
 	}
 
 	@Override
-	public void loadXML(Node stepNode, IMetaStore metaStore) throws HopXMLException {
+	public void loadXml(Node stepNode, IMetaStore metaStore) throws HopXmlException {
 
 		try {
-			this.expression = XMLHandler.getTagValue(stepNode, TAG_EXPRESSION);
-			this.setTrueTransformName(XMLHandler.getTagValue(stepNode, TAG_SEND_TRUE_TO));
-			this.setFalseTransformName(XMLHandler.getTagValue(stepNode, TAG_SEND_FALSE_TO));
+			this.expression = XmlHandler.getTagValue(stepNode, TAG_EXPRESSION);
+			this.setTrueTransformName(XmlHandler.getTagValue(stepNode, TAG_SEND_TRUE_TO));
+			this.setFalseTransformName(XmlHandler.getTagValue(stepNode, TAG_SEND_FALSE_TO));
 		} catch (Exception e) {
-			throw new HopXMLException(BaseMessages.getString(PKG, "WhereMeta.Exception.UnableToReadStepInfoFromXML"),
+			throw new HopXmlException(BaseMessages.getString(PKG, "WhereMeta.Exception.UnableToReadStepInfoFromXML"),
 					e);
 		}
 	}

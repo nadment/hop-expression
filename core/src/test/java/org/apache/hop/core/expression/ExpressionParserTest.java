@@ -16,7 +16,7 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.Expression;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
@@ -26,7 +26,7 @@ import org.junit.Test;
 public class ExpressionParserTest {
 
 	protected Value eval(String source) throws Exception {		
-		IExpression expression = Expression.parse(source);
+		IExpression expression = ExpressionParser.parse(source);
 
 		IVariables variables = new Variables();
 		variables.setVariable("TEST", "12345");
@@ -38,14 +38,16 @@ public class ExpressionParserTest {
 		rowMeta.addValueMeta(new ValueMetaDate("DN"));
 		rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
 		rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
+		rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
 
-		Object[] row = new Object[6];
+		Object[] row = new Object[7];
 		row[0] = "TEST";
 		row[1] = "F";
 		row[2] = 40L;
 		row[3] = new Date();
 		row[4] = true;
 		row[5] = null;
+		row[6] = 2020L;
 
 		RowExpressionContext evaluator = new RowExpressionContext(rowMeta);
 		evaluator.setRow(row);
@@ -66,7 +68,7 @@ public class ExpressionParserTest {
 	}
 
 	protected void evalEquals(String e, String expected) throws Exception {
-		assertEquals(expected, eval(e));
+		assertEquals(expected, eval(e).toString());
 	}
 
 	protected void evalEquals(String e, Long expected) throws Exception {
@@ -94,13 +96,23 @@ public class ExpressionParserTest {
 	}
 
 	@Test
+	public void testComment() throws Exception {
+		//evalTrue(" // Test \n  true ");
+		//evalTrue(" /** Test */  true ");
+		evalTrue("/**\n * Comment on multi line\n *\n */	True");
+	}
+	
+	
+	//@Test
 	public void TEST() throws Exception {
 		// evaluateEquals("Add_Months(Date '2019-01-15',1)", LocalDate.of(2019,
 		// Month.FEBRUARY,15));
 		// evaluateEquals("CONCAT('TES','T')","TEST");
-		// evaluateTrue("CONTAINS(NOM,'ES')");
+		evalEquals("Lower([NOM]) || 'XX'","testXX");
+		evalTrue("CONTAINS([NOM],'ES')");
 		// evaluateTrue("NOM =~ 'ES'");
-		// evaluateEquals("30/(2)",15);
+		evalEquals("1 + [Year]/(2)",1011);
+		evalEquals("30/(2)",15);
 		//evalEquals("10**2", 100);
 		//evalEquals("Pi()", Math.PI);
 		//evalTrue("2.000 = 2.00");

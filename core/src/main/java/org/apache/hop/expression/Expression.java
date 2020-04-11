@@ -11,10 +11,11 @@ import java.io.StringWriter;
  */
 public abstract class Expression implements IExpression {
 
-	public static Expression parse(String source) throws ExpressionException {
-		ExpressionParser parser = new ExpressionParser(source);
 
-		return parser.parse();
+	public abstract Kind getKind();
+	
+	public boolean is(Kind kind) {
+		return this.getKind()==kind;
 	}
 
 	/**
@@ -44,6 +45,26 @@ public abstract class Expression implements IExpression {
 		return this;
 	}
 
+    /* If leftOperand is an OrNode, then we modify the tree from:
+    *
+    *                              Or1 
+    *                           /      \
+    *                      Or2              Nodex
+    *                   /      \                ...
+    *              left2        right2
+    *
+    *      to:
+    *
+    *                                    Or1 
+    *                                 /      \
+    *   changeToCNF(left2)          Or2
+    *                           /        \
+    *              changeToCNF(right2)  changeToCNF(Nodex)
+    *
+    *  NOTE: We could easily switch places between changeToCNF(left2) and 
+    *  changeToCNF(right2).
+    */	
+	
 	/**
 	 * Appends this expression statement to the specified writer. This may not
 	 * always be the original expression statement, specially after optimization.

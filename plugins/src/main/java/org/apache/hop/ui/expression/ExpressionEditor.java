@@ -11,7 +11,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.ExpressionRegistry;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUI;
@@ -122,13 +122,12 @@ public class ExpressionEditor extends SashForm {
 				if (item != null && item.getData()!= null) {
 					event.doit = true;
 				}
-
-				event.doit = false;
+				else event.doit = false;
 			}
 
 			public void dragSetData(DragSourceEvent event) {
 				// Set the data to be the first selected item's text
-				event.data = tree.getSelection()[0].getText();
+				event.data = tree.getSelection()[0].getData();
 			}
 		});
 
@@ -151,7 +150,7 @@ public class ExpressionEditor extends SashForm {
 		}
 
 		// Create item operator
-		for (Operator operator : OperatorRegistry.getOperators()) {
+		for (Operator operator : ExpressionRegistry.getOperators()) {
 
 			TreeItem parentItem = items.get(operator.getCategory());
 
@@ -161,11 +160,11 @@ public class ExpressionEditor extends SashForm {
 			else
 				item = new TreeItem(parentItem, SWT.NULL);
 			item.setText(operator.getName());
-			item.setData(operator);
+			item.setData(operator.getName());
 		}
 
 		// Create item functions
-		for (Function function : OperatorRegistry.getFunctions()) {
+		for (Function function : ExpressionRegistry.getFunctions()) {
 			TreeItem parentItem = items.get(function.getCategory());			
 			TreeItem item;		
 			if (parentItem == null)
@@ -174,7 +173,7 @@ public class ExpressionEditor extends SashForm {
 				item = new TreeItem(parentItem, SWT.NULL);
 			item.setImage(labelProvider.getImage(function));
 			item.setText(function.getName());
-			item.setData(function);
+			item.setData(function.getName());
 		}
 
 		treeItemVariable = new TreeItem(tree, SWT.NULL);
@@ -218,14 +217,13 @@ public class ExpressionEditor extends SashForm {
 			for (String name : names) {
 				boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(name);
 
-				String content = "${" + name + '}';
-				// String description = (isDeprecated) ? Const.getDeprecatedPrefix() : null;
+				String data = "${" + name + '}';
 
 				TreeItem item = new TreeItem(treeItemVariable, SWT.NULL);
 				item.setImage(labelProvider.getImage(name));
 				item.setText(name);
 				item.setGrayed(isDeprecated);
-				item.setData(content);
+				item.setData(data);
 			}
 		}
 	}
@@ -245,11 +243,17 @@ public class ExpressionEditor extends SashForm {
 
 				for (int i = 0; i < rowMeta.size(); i++) {
 					IValueMeta valueMeta = rowMeta.getValueMeta(i);
-
+					
+					// Escape field name matching reserved words or function
+					String name = valueMeta.getName();
+					if ( ExpressionRegistry.getReservedWords().contains(name.toUpperCase()) || ExpressionRegistry.getFunction(name)!=null ) {
+						name = '['+name+']';
+					} 
+					
 					TreeItem item = new TreeItem(treeItemField, SWT.NULL);
 					item.setImage(labelProvider.getImage(valueMeta));
 					item.setText(valueMeta.getName());
-					item.setData(valueMeta);
+					item.setData(name);
 				}
 			});
 		}

@@ -8,7 +8,7 @@ import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
-import org.apache.hop.expression.Expression;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
@@ -23,7 +23,7 @@ public class ExpressionPerformance {
 		long cycle = 1000000;
 		long startTime = System.currentTimeMillis();
 
-		IExpression expression = Expression.parse("NOM||left(to_char(AGE+5,'000'),2)");
+		IExpression expression = ExpressionParser.parse("NOM||left(to_char(AGE+5,'000'),2)");
 
 		IRowMeta rowMeta = new RowMeta();
 		rowMeta.addValueMeta(new ValueMetaString("NOM"));
@@ -41,12 +41,12 @@ public class ExpressionPerformance {
 		row[4] = true;
 		row[5] = null;
 
-		RowExpressionContext evaluator = new RowExpressionContext(rowMeta);
-		evaluator.setRow(row);
+		RowExpressionContext context = new RowExpressionContext(rowMeta);
+		context.setRow(row);
 		System.out.println(expression.toString());
 
 		for (long i = cycle; i > 0; i--) {
-			Value result = expression.eval(evaluator);
+			Value result = expression.eval(context);
 		}
 
 		long endTime = System.currentTimeMillis();

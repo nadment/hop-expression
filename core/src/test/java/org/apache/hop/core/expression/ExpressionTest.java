@@ -17,7 +17,7 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.Expression;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
@@ -28,7 +28,7 @@ public class ExpressionTest {
 
 	protected Value eval(String e) throws Exception {
 		
-		IExpression expression = Expression.parse(e);
+		IExpression expression = ExpressionParser.parse(e);
 
 		IVariables variables = new Variables();
 		variables.setVariable("TEST", "12345");

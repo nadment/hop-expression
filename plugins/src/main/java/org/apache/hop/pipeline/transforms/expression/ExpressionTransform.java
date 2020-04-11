@@ -25,10 +25,11 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
-import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.Type;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -39,18 +40,43 @@ import org.apache.hop.pipeline.transform.TransformMeta;
  * @author Nicolas ADMENT
  */
 
-public class ExpressionTransform extends BaseTransform<ExpressionMeta,ExpressionData> {
+public class ExpressionTransform extends BaseTransform<ExpressionMeta, ExpressionData> {
 
 	private static final Class<?> PKG = ExpressionMeta.class;
 
-	private HashMap<ValueType, IValueMeta> valueMetaByType = new HashMap<>(8);
+	private HashMap<Type, IValueMeta> valueMetaByType = new HashMap<>(8);
 
-	public ExpressionTransform(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data, int copyNr, PipelineMeta pipelineMeta,
-			Pipeline pipeline) {
+	public ExpressionTransform(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data, int copyNr,
+			PipelineMeta pipelineMeta, Pipeline pipeline) {
 		super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
 	}
 
+	@Override
+	public boolean init() {
 
+		if (super.init()) {
+			try {
+
+				// Value meta conversion
+				valueMetaByType.put(Type.BOOLEAN, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_BOOLEAN));
+				valueMetaByType.put(Type.INTEGER, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_INTEGER));
+				valueMetaByType.put(Type.STRING, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_STRING));
+				valueMetaByType.put(Type.DATE, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_DATE));
+				valueMetaByType.put(Type.BINARY, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_BINARY));
+				valueMetaByType.put(Type.NUMBER, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_NUMBER));
+				valueMetaByType.put(Type.BIGNUMBER, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_BIGNUMBER));		
+				
+				return true;
+			} catch (HopException e) {
+				logError(BaseMessages.getString(PKG, "ExpressionTransform.Exception.ErrorOccurred") + e.getMessage());
+				setErrors(1);
+				stopAll();
+			}
+		}
+
+		return false;
+	}
+	
 	@Override
 	public boolean processRow() throws HopException {
 
@@ -75,33 +101,34 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta,Expression
 			}
 
 			first = false;
-
-			// Value meta conversion
-			valueMetaByType.put(ValueType.BOOLEAN, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_BOOLEAN));
-			valueMetaByType.put(ValueType.INTEGER, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_INTEGER));
-			valueMetaByType.put(ValueType.STRING, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_STRING));
-			valueMetaByType.put(ValueType.DATE, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_DATE));
-			valueMetaByType.put(ValueType.BINARY, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_BINARY));
-			valueMetaByType.put(ValueType.NUMBER, ValueMetaFactory.createValueMeta(IValueMeta.TYPE_NUMBER));
-			valueMetaByType.put(ValueType.BIGNUMBER,	ValueMetaFactory.createValueMeta(IValueMeta.TYPE_BIGNUMBER));
-
+			
+			
 			// Clone the input row structure and place it in our data object
 			data.outputRowMeta = getInputRowMeta().clone();
 
-				
 			// Use meta.getFields() to change it, so it reflects the output row structure
 			meta.getFields(data.outputRowMeta, this.getTransformName(), null, null, this, null);
 			data.expressions = new Expression[data.outputRowMeta.size()];
-						
+
 			RowExpressionContext context = new RowExpressionContext(getInputRowMeta());
 			data.expressionContext = context;
-			
-			// Parse field expression
+
+			// For all fields expression
 			for (ExpressionField field : meta.getExpressionValues()) {
 				int index = data.outputRowMeta.indexOfValue(field.getName());
-				Expression expression = Expression.parse(field.getExpression());
+
+				// Substitute variable
+				String e = field.getExpression();
+				String source = environmentSubstitute(e);
+
+		        if ( log.isDetailed() ) {
+		            logDetailed( "field [" + field.getName() + "] has expression [" + source + "]" );
+		        }
+				
+				// Parse and optimize expression
+				Expression expression = ExpressionParser.parse(source);
 				data.expressions[index] = expression.optimize(context);
-			}
+			}			
 		}
 
 		// Copies row into outputRowValues and pads extra null-default slots for the
@@ -120,10 +147,14 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta,Expression
 				IExpression expression = data.expressions[index];
 
 				// Evaluate expression
-				RowExpressionContext context = data.expressionContext; 
+				RowExpressionContext context = data.expressionContext;
 				context.setRow(row);
 				value = expression.eval(context);
 
+		        if ( log.isDetailed() ) {
+		            logDetailed( "field [" + field.getName() + "] has expression [" + value + "]" );
+		        }
+				
 				IValueMeta vm = valueMetaByType.get(value.getType());
 
 				outputRowValues[index] = valueMeta.convertData(vm, value.getObject());
@@ -131,8 +162,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta,Expression
 				logError(BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError"));
 				throw e;
 			} catch (HopValueException e) {
-				logError(BaseMessages.getString(PKG, "ExpressionTransform.Exception.DataIncompatibleError", String.valueOf(value),
-						valueMeta));
+				logError(BaseMessages.getString(PKG, "ExpressionTransform.Exception.DataIncompatibleError",
+						String.valueOf(value), valueMeta));
 				throw e;
 			}
 		}
@@ -150,4 +181,5 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta,Expression
 		// indicate that processRow() should be called again
 		return true;
 	}
+
 }

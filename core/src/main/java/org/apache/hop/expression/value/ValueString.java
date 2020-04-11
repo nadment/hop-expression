@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import org.apache.hop.expression.ValueType;
+import org.apache.hop.expression.Type;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
@@ -21,8 +21,8 @@ public class ValueString extends Value {
 	}
 
 	@Override
-	public ValueType getType() {
-		return ValueType.STRING;
+	public Type getType() {
+		return Type.STRING;
 	}
 
 	@Override

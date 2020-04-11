@@ -133,7 +133,7 @@ public abstract class AbstractTransformDialog<META extends ITransformMeta<?,?>> 
 
 				baseTransformMeta.setChanged();
 
-				wOK.setEnabled(isValid());
+				wOk.setEnabled(isValid());
 			}
 		});
 
@@ -190,11 +190,11 @@ public abstract class AbstractTransformDialog<META extends ITransformMeta<?,?>> 
 			}
 		});
 
-		wOK = new Button(parent, SWT.PUSH);
-		wOK.setText(BaseMessages.getString("System.Button.OK"));
+		wOk = new Button(parent, SWT.PUSH);
+		wOk.setText(BaseMessages.getString("System.Button.OK"));
 //    wOK.setLayoutData(new FormDataBuilder().bottom().right(wCancel, -ConstUI.SMALL_MARGIN).width(BUTTON_WIDTH).result());
-		wOK.setLayoutData(new FormDataBuilder().bottom().right(wCancel, -ConstUI.SMALL_MARGIN).result());
-		wOK.addListener(SWT.Selection, new Listener() {
+		wOk.setLayoutData(new FormDataBuilder().bottom().right(wCancel, -ConstUI.SMALL_MARGIN).result());
+		wOk.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
 				onOkPressed();
@@ -252,7 +252,7 @@ public abstract class AbstractTransformDialog<META extends ITransformMeta<?,?>> 
 			public void modifyText(ModifyEvent e) {
 				baseTransformMeta.setChanged();
 
-				wOK.setEnabled(isValid());
+				wOk.setEnabled(isValid());
 			}
 		};
 

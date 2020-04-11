@@ -5,6 +5,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.ui.core.gui.GUIResource;
 import org.apache.hop.ui.util.ImageUtil;
+import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -27,15 +28,23 @@ public class ExpressionLabelProvider implements ILabelProvider {
 		super();
 
 		imgOperator = GUIResource.getInstance().getImageInject();
-		imgBoolean = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Boolean.png"); //$NON-NLS-1$
-		imgString = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "String.png"); //$NON-NLS-1$
-		imgNumber = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Number.png"); //$NON-NLS-1$
-		imgDate = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Date.png"); //$NON-NLS-1$
-		imgBinary = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Binary.png"); //$NON-NLS-1$
-		imgInet = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Inet.png"); //$NON-NLS-1$
-		imgFunction = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Function.png"); //$NON-NLS-1$
+		imgString = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "String.svg", 16, 16); //$NON-NLS-1$
+		imgBoolean = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Boolean.svg", 16, 16); //$NON-NLS-1$
+		imgNumber = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Number.svg", 16, 16); //$NON-NLS-1$
+		imgDate = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Date.svg", 16, 16); //$NON-NLS-1$
+		imgBinary = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Binary.svg", 16, 16); //$NON-NLS-1$
+		imgInet = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Inet.svg", 16, 16); //$NON-NLS-1$
+		imgFunction = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Function.svg", 16, 16); //$NON-NLS-1$
+
+//		imgBoolean = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Boolean.png"); //$NON-NLS-1$
+//		imgNumber = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Number.png"); //$NON-NLS-1$
+//		imgDate = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Date.png"); //$NON-NLS-1$
+//		imgBinary = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Binary.png"); //$NON-NLS-1$
+//		imgInet = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Inet.png"); //$NON-NLS-1$
+//		imgFunction = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Function.png"); //$NON-NLS-1$
 		imgVariable = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Variable.png"); //$NON-NLS-1$
-		imgVariableDeprecated = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "VariableDeprecated.png"); //$NON-NLS-1$
+		imgVariableDeprecated = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(),
+				"VariableDeprecated.png"); //$NON-NLS-1$
 	}
 
 	@Override

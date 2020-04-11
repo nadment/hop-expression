@@ -26,7 +26,7 @@ public class ExpressionParser {
 	 * Enumerates the possible types of {@link Token}.
 	 */
 
-	private enum Id {
+	private static enum Id {
 		/**
 		 * Expression not covered by any other {@link Token} value.
 		 */
@@ -277,7 +277,7 @@ public class ExpressionParser {
 		/**
 		 * Expression keywords.
 		 */
-		public static final Set<Id> KEYWORDS = EnumSet.of(AND, AS, BETWEEN, CASE, CAST, DATE, ELSE, END, ESCAPE, FALSE,
+		private static final Set<Id> KEYWORDS = EnumSet.of(AND, AS, BETWEEN, CASE, CAST, DATE, ELSE, END, ESCAPE, FALSE,
 				IN, IS, LIKE, NOT, NULL, TRUE, OR, TIMESTAMP, THEN, WHEN, XOR);
 
 		public static final Set<Id> VALUE_TYPES = EnumSet.of(INTEGER, BOOLEAN, NUMBER, BIGNUMBER, STRING, BINARY);
@@ -409,6 +409,12 @@ public class ExpressionParser {
 	private List<Token> tokens = new ArrayList<>();
 	private int index = 0;
 
+	public static Expression parse(String source) throws ExpressionException {
+		ExpressionParser parser = new ExpressionParser(source);
+
+		return parser.parse();
+	}
+	
 	protected ExpressionParser(String source) {
 		super();
 		this.source = source.trim();
@@ -573,13 +579,9 @@ public class ExpressionParser {
 
 						while (pos < source.length()) {
 							c = source.charAt(pos);
-							switch (c) {
-							case '\r':
-							case '\n':
+							if (c=='\r' || c=='\n')
 								break;
-							default:
-								pos++;
-							}
+							pos++;
 						}
 
 						return new Token(Id.COMMENT, start);
@@ -611,6 +613,24 @@ public class ExpressionParser {
 
 				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
 
+			// Escape field name matching reserved words
+			case '[': {
+				start = ++pos;
+									
+				while (pos < source.length() ) {
+					c = source.charAt(++pos);
+					if ( !Characters.isAlphaOrDigit(c) ) {
+						break;
+					}					
+				}
+				
+				if ( c!= ']' ) 
+					throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
+				
+				String name = source.substring(start, pos++).toUpperCase();				
+				return new Token(Id.IDENTIFIER, start, name);
+			}
+				
 			case '0':
 			case '1':
 			case '2':
@@ -734,7 +754,7 @@ public class ExpressionParser {
 
 					}
 
-					if (OperatorRegistry.getFunction(name) != null) {
+					if (ExpressionRegistry.getFunction(name) != null) {
 						return new Token(Id.FUNCTION, start, name);
 					}
 
@@ -795,6 +815,8 @@ public class ExpressionParser {
 
 		// Tokenize
 		for (Token token = tokenize(); token != null; token = tokenize()) {
+			
+			if ( token.is(Id.COMMENT) ) continue;
 			tokens.add(token);
 		}
 
@@ -1016,7 +1038,7 @@ public class ExpressionParser {
 			case IDENTIFIER:
 				return new ExpressionIdentifier(token.getText());
 			case FUNCTION:
-				Function function = OperatorRegistry.getFunction(token.getText());
+				Function function = ExpressionRegistry.getFunction(token.getText());
 				List<Expression> params = new ArrayList<>();
 
 				token = next();
@@ -1304,7 +1326,7 @@ public class ExpressionParser {
 		}
 
 		Token token = next();
-		ValueType dataType = ValueType.valueOf(token.getText());
+		Type type = Type.valueOf(token.getText());
 
 		if (!next(Id.RPARENTHESIS)) {
 			throw new ExpressionParserException("ExpressionException.MissingRightParenthesis", source,
@@ -1312,7 +1334,7 @@ public class ExpressionParser {
 		}
 
 		// Use Enum.ordinal as argument for performance
-		return new ExpressionCall(Operator.CAST, expression, Value.of(dataType.ordinal()));
+		return new ExpressionCall(Operator.CAST, expression, Value.of(type.ordinal()));
 	}
 
 	/**

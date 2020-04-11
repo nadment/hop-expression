@@ -30,6 +30,11 @@ public class ToChar {
 	private static final String[] ROMAN_NUMERALS = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV",
 			"I" };
 
+	
+	private ToChar() {
+		// Utility class
+	}
+	
 	/**
 	 * Emulates Oracle's TO_CHAR(number) function.
 	 *
@@ -38,7 +43,7 @@ public class ToChar {
 	 * <th>
 	 * <td>Input</td>
 	 * <td>Output</td>
-	 * <td>Closest {@link DecimalFormat} Equivalent</td></th>
+	 * </th>
 	 * <tr>
 	 * <td>,</td>
 	 * <td>Grouping separator.</td>
@@ -145,12 +150,11 @@ public class ToChar {
 	 * documentation.
 	 *
 	 * @param number   the number to format
-	 * @param format   the format pattern to use (if any)
-	 * @param nlsParam the NLS parameter (if any)
+	 * @param format   the format pattern to use (if any)	 * 
 	 * @return the formatted number
 	 */
 	@SuppressWarnings("unused")
-	public static String toChar(BigDecimal number, String format, String nlsParam) {
+	public static String toChar(BigDecimal number, String format) {
 
 		// System.out.println("to_char(" + number + "," + format + ")");
 
@@ -879,10 +883,9 @@ public class ToChar {
 	 *
 	 * @param value    the date-time value to format
 	 * @param format   the format pattern to use (if any)
-	 * @param nlsParam the NLS parameter (if any)
 	 * @return the formatted timestamp
 	 */
-	public static String toChar(LocalDateTime value, String format, @SuppressWarnings("unused") String nlsParam) {
+	public static String toChar(LocalDateTime value, String format) {
 
 		if (format == null) {
 			format = "DD-MON-YY HH.MI.SS.FF PM";

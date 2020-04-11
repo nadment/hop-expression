@@ -31,6 +31,11 @@ public class Characters {
 		}
 	}
 
+	/**
+	 * Determines if the specified character is a digit. 
+	 * @param ch
+	 * @return
+	 */
 	public static boolean isDigit(char ch) {
 		if (ch > 255) {
 			return false;
@@ -45,11 +50,29 @@ public class Characters {
 		return (FLAGS[ch] & IS_HEXDIGIT) != 0;
 	}
 
-	public static boolean isAlphabetic(char ch) {
+	/**
+	 * Determines if the specified character is alphabetic
+	 * 
+	 * @param ch 
+	 * @return
+	 */
+	public static boolean isAlpha(char ch) {
 		if (ch > 255) {
 			return false;
 		}
 		return (FLAGS[ch] & IS_ALPHA) != 0;
+	}
+	
+	/**
+	 * Determines if the specified character is alphabetic or digit 
+	 * @param ch
+	 * @return
+	 */
+	public static boolean isAlphaOrDigit(char ch) {
+		if (ch > 255) {
+			return false;
+		}
+		return (FLAGS[ch] & (IS_ALPHA|IS_DIGIT)) != 0;
 	}
 
 	public static boolean isExponentChar(char ch) {

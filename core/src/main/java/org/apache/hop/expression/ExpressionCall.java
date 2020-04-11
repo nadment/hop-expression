@@ -38,6 +38,11 @@ public class ExpressionCall extends Expression {
 		return operator.optimize(context, operands);
 	}
 
+	
+	public Kind getKind() {
+		return operator.kind;
+	}
+	
 	/**
 	 * Accessor to the operator
 	 *

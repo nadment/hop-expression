@@ -176,7 +176,7 @@ public class Function extends Operator {
 			min = 2;
 			max = 3;
 			break;
-		case IFF:
+		case IF:
 		case TRANSLATE:
 			min = 3;
 			max = 3;
@@ -592,7 +592,7 @@ public class Function extends Operator {
 			return Value.of(new String(Character.toChars(codePoint)));
 		}
 
-		case IFF: {
+		case IF: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return Value.NULL;
@@ -725,7 +725,7 @@ public class Function extends Operator {
 			if (value.isNull())
 				return value;
 
-			return value.convertTo(ValueType.BOOLEAN);
+			return value.convertTo(Type.BOOLEAN);
 		}
 
 		case TO_CHAR: {
@@ -740,15 +740,13 @@ public class Function extends Operator {
 					format = v.toString();
 			}
 
-			// TODO: to_char nlsParam
-			String nlsParam = null;
 			switch (value.getType()) {
 			case INTEGER:
 			case NUMBER:
 			case BIGNUMBER:
-				return Value.of(ToChar.toChar(value.toBigNumber(), format, nlsParam));
+				return Value.of(ToChar.toChar(value.toBigNumber(), format));
 			case DATE:
-				return Value.of(ToChar.toChar(value.toDate(), format, nlsParam));
+				return Value.of(ToChar.toChar(value.toDate(), format));
 			case STRING:
 				return value;
 			}
@@ -795,7 +793,7 @@ public class Function extends Operator {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			return Value.of(Soundex.getSoundex(value.toString()));
+			return Value.of(Soundex.soundex(value.toString()));
 		}
 
 		case LEFT: {

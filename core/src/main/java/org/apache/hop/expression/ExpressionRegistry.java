@@ -9,48 +9,32 @@ import java.util.TreeSet;
 
 import org.apache.hop.expression.Operator.Category;
 
-public class OperatorRegistry {
+public class ExpressionRegistry {
 
+	// TODO: Java 9 use unmodifiable Set.of()
+	private static final Set<String> KEYWORDS = Collections
+			.unmodifiableSet(new TreeSet<>(Arrays.asList("%", "+", "-", "*", "^", "/", "=", "<>", "!=", "<", "<=", ">",
+					">=", "(", ")", "[","]","||", "AS", "AND", "BETWEEN", "CASE", "CAST", "DATE", "ELSE", "END", "ESCAPE",
+					"FALSE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TRUE", "WHEN", "XOR")));
 
 	/**
 	 * Set of operators.
 	 */
 	/* TODO: Java 9 use unmodifiable Set.of(...) */
-	private static final Set<Operator> OPERATORS = Collections.unmodifiableSet(new TreeSet<>(Arrays.asList(
-			Operator.ADD,
-			Operator.CAST, 
-			Operator.SUBTRACT, 
-			Operator.MULTIPLY, 
-			Operator.DIVIDE, 
-			Operator.BITWISE_AND, 
-			Operator.BITWISE_OR,
-			//Operator.BITWISE_NOT,
-			Operator.BITWISE_XOR,
-			Operator.MODULUS,
-			Operator.EQUALS, 
-			Operator.GREATER_THAN, 
-			Operator.GREATER_THAN_OR_EQUAL, 
-			Operator.LESS_THAN,
-			Operator.LESS_THAN_OR_EQUAL,
-			Operator.LESS_THAN_OR_GREATER_THAN,
-			Operator.NOT_EQUALS, 
-			Operator.LOGICAL_AND, 
-			Operator.BETWEEN, 
-			Operator.CASE,
-			Operator.CONCAT, 
-			Operator.IN, 
-			Operator.IS, 
-			Operator.LIKE, 
-			Operator.LOGICAL_NOT, 
-			Operator.LOGICAL_OR, 
-			Operator.LOGICAL_XOR)));
-	
-	
+	private static final Set<Operator> OPERATORS = Collections
+			.unmodifiableSet(new TreeSet<>(Arrays.asList(Operator.ADD, Operator.CAST, Operator.SUBTRACT,
+					Operator.MULTIPLY, Operator.DIVIDE, Operator.BITWISE_AND, Operator.BITWISE_OR,
+					// Operator.BITWISE_NOT,
+					Operator.BITWISE_XOR, Operator.MODULUS, Operator.EQUALS, Operator.GREATER_THAN,
+					Operator.GREATER_THAN_OR_EQUAL, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL,
+					Operator.LESS_THAN_OR_GREATER_THAN, Operator.NOT_EQUALS, Operator.LOGICAL_AND, Operator.BETWEEN,
+					Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS, Operator.LIKE, Operator.LOGICAL_NOT,
+					Operator.LOGICAL_OR, Operator.LOGICAL_XOR)));
+
 	public static Set<Operator> getOperators() {
 		return OPERATORS;
 	}
-	
-	
+
 	/**
 	 * Set of functions or alias.
 	 */
@@ -74,10 +58,10 @@ public class OperatorRegistry {
 		addFunction(Kind.ATAN2, Category.Mathematical);
 		// addFunction(Kind.BIT_LENGTH);
 		// TODO: addFunction(Kind.BITGET, Category.Bitwise);
-		//addFunction(Kind.BITAND, Category.Bitwise);
-		//addFunction(Kind.BITNOT, Category.Bitwise);
-		//addFunction(Kind.BITOR, Category.Bitwise);
-		//addFunction(Kind.BITXOR, Category.Bitwise);
+		// addFunction(Kind.BITAND, Category.Bitwise);
+		// addFunction(Kind.BITNOT, Category.Bitwise);
+		// addFunction(Kind.BITOR, Category.Bitwise);
+		// addFunction(Kind.BITXOR, Category.Bitwise);
 		addFunction(Kind.CBRT, Category.Mathematical);
 		addFunction(Kind.CEIL, Category.Mathematical);
 		addFunction(Kind.CHR, Category.String);
@@ -87,7 +71,8 @@ public class OperatorRegistry {
 		addFunction(Kind.COSH, Category.Mathematical);
 		addFunction(Kind.COT, Category.Mathematical);
 		addFunction(Kind.CONTAINS, Category.Comparison);
-		addFunctionNotDeterministic(Kind.CURRENT_DATE, Category.Date); // Alias  "NOW", "CURRENT_DATE", "CURDATE", "SYSDATE", "TODAY");
+		addFunctionNotDeterministic(Kind.CURRENT_DATE, Category.Date); // Alias "NOW", "CURRENT_DATE", "CURDATE",
+																		// "SYSDATE", "TODAY");
 		addFunction(Kind.DAY_NAME, Category.Date); // "DAYNAME"
 		addFunction(Kind.DAY_OF_MONTH, Category.Date, "DAY", "DAY_OF_MONTH"); // "DAYOFMONTH"
 		addFunction(Kind.DAY_OF_WEEK, Category.Date, "DAY_OF_WEEK"); // "DAYOFWEEK"
@@ -100,7 +85,8 @@ public class OperatorRegistry {
 		addFunction(Kind.FLOOR, Category.Mathematical);
 		addFunction(Kind.GREATEST, Category.Conditional);
 		addFunction(Kind.HOUR, Category.Date);
-		addFunction(Kind.IFF, Category.Conditional);
+		addFunction(Kind.IF, Category.Conditional);
+		addFunction(Kind.IFNULL, Category.Conditional, "IFNULL", "NVL");
 		addFunction(Kind.INITCAP, Category.String);
 		addFunction(Kind.INSTR, Category.String);
 		addFunction(Kind.LAST_DAY, Category.Date);
@@ -109,7 +95,7 @@ public class OperatorRegistry {
 		addFunction(Kind.LENGTH, Category.String); // "LENGTH", "LEN", "CHAR_LENGTH");
 		addFunction(Kind.LN, Category.Mathematical);
 		addFunction(Kind.LOG10, Category.Mathematical);
-		addFunction(Kind.LOWER, Category.String); //, "LOWER", "LCASE");
+		addFunction(Kind.LOWER, Category.String); // , "LOWER", "LCASE");
 		addFunction(Kind.LPAD, Category.String);
 		addFunction(Kind.LTRIM, Category.String);
 		addFunction(Kind.MD5, Category.Cryptographic);
@@ -118,12 +104,11 @@ public class OperatorRegistry {
 		addFunction(Kind.MONTH, Category.Date);
 		addFunction(Kind.MONTH_NAME, Category.Date); // "MONTHNAME"
 		addFunction(Kind.NULLIF, Category.Conditional);
-		addFunction(Kind.IFNULL, Category.Conditional,"IFNULL","NVL");
 		// addFunction(Kind.OCTET_LENGTH);
 		addFunction(Kind.PI, Category.Mathematical);
 		addFunction(Kind.POWER, Category.Mathematical); // Alias POW
 		addFunction(Kind.QUARTER, Category.Date);
-		addFunction(Kind.UPPER, Category.String); //, "UPPER", "UCASE");
+		addFunction(Kind.UPPER, Category.String); // , "UPPER", "UCASE");
 		addFunction(Kind.RADIANS, Category.Mathematical);
 		addFunctionNotDeterministic(Kind.RAND, Category.Mathematical);
 		addFunction(Kind.REPEAT, Category.String);
@@ -148,7 +133,7 @@ public class OperatorRegistry {
 		addFunction(Kind.STRINGDECODE, Category.String);
 		addFunction(Kind.STRINGENCODE, Category.String);
 		addFunction(Kind.SUBSTR, Category.String, "SUBSTR", "SUBSTRING");
-		addFunction(Kind.TAN, Category.Mathematical);		
+		addFunction(Kind.TAN, Category.Mathematical);
 		addFunction(Kind.TANH, Category.Mathematical);
 		addFunction(Kind.TO_BOOLEAN, Category.Conversion);
 		addFunction(Kind.TO_CHAR, Category.Conversion);
@@ -163,7 +148,6 @@ public class OperatorRegistry {
 		addFunction(Kind.YEAR, Category.Date);
 	}
 
-
 	private static void addFunction(Kind kind, Category category) {
 		addFunction(kind, category, kind.name());
 	}
@@ -177,7 +161,7 @@ public class OperatorRegistry {
 	}
 
 	private static void addFunctionNotDeterministic(Kind kind, Category category) {
-		addFunctionNotDeterministic(kind, category,  kind.name());
+		addFunctionNotDeterministic(kind, category, kind.name());
 	}
 
 	private static void addFunctionNotDeterministic(Kind kind, Category category, String... alias) {
@@ -197,5 +181,18 @@ public class OperatorRegistry {
 			return null;
 
 		return FUNCTIONS_BY_NAME.get(name.toUpperCase());
+	}
+
+//	public static Operator getOperator(String name) {
+//		for (Operator operator : OPERATORS) {
+//			if ( operator.getName().equalsIgnoreCase(name) )
+//				return operator;
+//		}
+//		
+//		return null;
+//	}
+	
+	public static Set<String> getReservedWords() {
+		return KEYWORDS;
 	}
 }

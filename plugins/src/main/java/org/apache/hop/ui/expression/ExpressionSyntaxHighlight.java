@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import org.apache.hop.core.database.SqlScriptStatement;
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.ExpressionRegistry;
 import org.apache.hop.ui.core.gui.GUIResource;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineStyleEvent;
@@ -20,15 +20,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 
 public class ExpressionSyntaxHighlight implements LineStyleListener {
-	
-	static final String[] KEYWORDS = { "%", "+", "-", "*", "^", "/", "=", "<>", "!=", "<", "<=", ">", ">=", "(", ")",
-			"||", "AS", "AND", "BETWEEN", "CASE", "CAST", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "IN", "IS", "LIKE",
-			"NOT", "NULL", "OR", "THEN", "TRUE", "WHEN", "XOR" };
-// TODO: Java 9
-//	private static final Set<String> KEYWORDS = Set.of( "%", "+", "-", "*", "**", "/", "<", "<=", ">", ">=", "(", ")", "||", "AND", "BETWEEN", "CASE", "DATE", "ELSE",
-//			"END", "ESCAPE", "FALSE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TRUE", "WHEN" ,"XOR");
-
-	
+		
 	Scanner scanner = new Scanner();
 	int[] tokenColors;
 	Color[] colors;
@@ -279,13 +271,13 @@ public class ExpressionSyntaxHighlight implements LineStyleListener {
 		void initialize() {
 			fgKeys = new Hashtable<String, Integer>();
 			Integer k = new Integer(KEY);
-			for (String keyword : KEYWORDS) {
+			for (String keyword : ExpressionRegistry.getReservedWords()) {
 				fgKeys.put(keyword, k);
 			}
 
 			kfKeys = new Hashtable<String, Integer>();
 			Integer f = new Integer(FUNCTION);
-			for (Function function : OperatorRegistry.getFunctions()) {
+			for (Function function : ExpressionRegistry.getFunctions()) {
 				kfKeys.put(function.getName(), f);
 			}
 		}
@@ -317,7 +309,21 @@ public class ExpressionSyntaxHighlight implements LineStyleListener {
 								return COMMENT;
 							}
 						}
-					} else {
+					} 
+					if (c == '*') {
+						while (true) {
+							c = read();
+							if ((c == EOF) || (c == EOL)) {
+								unread(c);
+								return COMMENT;
+							}
+							else if ( c=='*' )	 {							
+								c = read();
+								if ( c=='/' ) return COMMENT;
+							}
+						}
+					}
+					else {
 						unread(c);
 					}
 					return OTHER;

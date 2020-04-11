@@ -9,7 +9,7 @@ package org.apache.hop.expression;
  * If values need to be converted to match the other operands data type, the
  * value with the lower order is converted to the value with the higher order.
  */
-public enum ValueType {
+public enum Type {
 	/**
 	 * A unknown data type
 	 */
@@ -50,9 +50,9 @@ public enum ValueType {
 	 */
 	BINARY;
 
-	private static final ValueType[] values = values();
+	private static final Type[] values = values();
 
-	public static ValueType valueOf(int ordinal) {
+	public static Type valueOf(int ordinal) {
 		return values[ordinal];
 	}
 }

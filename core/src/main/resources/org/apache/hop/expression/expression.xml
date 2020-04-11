@@ -895,11 +895,7 @@ If the start_position is negative, the INSTR function counts back start_position
 	<operator>
 		<name>EQUAL_NULL</name>
 		<category>Other</category>
-		<description>Compares whether two expressions are equal. The function
-			is NULL-safe, meaning it treats NULLs as known values for comparing
-			equality. Note that this is different from the EQUAL comparison
-			operator (=), which treats NULLs as unknown values.
-		</description>
+		<description>Compares whether two expressions are equal. The function is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator (=), which treats NULLs as unknown values.</description>
 		<syntax>{0}(expression,expression)</syntax>
 		<returns>Boolean</returns>
 		<constraints></constraints>

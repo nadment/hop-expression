@@ -21,7 +21,8 @@ public class OperatorTest extends ExpressionTest {
 	}
 
 	@Test
-	public void LitteralBigNumber() throws Exception {
+	public void LitteralBigNumber() throws Exception {		
+		evalEquals("-2.3E-2", new BigDecimal("-2.3E-2"));
 		evalEquals("12345678901234567890123456789012345678901234567890", new BigDecimal("12345678901234567890123456789012345678901234567890"));
 	}
 	
@@ -219,17 +220,18 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("10*(2+1)", 30);
 		evalEquals("30/(5+5)", 3);
 		evalEquals("42%(3+2)", 2);
+		evalEquals("1-2+3*4/5/6-7", (((1 - 2) + (((3 * 4) / 5) / 6)) - 7));
 		
 		evalEquals("Age-(10+3*10+50-2*25)", 0);
-		//evalEquals("10^2+5", 105);
-		//evalEquals("5+10^2", 105);
-		//evalEquals("3*10^2", 300);
-		//evalEquals("10^2*3", 300);
+		//evalEquals("10**2+5", 105);
+		//evalEquals("5+10**2", 105);
+		//evalEquals("3*10**2", 300);
+		//evalEquals("10**2*3", 300);
 		
 		// evalEquals("2*'1.23'",2.46); // TODO: Should be casted to number and not
 		// integer
-	}
-
+	}	
+	
 	@Test
 	public void Between() throws Exception {
 		evalTrue("3 between 1 and 5");

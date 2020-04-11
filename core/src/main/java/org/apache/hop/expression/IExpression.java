@@ -1,5 +1,12 @@
 package org.apache.hop.expression;
 
+/**
+ * An expression is a combination of one or more values, operators and functions
+ * that evaluate to a value.
+ * 
+ * @author Nicolas ADMENT
+ *
+ */
 public interface IExpression {
 	
 	//	/**
