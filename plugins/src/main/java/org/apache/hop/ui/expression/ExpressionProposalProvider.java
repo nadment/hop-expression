@@ -12,7 +12,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.ExpressionRegistry;
+import org.apache.hop.expression.Operator;
 import org.apache.hop.ui.expression.ExpressionProposal.Type;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -48,14 +48,16 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
 		int start = position;
 		while (start > 0) {
-			char ch = contents.charAt(start-1);
-			if (!Character.isAlphabetic(ch) && ch!='.' )
+			char ch = contents.charAt(start - 1);
+			if (!Character.isAlphabetic(ch) && ch != '.')
 				break;
 			start--;
 		}
 
-		if ( start>0 && contents.charAt(start-1)=='{' )  start--;
-		if ( start>0 && contents.charAt(start-1)=='$' )  start--;
+		if (start > 0 && contents.charAt(start - 1) == '{')
+			start--;
+		if (start > 0 && contents.charAt(start - 1) == '$')
+			start--;
 
 		qualifier = qualifier.substring(start, position);
 
@@ -65,14 +67,14 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
 		ArrayList<IContentProposal> list = new ArrayList<IContentProposal>();
 
-		if ( qualifier.length()>0 &&  qualifier.charAt(0) == '$')
+		if (qualifier.length() > 0 && qualifier.charAt(0) == '$')
 			this.buildVariableProposals(list, qualifier, position - start);
-		//else if (start > 2 && contents.charAt(start - 1) == '{')
+		// else if (start > 2 && contents.charAt(start - 1) == '{')
 //			this.buildVariableProposals(list, qualifier, position - start - 1);
 
 		else {
 			this.buildFieldProposals(list, qualifier, position - start);
-			this.buildFunctionProposals(list, qualifier, position - start);
+			this.buildOperatorProposals(list, qualifier, position - start);
 		}
 
 		System.out.println('\r');
@@ -84,17 +86,17 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 		System.out.println("list variables [" + qualifier + "] " + position);
 
 		if (variables != null) {
-			
+
 			String name = qualifier;
-			if ( name.startsWith("${") ) name = name.substring(2); 
-			else if ( name.startsWith("$") ) name = name.substring(1); 
-			 
-			
+			if (name.startsWith("${"))
+				name = name.substring(2);
+			else if (name.startsWith("$"))
+				name = name.substring(1);
+
 			for (String variable : variables.listVariables()) {
 				// Add to proposal if variable name start with the qualifier
-				
-				if (variable.length() >= name.length()
-						&& variable.substring(0, name.length()).equalsIgnoreCase(name)) {
+
+				if (variable.length() >= name.length() && variable.substring(0, name.length()).equalsIgnoreCase(name)) {
 					boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(variable);
 
 					String content = "${" + variable + '}';
@@ -107,22 +109,26 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 		}
 	}
 
-	protected void buildFunctionProposals(List<IContentProposal> list, String qualifier, int position) {
+	protected void buildOperatorProposals(List<IContentProposal> list, String qualifier, int position) {
 
-		System.out.println("list functions [" + qualifier + "] " + position);
+//		System.out.println("list operators [" + qualifier + "] " + position);
 
-		for (Function function : ExpressionRegistry.getFunctions()) {
-			elements.add(new ExpressionProposal(Type.Function, function.getName(), function.getSyntax(),
-					function.getDescription()));
+		for (Operator operator : Operator.getOperators()) {
 
-			String name = function.getName();
+			// Only function
+			if (operator instanceof Function) {
+				elements.add(new ExpressionProposal(Type.Function, operator.getName(), operator.getSyntax(),
+						operator.getDescription()));
 
-			// Add to proposal if function name start with the qualifier
-			if (name.length() >= qualifier.length()
-					&& name.substring(0, qualifier.length()).equalsIgnoreCase(qualifier)) {
+				String name = operator.getName();
 
-				list.add(new ExpressionProposal(Type.Function, name.substring(position), function.getSyntax(),
-						function));
+				// Add to proposal if function name start with the qualifier
+				if (name.length() >= qualifier.length()
+						&& name.substring(0, qualifier.length()).equalsIgnoreCase(qualifier)) {
+
+					list.add(new ExpressionProposal(Type.Function, name.substring(position), operator.getSyntax(),
+							operator));
+				}
 			}
 		}
 	}

@@ -9,351 +9,16 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.ExpressionToken.Id;
 import org.apache.hop.expression.util.Characters;
 
 public class ExpressionParser {
-
-	/**
-	 * Enumerates the possible types of {@link Token}.
-	 */
-
-	private static enum Id {
-		/**
-		 * Expression not covered by any other {@link Token} value.
-		 */
-		OTHER,
-
-		AS,
-
-		/**
-		 * The bitwise AND operator "&".
-		 */
-		BITWISE_AND("&"),
-
-		/**
-		 * The bitwise NOT operator "~".
-		 */
-		BITWISE_NOT("~"),
-
-		/**
-		 * The bitwise OR operator "|".
-		 */
-		BITWISE_OR("|"),
-
-		/**
-		 * The bitwise exclusive OR operator "^".
-		 */
-		BITWISE_XOR("^"),
-
-		/**
-		 * Case when operator
-		 */
-		CASE,
-
-		CAST,
-
-		/**
-		 * Concat operator <code>||<code>
-		 */
-		CONCAT("||"),
-
-		/**
-		 * Contains operator <code>=~<code>
-		 */
-		CONTAINS("=~"),
-
-		/**
-		 * Comment
-		 */
-		COMMENT,
-
-		/**
-		 * Comma separator
-		 */
-		COMMA(","),
-
-		/**
-		 * Left parenthesis
-		 */
-		LPARENTHESIS("("),
-
-		/**
-		 * Right parenthesis
-		 */
-		RPARENTHESIS(")"),
-
-		/**
-		 * Literal integer.
-		 */
-		INTEGER,
-
-		/**
-		 * Literal number.
-		 */
-		NUMBER,
-
-		/** Literal hex number */
-		HEX,
-
-		/**
-		 * Identifier
-		 */
-		IDENTIFIER,
-
-		/**
-		 * Function
-		 */
-		FUNCTION,
-
-		/**
-		 * Literal string.
-		 */
-		STRING,
-
-		/**
-		 * The arithmetic division operator, "/".
-		 */
-		DIVIDE("/"),
-
-		/**
-		 * The arithmetic multiplication operator, "*".
-		 */
-		MULTIPLY("*"),
-
-		/**
-		 * ESCAPE keyword for like operator
-		 */
-		ESCAPE,
-
-		/**
-		 * The arithmetic power operator, "**".
-		 */
-		POWER("**"),
-
-		/**
-		 * The arithmetic remainder operator, "MOD" (and "%" in some dialects).
-		 */
-		MODULUS("%"),
-
-		/**
-		 * The arithmetic unary plus (positive) operator "+".
-		 */
-		PLUS("+"),
-
-		/**
-		 * The arithmetic unary minus (negative) operator "-".
-		 */
-		MINUS("-"),
-
-		/**
-		 * The arithmetic addition operator "+".
-		 */
-		ADD("+"),
-
-		/**
-		 * The arithmetic subtract operator "-".
-		 */
-		SUBTRACT("-"),
-
-		/**
-		 * The "IN" operator.
-		 */
-		IN,
-
-		/**
-		 * The "BETWEEN" operator.
-		 */
-		BETWEEN,
-
-		/**
-		 * The less-than operator "&lt;".
-		 */
-		LESS_THAN("<"),
-
-		/**
-		 * The greater-than operator "&gt;".
-		 */
-		GREATER_THAN(">"),
-
-		/**
-		 * The less-than-or-equal operator "&lt;=".
-		 */
-		LESS_THAN_OR_EQUAL("<="),
-		
-		LESS_THAN_OR_GREATER_THAN("<>"),
-
-		/**
-		 * The greater-than-or-equal operator "&gt;=".
-		 */
-		GREATER_THAN_OR_EQUAL(">="),
-
-		/**
-		 * The equals operator "=".
-		 */
-		EQUAL("="),
-
-		/**
-		 * Compares whether two expressions are equal.
-		 * 
-		 * The function is NULL-safe, meaning it treats NULLs as known values for
-		 * comparing equality. Note that this is different from the EQUAL comparison
-		 * operator (=), which treats NULLs as unknown values.
-		 */
-		EQUAL_NULL,
-
-		/**
-		 * The not-equals operator, "&#33;=" or "&lt;&gt;". The latter is standard, and
-		 * preferred.
-		 */
-		NOT_EQUAL("!="),
-
-		/**
-		 * The "DATE" litteral.
-		 */
-		DATE,
-		/**
-		 * The "TIMESTAMP" litteral.
-		 */
-		TIMESTAMP,
-
-		/**
-		 * The logical "OR" operator.
-		 */
-		OR,
-
-		/**
-		 * The logical "XOR" operator.
-		 */
-		XOR,
-
-		/**
-		 * The logical "AND" operator or keyword for BEETWEN value1 "AND" value2 .
-		 */
-		AND,
-
-		/**
-		 * The "LIKE" operator.
-		 */
-		LIKE,
-
-		/**
-		 * The logical "NOT" operator.
-		 */
-		NOT,
-
-		/**
-		 * The value "NULL".
-		 */
-		NULL,
-
-		/**
-		 * The "IS NULL" or "IS TRUE" operator.
-		 */
-		IS,
-
-		/**
-		 * The value "TRUE".
-		 */
-		TRUE,
-
-		/**
-		 * The value "FALSE".
-		 */
-		FALSE,
-
-		ELSE, THEN, END, WHEN,
-
-		BOOLEAN, BIGNUMBER, BINARY;
-
-		/**
-		 * Expression keywords.
-		 */
-		private static final Set<Id> KEYWORDS = EnumSet.of(AND, AS, BETWEEN, CASE, CAST, DATE, ELSE, END, ESCAPE, FALSE,
-				IN, IS, LIKE, NOT, NULL, TRUE, OR, TIMESTAMP, THEN, WHEN, XOR);
-
-		public static final Set<Id> VALUE_TYPES = EnumSet.of(INTEGER, BOOLEAN, NUMBER, BIGNUMBER, STRING, BINARY);
-
-		/**
-		 * Returns whether this {@code Type} belongs to a given category.
-		 *
-		 * @param category Category
-		 * @return Whether this kind belongs to the given category
-		 */
-		public final boolean is(Collection<Id> category) {
-			return category.contains(this);
-		}
-
-		private final String source;
-
-		Id() {
-			this.source = name();
-		}
-
-		Id(final String source) {
-			this.source = source;
-		}
-
-		@Override
-		public String toString() {
-			return source;
-		}
-	}
-
-	private static class Token {
-
-		private final Id id;
-
-		private final String text;
-
-		// The position of the first character of this Token.
-		private final int position;
-
-		protected Token(Id id, int position) {
-			this(id, position, null);
-		}
-
-		protected Token(Id id, int position, String text) {
-			this.id = id;
-			this.position = position;
-			this.text = text;
-		}
-
-		public final boolean is(Id type) {
-			return this.id == type;
-		}
-
-//			public final boolean is(Collection<Expression.Kind> category) {
-//				return kind.is(category);
-//			}
-
-		public String toString() {
-			String s = (text == null) ? id.toString() : (id + "(" + text + ")");
-
-			return String.valueOf(position) + ":" + s;
-		}
-
-		public Id getId() {
-			return id;
-		}
-
-		public int getPosition() {
-			return position;
-		}
-
-		public String getText() {
-			return text;
-		}
-
-	}
 
 	/** locale-neutral big decimal format. */
 	public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.0b",
@@ -405,8 +70,7 @@ public class ExpressionParser {
 
 	private final String source;
 
-	private int pos = 0;
-	private List<Token> tokens = new ArrayList<>();
+	private List<ExpressionToken> tokens = new ArrayList<>();
 	private int index = 0;
 
 	public static Expression parse(String source) throws ExpressionException {
@@ -414,391 +78,43 @@ public class ExpressionParser {
 
 		return parser.parse();
 	}
-	
+
 	protected ExpressionParser(String source) {
 		super();
-		this.source = source.trim();
-	}
-
-	private Token tokenize() throws ExpressionParserException {
-
-		int start = 0;
-
-		while (pos < source.length()) {
-			char c = source.charAt(pos);
-			final String sequence;
-			boolean isEndFound = false;
-
-			switch (c) {
-			case ',':
-				return new Token(Id.COMMA, pos++);
-
-			case '(':
-				return new Token(Id.LPARENTHESIS, pos++);
-
-			case ')':
-				return new Token(Id.RPARENTHESIS, pos++);
-
-			case '"': // Parse double-quoted identifier.
-				start = pos++;
-				while (pos < source.length()) {
-					c = source.charAt(pos);
-					++pos;
-					if (c == '"') {
-						if (pos < source.length()) {
-							char c1 = source.charAt(pos);
-							if (c1 == '"') {
-								// encountered consecutive
-								// double-quotes; still in identifier
-								++pos;
-							} else {
-								isEndFound = true;
-								break;
-							}
-						} else {
-							isEndFound = true;
-							break;
-						}
-					}
-				}
-
-				if (!isEndFound)
-					throw new ExpressionParserException("ExpressionException.MissingEndDoubleQuotedString", source,
-							pos);
-
-				sequence = source.substring(start + 1, pos - 1);
-
-				return new Token(Id.STRING, start, sequence);
-
-			case '\'': // Parse single-quoted identifier.
-				start = pos++;
-				while (pos < source.length()) {
-					c = source.charAt(pos);
-					++pos;
-					if (c == '\'') {
-						if (pos < source.length()) {
-							char c1 = source.charAt(pos);
-							if (c1 == '\'') {
-								// encountered consecutive
-								// single-quotes; still in identifier
-								++pos;
-							} else {
-								isEndFound = true;
-								break;
-							}
-						} else {
-							isEndFound = true;
-							break;
-						}
-					}
-				}
-				if (!isEndFound)
-					throw new ExpressionParserException("ExpressionException.MissingEndSingleQuotedString", source,
-							pos);
-
-				sequence = source.substring(start + 1, pos - 1);
-				return new Token(Id.STRING, start, sequence);
-
-			case '=':
-				start = pos++;
-				if (pos < source.length()) {
-					c = source.charAt(pos);
-					if (c == '~') {
-						pos++;
-						return new Token(Id.CONTAINS, start);
-					}
-				}
-				return new Token(Id.EQUAL, pos);
-
-			case '+':
-				return new Token(Id.PLUS, pos++);
-
-			case '-':
-				return new Token(Id.MINUS, pos++);
-
-			case '*':
-				return new Token(Id.MULTIPLY, pos++);
-
-			case '%':
-				return new Token(Id.MODULUS, pos++);
-
-			case '<':
-				// parse less symbol
-				start = pos++;
-				if (pos < source.length()) {
-					c = source.charAt(pos);
-					if (c == '=') {
-						pos++;
-						return new Token(Id.LESS_THAN_OR_EQUAL, start);
-					}
-					if (c == '>') {
-						pos++;
-						return new Token(Id.LESS_THAN_OR_GREATER_THAN, start);
-					}
-				}
-				return new Token(Id.LESS_THAN, start);
-
-			case '>': // parse greater symbol
-				start = pos++;
-				if (pos < source.length()) {
-					c = source.charAt(pos);
-					if (c == '=') {
-						pos++;
-						return new Token(Id.GREATER_THAN_OR_EQUAL, start);
-					}
-				}
-				return new Token(Id.GREATER_THAN, start);
-
-			case '!': // parse not equal symbol
-				start = pos++;
-				if (pos < source.length()) {
-					c = source.charAt(pos);
-					if (c == '=') {
-						pos++;
-						return new Token(Id.NOT_EQUAL, start);
-					}
-				}
-				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
-
-			case '/': // possible start of '/*' or '//' comment
-				if (pos < source.length()) {
-					start = pos;
-					char c1 = source.charAt(pos + 1);
-					if (c1 == '*') {
-						int end = source.indexOf("*/", pos + 2);
-						if (end < 0) {
-							end = source.length();
-						} else {
-							end += "*/".length();
-						}
-						pos = end;
-						return new Token(Id.COMMENT, start);
-					}
-					if (c1 == '/') {
-						pos += 2;
-
-						while (pos < source.length()) {
-							c = source.charAt(pos);
-							if (c=='\r' || c=='\n')
-								break;
-							pos++;
-						}
-
-						return new Token(Id.COMMENT, start);
-					}
-					pos++;
-					return new Token(Id.DIVIDE, start);
-				}
-
-			case '~':
-				return new Token(Id.BITWISE_NOT, pos++);
-
-			case '&':
-				return new Token(Id.BITWISE_AND, pos++);
-
-			case '^':
-				return new Token(Id.BITWISE_XOR, pos++);
-
-			case '|': // bitwise OR operator or concat symbol
-				if (pos < source.length()) {
-					start = pos++;
-					c = source.charAt(pos);
-					if (c == '|') {
-						pos++;
-						return new Token(Id.CONCAT, start);
-					}
-
-					return new Token(Id.BITWISE_OR, start);
-				}
-
-				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
-
-			// Escape field name matching reserved words
-			case '[': {
-				start = ++pos;
-									
-				while (pos < source.length() ) {
-					c = source.charAt(++pos);
-					if ( !Characters.isAlphaOrDigit(c) ) {
-						break;
-					}					
-				}
-				
-				if ( c!= ']' ) 
-					throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
-				
-				String name = source.substring(start, pos++).toUpperCase();				
-				return new Token(Id.IDENTIFIER, start, name);
-			}
-				
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9': {
-				boolean isDecimalPartFound = false;
-				boolean isDecimalSeparatorFound = false;
-				boolean isExponentSymbolFound = false;
-
-				start = pos++;
-
-				// Hexadecimal number 0xABCDEF
-				if (c == '0' && pos < source.length() && (source.charAt(pos) == 'x')) {
-					do {
-						pos++;
-					} while (pos < source.length() && Characters.isHexDigit(source.charAt(pos)));
-
-					return new Token(Id.HEX, start, source.substring(start + 2, pos));
-				}
-
-				// Binary number 0b01101011
-				if (c == '0' && pos < source.length() && (source.charAt(pos) == 'b')) {
-					do {
-						pos++;
-					} while (pos < source.length() && (source.charAt(pos) == '0' || source.charAt(pos) == '1'));
-
-					return new Token(Id.BINARY, start, source.substring(start + 2, pos));
-				}
-
-				while (pos < source.length() && Characters.isDigit(source.charAt(pos))) {
-					pos++;
-				}
-				// Use dot for decimal separator
-				if (pos < source.length() && source.charAt(pos) == '.') {
-					isDecimalSeparatorFound = true;
-					pos++;
-				}
-				while (pos < source.length() && Characters.isDigit(source.charAt(pos))) {
-					pos++;
-					isDecimalPartFound = true;
-				}
-				if (pos < source.length() && Characters.isExponentChar(source.charAt(pos))) {
-					pos++;
-					isExponentSymbolFound = true;
-				}
-				if (pos < source.length() && (source.charAt(pos) == '+' || source.charAt(pos) == '-')
-						&& isExponentSymbolFound) {
-					pos++;
-				}
-				while (pos < source.length() && Character.isDigit(source.charAt(pos)) && isExponentSymbolFound) {
-					pos++;
-				}
-
-				sequence = source.substring(start, pos);
-
-				if (sequence.length() > 18) {
-					return new Token(Id.BIGNUMBER, start, sequence);
-				}
-
-				if (isDecimalSeparatorFound) {
-					return new Token(Id.NUMBER, start, sequence);
-				}
-
-				// TODO: implement parsing BigNumber
-
-				return new Token(Id.INTEGER, start, sequence);
-			}
-
-			default:
-				if (Character.isWhitespace(c)) {
-					++pos;
-					break;
-				} else {
-					// Probably a letter or digit. Start an identifier.
-					// Other characters, e.g. *, ! are also included
-					// in identifiers.
-					start = pos++;
-					loop: while (pos < source.length()) {
-						c = source.charAt(pos);
-						switch (c) {
-						case '(':
-						case ')':
-						case '/':
-						case '*':
-						case ',':
-						case '^':
-						case '>':
-						case '<':
-						case '=':
-						case '~':
-						case '+':
-						case '-':
-						case '!':
-						case '|':
-							break loop;
-
-						default:
-							if (Character.isWhitespace(c)) {
-								break loop;
-							} else {
-								++pos;
-							}
-						}
-					}
-					String name = source.substring(start, pos).toUpperCase();
-
-					// keyword, e.g. AS, AND, LIKE, NOT, TRUE, FALSE, OR
-					try {
-
-						Id token = Id.valueOf(name);
-						if (token != null && (token.is(Id.KEYWORDS))) {
-							return new Token(token, start, name);
-						}
-
-					} catch (Exception e) {
-
-					}
-
-					if (ExpressionRegistry.getFunction(name) != null) {
-						return new Token(Id.FUNCTION, start, name);
-					}
-
-					return new Token(Id.IDENTIFIER, start, name);
-				}
-			}
-		}
-		return null;
+		this.source = source;
 	}
 
 	protected int getPosition() {
 
 		if (index > 0 && index < tokens.size())
-			return this.next().getPosition();
+			return this.next().getStart();
 
-		return pos;
+		return source.length();
 	}
 
 	protected boolean hasNext() {
 		return index < tokens.size();
 	}
 
-	protected Token next() {
+	protected ExpressionToken next() {
 		if (!hasNext())
 			return null;
-		Token token = tokens.get(index);
+		ExpressionToken token = tokens.get(index);
 		index++;
 		return token;
 	}
 
 	protected boolean next(Id id) {
-
 		if (hasNext()) {
 			if (tokens.get(index).is(id)) {
 				index++;
 				return true;
 			}
 		}
-
 		return false;
 	}
 
 	protected boolean is(Id id) {
-
 		if (hasNext()) {
 			if (tokens.get(index).is(id)) {
 				return true;
@@ -814,9 +130,13 @@ public class ExpressionParser {
 			return Value.NULL;
 
 		// Tokenize
-		for (Token token = tokenize(); token != null; token = tokenize()) {
-			
-			if ( token.is(Id.COMMENT) ) continue;
+		ExpressionScanner scanner = new ExpressionScanner(source);
+		for (ExpressionToken token = scanner.tokenize(); token != null; token = scanner.tokenize()) {
+
+			// Ignore comment
+			if (token.is(Id.COMMENT))
+				continue;
+
 			tokens.add(token);
 		}
 
@@ -832,7 +152,7 @@ public class ExpressionParser {
 	/**
 	 * Parse logical OR expression
 	 * 
-	 * LogicalXor ( OR LogicalXor)*
+	 * LogicalXor ( OR LogicalXor )*
 	 */
 	private Expression parseLogicalOr() throws ExpressionException {
 		Expression expression = this.parseLogicalXor();
@@ -846,7 +166,7 @@ public class ExpressionParser {
 	/**
 	 * Parse logical XOR expression
 	 * 
-	 * LogicalAnd ( XOR LogicalAnd)*
+	 * LogicalAnd ( XOR LogicalAnd )*
 	 * 
 	 * @return Expression
 	 */
@@ -862,7 +182,7 @@ public class ExpressionParser {
 	/**
 	 * Parse logical AND expression
 	 * 
-	 * LogicalNot ( AND LogicalNot)*
+	 * LogicalNot ( AND LogicalNot )*
 	 * 
 	 * @return Expression
 	 */
@@ -892,17 +212,16 @@ public class ExpressionParser {
 	/**
 	 * Parse IS expression
 	 * 
-	 * XXX [NOT] XXXExpression
+	 * Basic [NOT] BasicExpression
 	 */
 	private Expression parseIs() throws ExpressionException {
 		Expression expression = this.parseRelational();
 		if (next(Id.IS)) {
-			// System.out.println("Parse IS");
 			boolean not = false;
 			if (next(Id.NOT)) {
 				not = true;
 			}
-			Expression result = new ExpressionCall(Operator.IS, expression, this.parseBasic());
+			Expression result = new ExpressionCall(Operator.IS, expression, this.parseLiteralBasic());
 			if (not)
 				return new ExpressionCall(Operator.LOGICAL_NOT, result);
 			return result;
@@ -931,8 +250,8 @@ public class ExpressionParser {
 
 		return expression;
 	}
-	
-	/** (  UnaryExpression)* */
+
+	/** ( UnaryExpression)* */
 	private Expression parseBitwiseNot() throws ExpressionException {
 		if (next(Id.BITWISE_NOT)) {
 			return new ExpressionCall(Operator.BITWISE_NOT, this.parseUnary());
@@ -980,14 +299,13 @@ public class ExpressionParser {
 		return this.parseTerm();
 	}
 
-	/** TRUE | FALSE | NULL */
-	private Expression parseBasic() throws ExpressionParserException {
+	/** Literal TRUE | FALSE | NULL */
+	private Expression parseLiteralBasic() throws ExpressionParserException {
 
-		Token token = next();
+		ExpressionToken token = next();
 
 		if (token == null)
 			throw new ExpressionParserException("ExpressionException.SyntaxError", source, this.getPosition());
-		// System.out.println("Parse basic: " + token);
 
 		switch (token.getId()) {
 		case TRUE:
@@ -997,15 +315,89 @@ public class ExpressionParser {
 		case NULL:
 			return Value.NULL;
 		default:
-			throw new ExpressionParserException("ExpressionException.SyntaxError", source, token.getPosition());
+			throw new ExpressionParserException("ExpressionException.SyntaxError", source, token.getStart());
 		}
 	}
 
-	/** Literal | Identifier | '(' Expression ')' | Function */
-	private Expression parseTerm() throws ExpressionException {
+	/** Literal text */
+	private Expression parseLiteralText(ExpressionToken token) throws ExpressionParserException {
+		String text = token.getText();
+		int length = text.length();
+		StringBuilder builder = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			char c = text.charAt(i);
 
-		Token token = next();
-		// System.out.println("Parse primary: " + token);
+			// Convert backslash escape sequences
+			if (c == '\\') {
+				if (i + 1 >= text.length()) {
+					throw createFormatException(text, i);
+				}
+				c = text.charAt(++i);
+				switch (c) {
+				// Tab
+				case 't':
+					builder.append('\t');
+					continue;
+				// Carriage return
+				case 'r':
+					builder.append('\r');
+					continue;
+				// Newline
+				case 'n':
+					builder.append('\n');
+					continue;
+				// Backspace
+				case 'b':
+					builder.append('\b');
+					continue;
+				// Form feed
+				case 'f':
+					builder.append('\f');
+					continue;
+				// Single quote
+				case '\'':
+					builder.append('\'');
+					continue;
+				case '"':
+					builder.append('"');
+					continue;
+				case '\\':
+					builder.append('\\');
+					continue;
+				// u####' 16-bit Unicode character where #### are four hex digits
+				case 'u': {
+					try {
+						c = (char) (Integer.parseInt(text.substring(i + 1, i + 5), 16));
+					} catch (NumberFormatException e) {
+						throw new ExpressionException("Invalid escape sequence \\u#### at position {1}", text, i);
+					}
+					i += 4;
+					break;
+				}
+				// U########' 32-bit Unicode character where ######## are four are eight hex digits
+				case 'U': {
+					try {
+						c = (char) (Integer.parseInt(text.substring(i + 1, i + 9), 16));
+					} catch (NumberFormatException e) {
+						throw new ExpressionException("Invalid escape sequence \\U######## at position {1}", text, i);
+					}
+					i += 8;
+					break;
+				}
+
+				default:
+					throw createFormatException(text, i);
+				}
+			}
+			builder.append(c);
+		}
+
+		return Value.of(builder.toString());
+	}
+
+	/** Term = Literal | Identifier | Function | '(' Expression ')' */
+	private Expression parseTerm() throws ExpressionException {
+		ExpressionToken token = next();
 
 		if (token != null) {
 			switch (token.getId()) {
@@ -1015,18 +407,14 @@ public class ExpressionParser {
 				return Value.FALSE;
 			case NULL:
 				return Value.NULL;
-			case STRING:
-				return Value.of(token.getText());
-			case INTEGER:
-				return parseLiteralInteger(token, 10);
-			case HEX:
-				return parseLiteralInteger(token, 16);
-			case BINARY:
-				return parseLiteralInteger(token, 2);
-			case NUMBER:
-				return parseLiteralNumber(token);
-			case BIGNUMBER:
-				return parseLiteralBigNumber(token);
+			case LITERAL_TEXT:
+				return parseLiteralText(token);
+			case LITERAL_NUMBER:
+				return parseLiteralNumber(token);				
+			case LITERAL_HEXNUMBER:
+				return parseLiteralNumber(token, 16);
+			case LITERAL_BITNUMBER:
+				return parseLiteralNumber(token, 2);
 			case DATE:
 				return parseLiteralDate();
 			case TIMESTAMP:
@@ -1038,12 +426,12 @@ public class ExpressionParser {
 			case IDENTIFIER:
 				return new ExpressionIdentifier(token.getText());
 			case FUNCTION:
-				Function function = ExpressionRegistry.getFunction(token.getText());
+				Function function = Operator.getFunction(token.getText());
 				List<Expression> params = new ArrayList<>();
 
 				token = next();
 				if (token.is(Id.LPARENTHESIS)) {
-					// tokenizer.next();
+
 					// No param function
 					if (is(Id.RPARENTHESIS)) {
 						next();
@@ -1062,7 +450,7 @@ public class ExpressionParser {
 						return new ExpressionCall(function, params);
 					}
 					throw new ExpressionParserException("ExpressionException.MissingRightParenthesis", source,
-							token.getPosition());
+							token.getStart());
 				}
 
 			case LPARENTHESIS:
@@ -1087,11 +475,10 @@ public class ExpressionParser {
 
 	/**
 	 * AdditiveExpression ( Operator AdditiveExpression | InClause | BetweenClause |
-	 * LikeClause | IsNullClause
+	 * LikeClause
 	 */
 	private Expression parseRelational() throws ExpressionException {
 		Expression expression = this.parseAdditive();
-
 
 		if (next(Id.EQUAL)) {
 			return new ExpressionCall(Operator.EQUALS, expression, this.parseAdditive());
@@ -1118,23 +505,12 @@ public class ExpressionParser {
 			return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseAdditive());
 		}
 
-		// Special case NOT after operator: <exp> IS [NOT] <primaryExp>
-//		if (next(Id.IS)) {
-//			// System.out.println("Parse IS");
-//			if (next(Id.NOT)) {
-//				not = true;
-//			}
-//			expression = new ExpressionCall(Operator.IS, expression, this.parseBasic());
-//		} else if (next(Id.NOT)) {
-//			not = true;
-//		}
-
-		boolean not = false;	
+		// Special case NOT before operation: <exp> [NOT] LIKE <primaryExp>
+		boolean not = false;
 		if (next(Id.NOT)) {
 			not = true;
 		}
-		
-		// Special case NOT before operation: <exp> [NOT] LIKE <primaryExp>
+
 		if (next(Id.LIKE)) {
 			// System.out.println("Parse LIKE");
 			Expression pattern = this.parseTerm();
@@ -1190,16 +566,50 @@ public class ExpressionParser {
 		return expression;
 	}
 
-	private Value parseLiteralInteger(Token token, int radix) throws ExpressionParserException {
+	private Value parseLiteralNumber(ExpressionToken token) throws ExpressionParserException {
+		boolean isDecimalPartFound = false;
+		boolean isDecimalSeparatorFound = false;
+		boolean isExponentSymbolFound = false;
+
+		String text = token.getText();
+		int length = text.length();
+		int pos = 0;
+		char c = text.charAt(pos);
+
+		while (pos < length && Characters.isDigit(text.charAt(pos))) {
+			pos++;
+		}
+		
+		// Use dot for decimal separator
+		if (pos < length && text.charAt(pos) == '.') {
+			isDecimalSeparatorFound = true;
+			pos++;
+		}
+		while (pos < length && Characters.isDigit(text.charAt(pos))) {
+			pos++;
+			isDecimalPartFound = true;
+		}
+		if (pos < length && Characters.isExponentChar(text.charAt(pos))) {
+			pos++;
+			isExponentSymbolFound = true;
+		}
+		if (pos < length && (source.charAt(pos) == '+' || text.charAt(pos) == '-')
+				&& isExponentSymbolFound) {
+			pos++;
+		}
+		while (pos < length && Character.isDigit(source.charAt(pos)) && isExponentSymbolFound) {
+			pos++;
+		}
+
+		if (length < 18 && isDecimalSeparatorFound==false ) {
+			return Value.of(Long.parseLong(text,10));
+		}
+
+		return Value.of(new BigDecimal(text));
+	}
+
+	private Value parseLiteralNumber(ExpressionToken token, int radix) throws ExpressionParserException {
 		return Value.of(Long.parseLong(token.getText(), radix));
-	}
-
-	private Value parseLiteralNumber(Token token) throws ExpressionParserException {
-		return Value.of(Double.parseDouble(token.getText()));
-	}
-
-	private Value parseLiteralBigNumber(Token token) throws ExpressionParserException {
-		return Value.of(new BigDecimal(token.getText()));
 	}
 
 	/**
@@ -1209,7 +619,7 @@ public class ExpressionParser {
 	private Value parseLiteralDate() throws ExpressionParserException {
 
 		// The real literal text DATE 'literal'
-		Token token = next();
+		ExpressionToken token = next();
 
 		DateFormat dateFormat = Format.PER_THREAD.get().date;
 
@@ -1230,7 +640,7 @@ public class ExpressionParser {
 	private Value parseLiteralTimestamp() throws ExpressionParserException {
 
 		// The real literal text TIMESTAMP 'literal'
-		Token token = next();
+		ExpressionToken token = next();
 
 		DateFormat dateFormat = Format.PER_THREAD.get().timestamp;
 
@@ -1256,7 +666,7 @@ public class ExpressionParser {
 		// System.out.println("Parse expression list: " + token);
 		if (next(Id.LPARENTHESIS)) {
 
-			Token token;
+			ExpressionToken token;
 			do {
 				list.add(parseTerm());
 
@@ -1279,37 +689,36 @@ public class ExpressionParser {
 
 	/** Case When Then Else End ) */
 	private Expression parseCase() throws ExpressionException {
-			Expression valueExpression = null;
-			Expression elseExpression = null;
-			List<Expression> whenList = new ArrayList<>();
-			List<Expression> thenList = new ArrayList<>();
+		Expression valueExpression = null;
+		Expression elseExpression = null;
+		List<Expression> whenList = new ArrayList<>();
+		List<Expression> thenList = new ArrayList<>();
 
-			// Form Switch value
-			if (!is(Id.WHEN)) {
-				valueExpression = this.parseLogicalOr();
-			}
+		// Form Switch value
+		if (!is(Id.WHEN)) {
+			valueExpression = this.parseLogicalOr();
+		}
 
-			// Form mutli boolean condition
-			while (next(Id.WHEN)) {
-				whenList.add(this.parseLogicalOr());
-				if (!next(Id.THEN)) {
-					throw new ExpressionParserException("ExpressionException.InvalidCaseWhen", source,
-							this.getPosition());
-				}
-				thenList.add(this.parseLogicalOr());
-			}
-
-			if (!next(Id.ELSE)) {
+		// Form mutli boolean condition
+		while (next(Id.WHEN)) {
+			whenList.add(this.parseLogicalOr());
+			if (!next(Id.THEN)) {
 				throw new ExpressionParserException("ExpressionException.InvalidCaseWhen", source, this.getPosition());
 			}
-			elseExpression = this.parseLogicalOr();
+			thenList.add(this.parseLogicalOr());
+		}
 
-			if (!next(Id.END)) {
-				throw new ExpressionParserException("ExpressionException.InvalidCaseWhen", source, this.getPosition());
-			}
+		if (!next(Id.ELSE)) {
+			throw new ExpressionParserException("ExpressionException.InvalidCaseWhen", source, this.getPosition());
+		}
+		elseExpression = this.parseLogicalOr();
 
-			return new ExpressionCall(Operator.CASE, valueExpression, new ExpressionList(whenList),
-					new ExpressionList(thenList), elseExpression);
+		if (!next(Id.END)) {
+			throw new ExpressionParserException("ExpressionException.InvalidCaseWhen", source, this.getPosition());
+		}
+
+		return new ExpressionCall(Operator.CASE, valueExpression, new ExpressionList(whenList),
+				new ExpressionList(thenList), elseExpression);
 	}
 
 	/** Cast(expression AS dataType) */
@@ -1325,7 +734,7 @@ public class ExpressionParser {
 			throw new ExpressionParserException("ExpressionException.MissingCastAs", source, this.getPosition());
 		}
 
-		Token token = next();
+		ExpressionToken token = next();
 		Type type = Type.valueOf(token.getText());
 
 		if (!next(Id.RPARENTHESIS)) {
@@ -1346,5 +755,9 @@ public class ExpressionParser {
 		final DateFormat timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING, Locale.ROOT);
 		final DateFormat time = new SimpleDateFormat(TIME_FORMAT_STRING, Locale.ROOT);
 		final DateFormat date = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ROOT);
+	}
+
+	private static ExpressionException createFormatException(String s, int i) {
+		return new ExpressionException("Bad format {0} at position {1}", s, i);
 	}
 }

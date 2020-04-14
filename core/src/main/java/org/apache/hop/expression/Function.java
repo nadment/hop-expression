@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -296,7 +297,7 @@ public class Function extends Operator {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-
+			
 			int result = value.toDate().get(ChronoField.DAY_OF_WEEK) + 1;
 			if (result == 8)
 				result = 1;

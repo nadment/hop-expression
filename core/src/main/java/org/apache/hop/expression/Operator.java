@@ -3,6 +3,10 @@ package org.apache.hop.expression;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -17,28 +21,28 @@ import org.w3c.dom.Node;
 //TODO: implement ENDING [WITH]
 //TODO: implement the square brackets with a character range (MS SQL): like '[A-C]%'
 /**
- * Operators have the precedence levels.
- * An operator on higher levels is evaluated before an operator on a lower level
+ * Operators have the precedence levels. An operator on higher levels is
+ * evaluated before an operator on a lower level
  * 
- * 	 
- *   1			Functions
- *	 2  		Cast
- *   3	Right	+ (Positive), - (Negative)	
- * 	 4			~ (Bitwise NOT)
- *   5	Left	* (Multiplication), / (Division), % (Modulus)
- *   6			<<, >>  
- *   7 			& (Bitwise AND)      
- *   8  		^ (Bitwise Exclusive OR)      
- *   9  		| (Bitwise OR)
- *  10	Left	+ (Addition), - (Subtraction)
- *  11  		|| (Concatenation)
- *  12	-		BETWEEN, IN, LIKE
- *  13	-		=, >, <, >=, <=, <>, !=, !>, !< (Comparison operators)
- *  14  -		IS
- *  15	Right	NOT
- *  16	Left	AND
- *  17  Left	XOR
- * 	18  Left	OR	
+ * 
+ * 1 Functions 
+ * 2 Cast 
+ * 3 Right + (Positive), - (Negative) 
+ * 4 ~ (Bitwise NOT) 
+ * 5 * Left * (Multiplication), / (Division), % (Modulus) 
+ * 6 <<, >> 
+ * 7 & (Bitwise AND)
+ * 8 ^ (Bitwise Exclusive OR) 
+ * 9 | (Bitwise OR) 
+ * 10 Left + (Addition), - (Subtraction) 
+ * 11 || (Concatenation) 
+ * 12 - BETWEEN, IN, LIKE 
+ * 13 - =, >, <, >=, <=, <>, !=, !>, !< (Comparison operators) 
+ * 14 - IS 
+ * 15 Right NOT 
+ * 16 Left AND 
+ * 17 Left XOR 
+ * 18 Left OR
  * 
  * @author Nicolas ADMENT
  *
@@ -46,21 +50,407 @@ import org.w3c.dom.Node;
 public class Operator implements Comparable<Operator> {
 
 	public enum Category {
-		Arithmetic,
-		Bitwise,
-		Comparison,
-		Conditional,
-		Conversion,
-		Cryptographic,
-		Date,
-		Logical,
-		Mathematical,
-		String,
+		Arithmetic, Bitwise, Comparison, Conditional, Conversion, Cryptographic, Date, Logical, Mathematical, String,
 		Other
 	}
-	
+
 	private static final String JAVA_REGEX_SPECIALS = "[]()|^-+*?{}$\\.";
 
+	private static final ConcurrentHashMap<String, OperatorInfo> infos = new ConcurrentHashMap<>();
+
+	
+	static {
+		try (InputStream is = Expression.class.getResourceAsStream("expression.xml")) {
+			Document document = XmlHandler.loadXmlFile(is);
+			Node rootNode = XmlHandler.getSubNode(document, OperatorInfo.EXPRESSION_TAG);
+			int count = XmlHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
+			for (int i = 0; i < count; i++) {
+				Node node = XmlHandler.getSubNodeByNr(rootNode, OperatorInfo.OPERATOR_TAG, i);
+				OperatorInfo info = new OperatorInfo(node);
+				infos.put(info.getName(), info);
+
+				// System.out.println(info.getName());
+			}
+		} catch (Exception e) {
+
+		}
+	}
+
+	// -------------------------------------------------------------
+	// BITWISE OPERATORS
+	// -------------------------------------------------------------
+
+	/**
+	 * Bitwise AND operator "&".
+	 */
+	public static final Operator BITWISE_AND = new Operator(Kind.BITWISE_AND_OPERATOR, Category.Bitwise, 70, true);
+
+	/**
+	 * Bitwise OR operator "|".
+	 */
+	public static final Operator BITWISE_OR = new Operator(Kind.BITWISE_OR_OPERATOR, Category.Bitwise, 90, true);
+
+	/**
+	 * Bitwise NOT operator "~".
+	 */
+	public static final Operator BITWISE_NOT = new Operator(Kind.BITWISE_NOT_OPERATOR, Category.Bitwise, 40, true);
+
+	/**
+	 * Bitwise XOR operator "^".
+	 */
+	public static final Operator BITWISE_XOR = new Operator(Kind.BITWISE_XOR_OPERATOR, Category.Bitwise, 80, true);
+
+	// -------------------------------------------------------------
+	// LOGICAL OPERATORS
+	// -------------------------------------------------------------
+
+	/**
+	 * Logical negation <code>NOT</code> operator
+	 * 
+	 * <p>
+	 * Syntax of the operator:
+	 * <ul>
+	 * <li><code>field [NOT] TRUE</code></li>
+	 * <li><code>field [NOT] IN (list of values)</code></li>
+	 * <li><code>field [NOT] BETWEEN start AND end</code></li>
+	 * </ul>
+	 * </p>
+	 */
+	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT_OPERATOR, Category.Logical, 150, false);
+	/**
+	 * Logical disjunction <code>OR</code> operator.
+	 */
+	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR_OPERATOR, Category.Logical, 180, true);
+	/**
+	 * Logical conjunction <code>AND</code> operator.
+	 */
+	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND_OPERATOR, Category.Logical, 160, true);
+	/**
+	 * Logical <code>XOR</code> operator.
+	 */
+	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR_OPERATOR, Category.Logical, 170, true);
+
+	/**
+	 * An operator describing the <code>IS</code> operator.
+	 *
+	 * <p>
+	 * Syntax of the operator:
+	 * <ul>
+	 * <li><code>field IS TRUE</code></li>
+	 * <li><code>field IS FALSE</code></li>
+	 * <li><code>field IS NULL</code></li>
+	 * </ul>
+	 */
+	public static final Operator IS = new Operator(Kind.IS_OPERATOR, Category.Logical, 140, true);
+
+	/**
+	 * Logical <code>IN</code> operator tests for a value's membership in a list of
+	 * values. The IN operator is a shorthand for multiple OR conditions.
+	 *
+	 * <p>
+	 * Syntax of the operator:
+	 * <ul>
+	 * <li><code>field [NOT] IN list of values</code></li>
+	 * </ul>
+	 *
+	 * <p>
+	 * <b>NOTE</b> If the <code>NOT</code> clause is present the
+	 * {@link org.apache.hop.core.ExpressionParser parser} will generate a
+	 * equivalent to <code>NOT (field IN list of values ...)</code>
+	 */
+	public static final Operator IN = new Operator(Kind.IN_OPERATOR, Category.Logical, 120, true);
+	/**
+	 * An operator describing the <code>LIKE</code> operator.
+	 *
+	 * <p>
+	 * Syntax of the operator:
+	 *
+	 * <ul>
+	 * <li><code>field [NOT] LIKE pattern</code></li>
+	 * </ul>
+	 *
+	 * <p>
+	 * <b>NOTE</b> If the <code>NOT</code> clause is present the
+	 * {@link org.kettle.core.database.ExpressionParser parser} will generate a
+	 * equivalent to <code>NOT (field LIKE pattern ...)</code>
+	 * 
+	 * TODO: implement LIKE <pattern> ESCAPE <char>
+	 */
+	public static final Operator LIKE = new Operator(Kind.LIKE_OPERATOR, Category.Comparison, 120, true);
+
+	public static final Operator BETWEEN = new Operator(Kind.BETWEEN_OPERATOR, Category.Comparison, 120, true);
+
+	// -------------------------------------------------------------
+	// COMPARISON OPERATORS
+	// -------------------------------------------------------------
+
+	/**
+	 * Comparison equals operator '<code>=</code>'.
+	 */
+	public static final Operator EQUALS = new Operator(Kind.EQUAL_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison not equals operator '<code><></code>'.
+	 */
+	public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUAL_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison not equals operator '<code>!=</code>'.
+	 */
+	public static final Operator LESS_THAN_OR_GREATER_THAN = new Operator(Kind.LESS_THAN_OR_GREATER_THEN,
+			Category.Comparison, 130, true);
+	/**
+	 * Comparison less-than operator '<code>&lt;</code>'.
+	 */
+	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, Category.Comparison, 130, true);
+	/**
+	 * Comparison less-than-or-equal operator '<code>&lt;=</code>'.
+	 */
+	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR,
+			Category.Comparison, 130, true);
+	/**
+	 * Comparison greater-than operator '<code>&gt;</code>'.
+	 */
+	public static final Operator GREATER_THAN = new Operator(Kind.GREATER_THAN_OPERATOR, Category.Comparison, 130,
+			true);
+	/**
+	 * Comparison greater-than-or-equal operator '<code>&gt;=</code>'.
+	 */
+	public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL_OPERATOR,
+			Category.Comparison, 130, true);
+	/**
+	 * Comparison contains operator '<code>=~</code>'.
+	 */
+	public static final Operator CONTAINS = new Operator(Kind.CONTAINS_OPERATOR, Category.Comparison, 130, true);
+
+	// -------------------------------------------------------------
+	// ARITHMETIC OPERATORS
+	// -------------------------------------------------------------
+
+	/**
+	 * Arithmetic unary negate operator '<code>-</code>'.
+	 */
+	public static final Operator NEGATE = new Operator(Kind.NEGATE_OPERATOR, Category.Arithmetic, 30, true);
+
+//	/**
+//	 * Arithmetic power operator '<code>**</code>'.
+//	 */
+//	public static final Operator POWER = new Operator(Kind.POWER_OPERATOR, Category.Arithmetic, 70, true);
+
+	/**
+	 * Arithmetic multiplication operator '<code>*</code>'.
+	 */
+	public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY_OPERATOR, Category.Arithmetic, 50, true);
+
+	/**
+	 * Arithmetic division operator '<code>/</code>'.
+	 */
+	public static final Operator DIVIDE = new Operator(Kind.DIVIDE_OPERATOR, Category.Arithmetic, 50, true);
+
+	/**
+	 * Arithmetic modulus operator '<code>%</code>'.
+	 */
+	public static final Operator MODULUS = new Operator(Kind.MODULUS_OPERATOR, Category.Arithmetic, 50, true);
+
+	/**
+	 * Arithmetic addition operator '<code>+</code>'.
+	 */
+	public static final Operator ADD = new Operator(Kind.ADD_OPERATOR, Category.Arithmetic, 100, true);
+
+	/**
+	 * Arithmetic subtraction operator '<code>-</code>'.
+	 */
+	public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT_OPERATOR, Category.Arithmetic, 100, true);
+
+	// -------------------------------------------------------------
+	// SPECIAL OPERATORS
+	// -------------------------------------------------------------
+
+	/**
+	 * Casting operator '<code>CAST(value AS dataType)</code>'.
+	 */
+	public static final Operator CAST = new Operator(Kind.CAST_OPERATOR, Category.Conversion, 20, true);
+
+	/**
+	 * An operator describing the <code>CASE</code> operator.
+	 */
+	public static final Operator CASE = new Operator(Kind.CASE_WHEN_OPERATOR, Category.Conditional, 120, true);
+
+	/**
+	 * String concatenation operator '<code>||</code>'.
+	 */
+	public static final Operator CONCAT = new Operator(Kind.CONCAT_OPERATOR, Category.Other, 110, true);
+	
+	/**
+	 * Set of operators.
+	 */
+	/* TODO: Java 9 use unmodifiable Set.of(...) */
+	private static final Set<Operator> OPERATORS = new TreeSet<>(Arrays.asList(Operator.ADD, Operator.CAST, Operator.SUBTRACT,
+					Operator.MULTIPLY, Operator.DIVIDE, Operator.BITWISE_AND, Operator.BITWISE_OR,
+					// Operator.BITWISE_NOT,
+					Operator.BITWISE_XOR, Operator.MODULUS, Operator.EQUALS, Operator.GREATER_THAN,
+					Operator.GREATER_THAN_OR_EQUAL, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL,
+					Operator.LESS_THAN_OR_GREATER_THAN, Operator.NOT_EQUALS, Operator.LOGICAL_AND, Operator.BETWEEN,
+					Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS, Operator.LIKE, Operator.LOGICAL_NOT,
+					Operator.LOGICAL_OR, Operator.LOGICAL_XOR));
+
+	//private static final Set<Operator> OPERATORS = new TreeSet<>();
+	
+	public static Set<Operator> getOperators() {
+		return OPERATORS;
+	}
+	
+	/**
+	 * Set of functions or alias.
+	 */
+	//private static final TreeSet<Function> FUNCTIONS = new TreeSet<>(Comparator.comparing(Function::getName));
+
+	/**
+	 * Set of functions or alias by name.
+	 */
+	private static final HashMap<String, Function> FUNCTIONS_BY_NAME = new HashMap<>(256);
+
+
+
+	// -------------------------------------------------------------
+	// FUNCTIONS
+	// -------------------------------------------------------------
+	static {
+		
+		addFunction(Kind.ABS, Category.Mathematical);
+		addFunction(Kind.ADD_MONTHS, Category.Date);
+		addFunction(Kind.ACOS, Category.Mathematical);
+		addFunction(Kind.ASCII, Category.String);
+		addFunction(Kind.ASIN, Category.Mathematical);
+		addFunction(Kind.ATAN, Category.Mathematical);
+		addFunction(Kind.ATAN2, Category.Mathematical);
+		// addFunction(Kind.BIT_LENGTH);
+		// TODO: addFunction(Kind.BITGET, Category.Bitwise);
+		// addFunction(Kind.BITAND, Category.Bitwise);
+		// addFunction(Kind.BITNOT, Category.Bitwise);
+		// addFunction(Kind.BITOR, Category.Bitwise);
+		// addFunction(Kind.BITXOR, Category.Bitwise);
+		addFunction(Kind.CBRT, Category.Mathematical);
+		addFunction(Kind.CEIL, Category.Mathematical);
+		addFunction(Kind.CHR, Category.String);
+		addFunction(Kind.COALESCE, Category.Conditional);
+		addFunction(Kind.CONCAT, Category.String);
+		addFunction(Kind.COS, Category.Mathematical);
+		addFunction(Kind.COSH, Category.Mathematical);
+		addFunction(Kind.COT, Category.Mathematical);
+		addFunction(Kind.CONTAINS, Category.Comparison);
+		addFunctionNotDeterministic(Kind.CURRENT_DATE, Category.Date); // Alias "NOW", "CURRENT_DATE", "CURDATE",
+																		// "SYSDATE", "TODAY");
+		addFunction(Kind.DAY_NAME, Category.Date); // "DAYNAME"
+		addFunction(Kind.DAY_OF_MONTH, Category.Date, "DAY", "DAY_OF_MONTH"); // "DAYOFMONTH"
+		addFunction(Kind.DAY_OF_WEEK, Category.Date, "DAY_OF_WEEK"); // "DAYOFWEEK"
+		addFunction(Kind.DAY_OF_YEAR, Category.Date, "DAY_OF_YEAR"); // "DAYOFYEAR"
+		addFunction(Kind.DECODE, Category.Conditional);
+		addFunction(Kind.DEGREES, Category.Mathematical);
+		addFunction(Kind.EQUAL_NULL, Category.Comparison);
+		addFunction(Kind.ENDSWITH, Category.Comparison);
+		addFunction(Kind.EXP, Category.Mathematical);
+		addFunction(Kind.FLOOR, Category.Mathematical);
+		addFunction(Kind.GREATEST, Category.Conditional);
+		addFunction(Kind.HOUR, Category.Date);
+		addFunction(Kind.IF, Category.Conditional);
+		addFunction(Kind.IFNULL, Category.Conditional, "IFNULL", "NVL");
+		addFunction(Kind.INITCAP, Category.String);
+		addFunction(Kind.INSTR, Category.String);
+		addFunction(Kind.LAST_DAY, Category.Date);
+		addFunction(Kind.LEAST, Category.Conditional);
+		addFunction(Kind.LEFT, Category.String);
+		addFunction(Kind.LENGTH, Category.String); // "LENGTH", "LEN", "CHAR_LENGTH");
+		addFunction(Kind.LN, Category.Mathematical);
+		addFunction(Kind.LOG10, Category.Mathematical);
+		addFunction(Kind.LOWER, Category.String); // , "LOWER", "LCASE");
+		addFunction(Kind.LPAD, Category.String);
+		addFunction(Kind.LTRIM, Category.String);
+		addFunction(Kind.MD5, Category.Cryptographic);
+		addFunction(Kind.MINUTE, Category.Date);
+		addFunction(Kind.MOD, Category.Mathematical);
+		addFunction(Kind.MONTH, Category.Date);
+		addFunction(Kind.MONTH_NAME, Category.Date); // "MONTHNAME"
+		addFunction(Kind.NULLIF, Category.Conditional);
+		// addFunction(Kind.OCTET_LENGTH);
+		addFunction(Kind.PI, Category.Mathematical);
+		addFunction(Kind.POWER, Category.Mathematical); // Alias POW
+		addFunction(Kind.QUARTER, Category.Date);
+		addFunction(Kind.UPPER, Category.String); // , "UPPER", "UCASE");
+		addFunction(Kind.RADIANS, Category.Mathematical);
+		addFunctionNotDeterministic(Kind.RAND, Category.Mathematical);
+		addFunction(Kind.REPEAT, Category.String);
+		addFunction(Kind.REPLACE, Category.String);
+		addFunction(Kind.REVERSE, Category.String);
+		addFunction(Kind.RIGHT, Category.String);
+		addFunction(Kind.ROUND, Category.Mathematical);
+		addFunction(Kind.RPAD, Category.String);
+		addFunction(Kind.RTRIM, Category.String);
+		addFunction(Kind.SHA1, Category.Cryptographic);
+		addFunction(Kind.SHA256, Category.Cryptographic);
+		addFunction(Kind.SHA384, Category.Cryptographic);
+		addFunction(Kind.SHA512, Category.Cryptographic);
+		addFunction(Kind.SECOND, Category.Date);
+		addFunction(Kind.SIGN, Category.Mathematical);
+		addFunction(Kind.SIN, Category.Mathematical);
+		addFunction(Kind.SINH, Category.Mathematical);
+		addFunction(Kind.SOUNDEX, Category.String);
+		addFunction(Kind.SPACE, Category.String);
+		addFunction(Kind.SQRT, Category.Mathematical);
+		addFunction(Kind.STARTSWITH, Category.Comparison);
+		addFunction(Kind.STRINGDECODE, Category.String);
+		addFunction(Kind.STRINGENCODE, Category.String);
+		addFunction(Kind.SUBSTR, Category.String, "SUBSTR", "SUBSTRING");
+		addFunction(Kind.TAN, Category.Mathematical);
+		addFunction(Kind.TANH, Category.Mathematical);
+		addFunction(Kind.TO_BOOLEAN, Category.Conversion);
+		addFunction(Kind.TO_CHAR, Category.Conversion);
+		// addFunction(Kind.TO_DATE, Category.Conversion);
+		// addFunction(Kind.TO_NUMBER, Category.Conversion);
+		addFunction(Kind.TRIM, Category.String);
+		addFunction(Kind.TRANSLATE, Category.String);
+		addFunction(Kind.UNICODE, Category.String);
+		addFunction(Kind.URLDECODE, Category.String);
+		addFunction(Kind.URLENCODE, Category.String);
+		addFunction(Kind.WEEK_OF_YEAR, Category.Date, "WEEK_OF_YEAR", "WEEK");
+		addFunction(Kind.YEAR, Category.Date);
+	}
+	
+	private static void addFunction(Kind kind, Category category) {
+		addFunction(kind, category, kind.name());
+	}
+
+	private static void addFunction(Kind kind, Category category, String... alias) {
+		for (String name : alias) {
+			Function function = new Function(kind, name, category, true);
+			OPERATORS.add(function);
+			FUNCTIONS_BY_NAME.put(name, function);
+		}
+	}
+
+	private static void addFunctionNotDeterministic(Kind kind, Category category) {
+		addFunctionNotDeterministic(kind, category, kind.name());
+	}
+
+	private static void addFunctionNotDeterministic(Kind kind, Category category, String... alias) {
+		for (String name : alias) {
+			Function function = new Function(kind, name, category, false);
+			OPERATORS.add(function);
+			FUNCTIONS_BY_NAME.put(name, function);
+		}
+	}
+
+//	public static Set<Function> getFunctions() {
+//		return FUNCTIONS;
+//	}
+
+	public static Function getFunction(final String name) {
+		if (name == null)
+			return null;
+
+		return FUNCTIONS_BY_NAME.get(name.toUpperCase());
+	}
+	
+	
+	
 	protected final Kind kind;
 
 	/**
@@ -81,28 +471,9 @@ public class Operator implements Comparable<Operator> {
 	private String returns = "";
 	private String constraints = "";
 
-	private static final ConcurrentHashMap<String, OperatorInfo> infos = new ConcurrentHashMap<>();
-
-	static {
-		try (InputStream is = Expression.class.getResourceAsStream("expression.xml")) {
-			Document document = XmlHandler.loadXmlFile(is);
-			Node rootNode = XmlHandler.getSubNode(document, OperatorInfo.EXPRESSION_TAG);
-			int count = XmlHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
-			for (int i = 0; i < count; i++) {
-				Node node = XmlHandler.getSubNodeByNr(rootNode, OperatorInfo.OPERATOR_TAG, i);
-				OperatorInfo info = new OperatorInfo(node);
-				infos.put(info.getName(), info);
-
-				//System.out.println(info.getName());
-			}
-		} catch (Exception e) {
-
-		}
-	}
 
 
 
-	
 	/**
 	 * Creates an operator specifying left and right precedence.
 	 * 
@@ -110,7 +481,7 @@ public class Operator implements Comparable<Operator> {
 	 * @param leftPrecedence  Left precedence
 	 * @param rightPrecedence Right precedence
 	 */
-	protected Operator(Kind kind,  String name, Category category, int leftPrecedence, int rightPrecedence) {
+	protected Operator(Kind kind, String name, Category category, int leftPrecedence, int rightPrecedence) {
 		super();
 		this.kind = kind;
 		this.name = name;
@@ -121,7 +492,7 @@ public class Operator implements Comparable<Operator> {
 		OperatorInfo info = infos.get(kind.name());
 		if (info != null) {
 			this.syntax = MessageFormat.format(Const.NVL(info.getSyntax(), ""), name);
-			//this.category = Const.NVL(info.getCategory(), "");
+			// this.category = Const.NVL(info.getCategory(), "");
 			this.description = info.getDescription();
 			this.constraints = info.getConstraints();
 			this.returns = info.getReturns();
@@ -137,12 +508,13 @@ public class Operator implements Comparable<Operator> {
 	 *                          right
 	 */
 	protected Operator(Kind kind, Category category, int precedence, boolean leftAssociativity) {
-		this(kind, kind.toString(), category,  leftPrec(precedence, leftAssociativity), rightPrec(precedence, leftAssociativity));
+		this(kind, kind.toString(), category, leftPrec(precedence, leftAssociativity),
+				rightPrec(precedence, leftAssociativity));
 	}
 
 	protected static int leftPrec(int precedence, boolean leftAssociativity) {
 		assert (precedence % 2) == 0;
-		if (leftAssociativity) {			
+		if (leftAssociativity) {
 			++precedence;
 		}
 		return precedence;
@@ -183,7 +555,7 @@ public class Operator implements Comparable<Operator> {
 
 	public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
 		switch (kind) {
-				
+
 		case BITWISE_AND_OPERATOR: {
 			Value left = args[0].eval(context);
 			if (left.isNull())
@@ -224,7 +596,7 @@ public class Operator implements Comparable<Operator> {
 
 			return Value.of(left.toInteger() ^ right.toInteger());
 		}
-			
+
 		case BETWEEN_OPERATOR: {
 			Value operand = args[0].eval(context);
 			Value start = args[1].eval(context);
@@ -311,7 +683,7 @@ public class Operator implements Comparable<Operator> {
 
 		}
 
-		case MINUS_OPERATOR: {
+		case NEGATE_OPERATOR: {
 			Value value = args[0].eval(context);
 			return value.negate();
 		}
@@ -414,7 +786,7 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case POWER: // Same implementation for operator and function
-		//case POWER_OPERATOR: 
+		// case POWER_OPERATOR:
 		{
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
@@ -550,14 +922,13 @@ public class Operator implements Comparable<Operator> {
 	public Expression optimize(IExpressionContext context, Expression... operands) throws ExpressionException {
 		switch (kind) {
 
-		case MINUS_OPERATOR:
+		case NEGATE_OPERATOR:
 		case LOGICAL_NOT_OPERATOR: {
 			Expression operand = operands[0].optimize(context);
 
 			if (operand.isConstant()) {
 				return eval(context, operand);
-			}
-			else if ( operand.is(this.kind) ) {
+			} else if (operand.is(this.kind)) {
 				// Eliminate double NOT or MINUS
 				ExpressionCall call = (ExpressionCall) operand;
 				return call.getOperands()[0];
@@ -566,7 +937,49 @@ public class Operator implements Comparable<Operator> {
 			return new ExpressionCall(this, operand);
 		}
 
-		case LOGICAL_AND_OPERATOR: // Binary operator
+		case LOGICAL_OR_OPERATOR: {
+			Expression left = operands[0].optimize(context);
+			Expression right = operands[1].optimize(context);
+
+			if (left.isConstant() ) {
+				Value value = (Value) left;				
+				
+				if ( value.toBoolean() ) return Value.TRUE;
+				if ( !value.toBoolean() ) return right;
+			}
+
+			if (right.isConstant() ) {
+				Value value = (Value) right;				
+				if ( value.toBoolean() ) return Value.TRUE;
+				if ( !value.toBoolean() ) return left;
+			}
+			return new ExpressionCall(this, left, right);
+		}
+		
+		case LOGICAL_AND_OPERATOR: {
+			
+			Expression left = operands[0].optimize(context);
+			if (left.isConstant() ) {
+				Value value = (Value) left;
+				if ( value.isNull() ) return Value.NULL;
+				if ( !value.toBoolean() ) return Value.FALSE;
+			}
+
+			Expression right = operands[1].optimize(context);
+			if (right.isConstant() ) {
+				Value value = (Value) right;
+				if ( value.isNull() ) return Value.NULL;
+				if ( !value.toBoolean() ) return Value.FALSE;
+			}
+
+			if (left.isConstant() && right.isConstant()) {
+				return eval(context, left, right);
+			}	
+
+			return new ExpressionCall(this, left, right);
+		}
+			
+		// Binary operator
 		case CONCAT_OPERATOR:
 		case CONTAINS_OPERATOR:
 		case ADD_OPERATOR:
@@ -574,8 +987,7 @@ public class Operator implements Comparable<Operator> {
 		case MULTIPLY_OPERATOR:
 		case DIVIDE_OPERATOR:
 		case MODULUS_OPERATOR:
-		//case POWER_OPERATOR:
-		case LOGICAL_OR_OPERATOR:
+			// case POWER_OPERATOR:
 		case LOGICAL_XOR_OPERATOR:
 		case EQUAL_OPERATOR:
 		case NOT_EQUAL_OPERATOR:
@@ -637,7 +1049,7 @@ public class Operator implements Comparable<Operator> {
 
 		case CASE_WHEN_OPERATOR: {
 			Expression[] operands = call.getOperands();
-			
+
 			Expression switchExpression = operands[0];
 			ExpressionList whenList = (ExpressionList) operands[1];
 			ExpressionList thenList = (ExpressionList) operands[2];
@@ -698,14 +1110,14 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case MINUS_OPERATOR:  {
+		case NEGATE_OPERATOR: {
 			Expression[] operands = call.getOperands();
 			writer.append(this.getName());
 			operands[0].unparse(writer, leftPrec, rightPrec);
 			break;
 		}
 
-		case LOGICAL_NOT_OPERATOR: { 
+		case LOGICAL_NOT_OPERATOR: {
 			Expression[] operands = call.getOperands();
 			writer.append(this.getName());
 			writer.append(' ');
@@ -739,7 +1151,7 @@ public class Operator implements Comparable<Operator> {
 		case MULTIPLY_OPERATOR:
 		case DIVIDE_OPERATOR:
 		case MODULUS_OPERATOR: {
-		//case POWER_OPERATOR:
+			// case POWER_OPERATOR:
 			Expression[] operands = call.getOperands();
 			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(this.getName());
@@ -761,211 +1173,6 @@ public class Operator implements Comparable<Operator> {
 
 	}
 
-	// -------------------------------------------------------------
-	// BITWISE OPERATORS
-	// -------------------------------------------------------------
-	
-	/**
-	 * Bitwise AND operator "&".
-	 */
-	public static final Operator BITWISE_AND = new Operator(Kind.BITWISE_AND_OPERATOR, Category.Bitwise, 70, true);
-
-	/**
-	 * Bitwise OR operator "|".
-	 */
-	public static final Operator BITWISE_OR = new Operator(Kind.BITWISE_OR_OPERATOR, Category.Bitwise, 90, true);
-
-	/**
-	 * Bitwise NOT operator "~".
-	 */
-	public static final Operator BITWISE_NOT = new Operator(Kind.BITWISE_NOT_OPERATOR, Category.Bitwise, 40, true);
-
-	/**
-	 * Bitwise XOR operator "^".
-	 */
-	public static final Operator BITWISE_XOR = new Operator(Kind.BITWISE_XOR_OPERATOR, Category.Bitwise, 80, true);
-
-	
-	
-	// -------------------------------------------------------------
-	// LOGICAL OPERATORS
-	// -------------------------------------------------------------
-
-	/**
-	 * Logical negation <code>NOT</code> operator
-	 * 
-	 * <p>
-	 * Syntax of the operator:
-	 * <ul>
-	 * <li><code>field [NOT] TRUE</code></li>
-	 * <li><code>field [NOT] IN (list of values)</code></li>
-	 * <li><code>field [NOT] BETWEEN start AND end</code></li>
-	 * </ul>
-	 * </p>
-	 */
-	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT_OPERATOR, Category.Logical, 150, false);
-	/**
-	 * Logical disjunction <code>OR</code> operator.
-	 */
-	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR_OPERATOR, Category.Logical, 180, true);
-	/**
-	 * Logical conjunction <code>AND</code> operator.
-	 */
-	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND_OPERATOR, Category.Logical, 160, true);
-	/**
-	 * Logical <code>XOR</code> operator.
-	 */
-	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR_OPERATOR, Category.Logical, 170, true);
-
-	/**
-	 * An operator describing the <code>IS</code> operator.
-	 *
-	 * <p>
-	 * Syntax of the operator:
-	 * <ul>
-	 * <li><code>field IS TRUE</code></li>
-	 * <li><code>field IS FALSE</code></li>
-	 * <li><code>field IS NULL</code></li>
-	 * </ul>
-	 */
-	public static final Operator IS = new Operator(Kind.IS_OPERATOR, Category.Logical, 140, true);
-
-	/**
-	 * Logical <code>IN</code> operator tests for a value's membership in a list of
-	 * values. The IN operator is a shorthand for multiple OR conditions.
-	 *
-	 * <p>
-	 * Syntax of the operator:
-	 * <ul>
-	 * <li><code>field [NOT] IN list of values</code></li>
-	 * </ul>
-	 *
-	 * <p>
-	 * <b>NOTE</b> If the <code>NOT</code> clause is present the
-	 * {@link org.apache.hop.core.ExpressionParser parser} will generate a
-	 * equivalent to <code>NOT (field IN list of values ...)</code>
-	 */
-	public static final Operator IN = new Operator(Kind.IN_OPERATOR, Category.Logical, 120, true);
-	/**
-	 * An operator describing the <code>LIKE</code> operator.
-	 *
-	 * <p>
-	 * Syntax of the operator:
-	 *
-	 * <ul>
-	 * <li><code>field [NOT] LIKE pattern</code></li>
-	 * </ul>
-	 *
-	 * <p>
-	 * <b>NOTE</b> If the <code>NOT</code> clause is present the
-	 * {@link org.kettle.core.database.ExpressionParser parser} will generate a
-	 * equivalent to <code>NOT (field LIKE pattern ...)</code>
-	 * 
-	 * TODO: implement LIKE <pattern> ESCAPE <char>
-	 */
-	public static final Operator LIKE = new Operator(Kind.LIKE_OPERATOR, Category.Comparison, 120, true);
-
-	public static final Operator BETWEEN = new Operator(Kind.BETWEEN_OPERATOR, Category.Comparison, 120, true);
-
-	
-	// -------------------------------------------------------------
-	// COMPARISON OPERATORS
-	// -------------------------------------------------------------
-
-	/**
-	 * Comparison equals operator '<code>=</code>'.
-	 */
-	public static final Operator EQUALS = new Operator(Kind.EQUAL_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison not equals operator '<code><></code>'.
-	 */
-	public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUAL_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison not equals operator '<code>!=</code>'.
-	 */
-	public static final Operator LESS_THAN_OR_GREATER_THAN = new Operator(Kind.LESS_THAN_OR_GREATER_THEN, Category.Comparison, 130, true);
-	/**
-	 * Comparison less-than operator '<code>&lt;</code>'.
-	 */
-	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison less-than-or-equal operator '<code>&lt;=</code>'.
-	 */
-	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison greater-than operator '<code>&gt;</code>'.
-	 */
-	public static final Operator GREATER_THAN = new Operator(Kind.GREATER_THAN_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison greater-than-or-equal operator '<code>&gt;=</code>'.
-	 */
-	public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison contains operator '<code>=~</code>'.
-	 */
-	public static final Operator CONTAINS = new Operator(Kind.CONTAINS_OPERATOR, Category.Comparison, 130, true);
-
-
-
-	// -------------------------------------------------------------
-	// ARITHMETIC OPERATORS
-	// -------------------------------------------------------------
-
-	/**
-	 * Arithmetic unary negate operator '<code>-</code>'.
-	 */
-	public static final Operator NEGATE = new Operator(Kind.MINUS_OPERATOR, Category.Arithmetic, 30, true);
-
-//	/**
-//	 * Arithmetic power operator '<code>**</code>'.
-//	 */
-//	public static final Operator POWER = new Operator(Kind.POWER_OPERATOR, Category.Arithmetic, 70, true);
-
-	/**
-	 * Arithmetic multiplication operator '<code>*</code>'.
-	 */
-	public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY_OPERATOR, Category.Arithmetic, 50, true);
-
-	/**
-	 * Arithmetic division operator '<code>/</code>'.
-	 */
-	public static final Operator DIVIDE = new Operator(Kind.DIVIDE_OPERATOR, Category.Arithmetic, 50, true);
-
-	/**
-	 * Arithmetic modulus operator '<code>%</code>'.
-	 */
-	public static final Operator MODULUS = new Operator(Kind.MODULUS_OPERATOR, Category.Arithmetic, 50, true);
-
-	/**
-	 * Arithmetic addition operator '<code>+</code>'.
-	 */
-	public static final Operator ADD = new Operator(Kind.ADD_OPERATOR, Category.Arithmetic, 100, true);
-
-	/**
-	 * Arithmetic subtraction operator '<code>-</code>'.
-	 */
-	public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT_OPERATOR, Category.Arithmetic, 100, true);
-
-	// -------------------------------------------------------------
-	// SPECIAL OPERATORS
-	// -------------------------------------------------------------
-
-	/**
-	 * Casting operator '<code>CAST(value AS dataType)</code>'.
-	 */
-	public static final Operator CAST = new Operator(Kind.CAST_OPERATOR, Category.Conversion,20, true);
-
-	/**
-	 * An operator describing the <code>CASE</code> operator.
-	 */
-	public static final Operator CASE = new Operator(Kind.CASE_WHEN_OPERATOR, Category.Conditional, 120, true);
-
-	/**
-	 * String concatenation operator '<code>||</code>'.
-	 */
-	public static final Operator CONCAT = new Operator(Kind.CONCAT_OPERATOR, Category.Other, 110, true);
-
-	
 
 	public String getCategory() {
 		return category;

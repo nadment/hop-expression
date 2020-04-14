@@ -17,6 +17,8 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.DefaultExpressionContext;
+import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
@@ -30,27 +32,32 @@ public class ExpressionTest {
 		
 		IExpression expression = ExpressionParser.parse(e);
 
+		DefaultExpressionContext contextOptimize = new DefaultExpressionContext();	
+		Expression result =  ((Expression)expression).optimize(contextOptimize);
+		
+		
 		IVariables variables = new Variables();
 		variables.setVariable("TEST", "12345");
 
 		IRowMeta rowMeta = new RowMeta();
-		rowMeta.addValueMeta(new ValueMetaString("NOM"));
-		rowMeta.addValueMeta(new ValueMetaString("SEXE"));
+		rowMeta.addValueMeta(new ValueMetaString("NAME"));
+		rowMeta.addValueMeta(new ValueMetaString("SEX"));
 		rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
 		rowMeta.addValueMeta(new ValueMetaDate("DN"));
 		rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
 		rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
+		rowMeta.addValueMeta(new ValueMetaInteger("YEAR")); 
 
-		Object[] row = new Object[6];
+		Object[] row = new Object[7];
 		row[0] = "TEST";
 		row[1] = "F";
 		row[2] = 40L;
 		row[3] = new Date();
 		row[4] = true;
 		row[5] = null;
+		row[6] = 2020L;
 		
-		//DefaultExpressionContext contextOptimize = new DefaultExpressionContext();	
-		//Expression result =  expression.optimize(contextOptimize);
+
 
 		RowExpressionContext context = new RowExpressionContext(rowMeta);
 		context.setRow(row);
@@ -91,6 +98,8 @@ public class ExpressionTest {
 		assertEquals(expected.atStartOfDay(), eval(e).toDate());
 	}
 	
+
+	
 	protected void evalEquals(String e, LocalDateTime expected) throws Exception {
 		assertEquals(expected, eval(e).toDate());
 	}
@@ -100,12 +109,14 @@ public class ExpressionTest {
 			eval(e);
 			Assert.fail("Syntax should be invalid");
 		} catch (Exception ex) {
+			System.out.println(e + " >>> fail  "+ ex.toString());
 		}
 	}
 
+
 	@Test
 	public void parser() throws Exception {
-		evalEquals("100 | 2", 102);
+		//evalEquals("100 | 2", 102);
 		//evalFails("Year())");
 		//evalFails("Year(()");
 		//evalFails("Year(1,2)");

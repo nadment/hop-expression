@@ -27,6 +27,7 @@ public abstract class Expression implements IExpression {
 		return false;
 	}
 
+	
 	/**
 	 * Return the resulting value for the current context.
 	 *
@@ -35,6 +36,15 @@ public abstract class Expression implements IExpression {
 	 */
 	public abstract Value eval(IExpressionContext context) throws ExpressionException;
 
+    /**
+     * Estimate the cost to process the expression.
+     * Used when optimizing the query, to calculate the query plan
+     * with the lowest estimated cost.
+     *
+     * @return the estimated cost
+     */
+    public abstract int getCost();
+	
 	/**
 	 * Try to optimize the expression.
 	 *

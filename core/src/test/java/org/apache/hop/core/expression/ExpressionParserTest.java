@@ -1,124 +1,104 @@
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.RowMeta;
-import org.apache.hop.core.row.value.ValueMetaBoolean;
-import org.apache.hop.core.row.value.ValueMetaDate;
-import org.apache.hop.core.row.value.ValueMetaInteger;
-import org.apache.hop.core.row.value.ValueMetaString;
-import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.Value;
-import org.junit.Assert;
 import org.junit.Test;
 
-public class ExpressionParserTest {
-
-	protected Value eval(String source) throws Exception {		
-		IExpression expression = ExpressionParser.parse(source);
-
-		IVariables variables = new Variables();
-		variables.setVariable("TEST", "12345");
-
-		IRowMeta rowMeta = new RowMeta();
-		rowMeta.addValueMeta(new ValueMetaString("NOM"));
-		rowMeta.addValueMeta(new ValueMetaString("SEXE"));
-		rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
-		rowMeta.addValueMeta(new ValueMetaDate("DN"));
-		rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
-		rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
-		rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
-
-		Object[] row = new Object[7];
-		row[0] = "TEST";
-		row[1] = "F";
-		row[2] = 40L;
-		row[3] = new Date();
-		row[4] = true;
-		row[5] = null;
-		row[6] = 2020L;
-
-		RowExpressionContext evaluator = new RowExpressionContext(rowMeta);
-		evaluator.setRow(row);
-		System.out.println(source+"\t>>> " + expression.toString() );
-		return expression.eval(evaluator);
-	}
-
-	protected void evalNull(String e) throws Exception {
-		assertTrue(eval(e).isNull());
-	}
-
-	protected void evalTrue(String e) throws Exception {
-		assertTrue(eval(e).toBoolean());
-	}
-
-	protected void evalFalse(String e) throws Exception {
-		assertFalse(eval(e).toBoolean());
-	}
-
-	protected void evalEquals(String e, String expected) throws Exception {
-		assertEquals(expected, eval(e).toString());
-	}
-
-	protected void evalEquals(String e, Long expected) throws Exception {
-		assertEquals(expected, eval(e).toInteger(), 0);
-	}
-
-	protected void evalEquals(String e, double expected) throws Exception {
-		assertEquals(expected, eval(e).toNumber(), 0);
-	}
-
-	protected void evalEquals(String e, LocalDate expected) throws Exception {
-		Date date = Date.from(expected.atStartOfDay(ZoneId.of("GMT")).toInstant());
-		assertEquals(date, eval(e).toDate());
-	}
-
-	protected void evalFails(String e) {
-		System.out.print("Eval: " + e);
-
-		try {
-			eval(e);
-			Assert.fail("Syntax should be invalid");
-		} catch (Exception ex) {
-			System.out.println("\t>>> "+ex.getMessage());
-		}
-	}
+public class ExpressionParserTest extends ExpressionTest {
 
 	@Test
-	public void testComment() throws Exception {
-		//evalTrue(" // Test \n  true ");
-		//evalTrue(" /** Test */  true ");
+	public void comment() throws Exception {
+		evalTrue(" // Test \n  true ");
+		evalTrue(" /** Test */  true ");
 		evalTrue("/**\n * Comment on multi line\n *\n */	True");
 	}
 	
-	
+	@Test
+	public void literalDate() throws Exception {
+		evalEquals("Date '2019-02-25'", LocalDate.of(2019, 2, 25));
+	}
+
 	//@Test
-	public void TEST() throws Exception {
-		// evaluateEquals("Add_Months(Date '2019-01-15',1)", LocalDate.of(2019,
-		// Month.FEBRUARY,15));
-		// evaluateEquals("CONCAT('TES','T')","TEST");
-		evalEquals("Lower([NOM]) || 'XX'","testXX");
-		evalTrue("CONTAINS([NOM],'ES')");
-		// evaluateTrue("NOM =~ 'ES'");
+	public void literalTimestamp() throws Exception {
+		evalEquals("Timestamp '2019-02-25 23:59:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 59));
+	}
+
+	@Test
+	public void literalString() throws Exception {
+	
+		// Single quote
+		evalTrue("'test'=\"test\"");
+		evalEquals("'te''st'","te'st");
+		evalEquals("'te\"st'","te\"st");
+		
+		// Double quote
+		evalEquals("\"te'st\"","te'st");
+		evalEquals("\"te\"\"st\"","te\"st");
+		
+		// Escape tab 
+		evalEquals("'\\t'","\t");
+		
+		// Escape backspace
+		evalEquals("'\\b'","\b");
+
+		// Escape form feed
+		evalEquals("'\\f'","\f");
+
+		// Escape newline
+		evalEquals("'\\n'","\n");
+
+		// Escape carriage return
+		evalEquals("'\\r'","\r");
+
+		// Escape 16 bit unicode
+		evalEquals("'\\u20AC'","€");
+
+		// Escape 32 bit unicode
+		evalEquals("'\\U000020AC'","€");
+
+	}
+	
+	@Test
+	public void literalNumeric() throws Exception {
+
+		// Hexadecimal
+		evalEquals("0xff", 255);
+		evalEquals("0xfE", 254);
+		evalEquals("0x0F", 15);
+		evalFails("0X0F");
+		evalFails("0X0FG");
+
+		// Binary
+		evalEquals("0b10", 2);
+		evalEquals("0b00000010", 2);
+		evalFails("0B010101");
+		evalFails("0B010201");
+
+		// Integer
+		evalEquals("-9223372036854775818", Long.MIN_VALUE);		
+		evalEquals("9223372036854775807", Long.MAX_VALUE);			
+		
+		// Big number
+		evalEquals("2.3E2", new BigDecimal("2.3E2"));
+		evalEquals("-2.3E-2", new BigDecimal("-2.3E-2"));
+		evalEquals("-2.3e-2", new BigDecimal("-2.3E-2"));
+		evalEquals("12345678901234567890123456789012345678901234567890", new BigDecimal("12345678901234567890123456789012345678901234567890"));
+		
+		evalFails("2E2E2");
+		evalFails("2E-2.2");
+		evalFails("-2.3EE-2");
+		evalFails("-2.3E--2");
+	}
+
+	@Test
+	public void reservedWord() throws Exception {
 		evalEquals("1 + [Year]/(2)",1011);
-		evalEquals("30/(2)",15);
-		//evalEquals("10**2", 100);
-		//evalEquals("Pi()", Math.PI);
-		//evalTrue("2.000 = 2.00");
-		//evalEquals("40/10",4);
-		//evalTrue("NULLIS is null");
-//		evalFails(" 'T' | 'T' ");
+	}
+		
+	@Test
+	public void syntaxError() throws Exception {
 		evalFails("'T'||'T");
 		evalFails("\"T\"||\"T");
 		evalFails("9!7");
@@ -141,7 +121,7 @@ public class ExpressionParserTest {
 		evalFails("1 in (1,2,3");		
 		evalFails("1 in (1,,3)");		
 		evalFails("1 in (1,2,)");
-		evalFails("Cast(123 as Nill)");
+
 		//evalFails("Date '2020-20-28'");
 		//evalEquals("-4**2",-16);
 	}

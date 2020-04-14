@@ -147,6 +147,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueDate(value);
 	}
 
+	@Override
 	public Kind getKind() {
 		return Kind.VALUE;
 	}
@@ -165,6 +166,11 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 */
 	public abstract Object getObject();
 
+	@Override
+    public int getCost() {
+    	return 1;
+    };
+	
 	/**
 	 * Compare this value against another value of the same data type.
 	 *

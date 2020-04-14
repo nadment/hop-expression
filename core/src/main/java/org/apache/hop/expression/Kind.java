@@ -126,15 +126,15 @@ public enum Kind {
 	 */
 	MODULUS_OPERATOR("%"),
 
-	/**
-	 * The arithmetic unary plus (positive) operator '+'.
-	 */
-	PLUS_OPERATOR("+"),
+//	/**
+//	 * The arithmetic unary plus (positive) operator '+'.
+//	 */
+//	PLUS_OPERATOR("+"),
 
 	/**
 	 * The arithmetic unary minus (negative) operator '-'.
 	 */
-	MINUS_OPERATOR("-"),
+	NEGATE_OPERATOR("-"),
 
 	/**
 	 * The arithmetic addition operator '+'.

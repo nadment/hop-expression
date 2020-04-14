@@ -20,11 +20,11 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void Iff() throws Exception {
-		evalEquals("Iff(True,'True','False')", "True");
-		evalEquals("Iff(False,'True','False')", "False");
-		evalFails("Iff()");
-		evalFails("Iff(true)");
-		evalFails("Iff(true,2)");
+		evalEquals("If(True,'True','False')", "True");
+		evalEquals("If(False,'True','False')", "False");
+		evalFails("If()");
+		evalFails("If(true)");
+		evalFails("If(true,2)");
 	}
 
 	@Test

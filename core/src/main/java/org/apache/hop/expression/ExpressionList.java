@@ -66,6 +66,16 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
 		return Kind.LIST;
 	}
 	
+
+    @Override
+    public int getCost() {
+        int cost = 1;
+        for (Expression e : list) {
+            cost += e.getCost();
+        }
+        return cost;
+    }
+	
 	public Expression get(int index) {
 		return list[index];
 	}

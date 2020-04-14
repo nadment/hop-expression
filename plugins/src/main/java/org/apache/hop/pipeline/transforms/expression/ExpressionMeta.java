@@ -106,7 +106,6 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 	@Override
 	public Object clone() {
 		ExpressionMeta clone = (ExpressionMeta) super.clone();
-
 		return clone;
 	}
 

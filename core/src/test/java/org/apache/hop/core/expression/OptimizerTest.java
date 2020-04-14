@@ -15,12 +15,17 @@ public class OptimizerTest {
 
 	protected Expression optimize(String e) throws Exception {
 
-		IExpression expression = ExpressionParser.parse(e);
+		Expression expression = (Expression)ExpressionParser.parse(e);
 
 		DefaultExpressionContext context = new DefaultExpressionContext();
 		Expression result = ((Expression) expression).optimize(context);
 
-		System.out.println("optimize(" + e + ") >>> " + result);
+		int cost = expression.getCost();
+		int opticost = result.getCost();
+		
+		int optimized = expression.getCost()-result.getCost();
+				
+		System.out.println("("+optimized+") optimize(" + e + ")["+expression.getCost()+"] >>> optimized(" + result+")["+result.getCost()+"]");
 		return result;
 	}
 

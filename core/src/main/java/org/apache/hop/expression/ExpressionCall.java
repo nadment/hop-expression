@@ -38,11 +38,22 @@ public class ExpressionCall extends Expression {
 		return operator.optimize(context, operands);
 	}
 
-	
+	@Override
 	public Kind getKind() {
 		return operator.kind;
 	}
-	
+
+	@Override
+	public int getCost() {
+		// TODO: operator cost
+		int cost = 1;
+		for (Expression operand : operands) {
+			cost += operand.getCost();
+		}
+
+		return cost;
+	}
+
 	/**
 	 * Accessor to the operator
 	 *
@@ -81,7 +92,7 @@ public class ExpressionCall extends Expression {
 //		} else {
 //			operator.unparse(writer, this, leftPrec, rightPrec);
 //		}
-		
+
 		if (leftPrec < operator.getLeftPrecedence()
 				|| (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
 			writer.append('(');

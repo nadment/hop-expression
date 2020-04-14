@@ -9,9 +9,8 @@ import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.Function;
+import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.ExpressionRegistry;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUI;
@@ -64,7 +63,8 @@ public class ExpressionEditor extends SashForm {
 				SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, "", false);
 
 		txtEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-		txtEditor.addLineStyleListener(new ExpressionSyntaxHighlight());
+		txtEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
+		
 		//txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
 		// wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
@@ -150,7 +150,7 @@ public class ExpressionEditor extends SashForm {
 		}
 
 		// Create item operator
-		for (Operator operator : ExpressionRegistry.getOperators()) {
+		for (Operator operator : Operator.getOperators()) {
 
 			TreeItem parentItem = items.get(operator.getCategory());
 
@@ -159,22 +159,23 @@ public class ExpressionEditor extends SashForm {
 				item = new TreeItem(tree, SWT.NULL);
 			else
 				item = new TreeItem(parentItem, SWT.NULL);
+			item.setImage(labelProvider.getImage(operator));			
 			item.setText(operator.getName());
 			item.setData(operator.getName());
 		}
 
-		// Create item functions
-		for (Function function : ExpressionRegistry.getFunctions()) {
-			TreeItem parentItem = items.get(function.getCategory());			
-			TreeItem item;		
-			if (parentItem == null)
-				item = new TreeItem(tree, SWT.NULL);
-			else
-				item = new TreeItem(parentItem, SWT.NULL);
-			item.setImage(labelProvider.getImage(function));
-			item.setText(function.getName());
-			item.setData(function.getName());
-		}
+//		// Create item functions
+//		for (Function function : Operator.getFunctions()) {
+//			TreeItem parentItem = items.get(function.getCategory());			
+//			TreeItem item;		
+//			if (parentItem == null)
+//				item = new TreeItem(tree, SWT.NULL);
+//			else
+//				item = new TreeItem(parentItem, SWT.NULL);
+//			item.setImage(labelProvider.getImage(function));
+//			item.setText(function.getName());
+//			item.setData(function.getName());
+//		}
 
 		treeItemVariable = new TreeItem(tree, SWT.NULL);
 		treeItemVariable.setImage(GUIResource.getInstance().getImageBol());
@@ -246,7 +247,7 @@ public class ExpressionEditor extends SashForm {
 					
 					// Escape field name matching reserved words or function
 					String name = valueMeta.getName();
-					if ( ExpressionRegistry.getReservedWords().contains(name.toUpperCase()) || ExpressionRegistry.getFunction(name)!=null ) {
+					if ( ExpressionScanner.getReservedWords().contains(name.toUpperCase()) || Operator.getFunction(name)!=null ) {
 						name = '['+name+']';
 					} 
 					

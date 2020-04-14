@@ -1,8 +1,6 @@
 package org.apache.hop.core.expression;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -15,37 +13,8 @@ public class OperatorTest extends ExpressionTest {
 	}
 
 	@Test
-	public void LitteralDate() throws Exception {
-		evalEquals("Date '2019-02-25'", LocalDate.of(2019, 2, 25));
-		evalEquals("Timestamp '2019-02-25 23:59:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 59));
-	}
-
-	@Test
-	public void LitteralBigNumber() throws Exception {		
-		evalEquals("-2.3E-2", new BigDecimal("-2.3E-2"));
-		evalEquals("12345678901234567890123456789012345678901234567890", new BigDecimal("12345678901234567890123456789012345678901234567890"));
-	}
-	
-	@Test
-	public void LitteralBinary() throws Exception {
-		evalEquals("0b10", 2);
-		evalEquals("0b00000010", 2);
-		evalFails("0B010101");
-		evalFails("0B010201");
-	}
-
-	@Test
-	public void LitteralHex() throws Exception {
-		evalEquals("0xff", 255);
-		evalEquals("0xfE", 254);
-		evalEquals("0x0F", 15);
-		evalFails("0X0F");
-		evalFails("0X0FG");
-	}
-
-	@Test
 	public void Equals() throws Exception {
-		evalTrue("NOM = 'TEST'");
+		evalTrue("NAME = 'TEST'");
 		evalTrue("Age = 40");
 		evalTrue("FLAg = true");
 		evalTrue("2.000 = 2");
@@ -77,7 +46,7 @@ public class OperatorTest extends ExpressionTest {
 	@Test
 	public void NotEquals() throws Exception {
 		evalTrue("'bar' != 'foo'");		
-		evalTrue("NOM <> 'tEST'");
+		evalTrue("NAME <> 'tEST'");
 		evalFalse("Age <> 40");
 		evalFalse("Age != 40");
 		evalTrue("1 <> 2");
@@ -189,8 +158,8 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void In() throws Exception {
-		evalTrue("SEXE in ('?','F','RM')");
-		evalTrue("SEXE not in ('?','-','!')");
+		evalTrue("SEX in ('?','F','RM')");
+		evalTrue("SEX not in ('?','-','!')");
 		evalTrue("2 in (1,2,3)");
 		evalTrue("2.5 IN (1,2.5,3)");
 		evalTrue("'2' in (1,2,3)");
@@ -271,11 +240,13 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("Cast(123.6 as String)", "123.6");
 
 		 
-		evalEquals("Cast('1234.567' as Integer)", new Long(1234));
 		evalEquals("Cast('1234' as Number)", new Double(1234));
+		evalEquals("Cast('1234.567' as Integer)", new Long(1234));
 		// TODO: evalEquals("Cast('0x123' as Integer)", new Long(291));
 		
 		evalEquals("Cast(12345678901234567890123456789012345678901234567890 as BigNumber)", new BigDecimal("12345678901234567890123456789012345678901234567890"));
+		
+		evalFails("Cast(123 as Nill)");
 	}
 
 	@Test
@@ -304,7 +275,7 @@ public class OperatorTest extends ExpressionTest {
 	}
 
     // TODO: remove or implement power operator
-	public void Power() throws Exception {
+	public void Power() throws Exception {		
 		evalEquals("4**2", 16);
 		evalEquals("-4**2", -16);
 		evalNull("null**1");
@@ -394,10 +365,10 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void Like() throws Exception {
-		evalTrue("NOM like 'TES%'");
-		evalTrue("NOM not like 'X%'");
-		evalFalse("NOM like 'X%'");
-		evalTrue("'test or not' like '%or%'");
+		evalTrue("NAME like 'TES%'");
+		evalTrue("NAME not like 'X%'");
+		evalFalse("NAME like 'X%'");
+		evalTrue("'Tuesday' like '%es%'");
 
 		// values that starts with "a" and ends with "o"
 		evalTrue("'amigo' like 'a%o'");
@@ -405,6 +376,7 @@ public class OperatorTest extends ExpressionTest {
 		// values that starts with "a" and are at least 3 characters in length
 		evalTrue("'ami' like 'a_%_%'");
 		evalTrue("'amigo' like 'a_%_%'");
+		evalTrue("'Friday' like '___day'");
 		evalFalse("'am' like 'a_%_%'");
 
 		evalTrue("'100%' like '100^%' escape '^'");
@@ -420,8 +392,8 @@ public class OperatorTest extends ExpressionTest {
 	@Test
 	public void Concat() throws Exception {
 		evalEquals("CONCAT('TES','T')", "TEST");
-		evalTrue("NOM='TES'||'T'");
-		evalTrue("NOM='TES'||NULLIS||'T'");
+		evalTrue("NAME='TES'||'T'");
+		evalTrue("NAME='TES'||NULLIS||'T'");
 		evalEquals("'TEST'||null", "TEST");
 		evalEquals("null||'TEST'", "TEST");
 		evalNull("null||null");
@@ -429,9 +401,9 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void Contains() throws Exception {
-		evalTrue("CONTAINS(NOM,'ES')");
-		evalTrue("NOM =~ 'ES'");
-		evalTrue("NOM =~ 'TEST'");
+		evalTrue("CONTAINS(NAME,'ES')");
+		evalTrue("NAME =~ 'ES'");
+		evalTrue("NAME =~ 'TEST'");
 	}
 
 	@Test

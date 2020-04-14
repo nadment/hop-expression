@@ -12,9 +12,15 @@ public class ExpressionIdentifier extends Expression {
 		this.name = name;
 	}
 
+	@Override
 	public Kind getKind() {
 		return Kind.IDENTIFIER;
 	}
+
+	@Override
+    public int getCost() {
+        return 2;
+    }
 	
 	public String getName() {
 		return name;
