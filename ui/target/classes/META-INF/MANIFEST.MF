@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Implementation-Title: Hop hop-expression-ui
+Implementation-Version: 0.1.0-SNAPSHOT
+Built-By: Nico
+Specification-Vendor: Project Hop
+Specification-Title: Hop hop-expression-ui
+Implementation-Vendor-Id: org.hop
+Implementation-Vendor: Project Hop
+Source-Java-Version: 1.8
+Implementation-ProductID: hop-expression-ui
+Target-Java-Version: 1.8
+Build-Jdk: 1.8.0_241
+Specification-Version: 0.1.0-SNAPSHOT
+Implementation-URL: http://www.project-hop.org
+Created-By: Maven Integration for Eclipse
+
