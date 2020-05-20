@@ -8,22 +8,17 @@ import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.junit.Test;
 
 public class ExpressionPerformance {
 
-	@Test
-	public void perf() throws Exception {
-		System.out.println("Started performance test");
-
-		long cycle = 1000000;
-		long startTime = System.currentTimeMillis();
-
-		IExpression expression = ExpressionParser.parse("NOM||left(to_char(AGE+5,'000'),2)");
+	
+	public void perf(String e)  {
+		Expression expression = ExpressionParser.parse("NOM||left(to_char(AGE+5,'000'),2)");
 
 		IRowMeta rowMeta = new RowMeta();
 		rowMeta.addValueMeta(new ValueMetaString("NOM"));
@@ -43,17 +38,26 @@ public class ExpressionPerformance {
 
 		RowExpressionContext context = new RowExpressionContext(rowMeta);
 		context.setRow(row);
-		System.out.println(expression.toString());
-
+				
+		long cycle = 10000000;
+		long startTime = System.currentTimeMillis();
 		for (long i = cycle; i > 0; i--) {
 			Value result = expression.eval(context);
 		}
 
 		long endTime = System.currentTimeMillis();
-
 		long duration = endTime - startTime;
 
-		System.out.println("Performance test finished");
-		System.out.println("Duration for " + cycle + " cycles = " + duration);
+		System.out.println("Performance(\""+e+"\") Duration for " + cycle + " cycles = " + duration);
 	}
+	
+	
+	@Test
+	public void performance() {
+
+		perf("NOM||left(to_char(AGE+5,'000'),2)");
+		perf("Date '2020-05-06'");
+		perf("To_DATE('2020-FEB-06','YYYY-MM-DD'");
+
+	} 
 }

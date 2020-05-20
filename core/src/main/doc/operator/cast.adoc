@@ -1,0 +1,29 @@
+= CAST
+
+Converts a value of one data type into another data type:
+
+== Syntax
+----
+CAST(value AS dataType)
+----
+
+== Usage
+
+Supported data type:
+
+* BigNumber		
+*	Binary
+*	Boolean
+*	Date
+*	Integer
+*	Number
+*	String
+
+When converting a number to a boolean, 0 is false and every other value is true. 
+When converting a boolean to a number, false is 0 and true is 1. 
+When converting a number to a number of another type, the value is checked for overflow. 
+When converting a string to binary, it is hex encoded (every byte two characters).
+
+If the cast is not possible, an error is raised.
+
+See also xref:to_boolean.adoc[TO_BOOLEAN], xref:to_char.adoc[TO_CHAR]

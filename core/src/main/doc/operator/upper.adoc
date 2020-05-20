@@ -1,0 +1,11 @@
+= UPPER, UCASE
+
+Converts a string to upper case.
+
+== Syntax
+----
+UPPER(string)
+UCASE(string)
+----
+
+See also xref:lower.adoc[LOWER]

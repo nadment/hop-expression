@@ -16,6 +16,7 @@ import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.ColumnsResizer;
 import org.apache.hop.ui.core.widget.TableView;
+import org.apache.hop.ui.expression.AbstractTransformDialog;
 import org.apache.hop.ui.expression.ExpressionEditorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -26,7 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
-@PluginDialog(id = "ExpressionValue", image = "ExpressionValue.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
+@PluginDialog(id = "Expression", image = "expression.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
 public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta> implements ITransformDialog {
 	private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes, needed by Translator2!!
 

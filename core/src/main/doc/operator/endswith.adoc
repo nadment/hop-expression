@@ -1,0 +1,8 @@
+= ENDSWITH
+
+Returns TRUE if the first expression ends with second expression. Both values must be data type string or binary.
+
+== Syntax
+----
+ENDSWITH(string, string)
+----

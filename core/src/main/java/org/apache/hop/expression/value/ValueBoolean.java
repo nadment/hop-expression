@@ -3,7 +3,7 @@ package org.apache.hop.expression.value;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
-import org.apache.hop.expression.Type;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
@@ -54,8 +54,8 @@ public class ValueBoolean extends Value {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.BOOLEAN;
+	public DataType getDataType() {
+		return DataType.BOOLEAN;
 	}
 	
 	@Override

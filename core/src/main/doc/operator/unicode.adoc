@@ -1,0 +1,16 @@
+= UNICODE
+
+Returns the Unicode code point for the first Unicode character in a string. If the string is empty, a value of 0 is returned.
+
+== Syntax
+----
+UNICODE(string)
+----
+
+== Usage
+
+
+
+Returns::
+
+Integer

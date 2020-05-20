@@ -1,0 +1,12 @@
+= BIT_NOT, ~
+
+Performs a bitwise NOT operation on an integer value.
+
+== Syntax
+----
+BIT_NOT(integer)
+----
+The ~ operator provides alternative syntax.
+----
+~ integer
+----

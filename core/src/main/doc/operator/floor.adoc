@@ -1,0 +1,10 @@
+= FLOOR
+
+Returns the values rounded to the nearest equal or smaller integer.
+
+== Syntax
+----
+FLOOR(numeric_expression)
+----
+
+See also xref:ceil.adoc[CEIL], xref:round.adoc[ROUND]

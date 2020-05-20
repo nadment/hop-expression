@@ -1,0 +1,16 @@
+= MD5
+
+The function calculate the MD5 hash of a data value. The hash will be returned as a 40 characters hex-encoded string.
+
+== Syntax
+----
+MD5(string)
+----
+
+== Usage
+
+
+
+Returns::
+
+Number

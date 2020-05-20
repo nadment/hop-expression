@@ -1,0 +1,10 @@
+= LPAD
+
+Left-pads a string with another string, to a certain length.
+
+== Syntax
+----
+LPAD(string, length[, pad_string])
+----
+
+See also xref:rpad.adoc[RPAD]

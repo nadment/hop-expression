@@ -1,0 +1,16 @@
+= SPACE
+
+Returns a string consisting of a the specified number of	blank spaces.
+
+== Syntax
+----
+SPACE(length)
+----
+
+== Usage
+
+
+
+Returns::
+
+String

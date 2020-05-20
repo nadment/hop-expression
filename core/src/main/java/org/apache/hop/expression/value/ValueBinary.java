@@ -4,7 +4,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import org.apache.hop.expression.Type;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
@@ -20,8 +20,8 @@ public class ValueBinary extends Value {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.BINARY;
+	public DataType getDataType() {
+		return DataType.BINARY;
 	}
 	@Override
 	public Object getObject() {

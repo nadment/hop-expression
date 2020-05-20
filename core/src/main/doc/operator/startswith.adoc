@@ -1,0 +1,16 @@
+= STARTSWITH
+
+Returns TRUE if the first expression starts with second expression. Both values must be data type string or binary.
+
+== Syntax
+----
+STARTSWITH(string, string)
+----
+
+== Usage
+
+
+
+Returns::
+
+Boolean

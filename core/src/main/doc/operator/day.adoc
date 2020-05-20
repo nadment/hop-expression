@@ -1,0 +1,16 @@
+= DAY, DAYOFMONTH
+
+Returns the day of month of the specified date or timestamp.
+		
+== Syntax
+----
+DAY(date)
+----
+----
+DAYOFMONTH(date)
+----
+
+== Usage
+
+* Returns an integer between 1 and 31.
+* Equivalent to xref:extract.adoc[EXTRACT](DAY FROM date).

@@ -1,0 +1,8 @@
+= EXP
+
+Returns the exponential value of a numeric expression.
+
+== Syntax
+----
+EXP(numeric_expression)
+----

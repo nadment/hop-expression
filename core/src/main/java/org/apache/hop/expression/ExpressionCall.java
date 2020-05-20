@@ -45,8 +45,7 @@ public class ExpressionCall extends Expression {
 
 	@Override
 	public int getCost() {
-		// TODO: operator cost
-		int cost = 1;
+		int cost = 1;		
 		for (Expression operand : operands) {
 			cost += operand.getCost();
 		}
@@ -67,10 +66,6 @@ public class ExpressionCall extends Expression {
 		return operands;
 	}
 
-//	public Expression getOperand(int index) {
-//		return operands[index];
-//	}
-
 	/**
 	 * Returns a count of operands of this expression. In real life there are unary
 	 * (count == 1), binary (count == 2) and ternary (count == 3) expressions.
@@ -83,15 +78,6 @@ public class ExpressionCall extends Expression {
 	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
 
 		final Operator operator = this.getOperator();
-
-//		if (leftPrec > operator.getLeftPrecedence()
-//				|| (operator.getRightPrecedence() <= rightPrec && (rightPrec != 0))) {
-//			writer.append('(');
-//			operator.unparse(writer, this, 0, 0);
-//			writer.append(')');
-//		} else {
-//			operator.unparse(writer, this, leftPrec, rightPrec);
-//		}
 
 		if (leftPrec < operator.getLeftPrecedence()
 				|| (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {

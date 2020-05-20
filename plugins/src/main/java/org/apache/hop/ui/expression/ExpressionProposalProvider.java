@@ -111,13 +111,13 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
 	protected void buildOperatorProposals(List<IContentProposal> list, String qualifier, int position) {
 
-//		System.out.println("list operators [" + qualifier + "] " + position);
+		System.out.println("list operators [" + qualifier + "] " + position);
 
 		for (Operator operator : Operator.getOperators()) {
 
 			// Only function
 			if (operator instanceof Function) {
-				elements.add(new ExpressionProposal(Type.Function, operator.getName(), operator.getSyntax(),
+				elements.add(new ExpressionProposal(Type.Function, operator.getName(), operator.getName(),
 						operator.getDescription()));
 
 				String name = operator.getName();
@@ -126,7 +126,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 				if (name.length() >= qualifier.length()
 						&& name.substring(0, qualifier.length()).equalsIgnoreCase(qualifier)) {
 
-					list.add(new ExpressionProposal(Type.Function, name.substring(position), operator.getSyntax(),
+					list.add(new ExpressionProposal(Type.Function, name.substring(position), operator.getName(),
 							operator));
 				}
 			}

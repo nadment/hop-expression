@@ -1,5 +1,6 @@
 package org.apache.hop.expression;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Random;
@@ -12,6 +13,8 @@ public class DefaultExpressionContext implements IExpressionContext {
 	private ZoneId zone;
 	private Locale locale;
 	private Random random;
+	private Instant currentDate;
+	
 
 	public DefaultExpressionContext() {
 		super();
@@ -19,6 +22,7 @@ public class DefaultExpressionContext implements IExpressionContext {
 		this.locale = Locale.ROOT;
 		this.zone = ZoneId.of("UTC");
 		this.random = new Random();
+		this.currentDate = Instant.now();
 	}
 
 	@Override
@@ -39,5 +43,8 @@ public class DefaultExpressionContext implements IExpressionContext {
 	public Random getRandom() {
 		return random;
 	}
-
+	
+	public Instant getCurrentDate() {
+		return currentDate;
+	}
 }

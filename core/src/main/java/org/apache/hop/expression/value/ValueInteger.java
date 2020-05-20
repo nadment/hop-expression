@@ -4,7 +4,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import org.apache.hop.expression.Type;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
@@ -18,8 +18,8 @@ public class ValueInteger extends Value {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.INTEGER;
+	public DataType getDataType() {
+		return DataType.INTEGER;
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class ValueInteger extends Value {
 
 	@Override
 	public Value add(Value v) {
-		if (this.getType().compareTo(v.getType()) >= 0) {
+		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
 			return Value.of(value + v.toInteger());
 		}
 
@@ -122,16 +122,16 @@ public class ValueInteger extends Value {
 
 	@Override
 	public Value subtract(Value v) {
-		if (this.getType().compareTo(v.getType()) >= 0) {
+		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
 			return Value.of(value - v.toInteger());
 		}
 
-		return this.convertTo(v.getType()).subtract(v);
+		return this.convertTo(v.getDataType()).subtract(v);
 	}
 
 	@Override
 	public Value multiply(Value v) {
-		if (this.getType().compareTo(v.getType()) >= 0) {
+		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
 			return Value.of(value * v.toInteger());
 		}
 
@@ -140,20 +140,20 @@ public class ValueInteger extends Value {
 
 	@Override
 	public Value divide(Value v) {
-		if (this.getType().compareTo(v.getType()) >= 0) {
+		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
 			return Value.of(value / v.toInteger());
 		}
 
-		return this.convertTo(v.getType()).divide(v);
+		return this.convertTo(v.getDataType()).divide(v);
 	}
 
 	@Override
 	public Value remainder(Value v) {
-		if (this.getType().compareTo(v.getType()) >= 0) {
+		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
 			return Value.of(value % v.toInteger());
 		}
 
-		return this.convertTo(v.getType()).remainder(v);
+		return this.convertTo(v.getDataType()).remainder(v);
 	}
 
 	@Override

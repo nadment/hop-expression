@@ -1,0 +1,8 @@
+= OR
+
+Matches either expression.
+
+== Syntax
+----
+boolean OR boolean
+----

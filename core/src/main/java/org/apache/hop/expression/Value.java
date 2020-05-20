@@ -1,7 +1,7 @@
 package org.apache.hop.expression;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import org.apache.hop.expression.value.ValueBigNumber;
 import org.apache.hop.expression.value.ValueBinary;
@@ -141,7 +141,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		return new ValueString(value);
 	}
 
-	public static Value of(LocalDateTime value) {
+	public static Value of(Instant value) {
 		if (value == null)
 			return Value.NULL;
 		return new ValueDate(value);
@@ -157,7 +157,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 *
 	 * @return the type of this Value
 	 */
-	public abstract Type getType();
+	public abstract DataType getDataType();
 
 	/**
 	 * Returns the value object
@@ -195,17 +195,17 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		Value left = this;
 
 		// If not the same data type;
-		if (left.getType() != right.getType()) {
+		if (left.getDataType() != right.getDataType()) {
 			if (left.isNull())
 				return -1;
 			if (right.isNull())
 				return 1;
 
 			// The lower order data type is converted
-			if (left.getType().compareTo(right.getType()) > 0)
-				right = right.convertTo(left.getType());
+			if (left.getDataType().compareTo(right.getDataType()) > 0)
+				right = right.convertTo(left.getDataType());
 			else
-				left = left.convertTo(right.getType());
+				left = left.convertTo(right.getDataType());
 		}
 
 		return left.compare(right);
@@ -218,12 +218,12 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 *
 	 * @return the converted value
 	 */
-	public Value convertTo(final Type targetType) {
+	public Value convertTo(final DataType targetType) {
 
-		if (this.getType() == targetType)
+		if (this.getDataType() == targetType)
 			return this;
 
-		System.out.println("Convert " + this.toString() + " from " + this.getType() + " to " + targetType);
+		//System.out.println("Convert " + this.toString() + " from " + this.getType() + " to " + targetType);
 
 		switch (targetType) {
 		case BOOLEAN:
@@ -283,7 +283,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if the value is a String.
 	 */
 	public boolean isString() {
-		return this.getType() == Type.STRING;
+		return this.getDataType() == DataType.STRING;
 	}
 
 	/**
@@ -302,7 +302,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value has type boolean.
 	 */
 	public boolean isBoolean() {
-		return this.getType() == Type.BOOLEAN;
+		return this.getDataType() == DataType.BOOLEAN;
 	}
 
 	/**
@@ -311,7 +311,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value is an integer
 	 */
 	public boolean isInteger() {
-		return this.getType() == Type.INTEGER;
+		return this.getDataType() == DataType.INTEGER;
 	}
 
 	/**
@@ -320,7 +320,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true is this value is a number
 	 */
 	public boolean isNumber() {
-		return this.getType() == Type.NUMBER;
+		return this.getDataType() == DataType.NUMBER;
 	}
 
 	/**
@@ -329,7 +329,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true is this value is a big number
 	 */
 	public boolean isBigNumber() {
-		return this.getType() == Type.BIGNUMBER;
+		return this.getDataType() == DataType.BIGNUMBER;
 	}
 
 	/**
@@ -338,7 +338,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if the value is a Date
 	 */
 	public boolean isDate() {
-		return this.getType() == Type.DATE;
+		return this.getDataType() == DataType.DATE;
 	}
 
 	/**
@@ -347,7 +347,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return true if this value has type Binary
 	 */
 	public boolean isBinary() {
-		return this.getType() == Type.BINARY;
+		return this.getDataType() == DataType.BINARY;
 	}
 
 	/**
@@ -372,27 +372,27 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return the boolean value
 	 */
 	public boolean toBoolean() throws ExpressionException {
-		throw new ExpressionException("ExpressionException.UnsupportedConversion", "Boolean", this);
+		throw new ExpressionException("Expression.UnsupportedConversion", "Boolean", this);
 	}
 
 	public byte[] toBinary() throws ExpressionException {
-		throw new ExpressionException("ExpressionException.UnsupportedConversion", "Binary", this);
+		throw new ExpressionException("Expression.UnsupportedConversion", "Binary", this);
 	}
 
 	public long toInteger() throws ExpressionException {
-		throw new ExpressionException("ExpressionException.UnsupportedConversion", "Integer", this);
+		throw new ExpressionException("Expression.UnsupportedConversion", "Integer", this);
 	}
 
-	public LocalDateTime toDate() throws ExpressionException {
-		throw new ExpressionException("ExpressionException.UnsupportedConversion", "Date", this);
+	public Instant toDate() throws ExpressionException {
+		throw new ExpressionException("Expression.UnsupportedConversion", "Date", this);
 	}
 
 	public double toNumber() throws ExpressionException {
-		throw new ExpressionException("ExpressionException.UnsupportedConversion", "Number", this);
+		throw new ExpressionException("Expression.UnsupportedConversion", "Number", this);
 	}
 
 	public BigDecimal toBigNumber() throws ExpressionException {
-		throw new ExpressionException("ExpressionException.UnsupportedConversion", "BigNumber", this);
+		throw new ExpressionException("Expression.UnsupportedConversion", "BigNumber", this);
 	}
 
 	/**
@@ -461,8 +461,8 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @param targetType Target data type.
 	 * @return instance of the ExpressionException.
 	 */
-	protected final ExpressionException createDataConversionError(Type targetType) {
-		return new ExpressionException("Error converting {0} value {2} to type {1}", this.getType(), targetType, this);
+	protected final ExpressionException createDataConversionError(DataType targetType) {
+		return new ExpressionException("Error converting {0} value {2} to data type {1}", this.getDataType(), targetType, this);
 	}
 
 	protected final ExpressionException createUnsupportedOperationError(String operation) {

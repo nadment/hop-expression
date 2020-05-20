@@ -1,0 +1,16 @@
+= RTRIM
+
+Returns the string with trailing characters removed.
+
+== Syntax
+----
+RTRIM(string[, characters])
+----
+
+== Usage
+
+string:: The string expression to be trimmed
+
+characters::  One or more characters to remove from the right side. If the parameter is omitted, the function will remove space characters.
+
+See also xref:ltrim.adoc[LTRIM], xref:trim.adoc[TRIM]

@@ -1,7 +1,6 @@
 package org.apache.hop.expression;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -44,8 +43,8 @@ public class RowExpressionContext extends DefaultExpressionContext {
 				if (date == null)
 					return Value.NULL;
 
-				LocalDateTime dt = LocalDateTime.ofInstant(date.toInstant(), getZone());
-				return Value.of(dt);
+			//	LocalDateTime dt = LocalDateTime.ofInstant(date.toInstant(), getZone());
+				return Value.of(date.toInstant());
 			case IValueMeta.TYPE_STRING:
 				String string = rowMeta.getString(row, index);
 				return Value.of(string);

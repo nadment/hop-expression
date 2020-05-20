@@ -1,0 +1,10 @@
+= LAST_DAY
+
+Returns the last day of the month.
+
+== Syntax
+----
+LAST_DAY(date)
+----
+
+See also xref:first_day.adoc[FIRST_DAY], xref:next_day.adoc[NEXT_DAY]

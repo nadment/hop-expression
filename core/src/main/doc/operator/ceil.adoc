@@ -1,0 +1,10 @@
+= CEIL
+
+Returns the value rounded to the nearest equal or larger integer.
+
+== Syntax
+----
+CEIL(numeric_expr)
+----
+
+See also xref:floor.adoc[FLOOR], xref:round.adoc[ROUND]

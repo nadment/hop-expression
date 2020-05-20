@@ -1,0 +1,12 @@
+= SOUNDEX
+
+Returns a string that contains a phonetic representation of the input string.
+
+== Syntax
+----
+SOUNDEX(string)
+----
+
+== Usage
+
+The returned value starts with a letter that represents the first letter in the string followed by 3 digits (e.g. s400, c130).

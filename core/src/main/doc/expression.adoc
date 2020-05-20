@@ -1,37 +1,133 @@
-= Database Join
+= Expression
 
-== Description
+An expression is a combination of one or more values, operators and functions that evaluate to a value.
 
-The Database Join step allows you to run a query against a database using data obtained from previous steps. The parameters for this query are specified as follows:
+NOTE: Expression is not SQL. It is a proprietary language of data transformation.
 
-The data grid in the step properties dialog.  This allows you to select the data coming in from the source hop.
-As question marks (?) in the SQL query.  When the step runs, these will be replaced with data coming in from the fields defined from the data grid.  The question marks will be replaced in the same order as defined in the data grid.
-For example, Database Join allows you to run queries looking up the oldest person who bought a specific product as shown below:
+== Comments
 
-[source,sql]
+Comments are sections of code txist to aid readability.
+
+A single -line comment begins with double slash // and ends with a new line.
 ----
-SELECT      customernr
-FROM        product_orders, customer
-WHERE       orders.customernr = customer.customernr
-AND         orders.productnr = ?
-ORDER BY    customer.date_of_birth
+// Single line-comment
 ----
 
-The grid is then defined as follows:
+A multi-line comment begins with a slash asterick /* and ends with asterick slash.
+----
+/* 
+ * Multi line
+ * comment 
+ */
+----
 
-image::databasejoin-grid.png[]
+== Literals
 
-When the step runs, the (?) placeholder defined in the SQL query will be replaced with the incoming productnr field value from the source hop.  To define and use multiple parameters, list the fields in order you want them to be replaced in the SQL statement.
+The following types of literals (constant values) can be used in expression.
 
-== Options
+=== String
 
-[width="90%", options="header"]
+String literals are always surrounded by single quotes (')
+----
+'test value'
+'O''Reilly'
+----
+TIP: The simplest method to escape single quotes in expression is to use two single quotes.
+
+=== Boolean
+
+A Boolean constant specifies the keyword TRUE or FALSE.
+----
+TRUE
+FALSE
+----
+
+=== Integer
+
+Integer literals can be either positive numbers or negative numbers, but do not contain decimals.
+----
+536
++536
+-536
+----
+
+=== Number
+
+Literals can be either positive numbers or negative numbers and contain decimals. In addition, scientific notation can be used.
+----
+24.7
++0.5
+-24.7
+0.5E-2
+----
+
+NOTE: The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
+
+=== Binary
+
+Binary can be a sequence of hexadecimal digits with 0x prefix.
+----
+0xAE  
+0x12Ef  
+0x69048AEFDD010E 
+----
+Or also be composed by 0 and 1 digits with 0b prefix. 
+----
+0b00000010
+----
+
+NOTE: They are not enclosed in quotation marks.
+
+TIP: To convert a binary literal into an integer, just add 0.
+
+=== Date
+
+----
+Date '2020-05-18'
+----
+----
+Date(2020,5,18)
+----
+
+
+=== Timestamp
+
+----
+Timestamp '2020-05-18 23:48:59'
+----
+
+== Operator
+
+Expression supports most of the arithmetic, bitwise, logical and comparison operators.
+
+
+
+The operator precedence and associativity, highest to lowest.
+
+[cols="^1,<5", options="header"]
 |===
-|Option|Description
-|Step name|Name of the step; This name has to be unique in a single transformation
-|Connection|The database connection to use for the query.
-|SQL|SQL query to form the join; use question marks as parameter placeholders
-|Number of rows to return|Zero (0) returns all rows; any other number limits the number of rows returned.
-|Outer join?|Enable to always return a result, even if the query did not return a result
-|Parameters table|Specify the fields containing parameters.  The parameter type is required.
+|Associativity|Operator
+|-|Function
+|right| + (Positive), - (Negative)
+||~ (Bitwise NOT)
+|left|* (Multiplication), / (Division), % (Modulus)
+||<<, >>  TODO: Not implemented
+||& (Bitwise AND)
+||^ (Bitwise Exclusive OR)
+||\| (Bitwise OR) 
+|left| + (Addition), - (subtraction)
+|left| \|\| (Concatenation)
+|-|BETWEEN, IN, LIKE, ILIKE
+|left|=, >, <, >=, <=, <>, != (Comparison operators) 
+|-|IS NULL, IS FALSE, IS NOT TRUE etc.
+|right|NOT
+|left|AND
+|left|XOR
+|left|OR
 |===
+
+NOTE: An operator on higher levels is evaluated before an operator on a lower level.
+
+== Function
+
+Expression support scalar function.

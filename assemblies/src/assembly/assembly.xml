@@ -29,7 +29,7 @@
                 <include>org.hop:hop-expression-core:jar</include>
             </includes>
         </dependencySet>
-             <dependencySet>
+        <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <includes>
                 <include>org.hop:hop-expression-plugins:jar</include>

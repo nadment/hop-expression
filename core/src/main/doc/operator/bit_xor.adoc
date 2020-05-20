@@ -1,0 +1,12 @@
+= BIT_XOR, ^
+
+Performs a bitwise exclusive OR operation between two integer values.
+
+== Syntax
+----
+BIT_XOR(integer, integer) 
+----
+The ^ operator provides alternative syntax.
+----
+integer ^ integer
+----

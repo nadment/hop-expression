@@ -5,13 +5,12 @@
 
 	<parent>
 		<groupId>org.hop</groupId>
-		<artifactId>hop</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<artifactId>hop-expression</artifactId>
+		<version>0.30-SNAPSHOT</version>
 	</parent>
 
 
 	<artifactId>hop-expression-core</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
 	<name>Hop Expression Core</name>
 	<description>Hop expression language</description>
 	<url>http://www.project-hop.org</url>
@@ -26,30 +25,70 @@
 		<commons-vfs2.version>2.2</commons-vfs2.version>
 	</properties>
 
-<!-- 	<build> -->
-<!-- 		<plugins> -->
-<!-- 			<plugin> -->
-<!-- 				<artifactId>maven-antrun-plugin</artifactId> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<phase>install</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>run</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<target> -->
-<!-- 								<echo -->
-<!-- 									message="Installed the plugin in Hop installation in ${hop.home}. To test, please restart Hop" /> -->
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>asciidoctor-maven-plugin</artifactId>
+					<version>1.5.8</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.8</version>
+				<executions>
+					<execution>
+						<id>output-html</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>src/main/doc</sourceDirectory>
+							<sourceHighlighter>coderay</sourceHighlighter>
+							<backend>html5</backend>
+							<preserveDirectories>true</preserveDirectories>
+							<attributes>
+								<stylesheet>asciidoctor.css</stylesheet>
+								<linkcss>false</linkcss>
+								<nofooter>true</nofooter>
+								<icons>font</icons>
+							</attributes>
+						</configuration>
+					</execution>
 
-<!-- 								<copy file="${project.build.directory}\${project.artifactId}-${project.version}.jar" todir="${hop.home}\lib" /> -->
-<!-- 							</target> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
-<!-- 		</plugins> -->
-<!-- 	</build> -->
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
 
+							<outputDirectory>
+								${project.build.outputDirectory}/docs
+							</outputDirectory>
+							<resources>
+								<resource>
+									<directory>
+										${project.build.directory}/generated-docs
+									</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 
@@ -63,7 +102,13 @@
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
- 			<version>${commons-lang.version}</version>
+			<version>${commons-lang.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.6.1</version>
 		</dependency>
 
 		<dependency>

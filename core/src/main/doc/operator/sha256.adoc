@@ -1,0 +1,12 @@
+= SHA256
+
+The function calculate the SHA-256 hash of a data value.
+
+== Syntax
+----
+SHA256(string)
+----
+
+== Usage
+
+The hash will be returned as a 64 characters hex-encoded string.

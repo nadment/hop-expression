@@ -24,6 +24,7 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.FormDataBuilder;
+import org.apache.hop.ui.expression.AbstractTransformDialog;
 import org.apache.hop.ui.expression.ExpressionEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -31,7 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-@PluginDialog(id = "ExpressionFilter", image = "ExpressionFilter.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
+@PluginDialog(id = "ExpressionFilter", image = "where.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
 public class WhereDialog extends AbstractTransformDialog<WhereMeta> implements ITransformDialog {
 
 	private static final Class<?> PKG = WhereMeta.class; // for i18n purposes

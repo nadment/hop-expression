@@ -1,0 +1,8 @@
+= COSH
+
+Returns the hyperbolic cosine of its argument.
+
+== Syntax
+----
+COSH(numeric_expression)
+----

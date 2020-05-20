@@ -1,0 +1,12 @@
+= LEFT
+
+Extracts a number of characters from a string (starting
+			from left).
+		
+
+== Syntax
+----
+LEFT(string[, length])
+----
+
+See also xref:right.adoc[RIGHT]

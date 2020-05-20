@@ -1,0 +1,22 @@
+= TO_BOOLEAN
+
+Converts the input text or numeric expression to a Boolean value.
+
+== Syntax
+----
+TO_BOOLEAN(text_or_numeric)
+----
+
+== Usage
+
+For a text expression, string must be::
+* 'true', 't', 'yes', 'y', 'on', '1' return TRUE.
+* 'false', 'f', 'no', 'n', 'off', '0' return FALSE.
+*  All other strings return an error.
+
+Strings are case-insensitive.
+
+For a numeric expression::
+* 0 returns FALSE.
+* All non-zero values return TRUE.
+

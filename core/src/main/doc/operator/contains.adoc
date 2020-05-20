@@ -1,0 +1,8 @@
+= CONTAINS
+
+Returns true if string contains pattern.
+
+== Syntax
+----
+CONTAINS(string, pattern)
+----

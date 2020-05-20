@@ -1,0 +1,16 @@
+= <=
+
+First expression is less than or equal to the second expression.
+
+== Syntax
+----
+expression <= expression
+----
+
+== Usage
+
+
+
+Returns::
+
+Boolean

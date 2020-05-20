@@ -1,0 +1,12 @@
+= HOURS_BETWEEN
+
+This function compute the number of hours between two dates.
+
+== Syntax
+----
+HOURS_BETWEEN(<time1>, <time2>)
+----
+
+== Usage
+
+* Returns NULL if either of <time1> or <time2> is NULL

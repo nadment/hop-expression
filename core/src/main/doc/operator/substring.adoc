@@ -1,0 +1,15 @@
+= SUBSTRING, SUBSTR, MID
+
+Returns the portion of the string from string, starting from the character/byte specified by start, with optionally limited	length.
+		
+== Syntax
+----
+SUBSTRING(string, start[, length])
+SUBSTR(string, start[, length])
+MID(string, start[, length])
+----
+
+== Usage
+
+* If length is not specified, all of the characters to the end of the string are used.
+* The first character of a string has position 1. If position is negative, counting begins at the end of the string. 

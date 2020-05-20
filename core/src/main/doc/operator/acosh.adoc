@@ -1,0 +1,8 @@
+= ACOSH
+
+This function computes the inverse hyberbolic cosine (arc hyperbolic cosine) of a number.
+
+== Syntax
+----
+ACOSH(n)
+----

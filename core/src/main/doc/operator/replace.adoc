@@ -1,0 +1,16 @@
+= REPLACE
+
+Removes all occurrences of a specified substring, and optionally replaces them with another string.
+
+== Syntax
+----
+REPLACE(string, pattern[, replacement])
+----
+
+== Usage
+
+
+
+Returns::
+
+String

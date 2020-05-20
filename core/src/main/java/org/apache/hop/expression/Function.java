@@ -9,45 +9,54 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.util.Bytes;
-import org.apache.hop.expression.util.DateParser;
-import org.apache.hop.expression.util.Soundex;
+import org.apache.hop.expression.util.Functions;
 import org.apache.hop.expression.util.StringEncoder;
 import org.apache.hop.expression.util.ToChar;
+import org.apache.hop.expression.util.ToDate;
 
 /**
  * A <code>Function</code> is a type of operator which has conventional
  * function-call syntax.
  */
 
-//TODO: implement MONTHS_BETWEEN
-//TODO: implement YEARS_BETWEEN
 //TODO: implement TRY_TO_NUMBER
-//TODO: implement TRUNCATE
-//TODO: implement DATEPART, NANO
-//TODO: implement EXTRACT, NANO
+//TODO: implement TRY_CAST
+//TODO: implement TRY_TO_BOOLEAN
+//TODO: implement DATEDIFF
+//TODO: implement DATEPART
+//TODO: implement BIT_COUNT
+//TODO: implement PREVIOUS_DAY
+//TODO: implement REGEXP_SUBSTR
+//TODO: implement REGEXP_REPLACE
+//TODO: implement OVERLAY
 
 public class Function extends Operator {
 
-	/**
-	 * The maximum size to which the padding can expand.
-	 */
-	private static final int PAD_LIMIT = 8192;
-
 	private final boolean isDeterministic;
 
-	protected Function(Kind kind, String name, Category category, boolean isDeterministic) {
-		super(kind, name, category, 10, 10);
-		this.isDeterministic = isDeterministic;
+
+	protected Function(Kind kind, String name, boolean isAlias, boolean isDeterministic) {
+		super(kind, name, 10, 10, isAlias);
+		this.isDeterministic = isDeterministic;		
 	}
 
 	/**
@@ -61,17 +70,43 @@ public class Function extends Operator {
 
 	@Override
 	public void unparse(StringWriter writer, ExpressionCall call, int leftPrec, int rightPrec) {
-		writer.append(this.getName());
-		writer.append('(');
-		boolean first = true;
-		for (Expression operand : call.getOperands()) {
-			if (!first)
-				writer.append(',');
-			else
-				first = false;
-			operand.unparse(writer, leftPrec, rightPrec);
+		switch (kind) {
+
+		case CAST: {
+			Expression[] operands = call.getOperands();
+			writer.append(this.getName());
+			writer.append('(');
+			operands[0].unparse(writer, leftPrec, rightPrec);
+			writer.append(" AS ");
+			int ordinal = (int) ((Value) operands[1]).toInteger();
+			writer.append(DataType.of(ordinal).name());
+			writer.append(')');
+			break;
 		}
-		writer.append(')');
+		case EXTRACT: {
+			Expression[] operands = call.getOperands();
+			writer.append(this.getName());
+			writer.append('(');
+			operands[0].unparse(writer, leftPrec, rightPrec);
+			writer.append(" FROM ");
+			int ordinal = (int) ((Value) operands[1]).toInteger();
+			writer.append(DatePart.of(ordinal).name());
+			writer.append(')');
+			break;
+		}
+		default:
+			writer.append(this.getName());
+			writer.append('(');
+			boolean first = true;
+			for (Expression operand : call.getOperands()) {
+				if (!first)
+					writer.append(',');
+				else
+					first = false;
+				operand.unparse(writer, leftPrec, rightPrec);
+			}
+			writer.append(')');
+		}
 	}
 
 	@Override
@@ -85,10 +120,12 @@ public class Function extends Operator {
 			break;
 		case ABS:
 		case ACOS:
+		case ACOSH:
 		case ASCII:
 		case ASIN:
+		case ASINH:
 		case ATAN:
-
+		case ATANH:
 		case CEIL:
 		case BIT_LENGTH:
 		case OCTET_LENGTH:
@@ -99,6 +136,7 @@ public class Function extends Operator {
 		case COT:
 		case DEGREES:
 		case EXP:
+		case FIRST_DAY:
 		case FLOOR:
 		case HOUR:
 		case INITCAP:
@@ -121,18 +159,19 @@ public class Function extends Operator {
 		case SPACE:
 		case SECOND:
 		case MINUTE:
-		case ISO_DAY_OF_WEEK:
-		case ISO_WEEK_OF_YEAR:
-		case DAY_OF_WEEK:
-		case DAY_OF_MONTH:
-		case DAY_OF_YEAR:
-		case DAY_NAME:
+		case DAYOFWEEK_ISO:		
+		case DAYOFWEEK:
+		case DAY:
+		case DAYOFYEAR:
+		case DAYNAME:
 		case MONTH:
-		case MONTH_NAME:
+		case MONTHNAME:
 		case QUARTER:
 		case URLDECODE:
 		case URLENCODE:
-		case WEEK_OF_YEAR:
+		case WEEK:
+		case WEEKOFMONTH:
+		case WEEK_ISO:
 		case LAST_DAY:
 		case YEAR:
 		case MD5:
@@ -152,33 +191,63 @@ public class Function extends Operator {
 			min = 1;
 			max = 2;
 			break;
+			
+		case ADD:
+		case ADD_DAYS:
+		case ADD_HOURS:
+		case ADD_MINUTES:
 		case ADD_MONTHS:
+		case ADD_SECONDS:	
+		case ADD_WEEKS:
+		case ADD_YEARS:
 		case ATAN2:
-		case BITGET:
+		case BIT_AND:
+		case BIT_NOT:
+		case BIT_OR:
+		case BIT_XOR:
+		//case BIT_GET:
+		case CAST:
 		case CONTAINS:
+		case DATE_PART:
+		case DAYS_BETWEEN:
+		case DIVIDE:
+		case ENDSWITH:
+		case EQUAL_NULL:
+		case EXTRACT:
+		case HOURS_BETWEEN:
 		case IFNULL:
+		case LOG:
 		case POWER:
+		case MINUTES_BETWEEN:
 		case MOD:
+		case MONTHS_BETWEEN:
+		case MULTIPLY:
+		case NEXT_DAY:
 		case LEFT:
 		case REPEAT:
 		case RIGHT:
 		case NULLIF:
-		case EQUAL_NULL:
-		case ENDSWITH:
+		case SECONDS_BETWEEN:
 		case STARTSWITH:
+		case SUBTRACT:
+		case REGEXP_LIKE:
+		case TRUNCATE:
+		case YEARS_BETWEEN:
 			min = 2;
 			max = 2;
-			break;			
+			break;
 		case INSTR:
 		case LPAD:
 		case REPLACE:
 		case RPAD:
-		case SUBSTR:
+		case SUBSTRING:
 			min = 2;
 			max = 3;
 			break;
 		case IF:
+		case NVL2:
 		case TRANSLATE:
+		case DATE:
 			min = 3;
 			max = 3;
 			break;
@@ -214,141 +283,424 @@ public class Function extends Operator {
 
 	@Override
 	@SuppressWarnings("incomplete-switch")
-	public Value eval(final IExpressionContext context, final IExpression... args) throws ExpressionException {
+	public Value eval(final IExpressionContext context, final Expression... args) throws ExpressionException {
 
 		switch (kind) {
+		case ADD:
+		case SUBTRACT:
 		case MOD:
+		case MULTIPLY:
+		case DIVIDE:
+		case CONCAT:
 		case CONTAINS:
-		case POWER: // use operator implementation
+		case POWER: 
+		case BIT_AND:
+		case BIT_NOT:
+		case BIT_OR:
+		case BIT_XOR:
+			// use operator implementation
 			return super.eval(context, args);
 
+		case CAST: {
+			Value value = args[0].eval(context);
+			Value type = args[1].eval(context);
+
+			if (value.isNull())
+				return Value.NULL;
+			if (type.isNull())
+				return type;
+
+			DataType targetType = DataType.of((int) type.toInteger());
+
+			return value.convertTo(targetType);
+		}
+
 		case CURRENT_DATE:
-			return Value.of(LocalDateTime.now());
+			return Value.of(context.getCurrentDate());
+
+		case ADD_DAYS:  {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value months = args[1].eval(context);
+			if (months.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusDays(months.toInteger());
+			return Value.of(dt.toInstant());
+		}
+		case ADD_HOURS: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value months = args[1].eval(context);
+			if (months.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusHours(months.toInteger());
+			return Value.of(dt.toInstant());
+		}
+		case ADD_MINUTES:  {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value months = args[1].eval(context);
+			if (months.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusMinutes(months.toInteger());
+			return Value.of(dt.toInstant());
+		}
+						
 		case ADD_MONTHS: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			Value months = args[1].eval(context);
 			if (months.isNull())
-				return value;
+				return Value.NULL;
 
-			LocalDateTime date = value.toDate().plusMonths(months.toInteger());
-
-			return Value.of(date);
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusMonths(months.toInteger());
+			return Value.of(dt.toInstant());
 		}
 
+		case ADD_SECONDS: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value months = args[1].eval(context);
+			if (months.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusSeconds(months.toInteger());
+			return Value.of(dt.toInstant());
+		}	
+		case ADD_WEEKS: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value months = args[1].eval(context);
+			if (months.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusWeeks(months.toInteger());
+			return Value.of(dt.toInstant());
+		}	
+			
+		case ADD_YEARS: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+			Value months = args[1].eval(context);
+			if (months.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.plusYears(months.toInteger());
+			return Value.of(dt.toInstant());
+		}	
+		
+		case DATE: {
+			Value v0 = args[0].eval(context);
+			if (v0.isNull())
+				return Value.NULL;
+
+			Value v1 = args[1].eval(context);
+			if (v1.isNull())
+				return Value.NULL;
+
+			Value v2 = args[2].eval(context);
+			if (v2.isNull())
+				return Value.NULL;
+			
+			int year = (int) v0.toInteger();
+			int month = (int) v1.toInteger();
+			int day = (int) v2.toInteger();
+						
+			Instant instant  = LocalDate.of(year, month, day).atStartOfDay().toInstant(ZoneOffset.UTC);
+				
+			return Value.of(instant);
+		}
+		
+		case EXTRACT:
+		case DATE_PART: {
+			Value part = args[0].eval(context);
+			if (part.isNull())
+				return Value.NULL;
+
+			Value value = args[1].eval(context);
+			if (value.isNull())
+				return Value.NULL;					
+			
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());		
+			
+			DatePart datePart = DatePart.of((int) part.toInteger());
+			
+			return Value.of(datePart.get(dt));
+		}
+		
+		case FIRST_DAY: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.with(TemporalAdjusters.firstDayOfMonth());
+			return Value.of(dt.toInstant());
+		}
+		
 		case LAST_DAY: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
-				return value;
-			LocalDateTime dt = value.toDate().withDayOfMonth(value.toDate().toLocalDate().lengthOfMonth());
-			return Value.of(dt);
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
+					.with(TemporalAdjusters.lastDayOfMonth());
+			return Value.of(dt.toInstant());
 		}
 
-		case DAY_NAME: {
+		case NEXT_DAY:  {
 			Value value = args[0].eval(context);
 			if (value.isNull())
-				return value;
+				return Value.NULL;
 
-			DayOfWeek weekday = DayOfWeek.of(value.toDate().get(ChronoField.DAY_OF_WEEK));
-			return Value.of(weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+			Value dow = args[1].eval(context);
+			if (dow.isNull())
+				return Value.NULL;					
+
+			DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone()).with(TemporalAdjusters.next(dayofweek));
+			
+			return Value.of(dt.toInstant());
 		}
-
-		case MONTH_NAME: {
-			Value value = args[0].eval(context);
-			if (value.isNull())
-				return value;
-
-			Month month = Month.of(value.toDate().get(ChronoField.MONTH_OF_YEAR));
-			return Value.of(month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
-		}
-
+		
 		case MONTH: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
-				return value;
+				return Value.NULL;
 
-			return Value.of(value.toDate().get(ChronoField.MONTH_OF_YEAR));
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.getMonthValue());
+		}
+		
+		case MONTHNAME: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return Value.NULL;
+
+			Month month = ZonedDateTime.ofInstant(value.toDate(), context.getZone()).getMonth();
+			return Value.of(month.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+		}
+
+		case MONTHS_BETWEEN: {
+			Value value1 = args[0].eval(context);
+			if (value1.isNull())
+				return Value.NULL;
+			Value value2 = args[1].eval(context);
+			if (value2.isNull())
+				return Value.NULL;
+
+			LocalDate startDate = value1.toDate().atZone(context.getZone()).toLocalDate();
+			LocalDate endDate = value2.toDate().atZone(context.getZone()).toLocalDate();
+			long days = startDate.until(endDate, ChronoUnit.DAYS);
+			return Value.of(days / 31d);
+//			long months = startDate.until(endDate, ChronoUnit.MONTHS);
+//			return Value.of(months);
+
 		}
 
 		case YEAR: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
-				return value;
-			return Value.of(value.toDate().get(ChronoField.YEAR));
+				return Value.NULL;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.getYear());
 		}
 
+		case YEARS_BETWEEN: {
+			Value value1 = args[0].eval(context);
+			if (value1.isNull())
+				return Value.NULL;
+			Value value2 = args[1].eval(context);
+			if (value2.isNull())
+				return Value.NULL;
+
+			LocalDate startDate = value1.toDate().atZone(context.getZone()).toLocalDate();
+			LocalDate endDate = value2.toDate().atZone(context.getZone()).toLocalDate();
+			long years = startDate.until(endDate, ChronoUnit.YEARS);
+			return Value.of(years);
+		}
+		
 		case QUARTER: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
-				return value;
-			int month = value.toDate().get(ChronoField.MONTH_OF_YEAR);
-			return Value.of(((month - 1) / 3) + 1);
-		}
+				return Value.NULL;
 
-		case ISO_DAY_OF_WEEK: {
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.get(IsoFields.QUARTER_OF_YEAR));
+		}
+		
+		case DAYOFWEEK: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			return Value.of(value.toDate().get(ChronoField.DAY_OF_WEEK));
-		}
 
-		case DAY_OF_WEEK: {
-			Value value = args[0].eval(context);
-			if (value.isNull())
-				return value;
-			
-			int result = value.toDate().get(ChronoField.DAY_OF_WEEK) + 1;
+			DayOfWeek dow = ZonedDateTime.ofInstant(value.toDate(), context.getZone()).getDayOfWeek();
+
+			int result = dow.getValue() + 1;
 			if (result == 8)
 				result = 1;
 
 			return Value.of(result);
 		}
 
-		case DAY_OF_MONTH: {
+		case DAYOFWEEK_ISO: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return Value.NULL;
+
+			DayOfWeek dow = ZonedDateTime.ofInstant(value.toDate(), context.getZone()).getDayOfWeek();
+			return Value.of(dow.getValue());
+			
+//			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+//			return Value.of(DatePart.DAYOFWEEKISO.get(dt));
+		}
+
+		
+		case DAY: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			return Value.of(value.toDate().get(ChronoField.DAY_OF_MONTH));
-		}
 
-		case DAY_OF_YEAR: {
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.getDayOfMonth());
+		}
+		
+		case DAYOFYEAR: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
-			return Value.of(value.toDate().get(ChronoField.DAY_OF_YEAR));
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.getDayOfYear());
 		}
 
-		case WEEK_OF_YEAR: {
+		case DAYNAME: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return Value.NULL;
+
+			DayOfWeek weekday = ZonedDateTime.ofInstant(value.toDate(), context.getZone()).getDayOfWeek();
+			return Value.of(weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+		}
+		
+		case DAYS_BETWEEN: {
+			Value value1 = args[0].eval(context);
+			if (value1.isNull())
+				return Value.NULL;
+			Value value2 = args[1].eval(context);
+			if (value2.isNull())
+				return Value.NULL;
+
+			LocalDate startDate = value1.toDate().atZone(context.getZone()).toLocalDate();
+			LocalDate endDate = value2.toDate().atZone(context.getZone()).toLocalDate();
+			long days = startDate.until(endDate, ChronoUnit.DAYS);
+			return Value.of(days);
+		}
+		
+		
+		case WEEK: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
-			return Value.of(value.toDate().get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
 		}
 
+		case WEEKOFMONTH: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+
+			ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
+			return Value.of(dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
+		}
+		
 		case HOUR: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 
-			return Value.of(value.toDate().get(ChronoField.HOUR_OF_DAY));
+			LocalTime time = LocalTime.from(value.toDate().atZone(context.getZone()));
+			return Value.of(time.getHour());
+		}
+		
+		case HOURS_BETWEEN:{
+			Value value1 = args[0].eval(context);
+			if (value1.isNull())
+				return Value.NULL;
+			Value value2 = args[1].eval(context);
+			if (value2.isNull())
+				return Value.NULL;
+
+			LocalDateTime startDateTime = value1.toDate().atZone(context.getZone()).toLocalDateTime();
+			LocalDateTime endDateTime = value2.toDate().atZone(context.getZone()).toLocalDateTime();
+			long hours = startDateTime.until(endDateTime, ChronoUnit.HOURS);
+			return Value.of(hours);
 		}
 
 		case MINUTE: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			return Value.of(value.toDate().get(ChronoField.MINUTE_OF_HOUR));
+
+			LocalTime time = LocalTime.from(value.toDate().atZone(context.getZone()));
+			return Value.of(time.getMinute());
 		}
 
+		case MINUTES_BETWEEN:{
+			Value value1 = args[0].eval(context);
+			if (value1.isNull())
+				return Value.NULL;
+			Value value2 = args[1].eval(context);
+			if (value2.isNull())
+				return Value.NULL;
+
+			LocalDateTime startDateTime = value1.toDate().atZone(context.getZone()).toLocalDateTime();
+			LocalDateTime endDateTime = value2.toDate().atZone(context.getZone()).toLocalDateTime();
+			long minutes = startDateTime.until(endDateTime, ChronoUnit.MINUTES);
+			return Value.of(minutes);
+		}
+		
 		case SECOND: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			return Value.of(value.toDate().get(ChronoField.SECOND_OF_MINUTE));
+			LocalTime time = LocalTime.from(value.toDate().atZone(context.getZone()));
+			return Value.of(time.getSecond());
 		}
+		
+		case SECONDS_BETWEEN:{
+			Value value1 = args[0].eval(context);
+			if (value1.isNull())
+				return Value.NULL;
+			Value value2 = args[1].eval(context);
+			if (value2.isNull())
+				return Value.NULL;
+
+			LocalDateTime startDateTime = value1.toDate().atZone(context.getZone()).toLocalDateTime();
+			LocalDateTime endDateTime = value2.toDate().atZone(context.getZone()).toLocalDateTime();
+			long seconds = startDateTime.until(endDateTime, ChronoUnit.SECONDS);
+			return Value.of(seconds);
+		}		
 
 		case ABS: {
 			Value value = args[0].eval(context);
@@ -372,15 +724,29 @@ public class Function extends Operator {
 			if (d < -1.0 || d > 1.0) {
 				throw createArgumentOutOfRangeError(value);
 			}
-			return Value.of(Math.acos(value.toNumber()));
+			return Value.of(Math.acos(d));
 		}
 
+		case ACOSH: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;			
+			return Value.of(FastMath.acosh(value.toNumber()));
+		}
+		
 		case ASIN: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-
 			return Value.of(Math.asin(value.toNumber()));
+		}
+
+		case ASINH: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+
+			return Value.of(FastMath.asinh(value.toNumber()));
 		}
 
 		case ATAN: {
@@ -391,6 +757,14 @@ public class Function extends Operator {
 			return Value.of(Math.atan(value.toNumber()));
 		}
 
+		case ATANH: {
+			Value value = args[0].eval(context);
+			if (value.isNull())
+				return value;
+
+			return Value.of(FastMath.atanh(value.toNumber()));
+		}
+		
 		case ATAN2: {
 			Value x = args[0].eval(context);
 			Value y = args[0].eval(context);
@@ -400,7 +774,7 @@ public class Function extends Operator {
 			return Value.of(Math.atan2(x.toNumber(), y.toNumber()));
 		}
 
-		case BITGET: {
+		case BIT_GET: {
 			Value v0 = args[0].eval(context);
 			if (v0.isNull())
 				return v0;
@@ -444,7 +818,7 @@ public class Function extends Operator {
 
 			double d = Math.tan(value.toNumber());
 			if (d == 0.0) {
-				throw new ExpressionException("COT function division by zero");
+				throw createDivisionByZeroError();
 			}
 			return Value.of(1. / d);
 		}
@@ -467,12 +841,14 @@ public class Function extends Operator {
 			}
 			return Value.of(Math.floor(value.toNumber()));
 		}
+		
 		case EXP: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
 			return Value.of(Math.exp(value.toNumber()));
 		}
+		
 		case LN: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
@@ -482,6 +858,21 @@ public class Function extends Operator {
 			return Value.of(Math.log(value.toNumber()));
 		}
 
+		case LOG: {
+			Value base = args[0].eval(context);
+			
+			if (base.isNull())
+				return Value.NULL;
+			
+			Value value = args[1].eval(context);
+			if (value.isNull())
+				return value;
+			if (value.signum() <= 0)
+				throw createArgumentOutOfRangeError(value);
+			
+			return Value.of(Math.log(value.toNumber()) / Math.log(base.toNumber()));
+		}
+		
 		case LOG10: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
@@ -597,25 +988,29 @@ public class Function extends Operator {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return Value.NULL;
-			
-			return args[(value.toBoolean()) ? 1:2].eval(context);
-		}
-		
-		case IFNULL: {
-			Value value = args[0].eval(context);
-			if (value.isNull())
-				value = args[1].eval(context);
-			return value;
+
+			return args[(value.toBoolean()) ? 1 : 2].eval(context);
 		}
 
+		case IFNULL:
 		case COALESCE: {
-			for (IExpression operand : args) {
+			for (Expression operand : args) {
 				Value value = operand.eval(context);
 				if (!value.isNull())
 					return value;
 			}
 
 			return Value.NULL;
+		}
+
+		case NVL2: {
+			Value condition = args[0].eval(context);
+
+			if (condition.isNull()) {
+				return args[2].eval(context);
+			}
+
+			return args[1].eval(context);
 		}
 
 		case DECODE: {
@@ -640,7 +1035,7 @@ public class Function extends Operator {
 
 		case GREATEST: {
 			Value result = Value.NULL;
-			for (IExpression operand : args) {
+			for (Expression operand : args) {
 				Value value = operand.eval(context);
 				if (result.compareTo(value) < 0)
 					result = value;
@@ -651,7 +1046,7 @@ public class Function extends Operator {
 
 		case LEAST: {
 			Value result = Value.NULL;
-			for (IExpression operand : args) {
+			for (Expression operand : args) {
 				Value value = operand.eval(context);
 				// null is always smaller
 				if (value.isNull())
@@ -663,27 +1058,6 @@ public class Function extends Operator {
 
 			return result;
 		}
-
-		case CONCAT: {
-			StringBuilder builder = new StringBuilder();
-			for (IExpression operand : args) {
-				Value value = operand.eval(context);
-				if (!value.isNull())
-					builder.append(value);
-			}
-
-			if (builder.length() == 0)
-				return Value.NULL;
-
-			return Value.of(builder.toString());
-		}
-
-//		case LENGTH: {
-//			Value value = operands[0].eval(context);
-//			if (value.isNull())
-//				return value;
-//			return Value.of(value.toString().length());
-//		}
 
 		case LENGTH: {
 			Value value = args[0].eval(context);
@@ -726,7 +1100,7 @@ public class Function extends Operator {
 			if (value.isNull())
 				return value;
 
-			return value.convertTo(Type.BOOLEAN);
+			return value.convertTo(DataType.BOOLEAN);
 		}
 
 		case TO_CHAR: {
@@ -741,13 +1115,14 @@ public class Function extends Operator {
 					format = v.toString();
 			}
 
-			switch (value.getType()) {
+			switch (value.getDataType()) {
 			case INTEGER:
 			case NUMBER:
 			case BIGNUMBER:
 				return Value.of(ToChar.toChar(value.toBigNumber(), format));
 			case DATE:
-				return Value.of(ToChar.toChar(value.toDate(), format));
+				ZonedDateTime dt = value.toDate().atZone(context.getZone());
+				return Value.of(ToChar.toChar(dt, format));
 			case STRING:
 				return value;
 			}
@@ -781,12 +1156,12 @@ public class Function extends Operator {
 					format = v.toString();
 			}
 
-			switch (value.getType()) {
+			switch (value.getDataType()) {
 			case DATE:
 				return value;
 			case STRING:
-				LocalDateTime dt = DateParser.parse(value.toString(), format);
-				return Value.of(dt);
+				Instant instant = ToDate.parse(value.toString(), format);
+				return Value.of(instant);
 			}
 		}
 
@@ -794,26 +1169,19 @@ public class Function extends Operator {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
-			return Value.of(Soundex.soundex(value.toString()));
+			return Value.of(Functions.soundex(value.toString()));
 		}
 
 		case LEFT: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return Value.NULL;
+
 			Value count = args[1].eval(context);
 			if (count.isNull())
 				return Value.NULL;
 
-			String string = value.toString();
-			Long length = count.toInteger();
-			if (length < 0) {
-				throw new ExpressionException("LEFT: Length must be greater than or equal to 0");
-			} else if (length > string.length()) {
-				return value;
-			}
-
-			return Value.of(string.substring(0, length.intValue()));
+			return Value.of(Functions.left(value.toString(),(int)count.toInteger()));
 		}
 
 		case NULLIF: {
@@ -834,15 +1202,7 @@ public class Function extends Operator {
 			if (count.isNull())
 				return Value.NULL;
 
-			String string = value.toString();
-			int length = (int) count.toInteger();
-			if (length < 0) {
-				throw new ExpressionException("RIGHT: Length must be greater than or equal to 0");
-			} else if (length > string.length()) {
-				return value;
-			}
-
-			return Value.of(string.substring(string.length() - length));
+			return Value.of(Functions.right(value.toString(), (int) count.toInteger()));
 		}
 
 		case TRIM: {
@@ -869,7 +1229,6 @@ public class Function extends Operator {
 
 			String string = value.toString();
 			String characters = null;
-			// int i = 0;
 
 			if (args.length == 2) {
 				Value stripChars = args[1].eval(context);
@@ -895,10 +1254,6 @@ public class Function extends Operator {
 			}
 
 			return Value.of(StringUtils.stripEnd(string, characters));
-
-			// int i = string.length() - 1;
-			// while (i >= 0 && Character.isWhitespace(string.charAt(i))) i--;
-			// return new StringValue(string.substring(0, i + 1));
 		}
 
 		case REPEAT: {
@@ -966,7 +1321,7 @@ public class Function extends Operator {
 			return Value.of(string.indexOf(pattern, start) + 1);
 		}
 
-		case SUBSTR: {
+		case SUBSTRING: {
 			String string = args[0].eval(context).toString();
 			int length = string.length();
 			int start = (int) args[1].eval(context).toInteger();
@@ -1037,6 +1392,83 @@ public class Function extends Operator {
 			return Value.of(value.toString().startsWith(prefix.toString()));
 		}
 
+		case REGEXP_LIKE: {
+			Value input = args[0].eval(context);
+			Value pattern = args[1].eval(context);
+
+			if (input.isNull() || pattern.isNull()) {
+				return Value.FALSE;
+			}
+
+			Pattern p = Pattern.compile(pattern.toString(), Pattern.DOTALL);
+
+			return Value.of(p.matcher(input.toString()).find());
+		}
+
+		case TRUNCATE: {
+			Value value = args[0].eval(context);
+			Value pattern = args[1].eval(context);
+
+			if (value.isNull() || pattern.isNull())
+				return Value.NULL;
+
+			switch (value.getDataType()) {
+			case INTEGER:
+			case NUMBER:
+			case BIGNUMBER:
+				int scale = (int) pattern.toInteger();
+				return Value.of(Functions.truncate(value.toBigNumber(), scale));
+
+			case DATE:
+				Instant instant = value.toDate();
+
+				// TODO: optimize with ordinal: DatePart datePart = DatePart.valueOf((int)
+				// right.toInteger());
+				DatePart datePart = DatePart.MONTH;
+				
+				try {
+					datePart = DatePart.of(pattern.toString());
+				} catch (Exception e) {
+					throw new ExpressionException("Invalid date part: " + pattern);
+				}
+
+				switch (datePart) {
+				case YEAR: {
+					ZonedDateTime datetime = ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS),
+							context.getZone());
+					return Value.of(datetime.withDayOfYear(1).toInstant());
+				}
+				case MONTH: {
+					ZonedDateTime datetime = ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS),
+							context.getZone());
+					return Value.of(datetime.withDayOfMonth(1).toInstant());
+				}
+				case DAY:
+					return Value.of(instant.truncatedTo(ChronoUnit.DAYS));
+				case HOUR:
+					return Value.of(instant.truncatedTo(ChronoUnit.HOURS));
+				case MINUTE:
+					return Value.of(instant.truncatedTo(ChronoUnit.MINUTES));
+				case SECOND:
+					return Value.of(instant.truncatedTo(ChronoUnit.SECONDS));
+				case MILLISECOND:
+					return Value.of(instant.truncatedTo(ChronoUnit.MILLIS));
+				case MICROSECOND:
+					return Value.of(instant.truncatedTo(ChronoUnit.MICROS));
+				case NANOSECOND:
+					return Value.of(instant.truncatedTo(ChronoUnit.NANOS));
+				}
+
+				return value;
+
+			case STRING:
+			case BOOLEAN:
+			default:
+				throw new ExpressionException("Truncate date not implemented");
+			}
+
+		}
+
 		case TRANSLATE: {
 			Value stringValue = args[0].eval(context);
 			Value findCharsValue = args[1].eval(context);
@@ -1079,17 +1511,17 @@ public class Function extends Operator {
 
 		case STRINGENCODE: {
 			Value value = args[0].eval(context);
-	        String result = StringEncoder.encode(value.toString());	        
-	        return Value.of(result);
-			
+			String result = StringEncoder.encode(value.toString());
+			return Value.of(result);
+
 		}
-		
+
 		case STRINGDECODE: {
 			Value value = args[0].eval(context);
-	        String result = StringEncoder.decode(value.toString());	        
-	        return Value.of(result);
+			String result = StringEncoder.decode(value.toString());
+			return Value.of(result);
 		}
-		
+
 		case URLENCODE: {
 			Value value = args[0].eval(context);
 			try {
@@ -1122,90 +1554,41 @@ public class Function extends Operator {
 
 		case LPAD: {
 			Value param1 = args[0].eval(context);
-			Value param2 = args[1].eval(context);
-			Value param3 = args[2].eval(context);
-
 			if (param1.isNull()) {
 				return Value.NULL;
 			}
 
-			final int size = (int) param2.toInteger();
-			if (size > PAD_LIMIT) {
-				new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
-			}
+			Value param2 = args[1].eval(context);
+			final int length = (int) param2.toInteger();
 
 			// If this parameter is omitted, the function will pad spaces
-			String pad = " ";
-			if (param3.isString()) {
+			String pad = null;
+			if (args.length == 3) {
+				Value param3 = args[2].eval(context);
 				pad = param3.toString();
 			}
 
-			String str = param1.toString();
-			final int padLen = pad.length();
-			final int pads = size - str.length();
-
-			if (pads <= 0) {
-				str = str.substring(0, size);
-			} else if (padLen == 0) {
-				// nothing to do
-			} else if (pads == padLen) {
-				str = pad.concat(str);
-			} else if (pads < padLen) {
-				str = pad.substring(0, pads).concat(str);
-			} else {
-				final char[] padding = new char[pads];
-				final char[] padChars = pad.toCharArray();
-				for (int i = 0; i < pads; i++) {
-					padding[i] = padChars[i % padLen];
-				}
-				str = new String(padding).concat(str);
-			}
-
-			return Value.of(str);
+			return Value.of(Functions.lpad(param1.toString(), length, pad));
 		}
 
 		case RPAD: {
 			Value param1 = args[0].eval(context);
-			Value param2 = args[1].eval(context);
-			Value param3 = args[2].eval(context);
 
 			if (param1.isNull()) {
 				return Value.NULL;
 			}
 
-			final int size = (int) param2.toInteger();
-			if (size > PAD_LIMIT) {
-				new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
-			}
+			Value param2 = args[1].eval(context);
+			final int length = (int) param2.toInteger();
 
 			// If this parameter is omitted, the function will pad spaces
-			String pad = " ";
-			if (param3.isString()) {
+			String pad = null;
+			if (args.length == 3) {
+				Value param3 = args[2].eval(context);
 				pad = param3.toString();
 			}
 
-			String str = param1.toString();
-			final int padLen = pad.length();
-			final int pads = size - str.length();
-
-			if (pads <= 0) {
-				str = str.substring(0, size);
-			} else if (padLen == 0) {
-				// nothing to do
-			} else if (pads == padLen) {
-				str = str.concat(pad);
-			} else if (pads < padLen) {
-				str = str.concat(pad.substring(0, pads));
-			} else {
-				final char[] padding = new char[pads];
-				final char[] padChars = pad.toCharArray();
-				for (int i = 0; i < pads; i++) {
-					padding[i] = padChars[i % padLen];
-				}
-				str = str.concat(new String(padding));
-			}
-
-			return Value.of(str);
+			return Value.of(Functions.rpad(param1.toString(), length, pad));
 		}
 
 		case SPACE: {
@@ -1251,7 +1634,7 @@ public class Function extends Operator {
 
 		case SHA384: {
 			Value value = args[0].eval(context);
-			return getHash(value,  "SHA-384");
+			return getHash(value, "SHA-384");
 		}
 
 		case SHA512: {
@@ -1286,6 +1669,7 @@ public class Function extends Operator {
 		if (this.isDeterministic() && isAllConstant) {
 			return eval(context, args);
 		}
+
 		return new ExpressionCall(this, args);
 	}
 
@@ -1309,4 +1693,8 @@ public class Function extends Operator {
 		}
 		return Value.NULL;
 	}
+
+
+
+
 }

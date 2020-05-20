@@ -53,10 +53,10 @@ import org.w3c.dom.Node;
 @Transform(
 	id = "Expression",
 	name = "Expression.Name",
-	image = "Expression.svg",
+	image = "expression.svg",
 	description = "Expression.Description",
 	i18nPackageName = "org.apache.hop.pipeline.transforms.expression",
-	keywords = {"Script","SQL"}
+	keywords = {"script","sql","function"}
 )
 @InjectionSupported(localizationPrefix = "ExpressionMeta.Injection.")
 public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<ExpressionTransform, ExpressionData> {
@@ -184,7 +184,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 	}
 
 	@Override
-	public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta, TransformMeta tranformMeta, IRowMeta prev,
+	public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta, TransformMeta transformMeta, IRowMeta prev,
 			String input[], String output[], IRowMeta info, IVariables variables, IMetaStore metaStore) {
 
 		// Look up fields in the input stream <prev>
@@ -192,22 +192,22 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 			remarks.add(new CheckResult(
 					ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
 							"ExpressionMeta.CheckResult.ReceivingFieldsFromPreviousTransforms", prev.size() + ""),
-					tranformMeta));
+					transformMeta));
 		} else {
 			remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
 					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
-					tranformMeta));
+					transformMeta));
 		}
 
 		// See if we have input streams leading to this transform!
 		if (input.length > 0) {
 			remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_OK,
-					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"), tranformMeta));
+					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"), transformMeta));
 
 		} else {
 			remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
 					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
-					tranformMeta));
+					transformMeta));
 
 		}
 
@@ -219,7 +219,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 				remarks.add(new CheckResult(
 						ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
 								"ExpressionMeta.CheckResult.InvalidExpression", field.getName(), e.getMessage()),
-						tranformMeta));
+						transformMeta));
 			}
 
 		}

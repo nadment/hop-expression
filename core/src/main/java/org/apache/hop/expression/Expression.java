@@ -27,6 +27,14 @@ public abstract class Expression implements IExpression {
 		return false;
 	}
 
+	  /**
+     * Check if this expression will always return the NULL value.
+     *
+     * @return if the expression is constant NULL value
+     */
+	public boolean isNull() {
+		return false;
+	}
 	
 	/**
 	 * Return the resulting value for the current context.
@@ -38,8 +46,7 @@ public abstract class Expression implements IExpression {
 
     /**
      * Estimate the cost to process the expression.
-     * Used when optimizing the query, to calculate the query plan
-     * with the lowest estimated cost.
+     * Used when optimizing the query, to optimize the expression with the lowest estimated cost.
      *
      * @return the estimated cost
      */

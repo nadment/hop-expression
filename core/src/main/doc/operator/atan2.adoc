@@ -1,0 +1,18 @@
+= ATAN2
+
+Computes the inverse tangent (arc tangent) of the ratio of its two arguments.
+
+== Syntax
+----
+ATAN2( y , x )
+----
+
+NOTE: The first parameter is the Y coordinate, not the X coordinate.
+
+== Usage
+
+The returned value is in radians, not degrees.
+
+The returned value is a number in the interval [-pi, pi].
+
+The data type of the returned value is NUMBER.

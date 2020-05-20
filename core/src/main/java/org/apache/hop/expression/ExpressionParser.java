@@ -1,22 +1,23 @@
 package org.apache.hop.expression;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.ExpressionToken.Id;
 import org.apache.hop.expression.util.Characters;
+import org.apache.hop.expression.util.ToDate;
 
 public class ExpressionParser {
 
@@ -24,49 +25,20 @@ public class ExpressionParser {
 	public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.0b",
 			new DecimalFormatSymbols(Locale.ENGLISH));
 
-	/** The SimpleDateFormat string for ISO dates, "yyyy-MM-dd". */
-	public static final String DATE_FORMAT_STRING = "yyyy-MM-dd";
+	/** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss". */
+	public static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	
+	/** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss.nnnnnn". */
+	public static final DateTimeFormatter TIMESTAMP_FORMAT_NANO6 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnnnnn");
 
-	/** The SimpleDateFormat string for ISO times, "HH:mm:ss". */
-	public static final String TIME_FORMAT_STRING = "HH:mm:ss";
+//	/** The DateTimeFormatter for time, "HH:mm:ss.nnnnnn". */
+//	public static final DateTimeFormatter TIME_FORMAT_NANO3 = DateTimeFormatter.ofPattern("HH:mm:ss.nnn");
+//	public static final DateTimeFormatter TIME_FORMAT_NANO6 = DateTimeFormatter.ofPattern("HH:mm:ss.nnnnnn");
+//	public static final DateTimeFormatter TIME_FORMAT_NANO7 = DateTimeFormatter.ofPattern("HH:mm:ss.nnnnnnn");
 
-	/** The SimpleDateFormat string for ISO timestamps, "yyyy-MM-dd HH:mm:ss". */
-	public static final String TIMESTAMP_FORMAT_STRING = DATE_FORMAT_STRING + " " + TIME_FORMAT_STRING;
 
 	/** The UTC time zone. */
-	public static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
-
-	/** The Java default time zone. */
-	public static final TimeZone DEFAULT_ZONE = TimeZone.getDefault();
-
-	/**
-	 * The number of milliseconds in a second.
-	 */
-	public static final long MILLIS_PER_SECOND = 1000L;
-
-	/**
-	 * The number of milliseconds in a minute.
-	 */
-	public static final long MILLIS_PER_MINUTE = 60000L;
-
-	/**
-	 * The number of milliseconds in an hour.
-	 */
-	public static final long MILLIS_PER_HOUR = 3600000L; // = 60 * 60 * 1000
-
-	/**
-	 * The number of milliseconds in a day.
-	 *
-	 * <p>
-	 * This is the modulo 'mask' used when converting TIMESTAMP values to DATE and
-	 * TIME values.
-	 */
-	public static final long MILLIS_PER_DAY = 86400000; // = 24 * 60 * 60 * 1000
-
-	/**
-	 * The number of seconds in a day.
-	 */
-	public static final long SECONDS_PER_DAY = 86_400; // = 24 * 60 * 60
+	public static final ZoneId UTC_ZONE = ZoneId.of("UTC");
 
 	private final String source;
 
@@ -75,8 +47,9 @@ public class ExpressionParser {
 
 	public static Expression parse(String source) throws ExpressionException {
 		ExpressionParser parser = new ExpressionParser(source);
+		Expression expression = parser.parse();
 
-		return parser.parse();
+		return expression.optimize(new DefaultExpressionContext());
 	}
 
 	protected ExpressionParser(String source) {
@@ -123,7 +96,7 @@ public class ExpressionParser {
 		return false;
 	}
 
-	public Expression parse() throws ExpressionException {
+	private Expression parse() throws ExpressionException {
 		// System.out.println("Parse: " + source);
 
 		if (StringUtils.isEmpty(source))
@@ -136,6 +109,8 @@ public class ExpressionParser {
 			// Ignore comment
 			if (token.is(Id.COMMENT))
 				continue;
+
+			// System.out.println("Token " + token);
 
 			tokens.add(token);
 		}
@@ -234,7 +209,7 @@ public class ExpressionParser {
 	 * 
 	 * @return Expression
 	 */
-	private Expression parseMultiplicative() throws ExpressionException {
+	private Expression parseFactor() throws ExpressionException {
 		Expression expression = this.parseBitwiseNot();
 
 		while (hasNext()) {
@@ -254,16 +229,16 @@ public class ExpressionParser {
 	/** ( UnaryExpression)* */
 	private Expression parseBitwiseNot() throws ExpressionException {
 		if (next(Id.BITWISE_NOT)) {
-			return new ExpressionCall(Operator.BITWISE_NOT, this.parseUnary());
+			return new ExpressionCall(Operator.BIT_NOT, this.parseUnary());
 		}
 		return this.parseUnary();
 	}
 
 	/** UnaryExpression ( & UnaryExpression)* */
 	private Expression parseBitwiseAnd() throws ExpressionException {
-		Expression expression = this.parseMultiplicative();
+		Expression expression = this.parseFactor();
 		if (next(Id.BITWISE_AND)) {
-			return new ExpressionCall(Operator.BITWISE_AND, expression, this.parseMultiplicative());
+			return new ExpressionCall(Operator.BIT_AND, expression, this.parseFactor());
 		}
 		return expression;
 	}
@@ -272,7 +247,7 @@ public class ExpressionParser {
 	private Expression parseBitwiseOr() throws ExpressionException {
 		Expression expression = this.parseBitwiseXor();
 		if (next(Id.BITWISE_OR)) {
-			return new ExpressionCall(Operator.BITWISE_OR, expression, this.parseBitwiseXor());
+			return new ExpressionCall(Operator.BIT_OR, expression, this.parseBitwiseXor());
 		}
 		return expression;
 	}
@@ -281,7 +256,7 @@ public class ExpressionParser {
 	private Expression parseBitwiseXor() throws ExpressionException {
 		Expression expression = this.parseBitwiseAnd();
 		if (next(Id.BITWISE_XOR)) {
-			return new ExpressionCall(Operator.BITWISE_XOR, expression, this.parseBitwiseAnd());
+			return new ExpressionCall(Operator.BIT_XOR, expression, this.parseBitwiseAnd());
 		}
 		return expression;
 	}
@@ -290,7 +265,7 @@ public class ExpressionParser {
 	private Expression parseUnary() throws ExpressionException {
 
 		if (next(Id.MINUS)) {
-			return new ExpressionCall(Operator.NEGATE, this.parseTerm());
+			return new ExpressionCall(Operator.NEGATIVE, this.parseTerm());
 		}
 		if (next(Id.PLUS)) {
 			// Ignore
@@ -374,7 +349,8 @@ public class ExpressionParser {
 					i += 4;
 					break;
 				}
-				// U########' 32-bit Unicode character where ######## are four are eight hex digits
+				// U########' 32-bit Unicode character where ######## are four are eight hex
+				// digits
 				case 'U': {
 					try {
 						c = (char) (Integer.parseInt(text.substring(i + 1, i + 9), 16));
@@ -407,59 +383,29 @@ public class ExpressionParser {
 				return Value.FALSE;
 			case NULL:
 				return Value.NULL;
-			case LITERAL_TEXT:
+			case IDENTIFIER:
+				return new ExpressionIdentifier(token.getText());
+			case LITERAL_STRING:
 				return parseLiteralText(token);
 			case LITERAL_NUMBER:
-				return parseLiteralNumber(token);				
-			case LITERAL_HEXNUMBER:
+				return parseLiteralNumber(token);
+			case LITERAL_BINARY_HEX:
 				return parseLiteralNumber(token, 16);
-			case LITERAL_BITNUMBER:
+			case LITERAL_BINARY_BIT:
 				return parseLiteralNumber(token, 2);
 			case DATE:
 				return parseLiteralDate();
+			case TIME:
+				return parseLiteralTime();
 			case TIMESTAMP:
 				return parseLiteralTimestamp();
-			case CAST:
-				return parseCast();
 			case CASE:
-				return parseCase();
-			case IDENTIFIER:
-				return new ExpressionIdentifier(token.getText());
+				return parseCaseWhen();
 			case FUNCTION:
-				Function function = Operator.getFunction(token.getText());
-				List<Expression> params = new ArrayList<>();
-
-				token = next();
-				if (token.is(Id.LPARENTHESIS)) {
-
-					// No param function
-					if (is(Id.RPARENTHESIS)) {
-						next();
-						return new ExpressionCall(function, params);
-					}
-
-					params.add(this.parseLogicalOr());
-					token = next();
-
-					while (token.is(Id.COMMA)) {
-						params.add(this.parseLogicalOr());
-						token = next();
-					}
-
-					if (token.is(Id.RPARENTHESIS)) {
-						return new ExpressionCall(function, params);
-					}
-					throw new ExpressionParserException("ExpressionException.MissingRightParenthesis", source,
-							token.getStart());
-				}
-
+				return parseFunction(token);
 			case LPARENTHESIS:
-				if (is(Id.RPARENTHESIS)) {
-					throw new ExpressionParserException("ExpressionException.EmptyParenthesis", source,
-							this.getPosition());
-				}
-
 				Expression expression = this.parseLogicalOr();
+
 				token = next();
 				if (token.is(Id.RPARENTHESIS)) {
 					return expression;
@@ -489,9 +435,9 @@ public class ExpressionParser {
 		if (next(Id.LESS_THAN_OR_GREATER_THAN)) {
 			return new ExpressionCall(Operator.LESS_THAN_OR_GREATER_THAN, expression, this.parseAdditive());
 		}
-		if (next(Id.CONTAINS)) {
-			return new ExpressionCall(Operator.CONTAINS, expression, this.parseAdditive());
-		}
+//		if (next(Id.CONTAINS)) {
+//			return new ExpressionCall(Operator.CONTAINS, expression, this.parseAdditive());
+//		}
 		if (next(Id.GREATER_THAN)) {
 			return new ExpressionCall(Operator.GREATER_THAN, expression, this.parseAdditive());
 		}
@@ -505,14 +451,13 @@ public class ExpressionParser {
 			return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseAdditive());
 		}
 
-		// Special case NOT before operation: <exp> [NOT] LIKE <primaryExp>
+		// Special case NOT before operation: <exp> [NOT] LIKE|IN|BETWEEN <primaryExp>
 		boolean not = false;
 		if (next(Id.NOT)) {
 			not = true;
 		}
 
 		if (next(Id.LIKE)) {
-			// System.out.println("Parse LIKE");
 			Expression pattern = this.parseTerm();
 
 			if (next(Id.ESCAPE)) {
@@ -520,14 +465,19 @@ public class ExpressionParser {
 				expression = new ExpressionCall(Operator.LIKE, expression, pattern, escape);
 			} else
 				expression = new ExpressionCall(Operator.LIKE, expression, pattern);
+		} else if (next(Id.ILIKE)) {
+			Expression pattern = this.parseTerm();
+
+			if (next(Id.ESCAPE)) {
+				Expression escape = this.parseTerm();
+				expression = new ExpressionCall(Operator.ILIKE, expression, pattern, escape);
+			} else
+				expression = new ExpressionCall(Operator.ILIKE, expression, pattern);
 		} else if (next(Id.IN)) {
-			// System.out.println("Parse IN");
 			expression = new ExpressionCall(Operator.IN, expression, this.parseList());
 		}
 
 		else if (next(Id.BETWEEN)) {
-			// System.out.println("Parse BETWEEN");
-
 			Expression begin = this.parseTerm();
 			if (!next(Id.AND)) {
 				throw new ExpressionParserException("ExpressionException.InvalidBetween", source, this.getPosition());
@@ -574,12 +524,11 @@ public class ExpressionParser {
 		String text = token.getText();
 		int length = text.length();
 		int pos = 0;
-		char c = text.charAt(pos);
 
 		while (pos < length && Characters.isDigit(text.charAt(pos))) {
 			pos++;
 		}
-		
+
 		// Use dot for decimal separator
 		if (pos < length && text.charAt(pos) == '.') {
 			isDecimalSeparatorFound = true;
@@ -593,16 +542,15 @@ public class ExpressionParser {
 			pos++;
 			isExponentSymbolFound = true;
 		}
-		if (pos < length && (source.charAt(pos) == '+' || text.charAt(pos) == '-')
-				&& isExponentSymbolFound) {
+		if (pos < length && (source.charAt(pos) == '+' || text.charAt(pos) == '-') && isExponentSymbolFound) {
 			pos++;
 		}
 		while (pos < length && Character.isDigit(source.charAt(pos)) && isExponentSymbolFound) {
 			pos++;
 		}
 
-		if (length < 18 && isDecimalSeparatorFound==false ) {
-			return Value.of(Long.parseLong(text,10));
+		if (length < 18 && isDecimalSeparatorFound == false) {
+			return Value.of(Long.parseLong(text, 10));
 		}
 
 		return Value.of(new BigDecimal(text));
@@ -621,16 +569,37 @@ public class ExpressionParser {
 		// The real literal text DATE 'literal'
 		ExpressionToken token = next();
 
-		DateFormat dateFormat = Format.PER_THREAD.get().date;
+		//LocalDate date = LocalDate.parse(token.getText());
 
-		ParsePosition pp = new ParsePosition(0);
-		final Date date = dateFormat.parse(token.getText(), pp);
-		if (null == date) {
+		//System.out.println(token.getText() + " parse to " + date.toString());
 
-		}
-		LocalDateTime dt = LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.systemDefault());
+		//return Value.of(date.atStartOfDay(UTC_ZONE).toInstant());
+		
+		Instant instant = ToDate.parse(token.getText(), "YYYY-MM-DD");
+		
+		return Value.of(instant);
+	}
 
-		return Value.of(dt);
+	/**
+	 * Parses a time literal.
+	 */
+	private Value parseLiteralTime() throws ExpressionParserException {
+
+		// The real literal text TIME 'literal'
+		ExpressionToken token = next();
+	
+		DateTimeFormatter format = DateTimeFormatter.ISO_TIME;
+//		if ( token.getLength()==16 )
+//			format = TIME_FORMAT_NANO6;		
+//		else if ( token.getLength()==17 )
+//			format = TIME_FORMAT_NANO7;				
+//		
+		LocalTime time = LocalTime.parse(token.getText(), format);
+
+		//System.out.println(token.getText() + " parse to " + time.toString());
+
+		LocalDateTime datetime = LocalDateTime.of(LocalDate.of(1900, 1, 1), time);
+		return Value.of(datetime.toInstant(ZoneOffset.UTC));
 	}
 
 	/**
@@ -642,16 +611,18 @@ public class ExpressionParser {
 		// The real literal text TIMESTAMP 'literal'
 		ExpressionToken token = next();
 
-		DateFormat dateFormat = Format.PER_THREAD.get().timestamp;
+		DateTimeFormatter format = TIMESTAMP_FORMAT;
+		if ( token.getLength()==26 )
+			format = TIMESTAMP_FORMAT_NANO6;
 
-		ParsePosition pp = new ParsePosition(0);
-		final Date date = dateFormat.parse(token.getText(), pp);
-		if (null == date) {
+		
+		LocalDateTime datetime = LocalDateTime.parse(token.getText(), format);
+		
+		
 
-		}
-		LocalDateTime dt = LocalDateTime.ofInstant(date.toInstant(), ZoneOffset.systemDefault());
+		// System.out.println(token.getText()+" parse to "+datetime.toString() );
 
-		return Value.of(dt);
+		return Value.of(datetime.toInstant(ZoneOffset.UTC));
 	}
 
 	/**
@@ -688,7 +659,7 @@ public class ExpressionParser {
 	}
 
 	/** Case When Then Else End ) */
-	private Expression parseCase() throws ExpressionException {
+	private Expression parseCaseWhen() throws ExpressionException {
 		Expression valueExpression = null;
 		Expression elseExpression = null;
 		List<Expression> whenList = new ArrayList<>();
@@ -721,40 +692,94 @@ public class ExpressionParser {
 				new ExpressionList(thenList), elseExpression);
 	}
 
-	/** Cast(expression AS dataType) */
-	private Expression parseCast() throws ExpressionException {
-		if (!next(Id.LPARENTHESIS)) {
+	/** Function */
+	private Expression parseFunction(ExpressionToken token) throws ExpressionParserException {
+
+		Function function = Operator.getFunction(token.getText());
+		List<Expression> params = new ArrayList<>();
+
+		if (is(Id.LPARENTHESIS))
+			token = next();
+		else {
 			throw new ExpressionParserException("ExpressionException.MissingLeftParenthesis", source,
 					this.getPosition());
 		}
 
-		Expression expression = this.parseLogicalOr();
+		/** Cast(expression AS dataType) */
+		if (Kind.CAST == function.kind) {
 
-		if (!next(Id.AS)) {
-			throw new ExpressionParserException("ExpressionException.MissingCastAs", source, this.getPosition());
+			params.add(this.parseLogicalOr());
+
+			if (!next(Id.AS)) {
+				throw new ExpressionParserException("ExpressionException.InvalidFunctionCastAs", source,
+						this.getPosition());
+			}
+
+			token = next();
+			DataType type = DataType.valueOf(token.getText());
+
+			// Use Enum.ordinal as argument for evaluate performance
+			params.add(Value.of(type.ordinal()));
 		}
 
-		ExpressionToken token = next();
-		Type type = Type.valueOf(token.getText());
+		/** Extract(datePart FROM expression) */
+		else if (Kind.EXTRACT == function.kind) {
 
-		if (!next(Id.RPARENTHESIS)) {
+			ExpressionToken tokenPart = next();
+			DatePart part = DatePart.of(tokenPart.getText());
+
+			// Replace EXTRACT with the corresponding function
+			switch (part) {
+			case YEAR:
+			case MONTH:
+			case QUARTER:
+			case DAY:
+			case HOUR:
+			case MINUTE:
+			case SECOND:
+			case WEEK:
+			case DAYOFYEAR:
+			case DAYOFWEEK:
+				function = Operator.getFunction(part.name());
+				break;
+			default:
+				function = Operator.getFunction(Kind.DATE_PART);
+				// Use Enum.ordinal as argument for evaluate performance
+				params.add(Value.of(part.ordinal()));
+				break;
+			}
+						
+			if (!next(Id.FROM)) {
+				throw new ExpressionParserException("ExpressionException.InvalidFunctionExtractFrom", source,
+						this.getPosition());
+			}
+
+			params.add(this.parseLogicalOr());
+
+		} else {
+
+			// No param function
+			if (is(Id.RPARENTHESIS)) {
+				next();
+				return new ExpressionCall(function, params);
+			}
+
+			params.add(this.parseLogicalOr());
+
+			while (is(Id.COMMA)) {
+				token = next();
+				params.add(this.parseLogicalOr());
+			}
+		}
+
+		if (is(Id.RPARENTHESIS)) {
+			token = next();
+		} else {
 			throw new ExpressionParserException("ExpressionException.MissingRightParenthesis", source,
-					this.getPosition());
+					token.getStart());
 		}
 
-		// Use Enum.ordinal as argument for performance
-		return new ExpressionCall(Operator.CAST, expression, Value.of(type.ordinal()));
-	}
-
-	/**
-	 * Pre-initialized {@link DateFormat} objects, to be used within the current
-	 * thread, because {@code DateFormat} is not thread-safe.
-	 */
-	private static class Format {
-		private static final ThreadLocal<Format> PER_THREAD = ThreadLocal.withInitial(Format::new);
-		final DateFormat timestamp = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING, Locale.ROOT);
-		final DateFormat time = new SimpleDateFormat(TIME_FORMAT_STRING, Locale.ROOT);
-		final DateFormat date = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ROOT);
+		return new ExpressionCall(function, params);
 	}
 
 	private static ExpressionException createFormatException(String s, int i) {

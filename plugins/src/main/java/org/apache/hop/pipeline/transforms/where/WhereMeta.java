@@ -56,12 +56,12 @@ import org.w3c.dom.Node;
  */
 @Transform(
 			id = "Where",
-			image = "Where.svg",
+			image = "where.svg",
 			i18nPackageName = "org.apache.hop.pipeline.transforms.where",
 			name = "Where.Name",
 			description = "Where.Description",
 //			categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Experimental",
-			keywords = {"Filter","Expression","SQL"}
+			keywords = {"filter","expression","sql"}
 )
 @InjectionSupported(localizationPrefix = "Where.Injection.")
 public class WhereMeta extends BaseTransformMeta implements ITransformMeta<WhereTransform, WhereData> {

@@ -1,0 +1,13 @@
+= BIT_AND, &
+
+Performs a bitwise AND operation between two integer values.
+
+== Syntax
+----
+BIT_AND(integer, integer) 
+----
+
+The & operator provides alternative syntax.
+----
+integer & integer
+----

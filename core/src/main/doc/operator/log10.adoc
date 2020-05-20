@@ -1,0 +1,12 @@
+= LOG10
+
+This function calculates the logarithm of n with base 10.
+
+== Syntax
+----
+LOG10(n)
+----
+
+== Usage
+
+Argument must be a positive numeric value.

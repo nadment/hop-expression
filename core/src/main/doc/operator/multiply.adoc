@@ -1,0 +1,14 @@
+= MULTIPLY, *
+
+Multiply 2 numeric values.
+
+== Syntax
+
+----
+MULTIPLY(numeric_expression, numeric_expression)
+----
+
+The * operator provides alternative syntax.
+----
+numeric_expression * numeric_expression
+----

@@ -1,0 +1,13 @@
+= DAYOFYEAR
+
+Returns the day of year of the date or timestamp.
+
+== Syntax
+----
+DAYOFYEAR(date)
+----
+
+== Usage
+
+* Returns an integer between 1 and 366.
+* Equivalent to xref:extract.adoc[EXTRACT](DAYOFYEAR FROM date).

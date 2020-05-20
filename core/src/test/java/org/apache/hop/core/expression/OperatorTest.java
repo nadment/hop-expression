@@ -1,6 +1,7 @@
 package org.apache.hop.core.expression;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.junit.Test;
 
@@ -21,7 +22,7 @@ public class OperatorTest extends ExpressionTest {
 		evalTrue("2.000 = 2.00");
 		evalTrue("-1.4e-10 = -1.4e-10");
 		evalTrue("15 = 0xF");
-		// TODO: fixme evalTrue("'0.0' = 0");
+		// FIXME: evalTrue("'0.0' = 0");
 		evalTrue("15.0 = '15'");
 		evalTrue("'.01' = 0.01");
 
@@ -131,7 +132,6 @@ public class OperatorTest extends ExpressionTest {
 		evalTrue("Date '2019-01-01' < Date '2019-02-01'");
 		evalFalse("Date '2019-01-01' < Date '2019-01-01'");
 		evalFalse("Date '2019-01-01' < Date '2018-01-01'");
-
 	}
 
 	@Test
@@ -202,6 +202,22 @@ public class OperatorTest extends ExpressionTest {
 	}	
 	
 	@Test
+	public void Addition() throws Exception {		
+		evalEquals("0xF+0", 15);
+		evalEquals("0b00011+0", 3);
+		evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
+		evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
+	}
+
+	@Test
+	public void Subtraction() throws Exception {
+		evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+	}
+	
+	
+
+	
+	@Test
 	public void Between() throws Exception {
 		evalTrue("3 between 1 and 5");
 		evalTrue("3 between 3 and 5");
@@ -210,6 +226,11 @@ public class OperatorTest extends ExpressionTest {
 		evalFalse("1 between 3 and 5");
 		evalTrue("Age between 39.999 and 40.0001");
 		evalTrue("Age not between 10 and 20");
+
+		evalTrue("Age not between 10 and 20 and 'Test' is not null");
+		
+		
+		
 		evalFails("Age between 10 and");
 
 		evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
@@ -239,18 +260,44 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("Cast(true as String)", "TRUE");
 		evalEquals("Cast(123.6 as String)", "123.6");
 
+		
+		evalEquals("Cast(Date '2019-02-25' as String)", "2019-02-25");
+
+		//evalEquals("Cast(Time '23:48:59' as String)", "23:48:59");
+
+		// TODO: evalEquals("Timestamp '1900-01-04 12:00'", 3.5);
+		
+		//evalEquals("Time '23:48:59'+1.5", "23:48:59");
+
 		 
-		evalEquals("Cast('1234' as Number)", new Double(1234));
-		evalEquals("Cast('1234.567' as Integer)", new Long(1234));
-		// TODO: evalEquals("Cast('0x123' as Integer)", new Long(291));
+		evalEquals("Cast('1234' as Number)", 1234d);
+		evalEquals("Cast('1234.567' as Number)", 1234.567d);
+		
+		
+		evalEquals("Cast('1234.567' as Integer)", 1234L);
+		
+		// Binary to integer
+		evalEquals("Cast(0x123 as Integer)", 291L);
 		
 		evalEquals("Cast(12345678901234567890123456789012345678901234567890 as BigNumber)", new BigDecimal("12345678901234567890123456789012345678901234567890"));
 		
 		evalFails("Cast(123 as Nill)");
+		
+		
+		
 	}
 
 	@Test
-	public void Negate() throws Exception {
+	public void Positive() throws Exception {
+		evalEquals("+(40)", 40);
+		evalEquals("+(Age)", 40);
+		evalNull("+null");
+		evalEquals("+40", 40);
+
+	}
+	
+	@Test
+	public void Negative() throws Exception {
 		evalEquals("-40", -40);
 		evalEquals("-Age", -40);
 		evalNull("-null");
@@ -274,7 +321,6 @@ public class OperatorTest extends ExpressionTest {
 		evalFails("40/0");
 	}
 
-    // TODO: remove or implement power operator
 	public void Power() throws Exception {		
 		evalEquals("4**2", 16);
 		evalEquals("-4**2", -16);
@@ -289,28 +335,30 @@ public class OperatorTest extends ExpressionTest {
 	}
 
 	@Test
-	public void BitwiseNot() throws Exception {
+	public void BitNot() throws Exception {
 		//evalEquals("~1", -2);
 		//evalEquals("~0", -1);
 		//evalEquals("~0xFF", 0x1);
 	}
 
 	@Test
-	public void BitwiseAnd() throws Exception {
+	public void BitAnd() throws Exception {
+		evalEquals("Bit_And(3,2)", 2);
 		evalEquals("3 & 2", 2);
 		evalEquals("100 & 2", 0);
 	}
 	
 	@Test
-	public void BitwiseOr() throws Exception {
+	public void BitOr() throws Exception {
+		evalEquals("Bit_Or(100,2)", 102);
 		evalEquals("100 | 2", 102);
 		evalEquals("3 | 2", 3);
 	}
 
 	@Test
-	public void BitwiseXor() throws Exception {
-		evalEquals("2 ^ 2", 0);
-		evalEquals("2 ^1", 3);
+	public void BitXor() throws Exception {
+		evalEquals("Bit_Xor(2,2)", 0);
+		evalEquals("2 ^ 1", 3);
 		evalEquals("100 ^ 2", 102);
 	}
 	
@@ -364,12 +412,27 @@ public class OperatorTest extends ExpressionTest {
 	}
 
 	@Test
+	public void ILike() throws Exception {
+		evalTrue("'test' ILIKE '%t%'");
+		evalTrue("'test' ILIKE '%T%'");
+	}
+	
+	@Test
 	public void Like() throws Exception {
 		evalTrue("NAME like 'TES%'");
 		evalTrue("NAME not like 'X%'");
 		evalFalse("NAME like 'X%'");
 		evalTrue("'Tuesday' like '%es%'");
+		evalTrue("'...Tuesday....' like '%es%'");
 
+		// Test one char
+		evalTrue("'A' like '_'");
+		//evalFalse("'AA' like '_'");
+		
+		// Test empty
+		evalTrue("'' like '%'");
+		evalFalse("'' like '_'");
+				
 		// values that starts with "a" and ends with "o"
 		evalTrue("'amigo' like 'a%o'");
 		evalTrue("'ao' like 'a%o'");
@@ -378,12 +441,27 @@ public class OperatorTest extends ExpressionTest {
 		evalTrue("'amigo' like 'a_%_%'");
 		evalTrue("'Friday' like '___day'");
 		evalFalse("'am' like 'a_%_%'");
+		evalTrue("'AA' like '__'");
+		evalFalse("'AA' like '___'");
 
-		evalTrue("'100%' like '100^%' escape '^'");
-		evalFalse("'100' like '100^%' escape '^'");
+		
+		// New line
+		evalTrue("'AA\nA' like 'AA%'");
+		evalTrue("'AA\nA' like 'AA_A'");
+		evalTrue("'AA\nA' like 'AA%A'");
+		evalFalse("'AA\nA' like 'AA_'");
+		
+		// Escape with other char
+		evalTrue("'Result 100% value' like '%100^%%' escape '^'");
+		
+		// Double escape char
+		evalFalse("'^100% milles' like '^^100^%%' escape '^'");
+		
+		// Escape with Regexp special char
+		evalTrue("'give me 30% discount' like '%30!%%' escape '!'");
+		evalTrue("'ADD_MONTHS' like '%ADD!_%' escape '!'");
 
-
-		// evalTrue("'Amigo' like '[A-C]%'");
+		// TODO:  evalTrue("'Amigo' like '[A-C]%'");
 
 		// NULL does not match NULL
 		evalFalse("NULL like NULL");
@@ -402,14 +480,15 @@ public class OperatorTest extends ExpressionTest {
 	@Test
 	public void Contains() throws Exception {
 		evalTrue("CONTAINS(NAME,'ES')");
-		evalTrue("NAME =~ 'ES'");
-		evalTrue("NAME =~ 'TEST'");
+		//evalTrue("NAME =~ 'ES'");
+		//evalTrue("NAME =~ 'TEST'");
 	}
 
 	@Test
 	public void CaseWhen() throws Exception {
 		evalEquals("case when Age=40 then 10 else 50 end", 10);
 		evalEquals("case when Age=10+20 then 1*5  when Age=20+20 then 2*5 else 50 end", 10);
+		
 		evalEquals("case Age when 10 then 10 when 40 then 40 else 50 end", 40);
 	}
 

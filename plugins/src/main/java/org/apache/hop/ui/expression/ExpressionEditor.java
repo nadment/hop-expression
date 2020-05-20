@@ -1,7 +1,9 @@
 package org.apache.hop.ui.expression;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hop.core.Const;
@@ -9,12 +11,14 @@ import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionScanner;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
-import org.apache.hop.ui.core.PropsUI;
-import org.apache.hop.ui.core.gui.GUIResource;
+import org.apache.hop.ui.core.PropsUi;
+import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.StyledTextComp;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
@@ -64,13 +68,13 @@ public class ExpressionEditor extends SashForm {
 
 		txtEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
 		txtEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
-		
-		//txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
+
+		// txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
 		// wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
-		PropsUI.getInstance().setLook(txtEditor, Props.WIDGET_STYLE_FIXED);
+		PropsUi.getInstance().setLook(txtEditor, Props.WIDGET_STYLE_FIXED);
 
-		PropsUI.getInstance().setLook(this);
+		PropsUi.getInstance().setLook(this);
 
 		// See PDI-1284 in chinese window, Ctrl-SPACE is reserved by system for input
 		// chinese character. use Ctrl-ALT-SPACE instead.
@@ -81,13 +85,11 @@ public class ExpressionEditor extends SashForm {
 		KeyStroke keyStroke = KeyStroke.getInstance(modifierKeys, SWT.SPACE);
 
 		contentProposalProvider = new ExpressionProposalProvider();
-		// contentProposalProvider.init(variables);
-		// contentProposalProvider.init(rowMeta);
 
 		StyledText styledText = txtEditor.getStyledText();
 
 		ContentProposalAdapter contentProposalAdapter = new ContentProposalAdapter(styledText,
-				new StyledTextContentAdapter(), contentProposalProvider, keyStroke, new char[] { '(','$' });
+				new StyledTextContentAdapter(), contentProposalProvider, keyStroke, new char[] { '(', '$' });
 		contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
 		contentProposalAdapter.setLabelProvider(new ExpressionLabelProvider());
 		contentProposalAdapter.setPropagateKeys(true);
@@ -109,7 +111,7 @@ public class ExpressionEditor extends SashForm {
 		// Tree
 		tree = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		tree.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-		PropsUI.getInstance().setLook(tree);
+		PropsUi.getInstance().setLook(tree);
 
 		// Create the drag source on the tree
 		DragSource ds = new DragSource(tree, DND.DROP_MOVE);
@@ -127,32 +129,55 @@ public class ExpressionEditor extends SashForm {
 
 			public void dragSetData(DragSourceEvent event) {
 				// Set the data to be the first selected item's text
-				event.data = tree.getSelection()[0].getData();
+				event.data = labelProvider.getText(tree.getSelection()[0].getData());
 			}
 		});
 
 		
 		treeItemField = new TreeItem(tree, SWT.NULL);
-		treeItemField.setImage(GUIResource.getInstance().getImageBol());
+		treeItemField.setImage(GuiResource.getInstance().getImageBol());
 		treeItemField.setText(BaseMessages.getString(PKG, "Expression.Fields.Label"));
 
 		TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
-		treeItemOperator.setImage(GUIResource.getInstance().getImageBol());
+		treeItemOperator.setImage(GuiResource.getInstance().getImageBol());
 		treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
 
 		// Create operator category
 		Map<String, TreeItem> items = new HashMap<>();
-		for (Operator.Category category: Operator.Category.values() ) {
+		for (OperatorCategory category: OperatorCategory.values() ) {
+			
+			if ( category==OperatorCategory.None ) continue;
+			
 			TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
-			item.setImage(GUIResource.getInstance().getImageBol());
+			item.setImage(GuiResource.getInstance().getImageBol());
 			item.setText(BaseMessages.getString(PKG, "Expression.Operators.Category."+category.name()+".Label"));
 			items.put(category.name(), item);
 		}
 
-		// Create item operator
-		for (Operator operator : Operator.getOperators()) {
+		
+		List<Operator> primaryOperators = new ArrayList<>();
+		HashMap<Kind,String> mapDisplay = new HashMap<>();
+		
+		// Primary operator
+		for ( Operator o:Operator.getOperators()) {						
+			if ( !o.isAlias() ) {
+				primaryOperators.add(o);
+				mapDisplay.put(o.getKind(), o.getName());
+			}
+		}
 
-			TreeItem parentItem = items.get(operator.getCategory());
+		// Alias operator
+		for ( Operator o:Operator.getOperators()) {
+			if ( o.isAlias() ) {				
+				String alias = mapDisplay.get(o.getKind());	
+				mapDisplay.replace(o.getKind(), String.join(", ", alias, o.getName()));
+			}
+		}
+			
+		// Create item operator
+		for (Operator operator : primaryOperators) {
+
+			TreeItem parentItem = items.get(operator.getKind().category());
 
 			TreeItem item;		
 			if (parentItem == null)
@@ -160,30 +185,16 @@ public class ExpressionEditor extends SashForm {
 			else
 				item = new TreeItem(parentItem, SWT.NULL);
 			item.setImage(labelProvider.getImage(operator));			
-			item.setText(operator.getName());
-			item.setData(operator.getName());
+			item.setText(mapDisplay.get(operator.getKind()));
+			item.setData(operator);
 		}
 
-//		// Create item functions
-//		for (Function function : Operator.getFunctions()) {
-//			TreeItem parentItem = items.get(function.getCategory());			
-//			TreeItem item;		
-//			if (parentItem == null)
-//				item = new TreeItem(tree, SWT.NULL);
-//			else
-//				item = new TreeItem(parentItem, SWT.NULL);
-//			item.setImage(labelProvider.getImage(function));
-//			item.setText(function.getName());
-//			item.setData(function.getName());
-//		}
-
 		treeItemVariable = new TreeItem(tree, SWT.NULL);
-		treeItemVariable.setImage(GUIResource.getInstance().getImageBol());
+		treeItemVariable.setImage(GuiResource.getInstance().getImageBol());
 		treeItemVariable.setText(BaseMessages.getString(PKG, "Expression.Variables.Label"));
 
 		// Tooltip for syntax and help
-		TreeTooltipSupport toolTip = new TreeTooltipSupport(tree, SWT.NONE);
-		toolTip.setLabelProvider(new ExpressionLabelProvider());
+		HtmlToolTip toolTip = new HtmlToolTip(tree, labelProvider);
 		toolTip.activate();
 	}
 
@@ -244,13 +255,14 @@ public class ExpressionEditor extends SashForm {
 
 				for (int i = 0; i < rowMeta.size(); i++) {
 					IValueMeta valueMeta = rowMeta.getValueMeta(i);
-					
+
 					// Escape field name matching reserved words or function
 					String name = valueMeta.getName();
-					if ( ExpressionScanner.getReservedWords().contains(name.toUpperCase()) || Operator.getFunction(name)!=null ) {
-						name = '['+name+']';
-					} 
-					
+					if (ExpressionScanner.getReservedWords().contains(name.toUpperCase())
+							|| Operator.getFunction(name) != null) {
+						name = '[' + name + ']';
+					}
+
 					TreeItem item = new TreeItem(treeItemField, SWT.NULL);
 					item.setImage(labelProvider.getImage(valueMeta));
 					item.setText(valueMeta.getName());

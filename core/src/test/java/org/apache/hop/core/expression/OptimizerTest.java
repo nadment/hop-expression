@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DefaultExpressionContext;
 import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Value;
 import org.junit.Test;
 
@@ -15,10 +14,10 @@ public class OptimizerTest {
 
 	protected Expression optimize(String e) throws Exception {
 
-		Expression expression = (Expression)ExpressionParser.parse(e);
+		Expression expression = ExpressionParser.parse(e);
 
 		DefaultExpressionContext context = new DefaultExpressionContext();
-		Expression result = ((Expression) expression).optimize(context);
+		Expression result = expression.optimize(context);
 
 		int cost = expression.getCost();
 		int opticost = result.getCost();
@@ -62,7 +61,7 @@ public class OptimizerTest {
 		optimize("-(10+2)", -12L);
 		optimize("-(0)", 0L);
 		
-		optimize("1+AGE+3"); // TODO:
+		optimize("1+AGE+3"); // TODO: operator swap
 		optimize("not ( not [FIELD] is NULL )");
 		optimize("-(-[FIELD])");
 		optimize("false and true or [FIELD]");
@@ -88,6 +87,7 @@ public class OptimizerTest {
 		optimizeTrue("'25' in ('1','25','66')");
 		optimizeTrue("25.8 between 18 and 32");
 		optimizeTrue("Trim(' test ')='test'");
-		optimize("Day_Of_Month(Date '2019-02-15')",15L);
+		optimize("DayOfMonth(Date '2019-02-15')",15L);
+		optimize("DayOfMonth(Date(2019,2,15))",15L);
 	}
 }

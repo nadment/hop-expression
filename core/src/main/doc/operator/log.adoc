@@ -1,0 +1,12 @@
+= LOG
+
+This function calculates the logarithm of n with base b.
+
+== Syntax
+----
+LOG10(b,n)
+----
+
+== Usage
+
+Argument must be a positive numeric value.

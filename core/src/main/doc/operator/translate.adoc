@@ -1,0 +1,16 @@
+= TRANSLATE
+
+Translates original from the characters in findChars to the characters in replaceChars.
+
+== Syntax
+----
+TRANSLATE(original, findChars, replaceChars)
+----
+
+== Usage
+
+
+
+Returns::
+
+String

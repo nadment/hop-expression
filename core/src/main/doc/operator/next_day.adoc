@@ -1,0 +1,14 @@
+= NEXT_DAY
+
+This function returns the date of the first specified day of week that occurs after the input date.
+
+== Syntax
+----
+NEXT_DAY(date, weekday)
+----
+
+
+
+
+
+See also xref:first_day.adoc[FIRST_DAY], xref:last_day.adoc[LAST_DAY]

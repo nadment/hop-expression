@@ -4,7 +4,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import org.apache.hop.expression.Type;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
@@ -38,15 +38,15 @@ public class ValueBigNumber extends Value {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.BIGNUMBER;
+	public DataType getDataType() {
+		return DataType.BIGNUMBER;
 	}
 
 	@Override
 	public Object getObject() {
 		return value;
 	}
-	
+
 	@Override
 	public BigDecimal toBigNumber() {
 		return value;
@@ -64,7 +64,18 @@ public class ValueBigNumber extends Value {
 
 	@Override
 	public String toString() {
-		return value.toString();
+		final String s = value.toString();
+		if (s.equals("0")) {
+			return s;
+		} else if (s.startsWith("0.")) {
+			// we want ".1" not "0.1"
+			return s.substring(1);
+		} else if (s.startsWith("-0.")) {
+			// we want "-.1" not "-0.1"
+			return "-" + s.substring(2);
+		} else {
+			return s;
+		}
 	}
 
 	@Override
@@ -138,6 +149,5 @@ public class ValueBigNumber extends Value {
 	public Value power(Value v) {
 		return Value.of(value.pow((int) v.toInteger()));
 	}
-
 
 }

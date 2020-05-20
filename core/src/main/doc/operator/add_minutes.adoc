@@ -1,0 +1,13 @@
+= ADD_MINUTES
+
+This function adds or subtracts a specified number of minutes to a date or timestamp.
+		
+== Syntax
+----
+ADD_MINUTES(date_or_timestamp_expr, integer)
+----
+
+== Usage
+
+* Decimals are rounded before adding that number.
+* The number of minutes, can be a positive or negative integer to either add or subtract minutes, respectively.

@@ -1,0 +1,20 @@
+:language: en_US
+= DECODE
+
+Compares the select expression to each search expression in order. As soon as a search expression matches the selection expression, the corresponding result expression is returned.
+
+== Syntax
+
+----
+DECODE(expr, search1 , result1 [, search2, result2 ... ][, default ])
+----
+
+expr::	This is the select expression.
+searchN:: The search expressions indicate the values to compare to the select expression. 
+
+== Usage
+
+If an optional default is specified, and if none of the search expressions match the select expression, then DECODE returns this default value.
+
+
+TIP: Contrary to `CASE`, a NULL value in the select expression matches a NULL value in the search expressions.

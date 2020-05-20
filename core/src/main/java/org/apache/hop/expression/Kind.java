@@ -1,8 +1,6 @@
 package org.apache.hop.expression;
 
 import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * Enumerates the possible types of {@link Expression}.
@@ -10,176 +8,90 @@ import java.util.Set;
 
 public enum Kind {
 
-	VALUE,
+	VALUE(OperatorCategory.None),
 
-	LIST,
-	IDENTIFIER,
-	
-	
-	BITGET,
+	LIST(OperatorCategory.None),
+
+	IDENTIFIER(OperatorCategory.None),
+
+	// -------------------------------------------------------------
+	// BITWISE
+	// -------------------------------------------------------------
+
+	BIT_GET(OperatorCategory.Bitwise),
 
 	/**
 	 * The bitwise AND operation.
 	 */
-	BITWISE_AND_OPERATOR("&"),
+	BIT_AND(OperatorCategory.Bitwise),
 
 	/**
 	 * The bitwise OR operation.
 	 */
-	BITWISE_OR_OPERATOR("|"),
+	BIT_OR(OperatorCategory.Bitwise),
 
 	/**
 	 * The bitwise NOT operation.
 	 */
-	BITWISE_NOT_OPERATOR("~"),
+	BIT_NOT(OperatorCategory.Bitwise),
 
 	/**
 	 * The bitwise XOR operation.
 	 */
-	BITWISE_XOR_OPERATOR("^"),
+	BIT_XOR(OperatorCategory.Bitwise),
 
-	LSHIFT_OPERATOR("<<"),
-	
-	RSHIFT_OPERATOR(">>"),
+	// LSHIFT(Category.Bitwise),
 
-	/**
-	 * Case when operator
-	 */
-	CASE_WHEN_OPERATOR("CASE"),
-
-	/**
-	 * Converts a value of one data type into another data type.
-	 */
-	CAST_OPERATOR("CAST"),
+	// RSHIFT(Category.Bitwise),
 
 	/**
 	 * Returns the length of a string or binary value in bits.
 	 */
-	BIT_LENGTH,
+	BIT_LENGTH(OperatorCategory.String),
 
-	OCTET_LENGTH,
-
-	/**
-	 * String concatenation operator '<code>||</code>'.
-	 * 
-	 * @See {@link #CONCAT}
-	 */
-	CONCAT_OPERATOR("||"),
-
-	/**
-	 * Concat function
-	 */
-	CONCAT,
-
-	/**
-	 * Contains operator <code>=~<code>
-	 */
-	CONTAINS_OPERATOR("=~"),
+	// -------------------------------------------------------------
+	// COMPARISON
+	// -------------------------------------------------------------
 
 	/**
 	 * Contains function
 	 */
-	CONTAINS,
-
-	/**
-	 * The arithmetic division operator '/'.
-	 */
-	DIVIDE_OPERATOR("/"),
-
-	/**
-	 * The arithmetic multiplication operator '*'.
-	 */
-	MULTIPLY_OPERATOR("*"),
-
-	/**
-	 * Returns the exponential value of a numeric expression.
-	 */
-	EXP,
-
-//	/**
-//	 * The arithmetic power operator '^'.
-//	 * 
-//	 * @See {@link #POWER}
-//	 */
-//	POWER_OPERATOR("^"),
-
-	/**
-	 * The function raises a Number to a Power.
-	 * 
-//	 * @See {@link #POWER_OPERATOR}
-	 */
-	POWER,
-
-	/**
-	 * The function returns the remainder division.
-	 * 
-	 * Equivalent to the modulo arithmetic operator (e.g. expr1 % expr2).
-	 * 
-	 * @see {@link #MODULUS_OPERATOR}
-	 */
-	MOD,
-
-	/**
-	 * The arithmetic remainder operator '%'.
-	 * 
-	 * @see {@link #MOD}
-	 */
-	MODULUS_OPERATOR("%"),
-
-//	/**
-//	 * The arithmetic unary plus (positive) operator '+'.
-//	 */
-//	PLUS_OPERATOR("+"),
-
-	/**
-	 * The arithmetic unary minus (negative) operator '-'.
-	 */
-	NEGATE_OPERATOR("-"),
-
-	/**
-	 * The arithmetic addition operator '+'.
-	 */
-	ADD_OPERATOR("+"),
-
-	/**
-	 * The arithmetic subtract operator '-'.
-	 */
-	SUBTRACT_OPERATOR("-"),
+	CONTAINS(OperatorCategory.Comparison),
 
 	/**
 	 * The "IN" operator.
 	 */
-	IN_OPERATOR("IN"),
+	IN(OperatorCategory.Comparison),
 
 	/**
 	 * The "BETWEEN" operator.
 	 */
-	BETWEEN_OPERATOR("BETWEEN"),
+	BETWEEN(OperatorCategory.Comparison),
 
 	/**
 	 * The less-than operator '&lt;'.
 	 */
-	LESS_THAN_OPERATOR("<"),
+	LESS_THAN_OPERATOR(OperatorCategory.Comparison),
 
 	/**
 	 * The greater-than operator '&gt;'.
 	 */
-	GREATER_THAN_OPERATOR(">"),
+	GREATER_THAN(OperatorCategory.Comparison),
 
 	/**
 	 * The less-than-or-equal operator '&lt;='.
 	 */
-	LESS_THAN_OR_EQUAL_OPERATOR("<="),
+	LESS_THAN_OR_EQUAL_OPERATOR(OperatorCategory.Comparison),
 
 	/**
 	 * The greater-than-or-equal operator '&gt;='.
 	 */
-	GREATER_THAN_OR_EQUAL_OPERATOR(">="),
+	GREATER_THAN_OR_EQUAL(OperatorCategory.Comparison),
 
 	/**
 	 * The equals operator '='.
 	 */
-	EQUAL_OPERATOR("="),
+	EQUAL(OperatorCategory.Comparison),
 
 	/**
 	 * Compares whether two expressions are equal.
@@ -188,282 +100,170 @@ public enum Kind {
 	 * comparing equality. Note that this is different from the EQUAL comparison
 	 * operator (=), which treats NULLs as unknown values.
 	 */
-	EQUAL_NULL,
+	EQUAL_NULL(OperatorCategory.Comparison),
 
 	/**
 	 * The not-equals operator "&lt;&gt;".
 	 * 
-	 *  @See {@link #LESS_THAN_OR_GREATER_THEN}
+	 * @See {@link #LESS_THAN_OR_GREATER_THEN}
 	 */
-	NOT_EQUAL_OPERATOR("!="),
+	NOT_EQUALS(OperatorCategory.Comparison),
 
 	/**
 	 * The not-equals operator '!='
 	 * 
 	 * @See {@link #NOT_EQUAL_OPERATOR}
 	 */
-	LESS_THAN_OR_GREATER_THEN("<>"),
-	
-	/**
-	 * The logical OR operator.
-	 */
-	LOGICAL_OR_OPERATOR("OR"),
+	LESS_THAN_OR_GREATER_THEN(OperatorCategory.Comparison),
 
 	/**
-	 * The logical XOR operator.
+	 * The IS NULL or <code>IS TRUE</code> operator.
 	 */
-	LOGICAL_XOR_OPERATOR("XOR"),
-
-	/**
-	 * The logical AND operator.
-	 */
-	LOGICAL_AND_OPERATOR("AND"),
+	IS(OperatorCategory.Comparison),
 
 	/**
 	 * The LIKE operator.
 	 */
-	LIKE_OPERATOR("LIKE"),
+	LIKE(OperatorCategory.Comparison),
 
 	/**
-	 * The logical NOT operator.
+	 * The ILIKE case-insensitive operator.
 	 */
-	LOGICAL_NOT_OPERATOR("NOT"),
+	ILIKE(OperatorCategory.Comparison),
 
 	/**
-	 * The function NULLIF
+	 * The function returns TRUE if the first value ends with second value. Both
+	 * values must be data type of string or binary.
+	 * 
+	 * @see {@link #STARTSWITH}
 	 */
-	NULLIF,
+	ENDSWITH(OperatorCategory.Comparison),
+
+	// -------------------------------------------------------------
+	// CONDITIONAL
+	// -------------------------------------------------------------
 
 	/**
-	 * Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
+	 * Case when operator
 	 */
-	IF,
-	
-	/**
-	 * The IS NULL or <code>IS TRUE</code> operator.
-	 */
-	IS_OPERATOR("IS"),
-
-	/**
-	 * Returns the absolute (positive) value of the numeric value.
-	 */
-	ABS,
-
-	/**
-	 * Returns the arc cosine, the angle in radians whose cosine is the specified
-	 * float expression.
-	 */
-	ACOS,
-
-	/**
-	 * Adds or subtracts a specified number of months to a date or timestamp
-	 */
-	ADD_MONTHS,
-
-	ASIN,
-
-	ATAN,
-
-	ATAN2,
-	
-	/**
-	 * Returns the values rounded to the nearest equal or larger integer.
-	 */
-	CEIL,
+	CASE_WHEN(OperatorCategory.Conditional),
 
 	/**
 	 * The COALESCE function returns the first of its arguments that is not null.
 	 * Null is returned only if all arguments are null.
 	 */
-	COALESCE,
+	COALESCE(OperatorCategory.Conditional),
 
 	/**
-	 * The IFNULL function replace the null with value.
+	 * Single-level if-then-else expression. Similar to CASE, but only allows a
+	 * single condition.
 	 */
-	IFNULL,
+	IF(OperatorCategory.Conditional),
 
 	/**
-	 * Returns the trigonometric cosine of the specified angle in radians in the specified number.
+	 * The IFNULL function replace the null with value (Alias NVL).
 	 */
-	COS,
+	IFNULL(OperatorCategory.Conditional),
 
 	/**
-	 * Returns the hyperbolic cosine of its argument.
+	 * The function NULLIF
 	 */
-	COSH,
+	NULLIF(OperatorCategory.Conditional),
+
+	NVL2(OperatorCategory.Conditional),
 
 	/**
-	 * Returns the trigonometric cotangent of the angle in radians specified by
-	 * float expression.
-	 */
-	COT,
-
-	/**
-	 * Compares the select expression to each search expression in order. As soon as a search expression matches the selection expression, the corresponding result expression is returned.
-	 */
-	DECODE,
-	
-	/**
-	 * Function to converts radians to degrees.
-	 */
-	DEGREES,
-
-	/**
-	 * Returns the values rounded to the nearest equal or smaller integer.
-	 */
-	FLOOR,
-
-	/**
-	 * Returns the current date value.
-	 */
-	CURRENT_DATE,
-
-	/** Returns the last day of the month. */
-	LAST_DAY,
-
-	/** The year of a date */
-	YEAR,
-
-	/** Quarter of the year (number from 1-4). */
-	QUARTER,
-
-	/** Month of the year (number from 1-12). */
-	MONTH,
-
-	/** Returns the name of the month (in English). */
-	MONTH_NAME,
-
-	/** Week of the year (number from 1-54). */
-	WEEK_OF_YEAR,
-
-	/** Returns the name of the weekday (in English). */
-	DAY_NAME,
-
-	/** Day of the month (number from 1-31). */
-	DAY_OF_MONTH,
-
-	/** Day of the week (Sunday=1 to Saturday=7). */
-	DAY_OF_WEEK,
-
-	/** Day of the year (number from 1-366). */
-	DAY_OF_YEAR,
-
-	/** Day of the week (Monday=1 to Sunday=7). */
-	ISO_DAY_OF_WEEK,
-
-	/** Week of the year (number from 1-53). */
-	ISO_WEEK_OF_YEAR,
-
-	/** 
-	 * The hour (0-23).
+	 * The function returns TRUE if the first value starts with second value. Both
+	 * values must be data type string or binary.
 	 * 
-	 * @See {@link #MINUTE}, {@link #SECOND}
+	 * @see {@link #ENDSWITH}
 	 */
-	HOUR,
+	STARTSWITH(OperatorCategory.Comparison),
 
-	/** 
-	 * The minute (0-59).
+	REGEXP_LIKE(OperatorCategory.Conditional),
+
+	/**
+	 * The function returns the largest value that is not NULL, or NULL if all
+	 * values are NULL.
 	 * 
-	 * @See {@link #HOUR}, {@link #SECOND}
+	 * @see {@link #LEAST}
 	 */
-	MINUTE,
+	GREATEST(OperatorCategory.Conditional),
 
-	/** 
-	 * The second (0-59). 
+	/**
+	 * The function returns the smallest value that is not NULL, or NULL if all
+	 * values are NULL.
 	 * 
-	 * @See {@link #HOUR}, {@link #MINUTE}
+	 * @see {@link #GREATEST}
 	 */
-	SECOND,
+	LEAST(OperatorCategory.Conditional),
+
+	// -------------------------------------------------------------
+	// LOGICAL
+	// -------------------------------------------------------------
 
 	/**
-	 * Returns the number of PI.
+	 * The logical OR operator.
 	 */
-	PI,
+	LOGICAL_OR_OPERATOR(OperatorCategory.Logical),
 
 	/**
-	 * The function converts degrees to radians.
+	 * The logical XOR operator.
 	 */
-	RADIANS, RAND,
+	LOGICAL_XOR_OPERATOR(OperatorCategory.Logical),
 
 	/**
-	 * Returns the values rounded to the nearest integer.
+	 * The logical AND operator.
 	 */
-	ROUND,
+	LOGICAL_AND_OPERATOR(OperatorCategory.Logical),
 
 	/**
-	 * Returns the natural logarithm of a numeric value.
+	 * The logical NOT operator.
 	 */
-	LN,
+	LOGICAL_NOT_OPERATOR(OperatorCategory.Logical),
+
+	// -------------------------------------------------------------
+	// STRING
+	// -------------------------------------------------------------
 
 	/**
-	 * Returns the base 10 logarithm of a numeric value.
-	 */
-	LOG10,
-
-	/**
-	 * Returns the sign of a number.
-	 */
-	SIGN,
-
-	/**
-	 * Calculates the trigonometric sine of the angle in radians.
-	 */
-	SIN,
-
-	/**
-	 * Calculates the hyperbolic sine of its argument.
-	 */
-	SINH,
-
-	/**
-	 * Returns the cubic root of a numeric expression.
-	 *
-	 * @See {@link #SQRT}
-	 */
-	CBRT,
-
-	/**
-	 * Returns the square-root of a non-negative numeric expression.
+	 * String concatenation operator '<code>||</code>'.
 	 * 
-	 * @See {@link #CBRT}
+	 * @See {@link #CONCAT}
 	 */
-	SQRT,
+	CONCAT(OperatorCategory.String),
 
 	/**
-	 * Calculates the tangent of its argument, the argument should be expressed in
-	 * radians.
+	 * Compares the select expression to each search expression in order. As soon as
+	 * a search expression matches the selection expression, the corresponding
+	 * result expression is returned.
 	 */
-	TAN,
-
-	/**
-	 * Calculates the hyperbolic tangent of its argument.
-	 */
-	TANH,
+	DECODE(OperatorCategory.String),
 
 	/**
 	 * The function decode string using the Java string literal encoding format.
 	 * Special characters are \b, \t, \n, \f, \r, \", \\, \<octal>, \\u<unicode>.
 	 */
-	STRINGDECODE,
+	STRINGDECODE(OperatorCategory.String),
 	/**
-	 * The function encode special characters in a string using the Java string literal encoding format.
-	 * Special characters are \b, \t, \n, \f, \r, \", \\, \<octal>, \\u<unicode>.
+	 * The function encode special characters in a string using the Java string
+	 * literal encoding format. Special characters are \b, \t, \n, \f, \r, \", \\,
+	 * \<octal>, \\u<unicode>.
 	 */
-	STRINGENCODE,
-	
+	STRINGENCODE(OperatorCategory.String),
+
 	/**
 	 * Returns a string that contains a phonetic representation of the input string.
 	 */
-	SOUNDEX,
-	
-	
+	SOUNDEX(OperatorCategory.String),
+
 	/**
 	 * The function convert a string value to lower case.
 	 * 
 	 * @See {@link #LOWER}, {@link #INITCAP}
 	 *
 	 */
-	UPPER,
+	UPPER(OperatorCategory.String),
 
 	/**
 	 * The function convert a string value to upper case.
@@ -471,7 +271,7 @@ public enum Kind {
 	 * @See {@link #INITCAP}, {@link #UPPER}
 	 *
 	 */
-	LOWER,
+	LOWER(OperatorCategory.String),
 
 	/**
 	 * Returns a string with the first letter of each word in uppercase and the
@@ -479,7 +279,7 @@ public enum Kind {
 	 * 
 	 * @See {@link #LOWER}, {@link #UPPER}
 	 */
-	INITCAP,
+	INITCAP(OperatorCategory.String),
 
 	/**
 	 * The function extracts a number of characters from a string (starting from
@@ -487,7 +287,7 @@ public enum Kind {
 	 * 
 	 * @See {@link #RIGHT}
 	 */
-	LEFT,
+	LEFT(OperatorCategory.String),
 
 	/**
 	 * The function extracts a number of characters from a string (starting from
@@ -495,76 +295,20 @@ public enum Kind {
 	 * 
 	 * @See {@link #LEFT}
 	 */
-	RIGHT,
+	RIGHT(OperatorCategory.String),
 
 	/**
 	 * The function returns the number of characters of the specified string.
 	 */
-	LENGTH,
+	LENGTH(OperatorCategory.String),
 
-	/**
-	 * The function calculate the MD5 hash of a data value. The hash will be
-	 * returned as a 32 characters hex-encoded string.
-	 * 
-	 * @see {@link #SHA1}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
-	 */
-	MD5,
-
-	/**
-	 * The function calculate the SHA-1 hash of a data value. The hash will be
-	 * returned as a 40 characters hex-encoded string.
-	 * 
-	 * @see {@link #MD5}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
-	 */
-	SHA1,
-
-	/**
-	 * The function calculate the SHA-256 hash of a data value. The hash will be
-	 * returned as a 64 characters hex-encoded string.
-	 * 
-	 * @see {@link #MD5}, {@link #SHA1}, {@link #SHA384}, {@link #SHA512}
-	 */
-	SHA256,
-
-	/**
-	 * The function calculate the SHA-384 hash of a data value. The hash will be
-	 * returned as a 96 characters hex-encoded string.
-	 * 
-	 * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA512}
-	 */
-	SHA384,
-
-	/**
-	 * The function calculate the SHA-512 hash of a data value. The hash will be
-	 * returned as a 128 characters hex-encoded string.
-	 * 
-	 * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA384}
-	 */
-	SHA512,
-
-	/**
-	 * Converts the string or numeric expression to a boolean value.
-	 */
-	TO_BOOLEAN,
-	
-	TO_CHAR,
-
-	/**
-	 * Converts a string to a date value.
-	 */
-	TO_DATE,
-
-	/**
-	 * Converts a string to a number value.
-	 */
-	TO_NUMBER,
+	OCTET_LENGTH(OperatorCategory.String),
 
 	/**
 	 * The function return the ASCII value of the first character in a string. If
 	 * the string is empty, a value of 0 is returned.
-	 * 
 	 */
-	ASCII,
+	ASCII(OperatorCategory.String),
 
 	/**
 	 * The function return the Unicode code point for the first Unicode character in
@@ -572,7 +316,7 @@ public enum Kind {
 	 * 
 	 * @see {@link #CHR}, {@link #ASCII},
 	 */
-	UNICODE,
+	UNICODE(OperatorCategory.String),
 
 	/**
 	 * The function converts a Unicode code point (including 7-bit ASCII) into the
@@ -581,140 +325,510 @@ public enum Kind {
 	 * 
 	 * @see {@link #ASCII}
 	 */
-	CHR,
+	CHR(OperatorCategory.String),
 
 	/**
 	 * The function encode the string as a URL.
 	 * 
 	 * @see {@link #URLDECODE}
 	 */
-	URLENCODE,
+	URLENCODE(OperatorCategory.String),
 
 	/**
 	 * The function decode the URL to a string.
 	 * 
 	 * @see {@link #URLENCODE}
 	 */
-	URLDECODE,
+	URLDECODE(OperatorCategory.String),
 
 	/**
 	 * Returns the position in the string that is the first character of a specified
 	 * occurrence of the substring.
 	 */
-	INSTR,
+	INSTR(OperatorCategory.String),
 
 	/**
 	 * The function removes leading and trailing characters from a string.
 	 * 
 	 * @see {@link #LTRIM}, {@link #RTRIM}
 	 */
-	TRIM,
+	TRIM(OperatorCategory.String),
 
 	/**
 	 * The function removes leading characters from a string.
 	 * 
 	 * @see {@link #TRIM}, {@link #RTRIM}
 	 */
-	LTRIM,
+	LTRIM(OperatorCategory.String),
 
 	/**
 	 * The function removes leading characters from a string.
 	 * 
 	 * @see {@link #TRIM}, {@link #LTRIM}
 	 */
-	RTRIM,
+	RTRIM(OperatorCategory.String),
 
 	/**
 	 * The function left-pads a string with another string, to a certain length.
 	 * 
 	 * @see {@link #RPAD}
 	 */
-	LPAD,
+	LPAD(OperatorCategory.String),
 
 	/**
 	 * The function right-pads a string with another string, to a certain length.
 	 * 
 	 * @see {@link #LPAD}
 	 */
-	RPAD,
+	RPAD(OperatorCategory.String),
 
 	/**
 	 * Returns a string consisting of a the specified number of blank spaces.
 	 */
-	SPACE,
+	SPACE(OperatorCategory.String),
 
 	/**
 	 * The function repeats a string as many times as specified.
 	 */
-	REPEAT,
-	
+	REPEAT(OperatorCategory.String),
+
 	/**
 	 * Removes all occurrences of a specified substring, and optionally replaces
 	 * them with another string.
 	 */
-	REPLACE,
+	REPLACE(OperatorCategory.String),
 
 	/**
 	 * The function reverses the order of characters in a string value, or of bytes
 	 * in a binary value.
 	 */
-	REVERSE,
+	REVERSE(OperatorCategory.String),
 
 	/**
 	 * Returns the portion of the string from string, startingfrom the
 	 * character/byte specified by start, with optionally limited length.
 	 */
-	SUBSTR,
+	SUBSTRING(OperatorCategory.String),
 
 	/**
 	 * Translates original from the characters in findChars to the characters in
 	 * replaceChars.
 	 */
-	TRANSLATE,
+	TRANSLATE(OperatorCategory.String),
+
+
+
+	// -------------------------------------------------------------
+	// MATHEMATICAL
+	// -------------------------------------------------------------
 
 	/**
-	 * The function returns TRUE if the first value ends with second value. Both
-	 * values must be data type of string or binary.
-	 * 
-	 * @see {@link #STARTSWITH}
+	 * The arithmetic division operator '/'.
 	 */
-	ENDSWITH,
+	DIVIDE(OperatorCategory.Mathematical),
 
 	/**
-	 * The function returns TRUE if the first value starts with second value. Both
-	 * values must be data type string or binary.
-	 * 
-	 * @see {@link #ENDSWITH}
+	 * The arithmetic multiplication operator '*'.
 	 */
-	STARTSWITH,
+	MULTIPLY(OperatorCategory.Mathematical),
 
 	/**
-	 * The function returns the largest value that is not NULL, or NULL if all
-	 * values are NULL.
-	 * 
-	 * @see {@link #LEAST}
+	 * Returns the exponential value of a numeric expression.
 	 */
-	GREATEST,
+	EXP(OperatorCategory.Mathematical),
 
 	/**
-	 * The function returns the smallest value that is not NULL, or NULL if all
-	 * values are NULL.
-	 * 
-	 * @see {@link #GREATEST}
+	 * The arithmetic power operator '**' or function.
 	 */
-	LEAST;
+	POWER(OperatorCategory.Mathematical),
 
 	/**
-	 * Category of comparison operators.
+	 * The arithmetic remainder operator '%'. The function returns the remainder
+	 * division.
+	 */
+	MOD(OperatorCategory.Mathematical),
+
+//	/**
+//	 * The arithmetic unary plus (positive) operator '+'.
+//	 */
+//	POSITIVE(Category.Arithmetic),
+
+	/**
+	 * The arithmetic unary minus (negative) operator '-'.
+	 */
+	NEGATIVE(OperatorCategory.Mathematical),
+
+	/**
+	 * The arithmetic addition operator '+'.
+	 */
+	ADD(OperatorCategory.Mathematical),
+
+	/**
+	 * The arithmetic subtract operator '-'.
+	 */
+	SUBTRACT(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the absolute (positive) value of the numeric value.
+	 */
+	ABS(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the arc cosine, the angle in radians whose cosine is the specified
+	 * float expression.
+	 */
+	ACOS(OperatorCategory.Trigonometry),
+	ACOSH(OperatorCategory.Trigonometry),
+
+	ASIN(OperatorCategory.Trigonometry),
+	ASINH(OperatorCategory.Trigonometry),
+
+	ATAN(OperatorCategory.Trigonometry),
+	ATANH(OperatorCategory.Trigonometry),
+
+	ATAN2(OperatorCategory.Trigonometry),
+
+	/**
+	 * Converts a value of one data type into another data type
+	 * '<code>CAST(value AS type)</code>'.
+	 */
+	CAST(OperatorCategory.Conversion),
+
+	/**
+	 * Returns the values rounded to the nearest equal or larger integer.
+	 */
+	CEIL(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the trigonometric cosine of the specified angle in radians in the
+	 * specified number.
+	 */
+	COS(OperatorCategory.Trigonometry),
+
+	/**
+	 * Returns the hyperbolic cosine of its argument.
+	 */
+	COSH(OperatorCategory.Trigonometry),
+
+	/**
+	 * Returns the trigonometric cotangent of the angle in radians specified by
+	 * float expression.
+	 */
+	COT(OperatorCategory.Trigonometry),
+
+	/**
+	 * Function to converts radians to degrees.
+	 */
+	DEGREES(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the values rounded to the nearest equal or smaller integer.
+	 */
+	FLOOR(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the number of PI.
+	 */
+	PI(OperatorCategory.Mathematical),
+
+	/**
+	 * The function converts degrees to radians.
+	 */
+	RADIANS(OperatorCategory.Mathematical),
+
+	RAND(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the values rounded to the nearest integer.
+	 */
+	ROUND(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the natural logarithm of a numeric value.
+	 */
+	LN(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the specified base logarithm of a numeric value.
+	 */
+	LOG(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the base 10 logarithm of a numeric value.
+	 */
+	LOG10(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the sign of a number.
+	 */
+	SIGN(OperatorCategory.Mathematical),
+
+	/**
+	 * Calculates the trigonometric sine of the angle in radians.
+	 */
+	SIN(OperatorCategory.Trigonometry),
+
+	/**
+	 * Calculates the hyperbolic sine of its argument.
+	 */
+	SINH(OperatorCategory.Trigonometry),
+
+	/**
+	 * Returns the cubic root of a numeric expression.
 	 *
-	 * <p>
-	 * Consists of: {@link #IN_OPERATOR}, {@link #EQUAL_OPERATOR},
-	 * {@link #NOT_EQUAL_OPERATOR}, {@link #LESS_THAN_OPERATOR},
-	 * {@link #GREATER_THAN_OPERATOR}, {@link #LESS_THAN_OR_EQUAL_OPERATOR},
-	 * {@link #GREATER_THAN_OR_EQUAL_OPERATOR}.
+	 * @See {@link #SQRT}
 	 */
-	public static final Set<Kind> COMPARISON = EnumSet.of(IN_OPERATOR, EQUAL_OPERATOR, NOT_EQUAL_OPERATOR,
-			LESS_THAN_OPERATOR, GREATER_THAN_OPERATOR, GREATER_THAN_OR_EQUAL_OPERATOR, LESS_THAN_OR_EQUAL_OPERATOR);
+	CBRT(OperatorCategory.Mathematical),
+
+	/**
+	 * Returns the square-root of a non-negative numeric expression.
+	 * 
+	 * @See {@link #CBRT}
+	 */
+	SQRT(OperatorCategory.Mathematical),
+
+	/**
+	 * Calculates the tangent of its argument, the argument should be expressed in
+	 * radians.
+	 */
+	TAN(OperatorCategory.Trigonometry),
+
+	/**
+	 * Calculates the hyperbolic tangent of its argument.
+	 */
+	TANH(OperatorCategory.Trigonometry),
+
+	/**
+	 * Round down numeric expressions or truncates a date or timestamp to the
+	 * specified part.
+	 */
+	TRUNCATE(OperatorCategory.Mathematical),
+	
+	// -------------------------------------------------------------
+	// DATE AND TIME
+	// -------------------------------------------------------------
+
+	/**
+	 * Adds or subtracts a specified number of days to a date or timestamp
+	 */
+	ADD_DAYS(OperatorCategory.Date),
+
+	/**
+	 * Adds or subtracts a specified number of hours to a date or timestamp
+	 */
+	ADD_HOURS(OperatorCategory.Date),
+
+	/**
+	 * Adds or subtracts a specified number of minutes to a date or timestamp
+	 */
+	ADD_MINUTES(OperatorCategory.Date),
+
+	/**
+	 * Adds or subtracts a specified number of months to a date or timestamp
+	 */
+	ADD_MONTHS(OperatorCategory.Date),
+
+	/**
+	 * Adds or subtracts a specified number of seconds to a date or timestamp
+	 */
+	ADD_SECONDS(OperatorCategory.Date),
+
+	/**
+	 * Adds or subtracts a specified number of weeks to a date or timestamp
+	 */
+	ADD_WEEKS(OperatorCategory.Date),
+
+	/**
+	 * Adds or subtracts a specified number of years to a date or timestamp
+	 */
+	ADD_YEARS(OperatorCategory.Date),
+
+	/**
+	 * DATE function
+	 */
+	DATE(OperatorCategory.Date),
+	
+	/**
+	 * @see {@link #EXTRACT}
+	 */
+	DATE_PART(OperatorCategory.Date), DATE_DIFF(OperatorCategory.Date), DATE_TRUNC(OperatorCategory.Date),
+
+	/**
+	 * Returns the current date value.
+	 */
+	CURRENT_DATE(OperatorCategory.Date),
+
+	/** Returns the first day of the month. */
+	FIRST_DAY(OperatorCategory.Date),
+
+	/** Returns the last day of the month. */
+	LAST_DAY(OperatorCategory.Date),
+
+	/** Returns the date of the first specified day of week that occurs after the input date. */
+	NEXT_DAY(OperatorCategory.Date),
+
+	/** The year of a date */
+	YEAR(OperatorCategory.Date),
+
+	/** Quarter of the year (number from 1-4). */
+	QUARTER(OperatorCategory.Date),
+
+	/** Month of the year (number from 1-12). */
+	MONTH(OperatorCategory.Date),
+
+	/** Returns the name of the month (in English). */
+	MONTHNAME(OperatorCategory.Date),
+
+	/** Week of the year (number from 1-54). */
+	WEEK(OperatorCategory.Date),
+
+	/** Week from the beginning of the month (0-5) */
+	WEEKOFMONTH(OperatorCategory.Date),
+	
+	/** Returns the name of the weekday (in English). */
+	DAYNAME(OperatorCategory.Date),
+
+	/** Day of the month (number from 1-31). */
+	DAY(OperatorCategory.Date),
+
+	/** Day of the year (number from 1-366). */
+	DAYOFYEAR(OperatorCategory.Date),
+
+	/** Day of the week (Sunday=1 to Saturday=7). */
+	DAYOFWEEK(OperatorCategory.Date),
+
+	/** Day of the week (Monday=1 to Sunday=7). */
+	DAYOFWEEK_ISO(OperatorCategory.Date),
+
+	/** Week of the year (number from 1-53). */
+	WEEK_ISO(OperatorCategory.Date),
+
+	/**
+	 * The hour (0-23).
+	 * 
+	 * @See {@link #MINUTE}, {@link #SECOND}
+	 */
+	HOUR(OperatorCategory.Date),
+
+	/**
+	 * The minute (0-59).
+	 * 
+	 * @See {@link #HOUR}, {@link #SECOND}
+	 */
+	MINUTE(OperatorCategory.Date),
+
+	/**
+	 * The second (0-59).
+	 * 
+	 * @See {@link #HOUR}, {@link #MINUTE}
+	 */
+	SECOND(OperatorCategory.Date),
+
+	/**
+	 * Returns number of days between two date values.
+	 */
+	DAYS_BETWEEN(OperatorCategory.Date),
+
+	/**
+	 * Returns number of months between two date.
+	 */
+	MONTHS_BETWEEN(OperatorCategory.Date),
+
+	/**
+	 * Returns number of years between two date.
+	 */
+	YEARS_BETWEEN(OperatorCategory.Date),
+	/**
+	 * Return the number of minutes between two timestamps
+	 */
+	MINUTES_BETWEEN(OperatorCategory.Date),
+
+	/**
+	 * Return the number of hours between two timestamps
+	 */
+	HOURS_BETWEEN(OperatorCategory.Date),
+
+	/**
+	 * Return the number of seconds between two timestamps
+	 */
+	SECONDS_BETWEEN(OperatorCategory.Date),
+
+	/**
+	 * Function to extract date part: DECADE | YEAR | MONTH | WEEK | DAY | HOUR |
+	 * MINUTE | SECOND...
+	 * 
+	 * @see {@link #DATE_PART}
+	 */
+	EXTRACT(OperatorCategory.Date),
+
+	// -------------------------------------------------------------
+	// CONVERTION
+	// -------------------------------------------------------------
+
+	/**
+	 * Converts a string or numeric expression to a boolean value.
+	 */
+	TO_BOOLEAN(OperatorCategory.Conversion),
+
+	/**
+	 * Converts a numeric or date expression to a string value.
+	 */
+
+	TO_CHAR(OperatorCategory.Conversion),
+
+	/**
+	 * Converts a string expression to a date value.
+	 */
+	TO_DATE(OperatorCategory.Conversion),
+
+	/**
+	 * Converts a string expression to a number value.
+	 */
+	TO_NUMBER(OperatorCategory.Conversion),
+
+	// -------------------------------------------------------------
+	// CRYPTOGRAPHIC
+	// -------------------------------------------------------------
+
+	/**
+	 * The function calculate the MD5 hash of a data value. The hash will be
+	 * returned as a 32 characters hex-encoded string.
+	 * 
+	 * @see {@link #SHA1}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
+	 */
+	MD5(OperatorCategory.Cryptographic),
+
+	/**
+	 * The function calculate the SHA-1 hash of a data value. The hash will be
+	 * returned as a 40 characters hex-encoded string.
+	 * 
+	 * @see {@link #MD5}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
+	 */
+	SHA1(OperatorCategory.Cryptographic),
+
+	/**
+	 * The function calculate the SHA-256 hash of a data value. The hash will be
+	 * returned as a 64 characters hex-encoded string.
+	 * 
+	 * @see {@link #MD5}, {@link #SHA1}, {@link #SHA384}, {@link #SHA512}
+	 */
+	SHA256(OperatorCategory.Cryptographic),
+
+	/**
+	 * The function calculate the SHA-384 hash of a data value. The hash will be
+	 * returned as a 96 characters hex-encoded string.
+	 * 
+	 * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA512}
+	 */
+	SHA384(OperatorCategory.Cryptographic),
+
+	/**
+	 * The function calculate the SHA-512 hash of a data value. The hash will be
+	 * returned as a 128 characters hex-encoded string.
+	 * 
+	 * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA384}
+	 */
+	SHA512(OperatorCategory.Cryptographic);
 
 	/**
 	 * Returns whether this {@link Kind} belongs to a given category.
@@ -722,24 +836,17 @@ public enum Kind {
 	 * @param category Category
 	 * @return Whether this kind belongs to the given category
 	 */
-	public final boolean is(Collection<Kind> category) {
-		return category.contains(this);
+	public final boolean is(Collection<Kind> collection) {
+		return collection.contains(this);
 	}
-	
-	private final String source;
 
-	Kind() {
-		this.source = name();
-	}
-	
-	Kind(final String source) {
-		this.source = source;
-	}
-	
-	@Override
-	public String toString() {
-		return source;
-	}
-	
+	private final OperatorCategory category;
 
+	Kind(final OperatorCategory category) {
+		this.category = category;
+	}
+
+	public String category() {
+		return category.name();
+	}
 }

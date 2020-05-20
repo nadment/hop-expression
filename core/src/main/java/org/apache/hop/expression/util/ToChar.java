@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
@@ -30,11 +30,10 @@ public class ToChar {
 	private static final String[] ROMAN_NUMERALS = { "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV",
 			"I" };
 
-	
 	private ToChar() {
 		// Utility class
 	}
-	
+
 	/**
 	 * Emulates Oracle's TO_CHAR(number) function.
 	 *
@@ -42,8 +41,7 @@ public class ToChar {
 	 * <table border="1">
 	 * <th>
 	 * <td>Input</td>
-	 * <td>Output</td>
-	 * </th>
+	 * <td>Output</td></th>
 	 * <tr>
 	 * <td>,</td>
 	 * <td>Grouping separator.</td>
@@ -149,8 +147,8 @@ public class ToChar {
 	 * See also TO_CHAR(number) and number format models in the Oracle
 	 * documentation.
 	 *
-	 * @param number   the number to format
-	 * @param format   the format pattern to use (if any)	 * 
+	 * @param number the number to format
+	 * @param format the format pattern to use (if any) *
 	 * @return the formatted number
 	 */
 	@SuppressWarnings("unused")
@@ -534,34 +532,6 @@ public class ToChar {
 //        return DateTimeUtils.timeZoneNameFromOffsetMins(((ValueTimestampTimeZone) value).getTimeZoneOffsetMins());
 //    }
 
-//	private static Capitalization containsAt(String s, int index, DateFormat format) {
-//		for (String substring : format.names()) {
-//			if (index + substring.length() <= s.length()) {
-//				boolean found = true;
-//				Boolean up1 = null;
-//				Boolean up2 = null;
-//				for (int i = 0; i < substring.length(); i++) {
-//					char c1 = s.charAt(index + i);
-//					char c2 = substring.charAt(i);
-//					if (c1 != c2 && Character.toUpperCase(c1) != Character.toUpperCase(c2)) {
-//						found = false;
-//						break;
-//					} else if (Character.isLetter(c1)) {
-//						if (up1 == null) {
-//							up1 = Character.isUpperCase(c1);
-//						} else if (up2 == null) {
-//							up2 = Character.isUpperCase(c1);
-//						}
-//					}
-//				}
-//				if (found) {
-//					return Capitalization.toCapitalization(up1, up2);
-//				}
-//			}
-//		}
-//		return null;
-//	}
-
 	/**
 	 * Returns a capitalization strategy if the specified string contains any of the
 	 * specified substrings at the specified index. The capitalization strategy
@@ -881,65 +851,64 @@ public class ToChar {
 	 * See also TO_CHAR(datetime) and datetime format models in the Oracle
 	 * documentation.
 	 *
-	 * @param value    the date-time value to format
-	 * @param format   the format pattern to use (if any)
+	 * @param value  the date-time value to format
+	 * @param format the format pattern to use (if any)
 	 * @return the formatted timestamp
 	 */
-	public static String toChar(LocalDateTime value, String format) {
+	public static String toChar(ZonedDateTime value, String format) {
 
 		if (format == null) {
 			format = "DD-MON-YY HH.MI.SS.FF PM";
 		}
 
-		//System.out.println("to_char(" + value + "," + format + ")");
+		// System.out.println("to_char(" + value + "," + format + ")");
 
 		StringBuilder output = new StringBuilder();
 		boolean fillMode = true;
 
-		for (int i = 0, length = format.length(); i < length;) {
+		for (int index = 0, length = format.length(); index < length;) {
 
 			Capitalization cap;
 
 			// AD indicator with periods
-			if ((cap = containsAt(format, i, "A.D.", "B.C.")) != null) {
+			if ((cap = containsAt(format, index, "A.D.", "B.C.")) != null) {
 				String era = (value.getYear() > 0) ? "A.D." : "B.C.";
 				output.append(cap.apply(era));
-				i += 4;
+				index += 4;
 			}
-
 			// AD indicator without periods
-			else if ((cap = containsAt(format, i, "AD", "BC")) != null) {
+			else if ((cap = containsAt(format, index, "AD", "BC")) != null) {
 				String era = (value.getYear() > 0) ? "AD" : "BC";
 				output.append(cap.apply(era));
-				i += 2;
-			} else if ((cap = containsAt(format, i, "A.M.", "P.M.")) != null) {
+				index += 2;
+			} else if ((cap = containsAt(format, index, "A.M.", "P.M.")) != null) {
 				boolean isAM = value.getHour() < 12;
 				String am = isAM ? "A.M." : "P.M.";
 				output.append(cap.apply(am));
-				i += 4;
-			} else if ((cap = containsAt(format, i, "AM", "PM")) != null) {
+				index += 4;
+			} else if ((cap = containsAt(format, index, "AM", "PM")) != null) {
 				String am = (value.getHour() < 12) ? "AM" : "PM";
 				output.append(cap.apply(am));
-				i += 2;
+				index += 2;
 			}
 
 			// Long date format 'Tuesday, April 12, 1952 AD'
-			else if (containsAt(format, i, "DL") != null) {
+			else if (containsAt(format, index, "DL") != null) {
 				DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
 				output.append(value.format(formatter));
-				i += 2;
+				index += 2;
 			}
 			// Short date format 'MM/DD/RRRR'.
-			else if (containsAt(format, i, "DS") != null) {
+			else if (containsAt(format, index, "DS") != null) {
 				appendZeroPadded(output, 2, value.getMonthValue());
 				output.append('/');
 				appendZeroPadded(output, 2, value.getDayOfMonth());
 				output.append('/');
 				appendZeroPadded(output, 4, Math.abs(value.getYear()));
-				i += 2;
+				index += 2;
 			}
 			// Short time format
-			else if (containsAt(format, i, "TS") != null) {
+			else if ((cap = containsAt(format, index, "TS")) != null) {
 				int h12 = (value.getHour() + 11) % 12 + 1;
 				output.append(h12).append(':');
 				appendZeroPadded(output, 2, value.getMinute());
@@ -948,279 +917,312 @@ public class ToChar {
 				output.append(' ');
 				String am = (value.getHour() < 12) ? "AM" : "PM";
 				output.append(cap.apply(am));
-				i += 2;
+				index += 2;
 			}
 			// Day of year (1-366)
-			else if (containsAt(format, i, "DDD") != null) {
-				output.append(value.getDayOfYear());
-				i += 3;
+			else if (containsAt(format, index, "DDD") != null) {
+				if (fillMode) {
+					appendZeroPadded(output, 3, value.getDayOfYear());
+				} else {
+					output.append(value.getDayOfYear());
+				}
+				index += 3;
 			}
 			// Day of month (1-31)
-			else if (containsAt(format, i, "DD") != null) {
-				appendZeroPadded(output, 2, value.getDayOfMonth());
-				i += 2;
+			else if (containsAt(format, index, "DD") != null) {
+
+				if (fillMode) {
+					appendZeroPadded(output, 2, value.getDayOfMonth());
+				} else {
+					output.append(value.getDayOfMonth());
+				}
+				index += 2;
 			}
 			// Abbreviated name of day
-			else if ((cap = containsAt(format, i, "DY")) != null) {
+			else if ((cap = containsAt(format, index, "DY")) != null) {
 				String day = value.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 				output.append(cap.apply(day));
-				i += 2;
+				index += 2;
 			}
 			// Name of day
-			else if ((cap = containsAt(format, i, "DAY")) != null) {
+			else if ((cap = containsAt(format, index, "DAY")) != null) {
 				String day = cap.apply(value.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
 				if (fillMode) {
 					day = StringUtils.rightPad(day, "Wednesday".length(), " ");
 				}
 				output.append(day);
-				i += 3;
+				index += 3;
 			}
 			// Day of week (1=Sunday-7)
-			else if (containsAt(format, i, "D") != null) {
+			else if (containsAt(format, index, "D") != null) {
 				output.append((value.getDayOfWeek().getValue() + 1) % 7);
-				i += 1;
+				index += 1;
 			}
 			// Julian day; the number of days since January 1, 4712 BC
-			else if (containsAt(format, i, "J") != null) {
+			else if (containsAt(format, index, "J") != null) {
 				long julianDay = value.getLong(JulianFields.JULIAN_DAY);
 				output.append(julianDay);
-				i += 1;
+				index += 1;
 			}
 			// Hour of day in 24 hour format (0-23)
-			else if (containsAt(format, i, "HH24") != null) {
+			else if (containsAt(format, index, "HH24") != null) {
 				appendZeroPadded(output, 2, value.getHour());
-				i += 4;
+				index += 4;
 			}
 			// Hour of day in 12 hour format (1-12)
-			else if (containsAt(format, i, "HH12") != null) {
+			else if (containsAt(format, index, "HH12") != null) {
 				int h12 = (value.getHour() + 11) % 12 + 1;
 				appendZeroPadded(output, 2, h12);
-				i += 4;
+				index += 4;
 			}
 			// Hour of day in 12 hour format (1-12)
-			else if (containsAt(format, i, "HH") != null) {
+			else if (containsAt(format, index, "HH") != null) {
 				int h12 = (value.getHour() + 11) % 12 + 1;
 				appendZeroPadded(output, 2, h12);
-				i += 2;
+				index += 2;
 			}
 			// Minute (0-59)
-			else if (containsAt(format, i, "MI") != null) {
+			else if (containsAt(format, index, "MI") != null) {
 				appendZeroPadded(output, 2, value.getMinute());
-				i += 2;
+				index += 2;
 			}
 			// Seconds past midnight (0-86399)
-			else if (containsAt(format, i, "SSSSS") != null) {
+			else if (containsAt(format, index, "SSSSS") != null) {
 				int seconds = (int) (value.getNano() / 1_000_000_000);
 				output.append(seconds);
-				i += 5;
+				index += 5;
 			}
 			// Second (0-59)
-			else if (containsAt(format, i, "SS") != null) {
+			else if (containsAt(format, index, "SS") != null) {
 				appendZeroPadded(output, 2, value.getSecond());
-				i += 2;
+				index += 2;
 			}
 			// Fractional seconds
-			else if (containsAt(format, i, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9") != null) {
-				int x = format.charAt(i + 2) - '0';
+			else if (containsAt(format, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9") != null) {
+				int x = format.charAt(index + 2) - '0';
 
 				int nanos = value.getNano();
 
 				int ff = (int) (nanos * Math.pow(10, x - 9));
 				appendZeroPadded(output, x, ff);
-				i += 3;
-			} else if (containsAt(format, i, "FF") != null) {
+				index += 3;
+			} else if (containsAt(format, index, "FF") != null) {
 				appendZeroPadded(output, 9, value.getNano());
-				i += 2;
+				index += 2;
 			}
-			// Time zone region
-			else if (containsAt(format, i, "TZR") != null) {
+			// TODO: Time zone region
+			else if (containsAt(format, index, "TZR") != null) {
 
 				// output.append(getTimeZone(value, false));
-				i += 3;
+				index += 3;
 			}
-			// Time zone region with Daylight Saving Time information included
-			else if (containsAt(format, i, "TZD") != null) {
+			// TODO: Time zone region with Daylight Saving Time information included
+			else if (containsAt(format, index, "TZD") != null) {
 				// output.append(getTimeZone(value, true));
-				i += 3;
+				index += 3;
 			}
 			// Week of year (1-52 or 1-53) based on the ISO standard
-			else if (containsAt(format, i, "IW") != null) {
+			else if (containsAt(format, index, "IW") != null) {
 				int week = value.get(WeekFields.ISO.weekOfYear());
 				output.append(week);
-				i += 2;
+				index += 2;
 			}
 			// Week of year (1-53) where week 1 starts on the first day of the year and
 			// continues to the seventh day of the year.
-			else if (containsAt(format, i, "WW") != null) {
+			else if (containsAt(format, index, "WW") != null) {
 				int weekOfYear = value.get(WeekFields.SUNDAY_START.weekOfYear());
 				output.append(weekOfYear);
-				i += 2;
+				index += 2;
 			}
-
 			// Century
-			else if (containsAt(format, i, "CC") != null) {
+			else if (containsAt(format, index, "CC") != null) {
 				int year = Math.abs(value.getYear());
 				int century = year / 100;
 				if (((int) year % 100) != 0) {
 					century += 1;
 				}
 				appendZeroPadded(output, 2, century);
-				i += 2;
+				index += 2;
 			}
 			// Century
-			else if (containsAt(format, i, "SCC") != null) {
+			else if (containsAt(format, index, "SCC") != null) {
 				int year = value.getYear();
-				int century = Math.abs(year / 100);
+				int century = year / 100;
 				if (((int) year % 100) != 0) {
 					century += 1;
 				}
-				output.append(year < 0 ? '-' : ' ');
-				appendZeroPadded(output, 2, century);
-				i += 3;
+				
+				if (fillMode) {
+					output.append(year < 0 ? '-' : ' ');	
+					appendZeroPadded(output, 2, Math.abs(century));
+				}
+				else {
+					output.append(century);
+				}
+
+				index += 3;
 			}
 
 			// Week of month (1-5) where week 1 starts on the first day of the month and
 			// ends on the seventh
-			else if (containsAt(format, i, "W") != null) {
+			else if (containsAt(format, index, "W") != null) {
 				int weekOfMonth = value.get(WeekFields.ISO.weekOfMonth());
 				output.append(weekOfMonth);
-				i += 1;
+				index += 1;
 			}
 			// Year with comma in this position.
-			else if (containsAt(format, i, "Y,YYY") != null) {
+			else if (containsAt(format, index, "Y,YYY") != null) {
 				int year = Math.abs(value.getYear());
 				output.append(new DecimalFormat("#,###").format(year));
-				i += 5;
+				index += 5;
 			}
 			// 4-digit year; S prefixes BC dates with a minus sign.
-			else if (containsAt(format, i, "SYYYY") != null) {
+			else if (containsAt(format, index, "SYYYY") != null) {
 				int year = value.getYear();
-				output.append(year < 0 ? '-' : ' ');
-				appendZeroPadded(output, 4, year);
-				i += 5;
-			} else if ((cap = containsAt(format, i, "YEAR")) != null) {
+				if (fillMode) {
+					output.append(year < 0 ? '-' : ' ');
+					appendZeroPadded(output, 4, Math.abs(year));
+				} else {					
+					output.append(year);
+				}
+				index += 5;
+			} else if ((cap = containsAt(format, index, "YEAR")) != null) {
 				int year = Math.abs(value.getYear());
 				output.append(cap.apply(toWord(year)));
-				i += 4;
-			} else if ((cap = containsAt(format, i, "SYEAR")) != null) {
+				index += 4;
+			} else if ((cap = containsAt(format, index, "SYEAR")) != null) {
 				int year = value.getYear();
 				output.append(year < 0 ? '-' : ' ');
 				output.append(cap.apply(toWord(year)));
-				i += 5;
+				index += 5;
 			}
 			// 4-digit year
-			else if (containsAt(format, i, "YYYY") != null || containsAt(format, i, "RRRR") != null) {
+			else if (containsAt(format, index, "YYYY") != null || containsAt(format, index, "RRRR") != null) {
 				int year = Math.abs(value.getYear());
-				appendZeroPadded(output, 4, year);
-				i += 4;
-			}
-			// 4-digit year based on the ISO standard.
-			else if (containsAt(format, i, "IYYY") != null) {
-				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-				appendZeroPadded(output, 4, weekYear);
-				i += 4;
+				if (fillMode) {
+					appendZeroPadded(output, 4, year);
+				} else {
+					output.append(year);
+				}
+				index += 4;
 			}
 			// Last 3 digits of year.
-			else if (containsAt(format, i, "YYY") != null) {
+			else if (containsAt(format, index, "YYY") != null) {
 				int year = Math.abs(value.getYear());
 				appendZeroPadded(output, 3, year % 1000);
-				i += 3;
-			}
-			// Last 3 digits of ISO year.
-			else if (containsAt(format, i, "IYY") != null) {
-				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-				appendZeroPadded(output, 3, weekYear % 1000);
-				i += 3;
+				index += 3;
 			}
 			// Last 2 digits of year.
-			else if (containsAt(format, i, "YY", "RR") != null) {
+			else if (containsAt(format, index, "YY", "RR") != null) {
 				int year = Math.abs(value.getYear());
 				appendZeroPadded(output, 2, year % 100);
-				i += 2;
-			}
-			// Last 2 digits of ISO year.
-			else if (containsAt(format, i, "IY") != null) {
-				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-				appendZeroPadded(output, 2, weekYear % 100);
-				i += 2;
+				index += 2;
 			}
 			// Last 1 digit of year.
-			else if (containsAt(format, i, "Y") != null) {
+			else if (containsAt(format, index, "Y") != null) {
 				int year = Math.abs(value.getYear());
 				output.append(year % 10);
-				i += 1;
+				index += 1;
 			}
+			// 4-digit year based on the ISO standard.
+			else if (containsAt(format, index, "IYYY") != null) {
+				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+				appendZeroPadded(output, 4, weekYear);
+				index += 4;
+			}
+			// Last 3 digits of ISO year.
+			else if (containsAt(format, index, "IYY") != null) {
+				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+				appendZeroPadded(output, 3, weekYear % 1000);
+				index += 3;
+			}
+			// Last 2 digits of ISO year.
+			else if (containsAt(format, index, "IY") != null) {
+				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+				appendZeroPadded(output, 2, weekYear % 100);
+				index += 2;
+			}
+
 			// Last 1 digit of ISO year.
-			else if (containsAt(format, i, "I") != null) {
+			else if (containsAt(format, index, "I") != null) {
 				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
 				output.append(weekYear % 10);
-				i += 1;
+				index += 1;
 			}
 			// Name of month, padded with blanks
-			else if ((cap = containsAt(format, i, "MONTH")) != null) {
+			else if ((cap = containsAt(format, index, "MONTH")) != null) {
 				String month = cap.apply(value.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
 				if (fillMode) {
 					month = StringUtils.rightPad(month, "September".length(), " ");
 				}
 				output.append(month);
-				i += 5;
+				index += 5;
 				// Abbreviated name of month
-			} else if ((cap = containsAt(format, i, "MON")) != null) {
+			} else if ((cap = containsAt(format, index, "MON")) != null) {
 				String month = value.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 				output.append(cap.apply(month));
-				i += 3;
+				index += 3;
 			}
 			// Month (01-12; January = 01)
-			else if (containsAt(format, i, "MM") != null) {
-				appendZeroPadded(output, 2, value.getMonthValue());
-				i += 2;
+			else if (containsAt(format, index, "MM") != null) {
+				if (fillMode) {
+					appendZeroPadded(output, 2, value.getMonthValue());
+				} else {
+					output.append(value.getMonthValue());
+				}
+				index += 2;
 			}
 			// Roman numeral month (I-XII; January = I)
-			else if ((cap = containsAt(format, i, "RM")) != null) {
+			else if ((cap = containsAt(format, index, "RM")) != null) {
 				output.append(cap.apply(toRomanNumeral(value.getMonthValue())));
-				i += 2;
+				index += 2;
 			}
 			// Quarter of year (1, 2, 3, 4; January - March = 1)
-			else if (containsAt(format, i, "Q") != null) {
+			else if (containsAt(format, index, "Q") != null) {
 //				int q = 1 + ((value.getMonthValue() - 1) / 3);
 				int q = value.get(IsoFields.QUARTER_OF_YEAR);
 				output.append(q);
-				i += 1;
+				index += 1;
 			}
 			// Local radix character
-			else if (containsAt(format, i, "X") != null) {
+			else if (containsAt(format, index, "X") != null) {
 				char c = DecimalFormatSymbols.getInstance().getDecimalSeparator();
 				output.append(c);
-				i += 1;
+				index += 1;
 			}
-			// Format modifiers
-			else if (containsAt(format, i, "FM") != null) {
+
+			// Fill mode modifier; toggles between compact and fill modes for any elements
+			// following the modifier in the model.
+			else if (containsAt(format, index, "FM") != null) {
 				fillMode = !fillMode;
-				i += 2;
-			} else if (containsAt(format, i, "FX") != null) {
-				i += 2;
+				index += 2;
+			}
+			// TODO: Exact match modifier; toggles between lax and exact match modes for any
+			// elements following the modifier in the model.
+			else if (containsAt(format, index, "FX") != null) {
+				index += 2;
 			}
 			// Literal text
-			else if (containsAt(format, i, "\"") != null) {
-				for (i = i + 1; i < format.length(); i++) {
-					char c = format.charAt(i);
+			else if (containsAt(format, index, "\"") != null) {
+				for (index = index + 1; index < format.length(); index++) {
+					char c = format.charAt(index);
 					if (c != '"') {
 						output.append(c);
 					} else {
-						i++;
+						index++;
 						break;
 					}
 				}
-			} else if (format.charAt(i) == '-' || format.charAt(i) == '/' || format.charAt(i) == ','
-					|| format.charAt(i) == '.' || format.charAt(i) == ';' || format.charAt(i) == ':'
-					|| format.charAt(i) == ' ') {
-				output.append(format.charAt(i));
-				i += 1;
-
-				// Anything else
-
-			} else {
-				throw new IllegalFormatFlagsException(format);
+			}
+			// Anything else
+			else {
+				char ch = format.charAt(index);
+				if (!Characters.isAlphaOrDigit(ch)) {
+					output.append(ch);
+					index += 1;
+				} else {
+					throw new IllegalFormatFlagsException(format);
+				}
 			}
 		}
 

@@ -1,0 +1,8 @@
+= CBRT
+
+Calculates the cubic root of numeric expression.
+
+== Syntax
+----
+CBRT(numeric_expr)
+----

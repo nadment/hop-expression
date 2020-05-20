@@ -1,0 +1,7 @@
+= IS
+
+
+== Syntax
+----
+IS [NOT] TRUE|FALSE|NULL
+----

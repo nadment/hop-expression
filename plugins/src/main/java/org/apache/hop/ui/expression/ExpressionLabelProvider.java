@@ -3,15 +3,16 @@ package org.apache.hop.ui.expression;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.ui.core.gui.GUIResource;
+import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.util.ImageUtil;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IToolTipProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-public class ExpressionLabelProvider implements ILabelProvider {
+public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider {
 
 	private Image imgOperator;
 	private Image imgBoolean;
@@ -27,24 +28,16 @@ public class ExpressionLabelProvider implements ILabelProvider {
 	public ExpressionLabelProvider() {
 		super();
 
-		imgOperator = GUIResource.getInstance().getImageInject();
-		imgString = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "String.svg", 16, 16); //$NON-NLS-1$
-		imgBoolean = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Boolean.svg", 16, 16); //$NON-NLS-1$
-		imgNumber = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Number.svg", 16, 16); //$NON-NLS-1$
-		imgDate = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Date.svg", 16, 16); //$NON-NLS-1$
-		imgBinary = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Binary.svg", 16, 16); //$NON-NLS-1$
-		imgInet = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Inet.svg", 16, 16); //$NON-NLS-1$
-		imgFunction = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Function.svg", 16, 16); //$NON-NLS-1$
-
-//		imgBoolean = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Boolean.png"); //$NON-NLS-1$
-//		imgNumber = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Number.png"); //$NON-NLS-1$
-//		imgDate = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Date.png"); //$NON-NLS-1$
-//		imgBinary = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Binary.png"); //$NON-NLS-1$
-//		imgInet = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Inet.png"); //$NON-NLS-1$
-//		imgFunction = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Function.png"); //$NON-NLS-1$
-		imgVariable = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "Variable.png"); //$NON-NLS-1$
-		imgVariableDeprecated = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(),
-				"VariableDeprecated.png"); //$NON-NLS-1$
+		imgOperator = GuiResource.getInstance().getImageInject();
+		imgString = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "string.svg", 16, 16); //$NON-NLS-1$
+		imgBoolean = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "boolean.svg", 16, 16); //$NON-NLS-1$
+		imgNumber = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "number.svg", 16, 16); //$NON-NLS-1$
+		imgDate = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "date.svg", 16, 16); //$NON-NLS-1$
+		imgBinary = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "binary.svg", 16, 16); //$NON-NLS-1$
+		imgInet = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "inet.svg", 16, 16); //$NON-NLS-1$
+		imgFunction = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "function.svg", 16, 16); //$NON-NLS-1$
+		imgVariable = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "variable.png"); //$NON-NLS-1$
+		imgVariableDeprecated = ImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "variableDeprecated.png"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -159,5 +152,16 @@ public class ExpressionLabelProvider implements ILabelProvider {
 			return proposal.getLabel();
 		}
 		return ""; //$NON-NLS-1$
+	}
+
+	@Override
+	public String getToolTipText(Object element) {
+		if (element instanceof Operator) {
+			Operator operator = (Operator) element;
+
+			return Operator.getHtmlDocumentation(operator.getKind());
+		}
+
+		return null;
 	}
 }

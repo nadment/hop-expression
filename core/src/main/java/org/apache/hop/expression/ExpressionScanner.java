@@ -13,13 +13,14 @@ import org.apache.hop.expression.util.Characters;
 public class ExpressionScanner {
 
 	// TODO: Java 9 use unmodifiable Set.of()
-	private static final Set<String> RESERVED_WORDS = new TreeSet<>(Arrays.asList( "AS", "AND", "BETWEEN", "BIGNUMBER", "BINARY", "BOOLEAN", "CASE", "CAST", "DATE", "ELSE", "END", "ESCAPE",
-					"FALSE", "IN", "INTEGER", "IS", "LIKE", "NOT", "NULL", "NUMBER", "OR", "STRING", "THEN", "TRUE", "WHEN", "XOR"));
+	private static final Set<String> RESERVED_WORDS = new TreeSet<>(
+			Arrays.asList("AS", "AND", "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "FROM", "ILIKE",
+					"IN", "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR"));
 
 	public static Set<String> getReservedWords() {
 		return RESERVED_WORDS;
 	}
-	
+
 	private String source;
 
 	private int pos = 0;
@@ -44,39 +45,39 @@ public class ExpressionScanner {
 				return new ExpressionToken(Id.RPARENTHESIS, pos, ++pos);
 
 			// Double-quoted literal text.
-			case '"': {
-				StringBuilder text = new StringBuilder();
-				int start = pos++;
-				while (pos < source.length()) {
-					c = source.charAt(pos++);					
-					if (c == '"') {
-						if (pos < source.length()) {
-							char c2 = source.charAt(pos);
-							// encountered consecutive double-quotes
-							if (c2 == '"') {
-								++pos;
-								text.append(c);
-								continue;
-							} 							
-						} 
-						break;						
-					}
-					text.append(c);
-				}
+//			case '"': {
+//				StringBuilder text = new StringBuilder();
+//				int start = pos++;
+//				while (pos < source.length()) {
+//					c = source.charAt(pos++);
+//					if (c == '"') {
+//						if (pos < source.length()) {
+//							char c2 = source.charAt(pos);
+//							// encountered consecutive double-quotes
+//							if (c2 == '"') {
+//								++pos;
+//								text.append(c);
+//								continue;
+//							}
+//						}
+//						break;
+//					}
+//					text.append(c);
+//				}
+//
+//				if (c != '"')
+//					throw new ExpressionParserException("ExpressionException.MissingEndDoubleQuotedString", source,
+//							pos);
+//
+//				return new ExpressionToken(Id.LITERAL_TEXT, start, pos, text.toString());
+//			}
 
-				if (c!='"')
-					throw new ExpressionParserException("ExpressionException.MissingEndDoubleQuotedString", source,
-							pos);
-
-				return new ExpressionToken(Id.LITERAL_TEXT, start, pos, text.toString());
-			}
-			
 			// Single-quoted literal text.
 			case '\'': {
 				StringBuilder text = new StringBuilder();
 				int start = pos++;
 				while (pos < source.length()) {
-					c = source.charAt(pos++);					
+					c = source.charAt(pos++);
 					if (c == '\'') {
 						if (pos < source.length()) {
 							char c2 = source.charAt(pos);
@@ -85,20 +86,20 @@ public class ExpressionScanner {
 								++pos;
 								text.append(c);
 								continue;
-							} 							
-						} 
-						break;						
+							}
+						}
+						break;
 					}
 					text.append(c);
 				}
-				
-				if (c!='\'')
+
+				if (c != '\'')
 					throw new ExpressionParserException("ExpressionException.MissingEndSingleQuotedString", source,
 							pos);
 
-				return new ExpressionToken(Id.LITERAL_TEXT, start, pos, text.toString());
+				return new ExpressionToken(Id.LITERAL_STRING, start, pos, text.toString());
 			}
-				
+
 			case '=': {
 				int start = pos++;
 				if (pos < source.length()) {
@@ -153,7 +154,7 @@ public class ExpressionScanner {
 				return new ExpressionToken(Id.GREATER_THAN, start, pos);
 			}
 
-			 // parse not equal symbol
+			// parse not equal symbol
 			case '!': {
 				int start = pos++;
 				if (pos < source.length()) {
@@ -166,7 +167,7 @@ public class ExpressionScanner {
 				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
 			}
 
-			 // possible start of '/*' or '//' comment
+			// possible start of '/*' or '//' comment
 			case '/': {
 				int start = pos++;
 				if (pos < source.length()) {
@@ -196,7 +197,7 @@ public class ExpressionScanner {
 				}
 				return new ExpressionToken(Id.DIVIDE, start, pos);
 			}
-				
+
 			case '~':
 				return new ExpressionToken(Id.BITWISE_NOT, pos, ++pos);
 
@@ -223,47 +224,46 @@ public class ExpressionScanner {
 			case '[': {
 				int start = pos++;
 				while (pos < source.length()) {
-					c = source.charAt(++pos);
+					c = source.charAt(pos++);
 					if (!Characters.isAlphaOrDigit(c)) {
 						break;
 					}
 				}
 
-				if (c != ']')
-					throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
-
-				String name = source.substring(start + 1, pos++).toUpperCase();
-				return new ExpressionToken(Id.IDENTIFIER, start, pos, name);
-			}
-
-			// Variable
-			case '$': {
-				int start = pos++;
-				if (pos < source.length()) {
-
-					c = source.charAt(pos++);
-					if (c != '{')
-						throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
-
-					while (pos < source.length()) {
-						c = source.charAt(++pos);
-						if (!Characters.isAlphaOrDigit(c)) {
-							break;
-						}
-					}
-
-					if (c != '}')
-						throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
-
-					String name = source.substring(start + 2, pos++).toUpperCase();
-					return new ExpressionToken(Id.VARIABLE,start, pos, name);
+				if (c == ']') {
+					String name = source.substring(start + 1, pos - 1).toUpperCase();
+					return new ExpressionToken(Id.IDENTIFIER, start, pos, name);
 				}
+
 				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
 			}
 
+			// Variable
+//			case '$': {
+//				int start = pos++;
+//				if (pos < source.length()) {
+//
+//					c = source.charAt(pos++);
+//					if (c != '{')
+//						throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
+//
+//					while (pos < source.length()) {
+//						c = source.charAt(++pos);
+//						if (!Characters.isAlphaOrDigit(c)) {
+//							break;
+//						}
+//					}
+//
+//					if (c != '}')
+//						throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
+//
+//					String name = source.substring(start + 2, pos++).toUpperCase();
+//					return new ExpressionToken(Id.VARIABLE, start, pos, name);
+//				}
+//				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
+//			}
+
 			case '0':
-				
-				
 			case '1':
 			case '2':
 			case '3':
@@ -277,109 +277,121 @@ public class ExpressionScanner {
 				int start = pos++;
 
 				// Hexadecimal number 0xABCDEF
-				if ( pos < source.length() && (source.charAt(pos) == 'x')) {
+				if (c == '0' && pos < source.length() && (source.charAt(pos) == 'x')) {
 					do {
 						pos++;
 					} while (pos < source.length() && Characters.isHexDigit(source.charAt(pos)));
 
-					return new ExpressionToken(Id.LITERAL_HEXNUMBER, start, pos, source.substring(start + 2, pos));
+					return new ExpressionToken(Id.LITERAL_BINARY_HEX, start, pos, source.substring(start + 2, pos));
 				}
 
 				// Binary number 0b01101011
-				if ( pos < source.length() && (source.charAt(pos) == 'b')) {
+				if (c == '0' && pos < source.length() && (source.charAt(pos) == 'b')) {
 					do {
 						pos++;
 					} while (pos < source.length() && (source.charAt(pos) == '0' || source.charAt(pos) == '1'));
 
-					return new ExpressionToken(Id.LITERAL_BITNUMBER, start, pos, source.substring(start+2, pos));
+					return new ExpressionToken(Id.LITERAL_BINARY_BIT, start, pos, source.substring(start + 2, pos));
 				}
-
 
 				// Integer part
 				while (pos < source.length() && Characters.isDigit(source.charAt(pos))) {
 					pos++;
 				}
-				
+
 				// Use dot for decimal separator
 				if (pos < source.length() && source.charAt(pos) == '.') {
 					pos++;
 				}
-				
+
 				// Decimal part
 				while (pos < source.length() && Characters.isDigit(source.charAt(pos))) {
 					pos++;
 				}
-				
+
 				// Exponentiation part
 				if (pos < source.length() && Characters.isExponentChar(source.charAt(pos))) {
 					pos++;
-					
-					if (pos < source.length() && (source.charAt(pos) == '+' || source.charAt(pos) == '-')
-							) {
+
+					if (pos < source.length() && (source.charAt(pos) == '+' || source.charAt(pos) == '-')) {
 						pos++;
 					}
-					while (pos < source.length() && Character.isDigit(source.charAt(pos)) ) {
+					while (pos < source.length() && Character.isDigit(source.charAt(pos))) {
 						pos++;
 					}
 				}
-				
+
 				return new ExpressionToken(Id.LITERAL_NUMBER, start, pos, source.substring(start, pos));
 			}
 
 			default:
 				if (Character.isWhitespace(c)) {
 					++pos;
-					break;
-				} else {
-					// Probably a letter or digit. Start an identifier.
-					// Other characters, e.g. *, ! are also included
-					// in identifiers.
-					int start = pos++;
-					loop: while (pos < source.length()) {
-						c = source.charAt(pos);
-						switch (c) {
-						case '(':
-						case ')':
-						case '/':
-						case '*':
-						case ',':
-						case '^':
-						case '&':
-						case '>':
-						case '<':
-						case '=':
-						case '~':
-						case '+':
-						case '-':
-						case '!':
-						case '|':
-						case '$':
-						case '[':
-						case ']':
-							break loop;
+					continue;
+				}
 
-						default:
-							if (Character.isWhitespace(c)) {
-								break loop;
-							} else {
-								++pos;
-							}
+				// Probably a letter or digit. Start an identifier.
+				// Other characters, e.g. *, ! are also included
+				// in identifiers.
+				int start = pos++;
+				boolean isFunction = false;
+				loop: while (pos < source.length()) {
+					c = source.charAt(pos);
+					switch (c) {
+					case '(':
+						isFunction = true;
+					case ')':
+					case '/':
+					case '*':
+					case ',':
+					case '^':
+					case '&':
+					case '>':
+					case '<':
+					case '=':
+					case '~':
+					case '+':
+					case '-':
+					case '!':
+					case '|':
+					case '$':
+					case '[':
+					case ']':
+						break loop;
+
+					default:
+						if (Character.isWhitespace(c)) {
+							break loop;
+						} else {
+							++pos;
 						}
 					}
-					String name = source.substring(start, pos).toUpperCase();
-
-					// Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR, NUMBER
-					if (RESERVED_WORDS.contains(name)) {
-						return new ExpressionToken(Id.valueOf(name), start, pos, name);
-					}
-
-					if (Operator.getFunction(name) != null) {
-						return new ExpressionToken(Id.FUNCTION, start, pos, name);
-					}
-
-					return new ExpressionToken(Id.IDENTIFIER, start, pos, name);
 				}
+				String identifier = source.substring(start, pos);
+				String name = identifier.toUpperCase();
+
+				if (isFunction && Operator.getFunction(name) != null) {
+					return new ExpressionToken(Id.FUNCTION, start, pos, name);
+				}
+
+				// Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR
+				if (RESERVED_WORDS.contains(name)) {
+					return new ExpressionToken(Id.valueOf(name), start, pos, name);
+				}
+
+				DataType type = DataType.of(name);
+				if (type != null) {
+					return new ExpressionToken(Id.DATATYPE, start, pos, name);
+				}
+
+				DatePart part = DatePart.of(name);
+				if (part != null) {
+					return new ExpressionToken(Id.DATEPART, start, pos, name);
+				}
+
+				return new ExpressionToken(Id.IDENTIFIER, start, pos, identifier);
 			}
+
 		}
 		return null;
 	}

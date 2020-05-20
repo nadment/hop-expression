@@ -1,5 +1,6 @@
 package org.apache.hop.expression;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Random;
@@ -20,12 +21,14 @@ public interface IExpressionContext {
 
 	public ZoneId getZone();
 
-//	/**
-//	 * Returns the current date.
-//	 *
-//	 * @return the date.
-//	 */
-//	public LocalDateTime getCurrentDate();
+	/**
+	 * Returns the current date.
+	 *
+	 * @return the date.
+	 */
+	public Instant getCurrentDate();
 
 	public Random getRandom();
+	
+	
 }

@@ -1,0 +1,8 @@
+= COS
+
+Returns the trigonometric cosine of the specified angle in radians in the specified number.
+
+== Syntax
+----
+COS(numeric_expr)
+----

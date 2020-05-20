@@ -1,8 +1,8 @@
 package org.apache.hop.expression;
 
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.text.MessageFormat;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -10,71 +10,31 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import org.apache.hop.core.Const;
-import org.apache.hop.core.xml.XmlHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.apache.commons.io.IOUtils;
 
-//TODO: implement REGEXP, RLIKE operator
-//TODO: implement CONTAINING
-//TODO: implement STARTING [WITH]
-//TODO: implement ENDING [WITH]
+//TODO: implement RLIKE operator
 //TODO: implement the square brackets with a character range (MS SQL): like '[A-C]%'
+
 /**
  * Operators have the precedence levels. An operator on higher levels is
  * evaluated before an operator on a lower level
  * 
  * 
- * 1 Functions 
- * 2 Cast 
- * 3 Right + (Positive), - (Negative) 
- * 4 ~ (Bitwise NOT) 
- * 5 * Left * (Multiplication), / (Division), % (Modulus) 
- * 6 <<, >> 
- * 7 & (Bitwise AND)
- * 8 ^ (Bitwise Exclusive OR) 
- * 9 | (Bitwise OR) 
- * 10 Left + (Addition), - (Subtraction) 
- * 11 || (Concatenation) 
- * 12 - BETWEEN, IN, LIKE 
- * 13 - =, >, <, >=, <=, <>, !=, !>, !< (Comparison operators) 
- * 14 - IS 
- * 15 Right NOT 
- * 16 Left AND 
- * 17 Left XOR 
- * 18 Left OR
+ * 1 Functions 2 Cast 3 Right + (Positive), - (Negative) 4 ~ (Bitwise NOT) 5 *
+ * Left * (Multiplication), / (Division), % (Modulus) 6 <<, >> 7 & (Bitwise AND)
+ * 8 ^ (Bitwise Exclusive OR) 9 | (Bitwise OR) 10 Left + (Addition), -
+ * (Subtraction) 11 || (Concatenation) 12 - BETWEEN, IN, LIKE, ILIKE 13 - =, >,
+ * <, >=, <=, <>, !=, !>, !< (Comparison operators) 14 - IS 15 Right NOT 16 Left
+ * AND 17 Left XOR 18 Left OR
  * 
  * @author Nicolas ADMENT
  *
  */
 public class Operator implements Comparable<Operator> {
 
-	public enum Category {
-		Arithmetic, Bitwise, Comparison, Conditional, Conversion, Cryptographic, Date, Logical, Mathematical, String,
-		Other
-	}
+	private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
-	private static final String JAVA_REGEX_SPECIALS = "[]()|^-+*?{}$\\.";
-
-	private static final ConcurrentHashMap<String, OperatorInfo> infos = new ConcurrentHashMap<>();
-
-	
-	static {
-		try (InputStream is = Expression.class.getResourceAsStream("expression.xml")) {
-			Document document = XmlHandler.loadXmlFile(is);
-			Node rootNode = XmlHandler.getSubNode(document, OperatorInfo.EXPRESSION_TAG);
-			int count = XmlHandler.countNodes(rootNode, OperatorInfo.OPERATOR_TAG);
-			for (int i = 0; i < count; i++) {
-				Node node = XmlHandler.getSubNodeByNr(rootNode, OperatorInfo.OPERATOR_TAG, i);
-				OperatorInfo info = new OperatorInfo(node);
-				infos.put(info.getName(), info);
-
-				// System.out.println(info.getName());
-			}
-		} catch (Exception e) {
-
-		}
-	}
+	private static final ConcurrentHashMap<Kind, String> docs = new ConcurrentHashMap<>();
 
 	// -------------------------------------------------------------
 	// BITWISE OPERATORS
@@ -83,22 +43,22 @@ public class Operator implements Comparable<Operator> {
 	/**
 	 * Bitwise AND operator "&".
 	 */
-	public static final Operator BITWISE_AND = new Operator(Kind.BITWISE_AND_OPERATOR, Category.Bitwise, 70, true);
+	public static final Operator BIT_AND = new Operator(Kind.BIT_AND, "&", 70, true, true);
 
 	/**
 	 * Bitwise OR operator "|".
 	 */
-	public static final Operator BITWISE_OR = new Operator(Kind.BITWISE_OR_OPERATOR, Category.Bitwise, 90, true);
+	public static final Operator BIT_OR = new Operator(Kind.BIT_OR, "|", 90, true, true);
 
 	/**
 	 * Bitwise NOT operator "~".
 	 */
-	public static final Operator BITWISE_NOT = new Operator(Kind.BITWISE_NOT_OPERATOR, Category.Bitwise, 40, true);
+	public static final Operator BIT_NOT = new Operator(Kind.BIT_NOT, "~", 40, true, true);
 
 	/**
 	 * Bitwise XOR operator "^".
 	 */
-	public static final Operator BITWISE_XOR = new Operator(Kind.BITWISE_XOR_OPERATOR, Category.Bitwise, 80, true);
+	public static final Operator BIT_XOR = new Operator(Kind.BIT_XOR, "^", 80, true, true);
 
 	// -------------------------------------------------------------
 	// LOGICAL OPERATORS
@@ -116,19 +76,19 @@ public class Operator implements Comparable<Operator> {
 	 * </ul>
 	 * </p>
 	 */
-	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT_OPERATOR, Category.Logical, 150, false);
+	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT_OPERATOR, "NOT", 150, false, false);
 	/**
 	 * Logical disjunction <code>OR</code> operator.
 	 */
-	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR_OPERATOR, Category.Logical, 180, true);
+	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR_OPERATOR, "OR", 180, true, false);
 	/**
 	 * Logical conjunction <code>AND</code> operator.
 	 */
-	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND_OPERATOR, Category.Logical, 160, true);
+	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND_OPERATOR, "AND", 160, true, false);
 	/**
 	 * Logical <code>XOR</code> operator.
 	 */
-	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR_OPERATOR, Category.Logical, 170, true);
+	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR_OPERATOR, "XOR", 170, true, false);
 
 	/**
 	 * An operator describing the <code>IS</code> operator.
@@ -141,7 +101,7 @@ public class Operator implements Comparable<Operator> {
 	 * <li><code>field IS NULL</code></li>
 	 * </ul>
 	 */
-	public static final Operator IS = new Operator(Kind.IS_OPERATOR, Category.Logical, 140, true);
+	public static final Operator IS = new Operator(Kind.IS, "IS", 140, true, false);
 
 	/**
 	 * Logical <code>IN</code> operator tests for a value's membership in a list of
@@ -158,7 +118,7 @@ public class Operator implements Comparable<Operator> {
 	 * {@link org.apache.hop.core.ExpressionParser parser} will generate a
 	 * equivalent to <code>NOT (field IN list of values ...)</code>
 	 */
-	public static final Operator IN = new Operator(Kind.IN_OPERATOR, Category.Logical, 120, true);
+	public static final Operator IN = new Operator(Kind.IN, "IN", 120, true, false);
 	/**
 	 * An operator describing the <code>LIKE</code> operator.
 	 *
@@ -166,19 +126,19 @@ public class Operator implements Comparable<Operator> {
 	 * Syntax of the operator:
 	 *
 	 * <ul>
-	 * <li><code>field [NOT] LIKE pattern</code></li>
+	 * <li><code>field [NOT] LIKE pattern ESCAPE char</code></li>
 	 * </ul>
 	 *
 	 * <p>
 	 * <b>NOTE</b> If the <code>NOT</code> clause is present the
-	 * {@link org.kettle.core.database.ExpressionParser parser} will generate a
+	 * {@link org.hop.expresssion.ExpressionParser} parser will generate a
 	 * equivalent to <code>NOT (field LIKE pattern ...)</code>
 	 * 
-	 * TODO: implement LIKE <pattern> ESCAPE <char>
 	 */
-	public static final Operator LIKE = new Operator(Kind.LIKE_OPERATOR, Category.Comparison, 120, true);
+	public static final Operator LIKE = new Operator(Kind.LIKE, "LIKE", 120, true, false);
+	public static final Operator ILIKE = new Operator(Kind.ILIKE, "ILIKE", 120, true, false);
 
-	public static final Operator BETWEEN = new Operator(Kind.BETWEEN_OPERATOR, Category.Comparison, 120, true);
+	public static final Operator BETWEEN = new Operator(Kind.BETWEEN, "BETWEEN", 120, true, false);
 
 	// -------------------------------------------------------------
 	// COMPARISON OPERATORS
@@ -187,260 +147,277 @@ public class Operator implements Comparable<Operator> {
 	/**
 	 * Comparison equals operator '<code>=</code>'.
 	 */
-	public static final Operator EQUALS = new Operator(Kind.EQUAL_OPERATOR, Category.Comparison, 130, true);
-	/**
-	 * Comparison not equals operator '<code><></code>'.
-	 */
-	public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUAL_OPERATOR, Category.Comparison, 130, true);
+	public static final Operator EQUALS = new Operator(Kind.EQUAL, "=", 130, true, false);
 	/**
 	 * Comparison not equals operator '<code>!=</code>'.
 	 */
-	public static final Operator LESS_THAN_OR_GREATER_THAN = new Operator(Kind.LESS_THAN_OR_GREATER_THEN,
-			Category.Comparison, 130, true);
+	public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUALS, "!=", 130, true, true);
+	/**
+	 * Comparison not equals operator '<code><></code>'.
+	 */
+	public static final Operator LESS_THAN_OR_GREATER_THAN = new Operator(Kind.NOT_EQUALS, "<>", 130,
+			true, false);
 	/**
 	 * Comparison less-than operator '<code>&lt;</code>'.
 	 */
-	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, Category.Comparison, 130, true);
+	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, "<", 130, true, false);
 	/**
 	 * Comparison less-than-or-equal operator '<code>&lt;=</code>'.
 	 */
-	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR,
-			Category.Comparison, 130, true);
+	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR, "<=", 130, true,
+			false);
 	/**
 	 * Comparison greater-than operator '<code>&gt;</code>'.
 	 */
-	public static final Operator GREATER_THAN = new Operator(Kind.GREATER_THAN_OPERATOR, Category.Comparison, 130,
-			true);
+	public static final Operator GREATER_THAN = new Operator(Kind.GREATER_THAN, ">", 130, true, false);
 	/**
 	 * Comparison greater-than-or-equal operator '<code>&gt;=</code>'.
 	 */
-	public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL_OPERATOR,
-			Category.Comparison, 130, true);
-	/**
-	 * Comparison contains operator '<code>=~</code>'.
-	 */
-	public static final Operator CONTAINS = new Operator(Kind.CONTAINS_OPERATOR, Category.Comparison, 130, true);
+	public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL, ">=", 130, true,
+			false);
+//	/**
+//	 * Comparison contains operator '<code>=~</code>'.
+//	 */
+//	public static final Operator CONTAINS = new Operator(Kind.CONTAINS, 130, true);
 
 	// -------------------------------------------------------------
 	// ARITHMETIC OPERATORS
 	// -------------------------------------------------------------
 
 	/**
-	 * Arithmetic unary negate operator '<code>-</code>'.
+	 * Arithmetic unary negative operator '<code>-</code>'.
 	 */
-	public static final Operator NEGATE = new Operator(Kind.NEGATE_OPERATOR, Category.Arithmetic, 30, true);
+	public static final Operator NEGATIVE = new Operator(Kind.NEGATIVE, "-", 30, true, false);
 
-//	/**
-//	 * Arithmetic power operator '<code>**</code>'.
-//	 */
-//	public static final Operator POWER = new Operator(Kind.POWER_OPERATOR, Category.Arithmetic, 70, true);
+	/**
+	 * Arithmetic power operator '<code>**</code>'.
+	 */
+	public static final Operator POWER = new Operator(Kind.POWER, "**", 70, true, true);
 
 	/**
 	 * Arithmetic multiplication operator '<code>*</code>'.
 	 */
-	public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY_OPERATOR, Category.Arithmetic, 50, true);
+	public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY, "*", 50, true, true);
 
 	/**
 	 * Arithmetic division operator '<code>/</code>'.
 	 */
-	public static final Operator DIVIDE = new Operator(Kind.DIVIDE_OPERATOR, Category.Arithmetic, 50, true);
+	public static final Operator DIVIDE = new Operator(Kind.DIVIDE, "/", 50, true, true);
 
 	/**
 	 * Arithmetic modulus operator '<code>%</code>'.
 	 */
-	public static final Operator MODULUS = new Operator(Kind.MODULUS_OPERATOR, Category.Arithmetic, 50, true);
+	public static final Operator MODULUS = new Operator(Kind.MOD, "%", 50, true, true);
 
 	/**
 	 * Arithmetic addition operator '<code>+</code>'.
 	 */
-	public static final Operator ADD = new Operator(Kind.ADD_OPERATOR, Category.Arithmetic, 100, true);
+	public static final Operator ADD = new Operator(Kind.ADD, "+", 100, true, true);
 
 	/**
 	 * Arithmetic subtraction operator '<code>-</code>'.
 	 */
-	public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT_OPERATOR, Category.Arithmetic, 100, true);
+	public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT, "-", 100, true, true);
 
 	// -------------------------------------------------------------
 	// SPECIAL OPERATORS
 	// -------------------------------------------------------------
 
 	/**
-	 * Casting operator '<code>CAST(value AS dataType)</code>'.
-	 */
-	public static final Operator CAST = new Operator(Kind.CAST_OPERATOR, Category.Conversion, 20, true);
-
-	/**
 	 * An operator describing the <code>CASE</code> operator.
 	 */
-	public static final Operator CASE = new Operator(Kind.CASE_WHEN_OPERATOR, Category.Conditional, 120, true);
+	public static final Operator CASE = new Operator(Kind.CASE_WHEN, "CASE", 120, true, false);
 
 	/**
 	 * String concatenation operator '<code>||</code>'.
 	 */
-	public static final Operator CONCAT = new Operator(Kind.CONCAT_OPERATOR, Category.Other, 110, true);
-	
+	public static final Operator CONCAT = new Operator(Kind.CONCAT, "||", 110, true, true);
+
 	/**
 	 * Set of operators.
 	 */
-	/* TODO: Java 9 use unmodifiable Set.of(...) */
-	private static final Set<Operator> OPERATORS = new TreeSet<>(Arrays.asList(Operator.ADD, Operator.CAST, Operator.SUBTRACT,
-					Operator.MULTIPLY, Operator.DIVIDE, Operator.BITWISE_AND, Operator.BITWISE_OR,
-					// Operator.BITWISE_NOT,
-					Operator.BITWISE_XOR, Operator.MODULUS, Operator.EQUALS, Operator.GREATER_THAN,
-					Operator.GREATER_THAN_OR_EQUAL, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL,
-					Operator.LESS_THAN_OR_GREATER_THAN, Operator.NOT_EQUALS, Operator.LOGICAL_AND, Operator.BETWEEN,
-					Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS, Operator.LIKE, Operator.LOGICAL_NOT,
-					Operator.LOGICAL_OR, Operator.LOGICAL_XOR));
+	private static final Set<Operator> OPERATORS = new TreeSet<>(
+			Arrays.asList(ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER, BIT_AND, BIT_OR, BIT_NOT,
+					BIT_XOR, MODULUS, EQUALS, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN,
+					LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUALS, LOGICAL_AND, BETWEEN, CASE, CONCAT, IN,
+					IS, LIKE, LOGICAL_NOT, LOGICAL_OR, LOGICAL_XOR));
 
-	//private static final Set<Operator> OPERATORS = new TreeSet<>();
-	
 	public static Set<Operator> getOperators() {
 		return OPERATORS;
 	}
-	
-	/**
-	 * Set of functions or alias.
-	 */
-	//private static final TreeSet<Function> FUNCTIONS = new TreeSet<>(Comparator.comparing(Function::getName));
 
 	/**
 	 * Set of functions or alias by name.
 	 */
 	private static final HashMap<String, Function> FUNCTIONS_BY_NAME = new HashMap<>(256);
 
-
-
 	// -------------------------------------------------------------
 	// FUNCTIONS
 	// -------------------------------------------------------------
 	static {
-		
-		addFunction(Kind.ABS, Category.Mathematical);
-		addFunction(Kind.ADD_MONTHS, Category.Date);
-		addFunction(Kind.ACOS, Category.Mathematical);
-		addFunction(Kind.ASCII, Category.String);
-		addFunction(Kind.ASIN, Category.Mathematical);
-		addFunction(Kind.ATAN, Category.Mathematical);
-		addFunction(Kind.ATAN2, Category.Mathematical);
+		addFunction(Kind.ABS);
+		addFunction(Kind.ADD);
+		addFunction(Kind.ADD_DAYS);
+		addFunction(Kind.ADD_HOURS);
+		addFunction(Kind.ADD_MINUTES);
+		addFunction(Kind.ADD_MONTHS);
+		addFunction(Kind.ADD_SECONDS);
+		addFunction(Kind.ADD_WEEKS);
+		addFunction(Kind.ADD_YEARS);
+		addFunction(Kind.ACOS);
+		addFunction(Kind.ACOSH);
+		addFunction(Kind.ASCII);
+		addFunction(Kind.ASIN);
+		addFunction(Kind.ASINH);
+		addFunction(Kind.ATAN);
+		addFunction(Kind.ATANH);
+		addFunction(Kind.ATAN2);
 		// addFunction(Kind.BIT_LENGTH);
-		// TODO: addFunction(Kind.BITGET, Category.Bitwise);
-		// addFunction(Kind.BITAND, Category.Bitwise);
-		// addFunction(Kind.BITNOT, Category.Bitwise);
-		// addFunction(Kind.BITOR, Category.Bitwise);
-		// addFunction(Kind.BITXOR, Category.Bitwise);
-		addFunction(Kind.CBRT, Category.Mathematical);
-		addFunction(Kind.CEIL, Category.Mathematical);
-		addFunction(Kind.CHR, Category.String);
-		addFunction(Kind.COALESCE, Category.Conditional);
-		addFunction(Kind.CONCAT, Category.String);
-		addFunction(Kind.COS, Category.Mathematical);
-		addFunction(Kind.COSH, Category.Mathematical);
-		addFunction(Kind.COT, Category.Mathematical);
-		addFunction(Kind.CONTAINS, Category.Comparison);
-		addFunctionNotDeterministic(Kind.CURRENT_DATE, Category.Date); // Alias "NOW", "CURRENT_DATE", "CURDATE",
-																		// "SYSDATE", "TODAY");
-		addFunction(Kind.DAY_NAME, Category.Date); // "DAYNAME"
-		addFunction(Kind.DAY_OF_MONTH, Category.Date, "DAY", "DAY_OF_MONTH"); // "DAYOFMONTH"
-		addFunction(Kind.DAY_OF_WEEK, Category.Date, "DAY_OF_WEEK"); // "DAYOFWEEK"
-		addFunction(Kind.DAY_OF_YEAR, Category.Date, "DAY_OF_YEAR"); // "DAYOFYEAR"
-		addFunction(Kind.DECODE, Category.Conditional);
-		addFunction(Kind.DEGREES, Category.Mathematical);
-		addFunction(Kind.EQUAL_NULL, Category.Comparison);
-		addFunction(Kind.ENDSWITH, Category.Comparison);
-		addFunction(Kind.EXP, Category.Mathematical);
-		addFunction(Kind.FLOOR, Category.Mathematical);
-		addFunction(Kind.GREATEST, Category.Conditional);
-		addFunction(Kind.HOUR, Category.Date);
-		addFunction(Kind.IF, Category.Conditional);
-		addFunction(Kind.IFNULL, Category.Conditional, "IFNULL", "NVL");
-		addFunction(Kind.INITCAP, Category.String);
-		addFunction(Kind.INSTR, Category.String);
-		addFunction(Kind.LAST_DAY, Category.Date);
-		addFunction(Kind.LEAST, Category.Conditional);
-		addFunction(Kind.LEFT, Category.String);
-		addFunction(Kind.LENGTH, Category.String); // "LENGTH", "LEN", "CHAR_LENGTH");
-		addFunction(Kind.LN, Category.Mathematical);
-		addFunction(Kind.LOG10, Category.Mathematical);
-		addFunction(Kind.LOWER, Category.String); // , "LOWER", "LCASE");
-		addFunction(Kind.LPAD, Category.String);
-		addFunction(Kind.LTRIM, Category.String);
-		addFunction(Kind.MD5, Category.Cryptographic);
-		addFunction(Kind.MINUTE, Category.Date);
-		addFunction(Kind.MOD, Category.Mathematical);
-		addFunction(Kind.MONTH, Category.Date);
-		addFunction(Kind.MONTH_NAME, Category.Date); // "MONTHNAME"
-		addFunction(Kind.NULLIF, Category.Conditional);
-		// addFunction(Kind.OCTET_LENGTH);
-		addFunction(Kind.PI, Category.Mathematical);
-		addFunction(Kind.POWER, Category.Mathematical); // Alias POW
-		addFunction(Kind.QUARTER, Category.Date);
-		addFunction(Kind.UPPER, Category.String); // , "UPPER", "UCASE");
-		addFunction(Kind.RADIANS, Category.Mathematical);
-		addFunctionNotDeterministic(Kind.RAND, Category.Mathematical);
-		addFunction(Kind.REPEAT, Category.String);
-		addFunction(Kind.REPLACE, Category.String);
-		addFunction(Kind.REVERSE, Category.String);
-		addFunction(Kind.RIGHT, Category.String);
-		addFunction(Kind.ROUND, Category.Mathematical);
-		addFunction(Kind.RPAD, Category.String);
-		addFunction(Kind.RTRIM, Category.String);
-		addFunction(Kind.SHA1, Category.Cryptographic);
-		addFunction(Kind.SHA256, Category.Cryptographic);
-		addFunction(Kind.SHA384, Category.Cryptographic);
-		addFunction(Kind.SHA512, Category.Cryptographic);
-		addFunction(Kind.SECOND, Category.Date);
-		addFunction(Kind.SIGN, Category.Mathematical);
-		addFunction(Kind.SIN, Category.Mathematical);
-		addFunction(Kind.SINH, Category.Mathematical);
-		addFunction(Kind.SOUNDEX, Category.String);
-		addFunction(Kind.SPACE, Category.String);
-		addFunction(Kind.SQRT, Category.Mathematical);
-		addFunction(Kind.STARTSWITH, Category.Comparison);
-		addFunction(Kind.STRINGDECODE, Category.String);
-		addFunction(Kind.STRINGENCODE, Category.String);
-		addFunction(Kind.SUBSTR, Category.String, "SUBSTR", "SUBSTRING");
-		addFunction(Kind.TAN, Category.Mathematical);
-		addFunction(Kind.TANH, Category.Mathematical);
-		addFunction(Kind.TO_BOOLEAN, Category.Conversion);
-		addFunction(Kind.TO_CHAR, Category.Conversion);
-		// addFunction(Kind.TO_DATE, Category.Conversion);
-		// addFunction(Kind.TO_NUMBER, Category.Conversion);
-		addFunction(Kind.TRIM, Category.String);
-		addFunction(Kind.TRANSLATE, Category.String);
-		addFunction(Kind.UNICODE, Category.String);
-		addFunction(Kind.URLDECODE, Category.String);
-		addFunction(Kind.URLENCODE, Category.String);
-		addFunction(Kind.WEEK_OF_YEAR, Category.Date, "WEEK_OF_YEAR", "WEEK");
-		addFunction(Kind.YEAR, Category.Date);
-	}
-	
-	private static void addFunction(Kind kind, Category category) {
-		addFunction(kind, category, kind.name());
+		addFunction(Kind.BIT_AND);
+		addFunction(Kind.BIT_GET);
+		addFunction(Kind.BIT_NOT);
+		addFunction(Kind.BIT_OR);
+		addFunction(Kind.BIT_XOR);
+		addFunction(Kind.CAST);
+		addFunction(Kind.CBRT);
+		addFunction(Kind.CEIL, "CEILING");
+		addFunction(Kind.CHR);
+		addFunction(Kind.COALESCE);
+		addFunction(Kind.CONCAT);
+		addFunction(Kind.COS);
+		addFunction(Kind.COSH);
+		addFunction(Kind.COT);
+		addFunction(Kind.CONTAINS);
+		addFunctionNotDeterministic(Kind.CURRENT_DATE,"SYSDATE");
+		addFunction(Kind.DATE);
+		addFunction(Kind.DATE_PART);
+		addFunction(Kind.DAYNAME);
+		addFunction(Kind.DAY, "DAYOFMONTH");
+		addFunction(Kind.DAYOFWEEK);
+		addFunction(Kind.DAYOFWEEK_ISO);
+		addFunction(Kind.DAYOFYEAR);
+		addFunction(Kind.DAYS_BETWEEN);
+		addFunction(Kind.DECODE);
+		addFunction(Kind.DEGREES);
+		addFunction(Kind.DIVIDE);
+		addFunction(Kind.EXTRACT);
+		addFunction(Kind.EQUAL_NULL);
+		addFunction(Kind.ENDSWITH);
+		addFunction(Kind.EXP);
+		addFunction(Kind.FIRST_DAY);
+		addFunction(Kind.FLOOR);
+		addFunction(Kind.GREATEST);
+		addFunction(Kind.HOUR);
+		addFunction(Kind.HOURS_BETWEEN);
+		addFunction(Kind.IF);
+		addFunction(Kind.IFNULL, "NVL");
+		addFunction(Kind.INITCAP);
+		addFunction(Kind.INSTR);
+		addFunction(Kind.LAST_DAY);
+		addFunction(Kind.LEAST);
+		addFunction(Kind.LEFT);
+		addFunction(Kind.LENGTH);
+		addFunction(Kind.LN);
+		addFunction(Kind.LOG);
+		addFunction(Kind.LOG10);
+		addFunction(Kind.LOWER, "LCASE");
+		addFunction(Kind.LPAD);
+		addFunction(Kind.LTRIM);
+		addFunction(Kind.MD5);
+		addFunction(Kind.MINUTE);
+		addFunction(Kind.MINUTES_BETWEEN);
+		addFunction(Kind.MOD);
+		addFunction(Kind.MONTH);
+		addFunction(Kind.MONTHNAME);
+		addFunction(Kind.MONTHS_BETWEEN);
+		addFunction(Kind.MULTIPLY);
+		addFunction(Kind.NEXT_DAY);
+		addFunction(Kind.NULLIF);
+		addFunction(Kind.NVL2);
+		addFunction(Kind.PI);
+		addFunction(Kind.POWER);
+		addFunction(Kind.QUARTER);
+		addFunction(Kind.RADIANS);
+		addFunctionNotDeterministic(Kind.RAND);
+		addFunction(Kind.REGEXP_LIKE);
+		addFunction(Kind.REPEAT);
+		addFunction(Kind.REPLACE);
+		addFunction(Kind.REVERSE);
+		addFunction(Kind.RIGHT);
+		addFunction(Kind.ROUND);
+		addFunction(Kind.RPAD);
+		addFunction(Kind.RTRIM);
+		addFunction(Kind.SHA1);
+		addFunction(Kind.SHA256);
+		addFunction(Kind.SHA384);
+		addFunction(Kind.SHA512);
+		addFunction(Kind.SECOND);
+		addFunction(Kind.SECONDS_BETWEEN);
+		addFunction(Kind.SIGN);
+		addFunction(Kind.SIN);
+		addFunction(Kind.SINH);
+		addFunction(Kind.SOUNDEX);
+		addFunction(Kind.SPACE);
+		addFunction(Kind.SQRT);
+		addFunction(Kind.STARTSWITH);
+		addFunction(Kind.STRINGDECODE);
+		addFunction(Kind.STRINGENCODE);
+		addFunction(Kind.SUBSTRING, "SUBSTR", "MID");
+		addFunction(Kind.SUBTRACT);
+		addFunction(Kind.TAN);
+		addFunction(Kind.TANH);
+		addFunction(Kind.TO_BOOLEAN);
+		addFunction(Kind.TO_CHAR);
+		addFunction(Kind.TO_DATE);
+		// addFunction(Kind.TO_NUMBER);
+		addFunction(Kind.TRIM);
+		addFunction(Kind.TRUNCATE, "TRUNC");
+		addFunction(Kind.TRANSLATE);
+		addFunction(Kind.UNICODE);
+		addFunction(Kind.UPPER, "UCASE");
+		addFunction(Kind.URLDECODE);
+		addFunction(Kind.URLENCODE);
+		addFunction(Kind.WEEK);
+		addFunction(Kind.WEEKOFMONTH);
+		addFunction(Kind.WEEK_ISO);
+		addFunction(Kind.YEAR);
+		addFunction(Kind.YEARS_BETWEEN);
 	}
 
-	private static void addFunction(Kind kind, Category category, String... alias) {
+	protected static void addFunction(Kind kind) {
+		createFunction(kind, kind.name(), false, true);
+	}
+
+	protected static void addFunction(Kind kind, String... alias) {
+		createFunction(kind, kind.name(), false, true);
 		for (String name : alias) {
-			Function function = new Function(kind, name, category, true);
-			OPERATORS.add(function);
-			FUNCTIONS_BY_NAME.put(name, function);
+			createFunction(kind, name, true, true);
 		}
 	}
 
-	private static void addFunctionNotDeterministic(Kind kind, Category category) {
-		addFunctionNotDeterministic(kind, category, kind.name());
+	protected static void addFunctionNotDeterministic(Kind kind) {
+		addFunctionNotDeterministic(kind, kind.name());
 	}
 
-	private static void addFunctionNotDeterministic(Kind kind, Category category, String... alias) {
+	protected static void addFunctionNotDeterministic(Kind kind, String... alias) {
+		createFunction(kind, kind.name(), false, false);
 		for (String name : alias) {
-			Function function = new Function(kind, name, category, false);
-			OPERATORS.add(function);
-			FUNCTIONS_BY_NAME.put(name, function);
+			createFunction(kind, name, true, true);
 		}
 	}
 
-//	public static Set<Function> getFunctions() {
-//		return FUNCTIONS;
-//	}
+	private static void createFunction(Kind kind, String name, boolean isAlias, boolean isDeterministic) {
+		Function function = new Function(kind, name, isAlias, isDeterministic);
+		OPERATORS.add(function);
+		FUNCTIONS_BY_NAME.put(name, function);
+	}
+
+	public static Function getFunction(final Kind kind) {
+		if (kind == null)
+			return null;
+
+		return getFunction(kind.name());
+	}
 
 	public static Function getFunction(final String name) {
 		if (name == null)
@@ -448,10 +425,60 @@ public class Operator implements Comparable<Operator> {
 
 		return FUNCTIONS_BY_NAME.get(name.toUpperCase());
 	}
-	
-	
-	
+
+	public static String getHtmlDocumentation(Kind kind) {
+		String doc = docs.get(kind);
+		if (doc != null) {
+			return doc;
+		}
+
+		doc = readAsciidoc(kind);
+		docs.put(kind, doc);
+
+		return doc;
+	}
+
+	private static String readAsciidoc(Kind kind) {
+		String file = "/docs/operator/" + kind.name().toLowerCase() + ".html";
+
+		StringWriter writer = new StringWriter();
+
+		try (InputStreamReader is = new InputStreamReader(Expression.class.getResourceAsStream(file))) {
+			IOUtils.copy(is, writer);
+		} catch (Exception e) {
+			writer.append(e.getMessage());
+			System.err.println("Warning no documentation : " + kind);
+		}
+
+		return writer.toString();
+	}
+
+	private String findDescription(Kind kind) {
+		String doc = getHtmlDocumentation(kind);
+
+		if (doc == null)
+			return "";
+
+		int beginIndex = doc.indexOf("id=\"preamble\"");
+		beginIndex = doc.indexOf("<p>", beginIndex);
+
+		if (beginIndex > 0) {
+			int endIndex = doc.indexOf("</p>", beginIndex);
+
+			return doc.substring(beginIndex + 3, endIndex);
+		}
+
+		return "";
+	}
+
 	protected final Kind kind;
+
+	/**
+	 * The name of the operator/function. Ex. "OVERLAY" or "TRIM"
+	 */
+	private final String name;
+
+	private final boolean isAlias;
 
 	/**
 	 * The precedence with which this operator binds to the expression to the left.
@@ -465,51 +492,28 @@ public class Operator implements Comparable<Operator> {
 	 */
 	private final int rightPrecedence;
 
-	private String category;
-	private String description = "";
-	private String syntax = "";
-	private String returns = "";
-	private String constraints = "";
-
-
-
+	private final String description;
 
 	/**
 	 * Creates an operator specifying left and right precedence.
 	 * 
 	 * @param kind            Kind of operator
+	 * @param name            Name of operator
 	 * @param leftPrecedence  Left precedence
 	 * @param rightPrecedence Right precedence
 	 */
-	protected Operator(Kind kind, String name, Category category, int leftPrecedence, int rightPrecedence) {
+	protected Operator(Kind kind, String name, int leftPrecedence, int rightPrecedence, boolean isAlias) {
 		super();
 		this.kind = kind;
 		this.name = name;
 		this.leftPrecedence = leftPrecedence;
 		this.rightPrecedence = rightPrecedence;
-		this.category = category.name();
-
-		OperatorInfo info = infos.get(kind.name());
-		if (info != null) {
-			this.syntax = MessageFormat.format(Const.NVL(info.getSyntax(), ""), name);
-			// this.category = Const.NVL(info.getCategory(), "");
-			this.description = info.getDescription();
-			this.constraints = info.getConstraints();
-			this.returns = info.getReturns();
-		}
+		this.isAlias = isAlias;
+		this.description = findDescription(kind);
 	}
 
-	/**
-	 * Creates an operator specifying left/right associativity.
-	 * 
-	 * @param kind              Kind of operator
-	 * @param leftPrec          Precedence
-	 * @param leftAssociativity operators on the left evaluate before ones of the
-	 *                          right
-	 */
-	protected Operator(Kind kind, Category category, int precedence, boolean leftAssociativity) {
-		this(kind, kind.toString(), category, leftPrec(precedence, leftAssociativity),
-				rightPrec(precedence, leftAssociativity));
+	protected Operator(Kind kind, String name, int precedence, boolean leftAssociativity, boolean isAlias) {
+		this(kind, name, leftPrec(precedence, leftAssociativity), rightPrec(precedence, leftAssociativity), isAlias);
 	}
 
 	protected static int leftPrec(int precedence, boolean leftAssociativity) {
@@ -529,14 +533,8 @@ public class Operator implements Comparable<Operator> {
 	}
 
 	/**
-	 * The name of the operator/function. Ex. "OVERLAY" or "TRIM"
+	 * The name of the operator/function
 	 */
-	private final String name;
-
-	/**
-	 * The name of the operator/function. Ex. "=" or "TRIM"
-	 */
-
 	public String getName() {
 		return name;
 	}
@@ -549,14 +547,18 @@ public class Operator implements Comparable<Operator> {
 		return rightPrecedence;
 	}
 
-	public final String getSyntax() {
-		return syntax;
+	protected URL getUrl(Kind kind) {
+		return getClass().getResource("/docs/" + kind.name().toLowerCase() + ".html");
 	}
 
-	public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
+	public boolean isAlias() {
+		return isAlias;
+	}
+
+	public Value eval(IExpressionContext context, Expression... args) throws ExpressionException {
 		switch (kind) {
 
-		case BITWISE_AND_OPERATOR: {
+		case BIT_AND: {
 			Value left = args[0].eval(context);
 			if (left.isNull())
 				return left;
@@ -567,7 +569,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.toInteger() & right.toInteger());
 		}
 
-		case BITWISE_NOT_OPERATOR: {
+		case BIT_NOT: {
 			Value value = args[0].eval(context);
 			if (value.isNull())
 				return value;
@@ -575,7 +577,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(~value.toInteger());
 		}
 
-		case BITWISE_OR_OPERATOR: {
+		case BIT_OR: {
 			Value left = args[0].eval(context);
 			if (left.isNull())
 				return left;
@@ -586,7 +588,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.toInteger() | right.toInteger());
 		}
 
-		case BITWISE_XOR_OPERATOR: {
+		case BIT_XOR: {
 			Value left = args[0].eval(context);
 			if (left.isNull())
 				return left;
@@ -597,7 +599,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.toInteger() ^ right.toInteger());
 		}
 
-		case BETWEEN_OPERATOR: {
+		case BETWEEN: {
 			Value operand = args[0].eval(context);
 			Value start = args[1].eval(context);
 			Value end = args[2].eval(context);
@@ -609,12 +611,12 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(operand.compareTo(start) >= 0 && operand.compareTo(end) <= 0);
 		}
 
-		case CASE_WHEN_OPERATOR: {
+		case CASE_WHEN: {
 			int index = 0;
-			IExpression switchExpression = args[0];
+			Expression switchExpression = args[0];
 			ExpressionList whenList = (ExpressionList) args[1];
 			ExpressionList thenList = (ExpressionList) args[2];
-			IExpression elseExpression = args[3];
+			Expression elseExpression = args[3];
 
 			if (switchExpression == null) {
 				for (Expression whenOperand : whenList) {
@@ -637,37 +639,26 @@ public class Operator implements Comparable<Operator> {
 
 			return elseExpression.eval(context);
 		}
-		case CAST_OPERATOR: {
-			Value left = args[0].eval(context);
-			Value right = args[1].eval(context);
 
-			if (left.isNull())
+		case CONCAT: {
+			StringBuilder builder = new StringBuilder();
+			for (Expression operand : args) {
+				Value value = operand.eval(context);
+				if (!value.isNull())
+					builder.append(value);
+			}
+
+			if (builder.length() == 0)
 				return Value.NULL;
-			if (right.isNull())
-				return right;
 
-			Type targetType = Type.valueOf((int) right.toInteger());
-
-			return left.convertTo(targetType);
+			return Value.of(builder.toString());
 		}
 
-		case CONCAT_OPERATOR: {
-			Value left = args[0].eval(context);
-			Value right = args[1].eval(context);
-
-			if (right.isNull())
-				return left;
-			if (left.isNull())
-				return right;
-
-			return Value.of(left.toString().concat(right.toString()));
-		}
-
-		case LIKE_OPERATOR: {
-			Value subject = args[0].eval(context);
+		case LIKE: {
+			Value input = args[0].eval(context);
 			Value pattern = args[1].eval(context);
 
-			if (subject.isNull() || pattern.isNull()) {
+			if (input.isNull() || pattern.isNull()) {
 				return Value.FALSE;
 			}
 
@@ -677,13 +668,35 @@ public class Operator implements Comparable<Operator> {
 				escape = escapeValue.toString();
 			}
 
-			final String regex = sqlToRegexLike(pattern.toString(), escape);
+			final String regex = toRegexLike(pattern.toString(), escape);
 
-			return Value.of(Pattern.matches(regex, subject.toString()));
+			Pattern p = Pattern.compile(regex, Pattern.DOTALL);
 
+			return Value.of(p.matcher(input.toString()).matches());
 		}
 
-		case NEGATE_OPERATOR: {
+		case ILIKE: {
+			Value input = args[0].eval(context);
+			Value pattern = args[1].eval(context);
+
+			if (input.isNull() || pattern.isNull()) {
+				return Value.FALSE;
+			}
+
+			String escape = null;
+			if (args.length == 3) {
+				Value escapeValue = args[2].eval(context);
+				escape = escapeValue.toString();
+			}
+
+			final String regex = toRegexLike(pattern.toString(), escape);
+
+			Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+
+			return Value.of(p.matcher(input.toString()).matches());
+		}
+
+		case NEGATIVE: {
 			Value value = args[0].eval(context);
 			return value.negate();
 		}
@@ -726,7 +739,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of((left.toBoolean() || right.toBoolean()) && !(left.toBoolean() && right.toBoolean()));
 		}
 
-		case ADD_OPERATOR: {
+		case ADD: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -736,7 +749,7 @@ public class Operator implements Comparable<Operator> {
 			return left.add(right);
 		}
 
-		case SUBTRACT_OPERATOR: {
+		case SUBTRACT: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -746,7 +759,7 @@ public class Operator implements Comparable<Operator> {
 			return left.subtract(right);
 		}
 
-		case MULTIPLY_OPERATOR: {
+		case MULTIPLY: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -756,7 +769,7 @@ public class Operator implements Comparable<Operator> {
 			return left.multiply(right);
 		}
 
-		case DIVIDE_OPERATOR: {
+		case DIVIDE: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -770,8 +783,7 @@ public class Operator implements Comparable<Operator> {
 			return left.divide(right);
 		}
 
-		case MOD: // Same implementation for operator and function
-		case MODULUS_OPERATOR: {
+		case MOD: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -786,7 +798,6 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case POWER: // Same implementation for operator and function
-		// case POWER_OPERATOR:
 		{
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
@@ -802,7 +813,7 @@ public class Operator implements Comparable<Operator> {
 			return left.power(right);
 		}
 
-		case EQUAL_OPERATOR: {
+		case EQUAL: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -815,7 +826,7 @@ public class Operator implements Comparable<Operator> {
 		}
 
 		case LESS_THAN_OR_GREATER_THEN:
-		case NOT_EQUAL_OPERATOR: {
+		case NOT_EQUALS: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -851,7 +862,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.compareTo(right) <= 0);
 		}
 
-		case GREATER_THAN_OPERATOR: {
+		case GREATER_THAN: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -862,7 +873,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.compareTo(right) > 0);
 		}
 
-		case GREATER_THAN_OR_EQUAL_OPERATOR: {
+		case GREATER_THAN_OR_EQUAL: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -873,14 +884,14 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.compareTo(right) >= 0);
 		}
 
-		case IS_OPERATOR: {
+		case IS: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
 			return Value.of(left.equals(right));
 		}
 
-		case IN_OPERATOR: {
+		case IN: {
 			Value left = args[0].eval(context);
 			if (left.isNull()) {
 				return Value.FALSE;
@@ -897,8 +908,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.FALSE;
 		}
 
-		case CONTAINS:
-		case CONTAINS_OPERATOR: {
+		case CONTAINS: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -922,7 +932,7 @@ public class Operator implements Comparable<Operator> {
 	public Expression optimize(IExpressionContext context, Expression... operands) throws ExpressionException {
 		switch (kind) {
 
-		case NEGATE_OPERATOR:
+		case NEGATIVE:
 		case LOGICAL_NOT_OPERATOR: {
 			Expression operand = operands[0].optimize(context);
 
@@ -941,63 +951,72 @@ public class Operator implements Comparable<Operator> {
 			Expression left = operands[0].optimize(context);
 			Expression right = operands[1].optimize(context);
 
-			if (left.isConstant() ) {
-				Value value = (Value) left;				
-				
-				if ( value.toBoolean() ) return Value.TRUE;
-				if ( !value.toBoolean() ) return right;
+			if (left.isConstant()) {
+				Value value = (Value) left;
+
+				if (value.toBoolean())
+					return Value.TRUE;
+				if (!value.toBoolean())
+					return right;
 			}
 
-			if (right.isConstant() ) {
-				Value value = (Value) right;				
-				if ( value.toBoolean() ) return Value.TRUE;
-				if ( !value.toBoolean() ) return left;
+			if (right.isConstant()) {
+				Value value = (Value) right;
+				if (value.toBoolean())
+					return Value.TRUE;
+				if (!value.toBoolean())
+					return left;
 			}
 			return new ExpressionCall(this, left, right);
 		}
-		
+
 		case LOGICAL_AND_OPERATOR: {
-			
+
 			Expression left = operands[0].optimize(context);
-			if (left.isConstant() ) {
+			Expression right = operands[1].optimize(context);
+
+			if (left.isConstant()) {
 				Value value = (Value) left;
-				if ( value.isNull() ) return Value.NULL;
-				if ( !value.toBoolean() ) return Value.FALSE;
+
+				if (value.isNull() || (right.isConstant() && ((Value) right).isNull()))
+					return Value.NULL;
+
+				if (!value.toBoolean())
+					return Value.FALSE;
 			}
 
-			Expression right = operands[1].optimize(context);
-			if (right.isConstant() ) {
+			if (right.isConstant()) {
 				Value value = (Value) right;
-				if ( value.isNull() ) return Value.NULL;
-				if ( !value.toBoolean() ) return Value.FALSE;
+				if (value.isNull())
+					return Value.NULL;
+				if (!value.toBoolean())
+					return Value.FALSE;
 			}
 
 			if (left.isConstant() && right.isConstant()) {
 				return eval(context, left, right);
-			}	
+			}
 
 			return new ExpressionCall(this, left, right);
 		}
-			
+
 		// Binary operator
-		case CONCAT_OPERATOR:
-		case CONTAINS_OPERATOR:
-		case ADD_OPERATOR:
-		case SUBTRACT_OPERATOR:
-		case MULTIPLY_OPERATOR:
-		case DIVIDE_OPERATOR:
-		case MODULUS_OPERATOR:
-			// case POWER_OPERATOR:
+		case CONCAT:
+		case CONTAINS:
+		case ADD:
+		case SUBTRACT:
+		case MULTIPLY:
+		case DIVIDE:
+		case MOD:
 		case LOGICAL_XOR_OPERATOR:
-		case EQUAL_OPERATOR:
-		case NOT_EQUAL_OPERATOR:
-		case LIKE_OPERATOR:
+		case EQUAL:
+		case NOT_EQUALS:
 		case LESS_THAN_OPERATOR:
 		case LESS_THAN_OR_EQUAL_OPERATOR:
-		case GREATER_THAN_OPERATOR:
-		case GREATER_THAN_OR_EQUAL_OPERATOR:
-		case IS_OPERATOR:
-		case IN_OPERATOR: {
+		case GREATER_THAN:
+		case GREATER_THAN_OR_EQUAL:
+		case IS:
+		case IN: {
 			Expression left = operands[0].optimize(context);
 			Expression right = operands[1].optimize(context);
 
@@ -1008,7 +1027,34 @@ public class Operator implements Comparable<Operator> {
 			return new ExpressionCall(this, left, right);
 		}
 
-		case BETWEEN_OPERATOR: {
+		case LIKE: {
+			Expression left = operands[0].optimize(context);
+			Expression right = operands[1].optimize(context);
+
+			if (left.isConstant() && right.isConstant()) {
+				if (operands.length == 3) {
+					Expression escape = operands[2].optimize(context);
+					return eval(context, left, right, escape);
+				}
+				return eval(context, left, right);
+			}
+
+			// TODO: optimize NULL LIKE X : convert to NULL
+			// TODO: optimize X LIKE NULL : convert to NULL
+			// TODO: optimize X LIKE '%' : convert to X IS NOT NULL
+			// TODO: optimize X LIKE 'Hello' : convert to X = 'Hello'
+			// TODO: optimize the common case of X LIKE 'foo%' to Starts_With(X,'foo')
+			// TODO: optimize the common case of X LIKE '%foo' to Ends_With(X,'foo')
+
+			if (operands.length == 3) {
+				Expression escape = operands[2].optimize(context);
+				return new ExpressionCall(this, left, right, escape);
+			}
+
+			return new ExpressionCall(this, left, right);
+		}
+
+		case BETWEEN: {
 			Expression operand = operands[0].optimize(context);
 			Expression start = operands[1].optimize(context);
 			Expression end = operands[2].optimize(context);
@@ -1035,7 +1081,7 @@ public class Operator implements Comparable<Operator> {
 	public void unparse(StringWriter writer, ExpressionCall call, int leftPrec, int rightPrec) {
 		switch (kind) {
 
-		case BETWEEN_OPERATOR: {
+		case BETWEEN: {
 			Expression[] operands = call.getOperands();
 			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
@@ -1047,7 +1093,7 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case CASE_WHEN_OPERATOR: {
+		case CASE_WHEN: {
 			Expression[] operands = call.getOperands();
 
 			Expression switchExpression = operands[0];
@@ -1077,18 +1123,7 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case CAST_OPERATOR: {
-			Expression[] operands = call.getOperands();
-			writer.append(this.getName());
-			writer.append('(');
-			operands[0].unparse(writer, leftPrec, rightPrec);
-			writer.append(" AS ");
-			operands[1].unparse(writer, leftPrec, rightPrec);
-			writer.append(')');
-			break;
-		}
-
-		case CONCAT_OPERATOR: {
+		case CONCAT: {
 			Expression[] operands = call.getOperands();
 			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(this.getName());
@@ -1096,7 +1131,7 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case LIKE_OPERATOR: {
+		case LIKE: {
 			Expression[] operands = call.getOperands();
 			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
@@ -1110,7 +1145,7 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case NEGATE_OPERATOR: {
+		case NEGATIVE: {
 			Expression[] operands = call.getOperands();
 			writer.append(this.getName());
 			operands[0].unparse(writer, leftPrec, rightPrec);
@@ -1128,15 +1163,15 @@ public class Operator implements Comparable<Operator> {
 		case LOGICAL_AND_OPERATOR:
 		case LOGICAL_OR_OPERATOR:
 		case LOGICAL_XOR_OPERATOR:
-		case EQUAL_OPERATOR:
-		case NOT_EQUAL_OPERATOR:
+		case EQUAL:
+		case NOT_EQUALS:
 		case LESS_THAN_OR_GREATER_THEN:
 		case LESS_THAN_OPERATOR:
 		case LESS_THAN_OR_EQUAL_OPERATOR:
-		case GREATER_THAN_OPERATOR:
-		case GREATER_THAN_OR_EQUAL_OPERATOR:
-		case IS_OPERATOR:
-		case IN_OPERATOR: {
+		case GREATER_THAN:
+		case GREATER_THAN_OR_EQUAL:
+		case IS:
+		case IN: {
 			Expression[] operands = call.getOperands();
 			operands[0].unparse(writer, leftPrec, rightPrec);
 			writer.append(' ');
@@ -1146,11 +1181,11 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case ADD_OPERATOR:
-		case SUBTRACT_OPERATOR:
-		case MULTIPLY_OPERATOR:
-		case DIVIDE_OPERATOR:
-		case MODULUS_OPERATOR: {
+		case ADD:
+		case SUBTRACT:
+		case MULTIPLY:
+		case DIVIDE:
+		case MOD: {
 			// case POWER_OPERATOR:
 			Expression[] operands = call.getOperands();
 			operands[0].unparse(writer, leftPrec, rightPrec);
@@ -1170,63 +1205,47 @@ public class Operator implements Comparable<Operator> {
 	 * @throws ExpressionException if the number of arguments is incorrect
 	 */
 	public void checkNumberOfArguments(int len) throws ExpressionException {
-
-	}
-
-
-	public String getCategory() {
-		return category;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getReturns() {
-		return returns;
-	}
-
-	public String getConstraints() {
-		return constraints;
+		// Checked by parser
 	}
 
 	protected final ExpressionException createArgumentOutOfRangeError(Object arg) {
-		return new ExpressionException("Argument '{0}' is out of range", arg);
+		return new ExpressionException("Expression.ArgumentOutOfRange", this.getName(), arg);
 	}
 
 	protected final ExpressionException createDivisionByZeroError() {
-		return new ExpressionException("Division by 0 for operator " + this);
+		return new ExpressionException("Expression.DivisionByZero", this.getName());
 	}
 
 	protected final ExpressionException createInvalidNumberOfArgumentsError() {
-		return new ExpressionException("ExpressionException.InvalidNumberOfArguments", this.getSyntax());
+		return new ExpressionException("Expression.InvalidNumberOfArguments", this.getName());
 	}
 
 	protected final ExpressionException createInternalError(final String error) {
-		return new ExpressionException("ExpressionException.InternalError", error);
+		return new ExpressionException("Expression.InternalError", error);
 	}
 
 	/**
-	 * Translates a SQL LIKE pattern to Java regex pattern, with optional escape
-	 * string.
+	 * Translates a LIKE pattern to Java regex pattern, with optional escape string.
 	 */
-	private String sqlToRegexLike(String sqlPattern, CharSequence escapeStr) {
+	private String toRegexLike(String sqlPattern, CharSequence escapeStr) {
 		final char escapeChar;
 		if (escapeStr != null) {
+
 			if (escapeStr.length() != 1) {
 				throw createInvalidEscapeCharacter(escapeStr.toString());
 			}
+
 			escapeChar = escapeStr.charAt(0);
 		} else {
 			escapeChar = 0;
 		}
-		return sqlToRegexLike(sqlPattern, escapeChar);
+		return toRegexLike(sqlPattern, escapeChar);
 	}
 
 	/**
-	 * Translates a SQL LIKE pattern to Java regex pattern.
+	 * Translates a LIKE pattern to Java regex pattern.
 	 */
-	private String sqlToRegexLike(String sqlPattern, char escapeChar) {
+	private String toRegexLike(String sqlPattern, char escapeChar) {
 		int i;
 		final int len = sqlPattern.length();
 		final StringBuilder javaPattern = new StringBuilder(len + len);
@@ -1242,6 +1261,9 @@ public class Operator implements Comparable<Operator> {
 				}
 				char nextChar = sqlPattern.charAt(i + 1);
 				if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
+					if (JAVA_REGEX_SPECIALS.indexOf(nextChar) >= 0) {
+						javaPattern.append('\\');
+					}
 					javaPattern.append(nextChar);
 					i++;
 				} else {
@@ -1268,6 +1290,21 @@ public class Operator implements Comparable<Operator> {
 
 	@Override
 	public int compareTo(Operator o) {
-		return this.kind.compareTo(o.kind);
+
+		// Compare kind if same type
+		if (this.getClass().equals(o.getClass()))
+//			return this.kind.toString().compareTo(o.kind.toString());
+			return this.name.compareTo(o.name);
+
+		// Operator first and function last
+		return (o instanceof Operator) ? 1 : 0;
+	}
+
+	public Kind getKind() {
+		return kind;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

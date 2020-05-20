@@ -1,0 +1,12 @@
+= ADD, +
+
+Sum of 2 numeric values.
+
+== Syntax +
+----
+ADD(numeric_expr,numeric_expr)
+----
+The + operator provides alternative syntax.
+----
+numeric_expr + numeric_expr
+----

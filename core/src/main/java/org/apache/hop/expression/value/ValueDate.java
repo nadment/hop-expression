@@ -1,26 +1,33 @@
 package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import java.util.Objects;
 
-import org.apache.hop.expression.Type;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.Value;
 
 public class ValueDate extends Value {
 
-	private final LocalDateTime value;
+	// FIXME: Format
+	private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn").withLocale( Locale.ROOT ).withZone( ZoneId.systemDefault() );
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale( Locale.ROOT ).withZone( ZoneId.systemDefault() );
 
-	public ValueDate(LocalDateTime date) {
+	private final Instant value;
+
+	public ValueDate(Instant date) {
 		this.value = Objects.requireNonNull(date);
 	}
 
 	@Override
-	public Type getType() {
-		return Type.DATE;
+	public DataType getDataType() {
+		return DataType.DATE;
 	}
 
 	@Override
@@ -48,15 +55,17 @@ public class ValueDate extends Value {
 		return this;
 	}
 
-	public LocalDateTime toDate() {
+	public Instant toDate() {
 		return value;
 	}
 
-
 	@Override
-	// TODO: fix me
-	public String toString() {
-		return "NULL";
+
+	public String toString() {		
+		if ( value.getNano()>0 ) 
+			return TIMESTAMP_FORMAT.format(value);
+		
+		return DATE_FORMAT.format(value);		
 	}
 
 	/**
@@ -64,21 +73,39 @@ public class ValueDate extends Value {
 	 * 1970-01-01T00:00:00Z.
 	 */
 	public long toInteger() {
-		long time = value.toInstant(ZoneOffset.ofHours(0)).toEpochMilli();
+		long time = value.toEpochMilli();
 
 		return time;
 	}
 
 	/**
-	 * Converts this date time to the number of milliseconds from the epochof
-	 * 1970-01-01T00:00:00Z.
+	 * Converts this date time to the number of milliseconds from the epochof 1970-01-01 00:00:00.
 	 */
 	public double toNumber() {
-		long time = value.toInstant(ZoneOffset.ofHours(0)).toEpochMilli();
+		long time = value.toEpochMilli();
 
 		return (double) time;
 	}
+	
+	@Override
+	public Value add(Value v) {
+				
+		if (v.getDataType()==DataType.INTEGER) {
+			return Value.of(value.plus(v.toInteger(), ChronoUnit.DAYS));
+		}
 
+		return super.add(v);
+	}
+
+	@Override
+	public Value subtract(Value v) {
+		if (v.getDataType()==DataType.INTEGER) {
+			return Value.of(value.minus(v.toInteger(), ChronoUnit.DAYS));
+		}
+
+		return super.add(v);
+	}
+	
 	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
 		writer.append(this.toString());
 	}

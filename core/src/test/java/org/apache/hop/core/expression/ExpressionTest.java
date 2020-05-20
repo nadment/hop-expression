@@ -5,8 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.apache.hop.core.row.IRowMeta;
@@ -17,25 +20,25 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.DefaultExpressionContext;
 import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ExpressionTest {
 
-	protected Value eval(String e) throws Exception {
-		
-		IExpression expression = ExpressionParser.parse(e);
+	private RowExpressionContext context;
+	
+	public RowExpressionContext getContext() {
+		return context;
+	}
 
-		DefaultExpressionContext contextOptimize = new DefaultExpressionContext();	
-		Expression result =  ((Expression)expression).optimize(contextOptimize);
-		
-		
+	@Before
+	public void setupOnce() throws Exception {
+
 		IVariables variables = new Variables();
 		variables.setVariable("TEST", "12345");
 
@@ -47,8 +50,9 @@ public class ExpressionTest {
 		rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
 		rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
 		rowMeta.addValueMeta(new ValueMetaInteger("YEAR")); 
+		rowMeta.addValueMeta(new ValueMetaString("FROM"));
 
-		Object[] row = new Object[7];
+		Object[] row = new Object[8];
 		row[0] = "TEST";
 		row[1] = "F";
 		row[2] = 40L;
@@ -56,11 +60,16 @@ public class ExpressionTest {
 		row[4] = true;
 		row[5] = null;
 		row[6] = 2020L;
+		row[7] = "Paris";
 		
-
-
-		RowExpressionContext context = new RowExpressionContext(rowMeta);
+		context = new RowExpressionContext(rowMeta);
 		context.setRow(row);
+	}
+	
+	protected Value eval(String e) throws Exception {
+		
+		Expression expression = ExpressionParser.parse(e);
+	
 		return expression.eval(context);
 	}
 
@@ -94,14 +103,21 @@ public class ExpressionTest {
 		assertEquals(expected, value.toBigNumber());
 	}
 	
-	protected void evalEquals(String e, LocalDate expected) throws Exception {
-		assertEquals(expected.atStartOfDay(), eval(e).toDate());
+	protected void evalEquals(String e, Instant expected) throws Exception {
+		assertEquals(expected, eval(e).toDate());
+	}
+
+	protected void evalEquals(String e, LocalTime expected) throws Exception {	
+		assertEquals(Instant.from(expected), eval(e).toDate());
 	}
 	
-
+	
+	protected void evalEquals(String e, LocalDate expected) throws Exception {	
+		assertEquals(expected.atStartOfDay(ZoneId.of("UTC")).toInstant(), eval(e).toDate());
+	}
 	
 	protected void evalEquals(String e, LocalDateTime expected) throws Exception {
-		assertEquals(expected, eval(e).toDate());
+		assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(e).toDate());
 	}
 	
 	protected void evalFails(String e) {
@@ -113,21 +129,10 @@ public class ExpressionTest {
 		}
 	}
 
-
 	@Test
 	public void parser() throws Exception {
-		//evalEquals("100 | 2", 102);
-		//evalFails("Year())");
-		//evalFails("Year(()");
-		//evalFails("Year(1,2)");
-		//evalEquals("10**2+5",105);
-
-		//evalTrue("Cast(0 as Boolean)");
-
-		
-		//evalEquals("1+2*3",7);
-		//evalEquals("(1+2)*3",9);
-		//evalEquals("5+10^2",105);		
+		evalTrue("'give me 30% discount' like '%30!%%' escape '!'");
+		//evalFalse("'AA' like '_'");
 	}
 
 

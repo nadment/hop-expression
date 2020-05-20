@@ -43,11 +43,6 @@ public class ExpressionToken {
 		CASE,
 
 		/**
-		 * Cast operator
-		 */
-		CAST,
-
-		/**
 		 * Concat operator <code>||<code>
 		 */
 		CONCAT("||"),
@@ -77,29 +72,38 @@ public class ExpressionToken {
 		 */
 		RPARENTHESIS(")"),
 
-
 		/**
 		 * Literal number.
 		 */
 		LITERAL_NUMBER,
 		
-		/** Literal hex number 0x1234567890ABCDEF */
-		LITERAL_HEXNUMBER,
+		/** 
+		 * Literal hex binary 0x1234567890ABCDEF
+		 */
+		LITERAL_BINARY_HEX,
 
-		/** Literal bit number 0b1101010101 */
-		LITERAL_BITNUMBER,
+		/** 
+		 * Literal bit binary 0b1101010101
+		 */
+		LITERAL_BINARY_BIT,
 
 		/**
 		 * Literal string.
 		 */
-		LITERAL_TEXT,
+		LITERAL_STRING,
 
 		/**
-		 * The "DATE" word for litteral date.
+		 * The "DATE" word for literal date.
 		 */
 		DATE,
+		
 		/**
-		 * The "TIMESTAMP" word for litteral timesamp.
+		 * The "TIME" word for literal time.
+		 */
+		TIME,
+				
+		/**
+		 * The "TIMESTAMP" word for literal timesamp.
 		 */
 		TIMESTAMP,
 		
@@ -113,7 +117,7 @@ public class ExpressionToken {
 		 */
 		FUNCTION,
 
-
+		FROM,
 
 		/**
 		 * The arithmetic division operator, "/".
@@ -130,10 +134,10 @@ public class ExpressionToken {
 		 */
 		ESCAPE,
 
-		/**
-		 * The arithmetic power operator, "**".
-		 */
-		POWER("**"),
+//		/**
+//		 * TOOD: remove or implement:  The arithmetic power operator, "**".
+//		 */
+//		POWER("**"),
 
 		/**
 		 * The arithmetic remainder operator, "MOD" (and "%" in some dialects).
@@ -225,6 +229,12 @@ public class ExpressionToken {
 		LIKE,
 
 		/**
+		 * The "ILIKE" operator.
+		 */
+		ILIKE,
+
+		
+		/**
 		 * The logical "NOT" operator.
 		 */
 		NOT,
@@ -251,31 +261,12 @@ public class ExpressionToken {
 
 		ELSE, THEN, END, WHEN,
 
-		/**
-		 * The value type "BOOLEAN" for CAST operator
-		 */
-		BOOLEAN,
-		/**
-		 * The value type "STRING" for CAST operator
-		 */				
-		STRING,
-		/**
-		 * The value type "INTEGER" for CAST operator
-		 */				
-		INTEGER,
-		/**
-		 * The value type "NUMBER" for CAST operator
-		 */				
-		NUMBER,
-		/**
-		 * The value type "BIGNUMBER" for CAST operator
-		 */				
-		BIGNUMBER,
-		/**
-		 * The value type "BINARY" for CAST operator
-		 */				
-		BINARY;
-
+		HOUR, 
+		MINUTE,
+		SECOND,
+		DATATYPE,
+		DATEPART;
+		
 		private final String source;
 
 		Id() {
@@ -288,7 +279,8 @@ public class ExpressionToken {
 
 		@Override
 		public String toString() {
-			return source;
+			if ( this.source.equals(this.name()) ) return source;
+			return this.name()+'('+source+')';
 		}
 	}
 
@@ -301,7 +293,7 @@ public class ExpressionToken {
 	private final int end;
 
 	protected ExpressionToken(Id id, int start, int end) {
-		this(id, start, end, null);
+		this(id, start, end, id.source);
 	}
 
 	protected ExpressionToken(Id id, int start, int end, String text) {
@@ -326,9 +318,7 @@ public class ExpressionToken {
 	}
 
 	public String toString() {
-		String s = (text == null) ? id.toString() : (id + "(" + text + ")");
-
-		return "[" + start + ":" + end + "]" + s;
+		return  id.name()+ "(" + text + ")";
 	}
 
 	public Id getId() {

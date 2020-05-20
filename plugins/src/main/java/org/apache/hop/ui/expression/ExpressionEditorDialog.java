@@ -4,9 +4,9 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
-import org.apache.hop.ui.core.ConstUI;
+import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
-import org.apache.hop.ui.core.PropsUI;
+import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.gui.WindowProperty;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormLayout;
@@ -27,7 +27,7 @@ public class ExpressionEditorDialog extends Dialog {
 
 	public static final int LARGE_MARGIN = 15;
 
-	private PropsUI props;
+	private PropsUi props;
 	private Shell shell;
 
 	private IVariables variables;
@@ -38,7 +38,7 @@ public class ExpressionEditorDialog extends Dialog {
 	public ExpressionEditorDialog(Shell parent, int style) {
 		super(parent, style);
 
-		this.props = PropsUI.getInstance();
+		this.props = PropsUi.getInstance();
 	}
 
 	public String open() {
@@ -73,7 +73,7 @@ public class ExpressionEditorDialog extends Dialog {
 
 		Button btnOK = new Button(buttonBar, SWT.PUSH);
 		btnOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-		btnOK.setLayoutData(new FormDataBuilder().bottom().right(btnCancel, -ConstUI.SMALL_MARGIN).result());
+		btnOK.setLayoutData(new FormDataBuilder().bottom().right(btnCancel, -ConstUi.SMALL_MARGIN).result());
 		btnOK.addListener(SWT.Selection, Event -> onOkPressed());
 
 		//BaseTransformDialog.setSize(shell);
