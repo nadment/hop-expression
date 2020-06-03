@@ -55,9 +55,9 @@ public class ExpressionPerformance {
 	@Test
 	public void performance() {
 
-		perf("NOM||left(to_char(AGE+5,'000'),2)");
-		perf("Date '2020-05-06'");
-		perf("To_DATE('2020-FEB-06','YYYY-MM-DD'");
+		//perf("NOM||left(to_char(AGE+5,'000'),2)");
+		//perf("Date '2020-05-06'");
+		//perf("To_DATE('2020-FEB-06','YYYY-MM-DD'");
 
 	} 
 }

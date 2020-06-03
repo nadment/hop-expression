@@ -4,10 +4,11 @@ Right-pads a string with another string, to a certain length.
 
 == Syntax
 ----
-RPAD(string, length[, pad_string])
+RPAD(string, padded_length [, pad_string])
 ----
 
 == Usage
 
+* If the padded_length is smaller than the original string, the LPAD function will truncate the string to the size of padded_length.
 
 See also xref:lpad.adoc[LPAD]

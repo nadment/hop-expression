@@ -16,14 +16,17 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.IllegalFormatFlagsException;
 import java.util.Locale;
-import java.util.MissingFormatArgumentException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.Expression;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.i18n.BaseMessages;
 
 /**
  * Emulates Oracle's TO_CHAR function.
  */
 public class ToChar {
+	protected static final Class<?> PKG = Expression.class; // for i18n purposes
 
 	private static final int[] ROMAN_VALUES = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
 
@@ -152,10 +155,10 @@ public class ToChar {
 	 * @return the formatted number
 	 */
 	@SuppressWarnings("unused")
-	public static String toChar(BigDecimal number, String format) {
+	public static String toChar(BigDecimal number, String format, Locale locale) {
 
 		// System.out.println("to_char(" + number + "," + format + ")");
-
+		
 		// short-circuit logic for formats that don't follow common logic below
 		String formatUp = format != null ? StringUtils.upperCase(format) : null;
 		if (formatUp == null || formatUp.equals("TM") || formatUp.equals("TM9")) {
@@ -177,32 +180,39 @@ public class ToChar {
 		} else if (formatUp.endsWith("X")) {
 			return toHex(number, format);
 		}
-
+		
+		int maxLength = 1;
 		String originalFormat = format;
-		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
 		char localGrouping = symbols.getGroupingSeparator();
-		char localDecimal = symbols.getDecimalSeparator();
 
+		// The S format element can appear only in the first or last position of a
+		// number format model.
 		boolean leadingSign = formatUp.startsWith("S");
 		if (leadingSign) {
 			format = format.substring(1);
 		}
-
 		boolean trailingSign = formatUp.endsWith("S");
 		if (trailingSign) {
 			format = format.substring(0, format.length() - 1);
 		}
 
+		// The MI format element can appear only in the last position of a number format
+		// model.
 		boolean trailingMinus = formatUp.endsWith("MI");
 		if (trailingMinus) {
 			format = format.substring(0, format.length() - 2);
 		}
 
+		// The PR format element can appear only in the last position of a number format
+		// model.
 		boolean angleBrackets = formatUp.endsWith("PR");
 		if (angleBrackets) {
 			format = format.substring(0, format.length() - 2);
+			maxLength+=1;
 		}
 
+		// Returns a value multiplied by 10n
 		int v = formatUp.indexOf('V');
 		if (v >= 0) {
 			int digits = 0;
@@ -225,7 +235,7 @@ public class ToChar {
 			power = null;
 		}
 
-		int maxLength = 1;
+
 		boolean fillMode = !formatUp.startsWith("FM");
 		if (!fillMode) {
 			format = format.substring(2);
@@ -238,8 +248,11 @@ public class ToChar {
 		// go ahead and do that first
 		int separator = findDecimalSeparator(format);
 		int formatScale = calculateScale(format, separator);
-		if (formatScale < number.scale()) {
+		int numberScale = number.scale();
+		if (formatScale < numberScale) {
 			number = number.setScale(formatScale, RoundingMode.HALF_UP);
+		} else {
+			// number = number.setScale(0);
 		}
 
 		// any 9s to the left of the decimal separator but to the right of a
@@ -280,19 +293,20 @@ public class ToChar {
 					output.insert(0, localGrouping);
 				}
 			} else if (c == 'C' || c == 'c') {
-				Currency currency = Currency.getInstance(Locale.getDefault());
+				Currency currency = symbols.getCurrency();
 				output.insert(0, currency.getCurrencyCode());
 				maxLength += 6;
 			} else if (c == 'L' || c == 'l' || c == 'U' || c == 'u') {
-				Currency currency = Currency.getInstance(Locale.getDefault());
+				Currency currency = symbols.getCurrency();
 				output.insert(0, currency.getSymbol());
 				maxLength += 9;
 			} else if (c == '$') {
-				Currency currency = Currency.getInstance(Locale.getDefault());
+				Currency currency = symbols.getCurrency();
 				String cs = currency.getSymbol();
 				output.insert(0, cs);
 			} else {
-				throw new NumberFormatException("Invalid TO_CHAR format " + originalFormat);
+				throw new ExpressionException(
+						BaseMessages.getString(PKG, "Expression.InvalidNumericFormat", originalFormat));
 			}
 		}
 
@@ -308,7 +322,7 @@ public class ToChar {
 			maxLength++;
 			char pt = format.charAt(separator);
 			if (pt == 'd' || pt == 'D') {
-				output.append(localDecimal);
+				output.append(symbols.getDecimalSeparator());
 			} else {
 				output.append(pt);
 			}
@@ -331,7 +345,8 @@ public class ToChar {
 						}
 					}
 				} else {
-					throw new MissingFormatArgumentException("Invalid TO_CHAT format {0}" + originalFormat);
+					throw new ExpressionException(
+							BaseMessages.getString(PKG, "Expression.InvalidNumericFormat", originalFormat));
 				}
 			}
 		}
@@ -855,7 +870,7 @@ public class ToChar {
 	 * @param format the format pattern to use (if any)
 	 * @return the formatted timestamp
 	 */
-	public static String toChar(ZonedDateTime value, String format) {
+	public static String toChar(ZonedDateTime value, String format, Locale local) {
 
 		if (format == null) {
 			format = "DD-MON-YY HH.MI.SS.FF PM";
@@ -1051,12 +1066,11 @@ public class ToChar {
 				if (((int) year % 100) != 0) {
 					century += 1;
 				}
-				
+
 				if (fillMode) {
-					output.append(year < 0 ? '-' : ' ');	
+					output.append(year < 0 ? '-' : ' ');
 					appendZeroPadded(output, 2, Math.abs(century));
-				}
-				else {
+				} else {
 					output.append(century);
 				}
 
@@ -1082,7 +1096,7 @@ public class ToChar {
 				if (fillMode) {
 					output.append(year < 0 ? '-' : ' ');
 					appendZeroPadded(output, 4, Math.abs(year));
-				} else {					
+				} else {
 					output.append(year);
 				}
 				index += 5;

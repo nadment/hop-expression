@@ -2,24 +2,25 @@
 
 An expression is a combination of one or more values, operators and functions that evaluate to a value.
 
-NOTE: Expression is not SQL. It is a proprietary language of data transformation.
-
 == Comments
 
-Comments are sections of code txist to aid readability.
+Comments are sections of code text to aid readability.
 
-A single -line comment begins with double slash // and ends with a new line.
-----
-// Single line-comment
-----
 
-A multi-line comment begins with a slash asterick /* and ends with asterick slash.
 ----
+// Single line-comment <1>
+
 /* 
- * Multi line
+ * Multi line	<2>
  * comment 
  */
 ----
+<1> A single -line comment begins with double slash // and ends with a new line.
+
+<2> A multi-line comment begins with a slash asterick /* and ends with asterick slash.
+
+NOTE: A comment is removed when parsing expression before evaluation, therefore has no influence on performance.
+
 
 == Literals
 
@@ -27,12 +28,18 @@ The following types of literals (constant values) can be used in expression.
 
 === String
 
-String literals are always surrounded by single quotes (')
+String literals are always surrounded by single quotes (').
+
 ----
 'test value'
-'O''Reilly'
+'O''Reilly' <1>
+'O\tReilly' <2>
+'O\u0F25Reilly' <3>
 ----
-TIP: The simplest method to escape single quotes in expression is to use two single quotes.
+<1> The simplest method to escape single quotes in expression is to use two single quotes.
+<2> Support backslash escape sequences \t, \r, \n \b, \f, \\, \'
+<3> 16-bit Unicode character +\u####+ or 32-bit Unicode character +\U########+
+
 
 === Boolean
 
@@ -73,14 +80,17 @@ Binary can be a sequence of hexadecimal digits with 0x prefix.
 ----
 Or also be composed by 0 and 1 digits with 0b prefix. 
 ----
-0b00000010
+0b1000001011110
 ----
 
-NOTE: They are not enclosed in quotation marks.
+NOTE:  A leading 0x is case-sensitive and cannot be written as 0X, but the case of the digits does not matter.
+ 
 
 TIP: To convert a binary literal into an integer, just add 0.
 
 === Date
+
+Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a YYYY-MM-DD format. 
 
 ----
 Date '2020-05-18'
@@ -108,13 +118,12 @@ The operator precedence and associativity, highest to lowest.
 |===
 |Associativity|Operator
 |-|Function
-|right| + (Positive), - (Negative)
-||~ (Bitwise NOT)
+|right|+ (Positive), - (Negative)
+|right|~ (Bitwise NOT)
 |left|* (Multiplication), / (Division), % (Modulus)
-||<<, >>  TODO: Not implemented
-||& (Bitwise AND)
-||^ (Bitwise Exclusive OR)
-||\| (Bitwise OR) 
+|left|& (Bitwise AND)
+|left|^ (Bitwise Exclusive OR)
+|left|\| (Bitwise OR) 
 |left| + (Addition), - (subtraction)
 |left| \|\| (Concatenation)
 |-|BETWEEN, IN, LIKE, ILIKE

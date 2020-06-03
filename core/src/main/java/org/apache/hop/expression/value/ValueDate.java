@@ -1,23 +1,28 @@
 package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Objects;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.Value;
 
 public class ValueDate extends Value {
 
 	// FIXME: Format
-	private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn").withLocale( Locale.ROOT ).withZone( ZoneId.systemDefault() );
-	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale( Locale.ROOT ).withZone( ZoneId.systemDefault() );
+	private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn")
+			.withLocale(Locale.ROOT).withZone(ZoneId.systemDefault());
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+			.withLocale(Locale.ROOT).withZone(ZoneId.systemDefault());
+
+	private static final BigDecimal SECONDS_BY_DAY = new BigDecimal(24 * 60 * 60);
+	//private static final BigDecimal NANOS_BY_DAY = new BigDecimal(24 * 60 * 60 * 1000000000);
 
 	private final Instant value;
 
@@ -34,7 +39,7 @@ public class ValueDate extends Value {
 	public Object getObject() {
 		return value;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return value.hashCode();
@@ -60,12 +65,11 @@ public class ValueDate extends Value {
 	}
 
 	@Override
-
-	public String toString() {		
-		if ( value.getNano()>0 ) 
+	public String toString() {
+		if (value.getNano() > 0)
 			return TIMESTAMP_FORMAT.format(value);
-		
-		return DATE_FORMAT.format(value);		
+
+		return DATE_FORMAT.format(value);
 	}
 
 	/**
@@ -79,33 +83,43 @@ public class ValueDate extends Value {
 	}
 
 	/**
-	 * Converts this date time to the number of milliseconds from the epochof 1970-01-01 00:00:00.
+	 * Converts this date time to the number of milliseconds from the epochof
+	 * 1970-01-01 00:00:00.
 	 */
 	public double toNumber() {
 		long time = value.toEpochMilli();
 
 		return (double) time;
 	}
-	
+
 	@Override
 	public Value add(Value v) {
-				
-		if (v.getDataType()==DataType.INTEGER) {
-			return Value.of(value.plus(v.toInteger(), ChronoUnit.DAYS));
+		// Computes fraction of day
+		if (v.isNumeric()) {
+
+			BigDecimal number = v.toBigNumber();
+			long seconds = number.multiply(SECONDS_BY_DAY).setScale( 0, BigDecimal.ROUND_HALF_UP ).longValue();
+
+			return Value.of(value.plusSeconds(seconds));
 		}
 
 		return super.add(v);
 	}
+
 
 	@Override
 	public Value subtract(Value v) {
-		if (v.getDataType()==DataType.INTEGER) {
-			return Value.of(value.minus(v.toInteger(), ChronoUnit.DAYS));
+		if (v.isNumeric()) {
+
+			BigDecimal number = v.toBigNumber();
+			long seconds = number.multiply(SECONDS_BY_DAY).setScale( 0, BigDecimal.ROUND_HALF_UP ).longValueExact();
+
+			return Value.of(value.minusSeconds(seconds));
 		}
 
 		return super.add(v);
 	}
-	
+
 	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
 		writer.append(this.toString());
 	}

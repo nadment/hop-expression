@@ -138,7 +138,7 @@ public class ValueBigNumber extends Value {
 
 	@Override
 	public Value divide(Value v) {
-		return Value.of(value.divide(v.toBigNumber(), 40, BigDecimal.ROUND_HALF_UP));
+		return Value.of(value.divide(v.toBigNumber(), MAX_SCALE, BigDecimal.ROUND_HALF_UP));
 	}
 
 	public Value remainder(Value v) {

@@ -87,11 +87,6 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 	public ExpressionData getTransformData() {
 		return new ExpressionData();
 	}
-
-	@Override
-	public String getDialogClassName() {
-		return ExpressionDialog.class.getName();
-	}
 	
 	/**
 	 * This method is called every time a new step is created and should
@@ -115,7 +110,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 		StringBuilder xml = new StringBuilder(500);
 
 		xml.append("<fields>");
-		for (ExpressionField value : this.getExpressionValues()) {
+		for (ExpressionField value : this.getExpressionFields()) {
 			xml.append("<field>");
 			xml.append(XmlHandler.addTagValue(TAG_FIELD_NAME, value.getName()));
 			xml.append(XmlHandler.addTagValue(TAG_FIELD_EXPRESSION, value.getExpression()));
@@ -160,7 +155,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 			IRowMeta unalteredInputRowMeta = rowMeta.clone();
 
 			// add the output fields if specified
-			for (ExpressionField field : this.getExpressionValues()) {
+			for (ExpressionField field : this.getExpressionFields()) {
 				if (!Utils.isEmpty(field.getName())) {
 
 					// create ValueMeta
@@ -170,7 +165,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 
 					// field already exist
 					int index = unalteredInputRowMeta.indexOfValue(field.getName());
-					if (index > 0) {
+					if (index >= 0) {
 						rowMeta.removeValueMeta(index);
 						rowMeta.addValueMeta(index, vm);
 					} else {
@@ -225,7 +220,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 		}
 	}
 
-	public List<ExpressionField> getExpressionValues() {
+	public List<ExpressionField> getExpressionFields() {
 		return this.fields;
 	}
 

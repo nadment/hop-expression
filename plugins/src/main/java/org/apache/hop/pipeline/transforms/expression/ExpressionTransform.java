@@ -81,7 +81,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 			data.expressionContext = context;
 
 			// For all fields expression
-			for (ExpressionField field : meta.getExpressionValues()) {
+			for (ExpressionField field : meta.getExpressionFields()) {
 				int index = data.outputRowMeta.indexOfValue(field.getName());
 
 				// Substitute variable
@@ -99,8 +99,15 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 				}
 
 				// Parse and optimize expression
-				Expression expression = ExpressionParser.parse(source);
-				data.expressions[index] = expression.optimize(context);
+				try {
+					Expression expression = ExpressionParser.parse(source);
+					data.expressions[index] = expression.optimize(context);
+				} catch (ExpressionException ex) {
+					String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.SyntaxError",
+							field.getName(), field.getExpression(), ex.toString());
+					logError(message);
+					throw new HopException(message);
+				}
 			}
 		}
 
@@ -108,7 +115,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 		// output values
 		Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
 
-		for (ExpressionField field : meta.getExpressionValues()) {
+		for (ExpressionField field : meta.getExpressionFields()) {
 
 			int index = data.outputRowMeta.indexOfValue(field.getName());
 
@@ -128,9 +135,11 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
 				IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
 				outputRowValues[index] = convertValue(valueMeta, value);
-			} catch (ExpressionException e) {
-				logError(BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError"));
-				throw e;
+			} catch (ExpressionException ex) {
+				String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateError",
+						field.getName(), field.getExpression(), ex.toString());
+				logError(message);
+				throw new HopException(message);
 			}
 		}
 
@@ -140,7 +149,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 		// Log progress if it is time to to so
 		if (checkFeedback(getLinesRead())) {
 			if (log.isBasic()) {
-				logBasic(BaseMessages.getString(PKG, "ExpressionTransform.Log.LineNumber") + getLinesRead());
+				logBasic(BaseMessages.getString(PKG, "ExpressionTransform.Log.LineNumber", getLinesRead()));
 			}
 		}
 
@@ -149,6 +158,10 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 	}
 
 	public Object convertValue(IValueMeta meta, Value value) throws HopValueException {
+
+		if (value.isNull())
+			return null;
+
 		switch (meta.getType()) {
 		case IValueMeta.TYPE_NONE:
 		case IValueMeta.TYPE_STRING:

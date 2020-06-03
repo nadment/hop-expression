@@ -8,6 +8,7 @@
 	<artifactId>hop-expression</artifactId>
 	<packaging>pom</packaging>
 	<name>Hop Expression</name>
+	<version>0.1.0-SNAPSHOT</version>
 
 	<parent>
 		<artifactId>hop</artifactId>
@@ -18,6 +19,7 @@
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
+		<hop.version>0.30-SNAPSHOT</hop.version>
 	</properties>
 
 	<modules>

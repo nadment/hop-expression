@@ -17,7 +17,7 @@
    id="Capa_1"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="Inet.svg"
+   sodipodi:docname="inet.svg"
    inkscape:export-filename="C:\eclipse\workspace\pdi-expression-plugin\src\main\resources\inet.png"
    inkscape:export-xdpi="45"
    inkscape:export-ydpi="45"><sodipodi:namedview
@@ -34,7 +34,7 @@
      id="namedview34"
      showgrid="false"
      inkscape:zoom="7.375"
-     inkscape:cx="16"
+     inkscape:cx="-42.440678"
      inkscape:cy="16"
      inkscape:window-x="0"
      inkscape:window-y="0"
@@ -42,7 +42,7 @@
      inkscape:current-layer="Capa_1" /><metadata
      id="metadata41"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
      id="defs39" /><g
      id="g7" /><g
      id="g9" /><g
@@ -91,18 +91,18 @@
        x="-353.44058"
        id="tspan4144">URL</tspan></text>
 <text
-     transform="scale(1.0510279,0.95144953)"
+     transform="scale(1.0453657,0.95660303)"
      id="text4169"
-     y="24.687944"
-     x="5.5590115"
-     style="font-style:normal;font-weight:normal;font-size:26.15331078px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#3d6480;fill-opacity:1;stroke:none;stroke-width:12.26218224;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     y="27.364719"
+     x="2.4858203"
+     style="font-style:normal;font-weight:normal;font-size:33.93386459px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#3d6480;fill-opacity:1;stroke:none;stroke-width:12.26218224;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      xml:space="preserve"
      sodipodi:linespacing="125%"
      inkscape:export-xdpi="95.617126"
      inkscape:export-ydpi="95.617126"><tspan
        transform="matrix(0.76601202,0,0,0.89791264,-5.9646353,2.9852619)"
        style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS Italic';fill:#3d6480;fill-opacity:1;stroke-width:14.78539467;stroke-miterlimit:4;stroke-dasharray:none"
-       y="24.687944"
-       x="5.5590115"
+       y="27.364719"
+       x="2.4858203"
        id="tspan4171">@</tspan></text>
 </svg>

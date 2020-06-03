@@ -11,6 +11,7 @@ import org.apache.hop.expression.value.ValueInteger;
 import org.apache.hop.expression.value.ValueNull;
 import org.apache.hop.expression.value.ValueNumber;
 import org.apache.hop.expression.value.ValueString;
+import org.apache.hop.i18n.BaseMessages;
 
 /**
  * An value represents a boolean, numeric, string, date or timestamp constant,
@@ -23,6 +24,8 @@ import org.apache.hop.expression.value.ValueString;
  */
 public abstract class Value extends Expression implements Comparable<Value> {
 
+	protected int MAX_SCALE = 38;
+	
 	/**
 	 * Boolean value of TRUE.
 	 */
@@ -243,7 +246,7 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		case NONE:
 			return NULL;
 		default:
-			throw createDataConversionError(targetType);
+			throw createUnsupportedConversionError(targetType);
 		}
 	}
 
@@ -372,27 +375,27 @@ public abstract class Value extends Expression implements Comparable<Value> {
 	 * @return the boolean value
 	 */
 	public boolean toBoolean() throws ExpressionException {
-		throw new ExpressionException("Expression.UnsupportedConversion", "Boolean", this);
+		throw createUnsupportedConversionError(DataType.BOOLEAN);  		
 	}
 
 	public byte[] toBinary() throws ExpressionException {
-		throw new ExpressionException("Expression.UnsupportedConversion", "Binary", this);
+		throw createUnsupportedConversionError(DataType.BINARY);
 	}
 
 	public long toInteger() throws ExpressionException {
-		throw new ExpressionException("Expression.UnsupportedConversion", "Integer", this);
+		throw createUnsupportedConversionError(DataType.INTEGER);
 	}
 
 	public Instant toDate() throws ExpressionException {
-		throw new ExpressionException("Expression.UnsupportedConversion", "Date", this);
+		throw createUnsupportedConversionError(DataType.DATE);
 	}
 
 	public double toNumber() throws ExpressionException {
-		throw new ExpressionException("Expression.UnsupportedConversion", "Number", this);
+		throw createUnsupportedConversionError(DataType.NUMBER);
 	}
 
 	public BigDecimal toBigNumber() throws ExpressionException {
-		throw new ExpressionException("Expression.UnsupportedConversion", "BigNumber", this);
+		throw createUnsupportedConversionError(DataType.BIGNUMBER);
 	}
 
 	/**
@@ -455,21 +458,15 @@ public abstract class Value extends Expression implements Comparable<Value> {
 		throw createUnsupportedOperationError("%");
 	}
 
-	/**
-	 * Creates new instance of the {ExpressionException} for data conversion error.
-	 *
-	 * @param targetType Target data type.
-	 * @return instance of the ExpressionException.
-	 */
-	protected final ExpressionException createDataConversionError(DataType targetType) {
-		return new ExpressionException("Error converting {0} value {2} to data type {1}", this.getDataType(), targetType, this);
+	protected final ExpressionException createUnsupportedConversionError(DataType type) {
+		return new ExpressionException(BaseMessages.getString(PKG,"Expression.UnsupportedConversion", this.toString(), this.getDataType(), type));
 	}
-
+	
 	protected final ExpressionException createUnsupportedOperationError(String operation) {
-		return new ExpressionException("Unsupported operation " + operation + " with data type " + this.toString());
+		return new ExpressionException(BaseMessages.getString(PKG,"Expression.UnsupportedOperationWithDataType", operation, this.getDataType()));
 	}
 
 	protected final ExpressionException createOverflowError() {
-		return new ExpressionException("Overflow error: " + this.toString());
+		return new ExpressionException(BaseMessages.getString(PKG,"Expression.Overflow",this.toString()));
 	}
 }

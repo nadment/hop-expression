@@ -7,9 +7,12 @@ import java.util.Objects;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.i18n.BaseMessages;
 
 public class RowExpressionContext extends DefaultExpressionContext {
 
+	protected static final Class<?> PKG = Expression.class; // for i18n purposes
+	
 	private IRowMeta rowMeta;
 	private Object[] row;
 
@@ -25,7 +28,7 @@ public class RowExpressionContext extends DefaultExpressionContext {
 
 		int index = rowMeta.indexOfValue(name);
 		if (index < 0)
-			throw new ExpressionException("ExpressionException.FieldNotFound", name);
+			throw new ExpressionException(BaseMessages.getString(PKG,"Expression.FieldNotFound", name));
 
 		IValueMeta valueMeta = rowMeta.getValueMeta(index);
 		try {

@@ -30,20 +30,20 @@ public class ValueNull extends Value {
 		return false;
 	}
 
-	@Override
-	public double toNumber() {
-		return 0.0;
-	}
-
+//	@Override
+//	public double toNumber() {
+//		return 0.0;
+//	}
+//
 	@Override
 	public String toString() {
-		return "NULL";
+		return null;
 	}
 
-	@Override
-	public long toInteger() {
-		return 0L;
-	}
+//	@Override
+//	public long toInteger() {
+//		return 0L;
+//	}
 
 	@Override
 	public int hashCode() {

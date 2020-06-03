@@ -9,8 +9,4 @@ LENGTH(string)
 
 == Usage
 
-
-
-Returns::
-
-Integer
+* Returns NULL if expression is NULL. 

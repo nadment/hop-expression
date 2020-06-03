@@ -118,6 +118,9 @@ public class ExpressionToken {
 		FUNCTION,
 
 		FROM,
+		
+		/** CAST(numeric AS datatype FORMAT '9999') */
+		FORMAT, 
 
 		/**
 		 * The arithmetic division operator, "/".

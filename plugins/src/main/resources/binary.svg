@@ -19,7 +19,7 @@
    enable-background="new 0 0 42 42"
    xml:space="preserve"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="Binary.svg"
+   sodipodi:docname="binary.svg"
    inkscape:export-filename="C:\eclipse\workspace\pdi-expression-plugin\src\main\resources\Binary.png"
    inkscape:export-xdpi="34.285713"
    inkscape:export-ydpi="34.285713"><metadata
@@ -35,13 +35,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1027"
+     inkscape:window-width="3440"
+     inkscape:window-height="1387"
      id="namedview9"
      showgrid="false"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="-114.27243"
-     inkscape:cy="51.420872"
+     inkscape:zoom="16"
+     inkscape:cx="-22.770458"
+     inkscape:cy="25.762108"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -85,7 +85,7 @@
      id="g4319"
      transform="matrix(0.38266263,0,0,0.36430952,-237.61523,-110.48342)" /><g
      id="g4428"
-     transform="matrix(0.13644313,0,0,0.11577852,3.7267355,6.0023084)"
+     transform="matrix(0.1501431,0,0,0.12892384,1.3417068,3.9398084)"
      style="fill:#3d6480;fill-opacity:1"><g
        id="g4372"
        style="fill:#3d6480;fill-opacity:1"><path

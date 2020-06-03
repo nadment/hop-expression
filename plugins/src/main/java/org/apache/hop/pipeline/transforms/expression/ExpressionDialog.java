@@ -48,7 +48,7 @@ public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta> im
 	@Override
 	protected void loadMeta(final ExpressionMeta meta) {
 		int i = 0;
-		for (ExpressionField value : meta.getExpressionValues()) {
+		for (ExpressionField value : meta.getExpressionFields()) {
 
 			TableItem item = wTableFields.getTable().getItem(i++);
 			item.setText(1, Const.NVL(value.getName(), ""));
@@ -135,7 +135,7 @@ public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta> im
 		});
 
 		wTableFields = new TableView(this.pipelineMeta, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columns,
-				this.getTransformMeta().getExpressionValues().size(), lsMod, props);
+				this.getTransformMeta().getExpressionFields().size(), lsMod, props);
 		wTableFields.setLayoutData(new FormDataBuilder().top().bottom().left().right().result());
 		wTableFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
 

@@ -2,6 +2,7 @@ package org.apache.hop.core.expression;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void precedence() throws Exception {
-		evalEquals("3*5/2", ( ( 3 * 5 ) / 2 ));
+		evalEquals("3*5/2", ( ( 3 * 5 ) / 2d ));
 		evalTrue("( 3 > 5 ) IS FALSE");
 	}
 
@@ -21,11 +22,14 @@ public class OperatorTest extends ExpressionTest {
 		evalTrue("2.000 = 2");
 		evalTrue("2.000 = 2.00");
 		evalTrue("-1.4e-10 = -1.4e-10");
+		
+		// Integer and Binary
 		evalTrue("15 = 0xF");
 		// FIXME: evalTrue("'0.0' = 0");
 		evalTrue("15.0 = '15'");
 		evalTrue("'.01' = 0.01");
 
+		// Boolean
 		evalTrue("true = true");
 		evalTrue("true = 1");
 		evalTrue("true = 'Y'");
@@ -38,6 +42,7 @@ public class OperatorTest extends ExpressionTest {
 
 		evalNull("1 = null");
 		evalNull("null = true");
+		// NULL is not "equal to" NULL.
 		evalNull("null = null");
 		evalFails("NOM = ");
 		evalTrue("Date '2019-01-01' = Date '2019-01-01'");
@@ -189,13 +194,13 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("10*(2+1)", 30);
 		evalEquals("30/(5+5)", 3);
 		evalEquals("42%(3+2)", 2);
-		evalEquals("1-2+3*4/5/6-7", (((1 - 2) + (((3 * 4) / 5) / 6)) - 7));
+		evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
 		
 		evalEquals("Age-(10+3*10+50-2*25)", 0);
-		//evalEquals("10**2+5", 105);
-		//evalEquals("5+10**2", 105);
-		//evalEquals("3*10**2", 300);
-		//evalEquals("10**2*3", 300);
+//		evalEquals("10**2+5", 105);
+//		evalEquals("5+10**2", 105);
+//		evalEquals("3*10**2", 300);
+//		evalEquals("10**2*3", 300);
 		
 		// evalEquals("2*'1.23'",2.46); // TODO: Should be casted to number and not
 		// integer
@@ -206,17 +211,21 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("0xF+0", 15);
 		evalEquals("0b00011+0", 3);
 		evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
+		
 		evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
+		evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
+		evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
 	}
 
 	@Test
-	public void Subtraction() throws Exception {
+	public void Subtract() throws Exception {
+		evalEquals("Subtract(10,-0.5)", 10.5);
+		evalEquals("Age-0.5", 39.5);
 		evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+		evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+		evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 	}
-	
-	
-
-	
+		
 	@Test
 	public void Between() throws Exception {
 		evalTrue("3 between 1 and 5");
@@ -307,6 +316,7 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void Multiply() throws Exception {
+		evalEquals("Multiply(2.5,10)", 25);
 		evalEquals("4*10", 40);
 		evalEquals("-4*-1", 4);
 		evalEquals("2*-2", -4);
@@ -315,8 +325,10 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void Divide() throws Exception {
+		evalEquals("Divide(10,4)", 2.5);
 		evalEquals("40/10", 4);
 		evalEquals("-40/-10", 4);
+		evalEquals("5/2",2.5 );
 		evalNull("null/1");
 		evalFails("40/0");
 	}

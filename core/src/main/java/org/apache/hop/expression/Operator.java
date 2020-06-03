@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.hop.i18n.BaseMessages;
 
 //TODO: implement RLIKE operator
 //TODO: implement the square brackets with a character range (MS SQL): like '[A-C]%'
@@ -19,19 +20,13 @@ import org.apache.commons.io.IOUtils;
  * Operators have the precedence levels. An operator on higher levels is
  * evaluated before an operator on a lower level
  * 
- * 
- * 1 Functions 2 Cast 3 Right + (Positive), - (Negative) 4 ~ (Bitwise NOT) 5 *
- * Left * (Multiplication), / (Division), % (Modulus) 6 <<, >> 7 & (Bitwise AND)
- * 8 ^ (Bitwise Exclusive OR) 9 | (Bitwise OR) 10 Left + (Addition), -
- * (Subtraction) 11 || (Concatenation) 12 - BETWEEN, IN, LIKE, ILIKE 13 - =, >,
- * <, >=, <=, <>, !=, !>, !< (Comparison operators) 14 - IS 15 Right NOT 16 Left
- * AND 17 Left XOR 18 Left OR
- * 
  * @author Nicolas ADMENT
  *
  */
 public class Operator implements Comparable<Operator> {
 
+	protected static final Class<?> PKG = Expression.class; // for i18n purposes
+	
 	private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
 	private static final ConcurrentHashMap<Kind, String> docs = new ConcurrentHashMap<>();
@@ -76,19 +71,19 @@ public class Operator implements Comparable<Operator> {
 	 * </ul>
 	 * </p>
 	 */
-	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT_OPERATOR, "NOT", 150, false, false);
+	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT, "NOT", 150, false, false);
 	/**
 	 * Logical disjunction <code>OR</code> operator.
 	 */
-	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR_OPERATOR, "OR", 180, true, false);
+	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR, "OR", 180, true, false);
 	/**
 	 * Logical conjunction <code>AND</code> operator.
 	 */
-	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND_OPERATOR, "AND", 160, true, false);
+	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND, "AND", 160, true, false);
 	/**
 	 * Logical <code>XOR</code> operator.
 	 */
-	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR_OPERATOR, "XOR", 170, true, false);
+	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR, "XOR", 170, true, false);
 
 	/**
 	 * An operator describing the <code>IS</code> operator.
@@ -160,11 +155,11 @@ public class Operator implements Comparable<Operator> {
 	/**
 	 * Comparison less-than operator '<code>&lt;</code>'.
 	 */
-	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN_OPERATOR, "<", 130, true, false);
+	public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN, "<", 130, true, false);
 	/**
 	 * Comparison less-than-or-equal operator '<code>&lt;=</code>'.
 	 */
-	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL_OPERATOR, "<=", 130, true,
+	public static final Operator LESS_THAN_OR_EQUAL = new Operator(Kind.LESS_THAN_OR_EQUAL, "<=", 130, true,
 			false);
 	/**
 	 * Comparison greater-than operator '<code>&gt;</code>'.
@@ -369,7 +364,7 @@ public class Operator implements Comparable<Operator> {
 		addFunction(Kind.TO_BOOLEAN);
 		addFunction(Kind.TO_CHAR);
 		addFunction(Kind.TO_DATE);
-		// addFunction(Kind.TO_NUMBER);
+		addFunction(Kind.TO_NUMBER);
 		addFunction(Kind.TRIM);
 		addFunction(Kind.TRUNCATE, "TRUNC");
 		addFunction(Kind.TRANSLATE);
@@ -554,6 +549,16 @@ public class Operator implements Comparable<Operator> {
 	public boolean isAlias() {
 		return isAlias;
 	}
+	
+	/**
+	 * Check if the number of arguments is correct.
+	 *
+	 * @param len the number of arguments set
+	 * @return true if the number of arguments is correct
+	 */
+	public boolean checkNumberOfArguments(int len) throws ExpressionException {
+		return true;
+	}
 
 	public Value eval(IExpressionContext context, Expression... args) throws ExpressionException {
 		switch (kind) {
@@ -701,7 +706,7 @@ public class Operator implements Comparable<Operator> {
 			return value.negate();
 		}
 
-		case LOGICAL_NOT_OPERATOR: {
+		case LOGICAL_NOT: {
 			Value operand = args[0].eval(context);
 
 			if (operand.isNull()) {
@@ -711,7 +716,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(!operand.toBoolean());
 		}
 
-		case LOGICAL_AND_OPERATOR: {
+		case LOGICAL_AND: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 			if (left.isNull() || right.isNull()) {
@@ -720,7 +725,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.toBoolean() && right.toBoolean());
 		}
 
-		case LOGICAL_OR_OPERATOR: {
+		case LOGICAL_OR: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 			if (left.isNull() && right.isNull()) {
@@ -730,7 +735,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.toBoolean() || right.toBoolean());
 		}
 
-		case LOGICAL_XOR_OPERATOR: {
+		case LOGICAL_XOR: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 			if (left.isNull() || right.isNull()) {
@@ -840,7 +845,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.compareTo(right) != 0);
 		}
 
-		case LESS_THAN_OPERATOR: {
+		case LESS_THAN: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -851,7 +856,7 @@ public class Operator implements Comparable<Operator> {
 			return Value.of(left.compareTo(right) < 0);
 		}
 
-		case LESS_THAN_OR_EQUAL_OPERATOR: {
+		case LESS_THAN_OR_EQUAL: {
 			Value left = args[0].eval(context);
 			Value right = args[1].eval(context);
 
@@ -933,7 +938,7 @@ public class Operator implements Comparable<Operator> {
 		switch (kind) {
 
 		case NEGATIVE:
-		case LOGICAL_NOT_OPERATOR: {
+		case LOGICAL_NOT: {
 			Expression operand = operands[0].optimize(context);
 
 			if (operand.isConstant()) {
@@ -947,7 +952,7 @@ public class Operator implements Comparable<Operator> {
 			return new ExpressionCall(this, operand);
 		}
 
-		case LOGICAL_OR_OPERATOR: {
+		case LOGICAL_OR: {
 			Expression left = operands[0].optimize(context);
 			Expression right = operands[1].optimize(context);
 
@@ -970,7 +975,7 @@ public class Operator implements Comparable<Operator> {
 			return new ExpressionCall(this, left, right);
 		}
 
-		case LOGICAL_AND_OPERATOR: {
+		case LOGICAL_AND: {
 
 			Expression left = operands[0].optimize(context);
 			Expression right = operands[1].optimize(context);
@@ -1008,11 +1013,11 @@ public class Operator implements Comparable<Operator> {
 		case MULTIPLY:
 		case DIVIDE:
 		case MOD:
-		case LOGICAL_XOR_OPERATOR:
+		case LOGICAL_XOR:
 		case EQUAL:
 		case NOT_EQUALS:
-		case LESS_THAN_OPERATOR:
-		case LESS_THAN_OR_EQUAL_OPERATOR:
+		case LESS_THAN:
+		case LESS_THAN_OR_EQUAL:
 		case GREATER_THAN:
 		case GREATER_THAN_OR_EQUAL:
 		case IS:
@@ -1152,7 +1157,7 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case LOGICAL_NOT_OPERATOR: {
+		case LOGICAL_NOT: {
 			Expression[] operands = call.getOperands();
 			writer.append(this.getName());
 			writer.append(' ');
@@ -1160,14 +1165,14 @@ public class Operator implements Comparable<Operator> {
 			break;
 		}
 
-		case LOGICAL_AND_OPERATOR:
-		case LOGICAL_OR_OPERATOR:
-		case LOGICAL_XOR_OPERATOR:
+		case LOGICAL_AND:
+		case LOGICAL_OR:
+		case LOGICAL_XOR:
 		case EQUAL:
 		case NOT_EQUALS:
 		case LESS_THAN_OR_GREATER_THEN:
-		case LESS_THAN_OPERATOR:
-		case LESS_THAN_OR_EQUAL_OPERATOR:
+		case LESS_THAN:
+		case LESS_THAN_OR_EQUAL:
 		case GREATER_THAN:
 		case GREATER_THAN_OR_EQUAL:
 		case IS:
@@ -1198,30 +1203,19 @@ public class Operator implements Comparable<Operator> {
 		}
 	}
 
-	/**
-	 * Check if the number of arguments is correct.
-	 *
-	 * @param len the number of arguments set
-	 * @throws ExpressionException if the number of arguments is incorrect
-	 */
-	public void checkNumberOfArguments(int len) throws ExpressionException {
-		// Checked by parser
-	}
+
 
 	protected final ExpressionException createArgumentOutOfRangeError(Object arg) {
-		return new ExpressionException("Expression.ArgumentOutOfRange", this.getName(), arg);
+		return new ExpressionException(BaseMessages.getString(PKG,"Expression.ArgumentOutOfRange", arg));
 	}
 
 	protected final ExpressionException createDivisionByZeroError() {
-		return new ExpressionException("Expression.DivisionByZero", this.getName());
+		return new ExpressionException(BaseMessages.getString(PKG,"Expression.DivisionByZero"));
 	}
 
-	protected final ExpressionException createInvalidNumberOfArgumentsError() {
-		return new ExpressionException("Expression.InvalidNumberOfArguments", this.getName());
-	}
 
 	protected final ExpressionException createInternalError(final String error) {
-		return new ExpressionException("Expression.InternalError", error);
+		return new ExpressionException(BaseMessages.getString(PKG,"Expression.InternalError", error));
 	}
 
 	/**

@@ -73,7 +73,10 @@ public class Functions {
 	
 	public static String lpad(String str, int length, String pad) {
 
-		if (length > PAD_LIMIT) {
+	    if (length < 0) {
+	    	length = 0;
+        }		
+	    else if (length > PAD_LIMIT) {
 			new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
 		}
 
@@ -86,13 +89,13 @@ public class Functions {
 		final int index = length - str.length();
 
 		if (index <= 0) {
-			str = str.substring(0, length);
+			return str.substring(0, length);
 		} else if (size == 0) {
 			// nothing to do
 		} else if (index == size) {
-			str = pad.concat(str);
+			return pad.concat(str);
 		} else if (index < size) {
-			str = pad.substring(0, index).concat(str);
+			return pad.substring(0, index).concat(str);
 		} else {
 			final char[] padding = new char[index];
 			final char[] padChars = pad.toCharArray();
@@ -107,6 +110,9 @@ public class Functions {
 
 	public static String rpad(String str, int length, String pad) {
 
+	    if (length < 0) {
+	    	length = 0;
+        }		
 		if (length > PAD_LIMIT) {
 			new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
 		}

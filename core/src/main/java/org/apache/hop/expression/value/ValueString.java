@@ -9,6 +9,7 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
+import org.apache.hop.i18n.BaseMessages;
 
 public class ValueString extends Value {
 	/**
@@ -28,8 +29,8 @@ public class ValueString extends Value {
 	@Override
 	public Object getObject() {
 		return value;
-	}	
-	
+	}
+
 	@Override
 	public int hashCode() {
 		return value.hashCode();
@@ -109,20 +110,32 @@ public class ValueString extends Value {
 
 	@Override
 	public long toInteger() {
-		
-		if ( value.indexOf('.')<0 )
-			return Long.parseLong(value);
-		
-		return (long) Double.parseDouble(value);
+		try {
+
+			if (value.indexOf('.') < 0)
+				return Long.parseLong(value);
+
+			return (long) Double.parseDouble(value);
+		} catch (NumberFormatException e) {
+			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumeric", value));
+		}
 	}
 
 	@Override
 	public double toNumber() {
-		return Double.parseDouble(value);
+		try {
+			return Double.parseDouble(value);
+		} catch (NumberFormatException e) {
+			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumeric", value));
+		}
 	}
 
 	@Override
 	public BigDecimal toBigNumber() {
-		return new BigDecimal(value.trim());
+		try {
+			return new BigDecimal(value.trim());
+		} catch (NumberFormatException e) {
+			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumeric", value));
+		}
 	}
 }

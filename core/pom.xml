@@ -6,9 +6,8 @@
 	<parent>
 		<groupId>org.hop</groupId>
 		<artifactId>hop-expression</artifactId>
-		<version>0.30-SNAPSHOT</version>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
-
 
 	<artifactId>hop-expression-core</artifactId>
 	<name>Hop Expression Core</name>
@@ -17,9 +16,6 @@
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
-
-		<hop.home>C:\hop</hop.home>
-
 		<!-- Third-party dependencies -->
 		<commons-lang.version>2.6</commons-lang.version>
 		<commons-vfs2.version>2.2</commons-vfs2.version>
@@ -95,7 +91,7 @@
 		<dependency>
 			<groupId>org.hop</groupId>
 			<artifactId>hop-core</artifactId>
-			<version>${project.version}</version>
+			<version>${hop.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

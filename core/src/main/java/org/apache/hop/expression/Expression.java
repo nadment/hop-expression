@@ -11,6 +11,7 @@ import java.io.StringWriter;
  */
 public abstract class Expression implements IExpression {
 
+	protected static final Class<?> PKG = Expression.class; // for i18n purposes
 
 	public abstract Kind getKind();
 	

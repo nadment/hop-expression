@@ -12,7 +12,7 @@ TO_DATE(text [,format])
 
 [cols="<2,<5", options="header"]
 |===
-|Input|Description
+|Element|Description
 |AD A.D. BC B.C.|Era designator, with or without periods [NOT_IMPLEMENTED] 
 |AM A.M.|Ante Meridian / Post Meridian for use with HH12. 
 |D|Day of week 

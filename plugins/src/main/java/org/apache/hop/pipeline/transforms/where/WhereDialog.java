@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-@PluginDialog(id = "ExpressionFilter", image = "where.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
+@PluginDialog(id = "Where", image = "where.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
 public class WhereDialog extends AbstractTransformDialog<WhereMeta> implements ITransformDialog {
 
 	private static final Class<?> PKG = WhereMeta.class; // for i18n purposes

@@ -11,10 +11,10 @@ import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -73,7 +73,6 @@ public class ExpressionEditor extends SashForm {
 		// wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
 		PropsUi.getInstance().setLook(txtEditor, Props.WIDGET_STYLE_FIXED);
-
 		PropsUi.getInstance().setLook(this);
 
 		// See PDI-1284 in chinese window, Ctrl-SPACE is reserved by system for input

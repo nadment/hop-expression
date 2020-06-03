@@ -117,29 +117,29 @@ public class ValueNumber extends Value {
 
 	@Override
 	public Value multiply(Value v) {
-		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
-			return Value.of(value * v.toNumber());
+		if ( v.isBigNumber() ) {
+			return v.multiply(this);
 		}
-
-		return v.multiply(this);
+		return Value.of(value * v.toNumber());
 	}
 
 	@Override
 	public Value divide(Value v) {
-		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
-			return Value.of(value / v.toNumber());
+		if ( v.isBigNumber() ) {			
+			return Value.of(this.toBigNumber().divide(v.toBigNumber(),MAX_SCALE, BigDecimal.ROUND_HALF_UP));
 		}
 
-		return this.convertTo(v.getDataType()).divide(v);
+		return Value.of(value / v.toNumber());
+
 	}
 
 	@Override
 	public Value remainder(Value v) {
-		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
-			return Value.of(value % v.toNumber());
+		if ( v.isBigNumber() ) {
+			return Value.of(this.toBigNumber().remainder(v.toBigNumber()));
 		}
 
-		return this.convertTo(v.getDataType()).remainder(v);
+		return Value.of(value % v.toNumber());
 	}
 
 	@Override

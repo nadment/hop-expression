@@ -4,6 +4,8 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.hop.i18n.BaseMessages;
+
 /**
  * A <code>ExpressionCall</code> is a call to an {@link Operator operator}.
  */
@@ -15,17 +17,13 @@ public class ExpressionCall extends Expression {
 	public ExpressionCall(Operator operator, Expression... operands) throws ExpressionException {
 		super();
 		this.operator = Objects.requireNonNull(operator);
-		this.operands = operands;
-
-		operator.checkNumberOfArguments(operands.length);
+		this.operands = operands;	
 	}
 
 	public ExpressionCall(Operator operator, List<Expression> operands) throws ExpressionException {
 		super();
 		this.operator = Objects.requireNonNull(operator);
 		this.operands = operands.toArray(new Expression[0]);
-
-		operator.checkNumberOfArguments(operands.size());
 	}
 
 	@Override

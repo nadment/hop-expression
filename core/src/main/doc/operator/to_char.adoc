@@ -32,7 +32,7 @@ Emulates Oracle's TO_CHAR(number) function.
 |MI|||Negative values get trailing minus sign, positive get trailingspace 
 |PR|||Negative values get enclosing angle brackets, positive get spaces 
 |RN|||Returns values in Roman numerals
-|S|||Returns values with leading/trailing +/- signs 
+|S|||Returns values with leading/trailing +/- signs. *Restriction:* The S format element can appear only in the first or last position of a number format model. 
 |TM|||Returns smallest number of characters possible 
 |U|||Returns the dual currency symbol
 |V|||Returns a value multiplied by 10^n 

@@ -23,11 +23,12 @@ public class ValueBinary extends Value {
 	public DataType getDataType() {
 		return DataType.BINARY;
 	}
+
 	@Override
 	public Object getObject() {
 		return value;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return value.hashCode();
@@ -61,6 +62,37 @@ public class ValueBinary extends Value {
 	@Override
 	public byte[] toBinary() throws ExpressionException {
 		return value;
+	}
+
+	@Override
+	public long toInteger() {
+
+		if (value.length > 8)
+			throw new ExpressionException("Binary too big to fit in integer");
+
+		long result = 0;
+
+		for (int i = 0; i < value.length; i++) {
+			result = result << 8;
+			result = result | (value[i] & 0xFF);
+		}
+
+		return result;
+	}
+
+	@Override
+	public double toNumber() {
+		if (value.length > 8)
+			throw new ExpressionException("Binary too big to fit in double");
+
+		long result = 0;
+
+		for (int i = 0; i < value.length; i++) {
+			result = result << 8;
+			result = result | (value[i] & 0xFF);
+		}
+
+		return result;
 	}
 
 	@Override

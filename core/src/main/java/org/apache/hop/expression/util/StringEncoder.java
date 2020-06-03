@@ -1,15 +1,19 @@
 package org.apache.hop.expression.util;
 
+import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.i18n.BaseMessages;
 
 public class StringEncoder {
+
+	protected static final Class<?> PKG = Expression.class; // for i18n purposes
+
 	private static final char[] HEX = "0123456789abcdef".toCharArray();
 
 	private StringEncoder() {
 		// utility class
 	}
 
-	
 	/**
 	 * Convert a string to a Java literal using the correct escape sequences. The
 	 * literal is not enclosed in double quotes. The result can be used in
@@ -145,6 +149,6 @@ public class StringEncoder {
 	}
 
 	private static ExpressionException createFormatException(String s, int i) {
-		return new ExpressionException("Bad format {0} at position {1}", s, i);
+		return new ExpressionException(BaseMessages.getString(PKG, "Bad format {0} at position {1}", s, i));
 	}
 }

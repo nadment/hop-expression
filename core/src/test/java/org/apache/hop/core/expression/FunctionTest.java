@@ -1,5 +1,7 @@
 package org.apache.hop.core.expression;
 
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -97,7 +99,8 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Date(2019,01,01)", LocalDate.of(2019, Month.JANUARY, 1));
 		evalEquals("Date(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
 		evalFails("Date()");
-		evalFails("Date(2020,13,22)");
+		evalFails("Date(2020,15,22)");
+		evalFails("Date(2020,8,49)");
 	}
 
 	@Test
@@ -119,15 +122,14 @@ public class FunctionTest extends ExpressionTest {
 	@Test
 	public void NextDay() throws Exception {
 		evalEquals("Next_day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2));
-		
+
 		evalNull("Next_day(null, 'monday')");
 		evalNull("Next_day(Date '2020-02-28', null)");
-		
+
 		evalFails("Next_day()");
 		evalFails("Next_day(Date '2020-02-28')");
 	}
-	
-	
+
 	@Test
 	public void Upper() throws Exception {
 		evalEquals("Upper('test')", "TEST");
@@ -166,8 +168,9 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("RPad('test',3,'*')", "tes");
 		evalEquals("RPad('test',12,'')", "test");
 		evalEquals("RPad('test',8,'ABC')", "testABCA");
+		evalEquals("RPad('test',-8)", "");
 		evalFails("RPad('test')");
-		evalFails("RPad('test',-8)");
+
 	}
 
 	@Test
@@ -179,8 +182,9 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("LPad('test',12,'')", "test");
 		evalEquals("LPad('test',6,'ABC')", "ABtest");
 		evalEquals("LPad('test',4,'ABC')", "test");
+		evalEquals("LPad('test',-8)", "");
 		evalFails("LPad('test')");
-		evalFails("LPad('test',-8)");
+
 	}
 
 	@Test
@@ -275,6 +279,17 @@ public class FunctionTest extends ExpressionTest {
 	}
 
 	@Test
+	public void Add_Years() throws Exception {
+		evalEquals("Add_Years(Date '2019-01-15',1)", LocalDate.of(2020, Month.JANUARY, 15));
+		evalEquals("Add_Years(Date '2019-01-15',-2)", LocalDate.of(2017, Month.JANUARY, 15));
+		evalEquals("Add_Years(Date '2019-11-15',3)", LocalDate.of(2022, Month.NOVEMBER, 15));
+		// the resulting month has fewer days
+		evalEquals("Add_Years(Date '2020-02-29',1)", LocalDate.of(2021, Month.FEBRUARY, 28));
+
+		evalFails("Add_Years(Date '2019-01-15')");
+	}
+
+	@Test
 	public void Add_Months() throws Exception {
 		evalEquals("Add_Months(Date '2019-01-15',1)", LocalDate.of(2019, Month.FEBRUARY, 15));
 		evalEquals("Add_Months(Date '2019-01-15',-2)", LocalDate.of(2018, Month.NOVEMBER, 15));
@@ -316,7 +331,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Substring('TEST FROM',6)", "FROM");
 		evalEquals("Substring('TEST FROM',6,2)", "FR");
 		evalEquals("Substring('TEST FROM',1,4)", "TEST");
-		
+
 		// Alias
 		evalEquals("Substr('TEST',5)", "");
 		evalEquals("Mid('TEST',5)", "");
@@ -347,19 +362,18 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void Asinh() throws Exception {
-		//evalEquals("Asinh(asin(0.5))", 0.5);
+		// evalEquals("Asinh(asin(0.5))", 0.5);
 		evalFails("Asinh()");
 		evalNull("Asinh(NULL)");
 	}
 
 	@Test
 	public void Atanh() throws Exception {
-		//evalEquals("Atanh(0.2)", 0.9);
+		// evalEquals("Atanh(0.2)", 0.9);
 		evalFails("Atanh()");
 		evalNull("Atanh(NULL)");
 	}
 
-	
 	@Test
 	public void Cot() throws Exception {
 		evalEquals("Cot(1)", 0.6420926159343306);
@@ -528,45 +542,91 @@ public class FunctionTest extends ExpressionTest {
 	}
 
 	@Test
+	public void ToNumber() throws Exception {
+
+		// Default Format
+		evalEquals("TO_NUMBER('5467.12')", 5467.12);
+
+		// Format No Decimals
+		evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
+
+		// Format with Decimals
+		evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
+
+		// Format with Currency
+		evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
+
+		// Format with Thousand Group Markers
+		evalEquals("TO_NUMBER('123,456,789', '999G999G999')", 123456789);
+	}
+
+	@Test
 	public void ToChar() throws Exception {
-		Currency currency = Currency.getInstance(Locale.getDefault());
-		String cs = currency.getSymbol();
+		Locale locale = this.getContext().getLocale();
+		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
+		Currency currency = symbols.getCurrency();
+		
 
 		// Text
-		evalEquals("To_Char('abc')", "abc");
-		evalNull("To_Char(NULL)");
+		evalEquals("TO_CHAR('abc')", "abc");
+		evalNull("TO_CHAR(NULL)");
 
-		// Number
-		evalEquals("To_Char(12,'99')", " 12");
-		evalEquals("To_Char(12,'S99')", "+12");
-		evalEquals("To_Char(12,'99S')", "12+");
-		// evalEquals("To_Char(12,'MI99')", " 12");
-		evalEquals("To_Char(12,'99MI')", "12 ");
-		evalEquals("To_Char(12,'$99')", " " + cs + "12");
+		// Number default format
+		evalEquals("TO_CHAR(0.45)", ".45");
+		evalEquals("TO_CHAR(12923)", "12923");
 
-		evalEquals("To_Char(-7,'99')", " -7");
-		// evalEquals("To_Char(485,'9 9 9')", " 4 8 5");
+		// Number default format
+		evalEquals("TO_CHAR(0.1,'99.99')", "   .10");
+		evalEquals("TO_CHAR(-0.2,'99.99')", "  -.20");
+		// evalEquals("TO_CHAR(0,'99.99')", " .00"); // FIXME: BUG with zero
+		evalEquals("TO_CHAR(0,'9999')", "    0");
+		evalEquals("TO_CHAR(0,'9999999')", "       0");
+		evalEquals("TO_CHAR(0,'0999')", " 0000");
+		evalEquals("TO_CHAR(12,'99')", " 12");
+		evalEquals("TO_CHAR(-7,'99')", " -7");
+		evalEquals("TO_CHAR(12923,'99999.99')", " 12923.00");
+		evalEquals("TO_CHAR(12,'9990999.9')", "    0012.0");
+		evalEquals("TO_CHAR(0.3,'99.00000')", "   .30000");
+		evalEquals("TO_CHAR(0.3,'00.99')", " 00.30");
 
-		evalEquals("To_Char(-7,'S99')", " -7");
-		evalEquals("To_Char(-7,'99S')", " 7-");
-		// evalEquals("To_Char(-7,'MI99')", "- 7");
-		evalEquals("To_Char(-7,'99MI')", " 7-");
-		evalEquals("To_Char(-7,'$99')", " -" + cs + "7");
+		evalEquals("TO_CHAR(1485,'9,999')", " 1"+symbols.getGroupingSeparator()+"485");
+		evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3"+symbols.getGroupingSeparator()+"148"+symbols.getDecimalSeparator()+"500");
 
-		evalEquals("To_Char(0.45)", ".45");
-		evalEquals("To_Char(12923)", "12923");
-		evalEquals("To_Char(12923,'99999.99')", " 12923.00");
-		evalEquals("To_Char(12,'9990999.9')", "    0012.0");
-		// evalEquals("To_Char(12923,'FM99999.99')", "12923.00");
-		evalEquals("To_Char(0.3,'00.99')", " 00.30");
-		evalEquals("To_Char(0.3,'FM00.99')", "00.3");
-		evalEquals("To_Char(0.3,'99.00000')", "   .30000");
-		evalEquals("To_Char(12345,'9,999')", "######");
-		evalEquals("To_Char(123.456,'9.9EEEE')", "  1.2E+02");
-		evalEquals("To_Char(0,'9999999')", "       0");
-		evalEquals("To_Char(11,'FMRN')", "XI");
-		evalEquals("To_Char(123,'XX')", " 7B");
-		// evalEquals("To_Char(123,'\"Number:\"999')", "Number: 123");
+
+		evalEquals("TO_CHAR(12,'S99')", "+12");
+		evalEquals("TO_CHAR(12,'99S')", "12+");
+		evalEquals("TO_CHAR(-7,'S99')", " -7");
+		evalEquals("TO_CHAR(-7,'99S')", " 7-");
+
+		evalEquals("TO_CHAR(12,'99MI')", "12 ");
+		evalEquals("TO_CHAR(7,'99MI')", " 7 ");
+		evalEquals("TO_CHAR(-7,'99MI')", " 7-");
+		evalFails("TO_CHAR(12,'MI99')");
+
+		evalEquals("TO_CHAR(7,'9999PR')","    7 ");
+		evalEquals("TO_CHAR(-7,'9999PR')","   <7>");
+		evalFails("TO_CHAR(-7,'PR9999')");
+		
+		evalEquals("TO_CHAR(12,'$99')", " " + currency.getSymbol() + "12");
+		evalEquals("TO_CHAR(-7,'$99')", " -" + currency.getSymbol() + "7");
+
+		evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");
+		evalEquals("TO_CHAR(12923,'FM99999.099')", "12923.0");
+		evalEquals("TO_CHAR(0.3,'FM00.99')", "00.3");
+		evalEquals("TO_CHAR(12345,'9,999')", "######");
+		evalEquals("TO_CHAR(123.456,'9.9EEEE')", "  1.2E+02");
+
+		evalEquals("TO_CHAR(11,'FMRN')", "XI");
+		evalEquals("TO_CHAR(11,'rn')", "             xi");
+		evalEquals("TO_CHAR(5.2, 'FMRN')","V");
+		
+		evalEquals("TO_CHAR(123,'XX')", " 7B");
+		// evalEquals("TO_CHAR(123,'\"Number:\"999')", "Number: 123");
+
+		evalEquals("TO_CHAR(12.4, '99V999')", " 12400");
+		
+		
+		evalFails("TO_CHAR(485,'9 9 9')");
 
 		// Date
 		evalEquals("To_Char(Date '2019-07-23','AD')", "AD");
@@ -585,24 +645,24 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("To_Char(Date '2000-07-23','FMSCC')", "20");
 		evalEquals("To_Char(To_Date('-0200','SYYYY'),'SCC')", "-02");
 		evalEquals("To_Char(To_Date('-0200','SYYYY'),'FMSCC')", "-2");
-		
+
 		evalEquals("To_Char(Date '2018-07-23','YEAR')", "TWO THOUSAND EIGHTEEN");
 		evalEquals("To_Char(Date '2018-07-23','year')", "two thousand eighteen");
 		evalEquals("To_Char(Date '2019-07-23','SYEAR')", " TWO THOUSAND NINETEEN");
 		evalEquals("To_Char(Date '2019-07-23','YYYY')", "2019");
-		evalEquals("To_Char(Date '0800-07-23','YYYY')", "0800"); 
+		evalEquals("To_Char(Date '0800-07-23','YYYY')", "0800");
 		evalEquals("To_Char(Date '0800-07-23','FMYYYY')", "800"); // Year compact
-		
+
 		evalEquals("To_Char(Date '2019-07-23','YYY')", "019");
 		evalEquals("To_Char(Date '2019-07-23','YY')", "19");
 		evalEquals("To_Char(Date '2019-07-23','Y')", "9");
 		evalEquals("To_Char(Date '2019-07-23','SYYYY')", " 2019");
 		evalEquals("To_Char(To_Date('-2000','SYYYY'),'YYYY BC')", "2000 BC");
-		evalEquals("To_Char(To_Date('-800','SYYYY'),'SYYYY')", "-0800"); // Negative signed year 
+		evalEquals("To_Char(To_Date('-800','SYYYY'),'SYYYY')", "-0800"); // Negative signed year
 		evalEquals("To_Char(To_Date('-800','SYYYY'),'YYYY BC')", "0800 BC");
 		evalEquals("To_Char(Date '0800-07-23','FMSYYYY')", "800"); // Signed year compact
 		evalEquals("To_Char(To_Date('-800','SYYYY'),'FMSYYYY BC')", "-800 BC"); // Negative signed year compact
-		 				
+
 		evalEquals("To_Char(Date '2019-07-23','Q')", "3");
 
 		evalEquals("To_Char(Date '2019-07-23','MM')", "07"); // Month number
@@ -625,7 +685,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("To_Char(Date '2019-07-23','DD')", "23"); // Day of month
 		evalEquals("To_Char(Date '2019-02-23','DDD')", "054"); // Day of year
 		evalEquals("To_Char(Date '2019-02-23','FMDDD')", "54"); // Day of year compact
-		
+
 		evalEquals("To_Char(Date '2019-07-23','DAY')", "TUESDAY  "); // Day name
 		evalEquals("To_Char(Date '2019-07-23','Day')", "Tuesday  "); // Day name
 		evalEquals("To_Char(Date '2019-07-23','day')", "tuesday  "); // Day name
@@ -639,9 +699,9 @@ public class FunctionTest extends ExpressionTest {
 		// evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short
 
 		evalEquals("To_Char(Date '2019-07-23','J')", "2458688");
-		
+
 		evalEquals("To_Char(Date '2019-07-23','$(FMMONTH)!')", "$(JULY)!"); // Special char
-		
+
 	}
 
 	@Test
@@ -650,7 +710,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("To_Date('2020148','YYYYDDD')", LocalDate.of(2020, 5, 27));
 		evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
 		evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, 3, 1));
-		evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, 2, 25));		
+		evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, 2, 25));
 		evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')", LocalDateTime.of(2019, 2, 13, 15, 34, 56));
 		evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
 		evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, 2, 1));
@@ -665,31 +725,27 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
 		// Rule to try alternate format MM -> MON and MONTH
 		evalEquals("To_Date('01/February/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
-		// Rule to try alternate format MON ->  MONTH
+		// Rule to try alternate format MON -> MONTH
 		evalEquals("To_Date('01/February/2020','DD/MON/YYYY')", LocalDate.of(2020, 2, 1));
-		// Rule to try alternate format MONTH ->  MON
+		// Rule to try alternate format MONTH -> MON
 		evalEquals("To_Date('01/Feb/2020','DD/MONTH/YYYY')", LocalDate.of(2020, 2, 1));
-		
 
 		// '12-02-2008' is 2454803 in julian,
 		evalEquals("To_Date('2454803','J')", LocalDate.of(2008, 12, 2));
-		
 
-		
-				
 		// Is interpreted as 10 February 2003
-		//evalEquals("To_Date('06-2003-MON','WW-YYYY-DY')", LocalDate.of(2003, 2, 10));
+		// evalEquals("To_Date('06-2003-MON','WW-YYYY-DY')", LocalDate.of(2003, 2, 10));
 
 		// Is interpreted as 31 December 2003, 12:59:33
 		evalEquals("To_Date('12:59:33 365-2003', 'HH24:MI:SS DDD-YYYY')", LocalDateTime.of(2003, 12, 31, 12, 59, 33));
 
 		// Is interpreted as 24 December 2009, 23:00:00
-		evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')", LocalDateTime.of(2009, 12, 24, 23, 0, 0));
+		evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
+				LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
 		// Is interpreted as 12 May 2003, 00:00:10.123
-		//evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
-		
-		
+		// evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
+
 		// evalEquals("To_Date('15:30:40','hh24:mi:ss')",LocalDateTime.of(1970,1,1,11,30,40));
 	}
 
@@ -724,6 +780,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
 		evalEquals("Extract(WEEK_ISO from Date '2010-01-03')", 53);
 		evalEquals("Extract(WEEK_ISO from Date '2010-01-04')", 1);
+		evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
 		evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
 		evalEquals("Extract(DD from Timestamp '2020-05-25 23:48:59')", 25);
 		evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
@@ -896,7 +953,7 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("Round(null)");
 		evalFails("Round()");
 		evalFails("Round(1,2,3)");
-		evalFails("Round('x')");
+		evalFails("Round('x')"); // Invalid number
 	}
 
 	@Test

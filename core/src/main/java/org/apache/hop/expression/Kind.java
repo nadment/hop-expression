@@ -71,7 +71,7 @@ public enum Kind {
 	/**
 	 * The less-than operator '&lt;'.
 	 */
-	LESS_THAN_OPERATOR(OperatorCategory.Comparison),
+	LESS_THAN(OperatorCategory.Comparison),
 
 	/**
 	 * The greater-than operator '&gt;'.
@@ -81,7 +81,7 @@ public enum Kind {
 	/**
 	 * The less-than-or-equal operator '&lt;='.
 	 */
-	LESS_THAN_OR_EQUAL_OPERATOR(OperatorCategory.Comparison),
+	LESS_THAN_OR_EQUAL(OperatorCategory.Comparison),
 
 	/**
 	 * The greater-than-or-equal operator '&gt;='.
@@ -131,6 +131,17 @@ public enum Kind {
 	 */
 	ILIKE(OperatorCategory.Comparison),
 
+	REGEXP_LIKE(OperatorCategory.Conditional),
+
+	/**
+	 * The function returns TRUE if the first value starts with second value. Both
+	 * values must be data type string or binary.
+	 * 
+	 * @see {@link #ENDSWITH}
+	 */
+	STARTSWITH(OperatorCategory.Comparison),
+
+	
 	/**
 	 * The function returns TRUE if the first value ends with second value. Both
 	 * values must be data type of string or binary.
@@ -173,16 +184,6 @@ public enum Kind {
 	NVL2(OperatorCategory.Conditional),
 
 	/**
-	 * The function returns TRUE if the first value starts with second value. Both
-	 * values must be data type string or binary.
-	 * 
-	 * @see {@link #ENDSWITH}
-	 */
-	STARTSWITH(OperatorCategory.Comparison),
-
-	REGEXP_LIKE(OperatorCategory.Conditional),
-
-	/**
 	 * The function returns the largest value that is not NULL, or NULL if all
 	 * values are NULL.
 	 * 
@@ -203,25 +204,25 @@ public enum Kind {
 	// -------------------------------------------------------------
 
 	/**
-	 * The logical OR operator.
-	 */
-	LOGICAL_OR_OPERATOR(OperatorCategory.Logical),
-
-	/**
-	 * The logical XOR operator.
-	 */
-	LOGICAL_XOR_OPERATOR(OperatorCategory.Logical),
-
-	/**
 	 * The logical AND operator.
 	 */
-	LOGICAL_AND_OPERATOR(OperatorCategory.Logical),
+	LOGICAL_AND(OperatorCategory.Logical),
 
 	/**
 	 * The logical NOT operator.
 	 */
-	LOGICAL_NOT_OPERATOR(OperatorCategory.Logical),
+	LOGICAL_NOT(OperatorCategory.Logical),
 
+	/**
+	 * The logical OR operator.
+	 */
+	LOGICAL_OR(OperatorCategory.Logical),
+
+	/**
+	 * The logical XOR operator.
+	 */
+	LOGICAL_XOR(OperatorCategory.Logical),
+	
 	// -------------------------------------------------------------
 	// STRING
 	// -------------------------------------------------------------
@@ -301,8 +302,6 @@ public enum Kind {
 	 * The function returns the number of characters of the specified string.
 	 */
 	LENGTH(OperatorCategory.String),
-
-	OCTET_LENGTH(OperatorCategory.String),
 
 	/**
 	 * The function return the ASCII value of the first character in a string. If
@@ -416,8 +415,6 @@ public enum Kind {
 	 */
 	TRANSLATE(OperatorCategory.String),
 
-
-
 	// -------------------------------------------------------------
 	// MATHEMATICAL
 	// -------------------------------------------------------------
@@ -474,21 +471,6 @@ public enum Kind {
 	ABS(OperatorCategory.Mathematical),
 
 	/**
-	 * Returns the arc cosine, the angle in radians whose cosine is the specified
-	 * float expression.
-	 */
-	ACOS(OperatorCategory.Trigonometry),
-	ACOSH(OperatorCategory.Trigonometry),
-
-	ASIN(OperatorCategory.Trigonometry),
-	ASINH(OperatorCategory.Trigonometry),
-
-	ATAN(OperatorCategory.Trigonometry),
-	ATANH(OperatorCategory.Trigonometry),
-
-	ATAN2(OperatorCategory.Trigonometry),
-
-	/**
 	 * Converts a value of one data type into another data type
 	 * '<code>CAST(value AS type)</code>'.
 	 */
@@ -499,22 +481,6 @@ public enum Kind {
 	 */
 	CEIL(OperatorCategory.Mathematical),
 
-	/**
-	 * Returns the trigonometric cosine of the specified angle in radians in the
-	 * specified number.
-	 */
-	COS(OperatorCategory.Trigonometry),
-
-	/**
-	 * Returns the hyperbolic cosine of its argument.
-	 */
-	COSH(OperatorCategory.Trigonometry),
-
-	/**
-	 * Returns the trigonometric cotangent of the angle in radians specified by
-	 * float expression.
-	 */
-	COT(OperatorCategory.Trigonometry),
 
 	/**
 	 * Function to converts radians to degrees.
@@ -564,16 +530,6 @@ public enum Kind {
 	SIGN(OperatorCategory.Mathematical),
 
 	/**
-	 * Calculates the trigonometric sine of the angle in radians.
-	 */
-	SIN(OperatorCategory.Trigonometry),
-
-	/**
-	 * Calculates the hyperbolic sine of its argument.
-	 */
-	SINH(OperatorCategory.Trigonometry),
-
-	/**
 	 * Returns the cubic root of a numeric expression.
 	 *
 	 * @See {@link #SQRT}
@@ -588,6 +544,59 @@ public enum Kind {
 	SQRT(OperatorCategory.Mathematical),
 
 	/**
+	 * Round down numeric expressions or truncates a date or timestamp to the
+	 * specified part.
+	 */
+	TRUNCATE(OperatorCategory.Mathematical),
+	
+	
+	// -------------------------------------------------------------
+	// TRIGONOMETRY
+	// -------------------------------------------------------------
+	
+	/**
+	 * Returns the arc cosine, the angle in radians whose cosine is the specified
+	 * float expression.
+	 */
+	ACOS(OperatorCategory.Trigonometry),
+	ACOSH(OperatorCategory.Trigonometry),
+
+	ASIN(OperatorCategory.Trigonometry),
+	ASINH(OperatorCategory.Trigonometry),
+
+	ATAN(OperatorCategory.Trigonometry),
+	ATANH(OperatorCategory.Trigonometry),
+
+	ATAN2(OperatorCategory.Trigonometry),
+	
+	/**
+	 * Returns the trigonometric cosine of the specified angle in radians in the
+	 * specified number.
+	 */
+	COS(OperatorCategory.Trigonometry),
+
+	/**
+	 * Returns the hyperbolic cosine of its argument.
+	 */
+	COSH(OperatorCategory.Trigonometry),
+
+	/**
+	 * Returns the trigonometric cotangent of the angle in radians specified by
+	 * float expression.
+	 */
+	COT(OperatorCategory.Trigonometry),
+		
+	/**
+	 * Calculates the trigonometric sine of the angle in radians.
+	 */
+	SIN(OperatorCategory.Trigonometry),
+
+	/**
+	 * Calculates the hyperbolic sine of its argument.
+	 */
+	SINH(OperatorCategory.Trigonometry),
+	
+	/**
 	 * Calculates the tangent of its argument, the argument should be expressed in
 	 * radians.
 	 */
@@ -597,12 +606,7 @@ public enum Kind {
 	 * Calculates the hyperbolic tangent of its argument.
 	 */
 	TANH(OperatorCategory.Trigonometry),
-
-	/**
-	 * Round down numeric expressions or truncates a date or timestamp to the
-	 * specified part.
-	 */
-	TRUNCATE(OperatorCategory.Mathematical),
+	
 	
 	// -------------------------------------------------------------
 	// DATE AND TIME

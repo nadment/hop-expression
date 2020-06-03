@@ -1,6 +1,10 @@
 package org.apache.hop.expression;
 
+import org.apache.hop.i18n.BaseMessages;
+
 public class ExpressionParserException extends ExpressionException {
+
+	private static final Class<?> PKG = Expression.class; // for i18n purposes
 
 	/**
 	 * 
@@ -11,7 +15,7 @@ public class ExpressionParserException extends ExpressionException {
 	private final int position;
 
 	public ExpressionParserException(String message, String source, int position) {
-		super(message, source, position);
+		super(message);
 		this.source = source;
 		this.position = position;
 	}
@@ -22,5 +26,13 @@ public class ExpressionParserException extends ExpressionException {
 
 	public int getPosition() {
 		return position;
+	}
+
+	public String toString() {
+		
+		String message =  this.getMessage();
+		message = ( message!=null  ) ? ": "+message:""; 
+		
+		return BaseMessages.getString(PKG, "ExpressionParser.SyntaxError", position, message);
 	}
 }

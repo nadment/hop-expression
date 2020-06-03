@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.hop</groupId>
 		<artifactId>hop-expression</artifactId>
-		<version>0.30-SNAPSHOT</version>
+		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>hop-expression-plugins</artifactId>
@@ -16,7 +16,6 @@
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
-		<hop.home>C:\hop</hop.home>
 	</properties>
 
 	<dependencies>
@@ -24,28 +23,28 @@
 		<dependency>
 			<groupId>org.hop</groupId>
 			<artifactId>hop-core</artifactId>
-			<version>${project.version}</version>
+			<version>${hop.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hop</groupId>
 			<artifactId>hop-engine</artifactId>
-			<version>${project.version}</version>
+			<version>${hop.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hop</groupId>
 			<artifactId>hop-ui-swt</artifactId>
-			<version>${project.version}</version>
+			<version>${hop.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hop</groupId>
 			<artifactId>hop-expression-core</artifactId>
-			<version>${project.version}</version>
+			<version>${hop.version}</version>
 		</dependency>
 
 		<!-- <dependency> -->

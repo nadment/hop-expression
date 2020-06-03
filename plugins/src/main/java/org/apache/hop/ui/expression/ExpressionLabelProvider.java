@@ -18,6 +18,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 	private Image imgBoolean;
 	private Image imgString;
 	private Image imgDate;
+	private Image imgTimestamp;
 	private Image imgNumber;
 	private Image imgBinary;
 	private Image imgInet;
@@ -33,6 +34,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 		imgBoolean = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "boolean.svg", 16, 16); //$NON-NLS-1$
 		imgNumber = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "number.svg", 16, 16); //$NON-NLS-1$
 		imgDate = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "date.svg", 16, 16); //$NON-NLS-1$
+		imgTimestamp = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "timestamp.svg", 16, 16); //$NON-NLS-1$
 		imgBinary = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "binary.svg", 16, 16); //$NON-NLS-1$
 		imgInet = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "inet.svg", 16, 16); //$NON-NLS-1$
 		imgFunction = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "function.svg", 16, 16); //$NON-NLS-1$
@@ -54,6 +56,8 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 			imgNumber.dispose();
 		if (imgDate != null)
 			imgDate.dispose();
+		if (imgTimestamp != null)
+			imgTimestamp.dispose();
 		if (imgBinary != null)
 			imgBinary.dispose();
 		if (imgInet != null)
@@ -92,8 +96,9 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 			case IValueMeta.TYPE_BOOLEAN:
 				return this.imgBoolean;
 			case IValueMeta.TYPE_DATE:
-			case IValueMeta.TYPE_TIMESTAMP:
 				return this.imgDate;
+			case IValueMeta.TYPE_TIMESTAMP:
+				return this.imgTimestamp;				
 			case IValueMeta.TYPE_INTEGER:
 			case IValueMeta.TYPE_NUMBER:
 			case IValueMeta.TYPE_BIGNUMBER:
@@ -142,7 +147,6 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
 	@Override
 	public String getText(Object element) {
-
 		if (element instanceof Operator) {
 			return ((Function) element).getName();
 		}
@@ -151,7 +155,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 			ExpressionProposal proposal = (ExpressionProposal) element;
 			return proposal.getLabel();
 		}
-		return ""; //$NON-NLS-1$
+		return String.valueOf(element);
 	}
 
 	@Override

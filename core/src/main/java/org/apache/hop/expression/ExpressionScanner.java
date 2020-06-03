@@ -6,12 +6,15 @@ import java.util.TreeSet;
 
 import org.apache.hop.expression.ExpressionToken.Id;
 import org.apache.hop.expression.util.Characters;
+import org.apache.hop.i18n.BaseMessages;
 
 /**
  * Parses an expression string to return the individual tokens.
  */
 public class ExpressionScanner {
 
+	private static final Class<?> PKG = Expression.class; // for i18n purposes
+	
 	// TODO: Java 9 use unmodifiable Set.of()
 	private static final Set<String> RESERVED_WORDS = new TreeSet<>(
 			Arrays.asList("AS", "AND", "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "FROM", "ILIKE",
@@ -94,7 +97,7 @@ public class ExpressionScanner {
 				}
 
 				if (c != '\'')
-					throw new ExpressionParserException("ExpressionException.MissingEndSingleQuotedString", source,
+					throw new ExpressionParserException(BaseMessages.getString(PKG, "ExpressionParser.MissingEndSingleQuotedString"), source,
 							pos);
 
 				return new ExpressionToken(Id.LITERAL_STRING, start, pos, text.toString());
@@ -164,7 +167,7 @@ public class ExpressionScanner {
 						return new ExpressionToken(Id.NOT_EQUAL, start, pos);
 					}
 				}
-				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
+				throw new ExpressionParserException(BaseMessages.getString(PKG, "ExpressionParser.UnexpectedCharacter"), source, start);
 			}
 
 			// possible start of '/*' or '//' comment
@@ -225,17 +228,13 @@ public class ExpressionScanner {
 				int start = pos++;
 				while (pos < source.length()) {
 					c = source.charAt(pos++);
-					if (!Characters.isAlphaOrDigit(c)) {
-						break;
+					if (c==']') {					
+						String name = source.substring(start + 1, pos - 1).toUpperCase();
+						return new ExpressionToken(Id.IDENTIFIER, start, pos, name);
 					}
 				}
-
-				if (c == ']') {
-					String name = source.substring(start + 1, pos - 1).toUpperCase();
-					return new ExpressionToken(Id.IDENTIFIER, start, pos, name);
-				}
-
-				throw new ExpressionParserException("ExpressionException.SyntaxError", source, pos);
+// FIXME: End of bracket
+				throw new ExpressionParserException(BaseMessages.getString(PKG, "ExpressionParser.SyntaxError"), source, pos);
 			}
 
 			// Variable
@@ -343,6 +342,7 @@ public class ExpressionScanner {
 					case ')':
 					case '/':
 					case '*':
+					case '%':
 					case ',':
 					case '^':
 					case '&':

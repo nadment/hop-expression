@@ -69,6 +69,10 @@ public enum DatePart {
 
 	/** Week of the year (number from 1-53). */
 	WEEK_ISO("WEEKOFYEAR_ISO"),
+	
+	/** Week from the beginning of the month (0-5) */
+	WEEKOFMONTH,
+	
 	/**
 	 * The quarter (1, 2, 3, or 4) of the year
 	 */
@@ -148,6 +152,8 @@ public enum DatePart {
 			return dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 		case WEEK_ISO:
 			return dt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+		case WEEKOFMONTH:
+			return dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);			
 		case MONTH:
 			return dt.getMonthValue();
 		case QUARTER:

@@ -110,16 +110,8 @@ public class WhereTransform extends BaseTransform<WhereMeta,WhereData> {
 		context.setRow(row);
 		Value keep = data.condition.eval(context);
 
-		if (keep.toBoolean()) {
-			// put the row to the TRUE output row stream
-			if (data.trueRowSet != null) {
-				if (log.isRowLevel()) {
-					logRowlevel(BaseMessages.getString(PKG, "ExpressionFilter.Log.KeepRow",
-							data.trueRowSet.getDestinationTransformName(), getInputRowMeta().getString(row)));
-				}
-				putRowTo(data.outputRowMeta, row, data.trueRowSet);
-			}
-		} else {
+		
+		if (keep.isNull() || !keep.toBoolean()){
 			// put the row to the FALSE output row stream
 			if (data.falseRowSet != null) {
 				if (log.isRowLevel()) {
@@ -129,6 +121,16 @@ public class WhereTransform extends BaseTransform<WhereMeta,WhereData> {
 				putRowTo(data.outputRowMeta, row, data.falseRowSet);
 			}
 		}
+		else {
+			// put the row to the TRUE output row stream
+			if (data.trueRowSet != null) {
+				if (log.isRowLevel()) {
+					logRowlevel(BaseMessages.getString(PKG, "ExpressionFilter.Log.KeepRow",
+							data.trueRowSet.getDestinationTransformName(), getInputRowMeta().getString(row)));
+				}
+				putRowTo(data.outputRowMeta, row, data.trueRowSet);
+			}
+		} 
 
 		// log progress if it is time to to so
 		if (checkFeedback(getLinesRead())) {

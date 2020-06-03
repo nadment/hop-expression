@@ -64,10 +64,10 @@ public class ValueInteger extends Value {
 		buffer[1] = (byte) (v >> 8);
 		buffer[2] = (byte) (v >> 16);
 		buffer[3] = (byte) (v >> 24);
-		buffer[5] = (byte) (value >> 32);
-		buffer[6] = (byte) (value >> 40);
-		buffer[7] = (byte) (value >> 48);
-		buffer[8] = (byte) (value >> 56);
+		buffer[4] = (byte) (value >> 32);
+		buffer[5] = (byte) (value >> 40);
+		buffer[6] = (byte) (value >> 48);
+		buffer[7] = (byte) (value >> 56);
 
 		return buffer;
 	}
@@ -131,29 +131,29 @@ public class ValueInteger extends Value {
 
 	@Override
 	public Value multiply(Value v) {
-		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
-			return Value.of(value * v.toInteger());
+		if ( v.isBigNumber() ) {
+			return v.multiply(this);
 		}
-
-		return v.multiply(this);
+		
+		 return Value.of(this.toNumber() * v.toNumber());
 	}
 
 	@Override
 	public Value divide(Value v) {
-		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
-			return Value.of(value / v.toInteger());
+		if ( v.isBigNumber() ) {			
+			return Value.of(this.toBigNumber().divide(v.toBigNumber(),MAX_SCALE, BigDecimal.ROUND_HALF_UP));
 		}
-
-		return this.convertTo(v.getDataType()).divide(v);
+		
+		return Value.of(this.toNumber() / v.toNumber());
 	}
 
 	@Override
-	public Value remainder(Value v) {
-		if (this.getDataType().compareTo(v.getDataType()) >= 0) {
-			return Value.of(value % v.toInteger());
+	public Value remainder(Value v) {	
+		if ( v.isBigNumber() ) {
+			return Value.of(this.toBigNumber().remainder(v.toBigNumber()));
 		}
-
-		return this.convertTo(v.getDataType()).remainder(v);
+		
+		return Value.of(this.toNumber() % v.toNumber());
 	}
 
 	@Override

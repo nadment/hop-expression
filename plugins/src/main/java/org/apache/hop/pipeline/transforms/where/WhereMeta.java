@@ -92,11 +92,6 @@ public class WhereMeta extends BaseTransformMeta implements ITransformMeta<Where
 	public WhereData getTransformData() {
 		return new WhereData();
 	}
-
-	@Override
-	public String getDialogClassName() {
-		return WhereDialog.class.getName();
-	}
 	
 	@Override
 	public void setDefault() {
