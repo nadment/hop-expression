@@ -47,7 +47,7 @@ public class ExpressionEditor extends SashForm {
 	private ExpressionProposalProvider contentProposalProvider;
 	private IVariables variables;
 	private IRowMeta rowMeta;
-	private StyledTextComp txtEditor;
+	private StyledTextComp textEditor;
 	private Tree tree;
 	private TreeItem treeItemField;
 	private TreeItem treeItemVariable;
@@ -66,16 +66,16 @@ public class ExpressionEditor extends SashForm {
 	}
 
 	protected void createEditor(final Composite parent) {
-		txtEditor = new StyledTextComp(variables, parent,
+		textEditor = new StyledTextComp(variables, parent,
 				SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, "", false);
 
-		txtEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-		txtEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
+		textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
+		textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
 
 		// txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
 		// wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
-		PropsUi.getInstance().setLook(txtEditor, Props.WIDGET_STYLE_FIXED);
+		PropsUi.getInstance().setLook(textEditor, Props.WIDGET_STYLE_FIXED);
 		PropsUi.getInstance().setLook(this);
 
 		// See PDI-1284 in chinese window, Ctrl-SPACE is reserved by system for input
@@ -88,7 +88,7 @@ public class ExpressionEditor extends SashForm {
 
 		contentProposalProvider = new ExpressionProposalProvider();
 
-		StyledText styledText = txtEditor.getStyledText();
+		StyledText styledText = textEditor.getStyledText();
 
 		ContentProposalAdapter contentProposalAdapter = new ContentProposalAdapter(styledText,
 				new StyledTextContentAdapter(), contentProposalProvider, keyStroke, new char[] { '(', '$' });
@@ -202,11 +202,11 @@ public class ExpressionEditor extends SashForm {
 	}
 
 	public void setText(String text) {
-		txtEditor.setText(text);
+		textEditor.setText(text);
 	}
 
 	public String getText() {
-		return txtEditor.getText();
+		return textEditor.getText();
 	}
 
 	@Override

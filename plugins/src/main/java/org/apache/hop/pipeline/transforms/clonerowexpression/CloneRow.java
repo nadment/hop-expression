@@ -79,7 +79,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> implemen
       first = false;
       data.outputRowMeta = getInputRowMeta().clone();
       data.NrPrevFields = getInputRowMeta().size();
-      meta.getFields( data.outputRowMeta, getTransformName(), null, null, this, metaStore );
+      meta.getFields( data.outputRowMeta, getTransformName(), null, null, this, metadataProvider );
       data.addInfosToRow = ( meta.isAddCloneFlag() || meta.isAddCloneNum() );
 
       if ( meta.isAddCloneFlag() ) {

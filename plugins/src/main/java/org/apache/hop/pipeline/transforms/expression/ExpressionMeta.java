@@ -36,7 +36,7 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.i18n.BaseMessages;
-import org.apache.hop.metastore.api.IMetaStore;
+import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
@@ -123,7 +123,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 	}
 
 	@Override
-	public void loadXml(Node transformNode, IMetaStore metaStore) throws HopXmlException {
+	public void loadXml(Node transformNode, IHopMetadataProvider metadataProvider) throws HopXmlException {
 
 		try {
 			Node nodes = XmlHandler.getSubNode(transformNode, "fields");
@@ -149,7 +149,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 
 	@Override
 	public void getFields(IRowMeta rowMeta, String transformName, IRowMeta[] info, TransformMeta nextTransform,
-			IVariables variables, IMetaStore metaStore) throws HopTransformException {
+			IVariables variables, IHopMetadataProvider metadataProvider) throws HopTransformException {
 		try {
 			// store the input stream meta
 			IRowMeta unalteredInputRowMeta = rowMeta.clone();
@@ -180,7 +180,7 @@ public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<
 
 	@Override
 	public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta, TransformMeta transformMeta, IRowMeta prev,
-			String input[], String output[], IRowMeta info, IVariables variables, IMetaStore metaStore) {
+			String input[], String output[], IRowMeta info, IVariables variables, IHopMetadataProvider metadataProvider) {
 
 		// Look up fields in the input stream <prev>
 		if (prev != null && prev.size() > 0) {

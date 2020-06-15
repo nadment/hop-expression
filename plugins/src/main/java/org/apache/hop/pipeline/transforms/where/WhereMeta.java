@@ -33,7 +33,7 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.i18n.BaseMessages;
-import org.apache.hop.metastore.api.IMetaStore;
+import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
@@ -130,7 +130,7 @@ public class WhereMeta extends BaseTransformMeta implements ITransformMeta<Where
 	}
 
 	@Override
-	public void loadXml(Node stepNode, IMetaStore metaStore) throws HopXmlException {
+	public void loadXml(Node stepNode, IHopMetadataProvider metadataProvider) throws HopXmlException {
 
 		try {
 			this.expression = XmlHandler.getTagValue(stepNode, TAG_EXPRESSION);
@@ -146,7 +146,7 @@ public class WhereMeta extends BaseTransformMeta implements ITransformMeta<Where
 
 	@Override
 	public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta, TransformMeta transformMeta, IRowMeta prev,
-			String input[], String output[], IRowMeta info, IVariables variables, IMetaStore metaStore) {
+			String input[], String output[], IRowMeta info, IVariables variables, IHopMetadataProvider metadataProvider) {
 
 		// See if there filter expression
 		if (Utils.isEmpty(this.getExpression())) {

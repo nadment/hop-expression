@@ -8,7 +8,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 public class ExpressionProposal implements IContentProposal {
 
 	enum Type {
-		FieldBoolean, FieldBinary, FieldDate, FieldNumber, FieldString, Operator, Function, Variable, VariableDeprecated
+		Field, Operator, Function, Variable, VariableDeprecated
 	}
 
 	private Type type;
@@ -78,5 +78,4 @@ public class ExpressionProposal implements IContentProposal {
 
 		return type.name()+':'+label+'('+content+')';
 	}
-
 }

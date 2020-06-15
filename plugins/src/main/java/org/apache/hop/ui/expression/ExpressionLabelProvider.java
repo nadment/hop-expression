@@ -83,7 +83,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
 			switch (proposal.getType()) {
 			case Function:
-			case FieldString:
+			case Field:
 				element = proposal.getData();
 				break;
 			case Variable:
@@ -110,7 +110,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 	@Override
 	public String getText(Object element) {
 		if (element instanceof Operator) {
-			return ((Function) element).getName();
+			return ((Operator) element).getName();
 		}
 
 		if (element instanceof ExpressionProposal) {

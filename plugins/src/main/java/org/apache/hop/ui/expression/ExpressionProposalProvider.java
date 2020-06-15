@@ -155,7 +155,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 					description.append("\nComment: ");
 					description.append(StringUtils.defaultString(valueMeta.getComments()));
 
-					ExpressionProposal.Type type = ExpressionProposal.Type.FieldString;
+					ExpressionProposal.Type type = ExpressionProposal.Type.Field;
 //					switch (valueMeta.getType()) {
 //					case IValueMeta.TYPE_BOOLEAN:
 //						type = ExpressionProposal.Type.FieldBoolean;

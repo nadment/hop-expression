@@ -74,7 +74,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 			data.outputRowMeta = getInputRowMeta().clone();
 
 			// Use meta.getFields() to change it, so it reflects the output row structure
-			meta.getFields(data.outputRowMeta, this.getTransformName(), null, null, this, null);
+			meta.getFields(data.outputRowMeta, this.getTransformName(), null, null, this, metadataProvider);
 			data.expressions = new Expression[data.outputRowMeta.size()];
 
 			RowExpressionContext context = new RowExpressionContext(getInputRowMeta());
