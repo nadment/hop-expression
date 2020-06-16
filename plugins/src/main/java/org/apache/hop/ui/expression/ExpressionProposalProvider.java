@@ -101,9 +101,8 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
 					String content = "${" + variable + '}';
 					String description = (isDeprecated) ? Const.getDeprecatedPrefix() : null;
-					Type type = (isDeprecated) ? Type.VariableDeprecated : Type.Variable;
 
-					list.add(new ExpressionProposal(type, content.substring(position), variable, description));
+					list.add(new ExpressionProposal(Type.Variable, content.substring(position), variable, description));
 				}
 			}
 		}
@@ -155,29 +154,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 					description.append("\nComment: ");
 					description.append(StringUtils.defaultString(valueMeta.getComments()));
 
-					ExpressionProposal.Type type = ExpressionProposal.Type.Field;
-//					switch (valueMeta.getType()) {
-//					case IValueMeta.TYPE_BOOLEAN:
-//						type = ExpressionProposal.Type.FieldBoolean;
-//						break;
-//					case IValueMeta.TYPE_BINARY:
-//						type = ExpressionProposal.Type.FieldBinary;
-//						break;
-//					case IValueMeta.TYPE_DATE:
-//					case IValueMeta.TYPE_TIMESTAMP:
-//						type = ExpressionProposal.Type.FieldDate;
-//						break;
-//					case IValueMeta.TYPE_NUMBER:
-//					case IValueMeta.TYPE_BIGNUMBER:
-//						type = ExpressionProposal.Type.FieldNumber;
-//						break;
-//					case IValueMeta.TYPE_STRING:
-//						type = ExpressionProposal.Type.FieldString;
-//						break;
-//					default:
-//					}
-
-					list.add(new ExpressionProposal(type, name.substring(position), name, valueMeta)); //description.toString()));
+					list.add(new ExpressionProposal(Type.Field, name.substring(position), name, valueMeta)); //description.toString()));
 				}
 			}
 		}

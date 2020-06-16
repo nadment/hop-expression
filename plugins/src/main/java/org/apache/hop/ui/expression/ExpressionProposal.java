@@ -8,7 +8,7 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 public class ExpressionProposal implements IContentProposal {
 
 	enum Type {
-		Field, Operator, Function, Variable, VariableDeprecated
+		Field, Operator, Function, Variable
 	}
 
 	private Type type;

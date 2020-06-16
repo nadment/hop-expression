@@ -10,7 +10,7 @@
     <pipeline_status>0</pipeline_status>
     <parameters>
       <parameter>
-        <name>FIELD_ROWNUM</name>
+        <name>DYNAMIC_FIELD_NAME</name>
         <default_value>ROWNUM</default_value>
         <description/>
       </parameter>
@@ -75,11 +75,11 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <nrclones>DAYS_BETWEEN(FIELD_DATE, Date '${START_DATE}')</nrclones>
+    <nrclones>=DAYS_BETWEEN(FIELD_DATE, Date '${START_DATE}')</nrclones>
     <addcloneflag>Y</addcloneflag>
     <cloneflagfield>STATIC_FIELD_NAME</cloneflagfield>
     <addclonenum>Y</addclonenum>
-    <clonenumfield>=UPPER('${FIELD_ROWNUM}')</clonenumfield>
+    <clonenumfield>=UPPER('${DYNAMIC_FIELD_NAME}')</clonenumfield>
     <attributes/>
     <GUI>
       <xloc>256</xloc>
@@ -221,7 +221,7 @@
  * 
  */
 
-Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ROWNUM%2>0 then 'A' else 'B' end</expression>
+Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${DYNAMIC_FIELD_NAME}%2>0 then 'A' else 'B' end</expression>
         <type>String</type>
       </field>
       <field>
