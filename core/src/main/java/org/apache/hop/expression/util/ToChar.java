@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -27,6 +28,28 @@ import org.apache.hop.i18n.BaseMessages;
  */
 public class ToChar {
 	protected static final Class<?> PKG = Expression.class; // for i18n purposes
+
+	/**
+	 * Hours per day.
+	 */
+	static final int HOURS_PER_DAY = 24;
+	/**
+	 * Minutes per hour.
+	 */
+	static final int MINUTES_PER_HOUR = 60;
+	/**
+	 * Minutes per day.
+	 */
+	static final int MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY;
+	/**
+	 * Seconds per minute.
+	 */
+	static final int SECONDS_PER_MINUTE = 60;
+
+	/**
+	 * Seconds per hour.
+	 */
+	static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
 	private static final int[] ROMAN_VALUES = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1 };
 
@@ -276,7 +299,7 @@ public class ToChar {
 					char digit = unscaled.charAt(j);
 					output.insert(0, digit);
 					j--;
-				} else if ( power == null) {
+				} else if (power == null) {
 					output.insert(0, '0');
 				}
 			} else if (c == '9') {
@@ -1029,15 +1052,29 @@ public class ToChar {
 				appendZeroPadded(output, 9, value.getNano());
 				index += 2;
 			}
-			// TODO: Time zone region
+			// Time zone region
 			else if (containsAt(format, index, "TZR") != null) {
-
-				// output.append(getTimeZone(value, false));
+				output.append(value.getZone().toString());
 				index += 3;
 			}
 			// TODO: Time zone region with Daylight Saving Time information included
 			else if (containsAt(format, index, "TZD") != null) {
 				// output.append(getTimeZone(value, true));
+				index += 3;
+			}
+			// TODO: Time zone hour
+			else if (containsAt(format, index, "TZH") != null) {
+				ZoneOffset offset = value.getOffset();
+				int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
+				output.append(hours < 0 ? '-' : '+');
+				appendZeroPadded(output, 2, Math.abs(hours));
+				index += 3;
+			}
+			// TODO: Time zone minute
+			else if (containsAt(format, index, "TZM") != null) {
+				ZoneOffset offset = value.getOffset();
+				int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
+				appendZeroPadded(output, 2, Math.abs(minutes));
 				index += 3;
 			}
 			// Week of year (1-52 or 1-53) based on the ISO standard

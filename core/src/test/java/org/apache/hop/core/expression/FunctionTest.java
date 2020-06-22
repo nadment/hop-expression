@@ -695,6 +695,11 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("To_Char(Date '2019-07-23','Dy')", "Tue"); // Day name
 		evalEquals("To_Char(Date '2019-07-23','dy')", "tue"); // Day name
 
+		evalEquals("To_Char(Date '2019-07-23','TZR')", "UTC"); // Time Zone Region
+		evalEquals("To_Char(Date '2019-07-23','TZH')", "+00"); // Time Zone Hour
+		evalEquals("To_Char(Date '2019-07-23','TZM')", "00"); // Time Zone Minute
+		evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00"); // Time Zone Hour
+		
 		evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
 		// evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
 		// evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short

@@ -84,6 +84,8 @@ Emulates Oracle's TO_CHAR(number) function.
 |TS||Short time format 
 |TZD||Daylight savings time zone abbreviation 
 |TZR||Time zone region information
+|TZH||Time zone hour
+|TZM||Time zone minute
 |X||Local radix character
 |===
 
