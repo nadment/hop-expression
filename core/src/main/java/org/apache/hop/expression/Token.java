@@ -1,7 +1,5 @@
 package org.apache.hop.expression;
 
-import java.util.Collection;
-
 public class Token {
 
 	/**
@@ -289,60 +287,52 @@ public class Token {
 
 	private final Id id;
 
-	private final String text;
+	private final String value;
 
-	// The position of the first character of this Token.
-	private final int start;
-	private final int end;
+	private final int index;
 
-	protected Token(Id id, int start, int end) {
-		this(id, start, end, id.source);
+	protected Token(Id id, int index) {
+		this(id, index,  id.source);
 	}
 
-	protected Token(Id id, int start, int end, String text) {
+	protected Token(Id id, int index, String text) {
 		this.id = id;
-		this.start = start;
-		this.end = end;
-		this.text = text;
+		this.index = index;		
+		this.value = text;
 	}
 
 	public boolean is(Id id) {
 		return this.id == id;
 	}
 
-	/**
-	 * Returns whether this {@code Type} belongs to a given category.
-	 *
-	 * @param category Category
-	 * @return Whether this kind belongs to the given category
-	 */
-	public boolean is(Collection<Id> ids) {
-		return ids.contains(this.id);
-	}
-
-	public String toString() {
-		return  id.name()+ "(" + text + ")";
-	}
-
-	public Id getId() {
+	public Id id() {
 		return id;
 	}
 
-	public int getStart() {
-		return start;
+	/**
+	 * Returns the index of the token in the original source.
+	 */
+	public int index() {
+		return index;
 	}
 
-	public int getEnd() {
-		return end;
+	/**
+	 * Returns the length of the token.
+	 */
+	public int length() {
+		return value.length();
 	}
-
-	public int getLength() {
-		return end-start;
-	}
-
 	
-	public String getText() {
-		return text;
+	/**
+	 * Returns the token value.
+	 */ 
+	public String value() {
+	 
+		return value;
 	}
-
+	
+	@Override
+	public String toString() {
+		return  id.name()+ "(" + value + ")";
+	}
 }

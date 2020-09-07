@@ -1062,7 +1062,7 @@ public class ToChar {
 				// output.append(getTimeZone(value, true));
 				index += 3;
 			}
-			// TODO: Time zone hour
+			// Time zone hour
 			else if (containsAt(format, index, "TZH") != null) {
 				ZoneOffset offset = value.getOffset();
 				int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
@@ -1070,7 +1070,7 @@ public class ToChar {
 				appendZeroPadded(output, 2, Math.abs(hours));
 				index += 3;
 			}
-			// TODO: Time zone minute
+			// Time zone minute
 			else if (containsAt(format, index, "TZM") != null) {
 				ZoneOffset offset = value.getOffset();
 				int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
@@ -1197,7 +1197,6 @@ public class ToChar {
 				appendZeroPadded(output, 2, weekYear % 100);
 				index += 2;
 			}
-
 			// Last 1 digit of ISO year.
 			else if (containsAt(format, index, "I") != null) {
 				int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));

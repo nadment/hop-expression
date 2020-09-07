@@ -56,6 +56,7 @@ import org.w3c.dom.Node;
 	image = "expression.svg",
 	description = "Expression.Description",
 	i18nPackageName = "org.apache.hop.pipeline.transforms.expression",
+	categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
 	keywords = {"script","sql","function"}
 )
 @InjectionSupported(localizationPrefix = "ExpressionMeta.Injection.")

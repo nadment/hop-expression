@@ -25,7 +25,8 @@ public class OperatorTest extends ExpressionTest {
 		
 		// Integer and Binary
 		evalTrue("15 = 0xF");
-		// FIXME: evalTrue("'0.0' = 0");
+		evalTrue("'0.0' = 0");
+		evalTrue("0.0 = '0.000'");
 		evalTrue("15.0 = '15'");
 		evalTrue("'.01' = 0.01");
 
@@ -40,11 +41,16 @@ public class OperatorTest extends ExpressionTest {
 		evalFalse("true = false");
 		evalFalse("false = true");
 
+		// Null
 		evalNull("1 = null");
-		evalNull("null = true");
-		// NULL is not "equal to" NULL.
-		evalNull("null = null");
+		evalNull("null = true");		 
+		evalNull("null = false");		 
+		evalNull("null = null"); // NULL is not equal ( = ) to anything—not even to another NULL.
+		
+		
 		evalFails("NOM = ");
+		
+		// Date 
 		evalTrue("Date '2019-01-01' = Date '2019-01-01'");
 		evalFalse("Date '2019-01-01' = Date '2018-01-01'");
 	}
@@ -90,6 +96,8 @@ public class OperatorTest extends ExpressionTest {
 		evalFalse("'foo' > 'foo'");
 		evalTrue("'foo' > 'bar'");
 
+		evalNull("null > 0");
+		
 		evalTrue("Date '2019-02-01' > Date '2019-01-01'");
 		evalFalse("Date '2019-01-01' > Date '2019-01-01'");
 		evalFalse("Date '2018-01-01' > Date '2019-01-01'");
@@ -111,6 +119,9 @@ public class OperatorTest extends ExpressionTest {
 		evalFalse("'bar' >= 'foo'");
 		evalTrue("'foo' >= 'foo'");
 		evalTrue("'foo' >= 'bar'");
+		
+		evalNull("null >= 0");
+
 
 		evalTrue("Date '2019-02-01' >= Date '2019-01-01'");
 		evalTrue("Date '2019-01-01' >= Date '2019-01-01'");
@@ -134,6 +145,8 @@ public class OperatorTest extends ExpressionTest {
 		evalFalse("'foo' < 'foo'");
 		evalFalse("'foo' < 'bar'");
 
+		evalNull("null < 0");
+		
 		evalTrue("Date '2019-01-01' < Date '2019-02-01'");
 		evalFalse("Date '2019-01-01' < Date '2019-01-01'");
 		evalFalse("Date '2019-01-01' < Date '2018-01-01'");
@@ -156,6 +169,8 @@ public class OperatorTest extends ExpressionTest {
 		evalTrue("'bar' <= 'foo'");
 		evalFalse("'foo' <= 'bar'");
 
+		evalNull("null <= 0");
+		
 		evalTrue("Date '2019-01-01' <= Date '2019-02-01'");
 		evalTrue("Date '2019-01-01' <= Date '2019-01-01'");
 		evalFalse("Date '2019-01-01' <= Date '2018-01-01'");
@@ -221,9 +236,13 @@ public class OperatorTest extends ExpressionTest {
 	public void Subtract() throws Exception {
 		evalEquals("Subtract(10,-0.5)", 10.5);
 		evalEquals("Age-0.5", 39.5);
+		evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
 		evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
 		evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
 		evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
+		
+		evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
+		evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')",1.5);
 	}
 		
 	@Test
@@ -235,16 +254,13 @@ public class OperatorTest extends ExpressionTest {
 		evalFalse("1 between 3 and 5");
 		evalTrue("Age between 39.999 and 40.0001");
 		evalTrue("Age not between 10 and 20");
-
 		evalTrue("Age not between 10 and 20 and 'Test' is not null");
-		
-		
-		
+				
 		evalFails("Age between 10 and");
 
 		evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
 
-		// precedence of BETWEEN is higher than AND and OR, but lower than '+'
+		// FIXME: precedence of BETWEEN is higher than AND and OR, but lower than '+'
 		//evalTrue("10 between 5 and 8 + 2 or False and True");
 	}
 
@@ -271,7 +287,7 @@ public class OperatorTest extends ExpressionTest {
 
 		// Date to String
 		evalEquals("CAST(Date '2019-02-25' AS String)", "2019-02-25");
-		//evalEquals("CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
+		evalEquals("CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
 
 		//evalEquals("Cast(Time '23:48:59' as String)", "23:48:59");
 
@@ -281,7 +297,7 @@ public class OperatorTest extends ExpressionTest {
 
 		// Integer to String
 		evalEquals("CAST(12923 AS STRING)", "12923");
-		//evalEquals("CAST(1234 AS STRING FORMAT '9999MI')", "1234-");
+		evalEquals("CAST(-1234 AS STRING FORMAT '9999MI')", "1234-");
 
 		// Number to String
 		evalEquals("CAST(0.45 AS STRING)", ".45");		
@@ -312,8 +328,8 @@ public class OperatorTest extends ExpressionTest {
 		
 		
 		// Unsupported conversion
-		//evalFails("CAST(Date '2019-02-25' AS INTEGER)");
-		//evalFails("CAST(Date '2019-02-25' AS NUMBER)");
+		evalFails("CAST(Date '2019-02-25' AS INTEGER)");
+		evalFails("CAST(Date '2019-02-25' AS NUMBER)");
 		evalFails("CAST(TRUE AS DATE)");
 		evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
 		evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
@@ -356,6 +372,7 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("-40/-10", 4);
 		evalEquals("5/2",2.5 );
 		evalNull("null/1");
+		evalNull("null/0");
 		evalFails("40/0");
 	}
 

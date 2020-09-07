@@ -5,12 +5,11 @@ import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Random;
 
+import javax.script.SimpleScriptContext;
+
 import org.apache.hop.i18n.BaseMessages;
 
-// OR optimization:
-// If a clause consists of multiple predicates that are connected by the OR operator, optimization occurs only if the same column and comparison operator are used in every predicate, and the comparison operator is LIKE or equal to (=).
-
-public class ExpressionContext implements IExpressionContext {
+public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
 	
 	protected static final Class<?> PKG = Expression.class; // for i18n purposes
 	
@@ -37,8 +36,18 @@ public class ExpressionContext implements IExpressionContext {
 		return locale;
 	}
 
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	
 	public ZoneId getZone() {
 		return zone;
+	}
+	
+	public void setZone(ZoneId zone) {
+		this.zone = zone;
 	}
 
 	public Random getRandom() {

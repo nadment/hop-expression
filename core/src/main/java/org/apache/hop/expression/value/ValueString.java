@@ -3,6 +3,7 @@ package org.apache.hop.expression.value;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Value;
-import org.apache.hop.expression.util.ToDate;
+import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.i18n.BaseMessages;
 
 public class ValueString extends Value {
@@ -52,8 +53,12 @@ public class ValueString extends Value {
 	public Value convertTo(final IExpressionContext context, final DataType targetType, String format) {
 
 		if (targetType==DataType.DATE) {									
-			Instant result = ToDate.parse(value, format);
-			return new ValueDate(result);			
+			try {
+				Instant result = DateTimeFormat.parse(value, format);
+				return new ValueDate(result);
+			} catch (ParseException e) {
+				throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDate", value));
+			}			
 		}
 		
 		throw createUnsupportedConversionError(targetType);
@@ -130,7 +135,7 @@ public class ValueString extends Value {
 
 			return (long) Double.parseDouble(value);
 		} catch (NumberFormatException e) {
-			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumeric", value));
+			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
 		}
 	}
 
@@ -139,7 +144,7 @@ public class ValueString extends Value {
 		try {
 			return Double.parseDouble(value);
 		} catch (NumberFormatException e) {
-			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumeric", value));
+			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
 		}
 	}
 
@@ -148,7 +153,7 @@ public class ValueString extends Value {
 		try {
 			return new BigDecimal(value.trim());
 		} catch (NumberFormatException e) {
-			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumeric", value));
+			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
 		}
 	}
 }

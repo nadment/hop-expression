@@ -15,7 +15,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Scanner;
+import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -262,7 +262,7 @@ public class ExpressionEditor extends SashForm {
 
 					// Escape field name matching reserved words or function
 					String name = valueMeta.getName();
-					if (Scanner.getReservedWords().contains(name.toUpperCase())
+					if (ExpressionScanner.getReservedWords().contains(name.toUpperCase())
 							|| Function.getFunction(name) != null) {
 						name = '[' + name + ']';
 					}

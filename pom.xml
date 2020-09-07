@@ -11,14 +11,14 @@
 
 	<parent>
 		<artifactId>hop</artifactId>
-		<groupId>org.hop</groupId>
-		<version>0.30-SNAPSHOT</version>
+		<groupId>org.apache.hop</groupId>
+		<version>0.50-SNAPSHOT</version>
 	</parent>
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
-		<hop.version>0.30-SNAPSHOT</hop.version>
+		<hop.version>0.50-SNAPSHOT</hop.version>
 	</properties>
 
 	<modules>

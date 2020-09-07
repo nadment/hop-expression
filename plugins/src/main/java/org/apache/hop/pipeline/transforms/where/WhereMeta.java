@@ -60,7 +60,7 @@ import org.w3c.dom.Node;
 			i18nPackageName = "org.apache.hop.pipeline.transforms.where",
 			name = "Where.Name",
 			description = "Where.Description",
-//			categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Experimental",
+			categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
 			keywords = {"filter","expression","sql"}
 )
 @InjectionSupported(localizationPrefix = "Where.Injection.")

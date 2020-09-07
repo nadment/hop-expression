@@ -641,12 +641,7 @@ public enum Kind {
 	 * DATE function
 	 */
 	DATE(OperatorCategory.Date),
-	
-	/**
-	 * @see {@link #EXTRACT}
-	 */
-	DATE_PART(OperatorCategory.Date), DATE_DIFF(OperatorCategory.Date), DATE_TRUNC(OperatorCategory.Date),
-
+	  
 	/**
 	 * Returns the current date value.
 	 */
@@ -750,8 +745,6 @@ public enum Kind {
 	/**
 	 * Function to extract date part: DECADE | YEAR | MONTH | WEEK | DAY | HOUR |
 	 * MINUTE | SECOND...
-	 * 
-	 * @see {@link #DATE_PART}
 	 */
 	EXTRACT(OperatorCategory.Date),
 

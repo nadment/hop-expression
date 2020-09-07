@@ -3,7 +3,7 @@ package org.apache.hop.ui.expression;
 import java.util.ArrayList;
 
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Scanner;
+import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Token;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.swt.custom.LineStyleEvent;
@@ -42,10 +42,10 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
 		
 		try {
 			ArrayList<StyleRange> ranges = new ArrayList<StyleRange>();
-			Scanner scanner = new Scanner(styledText.getText());
+			ExpressionScanner scanner = new ExpressionScanner(styledText.getText());
 
 			for (Token token = scanner.tokenize(); token != null; token = scanner.tokenize()) {
-				ranges.add(new StyleRange(token.getStart(), token.getLength(), getColor(token), null));
+				ranges.add(new StyleRange(token.index(), token.length(), getColor(token), null));
 			}
 
 			event.styles = ranges.toArray(new StyleRange[0]);
@@ -55,7 +55,7 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
 	}
 
 	public Color getColor(Token token) {
-		switch (token.getId()) {
+		switch (token.id()) {
 		case COMMENT:
 			return DARK_GREEN;
 		case IDENTIFIER:

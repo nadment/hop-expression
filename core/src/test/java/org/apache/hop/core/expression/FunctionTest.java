@@ -1,7 +1,6 @@
 package org.apache.hop.core.expression;
 
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -96,11 +95,16 @@ public class FunctionTest extends ExpressionTest {
 
 	@Test
 	public void Date() throws Exception {
-		evalEquals("Date(2019,01,01)", LocalDate.of(2019, Month.JANUARY, 1));
+		evalEquals("Date(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
 		evalEquals("Date(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
+		evalEquals("Date(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
+		evalEquals("Date(2020,-6,1)", LocalDate.of(2019, Month.JULY, 1));
+		evalEquals("Date(2020,-1,1)", LocalDate.of(2019, Month.DECEMBER, 1));
+				
 		evalFails("Date()");
-		evalFails("Date(2020,15,22)");
-		evalFails("Date(2020,8,49)");
+		evalFails("Date(2020)");
+		evalFails("Date(2020,15)");
+		evalFails("Date(2020,1,1,1)");
 	}
 
 	@Test
@@ -331,6 +335,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Substring('TEST FROM',6)", "FROM");
 		evalEquals("Substring('TEST FROM',6,2)", "FR");
 		evalEquals("Substring('TEST FROM',1,4)", "TEST");
+		evalEquals("Substring('TEST FROM',-4)", "FROM");
 
 		// Alias
 		evalEquals("Substr('TEST',5)", "");
@@ -526,6 +531,7 @@ public class FunctionTest extends ExpressionTest {
 		evalTrue("To_Boolean('on')");
 		evalTrue("To_Boolean('1')");
 		evalTrue("To_Boolean(5)");
+		evalTrue("To_Boolean(2.3)");
 		evalTrue("To_Boolean(-1)");
 
 		evalFalse("To_Boolean('False')");
@@ -551,13 +557,18 @@ public class FunctionTest extends ExpressionTest {
 //		evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
 //
 //		// Format with Decimals
-///		evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
+//		evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
 //
 //		// Format with Currency
-//		evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
+		//evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
 //
 //		// Format with Thousand Group Markers
-		//evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12345678);
+//		evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12345678);
+		
+		// Trailing space
+//   evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
+		
+		
 	}
 
 	@Test
@@ -566,7 +577,6 @@ public class FunctionTest extends ExpressionTest {
 		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
 		Currency currency = symbols.getCurrency();
 		
-
 		// Text
 		evalEquals("TO_CHAR('abc')", "abc");
 		evalNull("TO_CHAR(NULL)");
@@ -583,6 +593,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("TO_CHAR(0,'9999')", "    0");
 		evalEquals("TO_CHAR(0,'9999999')", "       0");
 		evalEquals("TO_CHAR(0,'0999')", " 0000");
+	//	evalEquals("TO_CHAR(-0.5, '90.99')","-0.5"); 
 		evalEquals("TO_CHAR(12,'99')", " 12");
 		evalEquals("TO_CHAR(-7,'99')", " -7");
 		evalEquals("TO_CHAR(12923,'99999.99')", " 12923.00");
@@ -622,7 +633,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("TO_CHAR(5.2, 'FMRN')","V");
 		
 		evalEquals("TO_CHAR(123,'XX')", " 7B");
-		// evalEquals("TO_CHAR(123,'\"Number:\"999')", "Number: 123");
+		//evalEquals("TO_CHAR(123,'\"Number:\"999')", "Number: 123");
 
 		evalEquals("TO_CHAR(12.4, '99V999')", " 12400");
 		
@@ -723,10 +734,17 @@ public class FunctionTest extends ExpressionTest {
 
 		evalEquals("To_Date('01/02/-100','DD/MM/SYYYY')", LocalDate.of(-100, 2, 1));
 
+		// Trailing space
+		evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
+		
 		evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(2001, 2, 1));
 		evalEquals("To_Date('01/2/52','DD/MM/RRRR')", LocalDate.of(1952, 2, 1));
 		evalEquals("To_Date('01/2/0923','DD/MM/RRRR')", LocalDate.of(923, 2, 1));
 
+		// Month and day shorter than format 
+		evalEquals("To_Date('2020/2/1','YYYY/MM/DD')", LocalDate.of(2020, 2, 1));
+		
+		
 		// Rule to try alternate format MM -> MON and MONTH
 		evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
 		// Rule to try alternate format MM -> MON and MONTH
@@ -753,6 +771,8 @@ public class FunctionTest extends ExpressionTest {
 		// evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
 
 		// evalEquals("To_Date('15:30:40','hh24:mi:ss')",LocalDateTime.of(1970,1,1,11,30,40));
+		
+		evalNull("To_Date(NULL)");
 	}
 
 	@Test
@@ -797,8 +817,6 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("Extract(millisecond from Time '00:00:01.1234567')", 123);
 		evalEquals("Extract(microsecond from Time '00:00:01.1234567')", 123456);
 		evalEquals("Extract(nanosecond from Time '00:00:01.1234567')", 123456700);
-
-		// evalEquals("Date_Part(nanosecond,Time '00:00:01.1234567')", 123456700);
 
 		evalNull("Extract(SECOND from NULL)");
 	}
@@ -983,6 +1001,7 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("Log(10,null)");
 		evalNull("Log(null,1)");
 		evalFails("Log(1)");
+		evalFails("Log(x,y)");
 	}
 
 	@Test

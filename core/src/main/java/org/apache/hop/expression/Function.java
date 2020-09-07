@@ -20,7 +20,6 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -29,11 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.util.Bytes;
+import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Functions;
-import org.apache.hop.expression.util.StringEncoder;
-import org.apache.hop.expression.util.ToChar;
-import org.apache.hop.expression.util.ToDate;
-import org.apache.hop.expression.util.ToNumber;
+import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 
 /**
@@ -52,188 +49,10 @@ import org.apache.hop.i18n.BaseMessages;
 //TODO: implement REGEXP_SUBSTR
 //TODO: implement REGEXP_REPLACE
 //TODO: implement OVERLAY
+//TODO: implement NULLIFZERO
 
 public class Function extends Operator {
 
-	/**
-	 * Set of functions or alias by name.
-	 */
-	private static final HashMap<String, Function> FUNCTIONS_BY_NAME = new HashMap<>(256);
-
-	// -------------------------------------------------------------
-	// FUNCTIONS
-	// -------------------------------------------------------------
-	static {
-		addFunction(Kind.ABS);
-		addFunction(Kind.ADD);
-		addFunction(Kind.ADD_DAYS);
-		addFunction(Kind.ADD_HOURS);
-		addFunction(Kind.ADD_MINUTES);
-		addFunction(Kind.ADD_MONTHS);
-		addFunction(Kind.ADD_SECONDS);
-		addFunction(Kind.ADD_WEEKS);
-		addFunction(Kind.ADD_YEARS);
-		addFunction(Kind.ACOS);
-		addFunction(Kind.ACOSH);
-		addFunction(Kind.ASCII);
-		addFunction(Kind.ASIN);
-		addFunction(Kind.ASINH);
-		addFunction(Kind.ATAN);
-		addFunction(Kind.ATANH);
-		addFunction(Kind.ATAN2);
-		addFunction(Kind.BITAND);
-		addFunction(Kind.BITGET);
-		addFunction(Kind.BITNOT);
-		addFunction(Kind.BITOR);
-		addFunction(Kind.BITXOR);
-		addFunction(Kind.CAST);
-		addFunction(Kind.CBRT);
-		addFunction(Kind.CEIL, "CEILING");
-		addFunction(Kind.CHR);
-		addFunction(Kind.COALESCE);
-		addFunction(Kind.CONCAT);
-		addFunction(Kind.COS);
-		addFunction(Kind.COSH);
-		addFunction(Kind.COT);
-		addFunction(Kind.CONTAINS);
-		addFunctionNotDeterministic(Kind.CURRENT_DATE,"SYSDATE");
-		addFunction(Kind.DATE);
-		addFunction(Kind.DATE_PART);
-		addFunction(Kind.DAYNAME);
-		addFunction(Kind.DAY, "DAYOFMONTH");
-		addFunction(Kind.DAYOFWEEK);
-		addFunction(Kind.DAYOFWEEK_ISO);
-		addFunction(Kind.DAYOFYEAR);
-		addFunction(Kind.DAYS_BETWEEN);
-		addFunction(Kind.DECODE);
-		addFunction(Kind.DEGREES);
-		addFunction(Kind.DIVIDE);
-		addFunction(Kind.EXTRACT);
-		addFunction(Kind.EQUAL_NULL);
-		addFunction(Kind.ENDSWITH);
-		addFunction(Kind.EXP);
-		addFunction(Kind.FIRST_DAY);
-		addFunction(Kind.FLOOR);
-		addFunction(Kind.GREATEST);
-		addFunction(Kind.HOUR);
-		addFunction(Kind.HOURS_BETWEEN);
-		addFunction(Kind.IF);
-		addFunction(Kind.IFNULL, "NVL");
-		addFunction(Kind.INITCAP);
-		addFunction(Kind.INSTR);
-		addFunction(Kind.LAST_DAY);
-		addFunction(Kind.LEAST);
-		addFunction(Kind.LEFT);
-		addFunction(Kind.LENGTH);
-		addFunction(Kind.LN);
-		addFunction(Kind.LOG);
-		addFunction(Kind.LOG10);
-		addFunction(Kind.LOWER, "LCASE");
-		addFunction(Kind.LPAD);
-		addFunction(Kind.LTRIM);
-		addFunction(Kind.MD5);
-		addFunction(Kind.MINUTE);
-		addFunction(Kind.MINUTES_BETWEEN);
-		addFunction(Kind.MOD);
-		addFunction(Kind.MONTH);
-		addFunction(Kind.MONTHNAME);
-		addFunction(Kind.MONTHS_BETWEEN);
-		addFunction(Kind.MULTIPLY);
-		addFunction(Kind.NEXT_DAY);
-		addFunction(Kind.NULLIF);
-		addFunction(Kind.NVL2);
-		addFunction(Kind.PI);
-		addFunction(Kind.POWER);
-		addFunction(Kind.QUARTER);
-		addFunction(Kind.RADIANS);
-		addFunctionNotDeterministic(Kind.RAND);
-		addFunction(Kind.REGEXP_LIKE);
-		addFunction(Kind.REPEAT);
-		addFunction(Kind.REPLACE);
-		addFunction(Kind.REVERSE);
-		addFunction(Kind.RIGHT);
-		addFunction(Kind.ROUND);
-		addFunction(Kind.RPAD);
-		addFunction(Kind.RTRIM);
-		addFunction(Kind.SHA1);
-		addFunction(Kind.SHA256);
-		addFunction(Kind.SHA384);
-		addFunction(Kind.SHA512);
-		addFunction(Kind.SECOND);
-		addFunction(Kind.SECONDS_BETWEEN);
-		addFunction(Kind.SIGN);
-		addFunction(Kind.SIN);
-		addFunction(Kind.SINH);
-		addFunction(Kind.SOUNDEX);
-		addFunction(Kind.SPACE);
-		addFunction(Kind.SQRT);
-		addFunction(Kind.STARTSWITH);
-		addFunction(Kind.STRINGDECODE);
-		addFunction(Kind.STRINGENCODE);
-		addFunction(Kind.SUBSTRING, "SUBSTR", "MID");
-		addFunction(Kind.SUBTRACT);
-		addFunction(Kind.TAN);
-		addFunction(Kind.TANH);
-		addFunction(Kind.TO_BOOLEAN);
-		addFunction(Kind.TO_CHAR);
-		addFunction(Kind.TO_DATE);
-		addFunction(Kind.TO_NUMBER);
-		addFunction(Kind.TRIM);
-		addFunction(Kind.TRUNCATE, "TRUNC");
-		addFunction(Kind.TRANSLATE);
-		addFunction(Kind.UNICODE);
-		addFunction(Kind.UPPER, "UCASE");
-		addFunction(Kind.URLDECODE);
-		addFunction(Kind.URLENCODE);
-		addFunction(Kind.WEEK);
-		addFunction(Kind.WEEKOFMONTH);
-		addFunction(Kind.WEEK_ISO);
-		addFunction(Kind.YEAR);
-		addFunction(Kind.YEARS_BETWEEN);
-	}
-
-	protected static void addFunction(Kind kind) {
-		createFunction(kind, kind.name(), false, true);
-	}
-
-	protected static void addFunction(Kind kind, String... alias) {
-		createFunction(kind, kind.name(), false, true);
-		for (String name : alias) {
-			createFunction(kind, name, true, true);
-		}
-	}
-
-	protected static void addFunctionNotDeterministic(Kind kind) {
-		addFunctionNotDeterministic(kind, kind.name());
-	}
-
-	protected static void addFunctionNotDeterministic(Kind kind, String... alias) {
-		createFunction(kind, kind.name(), false, false);
-		for (String name : alias) {
-			createFunction(kind, name, true, true);
-		}
-	}
-
-	private static void createFunction(Kind kind, String name, boolean isAlias, boolean isDeterministic) {
-		Function function = new Function(kind, name, isAlias, isDeterministic);
-		register(function);
-		FUNCTIONS_BY_NAME.put(name, function);
-	}
-
-	public static Function getFunction(final Kind kind) {
-		if (kind == null)
-			return null;
-
-		return getFunction(kind.name());
-	}
-
-	public static Function getFunction(final String name) {
-		if (name == null)
-			return null;
-
-		return FUNCTIONS_BY_NAME.get(name.toUpperCase());
-	}
-	
 	private final boolean isDeterministic;
 
 	protected Function(Kind kind, String name, boolean isAlias, boolean isDeterministic) {
@@ -390,7 +209,6 @@ public class Function extends Operator {
 		case BITXOR:
 			// case BIT_GET:
 		case CONTAINS:
-		case DATE_PART:
 		case DAYS_BETWEEN:
 		case DIVIDE:
 		case ENDSWITH:
@@ -432,7 +250,7 @@ public class Function extends Operator {
 		case TRANSLATE:
 		case DATE:
 			min = 3;
-			max = 3;			
+			max = 3;
 			break;
 		case COALESCE:
 		case CONCAT:
@@ -492,16 +310,15 @@ public class Function extends Operator {
 
 				DataType targetType = DataType.of((int) type.toInteger());
 
-
 				if (args.length == 3) {
 					String format = null;
 					Value f = args[2].eval(context);
 					if (!f.isNull())
 						format = f.toString();
-					
+
 					return value.convertTo(context, targetType, format);
 				}
-				
+
 				return value.convertTo(targetType);
 			}
 
@@ -512,36 +329,36 @@ public class Function extends Operator {
 				Value value = args[0].eval(context);
 				if (value.isNull())
 					return value;
-				Value months = args[1].eval(context);
-				if (months.isNull())
+				Value days = args[1].eval(context);
+				if (days.isNull())
 					return Value.NULL;
 
 				ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
-						.plusDays(months.toInteger());
+						.plusDays(days.toInteger());
 				return Value.of(dt.toInstant());
 			}
 			case ADD_HOURS: {
 				Value value = args[0].eval(context);
 				if (value.isNull())
 					return value;
-				Value months = args[1].eval(context);
-				if (months.isNull())
+				Value hours = args[1].eval(context);
+				if (hours.isNull())
 					return Value.NULL;
 
 				ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
-						.plusHours(months.toInteger());
+						.plusHours(hours.toInteger());
 				return Value.of(dt.toInstant());
 			}
 			case ADD_MINUTES: {
 				Value value = args[0].eval(context);
 				if (value.isNull())
 					return value;
-				Value months = args[1].eval(context);
-				if (months.isNull())
+				Value minutes = args[1].eval(context);
+				if (minutes.isNull())
 					return Value.NULL;
 
 				ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
-						.plusMinutes(months.toInteger());
+						.plusMinutes(minutes.toInteger());
 				return Value.of(dt.toInstant());
 			}
 
@@ -562,24 +379,24 @@ public class Function extends Operator {
 				Value value = args[0].eval(context);
 				if (value.isNull())
 					return value;
-				Value months = args[1].eval(context);
-				if (months.isNull())
+				Value seconds = args[1].eval(context);
+				if (seconds.isNull())
 					return Value.NULL;
 
 				ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
-						.plusSeconds(months.toInteger());
+						.plusSeconds(seconds.toInteger());
 				return Value.of(dt.toInstant());
 			}
 			case ADD_WEEKS: {
 				Value value = args[0].eval(context);
 				if (value.isNull())
 					return value;
-				Value months = args[1].eval(context);
-				if (months.isNull())
+				Value weeks = args[1].eval(context);
+				if (weeks.isNull())
 					return Value.NULL;
 
 				ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
-						.plusWeeks(months.toInteger());
+						.plusWeeks(weeks.toInteger());
 				return Value.of(dt.toInstant());
 			}
 
@@ -587,12 +404,12 @@ public class Function extends Operator {
 				Value value = args[0].eval(context);
 				if (value.isNull())
 					return value;
-				Value months = args[1].eval(context);
-				if (months.isNull())
+				Value years = args[1].eval(context);
+				if (years.isNull())
 					return Value.NULL;
 
 				ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone())
-						.plusYears(months.toInteger());
+						.plusYears(years.toInteger());
 				return Value.of(dt.toInstant());
 			}
 
@@ -612,15 +429,31 @@ public class Function extends Operator {
 				int year = (int) v0.toInteger();
 				int month = (int) v1.toInteger();
 				int day = (int) v2.toInteger();
+				
+				int monthsToAdd = 0;
+				if (month<1 ) {
+					monthsToAdd = month;
+					month = 1;					
+				}
+				else if ( month>12) {
+					monthsToAdd = month-1;
+					month = 1;					
+				}
 
-				// Locar LocalDate.of(year, month, day).atStartOfDay();
-
-				Instant instant = LocalDate.of(year, month, day).atStartOfDay(ZoneOffset.UTC).toInstant();
-				return Value.of(instant);
+				int daysToAdd = 0;
+				if (day<1 || day>31) {					
+					daysToAdd = day;
+					day = 1;
+				}
+				
+				LocalDate date =  LocalDate.of(year, month, day);
+				if ( monthsToAdd!=0 ) date = date.plusMonths(monthsToAdd);
+				if ( daysToAdd!=0 ) date = date.plusDays(daysToAdd);
+				
+				return Value.of(date.atStartOfDay(ZoneOffset.UTC).toInstant());
 			}
 
-			case EXTRACT:
-			case DATE_PART: {
+			case EXTRACT: {
 				Value part = args[0].eval(context);
 				if (part.isNull())
 					return Value.NULL;
@@ -1166,7 +999,7 @@ public class Function extends Operator {
 				int codePoint = (int) value.toInteger();
 
 				if (!Character.isValidCodePoint(codePoint)) {
-					throw new ExpressionException(BaseMessages.getString(PKG,"Invalid character code {0}", codePoint));
+					throw new ExpressionException(BaseMessages.getString(PKG, "Expression.ArgumentOutOfRange", codePoint));
 				}
 				return Value.of(new String(Character.toChars(codePoint)));
 			}
@@ -1296,15 +1129,19 @@ public class Function extends Operator {
 				case INTEGER:
 				case NUMBER:
 				case BIGNUMBER:
-					return Value.of(ToChar.toChar(value.toBigNumber(), format, context.getLocale()));
+					return Value.of(NumberFormat.format(value.toBigNumber(), format, context.getLocale()));
 				case DATE:
-					ZonedDateTime dt = value.toDate().atZone(context.getZone());
-					return Value.of(ToChar.toChar(dt, format, context.getLocale()));
+					ZonedDateTime datetime = value.toDate().atZone(context.getZone());
+
+					if (format == null)
+						format = "DD-MON-YY HH.MI.SS.FF PM";
+
+					return Value.of(DateTimeFormat.format(datetime, format, context.getLocale()));
 				case STRING:
 					return value;
 				}
 			}
-			
+
 			case TO_NUMBER: {
 				Value value = args[0].eval(context);
 				if (value.isNull())
@@ -1317,7 +1154,7 @@ public class Function extends Operator {
 						format = v.toString();
 				}
 
-				return Value.of(ToNumber.toNumber(value.toString(), format));				
+				return Value.of(NumberFormat.parse(value.toString(), format));
 			}
 
 			case TO_DATE: {
@@ -1336,7 +1173,7 @@ public class Function extends Operator {
 				case DATE:
 					return value;
 				case STRING:
-					Instant instant = ToDate.parse(value.toString(), format);
+					Instant instant = DateTimeFormat.parse(value.toString(), format);
 					return Value.of(instant);
 				}
 			}
@@ -1541,7 +1378,7 @@ public class Function extends Operator {
 
 				return Value.of(left.compareTo(right) == 0);
 			}
-			
+
 			case CONTAINS: {
 				Value left = args[0].eval(context);
 				Value right = args[1].eval(context);
@@ -1702,14 +1539,13 @@ public class Function extends Operator {
 
 			case STRINGENCODE: {
 				Value value = args[0].eval(context);
-				String result = StringEncoder.encode(value.toString());
+				String result = Functions.stringEncode(value.toString());
 				return Value.of(result);
-
 			}
 
 			case STRINGDECODE: {
 				Value value = args[0].eval(context);
-				String result = StringEncoder.decode(value.toString());
+				String result = Functions.stringDecode(value.toString());
 				return Value.of(result);
 			}
 
@@ -1834,8 +1670,7 @@ public class Function extends Operator {
 			}
 
 			}
-		}
-		catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw new ExpressionException(
 					BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.getMessage()), e);
 		}

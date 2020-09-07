@@ -10,10 +10,15 @@ public class ExpressionParserTest extends ExpressionTest {
 
 	@Test
 	public void comment() throws Exception {
-		evalTrue(" // Test \n  true ");
-		evalTrue(" /* Test */  true ");
+		evalTrue(" // Test line comment \n  true ");
+		evalTrue(" /* Test block comment */  true ");
+		evalTrue(" true /* Test block comment */");
 		evalTrue("/*\n * Comment on multi line\n *\n */	True");
-		// FIXME: evalTrue("/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */	True");
+		evalTrue("/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */	True");
+
+		evalFails("/*	True");
+		evalFails("/*	True*");
+		evalFails("/* /* nested block comment */	True");
 	}
 
 	@Test
@@ -31,8 +36,8 @@ public class ExpressionParserTest extends ExpressionTest {
 	@Test
 	public void literalTime() throws Exception {
 		evalEquals("Time '23:48:59'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
-		// TODO: evalEquals("Time '01:05'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
-		// TODO: evalEquals("Time '10:30 am'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
+		evalEquals("Time '01:05'", LocalDateTime.of(1900, 1, 1, 1, 5, 0));
+		//evalEquals("Time '10:30 am'", LocalDateTime.of(1900, 1, 1, 10, 30,0));
 		// TODO: evalEquals("Time '06:25:15 PM'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
 	}
 

@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.hop.i18n.BaseMessages;
 
 //TODO: implement RLIKE operator
-//TODO: implement the square brackets with a character range (MS SQL): like '[A-C]%'
+
 
 /**
  * Operators have the precedence levels. An operator on higher levels is
@@ -28,7 +29,13 @@ public class Operator implements Comparable<Operator> {
 	
 	private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
-	private static final ConcurrentHashMap<Kind, String> docs = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<Kind, String> docs = new ConcurrentHashMap<>();	
+
+	/**
+	 * Set of functions or alias by name.
+	 */
+	private static final HashMap<String, Function> FUNCTIONS_BY_NAME = new HashMap<>(256);
+
 
 	// -------------------------------------------------------------
 	// BITWISE OPERATORS
@@ -70,19 +77,19 @@ public class Operator implements Comparable<Operator> {
 	 * </ul>
 	 * </p>
 	 */
-	public static final Operator LOGICAL_NOT = new Operator(Kind.LOGICAL_NOT, "NOT", 150, false, false);
+	public static final Operator BOOLNOT = new Operator(Kind.LOGICAL_NOT, "NOT", 150, false, false);
 	/**
 	 * Logical disjunction <code>OR</code> operator.
 	 */
-	public static final Operator LOGICAL_OR = new Operator(Kind.LOGICAL_OR, "OR", 180, true, false);
+	public static final Operator BOOLOR = new Operator(Kind.LOGICAL_OR, "OR", 180, true, false);
 	/**
 	 * Logical conjunction <code>AND</code> operator.
 	 */
-	public static final Operator LOGICAL_AND = new Operator(Kind.LOGICAL_AND, "AND", 160, true, false);
+	public static final Operator BOOLAND = new Operator(Kind.LOGICAL_AND, "AND", 160, true, false);
 	/**
 	 * Logical <code>XOR</code> operator.
 	 */
-	public static final Operator LOGICAL_XOR = new Operator(Kind.LOGICAL_XOR, "XOR", 170, true, false);
+	public static final Operator BOOLXOR = new Operator(Kind.LOGICAL_XOR, "XOR", 170, true, false);
 
 	/**
 	 * An operator describing the <code>IS</code> operator.
@@ -226,15 +233,162 @@ public class Operator implements Comparable<Operator> {
 	/**
 	 * Set of operators.
 	 */
-	private static final Set<Operator> OPERATORS = new TreeSet<>(
+	private static final Set<Operator> operators = new TreeSet<>(
 			Arrays.asList(ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER, BITAND, BITOR, BITNOT,
 					BITXOR, MODULUS, EQUALS, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN,
-					LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUALS, LOGICAL_AND, BETWEEN, CASE, CONCAT, IN,
-					IS, LIKE, LOGICAL_NOT, LOGICAL_OR, LOGICAL_XOR));
+					LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUALS, BOOLAND, BETWEEN, CASE, CONCAT, IN,
+					IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR));
 
 	public static Set<Operator> getOperators() {
-		return OPERATORS;
+		return operators;
 	}
+	
+	// -------------------------------------------------------------
+	// FUNCTIONS
+	// -------------------------------------------------------------
+	static {
+		addFunction(Kind.ABS);
+		addFunction(Kind.ADD);
+		addFunction(Kind.ADD_DAYS);
+		addFunction(Kind.ADD_HOURS);
+		addFunction(Kind.ADD_MINUTES);
+		addFunction(Kind.ADD_MONTHS);
+		addFunction(Kind.ADD_SECONDS);
+		addFunction(Kind.ADD_WEEKS);
+		addFunction(Kind.ADD_YEARS);
+		addFunction(Kind.ACOS);
+		addFunction(Kind.ACOSH);
+		addFunction(Kind.ASCII);
+		addFunction(Kind.ASIN);
+		addFunction(Kind.ASINH);
+		addFunction(Kind.ATAN);
+		addFunction(Kind.ATANH);
+		addFunction(Kind.ATAN2);
+		addFunction(Kind.BITAND);
+		addFunction(Kind.BITGET);
+		addFunction(Kind.BITNOT);
+		addFunction(Kind.BITOR);
+		addFunction(Kind.BITXOR);
+		addFunction(Kind.CAST);
+		addFunction(Kind.CBRT);
+		addFunction(Kind.CEIL, "CEILING");
+		addFunction(Kind.CHR);
+		addFunction(Kind.COALESCE);
+		addFunction(Kind.CONCAT);
+		addFunction(Kind.COS);
+		addFunction(Kind.COSH);
+		addFunction(Kind.COT);
+		addFunction(Kind.CONTAINS);
+		addFunctionNotDeterministic(Kind.CURRENT_DATE, "SYSDATE");
+		addFunction(Kind.DATE);
+		addFunction(Kind.DAYNAME);
+		addFunction(Kind.DAY, "DAYOFMONTH");
+		addFunction(Kind.DAYOFWEEK);
+		addFunction(Kind.DAYOFWEEK_ISO);
+		addFunction(Kind.DAYOFYEAR);
+		addFunction(Kind.DAYS_BETWEEN);
+		addFunction(Kind.DECODE);
+		addFunction(Kind.DEGREES);
+		addFunction(Kind.DIVIDE);
+		addFunction(Kind.EXTRACT);
+		addFunction(Kind.EQUAL_NULL);
+		addFunction(Kind.ENDSWITH);
+		addFunction(Kind.EXP);
+		addFunction(Kind.FIRST_DAY);
+		addFunction(Kind.FLOOR);
+		addFunction(Kind.GREATEST);
+		addFunction(Kind.HOUR);
+		addFunction(Kind.HOURS_BETWEEN);
+		addFunction(Kind.IF);
+		addFunction(Kind.IFNULL, "NVL");
+		addFunction(Kind.INITCAP);
+		addFunction(Kind.INSTR);
+		addFunction(Kind.LAST_DAY);
+		addFunction(Kind.LEAST);
+		addFunction(Kind.LEFT);
+		addFunction(Kind.LENGTH);
+		addFunction(Kind.LN);
+		addFunction(Kind.LOG);
+		addFunction(Kind.LOG10);
+		addFunction(Kind.LOWER, "LCASE");
+		addFunction(Kind.LPAD);
+		addFunction(Kind.LTRIM);
+		addFunction(Kind.MD5);
+		addFunction(Kind.MINUTE);
+		addFunction(Kind.MINUTES_BETWEEN);
+		addFunction(Kind.MOD);
+		addFunction(Kind.MONTH);
+		addFunction(Kind.MONTHNAME);
+		addFunction(Kind.MONTHS_BETWEEN);
+		addFunction(Kind.MULTIPLY);
+		addFunction(Kind.NEXT_DAY);
+		addFunction(Kind.NULLIF);
+		addFunction(Kind.NVL2);
+		addFunction(Kind.PI);
+		addFunction(Kind.POWER);
+		addFunction(Kind.QUARTER);
+		addFunction(Kind.RADIANS);
+		addFunctionNotDeterministic(Kind.RAND);
+		addFunction(Kind.REGEXP_LIKE);
+		addFunction(Kind.REPEAT);
+		addFunction(Kind.REPLACE);
+		addFunction(Kind.REVERSE);
+		addFunction(Kind.RIGHT);
+		addFunction(Kind.ROUND);
+		addFunction(Kind.RPAD);
+		addFunction(Kind.RTRIM);
+		addFunction(Kind.SHA1);
+		addFunction(Kind.SHA256);
+		addFunction(Kind.SHA384);
+		addFunction(Kind.SHA512);
+		addFunction(Kind.SECOND);
+		addFunction(Kind.SECONDS_BETWEEN);
+		addFunction(Kind.SIGN);
+		addFunction(Kind.SIN);
+		addFunction(Kind.SINH);
+		addFunction(Kind.SOUNDEX);
+		addFunction(Kind.SPACE);
+		addFunction(Kind.SQRT);
+		addFunction(Kind.STARTSWITH);
+		addFunction(Kind.STRINGDECODE);
+		addFunction(Kind.STRINGENCODE);
+		addFunction(Kind.SUBSTRING, "SUBSTR", "MID");
+		addFunction(Kind.SUBTRACT);
+		addFunction(Kind.TAN);
+		addFunction(Kind.TANH);
+		addFunction(Kind.TO_BOOLEAN);
+		addFunction(Kind.TO_CHAR);
+		addFunction(Kind.TO_DATE);
+		addFunction(Kind.TO_NUMBER);
+		addFunction(Kind.TRIM);
+		addFunction(Kind.TRUNCATE, "TRUNC");
+		addFunction(Kind.TRANSLATE);
+		addFunction(Kind.UNICODE);
+		addFunction(Kind.UPPER, "UCASE");
+		addFunction(Kind.URLDECODE);
+		addFunction(Kind.URLENCODE);
+		addFunction(Kind.WEEK);
+		addFunction(Kind.WEEKOFMONTH);
+		addFunction(Kind.WEEK_ISO);
+		addFunction(Kind.YEAR);
+		addFunction(Kind.YEARS_BETWEEN);
+	}
+
+	public static Function getFunction(final Kind kind) {
+		if (kind == null)
+			return null;
+
+		return getFunction(kind.name());
+	}
+
+	public static Function getFunction(final String name) {
+		if (name == null)
+			return null;
+
+		return FUNCTIONS_BY_NAME.get(name.toUpperCase());
+	}
+	
+	
 	
 	/**
 	 * Register operator like function
@@ -242,7 +396,35 @@ public class Operator implements Comparable<Operator> {
 	 * @param operator
 	 */
 	protected static void register(Operator operator) {
-		OPERATORS.add(operator);
+		operators.add(operator);
+	}
+	
+	protected static void addFunction(Kind kind) {
+		createFunction(kind, kind.name(), false, true);
+	}
+
+	protected static void addFunction(Kind kind, String... alias) {
+		createFunction(kind, kind.name(), false, true);
+		for (String name : alias) {
+			createFunction(kind, name, true, true);
+		}
+	}
+
+	protected static void addFunctionNotDeterministic(Kind kind) {
+		addFunctionNotDeterministic(kind, kind.name());
+	}
+
+	protected static void addFunctionNotDeterministic(Kind kind, String... alias) {
+		createFunction(kind, kind.name(), false, false);
+		for (String name : alias) {
+			createFunction(kind, name, true, false);
+		}
+	}
+
+	private static void createFunction(Kind kind, String name, boolean isAlias, boolean isDeterministic) {
+		Function function = new Function(kind, name, isAlias, isDeterministic);
+		register(function);
+		FUNCTIONS_BY_NAME.put(name, function);
 	}
 	
 	public static String getHtmlDocumentation(Kind kind) {
@@ -647,6 +829,7 @@ public class Operator implements Comparable<Operator> {
 			Value right = args[1].eval(context);
 
 			// Treats NULLs as unknown values
+			// NULL is not equal ( = ) to anything—not even to another NULL.
 			if (left.isNull() || right.isNull()) {
 				return Value.NULL;
 			}
@@ -674,7 +857,7 @@ public class Operator implements Comparable<Operator> {
 			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
-				return Value.FALSE;
+				return Value.NULL;
 			}
 
 			return Value.of(left.compareTo(right) < 0);
@@ -685,7 +868,7 @@ public class Operator implements Comparable<Operator> {
 			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
-				return Value.FALSE;
+				return Value.NULL;
 			}
 
 			return Value.of(left.compareTo(right) <= 0);
@@ -696,7 +879,7 @@ public class Operator implements Comparable<Operator> {
 			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
-				return Value.FALSE;
+				return Value.NULL;
 			}
 
 			return Value.of(left.compareTo(right) > 0);
@@ -707,7 +890,7 @@ public class Operator implements Comparable<Operator> {
 			Value right = args[1].eval(context);
 
 			if (left.isNull() || right.isNull()) {
-				return Value.FALSE;
+				return Value.NULL;
 			}
 
 			return Value.of(left.compareTo(right) >= 0);

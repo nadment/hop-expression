@@ -23,7 +23,6 @@
 package org.apache.hop.pipeline.transforms.clonerowexpression;
 
 import org.apache.hop.core.Const;
-import org.apache.hop.core.annotations.PluginDialog;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
@@ -34,7 +33,6 @@ import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.dialog.ErrorDialog;
 import org.apache.hop.ui.core.widget.ExpressionText;
-import org.apache.hop.ui.core.widget.TextVar;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -55,12 +53,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-@PluginDialog(
-        id = "CloneRowExpression",
-        pluginType = PluginDialog.PluginType.TRANSFORM,
-        image = "clonerow.svg",
-        documentationUrl = "http://www.project-hop.org/manual/latest/plugins/transforms/clonerow.html"
-)
+
 public class CloneRowDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = CloneRowDialog.class; // for i18n purposes, needed by Translator!!
 

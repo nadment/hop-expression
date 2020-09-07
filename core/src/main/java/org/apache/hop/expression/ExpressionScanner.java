@@ -11,7 +11,7 @@ import org.apache.hop.i18n.BaseMessages;
 /**
  * Parses an expression string to return the individual tokens.
  */
-public class Scanner {
+public class ExpressionScanner {
 
 	private static final Class<?> PKG = Expression.class; // for i18n purposes
 	
@@ -28,7 +28,7 @@ public class Scanner {
 
 	private int pos = 0;
 
-	public Scanner(String text) {
+	public ExpressionScanner(String text) {
 		this.source = text;
 	}
 
@@ -39,13 +39,13 @@ public class Scanner {
 
 			switch (c) {
 			case ',':
-				return new Token(Id.COMMA, pos, ++pos);
+				return new Token(Id.COMMA, pos++);
 
 			case '(':
-				return new Token(Id.LPARENTHESIS, pos, ++pos);
+				return new Token(Id.LPARENTHESIS, pos++);
 
 			case ')':
-				return new Token(Id.RPARENTHESIS, pos, ++pos);
+				return new Token(Id.RPARENTHESIS, pos++);
 
 			// Double-quoted literal text.
 //			case '"': {
@@ -72,13 +72,13 @@ public class Scanner {
 //					throw new ExpressionParserException("ExpressionException.MissingEndDoubleQuotedString", source,
 //							pos);
 //
-//				return new ExpressionToken(Id.LITERAL_TEXT, start, pos, text.toString());
+//				return new ExpressionToken(Id.LITERAL_TEXT, start, text.toString());
 //			}
 
 			// Single-quoted literal text.
 			case '\'': {
 				StringBuilder text = new StringBuilder();
-				int start = pos++;
+				int index = pos++;
 				while (pos < source.length()) {
 					c = source.charAt(pos++);
 					if (c == '\'') {
@@ -100,61 +100,61 @@ public class Scanner {
 					throw new ExpressionParserException(BaseMessages.getString(PKG, "ExpressionParser.MissingEndSingleQuotedString"), source,
 							pos);
 
-				return new Token(Id.LITERAL_STRING, start, pos, text.toString());
+				return new Token(Id.LITERAL_STRING, index, text.toString());
 			}
 
 			case '=': {
-				int start = pos++;
+				int index = pos++;
 				if (pos < source.length()) {
 					c = source.charAt(pos);
 					if (c == '~') {
 						pos++;
-						return new Token(Id.CONTAINS, start, pos);
+						return new Token(Id.CONTAINS, index);
 					}
 				}
-				return new Token(Id.EQUAL, start, pos);
+				return new Token(Id.EQUAL, index);
 			}
 
 			case '+':
-				return new Token(Id.PLUS, pos, ++pos);
+				return new Token(Id.PLUS, pos++);
 
 			case '-':
-				return new Token(Id.MINUS, pos, ++pos);
+				return new Token(Id.MINUS, pos++);
 
 			case '*':
-				return new Token(Id.MULTIPLY, pos, ++pos);
+				return new Token(Id.MULTIPLY, pos++);
 
 			case '%':
-				return new Token(Id.MODULUS, pos, ++pos);
+				return new Token(Id.MODULUS, pos++);
 
 			case '<': {
 				// parse less symbol
-				int start = pos++;
+				int index = pos++;
 				if (pos < source.length()) {
 					c = source.charAt(pos);
 					if (c == '=') {
 						pos++;
-						return new Token(Id.LESS_THAN_OR_EQUAL, start, pos);
+						return new Token(Id.LESS_THAN_OR_EQUAL, index);
 					}
 					if (c == '>') {
 						pos++;
-						return new Token(Id.LESS_THAN_OR_GREATER_THAN, start, pos);
+						return new Token(Id.LESS_THAN_OR_GREATER_THAN, index);
 					}
 				}
-				return new Token(Id.LESS_THAN, start, pos);
+				return new Token(Id.LESS_THAN, index);
 			}
 
 			// parse greater symbol
 			case '>': {
-				int start = pos++;
+				int index = pos++;
 				if (pos < source.length()) {
 					c = source.charAt(pos);
 					if (c == '=') {
 						pos++;
-						return new Token(Id.GREATER_THAN_OR_EQUAL, start, pos);
+						return new Token(Id.GREATER_THAN_OR_EQUAL, index);
 					}
 				}
-				return new Token(Id.GREATER_THAN, start, pos);
+				return new Token(Id.GREATER_THAN, index);
 			}
 
 			// parse not equal symbol
@@ -164,7 +164,7 @@ public class Scanner {
 					c = source.charAt(pos);
 					if (c == '=') {
 						pos++;
-						return new Token(Id.NOT_EQUAL, start, pos);
+						return new Token(Id.NOT_EQUAL, start);
 					}
 				}
 				throw new ExpressionParserException(BaseMessages.getString(PKG, "ExpressionParser.UnexpectedCharacter"), source, start);
@@ -175,16 +175,40 @@ public class Scanner {
 				int start = pos++;
 				if (pos < source.length()) {
 					char c1 = source.charAt(pos);
+					// Block comment
 					if (c1 == '*') {
-						int end = source.indexOf("*/", pos + 1);
-						if (end < 0) {
-							end = source.length();
-						} else {
-							end += "*/".length();
+						int level = 1;
+						
+						while (level>0) {
+							int end = source.indexOf('*', pos + 1);
+							if ( end>0 && end<source.length()-1 ) {
+								// nested block comment
+								if ( source.charAt(end-1)=='/' ) {
+									level++;
+									pos = end;
+									continue;
+								}
+								if ( source.charAt(end+1)=='/' ) {
+									level--;
+									pos = end+2;
+								}			
+								else pos++;
+							}
+							else {
+								throw new ExpressionParserException(BaseMessages.getString(PKG, "ExpressionParser.MissingEndBlockComment"), source, pos);
+							}
 						}
-						pos = end;
-						return new Token(Id.COMMENT, start, pos);
+						
+//						int end = source.indexOf("*/", pos + 1);
+//						if (end < 0) {
+//							end = source.length();
+//						} else {
+//							end += "*/".length();
+//						}
+//						pos = end;
+						return new Token(Id.COMMENT, start);
 					}
+					// Line comment
 					if (c1 == '/') {
 						pos++;
 
@@ -195,20 +219,20 @@ public class Scanner {
 							pos++;
 						}
 
-						return new Token(Id.COMMENT, start, pos);
+						return new Token(Id.COMMENT, start);
 					}
 				}
-				return new Token(Id.DIVIDE, start, pos);
+				return new Token(Id.DIVIDE, start);
 			}
 
 			case '~':
-				return new Token(Id.BITWISE_NOT, pos, ++pos);
+				return new Token(Id.BITWISE_NOT, pos++);
 
 			case '&':
-				return new Token(Id.BITWISE_AND, pos, ++pos);
+				return new Token(Id.BITWISE_AND, pos++);
 
 			case '^':
-				return new Token(Id.BITWISE_XOR, pos, ++pos);
+				return new Token(Id.BITWISE_XOR, pos++);
 
 			// Bitwise OR operator or concat symbol
 			case '|': {
@@ -217,10 +241,10 @@ public class Scanner {
 					c = source.charAt(pos);
 					if (c == '|') {
 						pos++;
-						return new Token(Id.CONCAT, start, pos);
+						return new Token(Id.CONCAT, start);
 					}
 				}
-				return new Token(Id.BITWISE_OR, start, pos);
+				return new Token(Id.BITWISE_OR, start);
 			}
 
 			// Escape field name matching reserved words
@@ -230,7 +254,7 @@ public class Scanner {
 					c = source.charAt(pos++);
 					if (c==']') {					
 						String name = source.substring(start + 1, pos - 1).toUpperCase();
-						return new Token(Id.IDENTIFIER, start, pos, name);
+						return new Token(Id.IDENTIFIER, start, name);
 					}
 				}
 // FIXME: End of bracket
@@ -273,7 +297,7 @@ public class Scanner {
 			case '8':
 			case '9': {
 
-				int start = pos++;
+				int index = pos++;
 
 				// Hexadecimal number 0xABCDEF
 				if (c == '0' && pos < source.length() && (source.charAt(pos) == 'x')) {
@@ -281,7 +305,7 @@ public class Scanner {
 						pos++;
 					} while (pos < source.length() && Characters.isHexDigit(source.charAt(pos)));
 
-					return new Token(Id.LITERAL_BINARY_HEX, start, pos, source.substring(start + 2, pos));
+					return new Token(Id.LITERAL_BINARY_HEX, index, source.substring(index + 2, pos));
 				}
 
 				// Binary number 0b01101011
@@ -290,7 +314,7 @@ public class Scanner {
 						pos++;
 					} while (pos < source.length() && (source.charAt(pos) == '0' || source.charAt(pos) == '1'));
 
-					return new Token(Id.LITERAL_BINARY_BIT, start, pos, source.substring(start + 2, pos));
+					return new Token(Id.LITERAL_BINARY_BIT, index, source.substring(index + 2, pos));
 				}
 
 				// Integer part
@@ -320,7 +344,7 @@ public class Scanner {
 					}
 				}
 
-				return new Token(Id.LITERAL_NUMBER, start, pos, source.substring(start, pos));
+				return new Token(Id.LITERAL_NUMBER, index, source.substring(index, pos));
 			}
 
 			default:
@@ -332,7 +356,7 @@ public class Scanner {
 				// Probably a letter or digit. Start an identifier.
 				// Other characters, e.g. *, ! are also included
 				// in identifiers.
-				int start = pos++;
+				int index = pos++;
 				boolean isFunction = false;
 				loop: while (pos < source.length()) {
 					c = source.charAt(pos);
@@ -367,29 +391,29 @@ public class Scanner {
 						}
 					}
 				}
-				String identifier = source.substring(start, pos);
+				String identifier = source.substring(index, pos);
 				String name = identifier.toUpperCase();
 
 				if (isFunction && Function.getFunction(name) != null) {
-					return new Token(Id.FUNCTION, start, pos, name);
+					return new Token(Id.FUNCTION, index, name);
 				}
 
 				// Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR
 				if (RESERVED_WORDS.contains(name)) {
-					return new Token(Id.valueOf(name), start, pos, name);
+					return new Token(Id.valueOf(name), index, name);
 				}
 
 				DataType type = DataType.of(name);
 				if (type != null) {
-					return new Token(Id.DATATYPE, start, pos, name);
+					return new Token(Id.DATATYPE, index, name);
 				}
 
 				DatePart part = DatePart.of(name);
 				if (part != null) {
-					return new Token(Id.DATEPART, start, pos, name);
+					return new Token(Id.DATEPART, index, name);
 				}
 
-				return new Token(Id.IDENTIFIER, start, pos, identifier);
+				return new Token(Id.IDENTIFIER, index, identifier);
 			}
 
 		}

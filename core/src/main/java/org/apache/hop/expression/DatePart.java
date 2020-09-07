@@ -6,8 +6,6 @@ import java.time.temporal.IsoFields;
 
 /**
  * Date part
- * 
- * @author Nico
  */
 
 public enum DatePart {
@@ -67,18 +65,26 @@ public enum DatePart {
 	 */
 	WEEK("WEEKOFYEAR"),
 
-	/** Week of the year (number from 1-53). */
+	/** 
+	 * Week of the year (number from 1-53). 
+	 */
 	WEEK_ISO("WEEKOFYEAR_ISO"),
-	
-	/** Week from the beginning of the month (0-5) */
+
+	/** 
+	 * Week from the beginning of the month (0-5)
+	 */
 	WEEKOFMONTH,
-	
+
 	/**
 	 * The quarter (1, 2, 3, or 4) of the year
 	 */
 	QUARTER,
 
+	/**
+	 * The hour (0-23).
+	 */
 	HOUR("HH"),
+	
 	/**
 	 * The minute (0-59).
 	 */
@@ -90,11 +96,11 @@ public enum DatePart {
 
 	private final String alias;
 
-	DatePart() {
+	private DatePart() {
 		this.alias = null;
 	}
 
-	DatePart(final String alias) {
+	private DatePart(final String alias) {
 		this.alias = alias;
 	}
 
@@ -153,7 +159,7 @@ public enum DatePart {
 		case WEEK_ISO:
 			return dt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
 		case WEEKOFMONTH:
-			return dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);			
+			return dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 		case MONTH:
 			return dt.getMonthValue();
 		case QUARTER:

@@ -41,7 +41,7 @@ public class HtmlToolTip extends ToolTip {
 
 		
 		
-//		browser.getShell().addListener(SWT.MouseHover,  e -> onEvent(e));
+//		browser.getShell().addListener(SWT.MouseMove,  e -> onEvent(e));
 //		browser.addListener(SWT.FocusOut,  e -> onEvent(e));
 		
 		return browser;
@@ -60,13 +60,13 @@ public class HtmlToolTip extends ToolTip {
 		return false;
 	}
 	
-//	private void onEvent(Event event) {
-//		System.out.print(event);
+	private void onEvent(Event event) {
+		System.out.print(event);
 //		if (event.type==SWT.MouseHover) {
 //			System.out.print("Browser MouseHover");
 //			this.hide();
 //		}
-//	}
+	}
 	
 	protected final String getText(Event event) {
 		Tree tree = (Tree) event.widget;

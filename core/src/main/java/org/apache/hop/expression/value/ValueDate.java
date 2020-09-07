@@ -1,11 +1,11 @@
 package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -13,7 +13,8 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Value;
-import org.apache.hop.expression.util.ToChar;
+import org.apache.hop.expression.util.DateTimeFormat;
+
 
 public class ValueDate extends Value {
 
@@ -23,8 +24,7 @@ public class ValueDate extends Value {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 			.withLocale(Locale.ROOT).withZone(ZoneId.systemDefault());
 
-	private static final BigDecimal SECONDS_BY_DAY = new BigDecimal(24 * 60 * 60);
-	//private static final BigDecimal NANOS_BY_DAY = new BigDecimal(24 * 60 * 60 * 1000000000);
+	private static final double SECONDS_BY_DAY = 24 * 60 * 60;
 
 	private final Instant value;
 
@@ -74,25 +74,25 @@ public class ValueDate extends Value {
 		return DATE_FORMAT.format(value);
 	}
 
-	/**
-	 * Converts this date time to the number of milliseconds from the epochof
-	 * 1970-01-01T00:00:00Z.
-	 */
-	public long toInteger() {
-		long time = value.toEpochMilli();
-
-		return time;
-	}
-
-	/**
-	 * Converts this date time to the number of milliseconds from the epochof
-	 * 1970-01-01 00:00:00.
-	 */
-	public double toNumber() {
-		long time = value.toEpochMilli();
-
-		return (double) time;
-	}
+//	/**
+//	 * Converts this date time to the number of milliseconds from the epochof
+//	 * 1970-01-01T00:00:00Z.
+//	 */
+//	public long toInteger() {
+//		long time = value.toEpochMilli();
+//
+//		return time;
+//	}
+//
+//	/**
+//	 * Converts this date time to the number of milliseconds from the epochof
+//	 * 1970-01-01 00:00:00.
+//	 */
+//	public double toNumber() {
+//		long time = value.toEpochMilli();
+//
+//		return (double) time;
+//	}
 
 	
 	@Override
@@ -100,7 +100,7 @@ public class ValueDate extends Value {
 
 		if (targetType==DataType.STRING) {			
 			ZonedDateTime dt = ZonedDateTime.ofInstant(value,context.getZone());			
-			String result = ToChar.toChar(dt, format, context.getLocale());
+			String result = DateTimeFormat.format(dt, format, context.getLocale());
 			
 			return new ValueString(result);			
 		}
@@ -113,10 +113,7 @@ public class ValueDate extends Value {
 	public Value add(Value v) {
 		// Computes fraction of day
 		if (v.isNumeric()) {
-
-			BigDecimal number = v.toBigNumber();
-			long seconds = number.multiply(SECONDS_BY_DAY).setScale( 0, BigDecimal.ROUND_HALF_UP ).longValue();
-
+			long seconds = (long) (v.toNumber()*SECONDS_BY_DAY);			
 			return Value.of(value.plusSeconds(seconds));
 		}
 
@@ -127,14 +124,16 @@ public class ValueDate extends Value {
 	@Override
 	public Value subtract(Value v) {
 		if (v.isNumeric()) {
-
-			BigDecimal number = v.toBigNumber();
-			long seconds = number.multiply(SECONDS_BY_DAY).setScale( 0, BigDecimal.ROUND_HALF_UP ).longValueExact();
-
+			long seconds = (long) (v.toNumber()*SECONDS_BY_DAY);			
 			return Value.of(value.minusSeconds(seconds));
 		}
-
-		return super.add(v);
+		if ( v.isDate() ) {
+			long seconds = v.toDate().until(value, ChronoUnit.SECONDS);
+			// Date diff return fraction of day
+			return Value.of(seconds/SECONDS_BY_DAY);
+		}
+		
+		return super.subtract(v);
 	}
 
 	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {

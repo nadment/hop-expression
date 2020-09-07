@@ -31,13 +31,13 @@
             <useProjectArtifact>false</useProjectArtifact>
 		       <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>org.hop:hop-expression-core:jar</include>
+                <include>org.apache.hop:hop-expression-core:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <includes>
-                <include>org.hop:hop-expression-plugins:jar</include>
+                <include>org.apache.hop:hop-expression-plugins:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>

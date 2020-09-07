@@ -2,9 +2,7 @@ package org.apache.hop.expression;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Locale;
 
-import org.apache.hop.expression.util.ToChar;
 import org.apache.hop.expression.value.ValueBigNumber;
 import org.apache.hop.expression.value.ValueBinary;
 import org.apache.hop.expression.value.ValueBoolean;

@@ -18,9 +18,6 @@ public class OptimizerTest {
 
 		ExpressionContext context = new ExpressionContext();
 		Expression result = expression.optimize(context);
-
-		int cost = expression.getCost();
-		int opticost = result.getCost();
 		
 		int optimized = expression.getCost()-result.getCost();
 				

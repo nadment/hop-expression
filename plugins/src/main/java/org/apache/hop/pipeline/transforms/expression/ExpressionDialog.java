@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hop.core.Const;
-import org.apache.hop.core.annotations.PluginDialog;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
@@ -27,7 +26,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
-@PluginDialog(id = "Expression", image = "expression.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
 public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta> implements ITransformDialog {
 	private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes, needed by Translator2!!
 

@@ -7,4 +7,6 @@ First expression is equal than second expression.
 expression = expression
 ----
 
+TIP: NULL is not equal ( = ) to anything—not even to another NULL.
+
 See also xref:equal_null.adoc[EQUAL_NULL]

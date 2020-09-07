@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.hop</groupId>
+		<groupId>org.apache.hop</groupId>
 		<artifactId>hop-expression</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
@@ -12,7 +12,7 @@
 	<artifactId>hop-expression-core</artifactId>
 	<name>Hop Expression Core</name>
 	<description>Hop expression language</description>
-	<url>http://www.project-hop.org</url>
+	<url>http://hop.apache.org</url>
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
@@ -89,7 +89,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.hop</groupId>
+			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-core</artifactId>
 			<version>${hop.version}</version>
 			<scope>provided</scope>

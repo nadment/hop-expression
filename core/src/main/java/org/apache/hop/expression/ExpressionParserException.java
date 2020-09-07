@@ -23,7 +23,12 @@ public class ExpressionParserException extends ExpressionException {
 	public String getSource() {
 		return source;
 	}
-
+	
+    /**
+     * Returns the position where the error was found.
+     *
+     * @return the position where the error was found
+     */
 	public int getPosition() {
 		return position;
 	}

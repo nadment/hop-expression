@@ -16,12 +16,12 @@ Comments are sections of code text to aid readability.
 
 /* 
  * Multi line	<2>
- * comment 
+ * comment /* with nested block */
  */
 ----
-<1> A single -line comment begins with double slash // and ends with a new line.
+<1> A single line comment begins with double slash // and ends with a new line.
 
-<2> A multi-line comment begins with a slash asterick /* and ends with asterick slash.
+<2> A multi line comment begins with a slash asterick /* and ends with asterick slash and support nested block comment.
 
 NOTE: A comment is removed when parsing expression before evaluation, therefore has no influence on performance.
 

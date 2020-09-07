@@ -16,7 +16,6 @@
 
 package org.apache.hop.pipeline.transforms.where;
 
-import org.apache.hop.core.annotations.PluginDialog;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.i18n.BaseMessages;
@@ -32,7 +31,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-@PluginDialog(id = "Where", image = "where.svg", pluginType = PluginDialog.PluginType.TRANSFORM)
 public class WhereDialog extends AbstractTransformDialog<WhereMeta> implements ITransformDialog {
 
 	private static final Class<?> PKG = WhereMeta.class; // for i18n purposes

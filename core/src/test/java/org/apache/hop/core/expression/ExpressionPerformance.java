@@ -42,6 +42,7 @@ public class ExpressionPerformance {
 		long cycle = 10000000;
 		long startTime = System.currentTimeMillis();
 		for (long i = cycle; i > 0; i--) {
+			@SuppressWarnings("unused")
 			Value result = expression.eval(context);
 		}
 
