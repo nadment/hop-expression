@@ -41,239 +41,250 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 public class ExpressionEditor extends SashForm {
-	private static final Class<?> PKG = ExpressionEditor.class;
+  private static final Class<?> PKG = ExpressionEditor.class;
 
-	private ExpressionLabelProvider labelProvider;
-	private ExpressionProposalProvider contentProposalProvider;
-	private IVariables variables;
-	private IRowMeta rowMeta;
-	private StyledTextComp textEditor;
-	private Tree tree;
-	private TreeItem treeItemField;
-	private TreeItem treeItemVariable;
-	private boolean isUseField;
+  private ExpressionLabelProvider labelProvider;
+  private ExpressionProposalProvider contentProposalProvider;
+  private IVariables variables;
+  private IRowMeta rowMeta;
+  private StyledTextComp textEditor;
+  private Tree tree;
+  private TreeItem treeItemField;
+  private TreeItem treeItemVariable;
+  private boolean isUseField;
 
-	public ExpressionEditor(Composite parent, int style, boolean isUseField) {
-		super(parent, style + SWT.HORIZONTAL);
+  public ExpressionEditor(Composite parent, int style, boolean isUseField) {
+    super(parent, style + SWT.HORIZONTAL);
 
-		this.isUseField = isUseField;
-		this.labelProvider = new ExpressionLabelProvider();
+    this.isUseField = isUseField;
+    this.labelProvider = new ExpressionLabelProvider();
 
-		this.createTree(this);
-		this.createEditor(this);
+    this.createTree(this);
+    this.createEditor(this);
 
-		this.setWeights(new int[] { 25, 75 });
-	}
+    this.setWeights(new int[] {25, 75});
+  }
 
-	protected void createEditor(final Composite parent) {
-		textEditor = new StyledTextComp(variables, parent,
-				SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, "", false);
+  protected void createEditor(final Composite parent) {
+    textEditor =
+        new StyledTextComp(
+            variables,
+            parent,
+            SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER,
+            "",
+            false);
 
-		textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-		textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
+    textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
+    textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
 
-		// txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
-		// wEditor.getStyledText().setMargins(30, 5, 3, 5);
+    // txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
+    // wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
-		PropsUi.getInstance().setLook(textEditor, Props.WIDGET_STYLE_FIXED);
-		PropsUi.getInstance().setLook(this);
+    PropsUi.getInstance().setLook(textEditor, Props.WIDGET_STYLE_FIXED);
+    PropsUi.getInstance().setLook(this);
 
-		// See PDI-1284 in chinese window, Ctrl-SPACE is reserved by system for input
-		// chinese character. use Ctrl-ALT-SPACE instead.
-		int modifierKeys = SWT.CTRL;
-		if (System.getProperty("user.language").equals("zh")) {
-			modifierKeys = SWT.CTRL | SWT.ALT;
-		}
-		KeyStroke keyStroke = KeyStroke.getInstance(modifierKeys, SWT.SPACE);
+    // See PDI-1284 in chinese window, Ctrl-SPACE is reserved by system for input
+    // chinese character. use Ctrl-ALT-SPACE instead.
+    int modifierKeys = SWT.CTRL;
+    if (System.getProperty("user.language").equals("zh")) {
+      modifierKeys = SWT.CTRL | SWT.ALT;
+    }
+    KeyStroke keyStroke = KeyStroke.getInstance(modifierKeys, SWT.SPACE);
 
-		contentProposalProvider = new ExpressionProposalProvider();
+    contentProposalProvider = new ExpressionProposalProvider();
 
-		StyledText styledText = textEditor.getStyledText();
+    StyledText styledText = textEditor.getStyledText();
 
-		ContentProposalAdapter contentProposalAdapter = new ContentProposalAdapter(styledText,
-				new StyledTextContentAdapter(), contentProposalProvider, keyStroke, new char[] { '(', '$' });
-		contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
-		contentProposalAdapter.setLabelProvider(new ExpressionLabelProvider());
-		contentProposalAdapter.setPropagateKeys(true);
-		contentProposalAdapter.setAutoActivationDelay(10);
-		contentProposalAdapter.setPopupSize(new Point(300, 200));
+    ContentProposalAdapter contentProposalAdapter =
+        new ContentProposalAdapter(
+            styledText,
+            new StyledTextContentAdapter(),
+            contentProposalProvider,
+            keyStroke,
+            new char[] {'(', '$'});
+    contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+    contentProposalAdapter.setLabelProvider(new ExpressionLabelProvider());
+    contentProposalAdapter.setPropagateKeys(true);
+    contentProposalAdapter.setAutoActivationDelay(10);
+    contentProposalAdapter.setPopupSize(new Point(300, 200));
 
-		// Avoid Enter key to be inserted when selected content proposal
-		styledText.addVerifyKeyListener(new VerifyKeyListener() {
-			public void verifyKey(VerifyEvent event) {
-				if ('\r' == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
-					event.doit = false;
-				}
-			}
-		});
-	}
+    // Avoid Enter key to be inserted when selected content proposal
+    styledText.addVerifyKeyListener(
+        new VerifyKeyListener() {
+          public void verifyKey(VerifyEvent event) {
+            if ('\r' == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
+              event.doit = false;
+            }
+          }
+        });
+  }
 
-	protected void createTree(final Composite parent) {
+  protected void createTree(final Composite parent) {
 
-		// Tree
-		tree = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		tree.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-		PropsUi.getInstance().setLook(tree);
+    // Tree
+    tree = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+    tree.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
+    PropsUi.getInstance().setLook(tree);
 
-		// Create the drag source on the tree
-		DragSource ds = new DragSource(tree, DND.DROP_MOVE);
-		ds.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-		ds.addDragListener(new DragSourceAdapter() {
+    // Create the drag source on the tree
+    DragSource ds = new DragSource(tree, DND.DROP_MOVE);
+    ds.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+    ds.addDragListener(
+        new DragSourceAdapter() {
 
-			public void dragStart(DragSourceEvent event) {
-				TreeItem item = tree.getSelection()[0];
-				
-				if (item != null && item.getData()!= null) {
-					event.doit = true;
-				}
-				else event.doit = false;
-			}
+          public void dragStart(DragSourceEvent event) {
+            TreeItem item = tree.getSelection()[0];
 
-			public void dragSetData(DragSourceEvent event) {
-				// Set the data to be the first selected item's text
-				event.data = labelProvider.getText(tree.getSelection()[0].getData());
-			}
-		});
+            if (item != null && item.getData() != null) {
+              event.doit = true;
+            } else event.doit = false;
+          }
 
-		if ( isUseField ) { 
-		treeItemField = new TreeItem(tree, SWT.NULL);
-		treeItemField.setImage(GuiResource.getInstance().getImageBol());
-		treeItemField.setText(BaseMessages.getString(PKG, "Expression.Fields.Label"));
-		}
-		
-		TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
-		treeItemOperator.setImage(GuiResource.getInstance().getImageBol());
-		treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
+          public void dragSetData(DragSourceEvent event) {
+            // Set the data to be the first selected item's text
+            event.data = labelProvider.getText(tree.getSelection()[0].getData());
+          }
+        });
 
-		// Create operator category
-		Map<String, TreeItem> items = new HashMap<>();
-		for (OperatorCategory category: OperatorCategory.values() ) {
-			
-			if ( category==OperatorCategory.None ) continue;
-			
-			TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
-			item.setImage(GuiResource.getInstance().getImageBol());
-			item.setText(BaseMessages.getString(PKG, "Expression.Operators.Category."+category.name()+".Label"));
-			items.put(category.name(), item);
-		}
+    if (isUseField) {
+      treeItemField = new TreeItem(tree, SWT.NULL);
+      treeItemField.setImage(GuiResource.getInstance().getImageBol());
+      treeItemField.setText(BaseMessages.getString(PKG, "Expression.Fields.Label"));
+    }
 
-		
-		List<Operator> primaryOperators = new ArrayList<>();
-		HashMap<Kind,String> mapDisplay = new HashMap<>();
-		
-		// Primary operator
-		for ( Operator o:Operator.getOperators()) {						
-			if ( !o.isAlias() ) {
-				primaryOperators.add(o);
-				mapDisplay.put(o.getKind(), o.getName());
-			}
-		}
+    TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
+    treeItemOperator.setImage(GuiResource.getInstance().getImageBol());
+    treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
 
-		// Alias operator
-		for ( Operator o:Operator.getOperators()) {
-			if ( o.isAlias() ) {				
-				String alias = mapDisplay.get(o.getKind());	
-				mapDisplay.replace(o.getKind(), String.join(", ", alias, o.getName()));
-			}
-		}
-			
-		// Create item operator
-		for (Operator operator : primaryOperators) {
+    // Create operator category
+    Map<String, TreeItem> items = new HashMap<>();
+    for (OperatorCategory category : OperatorCategory.values()) {
 
-			TreeItem parentItem = items.get(operator.getKind().category());
+      if (category == OperatorCategory.None) continue;
 
-			TreeItem item;		
-			if (parentItem == null)
-				item = new TreeItem(tree, SWT.NULL);
-			else
-				item = new TreeItem(parentItem, SWT.NULL);
-			item.setImage(labelProvider.getImage(operator));			
-			item.setText(mapDisplay.get(operator.getKind()));
-			item.setData(operator);
-		}
+      TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
+      item.setImage(GuiResource.getInstance().getImageBol());
+      item.setText(
+          BaseMessages.getString(
+              PKG, "Expression.Operators.Category." + category.name() + ".Label"));
+      items.put(category.name(), item);
+    }
 
-		treeItemVariable = new TreeItem(tree, SWT.NULL);
-		treeItemVariable.setImage(GuiResource.getInstance().getImageBol());
-		treeItemVariable.setText(BaseMessages.getString(PKG, "Expression.Variables.Label"));
+    List<Operator> primaryOperators = new ArrayList<>();
+    HashMap<Kind, String> mapDisplay = new HashMap<>();
 
-		// Tooltip for syntax and help
-		HtmlToolTip toolTip = new HtmlToolTip(tree, labelProvider);
-		toolTip.activate();
-	}
+    // Primary operator
+    for (Operator o : Operator.getOperators()) {
+      if (!o.isAlias()) {
+        primaryOperators.add(o);
+        mapDisplay.put(o.getKind(), o.getName());
+      }
+    }
 
-	public void setText(String text) {
-		textEditor.setText(text);
-	}
+    // Alias operator
+    for (Operator o : Operator.getOperators()) {
+      if (o.isAlias()) {
+        String alias = mapDisplay.get(o.getKind());
+        mapDisplay.replace(o.getKind(), String.join(", ", alias, o.getName()));
+      }
+    }
 
-	public String getText() {
-		return textEditor.getText();
-	}
+    // Create item operator
+    for (Operator operator : primaryOperators) {
 
-	@Override
-	public void dispose() {
-		this.labelProvider.dispose();
-		super.dispose();
-	}
+      TreeItem parentItem = items.get(operator.getKind().category());
 
-	public IVariables getVariables() {
-		return variables;
-	}
+      TreeItem item;
+      if (parentItem == null) item = new TreeItem(tree, SWT.NULL);
+      else item = new TreeItem(parentItem, SWT.NULL);
+      item.setImage(labelProvider.getImage(operator));
+      item.setText(mapDisplay.get(operator.getKind()));
+      item.setData(operator);
+    }
 
-	public void setVariables(IVariables variables) {
-		this.variables = variables;
+    treeItemVariable = new TreeItem(tree, SWT.NULL);
+    treeItemVariable.setImage(GuiResource.getInstance().getImageBol());
+    treeItemVariable.setText(BaseMessages.getString(PKG, "Expression.Variables.Label"));
 
-		if (variables != null) {
-			this.contentProposalProvider.setVariables(variables);
+    // Tooltip for syntax and help
+    HtmlToolTip toolTip = new HtmlToolTip(tree, labelProvider);
+    toolTip.activate();
+  }
 
-			String[] names = this.variables.listVariables();
-			Arrays.sort(names);
+  public void setText(String text) {
+    textEditor.setText(text);
+  }
 
-			this.treeItemVariable.removeAll();
-			for (String name : names) {
-				boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(name);
+  public String getText() {
+    return textEditor.getText();
+  }
 
-				String data = "${" + name + '}';
+  @Override
+  public void dispose() {
+    this.labelProvider.dispose();
+    super.dispose();
+  }
 
-				TreeItem item = new TreeItem(treeItemVariable, SWT.NULL);
-				item.setImage(labelProvider.getImage(name));
-				item.setText(name);
-				item.setGrayed(isDeprecated);
-				item.setData(data);
-			}
-		}
-	}
+  public IVariables getVariables() {
+    return variables;
+  }
 
-	public IRowMeta getRowMeta() {
-		return rowMeta;
-	}
+  public void setVariables(IVariables variables) {
+    this.variables = variables;
 
-	public void setRowMeta(final IRowMeta rowMeta) {
-		this.rowMeta = rowMeta;
+    if (variables != null) {
+      this.contentProposalProvider.setVariables(variables);
 
-		if (rowMeta != null && 	isUseField  ) {			
-			
-			this.contentProposalProvider.setRowMeta(rowMeta);
+      String[] names = this.variables.listVariables();
+      Arrays.sort(names);
 
-			Display.getDefault().asyncExec(() -> {
-				treeItemField.removeAll();
+      this.treeItemVariable.removeAll();
+      for (String name : names) {
+        boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(name);
 
-				for (int i = 0; i < rowMeta.size(); i++) {
-					IValueMeta valueMeta = rowMeta.getValueMeta(i);
+        String data = "${" + name + '}';
 
-					// Escape field name matching reserved words or function
-					String name = valueMeta.getName();
-					if (ExpressionScanner.getReservedWords().contains(name.toUpperCase())
-							|| Function.getFunction(name) != null) {
-						name = '[' + name + ']';
-					}
+        TreeItem item = new TreeItem(treeItemVariable, SWT.NULL);
+        item.setImage(labelProvider.getImage(name));
+        item.setText(name);
+        item.setGrayed(isDeprecated);
+        item.setData(data);
+      }
+    }
+  }
 
-					TreeItem item = new TreeItem(treeItemField, SWT.NULL);
-					item.setImage(labelProvider.getImage(valueMeta));
-					item.setText(valueMeta.getName());
-					item.setData(name);
-				}
-			});
-		}
-	}
+  public IRowMeta getRowMeta() {
+    return rowMeta;
+  }
 
+  public void setRowMeta(final IRowMeta rowMeta) {
+    this.rowMeta = rowMeta;
+
+    if (rowMeta != null && isUseField) {
+
+      this.contentProposalProvider.setRowMeta(rowMeta);
+
+      Display.getDefault()
+          .asyncExec(
+              () -> {
+                treeItemField.removeAll();
+
+                for (int i = 0; i < rowMeta.size(); i++) {
+                  IValueMeta valueMeta = rowMeta.getValueMeta(i);
+
+                  // Escape field name matching reserved words or function
+                  String name = valueMeta.getName();
+                  if (ExpressionScanner.getReservedWords().contains(name.toUpperCase())
+                      || Function.getFunction(name) != null) {
+                    name = '[' + name + ']';
+                  }
+
+                  TreeItem item = new TreeItem(treeItemField, SWT.NULL);
+                  item.setImage(labelProvider.getImage(valueMeta));
+                  item.setText(valueMeta.getName());
+                  item.setData(name);
+                }
+              });
+    }
+  }
 }

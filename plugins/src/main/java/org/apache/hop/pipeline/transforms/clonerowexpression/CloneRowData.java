@@ -43,5 +43,4 @@ public class CloneRowData extends BaseTransformData implements ITransformData {
     addInfosToRow = false;
     NrPrevFields = 0;
   }
-
 }

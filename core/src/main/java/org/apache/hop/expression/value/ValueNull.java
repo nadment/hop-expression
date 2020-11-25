@@ -7,78 +7,74 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
 
-/**
- * Implementation of NULL. NULL is not a regular data type.
- */
+/** Implementation of NULL. NULL is not a regular data type. */
 public class ValueNull extends Value {
 
-	public ValueNull() {
-	}
+  public ValueNull() {}
 
-	@Override
-	public DataType getDataType() {
-		return DataType.NONE;
-	}
-	
-	@Override
-	public Object getObject() {
-		return null;
-	}
+  @Override
+  public DataType getDataType() {
+    return DataType.NONE;
+  }
 
-	@Override
-	public boolean toBoolean() {
-		return false;
-	}
+  @Override
+  public Object getObject() {
+    return null;
+  }
 
-//	@Override
-//	public double toNumber() {
-//		return 0.0;
-//	}
-//
-	@Override
-	public String toString() {
-		return null;
-	}
+  @Override
+  public boolean toBoolean() {
+    return false;
+  }
 
-//	@Override
-//	public long toInteger() {
-//		return 0L;
-//	}
+  //	@Override
+  //	public double toNumber() {
+  //		return 0.0;
+  //	}
+  //
+  @Override
+  public String toString() {
+    return null;
+  }
 
-	@Override
-	public int hashCode() {
-		return 0;
-	}
+  //	@Override
+  //	public long toInteger() {
+  //		return 0L;
+  //	}
 
-	@Override
-	public boolean equals(Object other) {
-		return other == this;
-	}
+  @Override
+  public int hashCode() {
+    return 0;
+  }
 
-	public boolean isNull() {
-		return true;
-	}
+  @Override
+  public boolean equals(Object other) {
+    return other == this;
+  }
 
-	@Override
-	public Value negate() {
-		return this;
-	}
+  public boolean isNull() {
+    return true;
+  }
 
-	@Override
-	public Value eval(IExpressionContext context) throws ExpressionException {
-		return this;
-	}
+  @Override
+  public Value negate() {
+    return this;
+  }
 
-	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
-		writer.append(this.toString());
-	}
+  @Override
+  public Value eval(IExpressionContext context) throws ExpressionException {
+    return this;
+  }
 
-	@Override
-	public int compare(Value o) {
-		if (o.isNull())
-			return 0;
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+    writer.append(this.toString());
+  }
 
-		// null is always smaller
-		return -1;
-	}
+  @Override
+  public int compare(Value o) {
+    if (o.isNull()) return 0;
+
+    // null is always smaller
+    return -1;
+  }
 }

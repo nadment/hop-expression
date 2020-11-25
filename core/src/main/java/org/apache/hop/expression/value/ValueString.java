@@ -15,145 +15,143 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.i18n.BaseMessages;
 
 public class ValueString extends Value {
-	/**
-	 * The string data.
-	 */
-	private final String value;
+  /** The string data. */
+  private final String value;
 
-	public ValueString(String value) {
-		this.value = Objects.requireNonNull(value);
-	}
+  public ValueString(String value) {
+    this.value = Objects.requireNonNull(value);
+  }
 
-	@Override
-	public DataType getDataType() {
-		return DataType.STRING;
-	}
+  @Override
+  public DataType getDataType() {
+    return DataType.STRING;
+  }
 
-	@Override
-	public Object getObject() {
-		return value;
-	}
+  @Override
+  public Object getObject() {
+    return value;
+  }
 
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return value.hashCode();
+  }
 
-	@Override
-	public boolean equals(Object other) {
-		return other instanceof ValueString && value.equals(((ValueString) other).value);
-	}
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof ValueString && value.equals(((ValueString) other).value);
+  }
 
-	@Override
-	public int compare(Value v) {
-		return value.compareTo(v.toString());
-	}
-	
-	@Override
-	public Value convertTo(final IExpressionContext context, final DataType targetType, String format) {
+  @Override
+  public int compare(Value v) {
+    return value.compareTo(v.toString());
+  }
 
-		if (targetType==DataType.DATE) {									
-			try {
-				Instant result = DateTimeFormat.parse(value, format);
-				return new ValueDate(result);
-			} catch (ParseException e) {
-				throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDate", value));
-			}			
-		}
-		
-		throw createUnsupportedConversionError(targetType);
-	}	
+  @Override
+  public Value convertTo(
+      final IExpressionContext context, final DataType targetType, String format) {
 
-	@Override
-	public boolean toBoolean() {
-		switch (value.length()) {
-		case 1:
-			if (value.equals("1") || value.equalsIgnoreCase("t") || value.equalsIgnoreCase("y")) {
-				return true;
-			}
-			if (value.equals("0") || value.equalsIgnoreCase("f") || value.equalsIgnoreCase("n")) {
-				return false;
-			}
-			break;
-		case 2:
-			if (value.equalsIgnoreCase("on")) {
-				return true;
-			}
+    if (targetType == DataType.DATE) {
+      try {
+        Instant result = DateTimeFormat.parse(value, format);
+        return new ValueDate(result);
+      } catch (ParseException e) {
+        throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDate", value));
+      }
+    }
 
-			if (value.equalsIgnoreCase("no")) {
-				return false;
-			}
-			break;
-		case 3:
-			if (value.equalsIgnoreCase("yes")) {
-				return true;
-			}
-			if (value.equalsIgnoreCase("off")) {
-				return false;
-			}
-			break;
-		case 4:
-			if (value.equalsIgnoreCase("true")) {
-				return true;
-			}
-			break;
-		case 5:
-			if (value.equalsIgnoreCase("false")) {
-				return false;
-			}
-		}
-		return false;
-	}
+    throw createUnsupportedConversionError(targetType);
+  }
 
-	@Override
-	public Value eval(IExpressionContext context) throws ExpressionException {
-		return this;
-	}
+  @Override
+  public boolean toBoolean() {
+    switch (value.length()) {
+      case 1:
+        if (value.equals("1") || value.equalsIgnoreCase("t") || value.equalsIgnoreCase("y")) {
+          return true;
+        }
+        if (value.equals("0") || value.equalsIgnoreCase("f") || value.equalsIgnoreCase("n")) {
+          return false;
+        }
+        break;
+      case 2:
+        if (value.equalsIgnoreCase("on")) {
+          return true;
+        }
 
-	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
-		writer.append('\'');
-		writer.append(String.valueOf(value));
-		writer.append('\'');
-	}
+        if (value.equalsIgnoreCase("no")) {
+          return false;
+        }
+        break;
+      case 3:
+        if (value.equalsIgnoreCase("yes")) {
+          return true;
+        }
+        if (value.equalsIgnoreCase("off")) {
+          return false;
+        }
+        break;
+      case 4:
+        if (value.equalsIgnoreCase("true")) {
+          return true;
+        }
+        break;
+      case 5:
+        if (value.equalsIgnoreCase("false")) {
+          return false;
+        }
+    }
+    return false;
+  }
 
-	@Override
-	public String toString() {
-		return value;
-	}
+  @Override
+  public Value eval(IExpressionContext context) throws ExpressionException {
+    return this;
+  }
 
-	@Override
-	public byte[] toBinary() {
-		return value.getBytes(StandardCharsets.UTF_8);
-	}
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+    writer.append('\'');
+    writer.append(String.valueOf(value));
+    writer.append('\'');
+  }
 
-	@Override
-	public long toInteger() {
-		try {
+  @Override
+  public String toString() {
+    return value;
+  }
 
-			if (value.indexOf('.') < 0)
-				return Long.parseLong(value);
+  @Override
+  public byte[] toBinary() {
+    return value.getBytes(StandardCharsets.UTF_8);
+  }
 
-			return (long) Double.parseDouble(value);
-		} catch (NumberFormatException e) {
-			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
-		}
-	}
+  @Override
+  public long toInteger() {
+    try {
 
-	@Override
-	public double toNumber() {
-		try {
-			return Double.parseDouble(value);
-		} catch (NumberFormatException e) {
-			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
-		}
-	}
+      if (value.indexOf('.') < 0) return Long.parseLong(value);
 
-	@Override
-	public BigDecimal toBigNumber() {
-		try {
-			return new BigDecimal(value.trim());
-		} catch (NumberFormatException e) {
-			throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
-		}
-	}
+      return (long) Double.parseDouble(value);
+    } catch (NumberFormatException e) {
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+    }
+  }
+
+  @Override
+  public double toNumber() {
+    try {
+      return Double.parseDouble(value);
+    } catch (NumberFormatException e) {
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+    }
+  }
+
+  @Override
+  public BigDecimal toBigNumber() {
+    try {
+      return new BigDecimal(value.trim());
+    } catch (NumberFormatException e) {
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+    }
+  }
 }

@@ -50,265 +50,303 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 /**
- * A Widget that combines a Text widget with a Variable button that will insert
- * an Environment variable. The tool tip of the text widget shows the content of
- * the Text widget with expanded variables.
- *
+ * A Widget that combines a Text widget with a Variable button that will insert an Environment
+ * variable. The tool tip of the text widget shows the content of the Text widget with expanded
+ * variables.
  */
 public class ExpressionText extends Composite {
-	protected static Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by Translator!!
+  protected static Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by Translator!!
 
-	protected String toolTipText;
+  protected String toolTipText;
 
-	protected IGetCaretPosition getCaretPositionInterface;
+  protected IGetCaretPosition getCaretPositionInterface;
 
-	protected IInsertText insertTextInterface;
+  protected IInsertText insertTextInterface;
 
-	protected ControlSpaceKeyAdapter controlSpaceKeyAdapter;
+  protected ControlSpaceKeyAdapter controlSpaceKeyAdapter;
 
-	protected IVariables variables;
+  protected IVariables variables;
 
-	protected IRowMeta rowMeta;
-	
-	protected Text wText;
+  protected IRowMeta rowMeta;
 
-	protected ModifyListener modifyListenerTooltipText;
+  protected Text wText;
 
-	protected ToolBar wToolBar;
+  protected ModifyListener modifyListenerTooltipText;
 
-	protected boolean isUseField;
-	
-	public ExpressionText(IVariables variables, Composite composite, int flags, boolean isUseField) {
-		this(variables, composite, flags, null, null, null);
-		
-		this.isUseField=isUseField;
-	}
+  protected ToolBar wToolBar;
 
-	public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText) {
-		this(variables, composite, flags, toolTipText, null, null);
-	}
+  protected boolean isUseField;
 
-	public ExpressionText(IVariables variables, Composite composite, int flags,
-			IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface) {
-		this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface);
-	}
+  public ExpressionText(IVariables variables, Composite composite, int flags, boolean isUseField) {
+    this(variables, composite, flags, null, null, null);
 
-	public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText,
-			IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface) {
-		super(composite, SWT.NONE);
-		initialize(variables, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface, null);
-	}
+    this.isUseField = isUseField;
+  }
 
-	public ExpressionText(Composite composite, IVariables variables, int flags,
-			IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
-			SelectionListener selectionListener) {
-		this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface, selectionListener);
-	}
+  public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText) {
+    this(variables, composite, flags, toolTipText, null, null);
+  }
 
-	public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText,
-			IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
-			SelectionListener selectionListener) {
-		super(composite, SWT.NONE);
-		initialize(variables, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface,
-				selectionListener);
-	}
+  public ExpressionText(
+      IVariables variables,
+      Composite composite,
+      int flags,
+      IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface) {
+    this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface);
+  }
 
-	protected void initialize(IVariables variables, Composite composite, int flags, String toolTipText,
-			IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
-			SelectionListener selectionListener) {
+  public ExpressionText(
+      IVariables variables,
+      Composite composite,
+      int flags,
+      String toolTipText,
+      IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface) {
+    super(composite, SWT.NONE);
+    initialize(
+        variables,
+        composite,
+        flags,
+        toolTipText,
+        getCaretPositionInterface,
+        insertTextInterface,
+        null);
+  }
 
-		this.toolTipText = toolTipText;
-		this.getCaretPositionInterface = getCaretPositionInterface;
-		this.insertTextInterface = insertTextInterface;
-		this.variables = variables;
+  public ExpressionText(
+      Composite composite,
+      IVariables variables,
+      int flags,
+      IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface,
+      SelectionListener selectionListener) {
+    this(
+        variables,
+        composite,
+        flags,
+        null,
+        getCaretPositionInterface,
+        insertTextInterface,
+        selectionListener);
+  }
 
-		PropsUi.getInstance().setLook(this);
+  public ExpressionText(
+      IVariables variables,
+      Composite composite,
+      int flags,
+      String toolTipText,
+      IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface,
+      SelectionListener selectionListener) {
+    super(composite, SWT.NONE);
+    initialize(
+        variables,
+        composite,
+        flags,
+        toolTipText,
+        getCaretPositionInterface,
+        insertTextInterface,
+        selectionListener);
+  }
 
-		final GridLayout layout = new GridLayout(2, false);
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		layout.verticalSpacing = 0;
-		layout.horizontalSpacing = 2;
-		this.setLayout(layout);
+  protected void initialize(
+      IVariables variables,
+      Composite composite,
+      int flags,
+      String toolTipText,
+      IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface,
+      SelectionListener selectionListener) {
 
-		// add a text field on it...
-		wText = new Text(this, flags);
-		wText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    this.toolTipText = toolTipText;
+    this.getCaretPositionInterface = getCaretPositionInterface;
+    this.insertTextInterface = insertTextInterface;
+    this.variables = variables;
 
-		// add button
-		Image image = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "expression.svg", 14, //$NON-NLS-1$
-				14);
+    PropsUi.getInstance().setLook(this);
 
-		wToolBar = new ToolBar(this, SWT.FLAT);
-		final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
-		toolItem.setImage(image);
-		toolItem.setToolTipText("Browse");
-		toolItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				openExpressionDialog(composite.getShell());
-			}
-		});
+    final GridLayout layout = new GridLayout(2, false);
+    layout.marginHeight = 0;
+    layout.marginWidth = 0;
+    layout.verticalSpacing = 0;
+    layout.horizontalSpacing = 2;
+    this.setLayout(layout);
 
-		wToolBar.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.HORIZONTAL_ALIGN_CENTER));
+    // add a text field on it...
+    wText = new Text(this, flags);
+    wText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		modifyListenerTooltipText = getModifyListenerTooltipText(wText);
-		wText.addModifyListener(modifyListenerTooltipText);
+    // add button
+    Image image =
+        SwtSvgImageUtil.getImage(
+            Display.getCurrent(),
+            getClass().getClassLoader(),
+            "expression.svg",
+            14, //$NON-NLS-1$
+            14);
 
-		controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText, getCaretPositionInterface,
-				insertTextInterface);
-		wText.addKeyListener(controlSpaceKeyAdapter);
-	}
+    wToolBar = new ToolBar(this, SWT.FLAT);
+    final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
+    toolItem.setImage(image);
+    toolItem.setToolTipText("Browse");
+    toolItem.addSelectionListener(
+        new SelectionAdapter() {
+          @Override
+          public void widgetSelected(SelectionEvent e) {
+            openExpressionDialog(composite.getShell());
+          }
+        });
 
-	protected void openExpressionDialog(Shell shell) {
-		ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell, SWT.APPLICATION_MODAL | SWT.SHEET, isUseField);
-		dialog.setExpression(wText.getText());
-		dialog.setVariables(variables);
-		dialog.setRowMeta(rowMeta);
-		String expression = dialog.open();
-		if (expression != null) {
-			wText.setText(expression);
+    wToolBar.setLayoutData(
+        new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.HORIZONTAL_ALIGN_CENTER));
 
-		}
-	}
+    modifyListenerTooltipText = getModifyListenerTooltipText(wText);
+    wText.addModifyListener(modifyListenerTooltipText);
 
-	/**
-	 * @return the getCaretPositionInterface
-	 */
-	public IGetCaretPosition getGetCaretPositionInterface() {
-		return getCaretPositionInterface;
-	}
+    controlSpaceKeyAdapter =
+        new ControlSpaceKeyAdapter(
+            variables, wText, getCaretPositionInterface, insertTextInterface);
+    wText.addKeyListener(controlSpaceKeyAdapter);
+  }
 
-	/**
-	 * @param getCaretPositionInterface the getCaretPositionInterface to set
-	 */
-	public void setGetCaretPositionInterface(IGetCaretPosition getCaretPositionInterface) {
-		this.getCaretPositionInterface = getCaretPositionInterface;
-	}
+  protected void openExpressionDialog(Shell shell) {
+    ExpressionEditorDialog dialog =
+        new ExpressionEditorDialog(shell, SWT.APPLICATION_MODAL | SWT.SHEET, isUseField);
+    dialog.setExpression(wText.getText());
+    dialog.setVariables(variables);
+    dialog.setRowMeta(rowMeta);
+    String expression = dialog.open();
+    if (expression != null) {
+      wText.setText(expression);
+    }
+  }
 
-	/**
-	 * @return the insertTextInterface
-	 */
-	public IInsertText getInsertTextInterface() {
-		return insertTextInterface;
-	}
+  /** @return the getCaretPositionInterface */
+  public IGetCaretPosition getGetCaretPositionInterface() {
+    return getCaretPositionInterface;
+  }
 
-	/**
-	 * @param insertTextInterface the insertTextInterface to set
-	 */
-	public void setInsertTextInterface(IInsertText insertTextInterface) {
-		this.insertTextInterface = insertTextInterface;
-	}
+  /** @param getCaretPositionInterface the getCaretPositionInterface to set */
+  public void setGetCaretPositionInterface(IGetCaretPosition getCaretPositionInterface) {
+    this.getCaretPositionInterface = getCaretPositionInterface;
+  }
 
-	protected ModifyListener getModifyListenerTooltipText(final Text textField) {
-		return new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				if (textField.getEchoChar() == '\0') { // Can't show passwords ;-)
+  /** @return the insertTextInterface */
+  public IInsertText getInsertTextInterface() {
+    return insertTextInterface;
+  }
 
-					String tip = textField.getText();
-					if (!Utils.isEmpty(tip) && !Utils.isEmpty(toolTipText)) {
-						tip += Const.CR + Const.CR + toolTipText;
-					}
+  /** @param insertTextInterface the insertTextInterface to set */
+  public void setInsertTextInterface(IInsertText insertTextInterface) {
+    this.insertTextInterface = insertTextInterface;
+  }
 
-					if (Utils.isEmpty(tip)) {
-						tip = toolTipText;
-					}
-					textField.setToolTipText(variables.environmentSubstitute(tip));
-				}
-			}
-		};
-	}
+  protected ModifyListener getModifyListenerTooltipText(final Text textField) {
+    return new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        if (textField.getEchoChar() == '\0') { // Can't show passwords ;-)
 
-	/**
-	 * @return the text in the Text widget
-	 */
-	public String getText() {
-		return wText.getText();
-	}
+          String tip = textField.getText();
+          if (!Utils.isEmpty(tip) && !Utils.isEmpty(toolTipText)) {
+            tip += Const.CR + Const.CR + toolTipText;
+          }
 
-	/**
-	 * @param text the text in the Text widget to set.
-	 */
-	public void setText(String text) {
-		wText.setText(text);
-		modifyListenerTooltipText.modifyText(null);
-	}
+          if (Utils.isEmpty(tip)) {
+            tip = toolTipText;
+          }
+          textField.setToolTipText(variables.environmentSubstitute(tip));
+        }
+      }
+    };
+  }
 
-	public Text getTextWidget() {
-		return wText;
-	}
-	
-	public void setRowMeta(IRowMeta rowMeta) {
-		this.rowMeta = rowMeta;
-	}
+  /** @return the text in the Text widget */
+  public String getText() {
+    return wText.getText();
+  }
 
-	@Override
-	public void addListener(int eventType, Listener listener) {
-		wText.addListener(eventType, listener);
-	}
+  /** @param text the text in the Text widget to set. */
+  public void setText(String text) {
+    wText.setText(text);
+    modifyListenerTooltipText.modifyText(null);
+  }
 
-	/**
-	 * Add a modify listener to the text widget
-	 *
-	 * @param modifyListener
-	 */
-	public void addModifyListener(ModifyListener modifyListener) {
-		wText.addModifyListener(modifyListener);
-	}
+  public Text getTextWidget() {
+    return wText;
+  }
 
-	public void addSelectionListener(SelectionAdapter lsDef) {
-		wText.addSelectionListener(lsDef);
-	}
+  public void setRowMeta(IRowMeta rowMeta) {
+    this.rowMeta = rowMeta;
+  }
 
-	public void addKeyListener(KeyListener lsKey) {
-		wText.addKeyListener(lsKey);
-	}
+  @Override
+  public void addListener(int eventType, Listener listener) {
+    wText.addListener(eventType, listener);
+  }
 
-	public void addFocusListener(FocusListener lsFocus) {
-		wText.addFocusListener(lsFocus);
-	}
+  /**
+   * Add a modify listener to the text widget
+   *
+   * @param modifyListener
+   */
+  public void addModifyListener(ModifyListener modifyListener) {
+    wText.addModifyListener(modifyListener);
+  }
 
-	public void setEchoChar(char c) {
-		wText.setEchoChar(c);
-	}
+  public void addSelectionListener(SelectionAdapter lsDef) {
+    wText.addSelectionListener(lsDef);
+  }
 
-	public void setEnabled(boolean flag) {
-		wText.setEnabled(flag);
-	}
+  public void addKeyListener(KeyListener lsKey) {
+    wText.addKeyListener(lsKey);
+  }
 
-	public boolean setFocus() {
-		return wText.setFocus();
-	}
+  public void addFocusListener(FocusListener lsFocus) {
+    wText.addFocusListener(lsFocus);
+  }
 
-	public void addTraverseListener(TraverseListener tl) {
-		wText.addTraverseListener(tl);
-	}
+  public void setEchoChar(char c) {
+    wText.setEchoChar(c);
+  }
 
-	public void setToolTipText(String toolTipText) {
-		this.toolTipText = toolTipText;
-		wText.setToolTipText(toolTipText);
-		modifyListenerTooltipText.modifyText(null);
-	}
+  public void setEnabled(boolean flag) {
+    wText.setEnabled(flag);
+  }
 
-	public void setEditable(boolean editable) {
-		wText.setEditable(editable);
-	}
+  public boolean setFocus() {
+    return wText.setFocus();
+  }
 
-	public void setSelection(int i) {
-		wText.setSelection(i);
-	}
+  public void addTraverseListener(TraverseListener tl) {
+    wText.addTraverseListener(tl);
+  }
 
-	public void selectAll() {
-		wText.selectAll();
-	}
+  public void setToolTipText(String toolTipText) {
+    this.toolTipText = toolTipText;
+    wText.setToolTipText(toolTipText);
+    modifyListenerTooltipText.modifyText(null);
+  }
 
-	public void showSelection() {
-		wText.showSelection();
-	}
+  public void setEditable(boolean editable) {
+    wText.setEditable(editable);
+  }
 
-	public void setVariables(IVariables vars) {
-		variables = vars;
-		controlSpaceKeyAdapter.setVariables(variables);
-		modifyListenerTooltipText.modifyText(null);
-	}
+  public void setSelection(int i) {
+    wText.setSelection(i);
+  }
+
+  public void selectAll() {
+    wText.selectAll();
+  }
+
+  public void showSelection() {
+    wText.showSelection();
+  }
+
+  public void setVariables(IVariables vars) {
+    variables = vars;
+    controlSpaceKeyAdapter.setVariables(variables);
+    modifyListenerTooltipText.modifyText(null);
+  }
 }

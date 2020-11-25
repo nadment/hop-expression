@@ -19,118 +19,119 @@ import org.eclipse.swt.widgets.Display;
 
 public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider {
 
-	private Image imageFunction;
-	private Image imageVariable;	
-	private Image[] imageValueMeta;
+  private Image imageFunction;
+  private Image imageVariable;
+  private Image[] imageValueMeta;
 
-	public ExpressionLabelProvider() {
-		super();
+  public ExpressionLabelProvider() {
+    super();
 
-		imageFunction = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "function.svg", 16, 16);
-		imageVariable = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), "variable.svg", 16, 16);
+    imageFunction =
+        SwtSvgImageUtil.getImage(
+            Display.getCurrent(), getClass().getClassLoader(), "function.svg", 16, 16);
+    imageVariable =
+        SwtSvgImageUtil.getImage(
+            Display.getCurrent(), getClass().getClassLoader(), "variable.svg", 16, 16);
 
-		// Load image from plugin ValueMeta
-		imageValueMeta = new Image[0];
-		PluginRegistry registry = PluginRegistry.getInstance();
-		List<IPlugin> plugins = registry.getPlugins(ValueMetaPluginType.class);
-		for (IPlugin plugin : plugins) {
-			try {
-				IValueMeta meta = (IValueMeta) registry.loadClass(plugin);
+    // Load image from plugin ValueMeta
+    imageValueMeta = new Image[0];
+    PluginRegistry registry = PluginRegistry.getInstance();
+    List<IPlugin> plugins = registry.getPlugins(ValueMetaPluginType.class);
+    for (IPlugin plugin : plugins) {
+      try {
+        IValueMeta meta = (IValueMeta) registry.loadClass(plugin);
 
-				String file = plugin.getImageFile();
-				Image image = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(), file, 16, 16);
-				
-				if ( imageValueMeta.length<meta.getType() ) {					
-					imageValueMeta = Arrays.copyOf(imageValueMeta, meta.getType()+1);
-				}
-				
-				imageValueMeta[meta.getType()] = image;
-			} catch (HopPluginException e) {
-				// Ignore
-			}
-		}
-	}
+        String file = plugin.getImageFile();
+        Image image =
+            SwtSvgImageUtil.getImage(
+                Display.getCurrent(), getClass().getClassLoader(), file, 16, 16);
 
-	@Override
-	public void addListener(ILabelProviderListener var1) {
-	}
+        if (imageValueMeta.length < meta.getType()) {
+          imageValueMeta = Arrays.copyOf(imageValueMeta, meta.getType() + 1);
+        }
 
-	@Override
-	public void dispose() {
-		if (imageFunction != null)
-			imageFunction.dispose();
-		if (imageVariable != null)
-			imageVariable.dispose();		
-		for(Image image:imageValueMeta) {
-			if (image != null)
-				image.dispose();
-		}
-	}
+        imageValueMeta[meta.getType()] = image;
+      } catch (HopPluginException e) {
+        // Ignore
+      }
+    }
+  }
 
-	@Override
-	public boolean isLabelProperty(Object var1, String var2) {
-		return false;
-	}
+  @Override
+  public void addListener(ILabelProviderListener var1) {}
 
-	@Override
-	public void removeListener(ILabelProviderListener var1) {
-	}
+  @Override
+  public void dispose() {
+    if (imageFunction != null) imageFunction.dispose();
+    if (imageVariable != null) imageVariable.dispose();
+    for (Image image : imageValueMeta) {
+      if (image != null) image.dispose();
+    }
+  }
 
-	@Override
-	public Image getImage(Object element) {
+  @Override
+  public boolean isLabelProperty(Object var1, String var2) {
+    return false;
+  }
 
-		if (element instanceof String) {
-			return this.imageVariable;
-		}
+  @Override
+  public void removeListener(ILabelProviderListener var1) {}
 
-		if (element instanceof ExpressionProposal) {
-			ExpressionProposal proposal = (ExpressionProposal) element;
+  @Override
+  public Image getImage(Object element) {
 
-			switch (proposal.getType()) {
-			case Function:
-			case Field:
-				element = proposal.getData();
-				break;
-			case Variable:
-				return imageVariable;
-			default:
-				break;
-			}
-		}
+    if (element instanceof String) {
+      return this.imageVariable;
+    }
 
-		if (element instanceof Function) {
-			return this.imageFunction;
-		}
+    if (element instanceof ExpressionProposal) {
+      ExpressionProposal proposal = (ExpressionProposal) element;
 
-		if (element instanceof IValueMeta) {
-			IValueMeta valueMeta = (IValueMeta) element;
-			return imageValueMeta[valueMeta.getType()];
-		}
+      switch (proposal.getType()) {
+        case Function:
+        case Field:
+          element = proposal.getData();
+          break;
+        case Variable:
+          return imageVariable;
+        default:
+          break;
+      }
+    }
 
-		return null;
-	}
+    if (element instanceof Function) {
+      return this.imageFunction;
+    }
 
-	@Override
-	public String getText(Object element) {
-		if (element instanceof Operator) {
-			return ((Operator) element).getName();
-		}
+    if (element instanceof IValueMeta) {
+      IValueMeta valueMeta = (IValueMeta) element;
+      return imageValueMeta[valueMeta.getType()];
+    }
 
-		if (element instanceof ExpressionProposal) {
-			ExpressionProposal proposal = (ExpressionProposal) element;
-			return proposal.getLabel();
-		}
-		return String.valueOf(element);
-	}
+    return null;
+  }
 
-	@Override
-	public String getToolTipText(Object element) {
-		if (element instanceof Operator) {
-			Operator operator = (Operator) element;
+  @Override
+  public String getText(Object element) {
+    if (element instanceof Operator) {
+      return ((Operator) element).getName();
+    }
 
-			return Operator.getHtmlDocumentation(operator.getKind());
-		}
+    if (element instanceof ExpressionProposal) {
+      ExpressionProposal proposal = (ExpressionProposal) element;
+      return proposal.getLabel();
+    }
+    return String.valueOf(element);
+  }
 
-		return null;
-	}
+  @Override
+  public String getToolTipText(Object element) {
+    if (element instanceof Operator) {
+      Operator operator = (Operator) element;
+
+      return Operator.getHtmlDocumentation(operator.getKind());
+    }
+
+    return null;
+  }
 }

@@ -54,34 +54,25 @@ import org.w3c.dom.Node;
  *
  */
 @Transform(
-  id = "CloneRowExpression", 
-  name = "CloneRow.Name",  
-  description = "CloneRow.Description",
-  image = "clonerow.svg",
-  categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility",
-  i18nPackageName = "org.apache.hop.pipeline.transforms.clonerow"
-)
-public class CloneRowMeta extends BaseTransformMeta implements ITransformMeta<CloneRow, CloneRowData> {
+    id = "CloneRowExpression",
+    name = "CloneRow.Name",
+    description = "CloneRow.Description",
+    image = "clonerow.svg",
+    categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility",
+    i18nPackageName = "org.apache.hop.pipeline.transforms.clonerow")
+public class CloneRowMeta extends BaseTransformMeta
+    implements ITransformMeta<CloneRow, CloneRowData> {
 
   private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator!!
 
-  /**
-   * nr of clone rows
-   */
+  /** nr of clone rows */
   private String nrclones;
 
-  /**
-   * Flag: add clone flag
-   */
-
+  /** Flag: add clone flag */
   private boolean addcloneflag;
 
-  /**
-   * clone flag field
-   */
+  /** clone flag field */
   private String cloneflagfield;
-
-
 
   private boolean addclonenum;
   private String clonenumfield;
@@ -93,18 +84,19 @@ public class CloneRowMeta extends BaseTransformMeta implements ITransformMeta<Cl
   @Override
   public String getXml() {
     StringBuilder retval = new StringBuilder();
-    retval.append( "    " + XmlHandler.addTagValue( "nrclones", nrclones ) );
-    retval.append( "    " + XmlHandler.addTagValue( "addcloneflag", addcloneflag ) );
-    retval.append( "    " + XmlHandler.addTagValue( "cloneflagfield", cloneflagfield ) );
-    retval.append( "    " + XmlHandler.addTagValue( "addclonenum", addclonenum ) );
-    retval.append( "    " + XmlHandler.addTagValue( "clonenumfield", clonenumfield ) );
+    retval.append("    " + XmlHandler.addTagValue("nrclones", nrclones));
+    retval.append("    " + XmlHandler.addTagValue("addcloneflag", addcloneflag));
+    retval.append("    " + XmlHandler.addTagValue("cloneflagfield", cloneflagfield));
+    retval.append("    " + XmlHandler.addTagValue("addclonenum", addclonenum));
+    retval.append("    " + XmlHandler.addTagValue("clonenumfield", clonenumfield));
 
     return retval.toString();
   }
 
   @Override
-  public void loadXml( Node transformNode, IHopMetadataProvider metadataProvider) throws HopXmlException {
-    readData( transformNode );
+  public void loadXml(Node transformNode, IHopMetadataProvider metadataProvider)
+      throws HopXmlException {
+    readData(transformNode);
   }
 
   public Object clone() {
@@ -116,7 +108,7 @@ public class CloneRowMeta extends BaseTransformMeta implements ITransformMeta<Cl
     return nrclones;
   }
 
-  public void setNrClones( String nrclones ) {
+  public void setNrClones(String nrclones) {
     this.nrclones = nrclones;
   }
 
@@ -124,16 +116,15 @@ public class CloneRowMeta extends BaseTransformMeta implements ITransformMeta<Cl
     return addcloneflag;
   }
 
-  public void setAddCloneFlag( boolean addcloneflag ) {
+  public void setAddCloneFlag(boolean addcloneflag) {
     this.addcloneflag = addcloneflag;
   }
-
 
   public boolean isAddCloneNum() {
     return addclonenum;
   }
 
-  public void setAddCloneNum( boolean addclonenum ) {
+  public void setAddCloneNum(boolean addclonenum) {
     this.addclonenum = addclonenum;
   }
 
@@ -141,30 +132,29 @@ public class CloneRowMeta extends BaseTransformMeta implements ITransformMeta<Cl
     return clonenumfield;
   }
 
-  public void setCloneNumField( String clonenumfield ) {
+  public void setCloneNumField(String clonenumfield) {
     this.clonenumfield = clonenumfield;
   }
-
 
   public String getCloneFlagField() {
     return cloneflagfield;
   }
 
-  public void setCloneFlagField( String cloneflagfield ) {
+  public void setCloneFlagField(String cloneflagfield) {
     this.cloneflagfield = cloneflagfield;
   }
 
-  private void readData( Node transformNode ) throws HopXmlException {
+  private void readData(Node transformNode) throws HopXmlException {
     try {
-      nrclones = XmlHandler.getTagValue( transformNode, "nrclones" );
-      addcloneflag = "Y".equalsIgnoreCase( XmlHandler.getTagValue( transformNode, "addcloneflag" ) );
-      cloneflagfield = XmlHandler.getTagValue( transformNode, "cloneflagfield" );
-      addclonenum = "Y".equalsIgnoreCase( XmlHandler.getTagValue( transformNode, "addclonenum" ) );
-      clonenumfield = XmlHandler.getTagValue( transformNode, "clonenumfield" );
+      nrclones = XmlHandler.getTagValue(transformNode, "nrclones");
+      addcloneflag = "Y".equalsIgnoreCase(XmlHandler.getTagValue(transformNode, "addcloneflag"));
+      cloneflagfield = XmlHandler.getTagValue(transformNode, "cloneflagfield");
+      addclonenum = "Y".equalsIgnoreCase(XmlHandler.getTagValue(transformNode, "addclonenum"));
+      clonenumfield = XmlHandler.getTagValue(transformNode, "clonenumfield");
 
-    } catch ( Exception e ) {
+    } catch (Exception e) {
       throw new HopXmlException(
-        BaseMessages.getString( PKG, "CloneRowMeta.Exception.UnableToReadTransformMeta" ), e );
+          BaseMessages.getString(PKG, "CloneRowMeta.Exception.UnableToReadTransformMeta"), e);
     }
   }
 
@@ -177,117 +167,139 @@ public class CloneRowMeta extends BaseTransformMeta implements ITransformMeta<Cl
     clonenumfield = null;
   }
 
-
   public Value evaluate(String source, IVariables variables) {
-	  String value = variables.environmentSubstitute( source );
-	  
-	  // If value start with '='  this is a expression
-	  if ( value.charAt(0)!='=' ) {
-		  return Value.of(value);
-	  }
-	  
-	  Expression expression  = ExpressionParser.parse(value.substring(1));
-	  
-	  return expression.eval(new ExpressionContext());
+    String value = variables.environmentSubstitute(source);
+
+    // If value start with '='  this is a expression
+    if (value.charAt(0) != '=') {
+      return Value.of(value);
+    }
+
+    Expression expression = ExpressionParser.parse(value.substring(1));
+
+    return expression.eval(new ExpressionContext());
   }
-  
-  
+
   @Override
-  public void getFields( IRowMeta rowMeta, String origin, IRowMeta[] info, TransformMeta nextTransform,
-                         IVariables variables, IHopMetadataProvider metadataProvider ) throws HopTransformException {
+  public void getFields(
+      IRowMeta rowMeta,
+      String origin,
+      IRowMeta[] info,
+      TransformMeta nextTransform,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider)
+      throws HopTransformException {
     // Output field (boolean) ?
-    if ( addcloneflag ) {
-      String realfieldValue = evaluate( cloneflagfield, variables ).toString();
-      if ( !Utils.isEmpty( realfieldValue ) ) {
-        IValueMeta v = new ValueMetaBoolean( realfieldValue );
-        v.setOrigin( origin );
-        rowMeta.addValueMeta( v );
+    if (addcloneflag) {
+      String realfieldValue = evaluate(cloneflagfield, variables).toString();
+      if (!Utils.isEmpty(realfieldValue)) {
+        IValueMeta v = new ValueMetaBoolean(realfieldValue);
+        v.setOrigin(origin);
+        rowMeta.addValueMeta(v);
       }
     }
     // Output clone row number
-    if ( addclonenum ) {
-      String realfieldValue = evaluate( clonenumfield, variables ).toString();
-      if ( !Utils.isEmpty( realfieldValue ) ) {
-        IValueMeta v = new ValueMetaInteger( realfieldValue );
-        v.setOrigin( origin );
-        rowMeta.addValueMeta( v );
+    if (addclonenum) {
+      String realfieldValue = evaluate(clonenumfield, variables).toString();
+      if (!Utils.isEmpty(realfieldValue)) {
+        IValueMeta v = new ValueMetaInteger(realfieldValue);
+        v.setOrigin(origin);
+        rowMeta.addValueMeta(v);
       }
     }
   }
 
-  public void check( List<ICheckResult> remarks, PipelineMeta pipelineMeta, TransformMeta transformMeta,
-                     IRowMeta prev, String[] input, String[] output, IRowMeta info, IVariables variables,
-                     IHopMetadataProvider metadataProvider ) {
+  public void check(
+      List<ICheckResult> remarks,
+      PipelineMeta pipelineMeta,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      String[] input,
+      String[] output,
+      IRowMeta info,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
     CheckResult cr;
     String error_message = "";
 
-    if ( Utils.isEmpty( nrclones ) ) {
-      error_message = BaseMessages.getString( PKG, "CloneRowMeta.CheckResult.NrClonesdMissing" );
-      cr = new CheckResult( ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta );
+    if (Utils.isEmpty(nrclones)) {
+      error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing");
+      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
     } else {
-   	 //TODO: validate expression
-      error_message = BaseMessages.getString( PKG, "CloneRowMeta.CheckResult.NrClonesOK" );
-      cr = new CheckResult( ICheckResult.TYPE_RESULT_OK, error_message, transformMeta );
+      // TODO: validate expression
+      error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesOK");
+      cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, error_message, transformMeta);
     }
-    remarks.add( cr );
+    remarks.add(cr);
 
-    if ( addcloneflag ) {
-      if ( Utils.isEmpty( cloneflagfield ) ) {
-        error_message = BaseMessages.getString( PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing" );
-        cr = new CheckResult( ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta );
+    if (addcloneflag) {
+      if (Utils.isEmpty(cloneflagfield)) {
+        error_message =
+            BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing");
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
       } else {
-     	 //TODO: validate expression    	  
-        error_message = BaseMessages.getString( PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk" );
-        cr = new CheckResult( ICheckResult.TYPE_RESULT_OK, error_message, transformMeta );
+        // TODO: validate expression
+        error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldOk");
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, error_message, transformMeta);
       }
-      remarks.add( cr );
-    }
-    
-    if ( addclonenum ) {
-      if ( Utils.isEmpty( clonenumfield ) ) {
-        error_message = BaseMessages.getString( PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing" );
-        cr = new CheckResult( ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta );
-      } else {
-    	 //TODO: validate expression
-        error_message = BaseMessages.getString( PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk" );
-        cr = new CheckResult( ICheckResult.TYPE_RESULT_OK, error_message, transformMeta );
-      }
-      remarks.add( cr );
+      remarks.add(cr);
     }
 
-    if ( prev == null || prev.size() == 0 ) {
+    if (addclonenum) {
+      if (Utils.isEmpty(clonenumfield)) {
+        error_message =
+            BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing");
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
+      } else {
+        // TODO: validate expression
+        error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldOk");
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, error_message, transformMeta);
+      }
+      remarks.add(cr);
+    }
+
+    if (prev == null || prev.size() == 0) {
       cr =
-        new CheckResult( ICheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
-          PKG, "CloneRowMeta.CheckResult.NotReceivingFields" ), transformMeta );
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_WARNING,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NotReceivingFields"),
+              transformMeta);
     } else {
       cr =
-        new CheckResult( ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "CloneRowMeta.CheckResult.TransformRecevingData", prev.size() + "" ), transformMeta );
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(
+                  PKG, "CloneRowMeta.CheckResult.TransformRecevingData", prev.size() + ""),
+              transformMeta);
     }
-    remarks.add( cr );
+    remarks.add(cr);
 
     // See if we have input streams leading to this transform!
-    if ( input.length > 0 ) {
+    if (input.length > 0) {
       cr =
-        new CheckResult( ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "CloneRowMeta.CheckResult.TransformRecevingData2" ), transformMeta );
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.TransformRecevingData2"),
+              transformMeta);
     } else {
       cr =
-        new CheckResult( ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherTransforms" ), transformMeta );
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "CloneRowMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
+              transformMeta);
     }
-    remarks.add( cr );
+    remarks.add(cr);
   }
 
   @Override
-  public CloneRow createTransform( TransformMeta transformMeta, CloneRowData data, int cnr, PipelineMeta tr,
-                                   Pipeline pipeline ) {
-    return new CloneRow( transformMeta, this, data, cnr, tr, pipeline );
+  public CloneRow createTransform(
+      TransformMeta transformMeta, CloneRowData data, int cnr, PipelineMeta tr, Pipeline pipeline) {
+    return new CloneRow(transformMeta, this, data, cnr, tr, pipeline);
   }
 
   @Override
   public CloneRowData getTransformData() {
     return new CloneRowData();
   }
-
 }

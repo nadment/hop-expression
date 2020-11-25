@@ -8,6 +8,8 @@ import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.gui.WindowProperty;
+import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
+import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -23,124 +25,132 @@ import org.eclipse.swt.widgets.Shell;
  * @since 25-02-2019
  */
 public class ExpressionEditorDialog extends Dialog {
-	private static final Class<?> PKG = ExpressionEditorDialog.class;
+  private static final Class<?> PKG = ExpressionEditorDialog.class;
 
-	public static final int LARGE_MARGIN = 15;
+  public static final int LARGE_MARGIN = 15;
 
-	private PropsUi props;
-	private Shell shell;
+  private PropsUi props;
+  private Shell shell;
 
-	private IVariables variables;
-	private IRowMeta rowMeta;
-	private ExpressionEditor wEditor;
-	private String expression;
-	private boolean isUseField;
+  private IVariables variables;
+  private IRowMeta rowMeta;
+  private ExpressionEditor wEditor;
+  private String expression;
+  private boolean isUseField;
 
-	public ExpressionEditorDialog(Shell parent, int style, boolean isUseField) {
-		super(parent, style);
-		
-		this.isUseField= isUseField;
-		this.props = PropsUi.getInstance();
-	}
+  public ExpressionEditorDialog(Shell parent, int style, boolean isUseField) {
+    super(parent, style);
 
-	public String open() {
+    this.isUseField = isUseField;
+    this.props = PropsUi.getInstance();
+  }
 
-		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
-		props.setLook(shell);
-		//shell.setImage(GUIResource.getInstance().getImageHop());
-		shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
-		shell.setLayout(new FormLayout());
+  public String open() {
 
-		// The expression editor
-		wEditor = new ExpressionEditor(shell, SWT.NONE, isUseField);
-		wEditor.setText(Const.NVL(expression, ""));
-		wEditor.setRowMeta(rowMeta);
-		wEditor.setVariables(variables);
-		wEditor.setLayoutData(
-				new FormDataBuilder().top().bottom(100, -50).left(0, LARGE_MARGIN).right(100, -LARGE_MARGIN).result());
+    shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+    props.setLook(shell);
+    shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
+    shell.setImage(
+        SwtSvgImageUtil.getImage(
+            Display.getCurrent(),
+            getClass().getClassLoader(),
+            "expression.svg",
+            ConstUi.SMALL_ICON_SIZE,
+            ConstUi.SMALL_ICON_SIZE));
+    shell.setLayout(new FormLayout());
 
-		// The button bar
-		Composite buttonBar = new Composite(shell, SWT.NONE);
-		FormLayout buttonBarLayout = new FormLayout();
-		buttonBarLayout.marginHeight = LARGE_MARGIN;
-		buttonBarLayout.marginWidth = LARGE_MARGIN;
-		buttonBar.setLayout(buttonBarLayout);
-		buttonBar.setLayoutData(new FormDataBuilder().top(wEditor, 0).bottom().right().result());
-		props.setLook(buttonBar);
+    // The expression editor
+    wEditor = new ExpressionEditor(shell, SWT.NONE, isUseField);
+    wEditor.setText(Const.NVL(expression, ""));
+    wEditor.setRowMeta(rowMeta);
+    wEditor.setVariables(variables);
+    wEditor.setLayoutData(
+        new FormDataBuilder()
+            .top()
+            .bottom(100, -50)
+            .left(0, LARGE_MARGIN)
+            .right(100, -LARGE_MARGIN)
+            .result());
 
-		Button btnCancel = new Button(buttonBar, SWT.PUSH);
-		btnCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
-		btnCancel.setLayoutData(new FormDataBuilder().bottom().right().result());
-		btnCancel.addListener(SWT.Selection, event -> onCancelPressed());
+    // The button bar
+    Composite buttonBar = new Composite(shell, SWT.NONE);
+    FormLayout buttonBarLayout = new FormLayout();
+    buttonBarLayout.marginHeight = LARGE_MARGIN;
+    buttonBarLayout.marginWidth = LARGE_MARGIN;
+    buttonBar.setLayout(buttonBarLayout);
+    buttonBar.setLayoutData(new FormDataBuilder().top(wEditor, 0).bottom().right().result());
+    props.setLook(buttonBar);
 
-		Button btnOK = new Button(buttonBar, SWT.PUSH);
-		btnOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-		btnOK.setLayoutData(new FormDataBuilder().bottom().right(btnCancel, -ConstUi.SMALL_MARGIN).result());
-		btnOK.addListener(SWT.Selection, Event -> onOkPressed());
+    Button btnCancel = new Button(buttonBar, SWT.PUSH);
+    btnCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+    btnCancel.setLayoutData(new FormDataBuilder().bottom().right().result());
+    btnCancel.addListener(SWT.Selection, event -> onCancelPressed());
 
-		//BaseTransformDialog.setSize(shell);
+    Button btnOK = new Button(buttonBar, SWT.PUSH);
+    btnOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+    btnOK.setLayoutData(
+        new FormDataBuilder().bottom().right(btnCancel, -ConstUi.SMALL_MARGIN).result());
+    btnOK.addListener(SWT.Selection, Event -> onOkPressed());
 
-	    // TODO: Set the shell size, based upon previous time...
-	    
-	    
-		shell.open();
-		Display display = shell.getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
+    BaseTransformDialog.setSize(shell);
 
-		return expression;
-	}
+    // TODO: Set the shell size, based upon previous time...
 
-	public void dispose() {
-		WindowProperty winprop = new WindowProperty(shell);
+    shell.open();
+    Display display = shell.getDisplay();
+    while (!shell.isDisposed()) {
+      if (!display.readAndDispatch()) {
+        display.sleep();
+      }
+    }
 
-		props.setScreen(winprop);
-		shell.dispose();
-	}
+    return expression;
+  }
 
-	protected void onOkPressed() {
+  public void dispose() {
+    WindowProperty winprop = new WindowProperty(shell);
 
-		this.expression = wEditor.getText();
+    props.setScreen(winprop);
+    shell.dispose();
+  }
 
-		dispose();
-	}
+  protected void onOkPressed() {
 
-	/**
-	 * Called when the user cancels the dialog. Subclasses may override if desired.
-	 */
-	protected void onCancelPressed() {
+    this.expression = wEditor.getText();
 
-		this.expression = null;
+    dispose();
+  }
 
-		// Close the SWT dialog window
-		dispose();
-	}
+  /** Called when the user cancels the dialog. Subclasses may override if desired. */
+  protected void onCancelPressed() {
 
-	public String getExpression() {
-		return expression;
-	}
+    this.expression = null;
 
-	public void setExpression(String expression) {
-		this.expression = expression;
-	}
+    // Close the SWT dialog window
+    dispose();
+  }
 
-	public IRowMeta getRowMeta() {
-		return rowMeta;
-	}
+  public String getExpression() {
+    return expression;
+  }
 
-	public void setRowMeta(IRowMeta rowMeta) {
-		this.rowMeta = rowMeta;
-	}
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
 
-	public IVariables getVariables() {
-		return variables;
-	}
+  public IRowMeta getRowMeta() {
+    return rowMeta;
+  }
 
-	public void setVariables(IVariables variables) {
-		this.variables = variables;
-	}
+  public void setRowMeta(IRowMeta rowMeta) {
+    this.rowMeta = rowMeta;
+  }
 
+  public IVariables getVariables() {
+    return variables;
+  }
+
+  public void setVariables(IVariables variables) {
+    this.variables = variables;
+  }
 }

@@ -4,40 +4,40 @@ import java.io.StringWriter;
 
 public class ExpressionIdentifier extends Expression {
 
-	private final String name;
+  private final String name;
 
-	public ExpressionIdentifier(final String name) {
-		super();
+  public ExpressionIdentifier(final String name) {
+    super();
 
-		this.name = name;
-	}
+    this.name = name;
+  }
 
-	@Override
-	public Kind getKind() {
-		return Kind.IDENTIFIER;
-	}
+  @Override
+  public Kind getKind() {
+    return Kind.IDENTIFIER;
+  }
 
-	@Override
-    public int getCost() {
-        return 2;
-    }
-	
-	public String getName() {
-		return name;
-	}
+  @Override
+  public int getCost() {
+    return 2;
+  }
 
-	@Override
-	public Value eval(IExpressionContext context) throws ExpressionException {
-		return context.resolve(this.name);
-	}
+  public String getName() {
+    return name;
+  }
 
-	@Override
-	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
-		writer.append(this.name);
-	}
+  @Override
+  public Value eval(IExpressionContext context) throws ExpressionException {
+    return context.resolve(this.name);
+  }
 
-	@Override
-	public String toString() {
-		return this.name;
-	}
+  @Override
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+    writer.append(this.name);
+  }
+
+  @Override
+  public String toString() {
+    return this.name;
+  }
 }

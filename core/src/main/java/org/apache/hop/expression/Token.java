@@ -2,337 +2,245 @@ package org.apache.hop.expression;
 
 public class Token {
 
-	/**
-	 * Enumerates the possible types of {@link Token}.
-	 */
+  /** Enumerates the possible types of {@link Token}. */
+  public static enum Id {
+    AS,
 
-	public static enum Id {
+    /** Variable "${var}" if scanner is used without variable environment substitution. */
+    VARIABLE,
 
-		AS,
+    /** The bitwise AND operator "&". */
+    BITWISE_AND("&"),
 
-		/**
-		 * Variable "${var}" if scanner is used without variable environment substitution.
-		 */
-		VARIABLE,
-		
-		/**
-		 * The bitwise AND operator "&".
-		 */
-		BITWISE_AND("&"),
+    /** The bitwise NOT operator "~". */
+    BITWISE_NOT("~"),
 
-		/**
-		 * The bitwise NOT operator "~".
-		 */
-		BITWISE_NOT("~"),
+    /** The bitwise OR operator "|". */
+    BITWISE_OR("|"),
 
-		/**
-		 * The bitwise OR operator "|".
-		 */
-		BITWISE_OR("|"),
+    /** The bitwise exclusive OR operator "^". */
+    BITWISE_XOR("^"),
 
-		/**
-		 * The bitwise exclusive OR operator "^".
-		 */
-		BITWISE_XOR("^"),
+    /** Case when operator */
+    CASE,
 
-		/**
-		 * Case when operator
-		 */
-		CASE,
+    /**
+     * Concat operator <code>||<code>
+     */
+    CONCAT("||"),
 
-		/**
-		 * Concat operator <code>||<code>
-		 */
-		CONCAT("||"),
+    /**
+     * Contains operator <code>=~<code>
+     */
+    CONTAINS("=~"),
 
-		/**
-		 * Contains operator <code>=~<code>
-		 */
-		CONTAINS("=~"),
+    /** Comment */
+    COMMENT,
 
-		/**
-		 * Comment
-		 */
-		COMMENT,
+    /** Comma separator */
+    COMMA(","),
 
-		/**
-		 * Comma separator
-		 */
-		COMMA(","),
+    /** Left parenthesis */
+    LPARENTHESIS("("),
 
-		/**
-		 * Left parenthesis
-		 */
-		LPARENTHESIS("("),
+    /** Right parenthesis */
+    RPARENTHESIS(")"),
 
-		/**
-		 * Right parenthesis
-		 */
-		RPARENTHESIS(")"),
+    /** Literal number. */
+    LITERAL_NUMBER,
 
-		/**
-		 * Literal number.
-		 */
-		LITERAL_NUMBER,
-		
-		/** 
-		 * Literal hex binary 0x1234567890ABCDEF
-		 */
-		LITERAL_BINARY_HEX,
+    /** Literal hex binary 0x1234567890ABCDEF */
+    LITERAL_BINARY_HEX,
 
-		/** 
-		 * Literal bit binary 0b1101010101
-		 */
-		LITERAL_BINARY_BIT,
+    /** Literal bit binary 0b1101010101 */
+    LITERAL_BINARY_BIT,
 
-		/**
-		 * Literal string.
-		 */
-		LITERAL_STRING,
+    /** Literal string. */
+    LITERAL_STRING,
 
-		/**
-		 * The "DATE" word for literal date.
-		 */
-		DATE,
-		
-		/**
-		 * The "TIME" word for literal time.
-		 */
-		TIME,
-				
-		/**
-		 * The "TIMESTAMP" word for literal timesamp.
-		 */
-		TIMESTAMP,
-		
-		/**
-		 * Identifier
-		 */
-		IDENTIFIER,
+    /** The "DATE" word for literal date. */
+    DATE,
 
-		/**
-		 * Function
-		 */
-		FUNCTION,
+    /** The "TIME" word for literal time. */
+    TIME,
 
-		FROM,
-		
-		/** CAST(numeric AS datatype FORMAT '9999') */
-		FORMAT, 
+    /** The "TIMESTAMP" word for literal timesamp. */
+    TIMESTAMP,
 
-		/**
-		 * The arithmetic division operator, "/".
-		 */
-		DIVIDE("/"),
+    /** Identifier */
+    IDENTIFIER,
 
-		/**
-		 * The arithmetic multiplication operator, "*".
-		 */
-		MULTIPLY("*"),
+    /** Function */
+    FUNCTION,
 
-		/**
-		 * ESCAPE word for like operator
-		 */
-		ESCAPE,
+    FROM,
 
-//		/**
-//		 * TOOD: remove or implement:  The arithmetic power operator, "**".
-//		 */
-//		POWER("**"),
+    /** CAST(numeric AS datatype FORMAT '9999') */
+    FORMAT,
 
-		/**
-		 * The arithmetic remainder operator, "MOD" (and "%" in some dialects).
-		 */
-		MODULUS("%"),
+    /** The arithmetic division operator, "/". */
+    DIVIDE("/"),
 
-		/**
-		 * The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".
-		 */
-		PLUS("+"),
+    /** The arithmetic multiplication operator, "*". */
+    MULTIPLY("*"),
 
-		/**
-		 * The arithmetic unary minus (negative) operator "-" or the arithmetic subtract operator "-".
-		 */
-		MINUS("-"),
+    /** ESCAPE word for like operator */
+    ESCAPE,
 
-		/**
-		 * The "IN" operator.
-		 */
-		IN,
+    //		/**
+    //		 * TOOD: remove or implement:  The arithmetic power operator, "**".
+    //		 */
+    //		POWER("**"),
 
-		/**
-		 * The "BETWEEN" operator.
-		 */
-		BETWEEN,
+    /** The arithmetic remainder operator, "MOD" (and "%" in some dialects). */
+    MODULUS("%"),
 
-		/**
-		 * The less-than operator "&lt;".
-		 */
-		LESS_THAN("<"),
+    /**
+     * The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".
+     */
+    PLUS("+"),
 
-		/**
-		 * The greater-than operator "&gt;".
-		 */
-		GREATER_THAN(">"),
+    /**
+     * The arithmetic unary minus (negative) operator "-" or the arithmetic subtract operator "-".
+     */
+    MINUS("-"),
 
-		/**
-		 * The less-than-or-equal operator "&lt;=".
-		 */
-		LESS_THAN_OR_EQUAL("<="),
+    /** The "IN" operator. */
+    IN,
 
-		/**
-		 * The greater-than-or-equal operator "&gt;=".
-		 */
-		GREATER_THAN_OR_EQUAL(">="),
+    /** The "BETWEEN" operator. */
+    BETWEEN,
 
-		/**
-		 * The equals operator "=".
-		 */
-		EQUAL("="),
+    /** The less-than operator "&lt;". */
+    LESS_THAN("<"),
 
-		/**
-		 * Compares whether two expressions are equal.
-		 * 
-		 * The function is NULL-safe, meaning it treats NULLs as known values for
-		 * comparing equality. Note that this is different from the EQUAL comparison
-		 * operator (=), which treats NULLs as unknown values.
-		 */
-		EQUAL_NULL,
+    /** The greater-than operator "&gt;". */
+    GREATER_THAN(">"),
 
-		/**
-		 * The not-equals operator, "&#33;=".
-		 */
-		NOT_EQUAL("!="),
+    /** The less-than-or-equal operator "&lt;=". */
+    LESS_THAN_OR_EQUAL("<="),
 
-		/**
-		 * The not-equals operator "&lt;&gt;".
-		 */
-		LESS_THAN_OR_GREATER_THAN("<>"),
+    /** The greater-than-or-equal operator "&gt;=". */
+    GREATER_THAN_OR_EQUAL(">="),
 
-		/**
-		 * The logical "OR" operator.
-		 */
-		OR,
+    /** The equals operator "=". */
+    EQUAL("="),
 
-		/**
-		 * The logical "XOR" operator.
-		 */
-		XOR,
+    /**
+     * Compares whether two expressions are equal.
+     *
+     * <p>The function is NULL-safe, meaning it treats NULLs as known values for comparing equality.
+     * Note that this is different from the EQUAL comparison operator (=), which treats NULLs as
+     * unknown values.
+     */
+    EQUAL_NULL,
 
-		/**
-		 * The logical "AND" operator or keyword for BEETWEN value1 "AND" value2 .
-		 */
-		AND,
+    /** The not-equals operator, "&#33;=". */
+    NOT_EQUAL("!="),
 
-		/**
-		 * The "LIKE" operator.
-		 */
-		LIKE,
+    /** The not-equals operator "&lt;&gt;". */
+    LESS_THAN_OR_GREATER_THAN("<>"),
 
-		/**
-		 * The "ILIKE" operator.
-		 */
-		ILIKE,
+    /** The logical "OR" operator. */
+    OR,
 
-		
-		/**
-		 * The logical "NOT" operator.
-		 */
-		NOT,
+    /** The logical "XOR" operator. */
+    XOR,
 
-		/**
-		 * The literal value "NULL".
-		 */
-		NULL,
+    /** The logical "AND" operator or keyword for BEETWEN value1 "AND" value2 . */
+    AND,
 
-		/**
-		 * The "IS" operator.
-		 */
-		IS,
+    /** The "LIKE" operator. */
+    LIKE,
 
-		/**
-		 * The literal value "TRUE".
-		 */
-		TRUE,
+    /** The "ILIKE" operator. */
+    ILIKE,
 
-		/**
-		 * The literal value "FALSE".
-		 */
-		FALSE,
+    /** The logical "NOT" operator. */
+    NOT,
 
-		ELSE, THEN, END, WHEN,
+    /** The literal value "NULL". */
+    NULL,
 
-		HOUR, 
-		MINUTE,
-		SECOND,
-		DATATYPE,
-		DATEPART;
-		
-		private final String source;
+    /** The "IS" operator. */
+    IS,
 
-		Id() {
-			this.source = name();
-		}
+    /** The literal value "TRUE". */
+    TRUE,
 
-		Id(final String source) {
-			this.source = source;
-		}
+    /** The literal value "FALSE". */
+    FALSE,
 
-		@Override
-		public String toString() {
-			if ( this.source.equals(this.name()) ) return source;
-			return this.name()+'('+source+')';
-		}
-	}
+    ELSE,
+    THEN,
+    END,
+    WHEN,
 
-	private final Id id;
+    HOUR,
+    MINUTE,
+    SECOND,
+    DATATYPE,
+    DATEPART;
 
-	private final String value;
+    private final String source;
 
-	private final int index;
+    Id() {
+      this.source = name();
+    }
 
-	protected Token(Id id, int index) {
-		this(id, index,  id.source);
-	}
+    Id(final String source) {
+      this.source = source;
+    }
 
-	protected Token(Id id, int index, String text) {
-		this.id = id;
-		this.index = index;		
-		this.value = text;
-	}
+    @Override
+    public String toString() {
+      if (this.source.equals(this.name())) return source;
+      return this.name() + '(' + source + ')';
+    }
+  }
 
-	public boolean is(Id id) {
-		return this.id == id;
-	}
+  private final Id id;
 
-	public Id id() {
-		return id;
-	}
+  private final String value;
 
-	/**
-	 * Returns the index of the token in the original source.
-	 */
-	public int index() {
-		return index;
-	}
+  private final int index;
 
-	/**
-	 * Returns the length of the token.
-	 */
-	public int length() {
-		return value.length();
-	}
-	
-	/**
-	 * Returns the token value.
-	 */ 
-	public String value() {
-	 
-		return value;
-	}
-	
-	@Override
-	public String toString() {
-		return  id.name()+ "(" + value + ")";
-	}
+  protected Token(Id id, int index) {
+    this(id, index, id.source);
+  }
+
+  protected Token(Id id, int index, String text) {
+    this.id = id;
+    this.index = index;
+    this.value = text;
+  }
+
+  public boolean is(Id id) {
+    return this.id == id;
+  }
+
+  public Id id() {
+    return id;
+  }
+
+  /** Returns the index of the token in the original source. */
+  public int index() {
+    return index;
+  }
+
+  /** Returns the length of the token. */
+  public int length() {
+    return value.length();
+  }
+
+  /** Returns the token value. */
+  public String value() {
+
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return id.name() + "(" + value + ")";
+  }
 }

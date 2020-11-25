@@ -5,126 +5,119 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-/**
- * Immutable list of expression.
- */
+/** Immutable list of expression. */
 public class ExpressionList extends Expression implements Iterable<Expression> {
 
-	/**
-	 * Iterator implementation used to efficiently expose contents of an
-	 * ExpressionList as read-only iterator.
-	 */
-	public class ExpressionIterator implements Iterator<Expression> {
+  /**
+   * Iterator implementation used to efficiently expose contents of an ExpressionList as read-only
+   * iterator.
+   */
+  public class ExpressionIterator implements Iterator<Expression> {
 
-		private int index;
+    private int index;
 
-		public ExpressionIterator() {
-			index = 0;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return index < list.length;
-		}
-
-		@Override
-		public Expression next() {
-			if (index >= list.length) {
-				throw new NoSuchElementException();
-			}
-			return list[index++];
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
-
-	/**
-	 * An immutable, empty ExpressionList.
-	 */
-	public static final ExpressionList EMPTY = new ExpressionList() {
-	};
-
-	private final Expression[] list;
-
-	public ExpressionList() {
-		super();
-		this.list = new Expression[0];
-	}
-
-	public ExpressionList(Expression... expressions) {
-		this.list = expressions;
-	}
-
-	public ExpressionList(List<Expression> expressions) {
-		this.list = expressions.toArray(new Expression[0]);
-	}
-
-	public Kind getKind() {
-		return Kind.LIST;
-	}
-	
+    public ExpressionIterator() {
+      index = 0;
+    }
 
     @Override
-    public int getCost() {
-        int cost = 1;
-        for (Expression e : list) {
-            cost += e.getCost();
-        }
-        return cost;
+    public boolean hasNext() {
+      return index < list.length;
     }
-	
-	public Expression get(int index) {
-		return list[index];
-	}
 
-	public boolean isEmpty() {
-		return list.length == 0;
-	}
+    @Override
+    public Expression next() {
+      if (index >= list.length) {
+        throw new NoSuchElementException();
+      }
+      return list[index++];
+    }
 
-	@Override
-	public boolean isConstant() {
-		for (Expression e : list) {
-			if (!e.isConstant()) {
-				return false;
-			}
-		}
-		return true;
-	}
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
+  }
 
-	public int size() {
-		return list.length;
-	}
+  /** An immutable, empty ExpressionList. */
+  public static final ExpressionList EMPTY = new ExpressionList() {};
 
-	public Expression[] toArray() {
-		return list;
-	}
+  private final Expression[] list;
 
-	@Override
-	public Value eval(IExpressionContext context) throws ExpressionException {
-		throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
-	}
+  public ExpressionList() {
+    super();
+    this.list = new Expression[0];
+  }
 
-	public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public ExpressionList(Expression... expressions) {
+    this.list = expressions;
+  }
 
-		writer.append('(');
-		boolean first = true;
-		for (Expression expression : list) {
-			if (first)
-				first = false;
-			else {
-				writer.append(',');
-			}
-			expression.unparse(writer, 2, 3);
-		}
-		// if (parenthese)
-		writer.append(')');
-	}
+  public ExpressionList(List<Expression> expressions) {
+    this.list = expressions.toArray(new Expression[0]);
+  }
 
-	@Override
-	public Iterator<Expression> iterator() {
-		return new ExpressionIterator();
-	}
+  public Kind getKind() {
+    return Kind.LIST;
+  }
+
+  @Override
+  public int getCost() {
+    int cost = 1;
+    for (Expression e : list) {
+      cost += e.getCost();
+    }
+    return cost;
+  }
+
+  public Expression get(int index) {
+    return list[index];
+  }
+
+  public boolean isEmpty() {
+    return list.length == 0;
+  }
+
+  @Override
+  public boolean isConstant() {
+    for (Expression e : list) {
+      if (!e.isConstant()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public int size() {
+    return list.length;
+  }
+
+  public Expression[] toArray() {
+    return list;
+  }
+
+  @Override
+  public Value eval(IExpressionContext context) throws ExpressionException {
+    throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
+  }
+
+  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+
+    writer.append('(');
+    boolean first = true;
+    for (Expression expression : list) {
+      if (first) first = false;
+      else {
+        writer.append(',');
+      }
+      expression.unparse(writer, 2, 3);
+    }
+    // if (parenthese)
+    writer.append(')');
+  }
+
+  @Override
+  public Iterator<Expression> iterator() {
+    return new ExpressionIterator();
+  }
 }

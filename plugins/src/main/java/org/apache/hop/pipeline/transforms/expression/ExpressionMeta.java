@@ -1,19 +1,18 @@
-/******************************************************************************
+/**
+ * ****************************************************************************
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.ArrayList;
@@ -46,187 +45,220 @@ import org.w3c.dom.Node;
 
 /**
  * This transform create field value with expression.
- * 
- * @author Nicolas ADMENT
  *
+ * @author Nicolas ADMENT
  */
 @Transform(
-	id = "Expression",
-	name = "Expression.Name",
-	image = "expression.svg",
-	description = "Expression.Description",
-	i18nPackageName = "org.apache.hop.pipeline.transforms.expression",
-	categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
-	keywords = {"script","sql","function"}
-)
+    id = "Expression",
+    name = "Expression.Name",
+    image = "expression.svg",
+    description = "Expression.Description",
+    i18nPackageName = "org.apache.hop.pipeline.transforms.expression",
+    categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
+    keywords = {"script", "sql", "function"})
 @InjectionSupported(localizationPrefix = "ExpressionMeta.Injection.")
-public class ExpressionMeta extends BaseTransformMeta implements ITransformMeta<ExpressionTransform, ExpressionData> {
+public class ExpressionMeta extends BaseTransformMeta
+    implements ITransformMeta<ExpressionTransform, ExpressionData> {
 
-	private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes
+  private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes
 
-	/**
-	 * Constants:
-	 */
-	private static final String TAG_FIELD_EXPRESSION = "expression"; //$NON-NLS-1$
-	private static final String TAG_FIELD_NAME = "field"; //$NON-NLS-1$
-	private static final String TAG_FIELD_TYPE = "type"; //$NON-NLS-1$
+  /** Constants: */
+  private static final String TAG_FIELD_EXPRESSION = "expression"; // $NON-NLS-1$
 
-	@InjectionDeep
-	private List<ExpressionField> fields;
+  private static final String TAG_FIELD_NAME = "field"; // $NON-NLS-1$
+  private static final String TAG_FIELD_TYPE = "type"; // $NON-NLS-1$
 
-	public ExpressionMeta() {
-		super();
-	}
+  @InjectionDeep private List<ExpressionField> fields;
 
-	@Override
-	public ExpressionTransform createTransform( TransformMeta transformMeta, ExpressionData data, int cnr, PipelineMeta tr,
-              Pipeline pipeline ) {
-		return new ExpressionTransform( transformMeta, this, data, cnr, tr, pipeline );
-	}
+  public ExpressionMeta() {
+    super();
+  }
 
-	@Override
-	public ExpressionData getTransformData() {
-		return new ExpressionData();
-	}
-	
-	/**
-	 * This method is called every time a new step is created and should
-	 * allocate/set the step configuration to sensible defaults. The values set here
-	 * will be used by Spoon when a new step is created.
-	 */
-	@Override
-	public void setDefault() {
-		this.fields = new ArrayList<>();
-	}
+  @Override
+  public ExpressionTransform createTransform(
+      TransformMeta transformMeta,
+      ExpressionData data,
+      int cnr,
+      PipelineMeta tr,
+      Pipeline pipeline) {
+    return new ExpressionTransform(transformMeta, this, data, cnr, tr, pipeline);
+  }
 
-	@Override
-	public Object clone() {
-		ExpressionMeta clone = (ExpressionMeta) super.clone();
-		return clone;
-	}
+  @Override
+  public ExpressionData getTransformData() {
+    return new ExpressionData();
+  }
 
-	@Override
-	public String getXml() throws HopValueException {
+  /**
+   * This method is called every time a new step is created and should allocate/set the step
+   * configuration to sensible defaults. The values set here will be used by Spoon when a new step
+   * is created.
+   */
+  @Override
+  public void setDefault() {
+    this.fields = new ArrayList<>();
+  }
 
-		StringBuilder xml = new StringBuilder(500);
+  @Override
+  public Object clone() {
+    ExpressionMeta clone = (ExpressionMeta) super.clone();
+    return clone;
+  }
 
-		xml.append("<fields>");
-		for (ExpressionField value : this.getExpressionFields()) {
-			xml.append("<field>");
-			xml.append(XmlHandler.addTagValue(TAG_FIELD_NAME, value.getName()));
-			xml.append(XmlHandler.addTagValue(TAG_FIELD_EXPRESSION, value.getExpression()));
-			xml.append(XmlHandler.addTagValue(TAG_FIELD_TYPE, ValueMetaFactory.getValueMetaName(value.getType())));
-			xml.append("</field>");
-		}
-		xml.append("</fields>");
+  @Override
+  public String getXml() throws HopValueException {
 
-		return xml.toString();
-	}
+    StringBuilder xml = new StringBuilder(500);
 
-	@Override
-	public void loadXml(Node transformNode, IHopMetadataProvider metadataProvider) throws HopXmlException {
+    xml.append("<fields>");
+    for (ExpressionField value : this.getExpressionFields()) {
+      xml.append("<field>");
+      xml.append(XmlHandler.addTagValue(TAG_FIELD_NAME, value.getName()));
+      xml.append(XmlHandler.addTagValue(TAG_FIELD_EXPRESSION, value.getExpression()));
+      xml.append(
+          XmlHandler.addTagValue(
+              TAG_FIELD_TYPE, ValueMetaFactory.getValueMetaName(value.getType())));
+      xml.append("</field>");
+    }
+    xml.append("</fields>");
 
-		try {
-			Node nodes = XmlHandler.getSubNode(transformNode, "fields");
-			int count = XmlHandler.countNodes(nodes, "field");
+    return xml.toString();
+  }
 
-			fields = new ArrayList<>(count);
-			for (int i = 0; i < count; i++) {
-				Node line = XmlHandler.getSubNodeByNr(nodes, "field", i);
+  @Override
+  public void loadXml(Node transformNode, IHopMetadataProvider metadataProvider)
+      throws HopXmlException {
 
-				ExpressionField value = new ExpressionField();
-				value.setName(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_NAME), ""));
-				value.setExpression(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_EXPRESSION), ""));
-				value.setType(XmlHandler.getTagValue(line, TAG_FIELD_TYPE));
+    try {
+      Node nodes = XmlHandler.getSubNode(transformNode, "fields");
+      int count = XmlHandler.countNodes(nodes, "field");
 
-				fields.add(value);
-			}
-		} catch (Exception e) {
-			throw new HopXmlException(
-					BaseMessages.getString(PKG, "ExpressionMeta.Exception.UnableToReadXML"), e);
-		}
+      fields = new ArrayList<>(count);
+      for (int i = 0; i < count; i++) {
+        Node line = XmlHandler.getSubNodeByNr(nodes, "field", i);
 
-	}
+        ExpressionField value = new ExpressionField();
+        value.setName(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_NAME), ""));
+        value.setExpression(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_EXPRESSION), ""));
+        value.setType(XmlHandler.getTagValue(line, TAG_FIELD_TYPE));
 
-	@Override
-	public void getFields(IRowMeta rowMeta, String transformName, IRowMeta[] info, TransformMeta nextTransform,
-			IVariables variables, IHopMetadataProvider metadataProvider) throws HopTransformException {
-		try {
-			// store the input stream meta
-			IRowMeta unalteredInputRowMeta = rowMeta.clone();
+        fields.add(value);
+      }
+    } catch (Exception e) {
+      throw new HopXmlException(
+          BaseMessages.getString(PKG, "ExpressionMeta.Exception.UnableToReadXML"), e);
+    }
+  }
 
-			// add the output fields if specified
-			for (ExpressionField field : this.getExpressionFields()) {
-				if (!Utils.isEmpty(field.getName())) {
+  @Override
+  public void getFields(
+      IRowMeta rowMeta,
+      String transformName,
+      IRowMeta[] info,
+      TransformMeta nextTransform,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider)
+      throws HopTransformException {
+    try {
+      // store the input stream meta
+      IRowMeta unalteredInputRowMeta = rowMeta.clone();
 
-					// create ValueMeta
-					IValueMeta vm = ValueMetaFactory.createValueMeta(field.getName(), field.getType());
-					vm.setOrigin(transformName);
-					vm.setLength(field.getLength(), field.getPrecision());
+      // add the output fields if specified
+      for (ExpressionField field : this.getExpressionFields()) {
+        if (!Utils.isEmpty(field.getName())) {
 
-					// field already exist
-					int index = unalteredInputRowMeta.indexOfValue(field.getName());
-					if (index >= 0) {
-						rowMeta.removeValueMeta(index);
-						rowMeta.addValueMeta(index, vm);
-					} else {
-						rowMeta.addValueMeta(vm);
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new HopTransformException(e);
-		}
-	}
+          // create ValueMeta
+          IValueMeta vm = ValueMetaFactory.createValueMeta(field.getName(), field.getType());
+          vm.setOrigin(transformName);
+          vm.setLength(field.getLength(), field.getPrecision());
 
-	@Override
-	public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta, TransformMeta transformMeta, IRowMeta prev,
-			String input[], String output[], IRowMeta info, IVariables variables, IHopMetadataProvider metadataProvider) {
+          // field already exist
+          int index = unalteredInputRowMeta.indexOfValue(field.getName());
+          if (index >= 0) {
+            rowMeta.removeValueMeta(index);
+            rowMeta.addValueMeta(index, vm);
+          } else {
+            rowMeta.addValueMeta(vm);
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new HopTransformException(e);
+    }
+  }
 
-		// Look up fields in the input stream <prev>
-		if (prev != null && prev.size() > 0) {
-			remarks.add(new CheckResult(
-					ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
-							"ExpressionMeta.CheckResult.ReceivingFieldsFromPreviousTransforms", prev.size() + ""),
-					transformMeta));
-		} else {
-			remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
-					transformMeta));
-		}
+  @Override
+  public void check(
+      List<ICheckResult> remarks,
+      PipelineMeta pipelineMeta,
+      TransformMeta transformMeta,
+      IRowMeta prev,
+      String input[],
+      String output[],
+      IRowMeta info,
+      IVariables variables,
+      IHopMetadataProvider metadataProvider) {
 
-		// See if we have input streams leading to this transform!
-		if (input.length > 0) {
-			remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_OK,
-					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"), transformMeta));
+    // Look up fields in the input stream <prev>
+    if (prev != null && prev.size() > 0) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(
+                  PKG,
+                  "ExpressionMeta.CheckResult.ReceivingFieldsFromPreviousTransforms",
+                  prev.size() + ""),
+              transformMeta));
+    } else {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
+              transformMeta));
+    }
 
-		} else {
-			remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-					BaseMessages.getString(PKG, "ExpressionMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
-					transformMeta));
+    // See if we have input streams leading to this transform!
+    if (input.length > 0) {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString(
+                  PKG, "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"),
+              transformMeta));
 
-		}
+    } else {
+      remarks.add(
+          new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(
+                  PKG, "ExpressionMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
+              transformMeta));
+    }
 
-		// Check expression
-		for (ExpressionField field : this.fields) {
-			try {
-				ExpressionParser.parse(field.getExpression());
-			} catch (Exception e) {
-				remarks.add(new CheckResult(
-						ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-								"ExpressionMeta.CheckResult.InvalidExpression", field.getName(), e.getMessage()),
-						transformMeta));
-			}
+    // Check expression
+    for (ExpressionField field : this.fields) {
+      try {
+        ExpressionParser.parse(field.getExpression());
+      } catch (Exception e) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG,
+                    "ExpressionMeta.CheckResult.InvalidExpression",
+                    field.getName(),
+                    e.getMessage()),
+                transformMeta));
+      }
+    }
+  }
 
-		}
-	}
+  public List<ExpressionField> getExpressionFields() {
+    return this.fields;
+  }
 
-	public List<ExpressionField> getExpressionFields() {
-		return this.fields;
-	}
-
-	public void setExpressionValues(final List<ExpressionField> values) {
-		this.fields = values;
-	}
-
+  public void setExpressionValues(final List<ExpressionField> values) {
+    this.fields = values;
+  }
 }

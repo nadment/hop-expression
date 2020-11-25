@@ -1,19 +1,18 @@
-/*******************************************************************************
+/**
+ * *****************************************************************************
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
-
+ * <p>****************************************************************************
+ */
 package org.apache.hop.pipeline.transforms.expression;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,88 +24,88 @@ import org.apache.hop.core.row.value.ValueMetaFactory;
  *
  * @author Nicolas ADMENT
  */
-public class ExpressionField  {
+public class ExpressionField {
 
-	public ExpressionField() {
-		super();
-	}
+  public ExpressionField() {
+    super();
+  }
 
-	/** The target field name */
+  /** The target field name */
+  private String name;
 
-	private String name;
-	private String expression;
-	private int type;
+  private String expression;
+  private int type;
 
-	@Injection(name = "LENGTH", group = "FIELDS")
-	private int length = -1;
-	@Injection(name = "PRECISION", group = "FIELDS")
-	private int precision = -1;
-	@Injection(name = "FORMAT", group = "FIELDS")
-	private String format;
+  @Injection(name = "LENGTH", group = "FIELDS")
+  private int length = -1;
 
+  @Injection(name = "PRECISION", group = "FIELDS")
+  private int precision = -1;
 
-	public String getName() {
-		return name;
-	}
+  @Injection(name = "FORMAT", group = "FIELDS")
+  private String format;
 
-	@Injection(name = "NAME", group = "FIELDS")
-	public void setName(final String name) {
-		this.name = StringUtils.stripToNull(name);
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getExpression() {
-		return expression;
-	}
+  @Injection(name = "NAME", group = "FIELDS")
+  public void setName(final String name) {
+    this.name = StringUtils.stripToNull(name);
+  }
 
-	@Injection(name = "EXPRESSION", group = "FIELDS")
-	public void setExpression(final String expression) {
-		this.expression = StringUtils.stripToNull(expression);
-	}
+  public String getExpression() {
+    return expression;
+  }
 
-	public int getType() {
-		return type;
-	}
+  @Injection(name = "EXPRESSION", group = "FIELDS")
+  public void setExpression(final String expression) {
+    this.expression = StringUtils.stripToNull(expression);
+  }
 
-	public void setType(int type) {
-		this.type = type;
-	}
+  public int getType() {
+    return type;
+  }
 
-	private String getTypeDesc() {
-		return ValueMetaFactory.getValueMetaName(type);
-	}
+  public void setType(int type) {
+    this.type = type;
+  }
 
-	@Injection(name = "TYPE", group = "FIELDS")
-	public void setType(final String name) {
-		this.type = ValueMetaFactory.getIdForValueMeta(name);
-	}
+  private String getTypeDesc() {
+    return ValueMetaFactory.getValueMetaName(type);
+  }
 
-	public int getLength() {
-		return length;
-	}
+  @Injection(name = "TYPE", group = "FIELDS")
+  public void setType(final String name) {
+    this.type = ValueMetaFactory.getIdForValueMeta(name);
+  }
 
-	public void setLength(int length) {
-		this.length = length;
-	}
+  public int getLength() {
+    return length;
+  }
 
-	public String getFormat() {
-		return format;
-	}
+  public void setLength(int length) {
+    this.length = length;
+  }
 
-	public void setFormat(String format) {
-		this.format = format;
-	}
+  public String getFormat() {
+    return format;
+  }
 
-	public int getPrecision() {
-		return precision;
-	}
+  public void setFormat(String format) {
+    this.format = format;
+  }
 
-	public void setPrecision(int precision) {
-		this.precision = precision;
-	}
+  public int getPrecision() {
+    return precision;
+  }
 
-	@Override
-	public String toString() {
-		return name + ":" + getTypeDesc() + "(" + length + "," + precision + ")";
-	}
+  public void setPrecision(int precision) {
+    this.precision = precision;
+  }
 
+  @Override
+  public String toString() {
+    return name + ":" + getTypeDesc() + "(" + length + "," + precision + ")";
+  }
 }
