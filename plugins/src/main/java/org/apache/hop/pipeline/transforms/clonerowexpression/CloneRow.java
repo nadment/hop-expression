@@ -60,7 +60,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
   }
 
   public Value evaluate(String source) {
-    String value = variables.environmentSubstitute(source);
+    String value = variables.resolve(source);
 
     if (value.charAt(0) != '=') {
       return Value.of(value);
@@ -106,7 +106,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
         }
       }
 
-      String nrclonesString = environmentSubstitute(meta.getNrClones());
+      String nrclonesString = resolve(meta.getNrClones());
       data.numberOfClones = ExpressionParser.parse(nrclonesString);
       if (log.isDebug()) {
         logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones", "" + data.numberOfClones));

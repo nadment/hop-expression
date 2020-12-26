@@ -63,6 +63,16 @@
       <to>Expression</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>FALSE</from>
+      <to>JavaScript</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>TRUE</from>
+      <to>User defined Java class</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <transform>
     <name>Clone row</name>
@@ -75,7 +85,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <nrclones>1000</nrclones>
+    <nrclones>100</nrclones>
     <addcloneflag>N</addcloneflag>
     <cloneflagfield/>
     <nrcloneinfield>N</nrcloneinfield>
@@ -377,6 +387,34 @@ UCASE('${os.name}')</expression>
     </GUI>
   </transform>
   <transform>
+    <name>JavaScript</name>
+    <type>ScriptValueMod</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <optimizationLevel>9</optimizationLevel>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>//Script here
+
+</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>880</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
     <name>TRUE</name>
     <type>Dummy</type>
     <description/>
@@ -390,6 +428,36 @@ UCASE('${os.name}')</expression>
     <attributes/>
     <GUI>
       <xloc>688</xloc>
+      <yloc>32</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>User defined Java class</name>
+    <type>UserDefinedJavaClass</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <definitions>
+      <definition>
+        <classType>TRANSFORM_CLASS</classType>
+        <className>Processor</className>
+        <class_source/>
+      </definition>
+    </definitions>
+    <fields>
+    </fields>
+    <clearResultFields>N</clearResultFields>
+    <infoTransforms/>
+    <target_transforms/>
+    <usage_parameters/>
+    <attributes/>
+    <GUI>
+      <xloc>896</xloc>
       <yloc>32</yloc>
     </GUI>
   </transform>

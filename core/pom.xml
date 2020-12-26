@@ -22,15 +22,8 @@
 	</properties>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>asciidoctor-maven-plugin</artifactId>
-					<version>1.5.8</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
+			
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>

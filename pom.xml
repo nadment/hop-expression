@@ -26,5 +26,23 @@
 		<module>plugins</module>
 		<module>assemblies</module>
 	</modules>
+	
+	<build>
+		<plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <version>0.13</version>
+		      <executions>
+            <execution>
+              <phase>verify</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>          
+        </plugin>						
+		</plugins>
+	</build>	
 
 </project>

@@ -168,7 +168,7 @@ public class CloneRowMeta extends BaseTransformMeta
   }
 
   public Value evaluate(String source, IVariables variables) {
-    String value = variables.environmentSubstitute(source);
+    String value = variables.resolve(source);
 
     // If value start with '='  this is a expression
     if (value.charAt(0) != '=') {

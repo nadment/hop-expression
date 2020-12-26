@@ -1,3 +1,19 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.ArrayList;
@@ -7,6 +23,7 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
+import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
@@ -34,8 +51,8 @@ public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta>
   private TableView wTableFields;
   private IRowMeta rowMeta;
 
-  public ExpressionDialog(Shell parent, Object input, PipelineMeta pipelineMeta, String name) {
-    super(parent, input, pipelineMeta, name);
+  public ExpressionDialog(Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta, String name) {
+    super(parent, variables, input, pipelineMeta, name);
 
     this.setText(BaseMessages.getString(PKG, "ExpressionDialog.Shell.Title"));
   }
@@ -138,7 +155,7 @@ public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta>
               ExpressionEditorDialog dialog =
                   new ExpressionEditorDialog(shell, SWT.APPLICATION_MODAL | SWT.SHEET, true);
               dialog.setExpression(expression);
-              dialog.setVariables(transformMeta.getParentPipelineMeta());
+              dialog.setVariables(getVariables());
               dialog.setRowMeta(rowMeta);
               expression = dialog.open();
               if (expression != null) {
@@ -152,7 +169,7 @@ public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta>
 
     wTableFields =
         new TableView(
-            this.pipelineMeta,
+            this.getVariables(),
             parent,
             SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
             columns,
@@ -169,7 +186,7 @@ public class ExpressionDialog extends AbstractTransformDialog<ExpressionMeta>
               if (transformMeta != null)
                 try {
 
-                  rowMeta = pipelineMeta.getPrevTransformFields(transformMeta);
+                  rowMeta = pipelineMeta.getPrevTransformFields(getVariables(), transformMeta);
                 } catch (HopException e) {
                   logError(BaseMessages.getString(PKG, "ExpressionDialog.Log.UnableToFindInput"));
                 }
