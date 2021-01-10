@@ -23,13 +23,13 @@ import java.util.Set;
 
 import javax.script.Bindings;
 
-public class ExpressionBindings implements Bindings {
+public class RowExpressionBindings implements Bindings {
 
   /** The <code>Map</code> field stores the attributes. */
   private Map<String, Object> map;
 
   /** Default constructor uses a <code>HashMap</code>. */
-  public ExpressionBindings() {
+  public RowExpressionBindings() {
     this(new HashMap<String, Object>());
   }
 
@@ -39,7 +39,7 @@ public class ExpressionBindings implements Bindings {
    * @param m The <code>Map</code> backing this <code>SimpleBindings</code>.
    * @throws NullPointerException if m is null
    */
-  public ExpressionBindings(Map<String, Object> m) {
+  public RowExpressionBindings(Map<String, Object> m) {
     if (m == null) {
       throw new NullPointerException();
     }

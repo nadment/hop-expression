@@ -19,16 +19,13 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
-
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
@@ -37,10 +34,10 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.ExpressionParserException;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
@@ -88,7 +85,7 @@ public class ExpressionTest {
 	
 
 	protected Value eval(String source) throws Exception {
-		Expression expression = ExpressionParser.parse(source);
+		IExpression expression = ExpressionParser.parse(source);
 		return expression.eval(context);
 	}
 

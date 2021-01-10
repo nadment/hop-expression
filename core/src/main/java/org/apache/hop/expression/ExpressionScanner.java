@@ -27,7 +27,7 @@ import org.apache.hop.i18n.BaseMessages;
 /** Parses an expression string to return the individual tokens. */
 public class ExpressionScanner {
 
-  private static final Class<?> PKG = Expression.class; // for i18n purposes
+  private static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   // TODO: Java 9 use unmodifiable Set.of()
   private static final Set<String> RESERVED_WORDS =

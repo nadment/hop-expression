@@ -17,7 +17,7 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.expression.Expression;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
@@ -26,7 +26,7 @@ public class ExpressionData extends BaseTransformData implements ITransformData 
 
   protected IRowMeta outputRowMeta;
 
-  protected Expression[] expressions;
+  protected IExpression[] expressions;
 
   protected RowExpressionContext expressionContext;
 

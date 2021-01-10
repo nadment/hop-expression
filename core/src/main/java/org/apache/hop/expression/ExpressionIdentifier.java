@@ -18,7 +18,7 @@ package org.apache.hop.expression;
 
 import java.io.StringWriter;
 
-public class ExpressionIdentifier extends Expression {
+public class ExpressionIdentifier implements IExpression {
 
   private final String name;
 
@@ -55,5 +55,20 @@ public class ExpressionIdentifier extends Expression {
   @Override
   public String toString() {
     return this.name;
+  }
+
+  @Override
+  public boolean isConstant() {
+    return false;
+  }
+
+  @Override
+  public boolean isNull() {
+    return false;
+  }
+
+  @Override
+  public IExpression optimize(IExpressionContext context) throws ExpressionException {
+    return this;
   }
 }

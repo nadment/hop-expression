@@ -21,21 +21,21 @@ import java.util.List;
 import java.util.Objects;
 
 /** A <code>ExpressionCall</code> is a call to an {@link Operator operator}. */
-public class ExpressionCall extends Expression {
+public class ExpressionCall implements IExpression {
 
   private final Operator operator;
-  private final Expression[] operands;
+  private final IExpression[] operands;
 
-  public ExpressionCall(Operator operator, Expression... operands) throws ExpressionException {
+  public ExpressionCall(Operator operator, IExpression... operands) throws ExpressionException {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands;
   }
 
-  public ExpressionCall(Operator operator, List<Expression> operands) throws ExpressionException {
+  public ExpressionCall(Operator operator, List<IExpression> operands) throws ExpressionException {
     super();
     this.operator = Objects.requireNonNull(operator);
-    this.operands = operands.toArray(new Expression[0]);
+    this.operands = operands.toArray(new IExpression[0]);
   }
 
   @Override
@@ -44,8 +44,16 @@ public class ExpressionCall extends Expression {
   }
 
   @Override
-  public Expression optimize(IExpressionContext context) throws ExpressionException {
+  public IExpression optimize(IExpressionContext context) throws ExpressionException {
     return operator.optimize(context, operands);
+  }
+  
+  public boolean isConstant() {
+    return false;
+  }
+
+  public boolean isNull() {
+    return false;
   }
 
   @Override
@@ -56,7 +64,7 @@ public class ExpressionCall extends Expression {
   @Override
   public int getCost() {
     int cost = 1;
-    for (Expression operand : operands) {
+    for (IExpression operand : operands) {
       cost += operand.getCost();
     }
 
@@ -72,7 +80,7 @@ public class ExpressionCall extends Expression {
     return operator;
   }
 
-  public Expression[] getOperands() {
+  public IExpression[] getOperands() {
     return operands;
   }
 

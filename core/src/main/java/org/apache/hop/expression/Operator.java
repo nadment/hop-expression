@@ -39,7 +39,7 @@ import org.apache.hop.i18n.BaseMessages;
  */
 public class Operator implements Comparable<Operator> {
 
-  protected static final Class<?> PKG = Expression.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
@@ -427,7 +427,7 @@ public class Operator implements Comparable<Operator> {
 
     StringWriter writer = new StringWriter();
 
-    try (InputStreamReader is = new InputStreamReader(Expression.class.getResourceAsStream(file))) {
+    try (InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(file))) {
       IOUtils.copy(is, writer);
     } catch (Exception e) {
       writer.append(e.getMessage());
@@ -551,7 +551,7 @@ public class Operator implements Comparable<Operator> {
     return true;
   }
 
-  public Value eval(IExpressionContext context, Expression... args) throws ExpressionException {
+  public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
     switch (kind) {
       case BITAND:
         {
@@ -607,13 +607,13 @@ public class Operator implements Comparable<Operator> {
       case CASE_WHEN:
         {
           int index = 0;
-          Expression switchExpression = args[0];
+          IExpression switchExpression = args[0];
           ExpressionList whenList = (ExpressionList) args[1];
           ExpressionList thenList = (ExpressionList) args[2];
-          Expression elseExpression = args[3];
+          IExpression elseExpression = args[3];
 
           if (switchExpression == null) {
-            for (Expression whenOperand : whenList) {
+            for (IExpression whenOperand : whenList) {
               Value condition = whenOperand.eval(context);
               if (condition.toBoolean() == true) {
                 return thenList.get(index).eval(context);
@@ -622,7 +622,7 @@ public class Operator implements Comparable<Operator> {
             }
           } else {
             Value condition = switchExpression.eval(context);
-            for (Expression whenOperand : whenList) {
+            for (IExpression whenOperand : whenList) {
               Value value = whenOperand.eval(context);
               if (condition.compareTo(value) == 0) {
                 return thenList.get(index).eval(context);
@@ -637,7 +637,7 @@ public class Operator implements Comparable<Operator> {
       case CONCAT:
         {
           StringBuilder builder = new StringBuilder();
-          for (Expression operand : args) {
+          for (IExpression operand : args) {
             Value value = operand.eval(context);
             if (!value.isNull()) builder.append(value);
           }
@@ -909,7 +909,7 @@ public class Operator implements Comparable<Operator> {
           }
 
           ExpressionList list = (ExpressionList) args[1];
-          for (Expression expression : list) {
+          for (IExpression expression : list) {
             Value value = expression.eval(context);
             if (left.compareTo(value) == 0) {
               return Value.TRUE;
@@ -944,13 +944,13 @@ public class Operator implements Comparable<Operator> {
    *  changeToCNF(right2).
    */
 
-  public Expression optimize(IExpressionContext context, Expression... operands)
+  public IExpression optimize(IExpressionContext context, IExpression... operands)
       throws ExpressionException {
     switch (kind) {
       case NEGATIVE:
       case LOGICAL_NOT:
         {
-          Expression operand = operands[0].optimize(context);
+          IExpression operand = operands[0].optimize(context);
 
           if (operand.isConstant()) {
             return eval(context, operand);
@@ -965,8 +965,8 @@ public class Operator implements Comparable<Operator> {
 
       case LOGICAL_OR:
         {
-          Expression left = operands[0].optimize(context);
-          Expression right = operands[1].optimize(context);
+          IExpression left = operands[0].optimize(context);
+          IExpression right = operands[1].optimize(context);
 
           if (left.isConstant()) {
             Value value = (Value) left;
@@ -985,8 +985,8 @@ public class Operator implements Comparable<Operator> {
 
       case LOGICAL_AND:
         {
-          Expression left = operands[0].optimize(context);
-          Expression right = operands[1].optimize(context);
+          IExpression left = operands[0].optimize(context);
+          IExpression right = operands[1].optimize(context);
 
           if (left.isConstant()) {
             Value value = (Value) left;
@@ -1028,8 +1028,8 @@ public class Operator implements Comparable<Operator> {
       case IS:
       case IN:
         {
-          Expression left = operands[0].optimize(context);
-          Expression right = operands[1].optimize(context);
+          IExpression left = operands[0].optimize(context);
+          IExpression right = operands[1].optimize(context);
 
           if (left.isConstant() && right.isConstant()) {
             return eval(context, left, right);
@@ -1040,12 +1040,12 @@ public class Operator implements Comparable<Operator> {
 
       case LIKE:
         {
-          Expression left = operands[0].optimize(context);
-          Expression right = operands[1].optimize(context);
+          IExpression left = operands[0].optimize(context);
+          IExpression right = operands[1].optimize(context);
 
           if (left.isConstant() && right.isConstant()) {
             if (operands.length == 3) {
-              Expression escape = operands[2].optimize(context);
+              IExpression escape = operands[2].optimize(context);
               return eval(context, left, right, escape);
             }
             return eval(context, left, right);
@@ -1059,7 +1059,7 @@ public class Operator implements Comparable<Operator> {
           // TODO: optimize the common case of X LIKE '%foo' to Ends_With(X,'foo')
 
           if (operands.length == 3) {
-            Expression escape = operands[2].optimize(context);
+            IExpression escape = operands[2].optimize(context);
             return new ExpressionCall(this, left, right, escape);
           }
 
@@ -1068,9 +1068,9 @@ public class Operator implements Comparable<Operator> {
 
       case BETWEEN:
         {
-          Expression operand = operands[0].optimize(context);
-          Expression start = operands[1].optimize(context);
-          Expression end = operands[2].optimize(context);
+          IExpression operand = operands[0].optimize(context);
+          IExpression start = operands[1].optimize(context);
+          IExpression end = operands[2].optimize(context);
 
           if (operand.isConstant() && start.isConstant() && end.isConstant()) {
             return eval(context, operand, start, end);
@@ -1093,7 +1093,7 @@ public class Operator implements Comparable<Operator> {
     switch (kind) {
       case BETWEEN:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           operands[0].unparse(writer, leftPrec, rightPrec);
           writer.append(' ');
           writer.append("BETWEEN");
@@ -1106,12 +1106,12 @@ public class Operator implements Comparable<Operator> {
 
       case CASE_WHEN:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
 
-          Expression switchExpression = operands[0];
+          IExpression switchExpression = operands[0];
           ExpressionList whenList = (ExpressionList) operands[1];
           ExpressionList thenList = (ExpressionList) operands[2];
-          Expression elseExpression = operands[3];
+          IExpression elseExpression = operands[3];
 
           writer.append("CASE ");
 
@@ -1121,11 +1121,11 @@ public class Operator implements Comparable<Operator> {
           }
 
           int index = 0;
-          for (Expression whenOperand : whenList) {
+          for (IExpression whenOperand : whenList) {
             writer.append("WHEN ");
             whenOperand.unparse(writer, 0, 0);
             writer.append(" THEN ");
-            Expression thenOperand = thenList.get(index++);
+            IExpression thenOperand = thenList.get(index++);
             thenOperand.unparse(writer, 0, 0);
           }
           if (elseExpression != null) {
@@ -1137,7 +1137,7 @@ public class Operator implements Comparable<Operator> {
 
       case CONCAT:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           operands[0].unparse(writer, leftPrec, rightPrec);
           writer.append(this.getName());
           operands[1].unparse(writer, leftPrec, rightPrec);
@@ -1146,7 +1146,7 @@ public class Operator implements Comparable<Operator> {
 
       case LIKE:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           operands[0].unparse(writer, leftPrec, rightPrec);
           writer.append(' ');
           writer.append(this.getName());
@@ -1161,7 +1161,7 @@ public class Operator implements Comparable<Operator> {
 
       case NEGATIVE:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           writer.append(this.getName());
           operands[0].unparse(writer, leftPrec, rightPrec);
           break;
@@ -1169,7 +1169,7 @@ public class Operator implements Comparable<Operator> {
 
       case LOGICAL_NOT:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           writer.append(this.getName());
           writer.append(' ');
           operands[0].unparse(writer, leftPrec, rightPrec);
@@ -1189,7 +1189,7 @@ public class Operator implements Comparable<Operator> {
       case IS:
       case IN:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           operands[0].unparse(writer, leftPrec, rightPrec);
           writer.append(' ');
           writer.append(this.getName());
@@ -1205,7 +1205,7 @@ public class Operator implements Comparable<Operator> {
       case MOD:
         {
           // case POWER_OPERATOR:
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           operands[0].unparse(writer, leftPrec, rightPrec);
           writer.append(this.getName());
           operands[1].unparse(writer, leftPrec, rightPrec);

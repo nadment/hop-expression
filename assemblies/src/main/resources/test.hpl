@@ -64,13 +64,18 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
+      <from>TRUE</from>
+      <to>User defined Java class</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
       <from>FALSE</from>
-      <to>JavaScript</to>
+      <to>Get system info</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>TRUE</from>
-      <to>User defined Java class</to>
+      <from>Get system info</from>
+      <to>JavaScript</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -116,8 +121,8 @@
     <clonenumfield>DYNAMIC_FIELD_NAME</clonenumfield>
     <attributes/>
     <GUI>
-      <xloc>224</xloc>
-      <yloc>256</yloc>
+      <xloc>256</xloc>
+      <yloc>16</yloc>
     </GUI>
   </transform>
   <transform>
@@ -387,6 +392,29 @@ UCASE('${os.name}')</expression>
     </GUI>
   </transform>
   <transform>
+    <name>Get system info</name>
+    <type>SystemInfo</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <name>StartDate</name>
+        <type>start date range</type>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>784</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
     <name>JavaScript</name>
     <type>ScriptValueMod</type>
     <description/>
@@ -407,10 +435,19 @@ UCASE('${os.name}')</expression>
 </jsScript_script>
       </jsScript>
     </jsScripts>
-    <fields>    </fields>
+    <fields>
+      <field>
+        <name>TEST</name>
+        <rename>TEST</rename>
+        <type>Boolean</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>
+    </fields>
     <attributes/>
     <GUI>
-      <xloc>880</xloc>
+      <xloc>912</xloc>
       <yloc>160</yloc>
     </GUI>
   </transform>
@@ -446,7 +483,18 @@ UCASE('${os.name}')</expression>
       <definition>
         <classType>TRANSFORM_CLASS</classType>
         <className>Processor</className>
-        <class_source/>
+        <class_source>public boolean processRow() throws HopException {
+
+  Object[] r = getRow();
+
+  if (r == null) {
+    setOutputDone();
+    return false;
+  }
+
+  return true;
+}
+</class_source>
       </definition>
     </definitions>
     <fields>
@@ -472,7 +520,8 @@ UCASE('${os.name}')</expression>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <expression>ROWNUM between 1 and  30 and ENDSWITH(FIELD_STRING,'A')</expression>
+    <expression>
+ROWNUM between 1 and  30 and ENDSWITH(FIELD_STRING,'A')</expression>
     <send_true_to>TRUE</send_true_to>
     <send_false_to>FALSE</send_false_to>
     <attributes/>

@@ -18,7 +18,7 @@ package org.apache.hop.expression;
 
 import java.util.Collection;
 
-/** Enumerates the possible types of {@link Expression}. */
+/** Enumerates the possible types of {@link IExpression}. */
 public enum Kind {
   VALUE(OperatorCategory.None),
 

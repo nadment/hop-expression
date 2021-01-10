@@ -36,8 +36,10 @@ import org.apache.hop.i18n.BaseMessages;
  *
  * @author Nicolas ADMENT
  */
-public abstract class Value extends Expression implements Comparable<Value> {
+public abstract class Value implements IExpression, Comparable<Value> {
 
+  protected static final Class<?> PKG = Value.class; // for i18n purposes
+  
   protected int MAX_SCALE = 38;
 
   /** Boolean value of TRUE. */
@@ -456,5 +458,10 @@ public abstract class Value extends Expression implements Comparable<Value> {
   protected final ExpressionException createOverflowError() {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.Overflow", this.toString()));
+  }
+
+  @Override
+  public IExpression optimize(IExpressionContext context) throws ExpressionException {
+    return this;
   }
 }

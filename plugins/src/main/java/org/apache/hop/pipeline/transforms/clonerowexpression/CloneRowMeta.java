@@ -23,7 +23,6 @@
 package org.apache.hop.pipeline.transforms.clonerowexpression;
 
 import java.util.List;
-
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
@@ -36,9 +35,9 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.xml.XmlHandler;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Value;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -175,7 +174,7 @@ public class CloneRowMeta extends BaseTransformMeta
       return Value.of(value);
     }
 
-    Expression expression = ExpressionParser.parse(value.substring(1));
+    IExpression expression = ExpressionParser.parse(value.substring(1));
 
     return expression.eval(new ExpressionContext());
   }

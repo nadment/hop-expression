@@ -17,15 +17,14 @@
 package org.apache.hop.core.expression;
 
 import java.util.Date;
-
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.junit.Test;
@@ -34,7 +33,7 @@ public class ExpressionPerformance {
 
 	
 	public void perf(String e)  {
-		Expression expression = ExpressionParser.parse("NOM||left(to_char(AGE+5,'000'),2)");
+		IExpression expression = ExpressionParser.parse("NOM||left(to_char(AGE+5,'000'),2)");
 
 		IRowMeta rowMeta = new RowMeta();
 		rowMeta.addValueMeta(new ValueMetaString("NOM"));

@@ -27,7 +27,7 @@ import org.apache.hop.i18n.BaseMessages;
 
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
 
-  protected static final Class<?> PKG = Expression.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private ZoneId zone;
   private Locale locale;

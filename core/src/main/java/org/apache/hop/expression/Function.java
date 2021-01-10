@@ -87,7 +87,7 @@ public class Function extends Operator {
     switch (kind) {
       case CAST:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           writer.append(this.getName());
           writer.append('(');
           operands[0].unparse(writer, leftPrec, rightPrec);
@@ -99,7 +99,7 @@ public class Function extends Operator {
         }
       case EXTRACT:
         {
-          Expression[] operands = call.getOperands();
+          IExpression[] operands = call.getOperands();
           writer.append(this.getName());
           writer.append('(');
           operands[0].unparse(writer, leftPrec, rightPrec);
@@ -113,7 +113,7 @@ public class Function extends Operator {
         writer.append(this.getName());
         writer.append('(');
         boolean first = true;
-        for (Expression operand : call.getOperands()) {
+        for (IExpression operand : call.getOperands()) {
           if (!first) writer.append(',');
           else first = false;
           operand.unparse(writer, leftPrec, rightPrec);
@@ -294,7 +294,7 @@ public class Function extends Operator {
 
   @Override
   @SuppressWarnings("incomplete-switch")
-  public Value eval(final IExpressionContext context, final Expression... args)
+  public Value eval(final IExpressionContext context, final IExpression... args)
       throws ExpressionException {
     try {
       switch (kind) {
@@ -1017,7 +1017,7 @@ public class Function extends Operator {
         case IFNULL:
         case COALESCE:
           {
-            for (Expression operand : args) {
+            for (IExpression operand : args) {
               Value value = operand.eval(context);
               if (!value.isNull()) return value;
             }
@@ -1059,7 +1059,7 @@ public class Function extends Operator {
         case GREATEST:
           {
             Value result = Value.NULL;
-            for (Expression operand : args) {
+            for (IExpression operand : args) {
               Value value = operand.eval(context);
               if (result.compareTo(value) < 0) result = value;
             }
@@ -1070,7 +1070,7 @@ public class Function extends Operator {
         case LEAST:
           {
             Value result = Value.NULL;
-            for (Expression operand : args) {
+            for (IExpression operand : args) {
               Value value = operand.eval(context);
               // null is always smaller
               if (value.isNull()) continue;
@@ -1692,14 +1692,14 @@ public class Function extends Operator {
   }
 
   @Override
-  public Expression optimize(IExpressionContext context, Expression... operands)
+  public IExpression optimize(IExpressionContext context, IExpression... operands)
       throws ExpressionException {
 
-    Expression[] args = new Expression[operands.length];
+    IExpression[] args = new IExpression[operands.length];
 
     boolean isAllConstant = true;
     for (int index = 0; index < args.length; index++) {
-      Expression operand = operands[index];
+      IExpression operand = operands[index];
 
       if (operand instanceof ExpressionCall) {
         operand = operand.optimize(context);

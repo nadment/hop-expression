@@ -17,13 +17,12 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.Arrays;
-
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.apache.hop.i18n.BaseMessages;
@@ -78,7 +77,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       // Use meta.getFields() to change it, so it reflects the output row structure
       meta.getFields(
           data.outputRowMeta, this.getTransformName(), null, null, this, metadataProvider);
-      data.expressions = new Expression[data.outputRowMeta.size()];
+      data.expressions = new IExpression[data.outputRowMeta.size()];
 
       RowExpressionContext context = new RowExpressionContext(getInputRowMeta());
       data.expressionContext = context;
@@ -102,7 +101,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
         // Parse and optimize expression
         try {
-          Expression expression = ExpressionParser.parse(source);
+          IExpression expression = ExpressionParser.parse(source);
           data.expressions[index] = expression.optimize(context);
         } catch (ExpressionException ex) {
           String message =
@@ -133,7 +132,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         RowExpressionContext context = data.expressionContext;
         context.setRow(row);
 
-        Expression expression = data.expressions[index];
+        IExpression expression = data.expressions[index];
         value = expression.eval(context);
 
         if (log.isDetailed()) {

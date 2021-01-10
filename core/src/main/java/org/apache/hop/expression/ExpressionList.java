@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /** Immutable list of expression. */
-public class ExpressionList extends Expression implements Iterable<Expression> {
+public class ExpressionList implements IExpression, Iterable<IExpression> {
 
   /**
    * Iterator implementation used to efficiently expose contents of an ExpressionList as read-only
    * iterator.
    */
-  public class ExpressionIterator implements Iterator<Expression> {
+  public class ExpressionIterator implements Iterator<IExpression> {
 
     private int index;
 
@@ -42,7 +42,7 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
     }
 
     @Override
-    public Expression next() {
+    public IExpression next() {
       if (index >= list.length) {
         throw new NoSuchElementException();
       }
@@ -58,19 +58,19 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
   /** An immutable, empty ExpressionList. */
   public static final ExpressionList EMPTY = new ExpressionList() {};
 
-  private final Expression[] list;
+  private final IExpression[] list;
 
   public ExpressionList() {
     super();
-    this.list = new Expression[0];
+    this.list = new IExpression[0];
   }
 
-  public ExpressionList(Expression... expressions) {
+  public ExpressionList(IExpression... expressions) {
     this.list = expressions;
   }
 
-  public ExpressionList(List<Expression> expressions) {
-    this.list = expressions.toArray(new Expression[0]);
+  public ExpressionList(List<IExpression> expressions) {
+    this.list = expressions.toArray(new IExpression[0]);
   }
 
   public Kind getKind() {
@@ -80,13 +80,13 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
   @Override
   public int getCost() {
     int cost = 1;
-    for (Expression e : list) {
+    for (IExpression e : list) {
       cost += e.getCost();
     }
     return cost;
   }
 
-  public Expression get(int index) {
+  public IExpression get(int index) {
     return list[index];
   }
 
@@ -96,7 +96,7 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
 
   @Override
   public boolean isConstant() {
-    for (Expression e : list) {
+    for (IExpression e : list) {
       if (!e.isConstant()) {
         return false;
       }
@@ -108,7 +108,7 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
     return list.length;
   }
 
-  public Expression[] toArray() {
+  public IExpression[] toArray() {
     return list;
   }
 
@@ -121,7 +121,7 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
 
     writer.append('(');
     boolean first = true;
-    for (Expression expression : list) {
+    for (IExpression expression : list) {
       if (first) first = false;
       else {
         writer.append(',');
@@ -133,7 +133,17 @@ public class ExpressionList extends Expression implements Iterable<Expression> {
   }
 
   @Override
-  public Iterator<Expression> iterator() {
+  public Iterator<IExpression> iterator() {
     return new ExpressionIterator();
+  }
+
+  @Override
+  public boolean isNull() {   
+    return false;
+  }
+
+  @Override
+  public IExpression optimize(IExpressionContext context) throws ExpressionException {
+    return this;
   }
 }

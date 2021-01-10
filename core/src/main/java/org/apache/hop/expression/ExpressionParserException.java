@@ -20,7 +20,7 @@ import org.apache.hop.i18n.BaseMessages;
 
 public class ExpressionParserException extends ExpressionException {
 
-  private static final Class<?> PKG = Expression.class; // for i18n purposes
+  private static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   /** */
   private static final long serialVersionUID = 8634955627375465878L;

@@ -27,10 +27,9 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 
 /**
@@ -69,7 +68,7 @@ import org.apache.hop.i18n.BaseMessages;
  */
 public final class NumberFormat extends BaseFormat {
 
-  protected static final Class<?> PKG = Expression.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private static final String PATTERN_EXCEPTION = "Wrong pattern";
   private static final String NOT_IMPLIMENTED_EXCEPTION = "Not implimented";

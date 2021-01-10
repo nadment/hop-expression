@@ -40,7 +40,7 @@ import org.apache.hop.i18n.BaseMessages;
 
 public class ExpressionParser {
 
-  private static final Class<?> PKG = Expression.class; // for i18n purposes
+  private static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   /** locale-neutral big decimal format. */
   public static final DecimalFormat DECIMAL_FORMAT =
@@ -62,9 +62,9 @@ public class ExpressionParser {
   private List<Token> tokens = new ArrayList<>();
   private int index = 0;
 
-  public static Expression parse(String source) throws ExpressionException {
+  public static IExpression parse(String source) throws ExpressionException {
     ExpressionParser parser = new ExpressionParser(source);
-    Expression expression = parser.parse();
+    IExpression expression = parser.parse();
 
     return expression.optimize(new ExpressionContext());
   }
@@ -111,7 +111,7 @@ public class ExpressionParser {
     return false;
   }
 
-  private Expression parse() throws ExpressionParserException {
+  private IExpression parse() throws ExpressionParserException {
     // System.out.println("Parse: " + source);
 
     if (StringUtils.isEmpty(source)) return Value.NULL;
@@ -128,7 +128,7 @@ public class ExpressionParser {
       tokens.add(token);
     }
 
-    Expression expression = this.parseLogicalOr();
+    IExpression expression = this.parseLogicalOr();
 
     if (hasNext()) {
       throw new ExpressionParserException(next().value(), source, this.getPosition());
@@ -142,8 +142,8 @@ public class ExpressionParser {
    *
    * <p>LogicalXor ( OR LogicalXor )*
    */
-  private Expression parseLogicalOr() throws ExpressionParserException {
-    Expression expression = this.parseLogicalXor();
+  private IExpression parseLogicalOr() throws ExpressionParserException {
+    IExpression expression = this.parseLogicalXor();
     while (next(Id.OR)) {
       expression = new ExpressionCall(Operator.BOOLOR, expression, parseLogicalXor());
     }
@@ -158,8 +158,8 @@ public class ExpressionParser {
    *
    * @return Expression
    */
-  private Expression parseLogicalXor() throws ExpressionParserException {
-    Expression expression = this.parseLogicalAnd();
+  private IExpression parseLogicalXor() throws ExpressionParserException {
+    IExpression expression = this.parseLogicalAnd();
     while (next(Id.XOR)) {
       expression = new ExpressionCall(Operator.BOOLXOR, expression, parseLogicalAnd());
     }
@@ -174,8 +174,8 @@ public class ExpressionParser {
    *
    * @return Expression
    */
-  private Expression parseLogicalAnd() throws ExpressionParserException {
-    Expression expression = this.parseLogicalNot();
+  private IExpression parseLogicalAnd() throws ExpressionParserException {
+    IExpression expression = this.parseLogicalNot();
     while (next(Id.AND)) {
       expression = new ExpressionCall(Operator.BOOLAND, expression, parseLogicalNot());
     }
@@ -188,7 +188,7 @@ public class ExpressionParser {
    *
    * <p>[NOT] RelationalExpression
    */
-  private Expression parseLogicalNot() throws ExpressionParserException {
+  private IExpression parseLogicalNot() throws ExpressionParserException {
 
     if (next(Id.NOT)) {
       return new ExpressionCall(Operator.BOOLNOT, this.parseIs());
@@ -202,14 +202,14 @@ public class ExpressionParser {
    *
    * <p>Basic [NOT] BasicExpression
    */
-  private Expression parseIs() throws ExpressionParserException {
-    Expression expression = this.parseRelational();
+  private IExpression parseIs() throws ExpressionParserException {
+    IExpression expression = this.parseRelational();
     if (next(Id.IS)) {
       boolean not = false;
       if (next(Id.NOT)) {
         not = true;
       }
-      Expression result = new ExpressionCall(Operator.IS, expression, this.parseLiteralBasic());
+      IExpression result = new ExpressionCall(Operator.IS, expression, this.parseLiteralBasic());
       if (not) return new ExpressionCall(Operator.BOOLNOT, result);
       return result;
     }
@@ -221,8 +221,8 @@ public class ExpressionParser {
    *
    * @return Expression
    */
-  private Expression parseFactor() throws ExpressionParserException {
-    Expression expression = this.parseBitwiseNot();
+  private IExpression parseFactor() throws ExpressionParserException {
+    IExpression expression = this.parseBitwiseNot();
 
     while (hasNext()) {
       if (next(Id.MULTIPLY)) {
@@ -238,7 +238,7 @@ public class ExpressionParser {
   }
 
   /** ( UnaryExpression)* */
-  private Expression parseBitwiseNot() throws ExpressionParserException {
+  private IExpression parseBitwiseNot() throws ExpressionParserException {
     if (next(Id.BITWISE_NOT)) {
       return new ExpressionCall(Operator.BITNOT, this.parseUnary());
     }
@@ -246,8 +246,8 @@ public class ExpressionParser {
   }
 
   /** UnaryExpression ( & UnaryExpression)* */
-  private Expression parseBitwiseAnd() throws ExpressionParserException {
-    Expression expression = this.parseFactor();
+  private IExpression parseBitwiseAnd() throws ExpressionParserException {
+    IExpression expression = this.parseFactor();
     if (next(Id.BITWISE_AND)) {
       return new ExpressionCall(Operator.BITAND, expression, this.parseFactor());
     }
@@ -255,8 +255,8 @@ public class ExpressionParser {
   }
 
   /** UnaryExpression ( | UnaryExpression)* */
-  private Expression parseBitwiseOr() throws ExpressionParserException {
-    Expression expression = this.parseBitwiseXor();
+  private IExpression parseBitwiseOr() throws ExpressionParserException {
+    IExpression expression = this.parseBitwiseXor();
     if (next(Id.BITWISE_OR)) {
       return new ExpressionCall(Operator.BITOR, expression, this.parseBitwiseXor());
     }
@@ -264,8 +264,8 @@ public class ExpressionParser {
   }
 
   /** UnaryExpression ( ^ UnaryExpression)* */
-  private Expression parseBitwiseXor() throws ExpressionParserException {
-    Expression expression = this.parseBitwiseAnd();
+  private IExpression parseBitwiseXor() throws ExpressionParserException {
+    IExpression expression = this.parseBitwiseAnd();
     if (next(Id.BITWISE_XOR)) {
       return new ExpressionCall(Operator.BITXOR, expression, this.parseBitwiseAnd());
     }
@@ -273,7 +273,7 @@ public class ExpressionParser {
   }
 
   /** (('+' | '-') PrimaryExpression ) */
-  private Expression parseUnary() throws ExpressionException {
+  private IExpression parseUnary() throws ExpressionException {
 
     if (next(Id.MINUS)) {
       return new ExpressionCall(Operator.NEGATIVE, this.parseTerm());
@@ -286,7 +286,7 @@ public class ExpressionParser {
   }
 
   /** Literal TRUE | FALSE | NULL */
-  private Expression parseLiteralBasic() throws ExpressionParserException {
+  private IExpression parseLiteralBasic() throws ExpressionParserException {
 
     Token token = next();
 
@@ -309,7 +309,7 @@ public class ExpressionParser {
   }
 
   /** Literal text */
-  private Expression parseLiteralText(Token token) throws ExpressionParserException {
+  private IExpression parseLiteralText(Token token) throws ExpressionParserException {
     String text = token.value();
     //		int length = text.length();
     //		StringBuilder builder = new StringBuilder(length);
@@ -389,7 +389,7 @@ public class ExpressionParser {
   }
 
   /** Term = Literal | Identifier | Function | '(' Expression ')' */
-  private Expression parseTerm() throws ExpressionParserException {
+  private IExpression parseTerm() throws ExpressionParserException {
     Token token = next();
 
     if (token != null) {
@@ -422,7 +422,7 @@ public class ExpressionParser {
         case FUNCTION:
           return parseFunction(token);
         case LPARENTHESIS:
-          Expression expression = this.parseLogicalOr();
+          IExpression expression = this.parseLogicalOr();
 
           token = next();
           if (token.is(Id.RPARENTHESIS)) {
@@ -443,8 +443,8 @@ public class ExpressionParser {
   }
 
   /** AdditiveExpression ( Operator AdditiveExpression | InClause | BetweenClause | LikeClause */
-  private Expression parseRelational() throws ExpressionParserException {
-    Expression expression = this.parseAdditive();
+  private IExpression parseRelational() throws ExpressionParserException {
+    IExpression expression = this.parseAdditive();
 
     if (next(Id.EQUAL)) {
       return new ExpressionCall(Operator.EQUALS, expression, this.parseAdditive());
@@ -476,30 +476,30 @@ public class ExpressionParser {
     }
 
     if (next(Id.LIKE)) {
-      Expression pattern = this.parseTerm();
+      IExpression pattern = this.parseTerm();
 
       if (next(Id.ESCAPE)) {
-        Expression escape = this.parseTerm();
+        IExpression escape = this.parseTerm();
         expression = new ExpressionCall(Operator.LIKE, expression, pattern, escape);
       } else expression = new ExpressionCall(Operator.LIKE, expression, pattern);
     } else if (next(Id.ILIKE)) {
-      Expression pattern = this.parseTerm();
+      IExpression pattern = this.parseTerm();
 
       if (next(Id.ESCAPE)) {
-        Expression escape = this.parseTerm();
+        IExpression escape = this.parseTerm();
         expression = new ExpressionCall(Operator.ILIKE, expression, pattern, escape);
       } else expression = new ExpressionCall(Operator.ILIKE, expression, pattern);
     } else if (next(Id.IN)) {
       expression = new ExpressionCall(Operator.IN, expression, this.parseList());
     } else if (next(Id.BETWEEN)) {
-      Expression begin = this.parseTerm();
+      IExpression begin = this.parseTerm();
       if (!next(Id.AND)) {
         throw new ExpressionParserException(
             BaseMessages.getString(PKG, "ExpressionParser.InvalidOperator", Id.BETWEEN),
             source,
             this.getPosition());
       }
-      Expression end = this.parseTerm();
+      IExpression end = this.parseTerm();
 
       expression = new ExpressionCall(Operator.BETWEEN, expression, begin, end);
     }
@@ -512,8 +512,8 @@ public class ExpressionParser {
   }
 
   /** BitwiseExpression ( (+ | - | ||) BitwiseOrExpression )* */
-  private Expression parseAdditive() throws ExpressionParserException {
-    Expression expression = this.parseBitwiseOr();
+  private IExpression parseAdditive() throws ExpressionParserException {
+    IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
       if (next(Id.PLUS)) {
         // System.out.println("Parse simple +");
@@ -703,7 +703,7 @@ public class ExpressionParser {
 
     // Token token = tokenizer.next();
 
-    List<Expression> list = new ArrayList<>();
+    List<IExpression> list = new ArrayList<>();
 
     // System.out.println("Parse expression list: " + token);
     if (next(Id.LPARENTHESIS)) {
@@ -732,11 +732,11 @@ public class ExpressionParser {
   }
 
   /** Case When Then Else End ) */
-  private Expression parseCaseWhen() throws ExpressionException {
-    Expression valueExpression = null;
-    Expression elseExpression = null;
-    List<Expression> whenList = new ArrayList<>();
-    List<Expression> thenList = new ArrayList<>();
+  private IExpression parseCaseWhen() throws ExpressionException {
+    IExpression valueExpression = null;
+    IExpression elseExpression = null;
+    List<IExpression> whenList = new ArrayList<>();
+    List<IExpression> thenList = new ArrayList<>();
 
     // Form Switch value
     if (!is(Id.WHEN)) {
@@ -779,10 +779,10 @@ public class ExpressionParser {
   }
 
   /** Function */
-  private Expression parseFunction(Token token) throws ExpressionParserException {
+  private IExpression parseFunction(Token token) throws ExpressionParserException {
 
     Function function = Function.getFunction(token.value());
-    List<Expression> operands = new ArrayList<>();
+    List<IExpression> operands = new ArrayList<>();
 
     if (is(Id.LPARENTHESIS)) token = next();
     else {

@@ -20,15 +20,14 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import org.apache.hop.expression.IExpression;
 
-import org.apache.hop.expression.Expression;
-
-public class ExpressionCompiled extends CompiledScript {
+public class CompiledExpression extends CompiledScript {
 
   private final ExpressionEngine engine;
-  private final Expression expression;
+  private final IExpression expression;
 
-  public ExpressionCompiled(ExpressionEngine engine, Expression expression) {
+  public CompiledExpression(ExpressionEngine engine, IExpression expression) {
     this.engine = engine;
     this.expression = expression;
   }

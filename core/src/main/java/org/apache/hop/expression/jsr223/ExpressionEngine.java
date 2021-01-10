@@ -18,7 +18,6 @@ package org.apache.hop.expression.jsr223;
 
 import java.io.IOException;
 import java.io.Reader;
-
 import javax.script.AbstractScriptEngine;
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -27,13 +26,12 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
-
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Value;
 
-public class ExpressionEngine extends AbstractScriptEngine implements ScriptEngine, Compilable {
+public final class ExpressionEngine extends AbstractScriptEngine implements ScriptEngine, Compilable {
 
   private volatile ExpressionEngineFactory factory;
 
@@ -52,13 +50,13 @@ public class ExpressionEngine extends AbstractScriptEngine implements ScriptEngi
 
   @Override
   public Bindings createBindings() {
-    return new ExpressionBindings();
+    return new RowExpressionBindings();
   }
 
   @Override
   public Object eval(String script, ScriptContext context) throws ScriptException {
     try {
-      Expression expression = ExpressionParser.parse(script);
+      IExpression expression = ExpressionParser.parse(script);
       Value result = expression.eval((ExpressionContext) context);
 
       return result;
@@ -73,25 +71,25 @@ public class ExpressionEngine extends AbstractScriptEngine implements ScriptEngi
   }
 
   private static String readFully(Reader reader) throws ScriptException {
-    char[] arr = new char[8192];
-    StringBuilder buf = new StringBuilder();
+    char[] buffer = new char[8192];
+    StringBuilder builder = new StringBuilder();
 
     int numChars;
     try {
-      while ((numChars = reader.read(arr, 0, arr.length)) > 0) {
-        buf.append(arr, 0, numChars);
+      while ((numChars = reader.read(buffer, 0, buffer.length)) > 0) {
+        builder.append(buffer, 0, numChars);
       }
-    } catch (IOException var5) {
-      throw new ScriptException(var5);
+    } catch (IOException e) {
+      throw new ScriptException(e);
     }
 
-    return buf.toString();
+    return builder.toString();
   }
 
   @Override
   public CompiledScript compile(String script) throws ScriptException {
-    Expression expression = ExpressionParser.parse(script);
-    return new ExpressionCompiled(this, expression);
+    IExpression expression = ExpressionParser.parse(script);
+    return new CompiledExpression(this, expression);
   }
 
   @Override

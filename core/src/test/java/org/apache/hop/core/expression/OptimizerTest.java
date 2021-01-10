@@ -19,21 +19,20 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Value;
 import org.junit.Test;
 
 public class OptimizerTest {
 
-	protected Expression optimize(String e) throws Exception {
+	protected IExpression optimize(String e) throws Exception {
 
-		Expression expression = ExpressionParser.parse(e);
+		IExpression expression = ExpressionParser.parse(e);
 
 		ExpressionContext context = new ExpressionContext();
-		Expression result = expression.optimize(context);
+		IExpression result = expression.optimize(context);
 		
 		int optimized = expression.getCost()-result.getCost();
 				

@@ -33,15 +33,14 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.IllegalFormatFlagsException;
 import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 
 /** Emulates Oracle's TO_CHAR function. */
 public class ToChar {
-  protected static final Class<?> PKG = Expression.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   /** Hours per day. */
   static final int HOURS_PER_DAY = 24;

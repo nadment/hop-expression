@@ -164,12 +164,12 @@ public class ExpressionEditor extends SashForm {
 
     if (isUseField) {
       treeItemField = new TreeItem(tree, SWT.NULL);
-      treeItemField.setImage(GuiResource.getInstance().getImageBol());
+      treeItemField.setImage(GuiResource.getInstance().getImageFolder());
       treeItemField.setText(BaseMessages.getString(PKG, "Expression.Fields.Label"));
     }
 
     TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
-    treeItemOperator.setImage(GuiResource.getInstance().getImageBol());
+    treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
     treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
 
     // Create operator category
@@ -179,7 +179,7 @@ public class ExpressionEditor extends SashForm {
       if (category == OperatorCategory.None) continue;
 
       TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
-      item.setImage(GuiResource.getInstance().getImageBol());
+      item.setImage(GuiResource.getInstance().getImageFolder());
       item.setText(
           BaseMessages.getString(
               PKG, "Expression.Operators.Category." + category.name() + ".Label"));
@@ -219,7 +219,7 @@ public class ExpressionEditor extends SashForm {
     }
 
     treeItemVariable = new TreeItem(tree, SWT.NULL);
-    treeItemVariable.setImage(GuiResource.getInstance().getImageBol());
+    treeItemVariable.setImage(GuiResource.getInstance().getImageFolder());
     treeItemVariable.setText(BaseMessages.getString(PKG, "Expression.Variables.Label"));
 
     // Tooltip for syntax and help

@@ -19,15 +19,14 @@ package org.apache.hop.expression.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.regex.Pattern;
-
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 
 public class Functions {
 
-  protected static final Class<?> PKG = Expression.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private static final char[] HEX = "0123456789abcdef".toCharArray();
 

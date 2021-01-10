@@ -26,8 +26,8 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowDataUtil;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.Expression;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.apache.hop.i18n.BaseMessages;
@@ -66,7 +66,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
       return Value.of(value);
     }
 
-    Expression expression = ExpressionParser.parse(value.substring(1));
+    IExpression expression = ExpressionParser.parse(value.substring(1));
 
     return expression.eval(new ExpressionContext());
   }
