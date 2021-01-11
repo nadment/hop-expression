@@ -57,8 +57,8 @@ import org.w3c.dom.Node;
     id = "Where",
     image = "where.svg",
     i18nPackageName = "org.apache.hop.pipeline.transforms.where",
-    name = "Where.Name",
-    description = "Where.Description",
+    name = "i18n::Where.Name",
+    description = "i18n::Where.Description",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
     keywords = {"filter", "expression", "sql"})
 @InjectionSupported(localizationPrefix = "Where.Injection.")
@@ -67,9 +67,8 @@ public class WhereMeta extends BaseTransformMeta
 
   private static final Class<?> PKG = WhereMeta.class; // for i18n purposes
 
-  /** Constants: */
+  /** Constants */
   private static final String TAG_EXPRESSION = "expression";
-
   private static final String TAG_SEND_TRUE_TO = "send_true_to";
   private static final String TAG_SEND_FALSE_TO = "send_false_to";
 
@@ -80,6 +79,13 @@ public class WhereMeta extends BaseTransformMeta
     super();
   }
 
+  public WhereMeta(WhereMeta other) {
+    super();
+    this.expression= other.expression;
+    this.setTrueTransformName(other.getTrueTransformName());
+    this.setFalseTransformName(other.getFalseTransformName());
+  }
+  
   @Override
   public WhereTransform createTransform(
       TransformMeta transformMeta,
@@ -102,13 +108,7 @@ public class WhereMeta extends BaseTransformMeta
 
   @Override
   public Object clone() {
-    WhereMeta clone = (WhereMeta) super.clone();
-
-    clone.setTrueTransformName(this.getTrueTransformName());
-    clone.setFalseTransformName(this.getFalseTransformName());
-    clone.setExpression(expression);
-
-    return clone;
+    return new WhereMeta(this);
   }
 
   @Override
@@ -294,7 +294,7 @@ public class WhereMeta extends BaseTransformMeta
     return transformIOMeta;
   }
 
-  private String getTargetStepName(int streamIndex) {
+  private String getTargetTransformName(int streamIndex) {
     IStream stream = getTransformIOMeta().getTargetStreams().get(streamIndex);
     return java.util.stream.Stream.of(stream.getTransformName(), stream.getSubject())
         .filter(Objects::nonNull)
@@ -304,7 +304,7 @@ public class WhereMeta extends BaseTransformMeta
   }
 
   public String getTrueTransformName() {
-    return getTargetStepName(0);
+    return getTargetTransformName(0);
   }
 
   @Injection(name = "TRUE_TARGET_TRANSFORM_NAME")
@@ -314,7 +314,7 @@ public class WhereMeta extends BaseTransformMeta
   }
 
   public String getFalseTransformName() {
-    return getTargetStepName(1);
+    return getTargetTransformName(1);
   }
 
   @Injection(name = "FALSE_TARGET_TRANSFORM_NAME")
