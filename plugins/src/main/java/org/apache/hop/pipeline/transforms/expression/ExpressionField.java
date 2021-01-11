@@ -31,6 +31,17 @@ public class ExpressionField {
     super();
   }
 
+  public ExpressionField(ExpressionField other) {
+    super();
+    
+    this.expression = other.expression;
+    this.name=other.name;
+    this.type = other.type;
+    this.format=other.format;
+    this.length=other.length;
+    this.precision=other.precision;
+  }
+  
   /** The target field name */
   private String name;
 

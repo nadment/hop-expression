@@ -51,9 +51,9 @@ import org.w3c.dom.Node;
  */
 @Transform(
     id = "Expression",
-    name = "Expression.Name",
+    name = "i18n::Expression.Name",
+    description = "i18n::Expression.Description",
     image = "expression.svg",
-    description = "Expression.Description",
     i18nPackageName = "org.apache.hop.pipeline.transforms.expression",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     keywords = {"script", "sql", "function"})
@@ -63,9 +63,8 @@ public class ExpressionMeta extends BaseTransformMeta
 
   private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes
 
-  /** Constants: */
+  /** Constants */
   private static final String TAG_FIELD_EXPRESSION = "expression"; // $NON-NLS-1$
-
   private static final String TAG_FIELD_NAME = "field"; // $NON-NLS-1$
   private static final String TAG_FIELD_TYPE = "type"; // $NON-NLS-1$
 
@@ -73,6 +72,15 @@ public class ExpressionMeta extends BaseTransformMeta
 
   public ExpressionMeta() {
     super();
+  }
+  
+  public ExpressionMeta(ExpressionMeta other) {
+    super();
+    
+    this.fields = new ArrayList<>();
+    for (ExpressionField field : this.getExpressionFields()) {
+      fields.add(new ExpressionField(field));
+    }
   }
 
   @Override
@@ -90,11 +98,6 @@ public class ExpressionMeta extends BaseTransformMeta
     return new ExpressionData();
   }
 
-  /**
-   * This method is called every time a new step is created and should allocate/set the step
-   * configuration to sensible defaults. The values set here will be used by Spoon when a new step
-   * is created.
-   */
   @Override
   public void setDefault() {
     this.fields = new ArrayList<>();
@@ -102,8 +105,7 @@ public class ExpressionMeta extends BaseTransformMeta
 
   @Override
   public Object clone() {
-    ExpressionMeta clone = (ExpressionMeta) super.clone();
-    return clone;
+    return new ExpressionMeta(this);
   }
 
   @Override
