@@ -55,8 +55,7 @@ import org.w3c.dom.Node;
  */
 @Transform(
     id = "Where",
-    image = "where.svg",
-    i18nPackageName = "org.apache.hop.pipeline.transforms.where",
+    image = "where.svg",  
     name = "i18n::Where.Name",
     description = "i18n::Where.Description",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
