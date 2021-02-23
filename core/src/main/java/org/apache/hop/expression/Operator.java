@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.hop.expression.value.ValueInteger;
 import org.apache.hop.i18n.BaseMessages;
 
 // TODO: implement RLIKE operator
@@ -186,6 +187,9 @@ public class Operator implements Comparable<Operator> {
   // SPECIAL OPERATORS
   // -------------------------------------------------------------
 
+  /** Cast <code>::</code> operator. */
+  public static final Operator CAST = new Operator(Kind.CAST, "::", 10, true, false);
+  
   /** An operator describing the <code>CASE</code> operator. */
   public static final Operator CASE = new Operator(Kind.CASE_WHEN, "CASE", 120, true, false);
 
@@ -205,6 +209,7 @@ public class Operator implements Comparable<Operator> {
               BITOR,
               BITNOT,
               BITXOR,
+              CAST,
               MODULUS,
               EQUALS,
               GREATER_THAN,
@@ -312,6 +317,7 @@ public class Operator implements Comparable<Operator> {
     addFunction(Kind.NVL2);
     addFunction(Kind.PI);
     addFunction(Kind.POWER);
+    addFunction(Kind.PREVIOUS_DAY);    
     addFunction(Kind.QUARTER);
     addFunction(Kind.RADIANS);
     addFunctionNotDeterministic(Kind.RAND);
@@ -346,9 +352,12 @@ public class Operator implements Comparable<Operator> {
     addFunction(Kind.TO_CHAR);
     addFunction(Kind.TO_DATE);
     addFunction(Kind.TO_NUMBER);
+    addFunction(Kind.TRANSLATE);
     addFunction(Kind.TRIM);
     addFunction(Kind.TRUNCATE, "TRUNC");
-    addFunction(Kind.TRANSLATE);
+    addFunction(Kind.TRY_TO_BOOLEAN);
+    addFunction(Kind.TRY_TO_DATE);
+    addFunction(Kind.TRY_TO_NUMBER);
     addFunction(Kind.UNICODE);
     addFunction(Kind.UPPER, "UCASE");
     addFunction(Kind.URLDECODE);
@@ -553,6 +562,25 @@ public class Operator implements Comparable<Operator> {
 
   public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
     switch (kind) {
+      
+      case CAST:
+      {
+        Value value = args[0].eval(context);
+        Value type = args[1].eval(context);
+
+        if (value.isNull() || type.isNull()) return Value.NULL;
+
+        DataType targetType = DataType.of((int) type.toInteger());
+
+        if (args.length == 3) {
+          // Format can be ValueNull
+          Value format = args[2].eval(context);
+          return value.convertTo(context, targetType, format.toString());
+        }
+
+        return value.convertTo(targetType);
+      }
+      
       case BITAND:
         {
           Value left = args[0].eval(context);
@@ -810,7 +838,7 @@ public class Operator implements Comparable<Operator> {
             return Value.NULL;
           }
           if (right.signum() < 0) throw new ArithmeticException("Cannot power negative " + right);
-          if (right.signum() == 0) return Value.ONE;
+          if (right.signum() == 0) return ValueInteger.ONE;
 
           return left.power(right);
         }
@@ -1089,18 +1117,18 @@ public class Operator implements Comparable<Operator> {
    * Writes a expression representation of a call to this operator to a writer, including
    * parentheses if the operators on either side are of greater precedence.
    */
-  public void unparse(StringWriter writer, ExpressionCall call, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, ExpressionCall call, int leftPrec, int rightPrec) {
     switch (kind) {
       case BETWEEN:
         {
           IExpression[] operands = call.getOperands();
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           writer.append(' ');
           writer.append("BETWEEN");
           writer.append(' ');
-          operands[1].unparse(writer, leftPrec, rightPrec);
+          operands[1].write(writer, leftPrec, rightPrec);
           writer.append(" AND ");
-          operands[2].unparse(writer, leftPrec, rightPrec);
+          operands[2].write(writer, leftPrec, rightPrec);
           break;
         }
 
@@ -1117,19 +1145,19 @@ public class Operator implements Comparable<Operator> {
 
           // Form switch expression
           if (switchExpression != null) {
-            switchExpression.unparse(writer, 0, 0);
+            switchExpression.write(writer, 0, 0);
           }
 
           int index = 0;
           for (IExpression whenOperand : whenList) {
             writer.append("WHEN ");
-            whenOperand.unparse(writer, 0, 0);
+            whenOperand.write(writer, 0, 0);
             writer.append(" THEN ");
             IExpression thenOperand = thenList.get(index++);
-            thenOperand.unparse(writer, 0, 0);
+            thenOperand.write(writer, 0, 0);
           }
           if (elseExpression != null) {
-            elseExpression.unparse(writer, leftPrec, rightPrec);
+            elseExpression.write(writer, leftPrec, rightPrec);
           }
           writer.append("END");
           break;
@@ -1138,23 +1166,23 @@ public class Operator implements Comparable<Operator> {
       case CONCAT:
         {
           IExpression[] operands = call.getOperands();
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           writer.append(this.getName());
-          operands[1].unparse(writer, leftPrec, rightPrec);
+          operands[1].write(writer, leftPrec, rightPrec);
           break;
         }
 
       case LIKE:
         {
           IExpression[] operands = call.getOperands();
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           writer.append(' ');
           writer.append(this.getName());
           writer.append(' ');
-          operands[1].unparse(writer, leftPrec, rightPrec);
+          operands[1].write(writer, leftPrec, rightPrec);
           if (call.getOperandCount() == 3) {
             writer.append(" ESCAPE ");
-            operands[2].unparse(writer, leftPrec, rightPrec);
+            operands[2].write(writer, leftPrec, rightPrec);
           }
           break;
         }
@@ -1163,7 +1191,7 @@ public class Operator implements Comparable<Operator> {
         {
           IExpression[] operands = call.getOperands();
           writer.append(this.getName());
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           break;
         }
 
@@ -1172,7 +1200,7 @@ public class Operator implements Comparable<Operator> {
           IExpression[] operands = call.getOperands();
           writer.append(this.getName());
           writer.append(' ');
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           break;
         }
 
@@ -1190,11 +1218,11 @@ public class Operator implements Comparable<Operator> {
       case IN:
         {
           IExpression[] operands = call.getOperands();
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           writer.append(' ');
           writer.append(this.getName());
           writer.append(' ');
-          operands[1].unparse(writer, leftPrec, rightPrec);
+          operands[1].write(writer, leftPrec, rightPrec);
           break;
         }
 
@@ -1206,9 +1234,9 @@ public class Operator implements Comparable<Operator> {
         {
           // case POWER_OPERATOR:
           IExpression[] operands = call.getOperands();
-          operands[0].unparse(writer, leftPrec, rightPrec);
+          operands[0].write(writer, leftPrec, rightPrec);
           writer.append(this.getName());
-          operands[1].unparse(writer, leftPrec, rightPrec);
+          operands[1].write(writer, leftPrec, rightPrec);
           break;
         }
       default:

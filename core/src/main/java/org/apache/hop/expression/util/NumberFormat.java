@@ -1,24 +1,26 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.expression.util;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -27,13 +29,9 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.i18n.BaseMessages;
 
 /**
- * Emulates Oracle's TO_NUMBER(number) function.
+ * Emulates Oracle's number format for TO_NUMBER(number) and TO_CHAR(number) functions.
  *
  * <p>
  *
@@ -42,139 +40,436 @@ import org.apache.hop.i18n.BaseMessages;
  * <td>Input</td>
  * <td>Output</td></th>
  * <tr>
- * <td>9</td>
- * <td>Value with the specified number of digits</td>
+ * <td>, (comma)</td>
+ * <td>Grouping separator.</td>
+ * <td>,</td>
+ * </tr>
+ * <tr>
+ * <td>. (periode)</td>
+ * <td>Decimal separator.</td>
+ * <td>.</td>
+ * </tr>
+ * <tr>
+ * <td>$</td>
+ * <td>Leading dollar sign.</td>
+ * <td>$</td>
  * </tr>
  * <tr>
  * <td>0</td>
- * <td>Value with leading zeros</td>
+ * <td>Leading or trailing zeroes.</td>
+ * <td>0</td>
  * </tr>
  * <tr>
- * <tr>
- * <td>. (periode)</td>
- * <td>Decimal point</td>
+ * <td>9</td>
+ * <td>Digit.</td>
+ * <td>#</td>
  * </tr>
  * <tr>
- * <td>, (comma)</td>
- * <td>Group (thousand) separator</td>
+ * <td>B</td>
+ * <td>Blanks integer part of a fixed point number less than 1.</td>
+ * <td>#</td>
  * </tr>
  * <tr>
+ * <td>C</td>
+ * <td>ISO currency abbreviation.</td>
+ * <td>\u00A4</td>
+ * </tr>
+ * <tr>
+ * <td>D</td>
+ * <td>Local decimal separator.</td>
+ * <td>.</td>
+ * </tr>
+ * <tr>
+ * <td>EEEE</td>
+ * <td>Returns a value in scientific notation (case sensitive).</td>
+ * <td>E</td>
+ * </tr>
+ * <tr>
+ * <td>FM</td>
+ * <td>Returns values with no leading or trailing spaces.</td>
+ * <td>None.</td>
+ * </tr>
  * <tr>
  * <td>G</td>
- * <td>Grouping separator.</td>
+ * <td>Local grouping separator.</td>
+ * <td>,</td>
  * </tr>
- *
+ * <tr>
+ * <td>L</td>
+ * <td>Local currency symbol.</td>
+ * <td>\u00A4</td>
+ * </tr>
+ * <tr>
+ * <td>MI</td>
+ * <td>Negative values get trailing minus sign, positive get trailing space.</td>
+ * <td>-</td>
+ * </tr>
+ * <tr>
+ * <td>PR</td>
+ * <td>Negative values get enclosing angle brackets, positive get spaces.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>RN</td>
+ * <td>Returns values in Roman numerals (case sensitive).</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>S</td>
+ * <td>Returns values with leading/trailing +/- signs.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>TM</td>
+ * <td>Returns smallest number of characters possible.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>U</td>
+ * <td>Returns the dual currency symbol.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>V</td>
+ * <td>Returns a value multiplied by 10^n.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>X</td>
+ * <td>Hex value.</td>
+ * <td>None.</td>
+ * </tr>
  * </table>
  */
 public final class NumberFormat extends BaseFormat {
 
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
-  private static final String PATTERN_EXCEPTION = "Wrong pattern";
-  private static final String NOT_IMPLIMENTED_EXCEPTION = "Not implimented";
-
-  private static final Map<String, Format> formatsCache = new ConcurrentHashMap<>();
-
-  private final String source;
+  private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
   public static enum Sign {
     DEFAULT,
-    MI,
+    /** */
+    _MI, MI_,
+    /** Trailing minus */
     _S,
+    /** */
     S_,
+    /** Angle brackets */
     PR
   };
 
   public static enum CurrencyMode {
-    NON,
-    DOLLARS,
-    LOCAL,
-    ISO
+    NONE, DOLLARS, LOCAL_, _LOCAL, ISO_, _ISO
   };
 
-  private static class Format {
-    boolean fillMode = false;
-    boolean b = false;
-    boolean scientific;
-    boolean localGroups = true; // for D and G
+  // Original format
+  private final String format;
 
-    // number of digits in 'numbers' member
-    int digits = 0;
+  // Fill mode suppress padding blanks and zeroes.
+  private boolean fillMode = true;
 
-    // number of digits to the right of the decimal point
-    int scale = 0;
+  private boolean exactMode = false;
 
-    // int firstNine = -1; // position in 'numbers' member the first 9 digit
-    CurrencyMode currency = CurrencyMode.NON;
-    Sign sign = Sign.DEFAULT;
-    String pattern = "";
+  private boolean b = false;
 
-    int v = 0;
+  private boolean localSymbols = true; // for D and G
 
-    public String toString() {
-      StringBuilder s = new StringBuilder();
-      if (sign == Sign.S_) {
-        s.append('S');
-      }
-      if (fillMode) {
-        s.append("FM");
-      }
-      if (b) {
-        s.append('B');
-      }
-      if (currency == CurrencyMode.DOLLARS) {
-        s.append('$');
-      } else if (currency == CurrencyMode.LOCAL) {
-        s.append('L');
-      } else if (currency == CurrencyMode.ISO) {
-        s.append('C');
-      }
-      s.append(pattern);
-      if (scale > 0) {
-        s.append('D');
-        for (int i = 0; i < scale; i++) {
-          s.append('9');
-        }
-      } else if (v > 0) {
-        s.append('V');
-        for (int i = 0; i < v; i++) {
-          s.append('9');
-        }
-      }
-      if (scientific) {
-        s.append("EEEE");
-      }
-      if (sign == Sign._S) {
-        s.append('S');
-      } else if (sign == Sign.MI) {
-        s.append("MI");
-      }
-      return s.toString();
-    }
-  };
+  // number of digits in 'numbers' member
+  private int precision = 0;
+
+  // number of digits to the right of the decimal point
+  private int scale = 0;
+
+  // scientific fixed-width exponent
+  private int scientific = 0;
+
+  // decimal separator position in pattern
+  private int separator = 0;
+
+  // int firstNine = -1; // position in 'numbers' member the first 9 digit
+  private CurrencyMode currency = CurrencyMode.NONE;
+  private Sign sign = Sign.DEFAULT;
+  private String pattern = "";
+  private int v = 0;
 
   public static final BigDecimal parse(String value, String format) throws ParseException {
-    NumberFormat parser = new NumberFormat(format);
+    if (format == null)
+      format = "TM";
+    NumberFormat parser = cache.get(format);
+    if (parser == null) {
+      parser = new NumberFormat(format);
+      cache.put(format, parser);
+    }
+
     return parser.parse(value);
   }
 
-  public static String format(BigDecimal value, String format, Locale local) throws ParseException {
-    NumberFormat formatter = new NumberFormat(format);
+  public static final BigDecimal parse(String value, int precision, int scale)
+      throws ParseException {
+
+    DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance();
+    format.setParseBigDecimal(true);
+    // format.setMaximumIntegerDigits(precision);
+    format.setMaximumFractionDigits(scale);
+    BigDecimal result = (BigDecimal) format.parse(value);
+    result.setScale(scale, BigDecimal.ROUND_HALF_UP);
+
+    return result;
+  }
+
+  public static String format(BigDecimal value, String format, Locale local) {
+    if (format == null)
+      format = "TM";
+    NumberFormat formatter = cache.get(format);
+    if (formatter == null) {
+      formatter = new NumberFormat(format);
+      cache.put(format, formatter);
+    }
+
     return formatter.format(value, local);
   }
 
-  public NumberFormat(String format) {
+  protected NumberFormat(final String format) {
 
-    //		if (format == null)
-    //			format = "999999999999.9999";
+    if (format == null || format.length() == 0) {
+      throw createInvalidFormat(format);
+    }
 
-    this.source = format;
+    // short-circuit logic for formats that don't follow common logic below
+    // TOOD: tme processes exponents with a lowercase e.
+    if ("TM".equalsIgnoreCase(format) || "TM9".equalsIgnoreCase(format)
+        || "TME".equalsIgnoreCase(format)) {
+      this.format = format.toUpperCase();
+      return;
+    }
+
+    int index = 0;
+    int length = format.length();
+    this.format = format;
+
+    if (startsWithIgnoreCase(format, index, "FM")) {
+      this.fillMode = false;
+      index += 2;
+    }
+
+    // S element can appear only in the first or last position of a number format.
+    if (startsWithIgnoreCase(format, index, "S")) {
+      this.sign = Sign.S_;
+      index += 1;
+    } else if (endsWithIgnoreCase(format, "S")) {
+      this.sign = Sign._S;
+      length -= 1;
+    } else if (startsWithIgnoreCase(format, index, "MI")) {
+      this.sign = Sign.MI_;
+      index += 2;
+    }
+    // MI element can appear only in the last position of a number format.
+    else if (endsWithIgnoreCase(format, "MI")) {
+      this.sign = Sign._MI;
+      length -= 2;
+    }
+    // PR element can appear only in the last position of a number format.
+    else if (endsWithIgnoreCase(format, "PR")) {
+      this.sign = Sign.PR;
+      length -= 2;
+    }
+
+    // Zero blank
+    if (startsWithIgnoreCase(format, index, "B")) {
+      this.b = true;
+      index += 1;
+    }
+
+    // Prefix dollars currency
+    if (startsWithIgnoreCase(format, index, "$")) {
+      this.currency = CurrencyMode.DOLLARS;
+      index++;
+    }
+    // Prefix local currency symbol
+    else if (startsWithIgnoreCase(format, index, "L")) {
+      this.currency = CurrencyMode.LOCAL_;
+      index++;
+    }
+    // Prefix ISO currency abbreviation
+    else if (startsWithIgnoreCase(format, index, "C")) {
+      this.currency = CurrencyMode.ISO_;
+      index++;
+    }
+
+    // Integer part
+    boolean leadZero = false;
+    boolean definedGroups = false;
+    boolean hexa = false;
+    StringBuilder builder = new StringBuilder();
+    for (; index < length; index++, this.separator++) {
+      char c = format.charAt(index);
+      if (c == 'G' || c == 'g') {
+        if (definedGroups && !this.localSymbols) {
+          throw createInvalidFormat(format);
+        }
+        definedGroups = true;
+        this.localSymbols = true;
+        builder.append(',');
+      } else if (c == ',') {
+        if (definedGroups && this.localSymbols) {
+          throw createInvalidFormat(format);
+        }
+        definedGroups = true;
+        this.localSymbols = false;
+        builder.append(',');
+      } else if (c == '0') {
+        builder.append('0');
+        this.precision++;
+        leadZero = true;
+      } else if (c == '9') {
+        // any 9s to the left of the decimal separator but to the right of a
+        // 0 behave the same as a 0, e.g. "09999.99" -> "00000.99"
+        builder.append((leadZero) ? '0' : c);
+        this.precision++;
+      } else if (c == 'X' | c == 'x') {
+        hexa = true;
+        boolean upper = (c == 'X');
+        for (; index < length; index++) {
+          builder.append(upper ? 'X' : 'x');
+          this.precision++;
+          this.separator++;
+          c = format.charAt(index);
+          if (c != 'X' && c != 'x')
+            break;
+        }
+
+        // } else if (c == ' ') {
+        // builder.append(c);
+      } else
+        break;
+    }
+
+    if (startsWithIgnoreCase(format, index, "RN")) {
+      builder.append(format.substring(index, index + 2));
+      index += 2;
+    }
+    else if (startsWithIgnoreCase(format, index, "V")) {
+      for (index++; index < length; index++, this.v++) {
+        char c = format.charAt(index);
+        if (c != '0' && c != '9')
+          break;
+      }
+    } else if (startsWithIgnoreCase(format, index, ".", "D")) {
+      char c = Character.toUpperCase(format.charAt(index));
+      if (definedGroups) {
+        if (this.localSymbols && c == '.' || !this.localSymbols && c == 'D') {
+          throw createInvalidFormat(format);
+        }
+      } else {
+        this.localSymbols = (c == 'D');
+      }
+
+      builder.append('.');
+      for (index++; index < length; index++, this.scale++) {
+        c = format.charAt(index);
+        if (c != '0' && c != '9')
+          break;
+        builder.append('0');
+      }
+    }
+
+    // Scientific notation
+    if (startsWithIgnoreCase(format, index, "EEEE")) {
+      this.scientific = 4;
+      index += 4;
+    }
+
+    // Dollars currency symbol
+    if (startsWithIgnoreCase(format, index, "$")) {
+      this.currency = CurrencyMode.DOLLARS;
+      index += 1;
+    }
+    // Local currency symbol
+    else if (startsWithIgnoreCase(format, index, "L")) {
+      this.currency = CurrencyMode._LOCAL;
+      index += 1;
+    }
+    // ISO currency abbreviation
+    else if (startsWithIgnoreCase(format, index, "C")) {
+      this.currency = CurrencyMode._ISO;
+      index += 1;
+    }
+
+    // Sign
+    if (startsWithIgnoreCase(format, index, "S")) {
+      this.sign = Sign._S;
+      index += 1;
+    } else if (startsWithIgnoreCase(format, index, "MI")) {
+      this.sign = Sign._MI;
+      index += 2;
+    } else if (startsWithIgnoreCase(format, index, "PR")) {
+      this.sign = Sign.PR;
+      index += 2;
+    }
+
+    if (index < format.length() || builder.length() == 0) {
+      throw createInvalidFormat(format);
+    }
+
+    this.pattern = builder.toString();
   }
+
 
   public String toString() {
-    return (source != null) ? source.toString() : "null";
+
+    if (pattern == null)
+      return format;
+
+    StringBuilder s = new StringBuilder();
+    if (sign == Sign.S_) {
+      s.append('S');
+    } else if (sign == Sign.MI_) {
+      s.append("MI");
+    }
+
+    if (!fillMode) {
+      s.append("FM");
+    }
+
+    if (b) {
+      s.append('B');
+    }
+
+    if (currency == CurrencyMode.DOLLARS) {
+      s.append('$');
+    } else if (currency == CurrencyMode.LOCAL_) {
+      s.append("L");
+    } else if (currency == CurrencyMode.ISO_) {
+      s.append("C");
+    }
+
+    if (this.localSymbols)
+      s.append(pattern.replace('.', 'D').replace(',', 'G'));
+    else
+      s.append(pattern);
+
+    if (scientific > 0) {
+      s.append("EEEE");
+    }
+
+    // Currency
+    if (currency == CurrencyMode._LOCAL) {
+      s.append("L");
+    } else if (currency == CurrencyMode._ISO) {
+      s.append("C");
+    }
+
+    // Sign
+    if (sign == Sign._S) {
+      s.append('S');
+    } else if (sign == Sign._MI) {
+      s.append("MI");
+    } else if (sign == Sign.PR) {
+      s.append("PR");
+    }
+    return s.toString();
   }
 
+  @Override
   public boolean equals(Object obj) {
     if (obj == null) {
       return false;
@@ -186,225 +481,115 @@ public final class NumberFormat extends BaseFormat {
       return false;
     }
     NumberFormat other = (NumberFormat) obj;
-    return (source != null) ? source.equals(other.source) : false;
+    return format.equals(other.format);
   }
 
-  private static Format compile(String source) throws ParseException {
-
-    System.out.print("Compile Number format: " + source + " >> ");
-
-    Format format = new Format();
-    if (source == null || source.length() == 0) {
-      return format;
-    }
-
-    if (source.equals("RN") || source.equals("rn")) {
-      throw new ParseException(NOT_IMPLIMENTED_EXCEPTION, 0);
-    }
-
-    final int length = source.length();
-
-    String prefix;
-    String suffix;
-
-    int index = 0;
-    char c = source.charAt(0);
-    if (c != '0' && c != '9') {
-      for (index = 1; index < length; index++) {
-        c = source.charAt(index);
-        if (c == '0' || c == '9') break;
-      }
-      prefix = source.substring(0, index).toUpperCase();
-    } else {
-      prefix = "";
-      index = 0;
-    }
-    StringBuilder pattern = new StringBuilder();
-    boolean leadZero = false;
-    boolean definedGroups = false;
-    for (; index < length; index++) {
-      c = source.charAt(index);
-      if (c == 'G' || c == 'g') {
-        if (definedGroups && !format.localGroups) {
-          throw new ParseException(PATTERN_EXCEPTION, 0);
-        }
-        definedGroups = true;
-        format.localGroups = true;
-        pattern.append('G');
-      } else if (c == ',') {
-        if (definedGroups && format.localGroups) {
-          throw new ParseException(PATTERN_EXCEPTION, index);
-        }
-        definedGroups = true;
-        format.localGroups = true;
-        pattern.append(',');
-      } else if (c == '0') {
-        pattern.append('0');
-        format.digits++;
-        leadZero = false;
-      } else if (c == '9') {
-        pattern.append((leadZero) ? '0' : c);
-        format.digits++;
-      } else break;
-    }
-
-    if (c == 'V') {
-      for (index++; index < length; index++, format.v++) {
-        c = source.charAt(index);
-        if (c != '0' && c != '9') break;
-      }
-    } else if (c == '.' || c == 'D') {
-      if (definedGroups) {
-        if (format.localGroups && c == '.' || !format.localGroups && c == 'D') {
-          throw new ParseException(PATTERN_EXCEPTION, index);
-        }
-      } else {
-        format.localGroups = (c == 'D');
-      }
-      for (index++; index < length; index++, format.scale++) {
-        c = source.charAt(index);
-        if (c != '0' && c != '9') break;
-        pattern.append('0');
-      }
-    }
-    format.pattern = pattern.toString();
-    if (index == prefix.length()) {
-      throw new ParseException(PATTERN_EXCEPTION, index);
-    }
-
-    suffix = source.substring(index).toUpperCase();
-    int suf_offset = 0;
-
-    // Scientific notation
-    if (suffix.startsWith("EEEE")) {
-      format.scientific = true;
-      suf_offset = 4;
-    }
-
-    // Sign
-    if (suffix.startsWith("S", suf_offset)) {
-      format.sign = Sign._S;
-      suf_offset += 1;
-    } else if (suffix.startsWith("MI", suf_offset)) {
-      format.sign = Sign.MI;
-      suf_offset += 2;
-    } else if (suffix.startsWith("PR", suf_offset)) {
-      format.sign = Sign.PR;
-      suf_offset += 2;
-    }
-
-    if (suf_offset < suffix.length()) {
-      throw new ParseException(PATTERN_EXCEPTION, index);
-    }
-
-    int pref_offset = 0;
-    if (format.sign == Sign.DEFAULT && prefix.startsWith("S")) {
-      format.sign = Sign.S_;
-      pref_offset += 1;
-    }
-    if (prefix.startsWith("FM", pref_offset)) {
-      format.fillMode = true;
-      pref_offset += 2;
-    }
-    if (prefix.startsWith("B", pref_offset)) {
-      format.b = true;
-      pref_offset += 1;
-    }
-    if (format.sign == Sign.DEFAULT && prefix.startsWith("S", pref_offset)) {
-      format.sign = Sign.S_;
-      suf_offset += 1;
-    }
-
-    if (prefix.startsWith("$", pref_offset)) {
-      format.currency = CurrencyMode.DOLLARS;
-      pref_offset += 1;
-    }
-    // Local currency symbol
-    else if (prefix.startsWith("L", pref_offset)) {
-      format.currency = CurrencyMode.LOCAL;
-      pref_offset += 1;
-    }
-    // ISO currency symbol
-    else if (prefix.startsWith("C", pref_offset)) {
-      format.currency = CurrencyMode.ISO;
-      pref_offset += 1;
-    }
-
-    if (pref_offset < prefix.length()) {
-      throw new ParseException(PATTERN_EXCEPTION, 0);
-    }
-
-    System.out.println(format);
-
-    return format;
+  @Override
+  public int hashCode() {
+    return format.hashCode();
   }
 
   public BigDecimal parse(String source) throws ParseException {
-    Format format = formatsCache.get(source);
-    if (format == null) {
-      format = compile(source);
-      formatsCache.put(source, format);
-    }
 
     ParsePosition pos = new ParsePosition(0);
 
-    StringBuilder d = new StringBuilder(source);
+    StringBuilder value = new StringBuilder(source);
     int start = 0; // first not white space symbol
     try {
       boolean negate = false;
-      int len = d.length(); // length of parsed string
+      int len = value.length(); // length of parsed string
+
+      // Skip space
       for (; start < len; start++) {
-        if (d.charAt(start) != ' ') break;
-      }
-      if (format.sign == Sign.PR) {
-        if (d.charAt(start) == '<' && d.charAt(len - 1) == '>') {
-          d.setCharAt(start++, ' ');
-          d.setLength(--len);
-          negate = true;
-        }
-      } else if (format.sign == Sign.MI) {
-        if (d.charAt(len - 1) == '-') {
-          d.setLength(--len);
-          negate = true;
-        }
-      } else if (format.sign == Sign._S) {
-        char s = d.charAt(len - 1);
-        if (s == '-') {
-          d.setLength(--len);
-          negate = true;
-        } else if (s == '+') {
-          d.setLength(--len);
-        } else {
-          pos.setErrorIndex(start);
-          return null;
-        }
-      } else if (format.sign == Sign.S_) {
-        char s = d.charAt(start);
-        if (s == '-') {
-          d.setCharAt(start++, ' ');
-          negate = true;
-        } else if (s == '+') {
-          d.setCharAt(start++, ' ');
-        } else {
-          pos.setErrorIndex(start);
-          return null;
-        }
-      } else if (format.sign == Sign.DEFAULT) {
-        char s = d.charAt(start);
-        if (s == '-') {
-          d.setCharAt(start++, ' ');
-          negate = true;
-        } else if (s == '+') {
-          d.setCharAt(start++, ' ');
-        }
-      }
-      for (; start < len; start++) {
-        if (d.charAt(start) != ' ') break;
+        if (!Character.isSpaceChar(value.charAt(start)))
+          break;
       }
 
-      int e = d.indexOf("E");
+      // Parse roman numeral
+      if ("RN".equals(pattern)) {
+        return BigDecimal.valueOf(parseRoman(source));
+      }
+
+      // Detect sign
+      if (this.sign == Sign.PR) {
+        if (value.charAt(start) == '<' && value.charAt(len - 1) == '>') {
+          value.setCharAt(start++, ' ');
+          value.setLength(--len);
+          negate = true;
+        }
+      } else if (this.sign == Sign.MI_) {
+        if (value.charAt(len - 1) == '-') {
+          value.setLength(--len);
+          negate = true;
+        }
+      } else if (this.sign == Sign._S) {
+        char s = value.charAt(len - 1);
+        if (s == '-') {
+          value.setLength(--len);
+          negate = true;
+        } else if (s == '+') {
+          value.setLength(--len);
+        } else {
+          pos.setErrorIndex(start);
+          return null;
+        }
+      } else if (this.sign == Sign.S_) {
+        char s = value.charAt(start);
+        if (s == '-') {
+          // TODO: try value.deleteCharAt(start++);
+          value.setCharAt(start++, ' ');
+          negate = true;
+        } else if (s == '+') {
+          value.setCharAt(start++, ' ');
+        } else {
+          pos.setErrorIndex(start);
+          return null;
+        }
+      } else if (this.sign == Sign.DEFAULT) {
+        char s = value.charAt(start);
+        if (s == '-') {
+          value.setCharAt(start++, ' ');
+          negate = true;
+        } else if (s == '+') {
+          value.setCharAt(start++, ' ');
+        }
+      }
+
+      // Skip space
+      for (; start < len; start++) {
+        if (!Character.isSpaceChar(value.charAt(start)))
+          break;
+      }
+
+
+      if (pattern.charAt(0) == 'X') {
+        long v = 0;
+
+        String s = value.substring(start);
+        BigInteger bigInt = new BigInteger(s, 16);
+
+        return new BigDecimal(bigInt);
+
+        // for (int i = start, j=0; i < len; i++, j++) {
+        //
+        //
+        // // int d = digits.indexOf(c);
+        //
+        // if (this.pattern.charAt(j) == 'X') {
+        // char c = value.charAt(i);
+        // if ( !Characters.isHexDigit(c) ) {
+        // pos.setErrorIndex(start);
+        // return null;
+        // }
+        //
+        // v = 16*v + c;
+        // }
+
+      }
+
+      int e = value.indexOf("E");
       if (e == -1) {
-        e = d.indexOf("e");
+        e = value.indexOf("e");
       }
       int dot = source.indexOf('.');
       int coefflen = len - start;
@@ -418,8 +603,8 @@ public final class NumberFormat extends BaseFormat {
         precision++;
         coeff[0] = '-';
       }
-      if (format.scientific) {
-        if (format.pattern.length() == 0 || format.pattern.indexOf('G') != -1) {
+      if (this.scientific > 0) {
+        if (this.pattern.length() == 0 || this.pattern.indexOf('G') != -1) {
           pos.setErrorIndex(start);
           return null;
         }
@@ -427,14 +612,14 @@ public final class NumberFormat extends BaseFormat {
           pos.setErrorIndex(start);
           return null;
         }
-        coeff[precision++] = d.charAt(start);
-        scale = -Integer.valueOf(d.substring(e + 1));
+        coeff[precision++] = value.charAt(start);
+        scale = -Integer.valueOf(value.substring(e + 1));
         if (dot == -1) {
           if (start + 1 != e) {
             pos.setErrorIndex(start);
             return null;
           }
-        } else if (format.scale < e - dot - 1) {
+        } else if (this.scale < e - dot - 1) {
           pos.setErrorIndex(dot);
           return null;
         } else {
@@ -444,7 +629,7 @@ public final class NumberFormat extends BaseFormat {
           }
           scale += e - dot - 1;
           for (int i = dot + 1; i < e; i++) {
-            coeff[precision++] = d.charAt(i);
+            coeff[precision++] = value.charAt(i);
           }
         }
       } else {
@@ -455,17 +640,17 @@ public final class NumberFormat extends BaseFormat {
         if (dot != -1) {
           coefflen--;
           scale = len - dot - 1;
-          if (format.scale < scale) {
+          if (this.scale < scale) {
             pos.setErrorIndex(dot);
             return null;
           }
         }
         try {
           int end = (dot < 0 ? len : dot);
-          int j = format.pattern.length() - 1;
+          int j = this.pattern.length() - 1;
           for (int i = start; i < end; i++, j--) {
-            char c = d.charAt(i);
-            if (format.pattern.charAt(j) == 'G') {
+            char c = value.charAt(i);
+            if (this.pattern.charAt(j) == 'G') {
               if (c != ' ') {
                 pos.setErrorIndex(i);
                 return null;
@@ -486,7 +671,7 @@ public final class NumberFormat extends BaseFormat {
         }
         if (dot != -1) {
           for (int i = dot + 1; i < len; i++) {
-            char c = d.charAt(i);
+            char c = value.charAt(i);
             if (Character.isDigit(c)) {
               coeff[precision++] = c;
             } else {
@@ -498,12 +683,12 @@ public final class NumberFormat extends BaseFormat {
       }
       String str = new String(coeff, 0, precision);
       BigDecimal ret;
-      //			if (scale == 0 && precision < 10) {
-      //				ret = new Integer(Integer.valueOf(str));
-      //			} else {
+      // if (scale == 0 && precision < 10) {
+      // ret = new Integer(Integer.valueOf(str));
+      // } else {
       ret = new BigDecimal(new BigInteger(str), scale);
       // }
-      pos.setIndex(len);
+      // pos.setIndex(len);
       return ret;
     } catch (Exception e) {
       pos.setErrorIndex(start);
@@ -512,483 +697,204 @@ public final class NumberFormat extends BaseFormat {
   }
 
   /**
-   * Emulates Oracle's TO_CHAR(number) function.
-   *
-   * <p>
-   *
-   * <table border="1">
-   * <th>
-   * <td>Input</td>
-   * <td>Output</td></th>
-   * <tr>
-   * <td>,</td>
-   * <td>Grouping separator.</td>
-   * <td>,</td>
-   * </tr>
-   * <tr>
-   * <td>.</td>
-   * <td>Decimal separator.</td>
-   * <td>.</td>
-   * </tr>
-   * <tr>
-   * <td>$</td>
-   * <td>Leading dollar sign.</td>
-   * <td>$</td>
-   * </tr>
-   * <tr>
-   * <td>0</td>
-   * <td>Leading or trailing zeroes.</td>
-   * <td>0</td>
-   * </tr>
-   * <tr>
-   * <td>9</td>
-   * <td>Digit.</td>
-   * <td>#</td>
-   * </tr>
-   * <tr>
-   * <td>B</td>
-   * <td>Blanks integer part of a fixed point number less than 1.</td>
-   * <td>#</td>
-   * </tr>
-   * <tr>
-   * <td>C</td>
-   * <td>ISO currency symbol.</td>
-   * <td>\u00A4</td>
-   * </tr>
-   * <tr>
-   * <td>D</td>
-   * <td>Local decimal separator.</td>
-   * <td>.</td>
-   * </tr>
-   * <tr>
-   * <td>EEEE</td>
-   * <td>Returns a value in scientific notation.</td>
-   * <td>E</td>
-   * </tr>
-   * <tr>
-   * <td>FM</td>
-   * <td>Returns values with no leading or trailing spaces.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>G</td>
-   * <td>Local grouping separator.</td>
-   * <td>,</td>
-   * </tr>
-   * <tr>
-   * <td>L</td>
-   * <td>Local currency symbol.</td>
-   * <td>\u00A4</td>
-   * </tr>
-   * <tr>
-   * <td>MI</td>
-   * <td>Negative values get trailing minus sign, positive get trailing
-   * space.</td>
-   * <td>-</td>
-   * </tr>
-   * <tr>
-   * <td>PR</td>
-   * <td>Negative values get enclosing angle brackets, positive get spaces.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>RN</td>
-   * <td>Returns values in Roman numerals.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>S</td>
-   * <td>Returns values with leading/trailing +/- signs.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>TM</td>
-   * <td>Returns smallest number of characters possible.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>U</td>
-   * <td>Returns the dual currency symbol.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>V</td>
-   * <td>Returns a value multiplied by 10^n.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>X</td>
-   * <td>Hex value.</td>
-   * <td>None.</td>
-   * </tr>
-   * </table>
-   *
    * See also TO_CHAR(number) and number format models in the Oracle documentation.
    *
    * @param number the number to format
-   * @param source the format pattern to use (if any) *
+   * @param locale the locale to use
    * @return the formatted number
    */
-  public String format(BigDecimal number, Locale locale) throws ParseException {
+  public String format(BigDecimal number, Locale locale) {
 
-    // System.out.println("to_char(" + number + "," + format + ")");
-    Format format = compile(source);
+    // Short-circuit logic for formats that don't follow common logic below
 
-    StringBuilder output = new StringBuilder();
-
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
-
-    // Adjust number scale
-    if (format.scale < number.scale()) {
-      number = number.setScale(format.scale, RoundingMode.HALF_UP);
-    }
-
-    if (number.precision() - number.scale() > format.digits) {
-      for (int i = 0; i < format.pattern.length() /* + format.v */ + 1; i++) {
-        output.append('#');
-      }
-    }
-
-    String unscaled = number.unscaledValue().abs().toString();
-    int i = format.digits - 1;
-    int j = unscaled.length() - number.scale() - 1;
-
-    for (; i >= 0 && j >= 0; i--) {
-      char c = format.pattern.charAt(i);
-      // maxLength++;
-      if (c == '0') {
-        if (j >= 0) {
-          char digit = unscaled.charAt(j--);
-          output.insert(0, digit);
-        }
-        // else if (power == null) {
-        //						output.insert(0, '0');
-        // }
-      } else if (c == '9') {
-        if (j >= 0) {
-          char digit = unscaled.charAt(j--);
-          output.insert(0, digit);
-        }
-      } else if (c == ',') {
-        // only add the grouping separator if we have more numbers
-        if (j >= 0 || (i > 0 && source.charAt(i - 1) == '0')) {
-          output.insert(0, c);
-        }
-      } else if (c == 'G' || c == 'g') {
-        // only add the grouping separator if we have more numbers
-        // if (j >= 0 || (i > 0 && fmt.numbers.charAt(i - 1) == '0')) {
-        //						output.insert(0, localGrouping);
-        // }
-      } else if (c == 'C' || c == 'c') {
-        Currency currency = symbols.getCurrency();
-        output.insert(0, currency.getCurrencyCode());
-        // maxLength += 6;
-      } else if (c == 'L' || c == 'l' || c == 'U' || c == 'u') {
-        Currency currency = symbols.getCurrency();
-        output.insert(0, currency.getSymbol());
-        // maxLength += 9;
-      } else if (c == '$') {
-        Currency currency = symbols.getCurrency();
-        String cs = currency.getSymbol();
-        output.insert(0, cs);
-        // maxLength += cs.length() - 1;
-      } else {
-        throw new ExpressionException(
-            BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", source));
-      }
-    }
-
-    // if the format (to the left of the decimal point) was too small
-    // to hold the number, return a big "######" string
-    if (j >= 0) {
-
-      return StringUtils.rightPad("", format.digits + format.scale + 1, "#");
-    }
-
-    if (format.scale > 0) {
-      // add the decimal point
-
-      // maxLength++;
-      // char pt = format.numbers.charAt(format.digits);
-      // if (pt == 'D') {
-      output.append(symbols.getDecimalSeparator());
-      //			} else {
-      // output.append(pt);
-      // }
-
-      j += 1;
-      for (i = 0; i < format.scale; i++) {
-        if (j < unscaled.length()) {
-          char digit = unscaled.charAt(j++);
-          output.append(digit);
-        } else if (format.fillMode) {
-          output.append('0');
-        }
-      }
-
-      // start at the decimal point and fill in the numbers to the right,
-      // working our way from left to right
-      //			i = format.digits + 1;
-      //			j = unscaled.length() - number.scale();
-      //			for (; i < format.numbers.length(); i++) {
-      //				char c = format.numbers.charAt(i);
-      //				//maxLength++;
-      //				if (c == '9' || c == '0') {
-      //					if (j < unscaled.length()) {
-      //						char digit = unscaled.charAt(j);
-      //						output.append(digit);
-      //						j++;
-      //					} else {
-      //						if (c == '0' || format.fillMode) {
-      //							output.append('0');
-      //						}
-      //					}
-      //				} else {
-      //					throw new ExpressionException(
-      //							BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", source));
-      //				}
-      //			}
-    }
-
-    addSign(output, number.signum(), format);
-
-    return output.toString();
-  }
-
-  public String format_old(BigDecimal number, Locale locale) {
-
-    // System.out.println("to_char(" + number + "," + format + ")");
-
-    try {
-      Format compile = compile(source);
-    } catch (ParseException e) {
-    }
-
-    // short-circuit logic for formats that don't follow common logic below
-    String formatUp = source != null ? StringUtils.upperCase(source) : null;
-    if (formatUp == null || formatUp.equals("TM") || formatUp.equals("TM9")) {
+    // Text-minimal number
+    if (format == null || format.equals("TM") || format.equals("TM9")) {
       String s = number.toPlainString();
       return s.startsWith("0.") ? s.substring(1) : s;
     }
 
-    if (formatUp.equals("TME")) {
-      int pow = number.precision() - number.scale() - 1;
-      number = number.movePointLeft(pow);
-      return number.toPlainString()
-          + "E"
-          + (pow < 0 ? '-' : '+')
-          + (Math.abs(pow) < 10 ? "0" : "")
-          + Math.abs(pow);
+    // Text-minimal number in scientific notation
+    if (format.equals("TME")) {
+      int power = number.precision() - number.scale() - 1;
+      number = number.movePointLeft(power);
+      return number.toPlainString() + "E" + (power < 0 ? '-' : '+')
+          + (Math.abs(power) < 10 ? "0" : "") + Math.abs(power);
     }
 
-    if (formatUp.equals("RN")) {
-      boolean lowercase = source.startsWith("r");
-      String rn = StringUtils.leftPad(formatRomanNumeral(number.intValue()), 15, " ");
-      return lowercase ? rn.toLowerCase() : rn;
-    }
-
-    if (formatUp.equals("FMRN")) {
-      boolean lowercase = source.charAt(2) == 'r';
+    // Roman numerals
+    if (pattern.charAt(0) == 'R' || pattern.charAt(0) == 'r') {
       String rn = formatRomanNumeral(number.intValue());
+      if (this.fillMode) {
+        rn = StringUtils.leftPad(rn, 15, " ");
+      }
+      boolean lowercase = pattern.charAt(0) == 'r';
       return lowercase ? rn.toLowerCase() : rn;
     }
 
-    if (formatUp.endsWith("X")) {
-      return formatHex(number, source);
-    }
 
-    int maxLength = 1;
-    String fmt = source;
-    // StringBuilder b= new StringBuilder(format);
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
-    char localGrouping = symbols.getGroupingSeparator();
 
-    // The S format element can appear only in the first or last position of a
-    // number format model.
-    boolean leadingSign = formatUp.startsWith("S");
-    if (leadingSign) {
-      fmt = fmt.substring(1);
-      // b.deleteCharAt(0);
+    // Hexadecimal
+    int index = pattern.indexOf('X');
+    if (index < 0) {
+      index = pattern.indexOf('x');
     }
-    boolean trailingSign = formatUp.endsWith("S");
-    if (trailingSign) {
-      fmt = fmt.substring(0, fmt.length() - 1);
-    }
-
-    // The MI format element can appear only in the last position of a number format
-    // model.
-    boolean trailingMinus = formatUp.endsWith("MI");
-    if (trailingMinus) {
-      fmt = fmt.substring(0, fmt.length() - 2);
-    }
-
-    // The PR format element can appear only in the last position of a number format
-    // model.
-    boolean angleBrackets = formatUp.endsWith("PR");
-    if (angleBrackets) {
-      fmt = fmt.substring(0, fmt.length() - 2);
-      maxLength += 1;
-    }
-
-    // Returns a value multiplied by 10n
-    int v = formatUp.indexOf('V');
-    if (v >= 0) {
-      int digits = 0;
-      for (int i = v + 1; i < fmt.length(); i++) {
-        char c = fmt.charAt(i);
-        if (c == '0' || c == '9') {
-          digits++;
-        }
+    if (index >= 0) {
+      boolean zeroPadded = (pattern.charAt(0) == '0');
+      BigInteger value = number.setScale(0, RoundingMode.HALF_UP).toBigInteger();
+      String hex = value.toString(16);
+      
+      // If the format precision was too small to hold the number
+      if (precision < hex.length()) {
+        return StringUtils.rightPad("", precision + 1, "#");
       }
-      number = number.movePointRight(digits);
-      fmt = fmt.substring(0, v) + fmt.substring(v + 1);
+
+      if (pattern.charAt(index) == 'X') {
+        hex = StringUtils.upperCase(hex);
+      }
+      if (zeroPadded) {
+        hex = StringUtils.leftPad(hex, precision, "0");
+      }
+
+      if (fillMode) {
+        hex = StringUtils.leftPad(hex, pattern.length() + 1, " ");
+      }
+
+      return hex;
     }
 
-    Integer power = null;
-    if (source.endsWith("EEEE")) {
+    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
+
+    // Adjust number scale
+    if (this.scale>0 && number.scale() > this.scale) {
+      number = number.setScale(this.scale, RoundingMode.HALF_UP);
+    }
+
+    int power = 0;
+    if (scientific > 0) {
       power = number.precision() - number.scale() - 1;
       number = number.movePointLeft(power);
-      fmt = fmt.substring(0, fmt.length() - 4);
     }
 
-    boolean fillMode = !formatUp.startsWith("FM");
-    if (!fillMode) {
-      fmt = fmt.substring(2);
-    }
-
-    // blanks flag doesn't seem to actually do anything
-    // format = format.replaceAll("[Bb]", "");
-
-    // if we need to round the number to fit into the format specified,
-    // go ahead and do that first
-    int separator = findDecimalSeparator(fmt);
-    int formatScale = calculateScale(fmt, separator);
-    int numberScale = number.scale();
-    if (formatScale < numberScale) {
-      number = number.setScale(formatScale, RoundingMode.HALF_UP);
-    }
-
-    // any 9s to the left of the decimal separator but to the right of a
-    // 0 behave the same as a 0, e.g. "09999.99" -> "00000.99"
-    for (int i = fmt.indexOf('0'); i >= 0 && i < separator; i++) {
-      if (fmt.charAt(i) == '9') {
-        fmt = fmt.substring(0, i) + "0" + source.substring(i + 1);
-      }
-    }
+    String unscaled = number.unscaledValue().abs().toString();
+    int i = this.separator - 1;
+    int j = unscaled.length() - number.scale() - 1;
+    int length = 0;
 
     StringBuilder output = new StringBuilder();
-    String unscaled =
-        (number.abs().compareTo(BigDecimal.ONE) < 0 ? zeroesAfterDecimalSeparator(number) : "")
-            + number.unscaledValue().abs().toString();
-
-    // start at the decimal point and fill in the numbers to the left,
-    // working our way from right to left
-    int i = separator - 1;
-    int j = unscaled.length() - number.scale() - 1;
-    for (; i >= 0; i--) {
-      char c = fmt.charAt(i);
-      maxLength++;
+    for (; i >= 0 || j>=0; i--) {
+      char c = '0';
+      
+      if ( i>=0) {
+        c = this.pattern.charAt(i);
+        length++;
+      }
+      
       if (c == '0') {
         if (j >= 0) {
-          char digit = unscaled.charAt(j);
+          char digit = unscaled.charAt(j--);
           output.insert(0, digit);
-          j--;
-        } else if (power == null) {
+        } else if (this.scientific == 0) {
           output.insert(0, '0');
         }
       } else if (c == '9') {
         if (j >= 0) {
-          char digit = unscaled.charAt(j);
-          output.insert(0, digit);
-          j--;
+          char digit = unscaled.charAt(j--);
+
+          // "0.12" => " .12"
+          if (j <= 0 && digit == '0' && output.length() == 0 && scale > 0) {
+            output.insert(0, ' ');
+          } else {
+            output.insert(0, digit);
+          }
         }
       } else if (c == ',') {
         // only add the grouping separator if we have more numbers
-        if (j >= 0 || (i > 0 && source.charAt(i - 1) == '0')) {
-          output.insert(0, c);
+        if (j >= 0 || (i > 0 && pattern.charAt(i - 1) == '0')) {
+          output.insert(0, localSymbols ? c : symbols.getGroupingSeparator());
         }
-      } else if (c == 'G' || c == 'g') {
-        // only add the grouping separator if we have more numbers
-        if (j >= 0 || (i > 0 && fmt.charAt(i - 1) == '0')) {
-          output.insert(0, localGrouping);
-        }
-      } else if (c == 'C' || c == 'c') {
-        Currency currency = symbols.getCurrency();
-        output.insert(0, currency.getCurrencyCode());
-        maxLength += 6;
-      } else if (c == 'L' || c == 'l' || c == 'U' || c == 'u') {
-        Currency currency = symbols.getCurrency();
-        output.insert(0, currency.getSymbol());
-        maxLength += 9;
-      } else if (c == '$') {
-        Currency currency = symbols.getCurrency();
-        String cs = currency.getSymbol();
-        output.insert(0, cs);
-        maxLength += cs.length() - 1;
+        // } else if (c == ' ') {
+        // output.insert(0, c);
       } else {
-        throw new ExpressionException(
-            BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", source));
+        throw createInvalidFormat(format);
       }
     }
 
-    // if the format (to the left of the decimal point) was too small
-    // to hold the number, return a big "######" string
-    if (j >= 0) {
-      return StringUtils.rightPad("", fmt.length() + 1, "#");
-    }
+    if (this.scale > 0) {
 
-    if (separator < fmt.length()) {
-
-      // add the decimal point
-      maxLength++;
-      char pt = fmt.charAt(separator);
-      if (pt == 'd' || pt == 'D') {
+      // Add decimal separator
+      i = this.separator;
+      char c = this.pattern.charAt(i++);
+      if (c == 'D') {
         output.append(symbols.getDecimalSeparator());
       } else {
-        output.append(pt);
+        output.append(c);
       }
-
-      // start at the decimal point and fill in the numbers to the right,
-      // working our way from left to right
-      i = separator + 1;
+      length++;
       j = unscaled.length() - number.scale();
-      for (; i < fmt.length(); i++) {
-        char c = fmt.charAt(i);
-        maxLength++;
-        if (c == '9' || c == '0') {
-          if (j < unscaled.length()) {
-            char digit = unscaled.charAt(j);
-            output.append(digit);
-            j++;
-          } else {
-            if (c == '0' || fillMode) {
-              output.append('0');
-            }
-          }
-        } else {
-          throw new ExpressionException(
-              BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", source));
+
+
+      // Add decimal digits
+      for (i = 0; i < this.scale; i++) {
+        if (j < unscaled.length()) {
+          char digit = unscaled.charAt(j++);
+          output.append(digit);
+        } else if (this.fillMode) {
+          output.append('0');
         }
+        length++;
       }
+    }  
+    
+    // Add currency symbol
+    Currency currency = symbols.getCurrency();
+    switch (this.currency) {
+      case LOCAL_:
+        output.insert(0, currency.getSymbol());
+        length += 6;
+        break;
+      case _LOCAL:
+        String cs = currency.getSymbol();
+        output.append(cs);
+        length += 6;
+        // maxLength += cs.length() - 1;
+        break;
+      case ISO_:
+        output.insert(0, currency.getCurrencyCode());
+        length += 6;
+        break;
+      case _ISO:
+        output.append(currency.getCurrencyCode());
+        length += 6;
+        break;
+      case DOLLARS:
+        output.insert(0, '$');
+        length += 1;
+        break;
+      default:
+        break;
     }
 
-    addSign(
-        output, number.signum(), leadingSign, trailingSign, trailingMinus, angleBrackets, fillMode);
+    // Add sign
+    length += addSign(output, number.signum());
 
-    if (power != null) {
+    // Add scientific notation
+    if (scientific > 0) {
       output.append('E');
       output.append(power < 0 ? '-' : '+');
       output.append(Math.abs(power) < 10 ? "0" : "");
       output.append(Math.abs(power));
+      length += scientific + 1;
     }
 
+    // If the format was too small to hold the number
+    if ( output.length() > length) {
+      return StringUtils.rightPad("", length, "#");
+    }
+    
     if (fillMode) {
-      if (power != null) {
-        output.insert(0, ' ');
-      } else {
-        while (output.length() < maxLength) {
-          output.insert(0, ' ');
-        }
+      int position = (sign == Sign.MI_) ? 1 : 0;
+      while (output.length() < length) {
+        output.insert(position, ' ');
       }
     }
 
@@ -1015,117 +921,73 @@ public final class NumberFormat extends BaseFormat {
     return String.valueOf(zeroes);
   }
 
-  private static void addSign(StringBuilder output, int signum, Format fmt) {
+  private int addSign(StringBuilder output, int signum) {
+    switch (this.sign) {
 
-    switch (fmt.sign) {
-
-        // Returns negative value with a leading minus sign (-) and positive value with
-        // a leading blank.
+      // Returns negative value with a leading minus sign (-) and positive value with
+      // a leading blank.
       case DEFAULT:
         if (signum < 0) {
           output.insert(0, '-');
-        } else if (fmt.fillMode) {
+        } else if (fillMode) {
           output.insert(0, ' ');
-        }
+        }        
+        else return 0;
         break;
 
-        // Returns negative value with a trailing minus sign (-) and positive value with
-        // a trailing blank.
-      case MI:
-        if (signum < 0) {
-          output.append('-');
-        } else if (fmt.fillMode) {
-          output.append(' ');
-        }
+      // Returns negative value with a leading minus sign (-) and positive value with
+      // a leading plus sign (+).
+      case S_:
+        output.insert(0, (signum < 0) ? '-' : '+');
         break;
 
-        // Returns negative value in <angle brackets> and positive value with a leading
-        // and trailing blank.
-      case PR:
-        if (signum < 0) {
-          output.insert(0, '<');
-          output.append('>');
-        } else if (fmt.fillMode) {
-          output.insert(0, ' ');
-          output.append(' ');
-        }
-        break;
-
-        // Returns negative value with a trailing minus sign (-) and positive value with
-        // a trailing plus sign (+).
+      // Returns negative value with a trailing minus sign (-) and positive value with
+      // a trailing plus sign (+).
       case _S:
         output.append((signum < 0) ? '-' : '+');
         break;
 
-        // Returns negative value with a leading minus sign (-) and positive value with
-        // a leading plus sign (+).
-      case S_:
-        output.insert(0, (signum < 0) ? '-' : '+');
-        break;
-    }
-  }
-
-  private static void addSign(
-      StringBuilder output,
-      int signum,
-      boolean leadingSign,
-      boolean trailingSign,
-      boolean trailingMinus,
-      boolean angleBrackets,
-      boolean fillMode) {
-    if (angleBrackets) {
-      if (signum < 0) {
-        output.insert(0, '<');
-        output.append('>');
-      } else if (fillMode) {
-        output.insert(0, ' ');
-        output.append(' ');
-      }
-    } else {
-      String sign;
-      if (signum == 0) {
-        sign = "";
-      } else if (signum < 0) {
-        sign = "-";
-      } else {
-        if (leadingSign || trailingSign) {
-          sign = "+";
+      // Returns negative value with a leading minus sign (-) and positive value with
+      // a leading blank.
+      case MI_:
+        if (signum < 0) {
+          output.insert(0, '-');
         } else if (fillMode) {
-          sign = " ";
-        } else {
-          sign = "";
+          output.insert(0, ' ');
+        }        
+        else return 0;
+        break;
+
+      // Returns negative value with a trailing minus sign (-) and positive value with
+      // a trailing blank.
+      case _MI:
+        if (signum < 0) {
+          output.append('-');
+        } else if (fillMode) {
+          output.append(' ');
         }
-      }
-      if (trailingMinus || trailingSign) {
-        output.append(sign);
-      } else {
-        output.insert(0, sign);
-      }
+        else return 0;
+        break;
+
+      // Returns negative value in <angle brackets> and positive value with a leading
+      // and trailing blank.
+      case PR:
+        if (signum < 0) {
+          output.insert(0, '<');
+          output.append('>');
+        } else if (fillMode) {
+          output.insert(0, ' ');
+          output.append(' ');
+        }
+        else return 0;
+        return 2;
     }
+    
+    return 1;
   }
 
-  private static int findDecimalSeparator(String format) {
-    int index = format.indexOf('.');
-    if (index == -1) {
-      index = format.indexOf('D');
-      if (index == -1) {
-        index = format.indexOf('d');
-        if (index == -1) {
-          index = format.length();
-        }
-      }
-    }
-    return index;
-  }
-
-  private static int calculateScale(String format, int separator) {
-    int scale = 0;
-    for (int i = separator; i < format.length(); i++) {
-      char c = format.charAt(i);
-      if (c == '0' || c == '9') {
-        scale++;
-      }
-    }
-    return scale;
+  protected static final ExpressionException createInvalidFormat(final String error) {
+    return new ExpressionException(
+        BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", error));
   }
 }

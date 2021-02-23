@@ -75,5 +75,5 @@ public interface IExpression {
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.
    */
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec);
+  public void write(StringWriter writer, int leftPrec, int rightPrec);
 }

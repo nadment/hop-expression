@@ -171,3 +171,14 @@ NOTE: An operator on higher levels is evaluated before an operator on a lower le
 
 Expression support scalar function.
 
+* <<operator/abs.adoc,Abs>>
+* <<operator/acos.adoc,Acos>>
+* <<operator/acosh.adoc,Acosh>>
+* <<operator/ascii.adoc,Ascii>> 
+* <<operator/asin.adoc,Asin>>
+* <<operator/atan.adoc,Atan>>
+* <<operator/cbrt.adoc,Cbrt>>
+* <<operator/day.adoc,Day>>
+* <<operator/decode.adoc,Decode>>
+ 
+

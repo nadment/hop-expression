@@ -16,9 +16,9 @@
  */
 package org.apache.hop.expression;
 
+import java.lang.ref.SoftReference;
 import java.math.BigDecimal;
 import java.time.Instant;
-
 import org.apache.hop.expression.value.ValueBigNumber;
 import org.apache.hop.expression.value.ValueBinary;
 import org.apache.hop.expression.value.ValueBoolean;
@@ -38,7 +38,12 @@ import org.apache.hop.i18n.BaseMessages;
  */
 public abstract class Value implements IExpression, Comparable<Value> {
 
-  protected static final Class<?> PKG = Value.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
+
+  // TODO: move to Const.OBJECT_CACHE_SIZE];
+  private static int OBJECT_CACHE_SIZE=1024;
+  
+  private static SoftReference<Value[]> softCache;
   
   protected int MAX_SCALE = 38;
 
@@ -54,11 +59,6 @@ public abstract class Value implements IExpression, Comparable<Value> {
   /** Numeric literal value of PI. */
   public static final Value PI = new ValueNumber(Math.PI);
 
-  /** Numeric literal value of 0. */
-  public static final Value ZERO = new ValueInteger(0L);
-
-  /** Number literal value of 1. */
-  public static final Value ONE = new ValueInteger(1L);
 
   /**
    * Get the boolean value for the given boolean.
@@ -89,8 +89,8 @@ public abstract class Value implements IExpression, Comparable<Value> {
    */
   public static Value of(Long value) {
     if (value == null) return Value.NULL;
-    if (value == 0L) return Value.ZERO;
-    if (value == 1L) return Value.ONE;
+    if (value == 0L) return ValueInteger.ZERO;
+    if (value == 1L) return ValueInteger.ONE;
 
     return new ValueInteger(value);
   }
@@ -98,8 +98,8 @@ public abstract class Value implements IExpression, Comparable<Value> {
   /** Returns an integer Value that equals to {@code value}. */
   public static Value of(Integer value) {
     if (value == null) return Value.NULL;
-    if (value == 0) return Value.ZERO;
-    if (value == 1) return Value.ONE;
+    if (value == 0) return ValueInteger.ZERO;
+    if (value == 1) return ValueInteger.ONE;
 
     return new ValueInteger(value.longValue());
   }
@@ -110,13 +110,13 @@ public abstract class Value implements IExpression, Comparable<Value> {
     if (BigDecimal.ZERO.equals(value)) return ValueBigNumber.ZERO;
     if (BigDecimal.ONE.equals(value)) return ValueBigNumber.ONE;
 
-    return new ValueBigNumber(value);
+    return (ValueBigNumber) Value.cache(new ValueBigNumber(value));    
   }
 
   public static Value of(Double value) {
     if (value == null || value.isNaN()) return Value.NULL;
-    if (value == 0.0) return Value.ZERO;
-    if (value == 1.0) return Value.ONE;
+    if (value == 0.0) return ValueNumber.ZERO;
+    if (value == 1.0) return ValueNumber.ONE;
 
     return new ValueNumber(value);
   }
@@ -239,7 +239,9 @@ public abstract class Value implements IExpression, Comparable<Value> {
   /**
    * Check if the two values have the same hash code. No data conversion is made; this method
    * returns false if the other object is not of the same class. For some values, compareTo may
-   * return 0 even if equals return false. Example: ValueDecimal 0.0 and 0.00.
+   * return 0 even if equals return false. 
+   * 
+   * Example: ValueDecimal 0 and 0.0
    *
    * @param other the other value
    * @return true if they are equal
@@ -455,6 +457,18 @@ public abstract class Value implements IExpression, Comparable<Value> {
             PKG, "Expression.UnsupportedOperationWithDataType", operation, this.getDataType()));
   }
 
+  /**
+   * Creates new instance of the ExpressionException for value conversion error.
+   *
+   * @param targetType Target data type.
+   * @return instance of the DbException.
+   */
+  protected final ExpressionException createConversionError(DataType to) {
+    return new ExpressionException(
+        BaseMessages.getString(
+            PKG, "Expression.ValueConversionError", this.getDataType(), to));
+  }
+  
   protected final ExpressionException createOverflowError() {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.Overflow", this.toString()));
@@ -463,5 +477,39 @@ public abstract class Value implements IExpression, Comparable<Value> {
   @Override
   public IExpression optimize(IExpressionContext context) throws ExpressionException {
     return this;
+  }
+  
+  /**
+   * Check if a value is in the cache that is equal to this value. If yes,
+   * this value should be used to save memory. If the value is not in the
+   * cache yet, it is added.
+   *
+   * @param v the value to look for
+   * @return the value in the cache or the value passed
+   */
+  static Value cache(Value v) {
+          int hash = v.hashCode();
+          Value[] cache;
+          if (softCache == null || (cache = softCache.get()) == null) {
+              cache = new Value[OBJECT_CACHE_SIZE];
+              softCache = new SoftReference<>(cache);
+          }
+          int index = hash & (OBJECT_CACHE_SIZE - 1); //   
+          Value cached = cache[index];
+          if (cached != null) {
+              if (cached.getDataType()== v.getDataType() && v.equals(cached)) {
+                  return cached;
+              }
+          }
+          cache[index] = v;
+
+      return v;
+  }
+
+  /**
+   * Clear the value cache. Used for testing.
+   */
+  public static void clearCache() {
+      softCache = null;
   }
 }

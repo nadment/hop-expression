@@ -30,7 +30,7 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
@@ -53,6 +53,7 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -87,11 +88,11 @@ public class ExpressionEditor extends SashForm {
             variables,
             parent,
             SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER,
-            "",
+            true,
             false);
 
     textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-    textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
+   // textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
 
     // txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
     // wEditor.getStyledText().setMargins(30, 5, 3, 5);
@@ -109,8 +110,9 @@ public class ExpressionEditor extends SashForm {
 
     contentProposalProvider = new ExpressionProposalProvider();
 
-    StyledText styledText = textEditor.getStyledText();
-
+ // StyledText styledText = textEditor.getStyledText();
+    Text styledText = textEditor.getTextWidget();
+    
     ContentProposalAdapter contentProposalAdapter =
         new ContentProposalAdapter(
             styledText,
@@ -125,14 +127,14 @@ public class ExpressionEditor extends SashForm {
     contentProposalAdapter.setPopupSize(new Point(300, 200));
 
     // Avoid Enter key to be inserted when selected content proposal
-    styledText.addVerifyKeyListener(
-        new VerifyKeyListener() {
-          public void verifyKey(VerifyEvent event) {
-            if ('\r' == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
-              event.doit = false;
-            }
-          }
-        });
+//    styledText.addVerifyKeyListener(
+//        new VerifyKeyListener() {
+//          public void verifyKey(VerifyEvent event) {
+//            if ('\r' == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
+//              event.doit = false;
+//            }
+//          }
+//        });
   }
 
   protected void createTree(final Composite parent) {
@@ -174,9 +176,9 @@ public class ExpressionEditor extends SashForm {
 
     // Create operator category
     Map<String, TreeItem> items = new HashMap<>();
-    for (OperatorCategory category : OperatorCategory.values()) {
+    for (Category category : Category.values()) {
 
-      if (category == OperatorCategory.None) continue;
+      if (category == Category.None) continue;
 
       TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
       item.setImage(GuiResource.getInstance().getImageFolder());

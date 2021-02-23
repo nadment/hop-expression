@@ -24,7 +24,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Objects;
-
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
@@ -152,7 +151,7 @@ public class ValueDate extends Value {
     return super.subtract(v);
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append(this.toString());
   }
 }

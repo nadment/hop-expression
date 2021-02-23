@@ -16,15 +16,14 @@
  */
 package org.apache.hop.expression.value;
 
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Value;
+import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
-
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Value;
-import org.apache.hop.expression.util.ToChar;
 
 public class ValueBigNumber extends Value {
 
@@ -61,7 +60,7 @@ public class ValueBigNumber extends Value {
       final IExpressionContext context, final DataType targetType, String format) {
 
     if (targetType == DataType.STRING) {
-      String result = ToChar.toChar(value, format, context.getLocale());
+      String result = NumberFormat.format(value, format, context.getLocale());
       return new ValueString(result);
     }
 
@@ -109,7 +108,7 @@ public class ValueBigNumber extends Value {
     return value.doubleValue();
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append(this.toString());
   }
 

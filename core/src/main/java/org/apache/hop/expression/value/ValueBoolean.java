@@ -18,11 +18,10 @@ package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
-
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
 
 public class ValueBoolean extends Value {
 
@@ -79,7 +78,7 @@ public class ValueBoolean extends Value {
     return value;
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append(this.toString());
   }
 

@@ -29,13 +29,13 @@
 	<parent>
 		<artifactId>hop</artifactId>
 		<groupId>org.apache.hop</groupId>
-		<version>0.60-SNAPSHOT</version>
+		<version>0.70-SNAPSHOT</version>
 	</parent>
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
-		<hop.version>0.60-SNAPSHOT</hop.version>
+		<hop.version>0.70-SNAPSHOT</hop.version>
 	</properties>
 
 	<modules>
@@ -49,6 +49,19 @@
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
+ 					<configuration>
+          	<excludeSubProjects>false</excludeSubProjects>
+            <consoleOutput>true</consoleOutput>
+            <excludes>
+         	  <exclude>**/target/**</exclude>
+  			  <exclude>**/*.classpath</exclude>
+  			  <exclude>**/*.project</exclude>
+              <exclude>**/*.svg</exclude>
+              <exclude>**/*.prefs</exclude>
+              <exclude>**/*.hpl</exclude>
+              <exclude>**/*.hwf</exclude>
+            </excludes>
+          </configuration>          
 		      <executions>
             <execution>
               <phase>verify</phase>

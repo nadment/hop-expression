@@ -20,12 +20,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.Currency;
 import java.util.Date;
+import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
@@ -84,67 +88,67 @@ public class ExpressionTest {
 	}
 	
 
-	protected Value eval(String source) throws Exception {
-		IExpression expression = ExpressionParser.parse(source);
+	protected Value eval(String s) throws Exception {
+		IExpression expression = ExpressionParser.parse(s);
 		return expression.eval(context);
 	}
 
-	protected void evalNull(String source) throws Exception {
-		assertTrue(eval(source).isNull());
+	protected void evalNull(String s) throws Exception {
+		assertTrue(eval(s).isNull());
 	}
 
-	protected void evalTrue(String source) throws Exception {
-		assertTrue(eval(source).toBoolean());
+	protected void evalTrue(String s) throws Exception {
+		assertTrue(eval(s).toBoolean());
 	}
 
-	protected void evalFalse(String source) throws Exception {
-		assertFalse(eval(source).toBoolean());
+	protected void evalFalse(String s) throws Exception {
+		assertFalse(eval(s).toBoolean());
 	}
 
-	protected void evalEquals(String source, String expected) throws Exception {
-		assertEquals(expected, eval(source).toString());
+	protected void evalEquals(String s, String expected) throws Exception {
+		assertEquals(expected, eval(s).toString());
 	}
 
-	protected void evalEquals(String source, Long expected) throws Exception {
-		assertEquals(expected.longValue(), eval(source).toInteger());
+	protected void evalEquals(String s, Long expected) throws Exception {
+		assertEquals(expected.longValue(), eval(s).toInteger());
 	}
 
-	protected void evalEquals(String source, double expected) throws Exception {
-		Value value = eval(source);
-		assertEquals(expected, value.toNumber(), 0);
+	protected void evalEquals(String s, double expected) throws Exception {
+		Value value = eval(s);
+		assertEquals(expected, value.toNumber(), 0.001);
 	}
 
-	protected void evalEquals(String source, BigDecimal expected) throws Exception {
-		Value value = eval(source);
+	protected void evalEquals(String s, BigDecimal expected) throws Exception {
+		Value value = eval(s);
 		assertEquals(expected, value.toBigNumber());
 	}
 
-	protected void evalEquals(String source, Instant expected) throws Exception {
-		assertEquals(expected, eval(source).toDate());
+	protected void evalEquals(String s, Instant expected) throws Exception {
+		assertEquals(expected, eval(s).toDate());
 	}
 
-	protected void evalEquals(String source, LocalTime expected) throws Exception {
-		assertEquals(Instant.from(expected), eval(source).toDate());
+	protected void evalEquals(String s, LocalTime expected) throws Exception {
+		assertEquals(Instant.from(expected), eval(s).toDate());
 	}
 
-	protected void evalEquals(String source, LocalDate expected) throws Exception {
-		assertEquals(expected.atStartOfDay(ZoneId.of("UTC")).toInstant(), eval(source).toDate());
+	protected void evalEquals(String s, LocalDate expected) throws Exception {
+		assertEquals(expected.atStartOfDay(ZoneId.of("UTC")).toInstant(), eval(s).toDate());
 	}
 
-	protected void evalEquals(String source, LocalDateTime expected) throws Exception {
-		assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(source).toDate());
+	protected void evalEquals(String s, LocalDateTime expected) throws Exception {
+		assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(s).toDate());
 	}
 
-	protected void evalFails(String source) {
+	protected void evalFails(String s) {
 		try {
-			eval(source);
-			Assert.fail("Syntax should be invalid");
+			eval(s);
+			Assert.fail("Syntax or result should be invalid");
 		} catch (ExpressionParserException ex) {
 			System.out.print(ex.getSource());
 			System.out.print(" >>> ");
 			System.err.println(ex.toString());
 		} catch (ExpressionException ex) {
-			System.out.println(source + " >>> " + ex.toString());
+			System.out.println(s + " >>> " + ex.toString());
 		} catch (Exception ex) {
 			Assert.fail("Uncatched exception " + ex.getClass());
 		}
@@ -152,48 +156,22 @@ public class ExpressionTest {
 
 	@Test
 	public void parser() throws Exception {
-		//evalEquals("TO_CHAR(-01.5, '$90.99MI')","1.5-"); 
-		evalEquals("TO_CHAR(12923)", "12923");
-		evalEquals("TO_CHAR(0.45)", ".45");
-		
-		
-		//evalEquals("TO_CHAR(-7,'99MI')", " 7-");
-
-		// evalEquals("TO_CHAR(12,'S99')", "+12");
-		// evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12345678);
-		// evalEquals("To_Date('01/2/52','DD/MM/RRRR')", LocalDate.of(1952, 2, 1));
-		// evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(2001, 2, 1));
-
-//		evalEquals("To_Date('01/02/-100','DD/MM/SYYYY')", LocalDate.of(-100, 2, 1));
-		// evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, 2, 1));
-		// evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, 2,
-		// 25));
-		// evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
-		// LocalDateTime.of(2009, 12, 24, 23, 0, 0));
-		// evalEquals("To_Date('01/February/2020','DD/MON/YYYY')", LocalDate.of(2020, 2,
-		// 1));
-		// evalTrue("'give me 30% discount' like '%30!%%' escape '!'");
-		// evalFalse("'AA' like '_'");
-		// evalEquals("0xF+0", 15);
-		// evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23,
-		// 55, 0));
-		// evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-		// evalFails("0X0F");
-		// evalFails("9!7");
-		// evalFails("Year()");
-		// evalFails("LPad('test',-8)");
-		// evalEquals("LPad('test',3,'*')", "tes");
-		// evalFails("Ceil('x')");
-		// evalFails("Date(2020,13,22)");
-		// evalEquals("To_Char(0.1,'999.99')", " .10");
-		// evalEquals("To_Char(0,'9999')", " 0");
-		// evalFails("To_Char(12,'MI99')");
-		/// evalEquals("TO_CHAR(7,'9999PR')"," 7 ");
-		// evalEquals("TO_CHAR(-7,'9999PR')"," <7>");
-		// evalEquals("TO_CHAR(-7,'$99')", " -XXX7");
-		// evalEquals("TO_CHAR(0,'99.99')", " .00");
-		// evalEquals("TO_CHAR(0,'9999')", " 0");
-		// evalEquals("TO_CHAR(123.456,'9.9EEEE')", " 1.2E+02");
+	     Locale locale = this.getContext().getLocale();
+	     DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
+	     Currency currency = symbols.getCurrency();
+	     
+	     //evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4);
+         //evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
+         evalFails("CAST('bad' AS)");
+         
+	      //evalEquals("TO_CHAR(12,'$99')", " $12");
+	     //evalEquals("TO_CHAR(123.456,'9.9EEEE')", "  1.2E+02");
+	      //evalEquals("TO_CHAR(11,'FMRN')", "XI");  
+	      //evalEquals("TO_CHAR(123,'XX')", " 7B");
+	      //evalEquals("TO_CHAR(124,'FM$99')", "###");
+	      //evalEquals("TO_CHAR(12345.567,'9,999')", "######");
+	     
+	     //evalEquals("TO_CHAR(-7,'99$')", " -7" + currency.getSymbol());
 
 	}
 

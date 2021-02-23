@@ -16,20 +16,25 @@
  */
 package org.apache.hop.expression.value;
 
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Value;
+import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.Objects;
-
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Value;
-import org.apache.hop.expression.util.ToChar;
 
 public class ValueNumber extends Value {
 
   private final double value;
+
+  /** Number value of 0. */
+  public static final Value ZERO = new ValueNumber(0.0);
+
+  /** Number value of 1. */
+  public static final Value ONE = new ValueNumber(1.0);
+
 
   public ValueNumber(double value) {
     this.value = value;
@@ -74,7 +79,7 @@ public class ValueNumber extends Value {
     return this;
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append(this.toString());
   }
 
@@ -120,7 +125,7 @@ public class ValueNumber extends Value {
       final IExpressionContext context, final DataType targetType, String format) {
 
     if (targetType == DataType.STRING) {
-      String result = ToChar.toChar(this.toBigNumber(), format, context.getLocale());
+      String result = NumberFormat.format(this.toBigNumber(), format, context.getLocale());
       return new ValueString(result);
     }
 

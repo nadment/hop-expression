@@ -282,7 +282,11 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void Cast() throws Exception {
+	  
+	  
+	  
 		// String to Boolean
+	    evalTrue("'Yes'::Boolean");
 		evalTrue("CAST('Yes' as Boolean)");
 		evalFalse("CAST('No' as Boolean)");
 		evalTrue("CAST('Y' as Boolean)");	
@@ -318,7 +322,7 @@ public class OperatorTest extends ExpressionTest {
 		// Number to String
 		evalEquals("CAST(0.45 AS STRING)", ".45");		
 		evalEquals("CAST(0.45 AS STRING FORMAT 'FM000.00')", "000.45");
-		//evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1234 ");
+		evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1234 ");
 		
 		// String to Integer
 		evalEquals("CAST('1234' as Integer)", 1234L);

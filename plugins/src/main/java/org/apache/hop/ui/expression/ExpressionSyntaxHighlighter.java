@@ -30,7 +30,6 @@ import org.eclipse.swt.graphics.Color;
 
 public class ExpressionSyntaxHighlighter implements LineStyleListener {
 
-  //	private Color BRUN;
   private Color BLACK;
   private Color RED;
   private Color GREEN;
@@ -41,15 +40,14 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
   private Color ORANGE;
 
   public ExpressionSyntaxHighlighter() {
-    BLACK = GuiResource.getInstance().getColor(0, 0, 0);
-    //	BRUN = GUIResource.getInstance().getColor(106,62,62);
-    RED = GuiResource.getInstance().getColor(255, 0, 0);
+    BLACK = GuiResource.getInstance().getColorBlack();
+    RED = GuiResource.getInstance().getColorRed();
     DARK_GREEN = GuiResource.getInstance().getColor(10, 93, 0);
     GREEN = GuiResource.getInstance().getColor(8, 154, 0);
-    BLUE = GuiResource.getInstance().getColor(0, 0, 255);
+    BLUE = GuiResource.getInstance().getColorBlue();
     PURPLE = GuiResource.getInstance().getColor(255, 0, 255);
-    ORANGE = GuiResource.getInstance().getColor(240, 94, 35);
-    INDIGO = GuiResource.getInstance().getColor(149, 58, 145);
+    ORANGE = GuiResource.getInstance().getColorOrange();
+    INDIGO = GuiResource.getInstance().getColorIndigo();
   }
 
   @Override
@@ -61,7 +59,7 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
       ExpressionScanner scanner = new ExpressionScanner(styledText.getText());
 
       for (Token token = scanner.tokenize(); token != null; token = scanner.tokenize()) {
-        ranges.add(new StyleRange(token.index(), token.length(), getColor(token), null));
+        ranges.add(new StyleRange(token.start(), token.length(), getColor(token), null));
       }
 
       event.styles = ranges.toArray(new StyleRange[0]);

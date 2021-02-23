@@ -45,11 +45,6 @@
     </hop>
     <hop>
       <from>Where</from>
-      <to>TRUE</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Where</from>
       <to>FALSE</to>
       <enabled>Y</enabled>
     </hop>
@@ -64,18 +59,8 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>TRUE</from>
-      <to>User defined Java class</to>
-      <enabled>N</enabled>
-    </hop>
-    <hop>
-      <from>FALSE</from>
-      <to>Get system info</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Get system info</from>
-      <to>JavaScript</to>
+      <from>Where</from>
+      <to>TRUE</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -90,16 +75,16 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <nrclones>100</nrclones>
+    <nrclones>1000</nrclones>
     <addcloneflag>N</addcloneflag>
     <cloneflagfield/>
     <nrcloneinfield>N</nrcloneinfield>
-    <nrclonefield/>
+    <nrclonefield>bb</nrclonefield>
     <addclonenum>Y</addclonenum>
     <clonenumfield>ROWNUM</clonenumfield>
     <attributes/>
     <GUI>
-      <xloc>256</xloc>
+      <xloc>240</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -121,7 +106,7 @@
     <clonenumfield>DYNAMIC_FIELD_NAME</clonenumfield>
     <attributes/>
     <GUI>
-      <xloc>256</xloc>
+      <xloc>240</xloc>
       <yloc>16</yloc>
     </GUI>
   </transform>
@@ -339,7 +324,7 @@ UCASE('${os.name}')</expression>
       </field>
       <field>
         <field>TOMORROW</field>
-        <expression>CURRENT_DATE() +1</expression>
+        <expression>trunc(CURRENT_DATE() + 1)</expression>
         <type>Date</type>
       </field>
       <field>
@@ -392,66 +377,6 @@ UCASE('${os.name}')</expression>
     </GUI>
   </transform>
   <transform>
-    <name>Get system info</name>
-    <type>SystemInfo</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <fields>
-      <field>
-        <name>StartDate</name>
-        <type>start date range</type>
-      </field>
-    </fields>
-    <attributes/>
-    <GUI>
-      <xloc>784</xloc>
-      <yloc>160</yloc>
-    </GUI>
-  </transform>
-  <transform>
-    <name>JavaScript</name>
-    <type>ScriptValueMod</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <optimizationLevel>9</optimizationLevel>
-    <jsScripts>
-      <jsScript>
-        <jsScript_type>0</jsScript_type>
-        <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>//Script here
-
-</jsScript_script>
-      </jsScript>
-    </jsScripts>
-    <fields>
-      <field>
-        <name>TEST</name>
-        <rename>TEST</rename>
-        <type>Boolean</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        <replace>N</replace>
-      </field>
-    </fields>
-    <attributes/>
-    <GUI>
-      <xloc>912</xloc>
-      <yloc>160</yloc>
-    </GUI>
-  </transform>
-  <transform>
     <name>TRUE</name>
     <type>Dummy</type>
     <description/>
@@ -465,47 +390,6 @@ UCASE('${os.name}')</expression>
     <attributes/>
     <GUI>
       <xloc>688</xloc>
-      <yloc>32</yloc>
-    </GUI>
-  </transform>
-  <transform>
-    <name>User defined Java class</name>
-    <type>UserDefinedJavaClass</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <definitions>
-      <definition>
-        <classType>TRANSFORM_CLASS</classType>
-        <className>Processor</className>
-        <class_source>public boolean processRow() throws HopException {
-
-  Object[] r = getRow();
-
-  if (r == null) {
-    setOutputDone();
-    return false;
-  }
-
-  return true;
-}
-</class_source>
-      </definition>
-    </definitions>
-    <fields>
-    </fields>
-    <clearResultFields>N</clearResultFields>
-    <infoTransforms/>
-    <target_transforms/>
-    <usage_parameters/>
-    <attributes/>
-    <GUI>
-      <xloc>896</xloc>
       <yloc>32</yloc>
     </GUI>
   </transform>

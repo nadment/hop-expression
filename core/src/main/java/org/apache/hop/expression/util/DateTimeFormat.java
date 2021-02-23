@@ -37,7 +37,221 @@ import java.util.IllegalFormatFlagsException;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.i18n.BaseMessages;
 
+/**
+ * Emulates Oracle's TO_CHAR(datetime) function.
+ *
+ * <p>
+ *
+ * <table border="1">
+ * <th>
+ * <td>Input</td>
+ * <td>Output</td>
+ * <td>Closest {@link SimpleDateFormat} Equivalent</td></th>
+ * <tr>
+ * <td>- / , . ; : "text"</td>
+ * <td>Reproduced verbatim.</td>
+ * <td>'text'</td>
+ * </tr>
+ * <tr>
+ * <td>A.D. AD B.C. BC</td>
+ * <td>Era designator, with or without periods.</td>
+ * <td>G</td>
+ * </tr>
+ * <tr>
+ * <td>A.M. AM P.M. PM</td>
+ * <td>AM/PM marker.</td>
+ * <td>a</td>
+ * </tr>
+ * <tr>
+ * <td>CC SCC</td>
+ * <td>Century.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>D</td>
+ * <td>Day of week.</td>
+ * <td>u</td>
+ * </tr>
+ * <tr>
+ * <td>DAY</td>
+ * <td>Name of day.</td>
+ * <td>EEEE</td>
+ * </tr>
+ * <tr>
+ * <td>DY</td>
+ * <td>Abbreviated day name.</td>
+ * <td>EEE</td>
+ * </tr>
+ * <tr>
+ * <td>DD</td>
+ * <td>Day of month.</td>
+ * <td>d</td>
+ * </tr>
+ * <tr>
+ * <td>DDD</td>
+ * <td>Day of year.</td>
+ * <td>D</td>
+ * </tr>
+ * <tr>
+ * <td>DL</td>
+ * <td>Long date format.</td>
+ * <td>EEEE, MMMM d, yyyy</td>
+ * </tr>
+ * <tr>
+ * <td>DS</td>
+ * <td>Short date format.</td>
+ * <td>MM/dd/yyyy</td>
+ * </tr>
+ * <tr>
+ * <td>E</td>
+ * <td>Abbreviated era name (Japanese, Chinese, Thai)</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>EE</td>
+ * <td>Full era name (Japanese, Chinese, Thai)</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>FF[1-9]</td>
+ * <td>Fractional seconds.</td>
+ * <td>S</td>
+ * </tr>
+ * <tr>
+ * <td>FM</td>
+ * <td>Returns values with no leading or trailing spaces.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>FX</td>
+ * <td>Requires exact matches between character data and format model.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>HH HH12</td>
+ * <td>Hour in AM/PM (1-12).</td>
+ * <td>hh</td>
+ * </tr>
+ * <tr>
+ * <td>HH24</td>
+ * <td>Hour in day (0-23).</td>
+ * <td>HH</td>
+ * </tr>
+ * <tr>
+ * <td>IW</td>
+ * <td>Week in year.</td>
+ * <td>w</td>
+ * </tr>
+ * <tr>
+ * <td>WW</td>
+ * <td>Week in year.</td>
+ * <td>w</td>
+ * </tr>
+ * <tr>
+ * <td>W</td>
+ * <td>Week in month.</td>
+ * <td>W</td>
+ * </tr>
+ * <tr>
+ * <td>IYYY IYY IY I</td>
+ * <td>Last 4/3/2/1 digit(s) of ISO year.</td>
+ * <td>yyyy yyy yy y</td>
+ * </tr>
+ * <tr>
+ * <td>RRRR RR</td>
+ * <td>Last 4/2 digits of year.</td>
+ * <td>yyyy yy</td>
+ * </tr>
+ * <tr>
+ * <td>Y,YYY</td>
+ * <td>Year with comma.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>YEAR SYEAR</td>
+ * <td>Year spelled out (S prefixes BC years with minus sign).</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>YYYY SYYYY</td>
+ * <td>4-digit year (S prefixes BC years with minus sign).</td>
+ * <td>yyyy</td>
+ * </tr>
+ * <tr>
+ * <td>YYY YY Y</td>
+ * <td>Last 3/2/1 digit(s) of year.</td>
+ * <td>yyy yy y</td>
+ * </tr>
+ * <tr>
+ * <td>J</td>
+ * <td>Julian day (number of days since January 1, 4712 BC).</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>MI</td>
+ * <td>Minute in hour.</td>
+ * <td>mm</td>
+ * </tr>
+ * <tr>
+ * <td>MM</td>
+ * <td>Month in year.</td>
+ * <td>MM</td>
+ * </tr>
+ * <tr>
+ * <td>MON</td>
+ * <td>Abbreviated name of month.</td>
+ * <td>MMM</td>
+ * </tr>
+ * <tr>
+ * <td>MONTH</td>
+ * <td>Name of month, padded with spaces.</td>
+ * <td>MMMM</td>
+ * </tr>
+ * <tr>
+ * <td>RM</td>
+ * <td>Roman numeral month.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>Q</td>
+ * <td>Quarter of year.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>SS</td>
+ * <td>Seconds in minute.</td>
+ * <td>ss</td>
+ * </tr>
+ * <tr>
+ * <td>SSSSS</td>
+ * <td>Seconds in day.</td>
+ * <td>None.</td>
+ * </tr>
+ * <tr>
+ * <td>TS</td>
+ * <td>Short time format.</td>
+ * <td>h:mm:ss aa</td>
+ * </tr>
+ * <tr>
+ * <td>TZD</td>
+ * <td>Daylight savings time zone abbreviation.</td>
+ * <td>z</td>
+ * </tr>
+ * <tr>
+ * <td>TZR</td>
+ * <td>Time zone region information.</td>
+ * <td>zzzz</td>
+ * </tr>
+ * <tr>
+ * <td>X</td>
+ * <td>Local radix character.</td>
+ * <td>None.</td>
+ * </tr>
+ * </table>
+ */
 public class DateTimeFormat extends BaseFormat {
 
   // Specifies the “century start” year for 2-digit years. This parameter prevents
@@ -169,7 +383,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'A':
           // Meridian indicator
-          if (match(format, index, "AM")) {
+          if (startsWithIgnoreCase(format, index, "AM")) {
             String str = parseString(value, position, AM_PM);
             if (str == null) break;
             if (str.charAt(0) == 'P') isPM = true;
@@ -179,7 +393,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Meridian indicator with period
-          if (match(format, index, "A.M.")) {
+          if (startsWithIgnoreCase(format, index, "A.M.")) {
             String str = parseString(value, position, AM_PM);
             if (str == null) break;
             if (str.charAt(0) == 'P') isPM = true;
@@ -189,7 +403,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Era designator
-          if (match(format, index, "AD")) {
+          if (startsWithIgnoreCase(format, index, "AD")) {
             String str = parseString(value, position, AD_BC);
             if (str == null) break;
             if (str.charAt(0) == 'B') bc = true;
@@ -200,7 +414,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Era designator with period
-          if (match(format, index, "A.D.")) {
+          if (startsWithIgnoreCase(format, index, "A.D.")) {
             String str = parseString(value, position, AD_BC);
             if (str == null) break;
             if (str.charAt(0) == 'B') bc = true;
@@ -213,7 +427,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'B':
           // Era designator
-          if (match(format, index, "BC")) {
+          if (startsWithIgnoreCase(format, index, "BC")) {
             String str = parseString(value, position, AD_BC);
             if (str == null) break;
             if (str.charAt(0) == 'B') bc = true;
@@ -224,7 +438,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Era designator with period
-          if (match(format, index, "B.C.")) {
+          if (startsWithIgnoreCase(format, index, "B.C.")) {
             String str = parseString(value, position, AD_BC);
             if (str == null) break;
             if (str.charAt(0) == 'B') bc = true;
@@ -237,7 +451,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'D':
           // Day of year (1-366)
-          if (match(format, index, "DDD")) {
+          if (startsWithIgnoreCase(format, index, "DDD")) {
             dayOfYear = parseInt(value, position, "DDD".length());
             isDayOfYear = true;
             isEpochDay = false;
@@ -246,7 +460,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Day of month (1-31)
-          if (match(format, index, "DD")) {
+          if (startsWithIgnoreCase(format, index, "DD")) {
             day = parseInt(value, position, "DD".length());
             isDayOfYear = false;
             isEpochDay = false;
@@ -279,14 +493,14 @@ public class DateTimeFormat extends BaseFormat {
           }
         case 'M':
           // Minutes (0-59)
-          if (match(format, index, "MI")) {
+          if (startsWithIgnoreCase(format, index, "MI")) {
             minute = parseInt(value, position, 2);
             index += 2;
             continue;
           }
 
           // Month number (1-12)
-          if (match(format, index, "MM")) {
+          if (startsWithIgnoreCase(format, index, "MM")) {
             index += 2;
 
             try {
@@ -300,7 +514,7 @@ public class DateTimeFormat extends BaseFormat {
             continue;
           }
           // Full name of month (parse before MON)
-          else if (match(format, index, "MONTH")) {
+          else if (startsWithIgnoreCase(format, index, "MONTH")) {
             index += 5;
             month = parseMonthName(value, position);
             isDayOfYear = false;
@@ -308,7 +522,7 @@ public class DateTimeFormat extends BaseFormat {
             continue;
           }
           // Abbreviated name of month (parse after MONTH)
-          else if (match(format, index, "MON")) {
+          else if (startsWithIgnoreCase(format, index, "MON")) {
             index += 3;
             month = parseMonthName(value, position);
             isDayOfYear = false;
@@ -319,7 +533,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'H':
           // Hour of day (1-23)
-          if (match(format, index, "HH24")) {
+          if (startsWithIgnoreCase(format, index, "HH24")) {
             hour = parseInt(value, position, 2);
             isTimeFormat12 = false;
             index += 4;
@@ -327,7 +541,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Hour of day (1-12)
-          if (match(format, index, "HH12")) {
+          if (startsWithIgnoreCase(format, index, "HH12")) {
             hour = parseInt(value, position, 2);
             isTimeFormat12 = true;
             index += 4;
@@ -335,7 +549,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Hour of day (1-12)
-          if (match(format, index, "HH")) {
+          if (startsWithIgnoreCase(format, index, "HH")) {
             hour = parseInt(value, position, 2);
             isTimeFormat12 = true;
             index += 2;
@@ -349,14 +563,14 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'R':
           // Roman numeral month (I-XII; January = I).
-          if (match(format, index, "RM")) {
+          if (startsWithIgnoreCase(format, index, "RM")) {
             index += 2;
             month = parseMonthRoman(value, position);
             continue;
           }
 
           // 4-digit year
-          if (match(format, index, "RRRR")) {
+          if (startsWithIgnoreCase(format, index, "RRRR")) {
             year = parseInt(value, position, 4);
             // Years between 00-49 will be given the 21st century (the year 2000)
             if (year >= 0 && year <= 49) year += 2000;
@@ -369,14 +583,14 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'S':
           // Seconds
-          if (match(format, index, "SS")) {
+          if (startsWithIgnoreCase(format, index, "SS")) {
             second = parseInt(value, position, 2);
             index += 2;
             continue;
           }
 
           // 4-digit year; S prefixes BC dates with a minus sign
-          if (match(format, index, "SYYYY")) {
+          if (startsWithIgnoreCase(format, index, "SYYYY")) {
             year = parseSignedInt(value, position, 5);
             isEpochDay = false;
             index += 5;
@@ -386,7 +600,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'Y':
           // 4-digit year
-          if (match(format, index, "YYYY")) {
+          if (startsWithIgnoreCase(format, index, "YYYY")) {
             year = parseInt(value, position, 4);
             isEpochDay = false;
             index += 4;
@@ -394,7 +608,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Last 2-digit year
-          if (match(format, index, "YY")) {
+          if (startsWithIgnoreCase(format, index, "YY")) {
             year = parseInt(value, position, 2);
             year += (1900 + year > TWO_DIGIT_CENTURY_START) ? 2000 : 1900;
             isEpochDay = false;
@@ -476,218 +690,8 @@ public class DateTimeFormat extends BaseFormat {
     return currentMonth;
   }
 
+  
   /**
-   * Emulates Oracle's TO_CHAR(datetime) function.
-   *
-   * <p>
-   *
-   * <table border="1">
-   * <th>
-   * <td>Input</td>
-   * <td>Output</td>
-   * <td>Closest {@link SimpleDateFormat} Equivalent</td></th>
-   * <tr>
-   * <td>- / , . ; : "text"</td>
-   * <td>Reproduced verbatim.</td>
-   * <td>'text'</td>
-   * </tr>
-   * <tr>
-   * <td>A.D. AD B.C. BC</td>
-   * <td>Era designator, with or without periods.</td>
-   * <td>G</td>
-   * </tr>
-   * <tr>
-   * <td>A.M. AM P.M. PM</td>
-   * <td>AM/PM marker.</td>
-   * <td>a</td>
-   * </tr>
-   * <tr>
-   * <td>CC SCC</td>
-   * <td>Century.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>D</td>
-   * <td>Day of week.</td>
-   * <td>u</td>
-   * </tr>
-   * <tr>
-   * <td>DAY</td>
-   * <td>Name of day.</td>
-   * <td>EEEE</td>
-   * </tr>
-   * <tr>
-   * <td>DY</td>
-   * <td>Abbreviated day name.</td>
-   * <td>EEE</td>
-   * </tr>
-   * <tr>
-   * <td>DD</td>
-   * <td>Day of month.</td>
-   * <td>d</td>
-   * </tr>
-   * <tr>
-   * <td>DDD</td>
-   * <td>Day of year.</td>
-   * <td>D</td>
-   * </tr>
-   * <tr>
-   * <td>DL</td>
-   * <td>Long date format.</td>
-   * <td>EEEE, MMMM d, yyyy</td>
-   * </tr>
-   * <tr>
-   * <td>DS</td>
-   * <td>Short date format.</td>
-   * <td>MM/dd/yyyy</td>
-   * </tr>
-   * <tr>
-   * <td>E</td>
-   * <td>Abbreviated era name (Japanese, Chinese, Thai)</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>EE</td>
-   * <td>Full era name (Japanese, Chinese, Thai)</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>FF[1-9]</td>
-   * <td>Fractional seconds.</td>
-   * <td>S</td>
-   * </tr>
-   * <tr>
-   * <td>FM</td>
-   * <td>Returns values with no leading or trailing spaces.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>FX</td>
-   * <td>Requires exact matches between character data and format model.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>HH HH12</td>
-   * <td>Hour in AM/PM (1-12).</td>
-   * <td>hh</td>
-   * </tr>
-   * <tr>
-   * <td>HH24</td>
-   * <td>Hour in day (0-23).</td>
-   * <td>HH</td>
-   * </tr>
-   * <tr>
-   * <td>IW</td>
-   * <td>Week in year.</td>
-   * <td>w</td>
-   * </tr>
-   * <tr>
-   * <td>WW</td>
-   * <td>Week in year.</td>
-   * <td>w</td>
-   * </tr>
-   * <tr>
-   * <td>W</td>
-   * <td>Week in month.</td>
-   * <td>W</td>
-   * </tr>
-   * <tr>
-   * <td>IYYY IYY IY I</td>
-   * <td>Last 4/3/2/1 digit(s) of ISO year.</td>
-   * <td>yyyy yyy yy y</td>
-   * </tr>
-   * <tr>
-   * <td>RRRR RR</td>
-   * <td>Last 4/2 digits of year.</td>
-   * <td>yyyy yy</td>
-   * </tr>
-   * <tr>
-   * <td>Y,YYY</td>
-   * <td>Year with comma.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>YEAR SYEAR</td>
-   * <td>Year spelled out (S prefixes BC years with minus sign).</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>YYYY SYYYY</td>
-   * <td>4-digit year (S prefixes BC years with minus sign).</td>
-   * <td>yyyy</td>
-   * </tr>
-   * <tr>
-   * <td>YYY YY Y</td>
-   * <td>Last 3/2/1 digit(s) of year.</td>
-   * <td>yyy yy y</td>
-   * </tr>
-   * <tr>
-   * <td>J</td>
-   * <td>Julian day (number of days since January 1, 4712 BC).</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>MI</td>
-   * <td>Minute in hour.</td>
-   * <td>mm</td>
-   * </tr>
-   * <tr>
-   * <td>MM</td>
-   * <td>Month in year.</td>
-   * <td>MM</td>
-   * </tr>
-   * <tr>
-   * <td>MON</td>
-   * <td>Abbreviated name of month.</td>
-   * <td>MMM</td>
-   * </tr>
-   * <tr>
-   * <td>MONTH</td>
-   * <td>Name of month, padded with spaces.</td>
-   * <td>MMMM</td>
-   * </tr>
-   * <tr>
-   * <td>RM</td>
-   * <td>Roman numeral month.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>Q</td>
-   * <td>Quarter of year.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>SS</td>
-   * <td>Seconds in minute.</td>
-   * <td>ss</td>
-   * </tr>
-   * <tr>
-   * <td>SSSSS</td>
-   * <td>Seconds in day.</td>
-   * <td>None.</td>
-   * </tr>
-   * <tr>
-   * <td>TS</td>
-   * <td>Short time format.</td>
-   * <td>h:mm:ss aa</td>
-   * </tr>
-   * <tr>
-   * <td>TZD</td>
-   * <td>Daylight savings time zone abbreviation.</td>
-   * <td>z</td>
-   * </tr>
-   * <tr>
-   * <td>TZR</td>
-   * <td>Time zone region information.</td>
-   * <td>zzzz</td>
-   * </tr>
-   * <tr>
-   * <td>X</td>
-   * <td>Local radix character.</td>
-   * <td>None.</td>
-   * </tr>
-   * </table>
-   *
    * <p>See also TO_CHAR(datetime) and datetime format models in the Oracle documentation.
    *
    * @param value the date-time value to format
@@ -725,7 +729,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'A':
           // AD indicator without periods
-          if ((cap = matchCapitalization(format, index, "AD")) != null) {
+          if ((cap = match(format, index, "AD")) != null) {
             String era = (value.getYear() > 0) ? "AD" : "BC";
             output.append(cap.apply(era));
             index += 2;
@@ -733,21 +737,21 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // AD indicator with periods
-          if ((cap = matchCapitalization(format, index, "A.D.")) != null) {
+          if ((cap = match(format, index, "A.D.")) != null) {
             String era = (value.getYear() > 0) ? "A.D." : "B.C.";
             output.append(cap.apply(era));
             index += 4;
             continue;
           }
 
-          if ((cap = matchCapitalization(format, index, "AM")) != null) {
+          if ((cap = match(format, index, "AM")) != null) {
             String am = (value.getHour() < 12) ? "AM" : "PM";
             output.append(cap.apply(am));
             index += 2;
             continue;
           }
 
-          if ((cap = matchCapitalization(format, index, "A.M.")) != null) {
+          if ((cap = match(format, index, "A.M.")) != null) {
             boolean isAM = value.getHour() < 12;
             String am = isAM ? "A.M." : "P.M.";
             output.append(cap.apply(am));
@@ -758,7 +762,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'B':
           // AD indicator without periods
-          if ((cap = matchCapitalization(format, index, "BC")) != null) {
+          if ((cap = match(format, index, "BC")) != null) {
             String era = (value.getYear() > 0) ? "AD" : "BC";
             output.append(cap.apply(era));
             index += 2;
@@ -766,7 +770,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // AD indicator with periods
-          if ((cap = matchCapitalization(format, index, "B.C.")) != null) {
+          if ((cap = match(format, index, "B.C.")) != null) {
             String era = (value.getYear() > 0) ? "A.D." : "B.C.";
             output.append(cap.apply(era));
             index += 4;
@@ -776,13 +780,13 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'C':
           // Century
-          if (match(format, index, "CC")) {
+          if (startsWithIgnoreCase(format, index, "CC")) {
             int year = Math.abs(value.getYear());
             int century = year / 100;
             if (((int) year % 100) != 0) {
               century += 1;
             }
-            padInt(output, century, "CC".length());
+            appendZeroPadded(output, century, "CC".length());
             index += 2;
             continue;
           }
@@ -790,9 +794,9 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'D':
           // Day of year (1-366)
-          if (match(format, index, "DDD")) {
+          if (startsWithIgnoreCase(format, index, "DDD")) {
             if (fillMode) {
-              padInt(output, value.getDayOfYear(), "DDD".length());
+              appendZeroPadded(output, value.getDayOfYear(), "DDD".length());
             } else {
               output.append(value.getDayOfYear());
             }
@@ -801,10 +805,10 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Day of month (1-31)
-          if (match(format, index, "DD")) {
+          if (startsWithIgnoreCase(format, index, "DD")) {
 
             if (fillMode) {
-              padInt(output, value.getDayOfMonth(), "DD".length());
+              appendZeroPadded(output, value.getDayOfMonth(), "DD".length());
             } else {
               output.append(value.getDayOfMonth());
             }
@@ -813,7 +817,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Long date format 'Tuesday, April 12, 1952 AD'
-          if (match(format, index, "DL")) {
+          if (startsWithIgnoreCase(format, index, "DL")) {
             DateTimeFormatter formatter =
                 DateTimeFormatter.ofLocalizedDateTime(
                     FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
@@ -823,18 +827,18 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Short date format 'MM/DD/RRRR'.
-          if (match(format, index, "DS")) {
-            padInt(output, value.getMonthValue(), "DD".length());
+          if (startsWithIgnoreCase(format, index, "DS")) {
+            appendZeroPadded(output, value.getMonthValue(), "DD".length());
             output.append('/');
-            padInt(output, value.getDayOfMonth(), "MM".length());
+            appendZeroPadded(output, value.getDayOfMonth(), "MM".length());
             output.append('/');
-            padInt(output, Math.abs(value.getYear()), "YYYY".length());
+            appendZeroPadded(output, Math.abs(value.getYear()), "YYYY".length());
             index += 2;
             continue;
           }
 
           // Abbreviated name of day
-          if ((cap = matchCapitalization(format, index, "DY")) != null) {
+          if ((cap = match(format, index, "DY")) != null) {
             String day = value.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
             output.append(cap.apply(day));
             index += 2;
@@ -842,7 +846,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Name of day
-          if ((cap = matchCapitalization(format, index, "DAY")) != null) {
+          if ((cap = match(format, index, "DAY")) != null) {
             String day =
                 cap.apply(value.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
             if (fillMode) {
@@ -854,7 +858,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Day of week (1=Sunday-7)
-          if (match(format, index, "D")) {
+          if (startsWithIgnoreCase(format, index, "D")) {
             output.append((value.getDayOfWeek().getValue() + 1) % 7);
             index += 1;
             continue;
@@ -863,27 +867,25 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'F':
           // Fractional seconds
-          if (matchCapitalization(
-                  format, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9")
-              != null) {
+          if (startsWithIgnoreCase(format, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7", "FF8", "FF9") ) {
             int x = format.charAt(index + 2) - '0';
 
             int nanos = value.getNano();
 
             int ff = (int) (nanos * Math.pow(10, x - 9));
-            padInt(output, x, ff);
+            appendZeroPadded(output, x, ff);
             index += 3;
             continue;
           }
-          if (match(format, index, "FF")) {
-            padInt(output, value.getNano(), 9);
+          if (startsWithIgnoreCase(format, index, "FF")) {
+            appendZeroPadded(output, value.getNano(), 9);
             index += 2;
             continue;
           }
 
           // Fill mode modifier; toggles between compact and fill modes for any elements
           // following the modifier in the model.
-          if (match(format, index, "FM")) {
+          if (startsWithIgnoreCase(format, index, "FM")) {
             fillMode = !fillMode;
             index += 2;
             continue;
@@ -891,7 +893,7 @@ public class DateTimeFormat extends BaseFormat {
 
           // TODO: Exact match modifier; toggles between lax and exact match modes for any
           // elements following the modifier in the model.
-          if (match(format, index, "FX")) {
+          if (startsWithIgnoreCase(format, index, "FX")) {
             index += 2;
             continue;
           }
@@ -899,22 +901,22 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'H':
           // Hour of day in 24 hour format (0-23)
-          if (match(format, index, "HH24")) {
-            padInt(output, value.getHour(), 2);
+          if (startsWithIgnoreCase(format, index, "HH24")) {
+            appendZeroPadded(output, value.getHour(), 2);
             index += 4;
             continue;
           }
           // Hour of day in 12 hour format (1-12)
-          if (match(format, index, "HH12")) {
+          if (startsWithIgnoreCase(format, index, "HH12")) {
             int h12 = (value.getHour() + 11) % 12 + 1;
-            padInt(output, h12, 2);
+            appendZeroPadded(output, h12, 2);
             index += 4;
             continue;
           }
           // Hour of day in 12 hour format (1-12)
-          if (match(format, index, "HH")) {
+          if (startsWithIgnoreCase(format, index, "HH")) {
             int h12 = (value.getHour() + 11) % 12 + 1;
-            padInt(output, h12, "HH".length());
+            appendZeroPadded(output, h12, "HH".length());
             index += 2;
             continue;
           }
@@ -922,39 +924,38 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'I':
           // 4-digit year based on the ISO standard.
-          if (match(format, index, "IYYY")) {
+          if (startsWithIgnoreCase(format, index, "IYYY")) {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-            padInt(output, weekYear, 4);
+            appendZeroPadded(output, weekYear, 4);
             index += 4;
             continue;
           }
 
           // Last 3 digits of ISO year.
-          if (match(format, index, "IYY")) {
+          if (startsWithIgnoreCase(format, index, "IYY")) {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-            padInt(output, weekYear % 1000, 3);
+            appendZeroPadded(output, weekYear % 1000, 3);
             index += 3;
             continue;
           }
 
           // Last 2 digits of ISO year.
-          if (match(format, index, "IY")) {
+          if (startsWithIgnoreCase(format, index, "IY")) {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-            padInt(output, weekYear % 100, 2);
+            appendZeroPadded(output, weekYear % 100, 2);
             index += 2;
             continue;
           }
 
           // Week of year (1-52 or 1-53) based on the ISO standard
-          if (match(format, index, "IW")) {
+          if (startsWithIgnoreCase(format, index, "IW")) {
             int week = value.get(WeekFields.ISO.weekOfYear());
             output.append(week);
             index += 2;
             continue;
           }
 
-          // Last 1 digit of ISO year.
-          // if (match(format, index, "I"))
+          // Last 1 digit of ISO year "I".
           {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             output.append(weekYear % 10);
@@ -974,16 +975,16 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'M':
           // Minute (0-59)
-          if (match(format, index, "MI")) {
-            padInt(output, value.getMinute(), "MI".length());
+          if (startsWithIgnoreCase(format, index, "MI")) {
+            appendZeroPadded(output, value.getMinute(), "MI".length());
             index += 2;
             continue;
           }
 
           // Month (01-12; January = 01)
-          if (match(format, index, "MM")) {
+          if (startsWithIgnoreCase(format, index, "MM")) {
             if (fillMode) {
-              padInt(output, value.getMonthValue(), "MM".length());
+              appendZeroPadded(output, value.getMonthValue(), "MM".length());
             } else {
               output.append(value.getMonthValue());
             }
@@ -992,7 +993,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Name of month, padded with blanks
-          if ((cap = matchCapitalization(format, index, "MONTH")) != null) {
+          if ((cap = match(format, index, "MONTH")) != null) {
             String month =
                 cap.apply(value.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
             if (fillMode) {
@@ -1004,7 +1005,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Abbreviated name of month
-          if ((cap = matchCapitalization(format, index, "MON")) != null) {
+          if ((cap = match(format, index, "MON")) != null) {
             String month = value.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
             output.append(cap.apply(month));
             index += 3;
@@ -1013,14 +1014,14 @@ public class DateTimeFormat extends BaseFormat {
           break;
 
         case 'P':
-          if ((cap = matchCapitalization(format, index, "PM")) != null) {
+          if ((cap = match(format, index, "PM")) != null) {
             String am = (value.getHour() < 12) ? "AM" : "PM";
             output.append(cap.apply(am));
             index += 2;
             continue;
           }
 
-          if ((cap = matchCapitalization(format, index, "P.M.")) != null) {
+          if ((cap = match(format, index, "P.M.")) != null) {
             boolean isAM = value.getHour() < 12;
             String am = isAM ? "A.M." : "P.M.";
             output.append(cap.apply(am));
@@ -1041,7 +1042,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'R':
           // Roman numeral month (I-XII; January = I)
-          if ((cap = matchCapitalization(format, index, "RM")) != null) {
+          if ((cap = match(format, index, "RM")) != null) {
             output.append(cap.apply(formatRomanNumeral(value.getMonthValue())));
             index += 2;
             continue;
@@ -1050,7 +1051,7 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'S':
           // Seconds past midnight (0-86399)
-          if (match(format, index, "SSSSS")) {
+          if (startsWithIgnoreCase(format, index, "SSSSS")) {
             int seconds = (int) (value.getNano() / 1_000_000_000);
             output.append(seconds);
             index += 5;
@@ -1058,14 +1059,14 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Second (0-59)
-          if (match(format, index, "SS")) {
-            padInt(output, value.getSecond(), "SS".length());
+          if (startsWithIgnoreCase(format, index, "SS")) {
+            appendZeroPadded(output, value.getSecond(), "SS".length());
             index += 2;
             continue;
           }
 
           // Signed century
-          if (match(format, index, "SCC")) {
+          if (startsWithIgnoreCase(format, index, "SCC")) {
             int year = value.getYear();
             int century = year / 100;
             if (((int) year % 100) != 0) {
@@ -1074,7 +1075,7 @@ public class DateTimeFormat extends BaseFormat {
 
             if (fillMode) {
               output.append(year < 0 ? '-' : ' ');
-              padInt(output, Math.abs(century), "CC".length());
+              appendZeroPadded(output, Math.abs(century), "CC".length());
             } else {
               output.append(century);
             }
@@ -1084,11 +1085,11 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // 4-digit year; S prefixes BC dates with a minus sign.
-          if (match(format, index, "SYYYY")) {
+          if (startsWithIgnoreCase(format, index, "SYYYY")) {
             int year = value.getYear();
             if (fillMode) {
               output.append(year < 0 ? '-' : ' ');
-              padInt(output, Math.abs(year), 4);
+              appendZeroPadded(output, Math.abs(year), 4);
             } else {
               output.append(year);
             }
@@ -1096,7 +1097,7 @@ public class DateTimeFormat extends BaseFormat {
             continue;
           }
 
-          if ((cap = matchCapitalization(format, index, "SYEAR")) != null) {
+          if ((cap = match(format, index, "SYEAR")) != null) {
             int year = value.getYear();
             output.append(year < 0 ? '-' : ' ');
             output.append(cap.apply(formatWord(year)));
@@ -1107,45 +1108,45 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'T':
           // Time zone region
-          if (match(format, index, "TZR")) {
+          if (startsWithIgnoreCase(format, index, "TZR")) {
             output.append(value.getZone().toString());
             index += 3;
             continue;
           }
 
           // TODO: Time zone region with Daylight Saving Time information included
-          if (match(format, index, "TZD")) {
+          if (startsWithIgnoreCase(format, index, "TZD")) {
             // output.append(getTimeZone(value, true));
             index += 3;
             continue;
           }
 
           // Time zone hour
-          if (match(format, index, "TZH")) {
+          if (startsWithIgnoreCase(format, index, "TZH")) {
             ZoneOffset offset = value.getOffset();
             int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
             output.append(hours < 0 ? '-' : '+');
-            padInt(output, Math.abs(hours), "HH".length());
+            appendZeroPadded(output, Math.abs(hours), "HH".length());
             index += 3;
             continue;
           }
 
           // Time zone minute
-          if (match(format, index, "TZM")) {
+          if (startsWithIgnoreCase(format, index, "TZM")) {
             ZoneOffset offset = value.getOffset();
             int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
-            padInt(output, Math.abs(minutes), "MM".length());
+            appendZeroPadded(output, Math.abs(minutes), "MM".length());
             index += 3;
             continue;
           }
 
           // Short time format
-          if ((cap = matchCapitalization(format, index, "TS")) != null) {
+          if ((cap = match(format, index, "TS")) != null) {
             int h12 = (value.getHour() + 11) % 12 + 1;
             output.append(h12).append(':');
-            padInt(output, value.getMinute(), "MI".length());
+            appendZeroPadded(output, value.getMinute(), "MI".length());
             output.append(':');
-            padInt(output, value.getSecond(), "SS".length());
+            appendZeroPadded(output, value.getSecond(), "SS".length());
             output.append(' ');
             String am = (value.getHour() < 12) ? "AM" : "PM";
             output.append(cap.apply(am));
@@ -1157,7 +1158,7 @@ public class DateTimeFormat extends BaseFormat {
         case 'W':
           // Week of year (1-53) where week 1 starts on the first day of the year and
           // continues to the seventh day of the year.
-          if (match(format, index, "WW")) {
+          if (startsWithIgnoreCase(format, index, "WW")) {
             int weekOfYear = value.get(WeekFields.SUNDAY_START.weekOfYear());
             output.append(weekOfYear);
             index += 2;
@@ -1176,10 +1177,10 @@ public class DateTimeFormat extends BaseFormat {
 
         case 'Y':
           // 4-digit year
-          if (match(format, index, "YYYY") || match(format, index, "RRRR")) {
+          if (startsWithIgnoreCase(format, index, "YYYY","RRRR")) {
             int year = Math.abs(value.getYear());
             if (fillMode) {
-              padInt(output, year, 4);
+              appendZeroPadded(output, year, 4);
             } else {
               output.append(year);
             }
@@ -1188,22 +1189,22 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Last 3 digits of year.
-          if (match(format, index, "YYY")) {
+          if (startsWithIgnoreCase(format, index, "YYY")) {
             int year = Math.abs(value.getYear());
-            padInt(output, year % 1000, 3);
+            appendZeroPadded(output, year % 1000, 3);
             index += 3;
             continue;
           }
           // Last 2 digits of year.
-          if (match(format, index, "YY") || match(format, index, "RR")) {
+          if (startsWithIgnoreCase(format, index, "YY", "RR")) {
             int year = Math.abs(value.getYear());
-            padInt(output, year % 100, 2);
+            appendZeroPadded(output, year % 100, 2);
             index += 2;
             continue;
           }
 
           // Year with comma in this position.
-          if (match(format, index, "Y,YYY")) {
+          if (startsWithIgnoreCase(format, index, "Y,YYY")) {
             int year = Math.abs(value.getYear());
             output.append(new DecimalFormat("#,###").format(year));
             index += 5;
@@ -1211,7 +1212,7 @@ public class DateTimeFormat extends BaseFormat {
           }
 
           // Year
-          if ((cap = matchCapitalization(format, index, "YEAR")) != null) {
+          if ((cap = match(format, index, "YEAR")) != null) {
             int year = Math.abs(value.getYear());
             output.append(cap.apply(formatWord(year)));
             index += 4;
@@ -1290,5 +1291,9 @@ public class DateTimeFormat extends BaseFormat {
     }
 
     throw new ParseException("Invalid roman month when parsing date with format RM", index);
+  }
+  
+  protected final ExpressionException createInvalidFormat(final String error) {
+    return new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
   }
 }

@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.Objects;
-
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
@@ -117,7 +116,7 @@ public class ValueString extends Value {
           return false;
         }
     }
-    return false;
+    throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidBoolean", value));    
   }
 
   @Override
@@ -125,9 +124,9 @@ public class ValueString extends Value {
     return this;
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append('\'');
-    writer.append(String.valueOf(value));
+    writer.append(value);
     writer.append('\'');
   }
 

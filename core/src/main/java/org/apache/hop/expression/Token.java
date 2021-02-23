@@ -46,6 +46,11 @@ public class Token {
     CONCAT("||"),
 
     /**
+     * Cast operator <code>::<code>
+     */
+    CAST("::"),
+    
+    /**
      * Contains operator <code>=~<code>
      */
     CONTAINS("=~"),
@@ -216,19 +221,19 @@ public class Token {
   }
 
   private final Id id;
-
+  private final int start;
+  private final int end;
   private final String value;
 
-  private final int index;
-
-  protected Token(Id id, int index) {
-    this(id, index, id.source);
+  protected Token(Id id, int start) {
+    this(id, start, start + 1, id.source);
   }
 
-  protected Token(Id id, int index, String text) {
+  protected Token(Id id, int start, int end, String value) {
     this.id = id;
-    this.index = index;
-    this.value = text;
+    this.start = start;
+    this.end = end;
+    this.value = value;
   }
 
   public boolean is(Id id) {
@@ -239,19 +244,29 @@ public class Token {
     return id;
   }
 
-  /** Returns the index of the token in the original source. */
-  public int index() {
-    return index;
+  /** 
+   * Returns the start index of the token in the original source.
+   */
+  public int start() {
+    return start;
   }
 
-  /** Returns the length of the token. */
+  /** 
+   * Returns the end index of the token in the original source.
+   */
+  public int end() {
+    return end;
+  }
+  
+  /** 
+   * Returns the length of the token.
+   */
   public int length() {
-    return value.length();
+    return end-start;
   }
 
   /** Returns the token value. */
   public String value() {
-
     return value;
   }
 

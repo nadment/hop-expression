@@ -43,12 +43,10 @@ public class ExpressionParser {
   private static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   /** locale-neutral big decimal format. */
-  public static final DecimalFormat DECIMAL_FORMAT =
-      new DecimalFormat("0.0b", new DecimalFormatSymbols(Locale.ENGLISH));
+  //public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.0b", new DecimalFormatSymbols(Locale.ENGLISH));
 
   /** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss". */
-  public static final DateTimeFormatter TIMESTAMP_FORMAT =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+  public static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss.nnnnnn". */
   public static final DateTimeFormatter TIMESTAMP_FORMAT_NANO6 =
@@ -76,7 +74,7 @@ public class ExpressionParser {
 
   protected int getPosition() {
 
-    if (index > 0 && index < tokens.size()) return this.next().index();
+    if (index > 0 && index < tokens.size()) return this.next().start();
 
     return source.length();
   }
@@ -304,88 +302,13 @@ public class ExpressionParser {
       case NULL:
         return Value.NULL;
       default:
-        throw new ExpressionParserException(" ERROR2 ", source, token.index());
+        throw new ExpressionParserException(" ERROR2 ", source, token.start());
     }
   }
 
   /** Literal text */
   private IExpression parseLiteralText(Token token) throws ExpressionParserException {
-    String text = token.value();
-    //		int length = text.length();
-    //		StringBuilder builder = new StringBuilder(length);
-    //		for (int i = 0; i < length; i++) {
-    //			char c = text.charAt(i);
-    //
-    //			// Convert backslash escape sequences
-    //			if (c == '\\') {
-    //				if (i + 1 >= text.length()) {
-    //					throw new ExpressionException("Invalid escape sequence at position {1}", text, i);
-    //				}
-    //				c = text.charAt(++i);
-    //				switch (c) {
-    //				// Tab
-    //				case 't':
-    //					builder.append('\t');
-    //					continue;
-    //				// Carriage return
-    //				case 'r':
-    //					builder.append('\r');
-    //					continue;
-    //				// Newline
-    //				case 'n':
-    //					builder.append('\n');
-    //					continue;
-    //				// Backspace
-    //				case 'b':
-    //					builder.append('\b');
-    //					continue;
-    //				// Form feed
-    //				case 'f':
-    //					builder.append('\f');
-    //					continue;
-    //				// Single quote
-    //				case '\'':
-    //					builder.append('\'');
-    //					continue;
-    ////				case '"':
-    ////					builder.append('"');
-    ////					continue;
-    //				case '\\':
-    //					builder.append('\\');
-    //					continue;
-    //				// u####' 16-bit Unicode character where #### are four hex digits
-    //				case 'u': {
-    //					try {
-    //						c = (char) (Integer.parseInt(text.substring(i + 1, i + 5), 16));
-    //					} catch (NumberFormatException e) {
-    //						throw new ExpressionException("Invalid escape sequence \\u#### at position {1}", text,
-    // i);
-    //					}
-    //					i += 4;
-    //					break;
-    //				}
-    //				// U########' 32-bit Unicode character where ######## are four are eight hex
-    //				// digits
-    //				case 'U': {
-    //					try {
-    //						c = (char) (Integer.parseInt(text.substring(i + 1, i + 9), 16));
-    //					} catch (NumberFormatException e) {
-    //						throw new ExpressionException("Invalid escape sequence \\U######## at position {1}",
-    // text, i);
-    //					}
-    //					i += 8;
-    //					break;
-    //				}
-    //
-    //				default:
-    //					throw createFormatException(text, i);
-    //				}
-    //			}
-    //			builder.append(c);
-    //		}
-    //		return Value.of(builder.toString());
-
-    return Value.of(text);
+    return Value.of(token.value());
   }
 
   /** Term = Literal | Identifier | Function | '(' Expression ')' */
@@ -516,13 +439,10 @@ public class ExpressionParser {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
       if (next(Id.PLUS)) {
-        // System.out.println("Parse simple +");
         expression = new ExpressionCall(Operator.ADD, expression, this.parseBitwiseOr());
       } else if (next(Id.MINUS)) {
-        // System.out.println("Parse simple -");
         expression = new ExpressionCall(Operator.SUBTRACT, expression, this.parseBitwiseOr());
       } else if (next(Id.CONCAT)) {
-        // System.out.println("Parse simple concat");
         expression = new ExpressionCall(Operator.CONCAT, expression, this.parseBitwiseOr());
       } else break;
     }
@@ -685,7 +605,7 @@ public class ExpressionParser {
       Token token = next();
 
       DateTimeFormatter format = TIMESTAMP_FORMAT;
-      if (token.length() == 26) format = TIMESTAMP_FORMAT_NANO6;
+      if (token.value().length() == 26) format = TIMESTAMP_FORMAT_NANO6;
 
       LocalDateTime datetime = LocalDateTime.parse(token.value(), format);
 
@@ -805,7 +725,12 @@ public class ExpressionParser {
       }
 
       DataType type = parseDataType(next());
-
+      if ( type==null)
+        throw new ExpressionParserException(
+            BaseMessages.getString(PKG, "ExpressionParser.MissingCastTargetType"),
+            source,
+            this.getPosition());
+      
       // Use Enum.ordinal as argument for evaluate performance
       operands.add(Value.of(type.ordinal()));
 
@@ -862,7 +787,7 @@ public class ExpressionParser {
               BaseMessages.getString(
                   PKG, "ExpressionParser.InvalidNumberOfArguments", function.getName()),
               source,
-              token.index());
+              token.start());
         }
 
         return new ExpressionCall(function, operands);
@@ -882,7 +807,7 @@ public class ExpressionParser {
       throw new ExpressionParserException(
           BaseMessages.getString(PKG, "ExpressionParser.MissingRightParenthesis"),
           source,
-          token.index());
+          token.start());
     }
 
     if (!function.checkNumberOfArguments(operands.size())) {
@@ -890,7 +815,7 @@ public class ExpressionParser {
           BaseMessages.getString(
               PKG, "ExpressionParser.InvalidNumberOfArguments", function.getName()),
           source,
-          token.index());
+          token.start());
     }
 
     return new ExpressionCall(function, operands);
@@ -898,12 +823,12 @@ public class ExpressionParser {
 
   private DataType parseDataType(Token token) {
     try {
-      return DataType.valueOf(token.value());
+      return DataType.of(token.value());
     } catch (Exception e) {
       throw new ExpressionParserException(
           BaseMessages.getString(PKG, "ExpressionParser.InvalidDataType", token.value()),
           source,
-          token.index());
+          token.start());
     }
   }
 }

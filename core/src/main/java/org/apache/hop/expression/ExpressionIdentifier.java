@@ -32,14 +32,14 @@ public class ExpressionIdentifier implements IExpression {
   public Kind getKind() {
     return Kind.IDENTIFIER;
   }
-
+  
+  public String getName() {
+    return name;
+  }
+  
   @Override
   public int getCost() {
     return 2;
-  }
-
-  public String getName() {
-    return name;
   }
 
   @Override
@@ -48,8 +48,10 @@ public class ExpressionIdentifier implements IExpression {
   }
 
   @Override
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {    
+    writer.append('[');
     writer.append(this.name);
+    writer.append(']');
   }
 
   @Override

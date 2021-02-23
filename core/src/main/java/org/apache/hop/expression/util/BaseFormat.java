@@ -16,98 +16,101 @@
  */
 package org.apache.hop.expression.util;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.ParsePosition;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.IExpression;
 
 public abstract class BaseFormat {
 
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
+  
   private static final int[] ROMAN_VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
 
   private static final String[] ROMAN_NUMERALS = {
     "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"
   };
 
-  /** Represents a capitalization / casing strategy. */
+  /** Represents a capitalization strategy. */
   public enum Capitalization {
 
-    /** All letters are uppercased. */
-    UPPERCASE,
+    /** All letters are upper case. */
+    UPPER,
 
-    /** All letters are lowercased. */
-    LOWERCASE,
+    /** All letters are lower case. */
+    LOWER,
 
-    /** The string is capitalized (first letter uppercased, subsequent letters lowercased). */
+    /** The string is capitalized (first letter upper case, subsequent letters lower case). */
     CAPITALIZE;
 
     /**
-     * Returns the capitalization / casing strategy which should be used when the first and second
+     * Returns the capitalization strategy which should be used when the first and second
      * letters have the specified casing.
      *
-     * @param up1 whether or not the first letter is uppercased
-     * @param up2 whether or not the second letter is uppercased
-     * @return the capitalization / casing strategy which should be used when the first and second
-     *     letters have the specified casing
+     * @param up1 whether or not the first letter is upper case 
+     * @param up2 whether or not the second letter is upper case
+     * @return the capitalization strategy
      */
-    static Capitalization toCapitalization(Boolean up1, Boolean up2) {
+    static Capitalization of(Boolean up1, Boolean up2) {
       if (up1 == null) {
         return Capitalization.CAPITALIZE;
       } else if (up2 == null) {
-        return up1 ? Capitalization.UPPERCASE : Capitalization.LOWERCASE;
+        return up1 ? Capitalization.UPPER : Capitalization.LOWER;
       } else if (up1) {
-        return up2 ? Capitalization.UPPERCASE : Capitalization.CAPITALIZE;
+        return up2 ? Capitalization.UPPER : Capitalization.CAPITALIZE;
       } else {
-        return Capitalization.LOWERCASE;
+        return Capitalization.LOWER;
       }
     }
 
     /**
      * Applies this capitalization strategy to the specified string.
      *
-     * @param s the string to apply this strategy to
+     * @param str the string to apply this strategy to
      * @return the resultant string
      */
-    public String apply(String s) {
-      if (s == null || s.isEmpty()) {
-        return s;
+    public String apply(String str) {
+      if (str == null || str.isEmpty()) {
+        return str;
       }
       switch (this) {
-        case UPPERCASE:
-          return StringUtils.upperCase(s);
-        case LOWERCASE:
-          return StringUtils.lowerCase(s);
+        case UPPER:
+          return StringUtils.upperCase(str);
+        case LOWER:
+          return StringUtils.lowerCase(str);
         case CAPITALIZE:
-          return Character.toUpperCase(s.charAt(0))
-              + (s.length() > 1 ? StringUtils.lowerCase(s).substring(1) : "");
+          return Character.toUpperCase(str.charAt(0))
+              + (str.length() > 1 ? StringUtils.lowerCase(str).substring(1) : "");
         default:
           throw new IllegalArgumentException("Unknown capitalization strategy: " + this);
       }
     }
   }
 
-  protected static boolean match(String value, int index, String substrings) {
-    return value.regionMatches(true, index, substrings, 0, substrings.length());
+  protected static boolean startsWithIgnoreCase(String str, int offset, String prefix) {
+      if (prefix.length() > str.length()-offset) {
+          return false;
+      }
+      
+      return str.regionMatches(true, offset, prefix, 0, prefix.length());
   }
-
-  //	protected static boolean match(String value, int index, String... substrings) {
-  //		for (String substring : substrings) {
-  //			if (value.regionMatches(true, index, substring, 0, substring.length()))
-  //				return true;
-  //		}
-  //		return false;
-  //	}
-
-  protected static int indexOfArray(String[] strings, String value) {
-    if (value == null) return -1;
-    for (int i = 0; i < strings.length; i++) {
-      if (value.equals(strings[i])) return i;
+  
+  protected static boolean startsWithIgnoreCase(String str, int offset, String... substrings) {
+    for (String substring : substrings) {
+      if (str.regionMatches(true, offset, substring, 0, substring.length())) return true;
     }
-    return -1;
+    return false;
   }
 
+  protected static boolean endsWithIgnoreCase(String str, String suffix) {
+    if (suffix.length() > str.length()) {
+        return false;
+    }
+    int offset = str.length() - suffix.length();
+    return str.regionMatches(true, offset, suffix, 0, suffix.length());
+ }
+ 
   /**
    * Parse an integer at the given position in a string
    *
@@ -145,6 +148,56 @@ public abstract class BaseFormat {
 
     return result;
   }
+  
+  /**
+   * This function returns value of a Roman symbol
+   */
+  static private int romanToDecimal(char r)
+  {
+    switch(r) {
+      case 'I': return 1;
+      case 'V': return 5;
+      case 'X': return 10;
+      case 'L': return 50;
+      case 'C': return 100;
+      case 'D': return 500;
+      case 'M': return 1000;
+      default: return -1;
+    }
+  }
+  
+  static protected long parseRoman(String str)
+  {
+      long result = 0L;
+
+      for (int i = 0; i < str.length(); i++) 
+      {
+          // Getting value of symbol s[i]
+          int s1 = romanToDecimal(str.charAt(i));
+
+          // Getting value of symbol s[i+1]
+          if (i + 1 < str.length()) 
+          {
+              int s2 = romanToDecimal(str.charAt(i + 1));
+              if (s1 >= s2) 
+              {
+                  // Current symbol is greater or equal to the next symbol
+                  result = result + s1;
+              }
+              else
+              {
+                  // Current symbol is less than the next symbol
+                  result = result + s2 - s1;
+                  i++;
+              }
+          }
+          else {
+              result = result + s1;
+          }
+      }
+      return result;
+  }
+
 
   /**
    * Parse an integer at the given position in a string
@@ -213,7 +266,7 @@ public abstract class BaseFormat {
    * @return a capitalization strategy if the specified string contains any of the specified
    *     substrings at the specified index, <code>null</code> otherwise
    */
-  protected static Capitalization matchCapitalization(String s, int index, String... substrings) {
+  protected static Capitalization match(String s, int index, String... substrings) {
     for (String substring : substrings) {
       if (index + substring.length() <= s.length()) {
         boolean found = true;
@@ -234,7 +287,7 @@ public abstract class BaseFormat {
           }
         }
         if (found) {
-          return Capitalization.toCapitalization(up1, up2);
+          return Capitalization.of(up1, up2);
         }
       }
     }
@@ -242,35 +295,59 @@ public abstract class BaseFormat {
   }
 
   /**
-   * Zero pad a number to a specified length
+   * Check if this string is a decimal number.
    *
-   * @param buffer buffer to use for padding
-   * @param value the integer value to pad if necessary.
-   * @param length the length of the string we should zero pad
+   * @param s the string
+   * @return true if it is
    */
-  protected static void padInt(StringBuilder buffer, int value, int length) {
-    String strValue = Integer.toString(value);
-    for (int i = length - strValue.length(); i > 0; i--) {
-      buffer.append('0');
-    }
-    buffer.append(strValue);
+  public static boolean isNumber(String s) {
+      int l = s.length();
+      if (l == 0) {
+          return false;
+      }
+      for (int i = 0; i < l; i++) {
+          if (!Character.isDigit(s.charAt(i))) {
+              return false;
+          }
+      }
+      return true;
+  }
+
+
+  /**
+   * Append a zero-padded number to a string builder.
+   *
+   * @param builder the string builder
+   * @param positiveValue the number to append
+   * @param length the number of characters to append
+   * @return the specified string builder
+   */
+  public static StringBuilder appendZeroPadded(StringBuilder builder, int positiveValue, int length) {
+      String s = Integer.toString(positiveValue);
+      length -= s.length();
+      for (; length > 0; length--) {
+          builder.append('0');
+      }
+      return builder.append(s);
   }
 
   /**
-   * Zero pad a number to a specified length
+   * Append a zero-padded number to a string builder.
    *
-   * @param buffer buffer to use for padding
-   * @param value the long value to pad if necessary.
-   * @param length the length of the string we should zero pad
+   * @param builder the string builder
+   * @param positiveValue the number to append
+   * @param length the number of characters to append
+   * @return the specified string builder
    */
-  protected static void padLong(StringBuilder buffer, long value, int length) {
-    String strValue = Long.toString(value);
-    for (int i = length - strValue.length(); i > 0; i--) {
-      buffer.append('0');
-    }
-    buffer.append(strValue);
+  public static StringBuilder appendZeroPadded(StringBuilder builder, long positiveValue, int length) {
+      String s = Long.toString(positiveValue);
+      length -= s.length();
+      for (; length > 0; length--) {
+          builder.append('0');
+      }
+      return builder.append(s);
   }
-
+  
   /**
    * Roman numeral month (I-XII; JAN = I).
    *
@@ -290,37 +367,7 @@ public abstract class BaseFormat {
     return result.toString();
   }
 
-  protected static String formatHex(BigDecimal number, String format) {
 
-    boolean fillMode = !StringUtils.upperCase(format).startsWith("FM");
-    boolean uppercase = !format.contains("x");
-    boolean zeroPadded = format.startsWith("0");
-    int digits = 0;
-    for (int i = 0; i < format.length(); i++) {
-      char c = format.charAt(i);
-      if (c == '0' || c == 'X' || c == 'x') {
-        digits++;
-      }
-    }
-
-    int i = number.setScale(0, RoundingMode.HALF_UP).intValue();
-    String hex = Integer.toHexString(i);
-    if (digits < hex.length()) {
-      hex = StringUtils.rightPad("", digits + 1, "#");
-    } else {
-      if (uppercase) {
-        hex = StringUtils.upperCase(hex);
-      }
-      if (zeroPadded) {
-        hex = StringUtils.leftPad(hex, digits, "0");
-      }
-      if (fillMode) {
-        hex = StringUtils.leftPad(hex, format.length() + 1, " ");
-      }
-    }
-
-    return hex;
-  }
 
   protected static String formatWord(int number) {
     // variable to hold string representation of number

@@ -117,7 +117,7 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
     throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
 
     writer.append('(');
     boolean first = true;
@@ -126,7 +126,7 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
       else {
         writer.append(',');
       }
-      expression.unparse(writer, 2, 3);
+      expression.write(writer, 2, 3);
     }
     // if (parenthese)
     writer.append(')');

@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Random;
 
 import javax.script.SimpleScriptContext;
-
 import org.apache.hop.i18n.BaseMessages;
 
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {

@@ -17,11 +17,10 @@
 package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
-
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Value;
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
 
 /** Implementation of NULL. NULL is not a regular data type. */
 public class ValueNull extends Value {
@@ -82,7 +81,7 @@ public class ValueNull extends Value {
     return this;
   }
 
-  public void unparse(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append(this.toString());
   }
 

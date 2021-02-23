@@ -150,6 +150,17 @@ public class FunctionTest extends ExpressionTest {
 		evalFails("Next_day(Date '2020-02-28')");
 	}
 
+    @Test
+    public void PreviousDay() throws Exception {
+        evalEquals("Previous_day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24));
+
+        evalNull("Previous_day(null, 'monday')");
+        evalNull("Previous_day(Date '2020-02-28', null)");
+
+        evalFails("Previous_day()");
+        evalFails("Previous_day(Date '2020-02-28')");
+    }	
+	
 	@Test
 	public void Upper() throws Exception {
 		evalEquals("Upper('test')", "TEST");
@@ -559,37 +570,93 @@ public class FunctionTest extends ExpressionTest {
 		evalFalse("To_Boolean(0)");
 
 		evalNull("To_Boolean(NULL)");
+	
 		evalFails("To_Boolean()");
+		evalFails("To_Boolean('test')");
 		evalFails("To_Boolean(1,2,3)");
+	    
+	    evalTrue("Try_To_Boolean(1)");
+		evalFalse("Try_To_Boolean(0)");
+	    evalNull("Try_To_Boolean('falsee')");
+		evalNull("Try_To_Boolean('x')");
 	}
 
 	@Test
 	public void ToNumber() throws Exception {
 
-		// Default Format
-//		evalEquals("TO_NUMBER('5467.12')", 5467.12);
-//
-//		// Format No Decimals
-//		evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
-//
-//		// Format with Decimals
-//		evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
-//
-//		// Format with Currency
-		//evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
-//
-//		// Format with Thousand Group Markers
-//		evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12345678);
+		// No precision/scale and no format
+		evalEquals("TO_NUMBER('12.3456')", 12);
+        evalEquals("TO_NUMBER('98.76546')", 98);
+
+        // No sign
+        evalEquals("TO_NUMBER('+0.1','99.99')", 0.1);
+        evalEquals("TO_NUMBER('-0.2','99.99')", -0.2);
+        evalEquals("TO_NUMBER(' -0.2','99.99')", -0.2);
+
+        evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
+        
+        // Sign S_ and _S
+        evalEquals("TO_NUMBER('-0.2','S99.99')", -0.2);
+        evalEquals("TO_NUMBER('0.3-','99.99S')", -0.3);
+        evalEquals("TO_NUMBER('0.3-','99.99s')", -0.3);
+        
+        evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4);
+        evalEquals("TO_NUMBER('0.4-','99.99mi')", -0.4);
+               
+        
+        evalEquals("TO_NUMBER('-   4','MI9999')",-4);
+       
+        evalEquals("TO_NUMBER(' 0.5 ','99.99PR')", 0.5);
+        evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5);
+
+        
+        // The PR format element can appear only in the last position of a number format model.
+        evalFails("TO_NUMBER('-5','PR9999')");
+        
+		//evalEquals("TO_NUMBER('12.3456',10,1)", 12.3);
+	    //evalEquals("TO_NUMBER('12.3456',10,8)", 12.34560000);
+		//evalEquals("TO_NUMBER('98.76546',10,1)", 98.8);
+		//evalEquals("TO_NUMBER('98.76546',37,1)", 98.76546000);
+		
+		// Format No Decimals
+		evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
+		
+		// Format with Decimals
+		evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
+
+		// Fomat Hexa
+		evalEquals("TO_NUMBER('ABCD','FMXXXX')",43981);
+		
+        // Format Roman numeral
+        evalEquals("TO_NUMBER('DXV','RN')",515);
+        evalEquals("TO_NUMBER('MCMXCIX','rn')",1999);
+
+		
+		// Format with Currency
+//		evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
+
+		// Format with Thousand Group Markers
+		evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12_345_678);
+		evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
+
+		// You can specify only one decimal character in a number format model.
+        evalFails("TO_NUMBER('123.456','9D999D9')");     
+		
+		// You can specify only one period in a number format model. 
+        evalFails("TO_NUMBER('123.456','9.999.9')");     
+
+        // A group separator cannot appear to the right of a decimal character or period in a number format model. 
+        evalFails("TO_NUMBER('-0.2','999.999G99')");
+        evalFails("TO_NUMBER('-0.2','999.999,99')");
+
 		
 		// Trailing space
-//   evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
-		
-		
+		evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
 	}
 
 	@Test
 	public void ToChar() throws Exception {
-		Locale locale = this.getContext().getLocale();
+		Locale locale =  this.getContext().getLocale();
 		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
 		Currency currency = symbols.getCurrency();
 		
@@ -605,53 +672,88 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("TO_CHAR(0.1,'99.99')", "   .10");
 		evalEquals("TO_CHAR(-0.2,'99.99')", "  -.20");
 		evalEquals("TO_CHAR(0,'90.99')", "  0.00");
-		evalEquals("TO_CHAR(0,'99.99')", "  0.00"); // FIXME: Should be "   .00" to be compatible with oracle
+        evalEquals("TO_CHAR(0,'90D99')", "  0.00");
+        evalEquals("TO_CHAR(0,'90d99')", "  0.00");
+        evalEquals("TO_CHAR(0,'99.99')", "   .00");
 		evalEquals("TO_CHAR(0,'9999')", "    0");
 		evalEquals("TO_CHAR(0,'9999999')", "       0");
 		evalEquals("TO_CHAR(0,'0999')", " 0000");
-	//	evalEquals("TO_CHAR(-0.5, '90.99')","-0.5"); 
+		evalEquals("TO_CHAR(-0.5, '90.99')"," -0.50"); 
 		evalEquals("TO_CHAR(12,'99')", " 12");
 		evalEquals("TO_CHAR(-7,'99')", " -7");
-		evalEquals("TO_CHAR(12923,'99999.99')", " 12923.00");
+		evalEquals("TO_CHAR(12923,'99,999.99')", " 12,923.00");
 		evalEquals("TO_CHAR(12,'9990999.9')", "    0012.0");
 		evalEquals("TO_CHAR(0.3,'99.00000')", "   .30000");
 		evalEquals("TO_CHAR(0.3,'00.99')", " 00.30");
-
-		evalEquals("TO_CHAR(1485,'9,999')", " 1"+symbols.getGroupingSeparator()+"485");
+        evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");        
+        evalEquals("TO_CHAR(12923,'FM9,9,9,9,9')", "1,2,9,2,3");
+        evalEquals("TO_CHAR(0.3,'FM00.99')", "00.3");
+        evalEquals("TO_CHAR(12345.567,'9,999')", "######"); 
+        evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
+		
+        
+		// Group
+		evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
 		evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3"+symbols.getGroupingSeparator()+"148"+symbols.getDecimalSeparator()+"500");
+        evalEquals("TO_CHAR(3148.5, '9g999d999')", " 3"+symbols.getGroupingSeparator()+"148"+symbols.getDecimalSeparator()+"500");
 
-
+        // Sign
 		evalEquals("TO_CHAR(12,'S99')", "+12");
 		evalEquals("TO_CHAR(12,'99S')", "12+");
 		evalEquals("TO_CHAR(-7,'S99')", " -7");
 		evalEquals("TO_CHAR(-7,'99S')", " 7-");
+        evalEquals("TO_CHAR(-7,'99s')", " 7-");
 
 		evalEquals("TO_CHAR(12,'99MI')", "12 ");
 		evalEquals("TO_CHAR(7,'99MI')", " 7 ");
 		evalEquals("TO_CHAR(-7,'99MI')", " 7-");
-		evalFails("TO_CHAR(12,'MI99')");
-
-		evalEquals("TO_CHAR(7,'9999PR')","    7 ");
+		evalEquals("TO_CHAR(-7,'MI99')", "- 7");		
+		// FM affect the trailing blank added by the MI suffix.
+		evalEquals("TO_CHAR(485,'FM999MI')", "485");
+		
+		
+		evalEquals("TO_CHAR(7,'9999pr')","    7 ");
 		evalEquals("TO_CHAR(-7,'9999PR')","   <7>");
 		evalFails("TO_CHAR(-7,'PR9999')");
 		
-		evalEquals("TO_CHAR(12,'$99')", " " + currency.getSymbol() + "12");
-		evalEquals("TO_CHAR(-7,'$99')", " -" + currency.getSymbol() + "7");
-
-		evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");
-		evalEquals("TO_CHAR(12923,'FM99999.099')", "12923.0");
-		evalEquals("TO_CHAR(0.3,'FM00.99')", "00.3");
-		evalEquals("TO_CHAR(12345,'9,999')", "######");
+		// Currency
+		evalEquals("TO_CHAR(12,'$99')", " $12");
+		evalEquals("TO_CHAR(-7,'$99')", " -$7");
+		evalEquals("TO_CHAR(-7,'99$')", " -$7");
+        evalEquals("TO_CHAR(12,'C99')", "    " + currency.getSymbol() + "12");
+        evalEquals("TO_CHAR(-7,'C99')", "    -" + currency.getSymbol() + "7");
+        evalEquals("TO_CHAR(-7,'99C')", "    -7" + currency.getSymbol());
+        evalEquals("TO_CHAR(12,'L99')", "    " + currency.getCurrencyCode() + "12");
+        evalEquals("TO_CHAR(-7,'L99')", "    -" + currency.getCurrencyCode() + "7");
+        evalEquals("TO_CHAR(-7,'99L')", "    -7" + currency.getCurrencyCode());		
+		evalEquals("TO_CHAR(123.45,'L999.99')", "    " + currency.getSymbol() + "123.45");
+		evalEquals("TO_CHAR(123.45,'FML999.99')", currency.getSymbol() + "123.45");
+        evalEquals("TO_CHAR(124,'$99')", "####");
+        evalEquals("TO_CHAR(124,'FM$99')", "###");
+		
+        // Text
+        evalEquals("TO_CHAR(123.456,'TM')", "123.456");
+        evalEquals("TO_CHAR(123.456,'tm')", "123.456");
+        evalEquals("TO_CHAR(123.456,'TME')", "1.23456E+02");        
+        // TODO: evalEquals("TO_CHAR(123.456,'TMe')", "1.23456e+02");
+        
+		// Scientific
 		evalEquals("TO_CHAR(123.456,'9.9EEEE')", "  1.2E+02");
 
+		// Roman
 		evalEquals("TO_CHAR(11,'FMRN')", "XI");
 		evalEquals("TO_CHAR(11,'rn')", "             xi");
 		evalEquals("TO_CHAR(5.2, 'FMRN')","V");
+		evalEquals("TO_CHAR(515, 'RN')","            DXV");		
 		
+		// Hexa
 		evalEquals("TO_CHAR(123,'XX')", " 7B");
-		//evalEquals("TO_CHAR(123,'\"Number:\"999')", "Number: 123");
+	    evalEquals("TO_CHAR(123,'xx')", " 7b");
+		evalEquals("TO_CHAR(123,'0XXX')", " 007B");
+	    evalEquals("TO_CHAR(123,'FM0XXX')", "007B");
+        evalEquals("TO_CHAR(9234,'xx')", "###");
 
-		evalEquals("TO_CHAR(12.4, '99V999')", " 12400");
+		//evalEquals("TO_CHAR(12.4, '99V999')", " 12400");
 		
 		
 		evalFails("TO_CHAR(485,'9 9 9')");
