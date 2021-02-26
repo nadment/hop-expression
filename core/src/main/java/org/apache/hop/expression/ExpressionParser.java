@@ -214,6 +214,7 @@ public class ExpressionParser {
     return expression;
   }
 
+ 
   /**
    * ExponentExpression ( (* | / | %) ExponentExpression())*
    *
@@ -274,13 +275,13 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ExpressionException {
 
     if (next(Id.MINUS)) {
-      return new ExpressionCall(Operator.NEGATIVE, this.parseTerm());
+      return new ExpressionCall(Operator.NEGATIVE, this.parseCast());
     }
     if (next(Id.PLUS)) {
       // Ignore
     }
 
-    return this.parseTerm();
+    return this.parseCast();
   }
 
   /** Literal TRUE | FALSE | NULL */
@@ -317,6 +318,7 @@ public class ExpressionParser {
 
     if (token != null) {
       switch (token.id()) {
+        case CAST:
         case TRUE:
           return Value.TRUE;
         case FALSE:
@@ -399,30 +401,30 @@ public class ExpressionParser {
     }
 
     if (next(Id.LIKE)) {
-      IExpression pattern = this.parseTerm();
+      IExpression pattern = this.parseCast();
 
       if (next(Id.ESCAPE)) {
-        IExpression escape = this.parseTerm();
+        IExpression escape = this.parseCast();
         expression = new ExpressionCall(Operator.LIKE, expression, pattern, escape);
       } else expression = new ExpressionCall(Operator.LIKE, expression, pattern);
     } else if (next(Id.ILIKE)) {
-      IExpression pattern = this.parseTerm();
+      IExpression pattern = this.parseCast();
 
       if (next(Id.ESCAPE)) {
-        IExpression escape = this.parseTerm();
+        IExpression escape = this.parseCast();
         expression = new ExpressionCall(Operator.ILIKE, expression, pattern, escape);
       } else expression = new ExpressionCall(Operator.ILIKE, expression, pattern);
     } else if (next(Id.IN)) {
       expression = new ExpressionCall(Operator.IN, expression, this.parseList());
     } else if (next(Id.BETWEEN)) {
-      IExpression begin = this.parseTerm();
+      IExpression begin = this.parseCast();
       if (!next(Id.AND)) {
         throw new ExpressionParserException(
             BaseMessages.getString(PKG, "ExpressionParser.InvalidOperator", Id.BETWEEN),
             source,
             this.getPosition());
       }
-      IExpression end = this.parseTerm();
+      IExpression end = this.parseCast();
 
       expression = new ExpressionCall(Operator.BETWEEN, expression, begin, end);
     }
@@ -630,7 +632,7 @@ public class ExpressionParser {
 
       Token token;
       do {
-        list.add(parseTerm());
+        list.add(parseCast());
 
         token = next();
         if (token == null)
@@ -698,6 +700,26 @@ public class ExpressionParser {
         elseExpression);
   }
 
+  /**
+   * Cast operator :: 
+   *
+   */
+  private IExpression parseCast() throws ExpressionParserException {
+    IExpression expression = this.parseTerm();
+    if (next(Id.CAST)) {
+      DataType type = parseDataType();
+      
+      // Use Enum.ordinal as argument for evaluate performance
+      Value targetType = Value.of(type.ordinal());
+      
+      IExpression result = new ExpressionCall(Operator.CAST, expression, targetType);
+     
+      return result;
+    }
+    return expression;
+  }
+  
+  
   /** Function */
   private IExpression parseFunction(Token token) throws ExpressionParserException {
 
@@ -724,12 +746,7 @@ public class ExpressionParser {
             this.getPosition());
       }
 
-      DataType type = parseDataType(next());
-      if ( type==null)
-        throw new ExpressionParserException(
-            BaseMessages.getString(PKG, "ExpressionParser.MissingCastTargetType"),
-            source,
-            this.getPosition());
+      DataType type = parseDataType();
       
       // Use Enum.ordinal as argument for evaluate performance
       operands.add(Value.of(type.ordinal()));
@@ -742,9 +759,8 @@ public class ExpressionParser {
 
     /** Extract(datePart FROM expression) */
     else if (Kind.EXTRACT == function.kind) {
-
-      Token tokenPart = next();
-      DatePart part = DatePart.of(tokenPart.value());
+      
+      DatePart part = DatePart.of(next().value());
 
       // Replace EXTRACT with the corresponding function
       switch (part) {
@@ -821,10 +837,18 @@ public class ExpressionParser {
     return new ExpressionCall(function, operands);
   }
 
-  private DataType parseDataType(Token token) {
+  private DataType parseDataType() {
+    Token token = next();
+    if ( token==null) {
+      throw new ExpressionParserException(
+          BaseMessages.getString(PKG, "ExpressionParser.MissingDataType"),
+          source,
+          this.getPosition());
+    }
+    
     try {
       return DataType.of(token.value());
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       throw new ExpressionParserException(
           BaseMessages.getString(PKG, "ExpressionParser.InvalidDataType", token.value()),
           source,

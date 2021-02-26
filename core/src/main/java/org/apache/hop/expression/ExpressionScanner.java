@@ -476,9 +476,13 @@ public class ExpressionScanner {
             return new Token(Id.valueOf(name), start, index, name);
           }
 
-          DataType type = DataType.of(name);
-          if (type != null) {
+          
+          try {
+            DataType type = DataType.of(name);
             return new Token(Id.DATATYPE, start, index, name);
+          }
+          catch(Exception e) {
+              // Ignore
           }
 
           DatePart part = DatePart.of(name);

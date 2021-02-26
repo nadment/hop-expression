@@ -587,57 +587,63 @@ public class FunctionTest extends ExpressionTest {
 		// No precision/scale and no format
 		evalEquals("TO_NUMBER('12.3456')", 12);
         evalEquals("TO_NUMBER('98.76546')", 98);
+        //evalEquals("TO_NUMBER('1.2E3')", 98);
+        //evalEquals("TO_NUMBER('1.2E-3')", 98);
 
+        // Format with Decimals
+        evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
+        evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
+
+        // Format No Decimals
+        evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
+
+        // Trailing space
+        evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
+        
         // No sign
         evalEquals("TO_NUMBER('+0.1','99.99')", 0.1);
         evalEquals("TO_NUMBER('-0.2','99.99')", -0.2);
         evalEquals("TO_NUMBER(' -0.2','99.99')", -0.2);
-
-        evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
         
         // Sign S_ and _S
         evalEquals("TO_NUMBER('-0.2','S99.99')", -0.2);
         evalEquals("TO_NUMBER('0.3-','99.99S')", -0.3);
         evalEquals("TO_NUMBER('0.3-','99.99s')", -0.3);
-        
+
+        // Sign MI_ and _MI
         evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4);
         evalEquals("TO_NUMBER('0.4-','99.99mi')", -0.4);
-               
-        
+        evalEquals("TO_NUMBER('0.4 -','99.99mi')", -0.4);
+        evalEquals("TO_NUMBER(' 0.4 -','99.99mi')", -0.4);
         evalEquals("TO_NUMBER('-   4','MI9999')",-4);
+        evalEquals("TO_NUMBER('-4','MI9999')",-4);
        
+        // Sign PR (format element can appear only in the last position of a number format model.)
         evalEquals("TO_NUMBER(' 0.5 ','99.99PR')", 0.5);
         evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5);
-
-        
-        // The PR format element can appear only in the last position of a number format model.
         evalFails("TO_NUMBER('-5','PR9999')");
+
+
+        // Format with Thousand Group Markers
+        evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12_345_678);
+        evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
         
 		//evalEquals("TO_NUMBER('12.3456',10,1)", 12.3);
 	    //evalEquals("TO_NUMBER('12.3456',10,8)", 12.34560000);
 		//evalEquals("TO_NUMBER('98.76546',10,1)", 98.8);
 		//evalEquals("TO_NUMBER('98.76546',37,1)", 98.76546000);
 		
-		// Format No Decimals
-		evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
-		
-		// Format with Decimals
-		evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
+        // Format with Currency
+        evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
 
+        
 		// Fomat Hexa
 		evalEquals("TO_NUMBER('ABCD','FMXXXX')",43981);
 		
         // Format Roman numeral
         evalEquals("TO_NUMBER('DXV','RN')",515);
         evalEquals("TO_NUMBER('MCMXCIX','rn')",1999);
-
 		
-		// Format with Currency
-//		evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
-
-		// Format with Thousand Group Markers
-		evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12_345_678);
-		evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
 
 		// You can specify only one decimal character in a number format model.
         evalFails("TO_NUMBER('123.456','9D999D9')");     
@@ -650,8 +656,7 @@ public class FunctionTest extends ExpressionTest {
         evalFails("TO_NUMBER('-0.2','999.999,99')");
 
 		
-		// Trailing space
-		evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
+
 	}
 
 	@Test
@@ -735,7 +740,8 @@ public class FunctionTest extends ExpressionTest {
         evalEquals("TO_CHAR(123.456,'TM')", "123.456");
         evalEquals("TO_CHAR(123.456,'tm')", "123.456");
         evalEquals("TO_CHAR(123.456,'TME')", "1.23456E+02");        
-        // TODO: evalEquals("TO_CHAR(123.456,'TMe')", "1.23456e+02");
+        evalEquals("TO_CHAR(123.456,'tMe')", "1.23456e+02");
+        evalEquals("TO_CHAR(123.456,'tMe')", "1.23456e+02");
         
 		// Scientific
 		evalEquals("TO_CHAR(123.456,'9.9EEEE')", "  1.2E+02");

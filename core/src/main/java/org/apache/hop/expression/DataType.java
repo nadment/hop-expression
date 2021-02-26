@@ -59,6 +59,7 @@ public enum DataType {
         return type;
       }
     }
-    return null;
+    
+    throw new EnumConstantNotPresentException(DataType.class, s);
   }
 }

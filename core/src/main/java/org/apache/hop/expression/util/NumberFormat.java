@@ -234,17 +234,22 @@ public final class NumberFormat extends BaseFormat {
       throw createInvalidFormat(format);
     }
 
+    this.format = format;
+    
     // short-circuit logic for formats that don't follow common logic below
-    // TOOD: tme processes exponents with a lowercase e.
-    if ("TM".equalsIgnoreCase(format) || "TM9".equalsIgnoreCase(format)
-        || "TME".equalsIgnoreCase(format)) {
-      this.format = format.toUpperCase();
+    if (format.equalsIgnoreCase("TM") || format.equalsIgnoreCase("TM9")) {
+      this.pattern = "TM";
       return;
     }
 
+    // Preserve case for exponent case 'E' or 'e' 
+    if (format.equalsIgnoreCase("TME")) {
+      this.pattern = format;
+      return;
+    }
+    
     int index = 0;
     int length = format.length();
-    this.format = format;
 
     if (startsWithIgnoreCase(format, index, "FM")) {
       this.fillMode = false;
@@ -416,9 +421,6 @@ public final class NumberFormat extends BaseFormat {
 
   public String toString() {
 
-    if (pattern == null)
-      return format;
-
     StringBuilder s = new StringBuilder();
     if (sign == Sign.S_) {
       s.append('S');
@@ -491,17 +493,23 @@ public final class NumberFormat extends BaseFormat {
 
   public BigDecimal parse(String source) throws ParseException {
 
-    ParsePosition pos = new ParsePosition(0);
+    ParsePosition position = new ParsePosition(0);
 
     StringBuilder value = new StringBuilder(source);
     int start = 0; // first not white space symbol
     try {
       boolean negate = false;
-      int len = value.length(); // length of parsed string
+      int length = value.length(); // length of parsed string
 
-      // Skip space
-      for (; start < len; start++) {
+      // Skip start space
+      for (; start < length; start++) {
         if (!Character.isSpaceChar(value.charAt(start)))
+          break;
+      }
+      
+      // Skip end space
+      for (; start < length; length--) {
+        if (!Character.isSpaceChar(value.charAt(length-1)))
           break;
       }
 
@@ -512,51 +520,68 @@ public final class NumberFormat extends BaseFormat {
 
       // Detect sign
       if (this.sign == Sign.PR) {
-        if (value.charAt(start) == '<' && value.charAt(len - 1) == '>') {
+        if (value.charAt(start) == '<' && value.charAt(length - 1) == '>') {
           value.setCharAt(start++, ' ');
-          value.setLength(--len);
+          value.setLength(--length);
           negate = true;
         }
-      } else if (this.sign == Sign.MI_) {
-        if (value.charAt(len - 1) == '-') {
-          value.setLength(--len);
+      } else if (this.sign == Sign._MI) {
+        if (value.charAt(length - 1) == '-') {
+          value.setLength(--length);
           negate = true;
+          
+          // Skip end space
+          for (; start < length; length--) {
+            if (!Character.isSpaceChar(value.charAt(length-1)))
+              break;
+          }
+        }
+      } 
+      else if (this.sign == Sign.MI_) {
+        if (value.charAt(start) == '-') {
+          value.setCharAt(start++, ' ');
+          negate = true;
+
+          // Skip start space
+          for (; start < length; start++) {
+            if (!Character.isSpaceChar(value.charAt(start)))
+              break;
+          }
         }
       } else if (this.sign == Sign._S) {
-        char s = value.charAt(len - 1);
-        if (s == '-') {
-          value.setLength(--len);
+        char c = value.charAt(length - 1);
+        if (c == '-') {
+          value.setLength(--length);
           negate = true;
-        } else if (s == '+') {
-          value.setLength(--len);
+        } else if (c == '+') {
+          value.setLength(--length);
         } else {
-          pos.setErrorIndex(start);
+          position.setErrorIndex(start);
           return null;
         }
       } else if (this.sign == Sign.S_) {
-        char s = value.charAt(start);
-        if (s == '-') {
-          // TODO: try value.deleteCharAt(start++);
+        char c = value.charAt(start);
+        if (c == '-') {
           value.setCharAt(start++, ' ');
           negate = true;
-        } else if (s == '+') {
+        } else if (c == '+') {
           value.setCharAt(start++, ' ');
         } else {
-          pos.setErrorIndex(start);
+          position.setErrorIndex(start);
           return null;
         }
       } else if (this.sign == Sign.DEFAULT) {
-        char s = value.charAt(start);
-        if (s == '-') {
+        char c = value.charAt(start);
+        if (c == '-') {
           value.setCharAt(start++, ' ');
           negate = true;
-        } else if (s == '+') {
+        } else if (c == '+') {
           value.setCharAt(start++, ' ');
         }
       }
 
       // Skip space
-      for (; start < len; start++) {
+      for (; start < length; start++) {
         if (!Character.isSpaceChar(value.charAt(start)))
           break;
       }
@@ -592,7 +617,7 @@ public final class NumberFormat extends BaseFormat {
         e = value.indexOf("e");
       }
       int dot = source.indexOf('.');
-      int coefflen = len - start;
+      int coefflen = length - start;
       if (negate) {
         coefflen++;
       }
@@ -604,27 +629,27 @@ public final class NumberFormat extends BaseFormat {
         coeff[0] = '-';
       }
       if (this.scientific > 0) {
-        if (this.pattern.length() == 0 || this.pattern.indexOf('G') != -1) {
-          pos.setErrorIndex(start);
+        if (this.pattern.length() == 0 || this.pattern.indexOf(',') != -1) {
+          position.setErrorIndex(start);
           return null;
         }
         if (e == -1) {
-          pos.setErrorIndex(start);
+          position.setErrorIndex(start);
           return null;
         }
         coeff[precision++] = value.charAt(start);
         scale = -Integer.valueOf(value.substring(e + 1));
         if (dot == -1) {
           if (start + 1 != e) {
-            pos.setErrorIndex(start);
+            position.setErrorIndex(start);
             return null;
           }
         } else if (this.scale < e - dot - 1) {
-          pos.setErrorIndex(dot);
+          position.setErrorIndex(dot);
           return null;
         } else {
           if (start + 1 != dot) {
-            pos.setErrorIndex(start);
+            position.setErrorIndex(start);
             return null;
           }
           scale += e - dot - 1;
@@ -634,48 +659,47 @@ public final class NumberFormat extends BaseFormat {
         }
       } else {
         if (e >= 0) {
-          pos.setErrorIndex(e);
+          position.setErrorIndex(e);
           return null;
         }
         if (dot != -1) {
           coefflen--;
-          scale = len - dot - 1;
+          scale = length - dot - 1;
           if (this.scale < scale) {
-            pos.setErrorIndex(dot);
+            position.setErrorIndex(dot);
             return null;
           }
         }
         try {
-          int end = (dot < 0 ? len : dot);
+          int end = (dot < 0 ? length : dot);
           int j = this.pattern.length() - 1;
           for (int i = start; i < end; i++, j--) {
             char c = value.charAt(i);
-            if (this.pattern.charAt(j) == 'G') {
+            if (this.pattern.charAt(j) == ',') {
               if (c != ' ') {
-                pos.setErrorIndex(i);
+                position.setErrorIndex(i);
                 return null;
               }
             } else {
               if (Character.isDigit(c)) {
                 coeff[precision++] = c;
               } else {
-                pos.setErrorIndex(i);
+                position.setErrorIndex(i);
                 return null;
               }
             }
           }
         } catch (Exception ex) {
-          pos.setErrorIndex(start);
-          ex.printStackTrace();
+          position.setErrorIndex(start);
           return null;
         }
         if (dot != -1) {
-          for (int i = dot + 1; i < len; i++) {
+          for (int i = dot + 1; i < length; i++) {
             char c = value.charAt(i);
             if (Character.isDigit(c)) {
               coeff[precision++] = c;
             } else {
-              pos.setErrorIndex(i);
+              position.setErrorIndex(i);
               return null;
             }
           }
@@ -690,8 +714,8 @@ public final class NumberFormat extends BaseFormat {
       // }
       // pos.setIndex(len);
       return ret;
-    } catch (Exception e) {
-      pos.setErrorIndex(start);
+    } catch (Exception exception) {
+      position.setErrorIndex(start);
       return null;
     }
   }
@@ -708,16 +732,17 @@ public final class NumberFormat extends BaseFormat {
     // Short-circuit logic for formats that don't follow common logic below
 
     // Text-minimal number
-    if (format == null || format.equals("TM") || format.equals("TM9")) {
+    if (pattern == null || pattern.equals("TM") ) {
       String s = number.toPlainString();
       return s.startsWith("0.") ? s.substring(1) : s;
     }
 
     // Text-minimal number in scientific notation
-    if (format.equals("TME")) {
+    if (pattern.equalsIgnoreCase("TME")) {
       int power = number.precision() - number.scale() - 1;
       number = number.movePointLeft(power);
-      return number.toPlainString() + "E" + (power < 0 ? '-' : '+')
+      char e = pattern.charAt(2);
+      return number.toPlainString() + e + (power < 0 ? '-' : '+')
           + (Math.abs(power) < 10 ? "0" : "") + Math.abs(power);
     }
 

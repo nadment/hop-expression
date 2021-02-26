@@ -298,12 +298,14 @@ public class OperatorTest extends ExpressionTest {
 
 		// Number to Boolean
 		evalTrue("CAST(1 as Boolean)");
+	    evalTrue("1::Boolean");
 		evalTrue("CAST(-12.1 as Boolean)");
 		evalFalse("CAST(0 as Boolean)");	
 		
 		// Boolean to String
 		evalEquals("CAST(true as String)", "TRUE");
-		evalEquals("CAST(123.6 as String)", "123.6");
+		evalEquals("true::String", "TRUE");
+
 
 		// Date to String
 		evalEquals("CAST(Date '2019-02-25' AS String)", "2019-02-25");
@@ -315,11 +317,13 @@ public class OperatorTest extends ExpressionTest {
 		
 		//evalEquals("Time '23:48:59'+1.5", "23:48:59");
 
-		// Integer to String
+		// Integer to String		
 		evalEquals("CAST(12923 AS STRING)", "12923");
 		evalEquals("CAST(-1234 AS STRING FORMAT '9999MI')", "1234-");
 
 		// Number to String
+	    evalEquals("CAST(123.6 as String)", "123.6");
+	    evalEquals("123.6::String", "123.6");
 		evalEquals("CAST(0.45 AS STRING)", ".45");		
 		evalEquals("CAST(0.45 AS STRING FORMAT 'FM000.00')", "000.45");
 		evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1234 ");
@@ -329,6 +333,7 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("CAST('1234.567' as Integer)", 1234L);
 		
 		// String to Number
+        //evalEquals("'1234'::Number)", 1234d);
 		evalEquals("CAST('1234' as Number)", 1234d);
 		evalEquals("CAST('1234.567' as Number)", 1234.567d);
 				
@@ -342,6 +347,7 @@ public class OperatorTest extends ExpressionTest {
 		evalEquals("CAST(12345678901234567890123456789012345678901234567890 as BigNumber)", new BigDecimal("12345678901234567890123456789012345678901234567890"));
 
 		// Bad syntax
+        evalFails("'1234'::");
 		evalFails("CAST('bad' AS)");
 		evalFails("CAST(1234 AS STRING FORMAT )");
 		evalFails("CAST(Date '2019-02-25' AS String FORMAT )");

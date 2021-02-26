@@ -188,7 +188,7 @@ public class Operator implements Comparable<Operator> {
   // -------------------------------------------------------------
 
   /** Cast <code>::</code> operator. */
-  public static final Operator CAST = new Operator(Kind.CAST, "::", 10, true, false);
+  public static final Operator CAST = new Operator(Kind.CAST, "::", 10, true, true);
   
   /** An operator describing the <code>CASE</code> operator. */
   public static final Operator CASE = new Operator(Kind.CASE_WHEN, "CASE", 120, true, false);

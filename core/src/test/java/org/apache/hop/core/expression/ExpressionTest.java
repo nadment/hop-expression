@@ -87,7 +87,6 @@ public class ExpressionTest {
 		context.setRow(row);
 	}
 	
-
 	protected Value eval(String s) throws Exception {
 		IExpression expression = ExpressionParser.parse(s);
 		return expression.eval(context);
@@ -160,10 +159,11 @@ public class ExpressionTest {
 	     DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
 	     Currency currency = symbols.getCurrency();
 	     
-	     //evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4);
-         //evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
-         evalFails("CAST('bad' AS)");
-         
+	      //evalEquals("TO_NUMBER('0.4-','99.99MI')", -0.4);
+	        //evalEquals("TO_NUMBER(' 0.5 ','99.99PR')", 0.5);
+	     evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12_345_678);
+	        //evalEquals("TO_NUMBER('<0.5>','99.99PR')", -0.5);
+	        
 	      //evalEquals("TO_CHAR(12,'$99')", " $12");
 	     //evalEquals("TO_CHAR(123.456,'9.9EEEE')", "  1.2E+02");
 	      //evalEquals("TO_CHAR(11,'FMRN')", "XI");  
