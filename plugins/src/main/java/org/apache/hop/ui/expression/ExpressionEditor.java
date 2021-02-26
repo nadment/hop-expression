@@ -16,27 +16,20 @@
  */
 package org.apache.hop.ui.expression;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.hop.core.Const;
 import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.gui.GuiResource;
-import org.apache.hop.ui.core.widget.StyledTextComp;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.swt.SWT;
@@ -53,9 +46,14 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExpressionEditor extends SashForm {
   private static final Class<?> PKG = ExpressionEditor.class;
@@ -64,7 +62,7 @@ public class ExpressionEditor extends SashForm {
   private ExpressionProposalProvider contentProposalProvider;
   private IVariables variables;
   private IRowMeta rowMeta;
-  private StyledTextComp textEditor;
+  private StyledText textEditor;
   private Tree tree;
   private TreeItem treeItemField;
   private TreeItem treeItemVariable;
@@ -83,16 +81,10 @@ public class ExpressionEditor extends SashForm {
   }
 
   protected void createEditor(final Composite parent) {
-    textEditor =
-        new StyledTextComp(
-            variables,
-            parent,
-            SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER,
-            true,
-            false);
+    textEditor = new StyledText(parent, SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
     textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-   // textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
+    textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
 
     // txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
     // wEditor.getStyledText().setMargins(30, 5, 3, 5);
@@ -109,13 +101,10 @@ public class ExpressionEditor extends SashForm {
     KeyStroke keyStroke = KeyStroke.getInstance(modifierKeys, SWT.SPACE);
 
     contentProposalProvider = new ExpressionProposalProvider();
-
- // StyledText styledText = textEditor.getStyledText();
-    Text styledText = textEditor.getTextWidget();
     
     ContentProposalAdapter contentProposalAdapter =
         new ContentProposalAdapter(
-            styledText,
+            textEditor,
             new StyledTextContentAdapter(),
             contentProposalProvider,
             keyStroke,
@@ -126,15 +115,18 @@ public class ExpressionEditor extends SashForm {
     contentProposalAdapter.setAutoActivationDelay(10);
     contentProposalAdapter.setPopupSize(new Point(300, 200));
 
-    // Avoid Enter key to be inserted when selected content proposal
-//    styledText.addVerifyKeyListener(
-//        new VerifyKeyListener() {
-//          public void verifyKey(VerifyEvent event) {
-//            if ('\r' == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
-//              event.doit = false;
-//            }
-//          }
-//        });
+    // Avoid Enter key to be inserted when selected content proposal    
+    textEditor.addListener(SWT.KeyDown, (event) -> {
+      try {
+        KeyStroke k = KeyStroke.getInstance("Enter");
+        if (k.getNaturalKey() == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
+          event.doit = false;
+        }
+      } catch (Exception e) {
+        // Ignore
+      }
+
+    });
   }
 
   protected void createTree(final Composite parent) {
