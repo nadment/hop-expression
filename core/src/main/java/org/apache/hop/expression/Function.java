@@ -767,9 +767,9 @@ public class Function extends Operator {
               return Value.of(value.toBigNumber().abs());
             }
             if (value.isNumber()) {
-              return Value.of(Math.abs(value.toNumber()));
+              return Value.of(FastMath.abs(value.toNumber()));
             }
-            return Value.of(Math.abs(value.toInteger()));
+            return Value.of(FastMath.abs(value.toInteger()));
           }
 
         case ACOS:
@@ -780,7 +780,7 @@ public class Function extends Operator {
             if (d < -1.0 || d > 1.0) {
               throw createArgumentOutOfRangeError(value);
             }
-            return Value.of(Math.acos(d));
+            return Value.of(FastMath.acos(d));
           }
 
         case ACOSH:
@@ -794,7 +794,7 @@ public class Function extends Operator {
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.asin(value.toNumber()));
+            return Value.of(FastMath.asin(value.toNumber()));
           }
 
         case ASINH:
@@ -810,7 +810,7 @@ public class Function extends Operator {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
 
-            return Value.of(Math.atan(value.toNumber()));
+            return Value.of(FastMath.atan(value.toNumber()));
           }
 
         case ATANH:
@@ -828,7 +828,7 @@ public class Function extends Operator {
             Value v1 = args[1].eval(context);
             if (v1.isNull()) return Value.NULL;
 
-            return Value.of(Math.atan2(v0.toNumber(), v1.toNumber()));
+            return Value.of(FastMath.atan2(v0.toNumber(), v1.toNumber()));
           }
 
         case BITGET:
@@ -849,21 +849,21 @@ public class Function extends Operator {
             if (value.isBigNumber()) {
               return Value.of(value.toBigNumber().setScale(0, RoundingMode.CEILING));
             }
-            return Value.of(Math.ceil(value.toNumber()));
+            return Value.of(FastMath.ceil(value.toNumber()));
           }
 
         case COS:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.cos(value.toNumber()));
+            return Value.of(FastMath.cos(value.toNumber()));
           }
 
         case COSH:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.cosh(value.toNumber()));
+            return Value.of(FastMath.cosh(value.toNumber()));
           }
 
         case COT:
@@ -871,7 +871,7 @@ public class Function extends Operator {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
 
-            double d = Math.tan(value.toNumber());
+            double d = FastMath.tan(value.toNumber());
             if (d == 0.0) {
               throw createDivisionByZeroError();
             }
@@ -882,7 +882,7 @@ public class Function extends Operator {
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.toDegrees(value.toNumber()));
+            return Value.of(FastMath.toDegrees(value.toNumber()));
           }
 
         case FLOOR:
@@ -893,14 +893,14 @@ public class Function extends Operator {
             if (value.isBigNumber()) {
               return Value.of(value.toBigNumber().setScale(0, RoundingMode.FLOOR));
             }
-            return Value.of(Math.floor(value.toNumber()));
+            return Value.of(FastMath.floor(value.toNumber()));
           }
 
         case EXP:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.exp(value.toNumber()));
+            return Value.of(FastMath.exp(value.toNumber()));
           }
 
         case LN:
@@ -908,7 +908,7 @@ public class Function extends Operator {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
             if (value.signum() <= 0) throw createArgumentOutOfRangeError(value);
-            return Value.of(Math.log(value.toNumber()));
+            return Value.of(FastMath.log(value.toNumber()));
           }
 
         case LOG:
@@ -921,7 +921,7 @@ public class Function extends Operator {
             if (value.isNull()) return Value.NULL;
             if (value.signum() <= 0) throw createArgumentOutOfRangeError(value);
 
-            return Value.of(Math.log(value.toNumber()) / Math.log(base.toNumber()));
+            return Value.of(FastMath.log(value.toNumber()) / Math.log(base.toNumber()));
           }
 
         case LOG10:
@@ -929,7 +929,7 @@ public class Function extends Operator {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
             if (value.signum() <= 0) throw createArgumentOutOfRangeError(value);
-            return Value.of(Math.log10(value.toNumber()));
+            return Value.of(FastMath.log10(value.toNumber()));
           }
 
         case PI:
@@ -939,7 +939,7 @@ public class Function extends Operator {
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.toRadians(value.toNumber()));
+            return Value.of(FastMath.toRadians(value.toNumber()));
           }
 
         case RAND:
@@ -955,7 +955,7 @@ public class Function extends Operator {
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return value;
-            return Value.of(Math.round(value.toNumber()));
+            return Value.of(FastMath.round(value.toNumber()));
           }
 
         case SIGN:
@@ -969,21 +969,21 @@ public class Function extends Operator {
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.sin(value.toNumber()));
+            return Value.of(FastMath.sin(value.toNumber()));
           }
 
         case SINH:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.sinh(value.toNumber()));
+            return Value.of(FastMath.sinh(value.toNumber()));
           }
 
         case CBRT:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.cbrt(value.toNumber()));
+            return Value.of(FastMath.cbrt(value.toNumber()));
           }
 
         case SQRT:
@@ -991,21 +991,21 @@ public class Function extends Operator {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
             if (value.signum() < 0) throw createArgumentOutOfRangeError(value);
-            return Value.of(Math.sqrt(value.toNumber()));
+            return Value.of(FastMath.sqrt(value.toNumber()));
           }
 
         case TAN:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.tan(value.toNumber()));
+            return Value.of(FastMath.tan(value.toNumber()));
           }
 
         case TANH:
           {
             Value value = args[0].eval(context);
             if (value.isNull()) return Value.NULL;
-            return Value.of(Math.tanh(value.toNumber()));
+            return Value.of(FastMath.tanh(value.toNumber()));
           }
 
         case ASCII:
@@ -1939,20 +1939,6 @@ public class Function extends Operator {
     return b0.movePointRight(b1).setScale(0, RoundingMode.DOWN).movePointLeft(b1);
   }
 
-  public static double acosh(double x) {
-    // return Math.log(x + Math.sqrt(x*x - 1.0d));
-    return FastMath.acosh(x);
-  }
-
-  public static double asinh(double x) {
-    // return Math.log(x + Math.sqrt(1 + x * x));
-    return FastMath.asinh(x);
-  }
-
-  public static double atanh(double x) {
-    // return Math.log(Math.sqrt(1 + x) / Math.sqrt(1 - x));
-    return FastMath.atanh(x);
-  }
 
   private static int makeRegexpFlags(String stringFlags) {
     int flags = 0;
@@ -2181,7 +2167,6 @@ public class Function extends Operator {
    *
    * @param suffix is a Bytes object to compare to this
    * @return true or false
-   * @since 1.1.0
    */
   public static boolean endsWith(byte[] data, byte[] suffix) {
     int startOffset = data.length - suffix.length;
