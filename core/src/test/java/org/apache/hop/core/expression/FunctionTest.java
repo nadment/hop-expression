@@ -505,16 +505,24 @@ public class FunctionTest extends ExpressionTest {
 	public void Greatest() throws Exception {
 		evalEquals("Greatest(5,2,null,9,4)", 9);
 		evalEquals("Greatest('B','A','C')", "C");
+        evalEquals("Greatest(Date '2020-01-01',Date '2021-12-06',Date '1990-12-08')", LocalDate.of(2021, 12, 6));
+		evalTrue("Greatest(false,true,false)");
+		evalFalse("Greatest(false,false,false)");
 	}
 
 	@Test
 	public void Least() throws Exception {
 		evalEquals("Least(5,2,null,9,4)", 2);
+        evalEquals("Least(Date '2020-01-01',Date '2021-12-06',Date '1990-12-08')", LocalDate.of(1990, 12, 8));
+        evalFalse("Least(false,true,false)");
+        evalTrue("Least(true,true,true)");
 	}
 
 	@Test
 	public void Length() throws Exception {
 		evalEquals("Length('TEST')", 4);
+	    evalNull("Length(null)");
+	    evalFails("Length()");
 	}
 
 	@Test
@@ -637,7 +645,7 @@ public class FunctionTest extends ExpressionTest {
         evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
 
         
-		// Fomat Hexa
+		// Format Hex
 		evalEquals("TO_NUMBER('ABCD','FMXXXX')",43981);
 		
         // Format Roman numeral
@@ -752,7 +760,7 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("TO_CHAR(5.2, 'FMRN')","V");
 		evalEquals("TO_CHAR(515, 'RN')","            DXV");		
 		
-		// Hexa
+		// Hex
 		evalEquals("TO_CHAR(123,'XX')", " 7B");
 	    evalEquals("TO_CHAR(123,'xx')", " 7b");
 		evalEquals("TO_CHAR(123,'0XXX')", " 007B");
@@ -850,33 +858,33 @@ public class FunctionTest extends ExpressionTest {
 		evalEquals("To_Date('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
 		evalEquals("To_Date('2020148','YYYYDDD')", LocalDate.of(2020, 5, 27));
 		evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
-		evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, 3, 1));
-		evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, 2, 25));
-		evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')", LocalDateTime.of(2019, 2, 13, 15, 34, 56));
-		evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
-		evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, 2, 1));
+		evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, Month.MARCH, 1));
+		evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, Month.FEBRUARY, 25));
+		evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
+		evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+		evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
 		evalEquals("To_Date('01/02/-100','DD/MM/SYYYY')", LocalDate.of(-100, 2, 1));
 
 		// Trailing space
 		evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
 		
-		evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(2001, 2, 1));
-		evalEquals("To_Date('01/2/52','DD/MM/RRRR')", LocalDate.of(1952, 2, 1));
-		evalEquals("To_Date('01/2/0923','DD/MM/RRRR')", LocalDate.of(923, 2, 1));
+		evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(2001, Month.FEBRUARY, 1));
+		evalEquals("To_Date('01/2/52','DD/MM/RRRR')", LocalDate.of(1952, Month.FEBRUARY, 1));
+		evalEquals("To_Date('01/2/0923','DD/MM/RRRR')", LocalDate.of(923, Month.FEBRUARY, 1));
 
 		// Month and day shorter than format 
-		evalEquals("To_Date('2020/2/1','YYYY/MM/DD')", LocalDate.of(2020, 2, 1));
+		evalEquals("To_Date('2020/2/1','YYYY/MM/DD')", LocalDate.of(2020, Month.FEBRUARY, 1));
 		
 		
 		// Rule to try alternate format MM -> MON and MONTH
-		evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
+		evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 		// Rule to try alternate format MM -> MON and MONTH
-		evalEquals("To_Date('01/February/2020','DD/MM/YYYY')", LocalDate.of(2020, 2, 1));
+		evalEquals("To_Date('01/February/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 		// Rule to try alternate format MON -> MONTH
-		evalEquals("To_Date('01/February/2020','DD/MON/YYYY')", LocalDate.of(2020, 2, 1));
+		evalEquals("To_Date('01/February/2020','DD/MON/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 		// Rule to try alternate format MONTH -> MON
-		evalEquals("To_Date('01/Feb/2020','DD/MONTH/YYYY')", LocalDate.of(2020, 2, 1));
+		evalEquals("To_Date('01/Feb/2020','DD/MONTH/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
 		// '12-02-2008' is 2454803 in julian,
 		evalEquals("To_Date('2454803','J')", LocalDate.of(2008, 12, 2));
@@ -949,27 +957,39 @@ public class FunctionTest extends ExpressionTest {
 	public void Truncate() throws Exception {
 
 		// Truncate numeric
-		evalEquals("Truncate(-975.975,-1)", -970);
+        evalEquals("Truncate(-975.975)", -975);
+	    evalEquals("Trunc(-975.975,-1)", -970);
 		evalEquals("Truncate(-975.975,0)", -975);
 		evalEquals("Truncate(-975.975,2)", -975.97);
 		evalEquals("Truncate(-975.975,3)", -975.975);
 		evalEquals("Truncate(-975.975,50)", -975.975);
 		evalEquals("Truncate(123.456,-2)", 100);
 		evalNull("Truncate(-975.975,Null)");
-
-		// Truncate date time
-		evalEquals("Truncate(DATE '2020-05-08','year')", LocalDate.of(2020, Month.JANUARY, 1));
-		evalEquals("Truncate(DATE '2020-05-08','MONTH')", LocalDate.of(2020, Month.MAY, 1));
+        evalNull("Truncate(NULL,2)");
+        
+		// Truncate date
+        evalEquals("Truncate(TO_DATE('08-05-2020 15:35:32','DD-MM-YYYY HH24:MI:SS'))",LocalDate.of(2020, Month.MAY, 8));
+        evalEquals("Truncate(DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 8));
+        evalEquals("Truncate(DATE '2020-05-08','year')", LocalDate.of(2020, Month.JANUARY, 1));
+        evalEquals("Truncate(DATE '2020-05-08','YY')", LocalDate.of(2020, Month.JANUARY, 1));
+        evalEquals("Truncate(DATE '2020-05-08','MONTH')", LocalDate.of(2020, Month.MAY, 1));
+        evalEquals("Truncate(DATE '2020-05-08','MM')", LocalDate.of(2020, Month.MAY, 1));
 		evalEquals("Truncate(DATE '2020-05-25','DAY')", LocalDate.of(2020, Month.MAY, 25));
-		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','DAY')", LocalDate.of(2020, Month.MAY, 25));
-		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','HOUR')",
-				LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','MINUTE')",
-				LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','SeCoNd')",
-				LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
-
-		evalNull("Truncate(NULL,2)");
+        evalEquals("Truncate(DATE '2020-05-25','DD')", LocalDate.of(2020, Month.MAY, 25));
+		evalEquals("Truncate(DATE '2020-05-25','QuArTeR')", LocalDate.of(2020, Month.APRIL, 1));
+	    evalEquals("Truncate(DATE '2020-05-25','Q')", LocalDate.of(2020, Month.APRIL, 1));
+	    evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 25));
+        //evalEquals("Truncate(DATE '2020-05-28','W')", LocalDate.of(2020, Month.APRIL, 25));
+        
+	    
+        // Truncate timestamp
+        evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','DAY')", LocalDate.of(2020, Month.MAY, 25));
+		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','HOUR')", LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
+        evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','HH')", LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
+		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','MINUTE')", LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
+        evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','MI')", LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
+		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','SeCoNd')", LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
+		evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','SS')", LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
 	}
 
 	@Test
@@ -1175,3 +1195,4 @@ public class FunctionTest extends ExpressionTest {
 	}
 
 }
+

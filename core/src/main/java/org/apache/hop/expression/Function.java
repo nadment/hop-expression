@@ -16,6 +16,13 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
+import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,22 +44,13 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.i18n.BaseMessages;
-
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
 
-// TODO: implement TRY_TO_NUMBER
 // TODO: implement TRY_CAST
-// TODO: implement TRY_TO_BOOLEAN
 // TODO: implement DATEDIFF
 // TODO: implement DATEPART
 // TODO: implement BIT_COUNT
@@ -61,6 +59,7 @@ import org.apache.hop.i18n.BaseMessages;
 // TODO: implement REGEXP_REPLACE
 // TODO: implement OVERLAY
 // TODO: implement NULLIFZERO
+// TODO: FIRST_DAY(d, 'week') LAST_DAY(d, 'week') add format YEAR, MONTH, DAY, WEEK 
 // TODO: JSON_EXTRACT()  and -> operator 
 
 public class Function extends Operator {
@@ -226,6 +225,7 @@ public class Function extends Operator {
       case RTRIM:
       case TO_CHAR:
       case TO_DATE:
+      case TRUNCATE:
       case TRY_TO_DATE:
         min = 1;
         max = 2;
@@ -275,7 +275,6 @@ public class Function extends Operator {
       case STARTSWITH:
       case SUBTRACT:
       case REGEXP_LIKE:
-      case TRUNCATE:
       case YEARS_BETWEEN:
         min = 2;
         max = 2;
@@ -1509,31 +1508,32 @@ public class Function extends Operator {
         case TRUNCATE:
           {
             Value value = args[0].eval(context);
-            Value pattern = args[1].eval(context);
-
-            if (value.isNull() || pattern.isNull()) return Value.NULL;
+            if (value.isNull()) return Value.NULL;
 
             switch (value.getDataType()) {
               case INTEGER:
               case NUMBER:
               case BIGNUMBER:
-                int scale = (int) pattern.toInteger();
+                int scale = 0;
+                if ( args.length==2) { 
+                  Value pattern = args[1].eval(context);
+                  if (pattern.isNull()) return Value.NULL;
+                  scale = (int) pattern.toInteger();
+                }
                 return Value.of(Function.truncate(value.toBigNumber(), scale));
 
               case DATE:
                 Instant instant = value.toDate();
-
-                // TODO: optimize with ordinal: DatePart datePart = DatePart.valueOf((int)
-                // right.toInteger());
-                DatePart datePart = DatePart.MONTH;
-
-                try {
+                DatePart datePart = DatePart.DAY;
+                
+                if ( args.length==2) { 
+                  Value pattern = args[1].eval(context);
+                  if (pattern.isNull()) return Value.NULL;
                   datePart = DatePart.of(pattern.toString());
-                } catch (Exception e) {
-                  throw new ExpressionException("Invalid date part: " + pattern);
                 }
 
                 switch (datePart) {
+                  // First day of the year
                   case YEAR:
                     {
                       ZonedDateTime datetime =
@@ -1541,6 +1541,7 @@ public class Function extends Operator {
                               instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
                       return Value.of(datetime.withDayOfYear(1).toInstant());
                     }
+                  // First day of the month
                   case MONTH:
                     {
                       ZonedDateTime datetime =
@@ -1548,6 +1549,28 @@ public class Function extends Operator {
                               instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
                       return Value.of(datetime.withDayOfMonth(1).toInstant());
                     }
+                  // First day of the quarter
+                  case QUARTER:
+                  {
+                    ZonedDateTime datetime =
+                        ZonedDateTime.ofInstant(
+                            instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
+                    int month = (datetime.getMonthValue()/3)*3+1;                    
+                    return Value.of(datetime.withMonth(month).withDayOfMonth(1).toInstant());
+                  }
+                  // First day of the week
+                  case WEEK:
+                  {
+                    ZonedDateTime datetime =
+                        ZonedDateTime.ofInstant(
+                            instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
+                    
+                    final Calendar calendar = Calendar.getInstance(context.getLocale());                  
+                    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
+                    
+                    return Value.of(datetime.with(TemporalAdjusters.previousOrSame(dow)).toInstant());
+                  }
+
                   case DAY:
                     return Value.of(instant.truncatedTo(ChronoUnit.DAYS));
                   case HOUR:
@@ -1561,7 +1584,7 @@ public class Function extends Operator {
                   case MICROSECOND:
                     return Value.of(instant.truncatedTo(ChronoUnit.MICROS));
                   case NANOSECOND:
-                    return Value.of(instant.truncatedTo(ChronoUnit.NANOS));
+                    return Value.of(instant.truncatedTo(ChronoUnit.NANOS));                 
                 }
 
                 return value;
@@ -1569,7 +1592,7 @@ public class Function extends Operator {
               case STRING:
               case BOOLEAN:
               default:
-                throw new ExpressionException("Truncate date not implemented");
+                throw new ExpressionException("Truncate data type not implemented");
             }
           }
 
