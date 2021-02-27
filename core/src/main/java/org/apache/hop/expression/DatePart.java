@@ -64,7 +64,7 @@ public enum DatePart {
   WEEKOFMONTH,
 
   /** The quarter (1, 2, 3, or 4) of the year */
-  QUARTER,
+  QUARTER("Q"),
 
   /** The hour (0-23). */
   HOUR("HH"),
