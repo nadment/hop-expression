@@ -907,6 +907,33 @@ public class FunctionTest extends ExpressionTest {
 		evalNull("To_Date(NULL)");
 	}
 
+	
+	   @Test
+	    public void Try_Cast() throws Exception {
+	          
+	        // String to Boolean
+	        evalTrue("TRY_CAST('Yes' as Boolean)");
+	        evalFalse("TRY_CAST('False' as Boolean)");
+	        evalNull("TRY_CAST('Fake' as Boolean)");
+	        
+	        // Number to Boolean
+	        evalTrue("TRY_CAST(1 as Boolean)");
+	        evalTrue("TRY_CAST(-12.1 as Boolean)");
+	        evalNull("TRY_CAST('test' as Boolean)");    
+
+	        // Date to String
+	        evalNull("TRY_CAST('2019-99-25' AS Date)");
+	        evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'DD/MM/YYYY')");
+
+	        // Bad syntax
+	        evalFails("TRY_CAST('bad' AS)");
+	        evalFails("TRY_CAST(1234 AS STRING FORMAT )");
+	        evalFails("TRY_CAST(Date '2019-02-25' AS String FORMAT )");     
+	        
+	        // Bad data type
+	        evalFails("Try_Cast(123 as Nill)");
+	    }
+	
 	@Test
 	public void Reverse() throws Exception {
 		evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH");
@@ -1195,4 +1222,3 @@ public class FunctionTest extends ExpressionTest {
 	}
 
 }
-

@@ -355,6 +355,7 @@ public class Operator implements Comparable<Operator> {
     addFunction(Kind.TRANSLATE);
     addFunction(Kind.TRIM);
     addFunction(Kind.TRUNCATE, "TRUNC");
+    addFunction(Kind.TRY_CAST);
     addFunction(Kind.TRY_TO_BOOLEAN);
     addFunction(Kind.TRY_TO_DATE);
     addFunction(Kind.TRY_TO_NUMBER);

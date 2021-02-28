@@ -735,7 +735,7 @@ public class ExpressionParser {
     }
 
     /** Cast(expression AS dataType FORMAT pattern) */
-    if (Kind.CAST == function.kind) {
+    if (Kind.CAST == function.kind || Kind.TRY_CAST == function.kind) {
 
       operands.add(this.parseLogicalOr());
 

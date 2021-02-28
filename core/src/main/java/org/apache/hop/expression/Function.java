@@ -16,7 +16,9 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math3.util.FastMath;
@@ -50,7 +52,6 @@ import java.util.regex.Pattern;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
 
-// TODO: implement TRY_CAST
 // TODO: implement DATEDIFF
 // TODO: implement DATEPART
 // TODO: implement BIT_COUNT
@@ -71,24 +72,8 @@ public class Function extends Operator {
   /** The maximum size to which the padding can expand. */
   private static final int PAD_LIMIT = 8192;
 
-  private static final char[] SOUNDEX = new char[128];
-  private static final int SOUNDEX_LENGTH = 4;
-
-  static {
-    // SOUNDEX_INDEX
-    String index = "7AEIOUY8HW1BFPV2CGJKQSXZ3DT4L5MN6R";
-    char number = 0;
-    for (int i = 0, length = index.length(); i < length; i++) {
-      char c = index.charAt(i);
-      if (c < '9') {
-        number = c;
-      } else {
-        SOUNDEX[c] = number;
-        SOUNDEX[Character.toLowerCase(c)] = number;
-      }
-    }
-  }
-
+  private static final Soundex SOUNDEX= new Soundex();
+  
   private final boolean isDeterministic;
 
   protected Function(Kind kind, String name, boolean isAlias, boolean isDeterministic) {
@@ -285,6 +270,7 @@ public class Function extends Operator {
       case REPLACE:
       case RPAD:
       case SUBSTRING:
+      case TRY_CAST:
         min = 2;
         max = 3;
         break;
@@ -344,6 +330,32 @@ public class Function extends Operator {
           // use operator implementation
           return super.eval(context, args);
 
+        case TRY_CAST: {
+          Value value = args[0].eval(context);
+          Value type = args[1].eval(context);
+
+          if (value.isNull() || type.isNull())
+            return Value.NULL;
+
+          DataType targetType = DataType.of((int) type.toInteger());
+
+          if (args.length == 3) {
+            // Format can be ValueNull
+            Value format = args[2].eval(context);
+            try {
+              return value.convertTo(context, targetType, format.toString());
+            } catch (Exception e) {
+              return Value.NULL;
+            }
+          }
+
+          try {
+            return value.convertTo(targetType);
+          } catch (Exception e) {
+            return Value.NULL;
+          }
+        }
+          
         case CURRENT_DATE:
           return Value.of(context.getCurrentDate());
 
@@ -1356,21 +1368,18 @@ public class Function extends Operator {
 
         case REPLACE:
           {
-            Value value = args[0].eval(context);
-            if (value.isNull()) return value;
-            Value param2 = args[1].eval(context);
+            Value v0 = args[0].eval(context);
+            if (v0.isNull()) return Value.NULL;
+            Value v1 = args[1].eval(context);
+            if (v1.isNull()) return Value.NULL;            
 
-            if (param2.isNull()) {
-              return Value.NULL;
-            }
-
-            String string = value.toString();
-            String search = param2.toString();
+            String string = v0.toString();
+            String search = v1.toString();
 
             if (args.length == 3) {
-              Value param3 = args[2].eval(context);
+              Value v3 = args[2].eval(context);
 
-              String replacement = param3.toString();
+              String replacement = v3.toString();
               return Value.of(string.replace(search, replacement));
             }
 
@@ -1493,16 +1502,16 @@ public class Function extends Operator {
 
         case REGEXP_LIKE:
           {
-            Value input = args[0].eval(context);
-            Value pattern = args[1].eval(context);
-
-            if (input.isNull() || pattern.isNull()) {
+            Value v0 = args[0].eval(context);
+            if (v0.isNull()) {
               return Value.FALSE;
             }
-
-            Pattern p = Pattern.compile(pattern.toString(), Pattern.DOTALL);
-
-            return Value.of(p.matcher(input.toString()).find());
+            Value v1 = args[1].eval(context);
+            if (v1.isNull()) {
+              return Value.FALSE;
+            }
+            Pattern pattern = Pattern.compile(v1.toString(), Pattern.DOTALL);
+            return Value.of(pattern.matcher(v0.toString()).find());
           }
 
         case TRUNCATE:
@@ -1828,38 +1837,11 @@ public class Function extends Operator {
   }
 
   public static String soundex(String s) {
-    int len = s.length();
-    char[] chars = {'0', '0', '0', '0'};
-    char lastDigit = '0';
-    for (int i = 0, j = 0; i < len && j < 4; i++) {
-      char c = s.charAt(i);
-      char newDigit = c > SOUNDEX.length ? 0 : SOUNDEX[c];
-      if (newDigit != 0) {
-        if (j == 0) {
-          chars[j++] = c;
-          lastDigit = newDigit;
-        } else if (newDigit <= '6') {
-          if (newDigit != lastDigit) {
-            chars[j++] = newDigit;
-            lastDigit = newDigit;
-          }
-        } else if (newDigit == '7') {
-          lastDigit = newDigit;
-        }
-      }
-    }
-    return new String(chars);
+    return SOUNDEX.soundex(s);
   }
 
-  public static int difference(String s0, String s1) {
-    String result0 = soundex(s0);
-    String result1 = soundex(s1);
-    for (int i = 0; i < SOUNDEX_LENGTH; i++) {
-      if (result0.charAt(i) != result1.charAt(i)) {
-        return i;
-      }
-    }
-    return SOUNDEX_LENGTH;
+  public static int difference(String s0, String s1) throws EncoderException {
+    return SOUNDEX.difference(s1, s1);
   }
 
   public static String lpad(String str, int length, String pad) {

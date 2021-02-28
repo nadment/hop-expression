@@ -562,7 +562,9 @@ public enum Kind {
    * CAST(value AS type FORMAT format)</code>.
    */
   CAST(Category.Conversion),
-
+  /** Converts a value of one data type into another data type if the cast succeeds; otherwise, returns null.*/ 
+  TRY_CAST(Category.Conversion),
+  
   /** Converts a string or numeric expression to a boolean value. */
   TO_BOOLEAN(Category.Conversion),
   TRY_TO_BOOLEAN(Category.Conversion),

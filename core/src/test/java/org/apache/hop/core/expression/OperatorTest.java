@@ -282,9 +282,7 @@ public class OperatorTest extends ExpressionTest {
 
 	@Test
 	public void Cast() throws Exception {
-	  
-	  
-	  
+	  	  
 		// String to Boolean
 	    evalTrue("'Yes'::Boolean");
 		evalTrue("CAST('Yes' as Boolean)");
@@ -330,10 +328,11 @@ public class OperatorTest extends ExpressionTest {
 		
 		// String to Integer
 		evalEquals("CAST('1234' as Integer)", 1234L);
+		evalEquals("'1234'::Integer+5", 1239L);
 		evalEquals("CAST('1234.567' as Integer)", 1234L);
 		
 		// String to Number
-        //evalEquals("'1234'::Number)", 1234d);
+        evalEquals("'1234'::Number)", 1234d);
 		evalEquals("CAST('1234' as Number)", 1234d);
 		evalEquals("CAST('1234.567' as Number)", 1234.567d);
 				
@@ -345,20 +344,19 @@ public class OperatorTest extends ExpressionTest {
 
 		
 		evalEquals("CAST(12345678901234567890123456789012345678901234567890 as BigNumber)", new BigDecimal("12345678901234567890123456789012345678901234567890"));
-
-		// Bad syntax
-        evalFails("'1234'::");
-		evalFails("CAST('bad' AS)");
-		evalFails("CAST(1234 AS STRING FORMAT )");
-		evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
-		
-		
+				
 		// Unsupported conversion
 		evalFails("CAST(Date '2019-02-25' AS INTEGER)");
 		evalFails("CAST(Date '2019-02-25' AS NUMBER)");
 		evalFails("CAST(TRUE AS DATE)");
 		evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
 		evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
+
+        // Bad syntax
+        evalFails("'1234'::");
+        evalFails("CAST('bad' AS)");
+        evalFails("CAST(1234 AS STRING FORMAT )");
+        evalFails("CAST(Date '2019-02-25' AS String FORMAT )");		
 		
 		// Bad data type
 		evalFails("Cast(123 as Nill)");
@@ -368,18 +366,16 @@ public class OperatorTest extends ExpressionTest {
 	public void Positive() throws Exception {
 		evalEquals("+(40)", 40);
 		evalEquals("+(Age)", 40);
-		evalNull("+null");
 		evalEquals("+40", 40);
-
+        evalNull("+null");
 	}
 	
 	@Test
 	public void Negative() throws Exception {
 		evalEquals("-40", -40);
 		evalEquals("-Age", -40);
+        evalEquals("+40", 40);
 		evalNull("-null");
-		evalEquals("+40", 40);
-
 	}
 
 	@Test
