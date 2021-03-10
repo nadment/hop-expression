@@ -14,11 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= COT
+= PREVIOUS_DAY
 
-This function calculates the trigonometric cotangent of the angle in radians specified by float expression.
+This function returns the date of the first specified day of week that occurs before the input date.
 
 == Syntax
 ----
-COT(numeric_expression)
+PREVIOUS_DAY(date, weekday)
 ----
+
+
+
+
+
+See also xref:first_day.adoc[NEXT_DAY], xref:first_day.adoc[FIRST_DAY], xref:last_day.adoc[LAST_DAY]

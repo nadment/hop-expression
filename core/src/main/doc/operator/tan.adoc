@@ -16,7 +16,7 @@ under the License.
 ////
 = TAN
 
-Calculates the tangent of its argument, the argument should be expressed in radians.
+This function calculates the tangent of its argument.
 
 == Syntax
 ----
@@ -25,6 +25,7 @@ TAN(numeric_expression)
 
 == Usage
 
+The argument should be expressed in radians.
 
 
 Returns::

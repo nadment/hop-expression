@@ -33,26 +33,27 @@ Emulates Oracle's TO_CHAR(number) function.
 [cols="<1,^1,^1,<5", options="header"]
 |===
 |Input|Repeatable|Case sensitive|Description
-|.|||Decimal fraction separator
+|.|||Decimal separator +
+*Restriction:* You can specify only one period in a number format model.
 |,|&#10003;||Digit group separator
-|$|||Leading dollar sign 
+|$|||Leading dollar sign
 |0|&#10003;||Leading or trailing zeroes 
 |9|&#10003;||Digit
 |B|||Blanks integer part of a fixed point number less than 1
-|C|||ISO currency symbol
-|D|||Local decimal separator 
+|C|||ISO currency symbol (EUR, USD...)
+|D|||Local decimal separator. +
+*Restriction:* You can specify only one decimal separator character in a number format model. 
 |EEEE||&#10003;|Returns a value in scientific notation 
 |FM|||Returns values with no leading or trailing spaces 
 |G|&#10003;||Local grouping separator
-|L|||Local currency symbol 
+|L|||Local currency symbol (€, £, $...) 
 |MI|||Negative values get trailing minus sign, positive get trailingspace 
 |PR|||Negative values get enclosing angle brackets, positive get spaces 
-|RN|||Returns values in Roman numerals
-|S|||Returns values with leading/trailing +/- signs. *Restriction:* The S format element can appear only in the first or last position of a number format model. 
+|RN||&#10003;|Returns values in Roman numerals. Allowed value is an integer between 1 and 3999. 
+|S|||Returns values with leading/trailing +/- signs. +
+*Restriction:* The S format element can appear only in the first or last position of a number format model. 
 |TM|||Returns smallest number of characters possible 
-|U|||Returns the dual currency symbol
-|V|||Returns a value multiplied by 10^n 
-|X|&#10003;|&#10003;|Hex value
+|X|&#10003;|&#10003;|Hexadecimal digit. If the specified number is not an integer, it will round to an integer.
 |===
 
 

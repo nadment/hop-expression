@@ -16,7 +16,7 @@ under the License.
 ////
 = SQRT
 
-Calculates the square-root of a non-negative numeric expression.
+This function calculates the square-root of a non-negative numeric expression.
 
 == Syntax
 ----

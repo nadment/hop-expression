@@ -16,7 +16,7 @@ under the License.
 ////
 = SIN
 
-Calculates the trigonometric sine of the angle in radians.
+This function calculates the trigonometric sine of the angle in radians.
 
 == Syntax
 ----

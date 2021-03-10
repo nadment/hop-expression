@@ -27,4 +27,4 @@ NEXT_DAY(date, weekday)
 
 
 
-See also xref:first_day.adoc[FIRST_DAY], xref:last_day.adoc[LAST_DAY]
+See also xref:first_day.adoc[PREVIOUS_DAY], xref:first_day.adoc[FIRST_DAY], xref:last_day.adoc[LAST_DAY]

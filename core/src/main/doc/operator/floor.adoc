@@ -16,7 +16,7 @@ under the License.
 ////
 = FLOOR
 
-Returns the values rounded to the nearest equal or smaller integer.
+This function returns the values rounded to the nearest equal or smaller integer.
 
 == Syntax
 ----

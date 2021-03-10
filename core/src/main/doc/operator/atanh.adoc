@@ -14,11 +14,12 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= COT
+= ATANH
 
-This function calculates the trigonometric cotangent of the angle in radians specified by float expression.
+This function calculates the inverse (arc) hyperbolic tangent of its argument.
 
 == Syntax
 ----
-COT(numeric_expression)
+ATANH(numeric_expr)
 ----
+

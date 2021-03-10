@@ -16,7 +16,7 @@ under the License.
 ////
 = ACOS
 
-This function computes the arc cosine, the angle in radians whose cosine is the specified number n.
+This function calculates the arc cosine, the angle in radians whose cosine is the specified number n.
 
 == Syntax
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = ATAN2
 
-Computes the inverse tangent (arc tangent) of the ratio of its two arguments.
+This function calculates the inverse tangent (arc tangent) of the ratio of its two arguments.
 
 == Syntax
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = ASIN
 
-Computes the inverse sine (arc sine) of its argument.
+This function calculates the inverse sine (arc sine) of its argument.
 
 == Syntax
 ----

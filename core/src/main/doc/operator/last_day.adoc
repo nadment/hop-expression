@@ -23,4 +23,4 @@ Returns the last day of the month.
 LAST_DAY(date)
 ----
 
-See also xref:first_day.adoc[FIRST_DAY], xref:next_day.adoc[NEXT_DAY]
+See also xref:first_day.adoc[FIRST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]
