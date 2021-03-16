@@ -341,7 +341,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
   }
 
   /**
-   * Checks wheter or not a value is null.
+   * Checks if the value is null.
    *
    * @return true if the Value is null.
    */

@@ -138,11 +138,6 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public boolean isNull() {   
-    return false;
-  }
-
-  @Override
   public IExpression optimize(IExpressionContext context) throws ExpressionException {
     return this;
   }

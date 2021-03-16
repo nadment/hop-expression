@@ -49,17 +49,12 @@ public enum DataType {
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY;
 
-  public static DataType of(int ordinal) {
-    return values()[ordinal];
-  }
-
-  public static DataType of(String s) {
+  public static DataType of(final String s) {
     for (DataType type : DataType.values()) {
       if (type.name().equalsIgnoreCase(s)) {
         return type;
       }
     }
-    
-    throw new EnumConstantNotPresentException(DataType.class, s);
+    throw new IllegalArgumentException("Invalid data type: "+s);
   }
 }

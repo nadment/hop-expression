@@ -144,25 +144,28 @@ Expression supports most of the arithmetic, bitwise, logical and comparison oper
 
 The operator precedence and associativity, highest to lowest.
 
-[cols="^1,<5", options="header"]
+[cols="^1,<5,<5", options="header"]
 |===
-|Associativity|Operator
-|-|Function
-|right|+ (Positive), - (Negative)
-|right|~ (Bitwise NOT)
-|left|* (Multiplication), / (Division), % (Modulus)
-|left|& (Bitwise AND)
-|left|^ (Bitwise Exclusive OR)
-|left|\| (Bitwise OR) 
-|left| + (Addition), - (subtraction)
-|left| \|\| (Concatenation)
-|-|BETWEEN, IN, LIKE, ILIKE
-|left|=, >, <, >=, <=, <>, != (Comparison operators) 
-|-|IS NULL, IS FALSE, IS NOT TRUE etc.
-|right|NOT
-|left|AND
-|left|XOR
-|left|OR
+|Associativity|Operator|Description
+|left|()|Parenthesis
+|left|fx(args...)|Function
+|right|::|Cast
+|right|+, -|Positive, Negative
+|right|~|Bitwise NOT
+|left|*, /, %|Multiplication, Division, Modulus
+|left|&|Bitwise AND
+|left|^|Bitwise exclusive OR
+|left|\||Bitwise inclusive OR 
+|left|+, -|Addition, Subtraction
+|left| \|\||Concatenation
+|left|IN|Set membership
+|left|BETWEEN|Range containment
+|left|LIKE, ILIKE|Pattern matching
+|left|=, >, <, >=, <=, <>, != |Comparison operators
+|left|IS|IS [NOT] NULL, IS [NOT] FALSE, IS [NOT] TRUE
+|right|NOT|Logical negation 
+|left|AND|Conjunction
+|left|OR|Inclusion 
 |===
 
 NOTE: An operator on higher levels is evaluated before an operator on a lower level.

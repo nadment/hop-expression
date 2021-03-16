@@ -475,19 +475,21 @@ public class ExpressionScanner {
           if (RESERVED_WORDS.contains(name)) {
             return new Token(Id.valueOf(name), start, index, name);
           }
-
           
           try {
-            DataType type = DataType.of(name);
+            DataType.of(name);
             return new Token(Id.DATATYPE, start, index, name);
           }
-          catch(Exception e) {
+          catch(RuntimeException e) {
               // Ignore
           }
 
-          DatePart part = DatePart.of(name);
-          if (part != null) {
+          try {
+            DatePart.of(name);
             return new Token(Id.DATEPART, start, index, name);
+          }
+          catch(RuntimeException e) {
+            // Ignore
           }
 
           return new Token(Id.IDENTIFIER, start, index, identifier);

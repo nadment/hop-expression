@@ -1,0 +1,65 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+
+== Date and time Formats
+
+[cols="<2,^1,<5", options="header"]
+|===
+|Input|Case sensitive|Description
+|- / , . ; : "text"||Always preserved as-is. 
+|A.D. AD B.C. BC|&#10003;|Era designator, with or without periods 
+|A.M. AM P.M. PM|&#10003;|Ante Meridiem (am) / Post Meridiem (pm) for use with HH12
+|CC SCC||Century
+|D||Day of week 
+|DAY|&#10003;|Name of day 
+|DY|&#10003;|Abbreviated day name 
+|DD||Day of month (1-7)
+|DDD||Day in the year (001-366)
+|DL||Long date format 
+|DS||Short date format 
+|E|&#10003;|Abbreviated era name (Japanese, Chinese, Thai) 
+|EE|&#10003;|Full era name (Japanese, Chinese, Thai)
+|FF[1-9]||Fractional seconds
+|FM||Returns values with no leading or trailing spaces 
+|FX||Requires exact matches between character data and format model [NOT_IMPLEMENTED] 
+|HH HH12||Hour in AM/PM (1-12)
+|HH24||Hour in day (0-23)
+|IW||Week in year
+|WW||Week in year 
+|W||Week in month 
+|IYYY IYY IY I||Last 4/3/2/1 digit(s) of ISO year 
+|RRRR RR||Last 4/2 digits of year
+|Y,YYY||Year with comma
+|YEAR SYEAR|&#10003;|Year spelled out (S prefixes BC years with minus sign) 
+|YYYY SYYYY||4-digit year (S prefixes BC years with minus sign) 
+|YYY YY Y||Last 3/2/1 digit(s) of year
+|J||Julian day (number of days since January 1, 4712 BC) 
+|MI||Minutes (00-59)
+|MM||Month in year (01-12)
+|MON|&#10003;|Abbreviated name of month (JAN-DEC (ENG) or JAN-DEZ (DEU))
+|MONTH|&#10003;|Name of month, padded with spaces 
+|RM|&#10003;|Roman numeral month
+|Q||Quarter of year (1-4)
+|SS||Seconds (00-59)
+|SSSSS||Seconds in day 
+|TS||Short time format 
+|TZD||Daylight savings time zone abbreviation 
+|TZR||Time zone region information
+|TZH||Time zone hour
+|TZM||Time zone minute
+|X||Local radix character
+|===

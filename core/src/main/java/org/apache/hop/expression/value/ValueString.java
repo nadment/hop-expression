@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Objects;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
@@ -68,9 +69,9 @@ public class ValueString extends Value {
 
     if (targetType == DataType.DATE) {
       try {
-        Instant result = DateTimeFormat.parse(value, format);
+        Instant result = DateTimeFormat.parse(value, format, Locale.ENGLISH);
         return new ValueDate(result);
-      } catch (ParseException e) {
+      } catch (RuntimeException | ParseException e) {
         throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDate", value));
       }
     }

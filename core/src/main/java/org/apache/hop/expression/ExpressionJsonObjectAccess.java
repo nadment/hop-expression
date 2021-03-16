@@ -18,11 +18,11 @@ package org.apache.hop.expression;
 
 import java.io.StringWriter;
 
-public class ExpressionIdentifier implements IExpression {
+public class ExpressionJsonObjectAccess implements IExpression {
 
   private final String name;
 
-  public ExpressionIdentifier(final String name) {
+  public ExpressionJsonObjectAccess(final String name) {
     super();
 
     this.name = name;

@@ -18,76 +18,12 @@ package org.apache.hop.expression.util;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.IExpression;
 
 public abstract class BaseFormat {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
-  private static final int[] ROMAN_VALUES = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-
-  private static final String[] ROMAN_NUMERALS = {
-    "M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"
-  };
-
-  /** Represents a capitalization strategy. */
-  public enum Capitalization {
-
-    /** All letters are upper case. */
-    UPPER,
-
-    /** All letters are lower case. */
-    LOWER,
-
-    /** The string is capitalized (first letter upper case, subsequent letters lower case). */
-    CAPITALIZE;
-
-    /**
-     * Returns the capitalization strategy which should be used when the first and second
-     * letters have the specified casing.
-     *
-     * @param up1 whether or not the first letter is upper case 
-     * @param up2 whether or not the second letter is upper case
-     * @return the capitalization strategy
-     */
-    static Capitalization of(Boolean up1, Boolean up2) {
-      if (up1 == null) {
-        return Capitalization.CAPITALIZE;
-      } else if (up2 == null) {
-        return up1 ? Capitalization.UPPER : Capitalization.LOWER;
-      } else if (up1) {
-        return up2 ? Capitalization.UPPER : Capitalization.CAPITALIZE;
-      } else {
-        return Capitalization.LOWER;
-      }
-    }
-
-    /**
-     * Applies this capitalization strategy to the specified string.
-     *
-     * @param str the string to apply this strategy to
-     * @return the resultant string
-     */
-    public String apply(String str) {
-      if (str == null || str.isEmpty()) {
-        return str;
-      }
-      switch (this) {
-        case UPPER:
-          return StringUtils.upperCase(str);
-        case LOWER:
-          return StringUtils.lowerCase(str);
-        case CAPITALIZE:
-          return Character.toUpperCase(str.charAt(0))
-              + (str.length() > 1 ? StringUtils.lowerCase(str).substring(1) : "");
-        default:
-          throw new IllegalArgumentException("Unknown capitalization strategy: " + this);
-      }
-    }
-  }
-
   protected static boolean startsWithIgnoreCase(String str, int offset, String prefix) {
       if (prefix.length() > str.length()-offset) {
           return false;
@@ -126,16 +62,14 @@ public abstract class BaseFormat {
     int result = 0;
     if (index + length > value.length()) length = value.length() - index;
 
-    for (int i = 0; i < length; i++) {
+    for (int i=0; i < length; i++) {
       int digit = Character.digit(value.charAt(index), 10);
       if (digit < 0) {
-
         if (index == position.getIndex()) {
           position.setErrorIndex(index);
-          throw new NumberFormatException(
-              "Invalid number: " + value.substring(position.getIndex(), position.getIndex() + i));
+          throw new NumberFormatException("Invalid number: " + value);
         }
-
+        
         break;
       }
 
@@ -149,56 +83,6 @@ public abstract class BaseFormat {
     return result;
   }
   
-  /**
-   * This function returns value of a Roman symbol
-   */
-  static private int romanToDecimal(char r)
-  {
-    switch(r) {
-      case 'I': return 1;
-      case 'V': return 5;
-      case 'X': return 10;
-      case 'L': return 50;
-      case 'C': return 100;
-      case 'D': return 500;
-      case 'M': return 1000;
-      default: return -1;
-    }
-  }
-  
-  static protected long parseRoman(String str)
-  {
-      long result = 0L;
-
-      for (int i = 0; i < str.length(); i++) 
-      {
-          // Getting value of symbol s[i]
-          int s1 = romanToDecimal(str.charAt(i));
-
-          // Getting value of symbol s[i+1]
-          if (i + 1 < str.length()) 
-          {
-              int s2 = romanToDecimal(str.charAt(i + 1));
-              if (s1 >= s2) 
-              {
-                  // Current symbol is greater or equal to the next symbol
-                  result = result + s1;
-              }
-              else
-              {
-                  // Current symbol is less than the next symbol
-                  result = result + s2 - s1;
-                  i++;
-              }
-          }
-          else {
-              result = result + s1;
-          }
-      }
-      return result;
-  }
-
-
   /**
    * Parse an integer at the given position in a string
    *
@@ -294,24 +178,6 @@ public abstract class BaseFormat {
     return null;
   }
 
-  /**
-   * Check if this string is a decimal number.
-   *
-   * @param s the string
-   * @return true if it is
-   */
-  public static boolean isNumber(String s) {
-      int l = s.length();
-      if (l == 0) {
-          return false;
-      }
-      for (int i = 0; i < l; i++) {
-          if (!Character.isDigit(s.charAt(i))) {
-              return false;
-          }
-      }
-      return true;
-  }
 
 
   /**
@@ -348,28 +214,7 @@ public abstract class BaseFormat {
       return builder.append(s);
   }
   
-  /**
-   * Roman numeral month (I-XII; JAN = I).
-   *
-   * @param number
-   * @return
-   */
-  protected static String formatRomanNumeral(int number) {
-    StringBuilder result = new StringBuilder();
-    for (int i = 0; i < ROMAN_VALUES.length; i++) {
-      int value = ROMAN_VALUES[i];
-      String numeral = ROMAN_NUMERALS[i];
-      while (number >= value) {
-        result.append(numeral);
-        number -= value;
-      }
-    }
-    return result.toString();
-  }
-
-
-
-  protected static String formatWord(int number) {
+  protected static String toWord(int number) {
     // variable to hold string representation of number
     StringBuilder words = new StringBuilder();
     String unitsArray[] = {
@@ -409,12 +254,12 @@ public abstract class BaseFormat {
     //		}
     // check if number is divisible by 1 thousand
     if ((number / 1000) > 0) {
-      words.append(formatWord(number / 1000)).append(" thousand ");
+      words.append(toWord(number / 1000)).append(" thousand ");
       number %= 1000;
     }
     // check if number is divisible by 1 hundred
     if ((number / 100) > 0) {
-      words.append(formatWord(number / 100)).append(" hundred ");
+      words.append(toWord(number / 100)).append(" hundred ");
       number %= 100;
     }
 

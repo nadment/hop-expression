@@ -25,37 +25,12 @@ TO_DATE(text [,format])
 
 == Usage
 
+include::..\dateformat.adoc[]
 
-[cols="<2,<5", options="header"]
-|===
-|Element|Description
-|AD A.D. BC B.C.|Era designator, with or without periods [NOT_IMPLEMENTED] 
-|AM A.M.|Ante Meridian / Post Meridian for use with HH12. 
-|D|Day of week 
-|DAY|Name of day [NOT_IMPLEMENTED]  
-|DD|Day of month (1-31)
-|DDD|Day of year 1-366)
-|FF[1-9]|Fractional seconds [NOT_IMPLEMENTED]
-|HH HH12|Hour in AM/PM (1-12)
-|HH24|Hour in day (0-23)
-|J|Julian day; the number of days since January 1, 4712 BC.
-|RM|Roman numeral month (I-XII; January = I)
-|RRRR|4-digit or 2-digit year, 20th century used for years 00-49, otherwise 19th
-|Y,YYY|Year with comma
-|YYYY SYYYY|4-digit year (S prefixes BC years with minus sign) 
-|YYY YY Y|Last 3/2/1 digit(s) of year
-|MI|Minute (0-59)
-|MM|Month (01-12; January = 01). 
-|MON|Abbreviated name of month (JAN, FEV, MAR... case-insensitive)
-|MONTH|Name of month (JANUARY, FEBRUARY, MARCH... case-insensitive) 
-|SS|Seconds (0-59)
-|SSSSS|Seconds in day [NOT_IMPLEMENTED]
-|===
-
-
+* An element in the date format model can only appear once. However, elements such as separators, padding characters can appear more than once.
 * If no format is specified, the standard format YYYY-MM-DD is used to interpret string.
 * If single elements are omitted, then their minimum values are assumed (for example, TO_DATE('1999-12', 'YYYY-MM') is interpreted as December 1st, 1999).
-* If a match fails between a format element and the corresponding characters in the string, then expression attempts alternative format
+* If a match fails between a format element and the corresponding characters in the string, then expression attempts alternative format.
 [cols="<2,<5", options="header"]
 |===
 |Original format|Try alternative format elements
@@ -63,6 +38,4 @@ TO_DATE(text [,format])
 |MON|MONTH  
 |MONTH|MON 
 |===
-
-NOTE: An element in the format model can only appear once. However, elements such as separators, padding characters can appear more than once.
 

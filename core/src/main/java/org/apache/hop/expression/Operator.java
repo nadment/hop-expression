@@ -571,7 +571,7 @@ public class Operator implements Comparable<Operator> {
 
         if (value.isNull() || type.isNull()) return Value.NULL;
 
-        DataType targetType = DataType.of((int) type.toInteger());
+        DataType targetType = DataType.of(type.toString());
 
         if (args.length == 3) {
           // Format can be ValueNull

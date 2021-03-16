@@ -35,10 +35,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   public ExpressionLabelProvider() {
     super();
 
-    imageVariable =
-        SwtSvgImageUtil.getImage(
-            Display.getCurrent(), getClass().getClassLoader(), "variable.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
-
+    imageVariable = GuiResource.getInstance().getImage("ui/images/variable.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
   }
 
   @Override

@@ -178,6 +178,28 @@
         <set_empty_string>N</set_empty_string>
       </field>
       <field>
+        <name>FIELD_JSON</name>
+        <type>JSON</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>FIELD_BINARY</name>
+        <type>Binary</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
         <name>YEAR</name>
         <type>Integer</type>
         <format/>
@@ -207,6 +229,8 @@
         <item>true</item>
         <item>2020-04-08</item>
         <item>8</item>
+        <item/>
+        <item/>
         <item>2019</item>
         <item>49002</item>
       </line>
@@ -216,6 +240,8 @@
         <item>False</item>
         <item>2020-01-24</item>
         <item>4</item>
+        <item/>
+        <item/>
         <item>2020</item>
         <item>15204</item>
       </line>
@@ -249,9 +275,39 @@ Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${
         <type>String</type>
       </field>
       <field>
-        <field>LITERAL_BIGNUMBER</field>
-        <expression>12345678901234567890123456789012345678901234567890.123456</expression>
-        <type>BigNumber</type>
+        <field>LITERAL_TIMESTAMP</field>
+        <expression>Date '2020-05-18 15:28:59'</expression>
+        <type>Timestamp</type>
+      </field>
+      <field>
+        <field>LITERAL_NULL</field>
+        <expression>NULL</expression>
+        <type>String</type>
+      </field>
+      <field>
+        <field>LITERAL_STRING</field>
+        <expression>'Escape single quotes in expression is to use two single '' quotes '</expression>
+        <type>String</type>
+      </field>
+      <field>
+        <field>LITERAL_NUMBER</field>
+        <expression>-2.3E-2</expression>
+        <type>Number</type>
+      </field>
+      <field>
+        <field>LITERAL_INTEGER</field>
+        <expression>123456</expression>
+        <type>Integer</type>
+      </field>
+      <field>
+        <field>LITERAL_DATE</field>
+        <expression>Date '2020-05-18'</expression>
+        <type>Date</type>
+      </field>
+      <field>
+        <field>LITERAL_BOOLEAN</field>
+        <expression>TRUE</expression>
+        <type>Boolean</type>
       </field>
       <field>
         <field>LITERAL_BINARY_BIT</field>
@@ -264,50 +320,9 @@ Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${
         <type>Binary</type>
       </field>
       <field>
-        <field>LITERAL_BOOLEAN</field>
-        <expression>TRUE</expression>
-        <type>Boolean</type>
-      </field>
-      <field>
-        <field>LITERAL_DATE</field>
-        <expression>Date '2020-05-18'</expression>
-        <type>Date</type>
-      </field>
-      <field>
-        <field>LITERAL_INTEGER</field>
-        <expression>123456</expression>
-        <type>Integer</type>
-      </field>
-      <field>
-        <field>LITERAL_NULL</field>
-        <expression>NULL</expression>
-        <type>String</type>
-      </field>
-      <field>
-        <field>LITERAL_NUMBER</field>
-        <expression>-2.3E-2</expression>
-        <type>Number</type>
-      </field>
-      <field>
-        <field>LITERAL_STRING</field>
-        <expression>'Escape single quotes in expression is to use two single '' quotes '</expression>
-        <type>String</type>
-      </field>
-      <field>
-        <field>LITERAL_TIMESTAMP</field>
-        <expression>Date '2020-05-18 15:28:59'</expression>
-        <type>Timestamp</type>
-      </field>
-      <field>
-        <field>FIRST_DAY_NEXT_MONTH</field>
-        <expression>ADD_DAYS(LAST_DAY(CURRENT_DATE()),1)</expression>
-        <type>Date</type>
-      </field>
-      <field>
-        <field>NEXT_YEAR</field>
-        <expression>// Reserved keyword enclosed in square brackets is an identifier
-[YEAR]+1</expression>
-        <type>Integer</type>
+        <field>LITERAL_BIGNUMBER</field>
+        <expression>12345678901234567890123456789012345678901234567890.123456</expression>
+        <type>BigNumber</type>
       </field>
       <field>
         <field>ROOT COST CENTER</field>
@@ -323,19 +338,35 @@ UCASE('${os.name}')</expression>
         <type>String</type>
       </field>
       <field>
+        <field>MATH</field>
+        <expression>100+3*COS(FIELD_NUMBER%1)/SIN(-10.58)</expression>
+        <type>Number</type>
+      </field>
+      <field>
+        <field>NEXT_YEAR</field>
+        <expression>// Reserved keyword enclosed in square brackets is an identifier
+[YEAR]+1</expression>
+        <type>Integer</type>
+      </field>
+      <field>
+        <field>AGE</field>
+        <expression>DAYS_BETWEEN(Date '1980-05-18',Date(2020,6,29))</expression>
+        <type>Integer</type>
+      </field>
+      <field>
         <field>TOMORROW</field>
-        <expression>trunc(CURRENT_DATE() + 1)</expression>
+        <expression>trunc(CURRENT_DATE() + 1,'DAY')</expression>
         <type>Date</type>
       </field>
       <field>
-        <field>CASTING_STRING_TO_BOOLEAN</field>
-        <expression>Cast('Yes' as Boolean)</expression>
-        <type>Boolean</type>
+        <field>FIRST_DAY_OF_CURRENT_WEEK</field>
+        <expression>trunc(CURRENT_DATE(),'WEEK')</expression>
+        <type>Date</type>
       </field>
       <field>
-        <field>CASTING_NUMBER_TO_BOOLEAN</field>
-        <expression>Cast([FIELD_NUMBER] as Boolean)</expression>
-        <type>Boolean</type>
+        <field>FIRST_DAY_NEXT_MONTH</field>
+        <expression>ADD_DAYS(LAST_DAY(CURRENT_DATE()),1)</expression>
+        <type>Date</type>
       </field>
       <field>
         <field>CAST_STRING_TO_INTEGER</field>
@@ -343,19 +374,24 @@ UCASE('${os.name}')</expression>
         <type>Integer</type>
       </field>
       <field>
-        <field>MATH</field>
-        <expression>100+3*COS(FIELD_NUMBER%1)/SIN(-10.58)</expression>
-        <type>Number</type>
+        <field>CAST_STRING_TO_BOOLEAN</field>
+        <expression>'Yes'::Boolean</expression>
+        <type>Boolean</type>
       </field>
       <field>
-        <field>AGE</field>
-        <expression>DAYS_BETWEEN(Date '1980-05-18',Date(2020,6,29))</expression>
-        <type>Integer</type>
+        <field>CAST_NUMBER_TO_STRING_WITH_FORMAT</field>
+        <expression>Cast([FIELD_NUMBER] as STRING format 'FML999G999G990D00S')</expression>
+        <type>String</type>
+      </field>
+      <field>
+        <field>CAST_NUMBER_TO_STRING</field>
+        <expression>[FIELD_NUMBER]::STRING</expression>
+        <type>String</type>
       </field>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>416</xloc>
+      <xloc>400</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -404,8 +440,7 @@ UCASE('${os.name}')</expression>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <expression>
-ROWNUM between 1 and  30 and ENDSWITH(FIELD_STRING,'A')</expression>
+    <expression>ROWNUM between 1 and  30 and ENDSWITH(FIELD_STRING,'A')</expression>
     <send_true_to>TRUE</send_true_to>
     <send_false_to>FALSE</send_false_to>
     <attributes/>

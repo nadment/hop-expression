@@ -33,12 +33,6 @@ public interface IExpression {
    */
   public boolean isConstant();
 
-  /**
-   * Check if this expression will always return the NULL value.
-   *
-   * @return if the expression is constant NULL value
-   */
-  public boolean isNull();
 
   /**
    * Return the resulting value for the current context.

@@ -87,10 +87,6 @@ public enum DatePart {
     this.alias = alias;
   }
 
-  public static DatePart of(int ordinal) {
-    return values()[ordinal];
-  }
-
   /**
    * Create date part, or null if not found
    *
@@ -109,7 +105,9 @@ public enum DatePart {
         return part;
       }
     }
-    return null;
+    
+//    throw new EnumConstantNotPresentException(DataType.class, s);
+    throw new IllegalArgumentException("Invalid date part: "+s);
   }
 
   private static int millennium(int year) {

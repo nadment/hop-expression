@@ -16,17 +16,13 @@ under the License.
 ////
 = CASE
 
-Works like a cascading `if-then-else` statement.
+A CASE expression consists of a set of WHEN/THEN clauses and an optional ELSE clause.
+
 
 == Syntax
-----
-CASE
-    WHEN <condition1> THEN <result1>
-  [ WHEN <condition2> THEN <result2> ]
-  [ ... ]
-  [ ELSE <result3> ]
-END
 
+Simple CASE expressions
+----
 CASE <expr>
     WHEN <value1> THEN <result1>
   [ WHEN <value2> THEN <result2> ]
@@ -34,3 +30,22 @@ CASE <expr>
   [ ELSE <result3> ]
 END		
 ----
+
+Searched CASE expressions
+----
+CASE
+    WHEN <condition1> THEN <result1>
+  [ WHEN <condition2> THEN <result2> ]
+  [ ... ]
+  [ ELSE <result3> ]
+END
+----
+
+== Usage 
+=== Simple CASE expressions
+A valued CASE expression tests for the first WHEN expression that is equal to a test expression and returns the value of the matching THEN expression. If no WHEN expression is equal to the test expression, CASE returns the ELSE expression, or, if omitted, NULL.
+
+=== Searched CASE expressions
+A searched CASE expression tests for the first WHEN expression that evaluates to TRUE and returns the value of the matching THEN expression. If no WHEN expression evaluates to TRUE, CASE returns the ELSE expression, or, if omitted, NULL.
+
+NOTE: Since WHEN clauses are evaluated in order, you may be able to squeeze some extra efficiency out of your code by listing the most likely WHEN clauses first. In addition, if you have WHEN clauses with “expensive” expressions (e.g., requiring lots of CPU and memory), you may want to list those last in order to minimize the chances that they will be evaluated.
