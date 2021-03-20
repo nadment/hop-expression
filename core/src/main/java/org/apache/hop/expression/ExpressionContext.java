@@ -28,6 +28,9 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
+  /** The UTC time zone. */
+  protected static final ZoneId UTC_ZONE = ZoneId.of("UTC");
+  
   private ZoneId zone;
   private Locale locale;
   private Random random;
@@ -37,7 +40,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     super();
 
     this.locale = Locale.ROOT;
-    this.zone = ZoneId.of("UTC");
+    this.zone = UTC_ZONE;
     this.random = new Random();
     this.currentDate = Instant.now();
   }
