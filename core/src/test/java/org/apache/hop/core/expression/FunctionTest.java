@@ -593,12 +593,13 @@ public class FunctionTest extends BaseExpressionTest {
   public void ToNumber() throws Exception {
 
     // No precision/scale and no format
-    evalEquals("TO_NUMBER('12.3456')", 12);
-    evalEquals("TO_NUMBER('98.76546')", 98);
-    //evalEquals("TO_NUMBER('1.2E3')", 1200);
-    //evalEquals("TO_NUMBER('1.2E-3')", 0.0012);
+    evalEquals("TO_NUMBER('12.3456')", 12.3456);
+    evalEquals("TO_NUMBER('98.76546')", 98.76546);
+    evalEquals("TO_NUMBER('1.2E3')", 1200);
+    evalEquals("TO_NUMBER('1.2E-3')", 0.0012);
     
     // Precision and scale
+    
     // evalEquals("TO_NUMBER('12.3456',10,1)", 12.3);
     // evalEquals("TO_NUMBER('12.3456',10,8)", 12.34560000);
     // evalEquals("TO_NUMBER('98.76546',10,1)", 98.8);

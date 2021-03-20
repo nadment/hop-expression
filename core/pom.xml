@@ -35,7 +35,8 @@
 		<license.licenseName>apache_v2</license.licenseName>
 		<!-- Third-party dependencies -->
 		<commons-lang.version>2.6</commons-lang.version>
-		<commons-vfs2.version>2.2</commons-vfs2.version>
+  	<commons-vfs2.version>2.2</commons-vfs2.version>
+ 		<commons-math3.version>3.6.1</commons-math3.version> 
 	</properties>
 
 	<build>
@@ -45,7 +46,7 @@
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>1.5.8</version>
-				<executions>
+				<executions>			
 					<execution>
 						<id>output-html</id>
 						<phase>compile</phase>
@@ -114,7 +115,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
-			<version>3.6.1</version>
+			<version>${commons-math3.version}</version>
 		</dependency>
 
 		<dependency>

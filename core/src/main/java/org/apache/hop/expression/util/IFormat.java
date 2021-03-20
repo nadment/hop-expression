@@ -17,7 +17,6 @@
 package org.apache.hop.expression.util;
 
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.util.Locale;
 
 public interface IFormat<V> {

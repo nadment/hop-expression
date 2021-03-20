@@ -20,7 +20,9 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Value;
 
 public class CompiledExpression extends CompiledScript {
 
@@ -34,7 +36,8 @@ public class CompiledExpression extends CompiledScript {
 
   @Override
   public Object eval(ScriptContext context) throws ScriptException {
-    return null;
+    Value value = expression.eval((ExpressionContext) context);
+    return value.getObject();
   }
 
   @Override

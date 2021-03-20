@@ -25,6 +25,7 @@ import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Objects;
 
 public class ValueBigNumber extends Value {
@@ -112,7 +113,7 @@ public class ValueBigNumber extends Value {
 
   @Override
   public long toInteger() {
-    return value.longValue();
+    return value.setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
   }
 
   @Override

@@ -16,7 +16,6 @@ package org.apache.hop.expression;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
@@ -26,7 +25,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
