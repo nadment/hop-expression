@@ -36,6 +36,7 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.ITransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
+import java.text.ParseException;
 
 /**
  * Clone input row.
@@ -59,14 +60,20 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
-  public Value evaluate(String source) {
+  public Value evaluate(String source)  throws HopException {
     String value = variables.resolve(source);
 
     if (value.charAt(0) != '=') {
       return Value.of(value);
     }
 
-    IExpression expression = ExpressionParser.parse(value.substring(1));
+    IExpression expression;
+    try {
+      expression = ExpressionParser.parse(value.substring(1));
+    } catch (ParseException e) {
+    throw new HopException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
+
+  }
 
     return expression.eval(new ExpressionContext());
   }
@@ -107,7 +114,12 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
       }
 
       String nrclonesString = resolve(meta.getNrClones());
-      data.numberOfClones = ExpressionParser.parse(nrclonesString);
+      try {
+        data.numberOfClones = ExpressionParser.parse(nrclonesString);
+      } catch (ParseException e) {
+        throw new HopException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()), e);
+
+      }
       if (log.isDebug()) {
         logDebug(BaseMessages.getString(PKG, "CloneRow.Log.NrClones", "" + data.numberOfClones));
       }

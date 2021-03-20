@@ -16,6 +16,7 @@
  */
 package org.apache.hop.ui.expression;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import org.apache.hop.expression.ExpressionException;
@@ -63,7 +64,7 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
       }
 
       event.styles = ranges.toArray(new StyleRange[0]);
-    } catch (ExpressionException e) {
+    } catch (ParseException e) {
       // Ignore
     }
   }

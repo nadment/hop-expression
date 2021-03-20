@@ -16,6 +16,7 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
@@ -103,7 +104,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         try {
           IExpression expression = ExpressionParser.parse(source);
           data.expressions[index] = expression.optimize(context);
-        } catch (ExpressionException ex) {
+        } catch (ParseException ex) {
           String message =
               BaseMessages.getString(
                   PKG,

@@ -16,9 +16,11 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.apache.hop.core.exception.HopException;
+import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.RowExpressionContext;
@@ -74,7 +76,11 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
       String expression = resolve(meta.getExpression());
 
       // Parse expression
-      data.condition = ExpressionParser.parse(expression);
+      try {
+        data.condition = ExpressionParser.parse(expression);
+      } catch (ParseException e) {
+        throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getExpression()), e);
+      }
 
       // clone the input row structure and place it in our data object
       data.outputRowMeta = getInputRowMeta().clone();
@@ -89,7 +95,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
         data.trueRowSet =
             findOutputRowSet(getTransformName(), getCopy(), streams.get(0).getTransformName(), 0);
         if (data.trueRowSet == null) {
-          throw new HopException(
+          throw new HopTransformException(
               BaseMessages.getString(
                   PKG,
                   "ExpressionFilter.Log.TargetTransformInvalid",
@@ -103,7 +109,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
         data.falseRowSet =
             findOutputRowSet(getTransformName(), getCopy(), streams.get(1).getTransformName(), 0);
         if (data.falseRowSet == null) {
-          throw new HopException(
+          throw new HopTransformException(
               BaseMessages.getString(
                   PKG,
                   "ExpressionFilter.Log.TargetTransformInvalid",

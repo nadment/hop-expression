@@ -22,10 +22,12 @@
 
 package org.apache.hop.pipeline.transforms.clonerowexpression;
 
+import java.text.ParseException;
 import java.util.List;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
+import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopXmlException;
 import org.apache.hop.core.row.IRowMeta;
@@ -166,7 +168,7 @@ public class CloneRowMeta extends BaseTransformMeta
     clonenumfield = null;
   }
 
-  public Value evaluate(String source, IVariables variables) {
+  public Value evaluate(String source, IVariables variables) throws HopTransformException {
     String value = variables.resolve(source);
 
     // If value start with '='  this is a expression
@@ -174,9 +176,12 @@ public class CloneRowMeta extends BaseTransformMeta
       return Value.of(value);
     }
 
-    IExpression expression = ExpressionParser.parse(value.substring(1));
-
-    return expression.eval(new ExpressionContext());
+    try {
+      IExpression expression = ExpressionParser.parse(value.substring(1));
+      return expression.eval(new ExpressionContext());
+    } catch (ParseException e) {
+      throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
+    }
   }
 
   @Override
