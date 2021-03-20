@@ -16,6 +16,7 @@
  */
 package org.apache.hop.core.expression;
 
+import java.text.ParseException;
 import java.util.Date;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
@@ -32,7 +33,7 @@ import org.junit.Test;
 public class ExpressionPerformance {
 
 	
-	public void perf(String e)  {
+	public void perf(String e) throws ParseException {
 		IExpression expression = ExpressionParser.parse("NOM||left(to_char(AGE+5,'000'),2)");
 
 		IRowMeta rowMeta = new RowMeta();

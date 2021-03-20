@@ -28,7 +28,7 @@ public class ValueNull extends Value {
   public ValueNull() {}
 
   @Override
-  public DataType getDataType() {
+  public DataType getType() {
     return DataType.NONE;
   }
 

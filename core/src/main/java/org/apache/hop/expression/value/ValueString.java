@@ -27,7 +27,7 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Value;
-import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.i18n.BaseMessages;
 
 public class ValueString extends Value {
@@ -39,7 +39,7 @@ public class ValueString extends Value {
   }
 
   @Override
-  public DataType getDataType() {
+  public DataType getType() {
     return DataType.STRING;
   }
 
@@ -69,7 +69,7 @@ public class ValueString extends Value {
 
     if (targetType == DataType.DATE) {
       try {
-        Instant result = DateTimeFormat.parse(value, format, Locale.ENGLISH);
+        Instant result = DateFormat.parse(value, format, Locale.ENGLISH);
         return new ValueDate(result);
       } catch (RuntimeException | ParseException e) {
         throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDate", value));

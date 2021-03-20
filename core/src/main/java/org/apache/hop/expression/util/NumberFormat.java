@@ -23,7 +23,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -194,14 +193,12 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
   private String pattern = "";
   private int v = 0;
 
-  public static final BigDecimal parse(String value, String format) throws ParseException {
-    return parse(value, format, Locale.ENGLISH);
-  }
-
   public static final BigDecimal parse(String value, String format, Locale locale)
       throws ParseException {
     if (format == null)
       format = "TM";
+    if (locale == null)
+      locale = Locale.ENGLISH;
     
     IFormat<BigDecimal> fmt = cache.get(format);
     if (fmt == null) {
@@ -224,7 +221,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
         }
         formats.add(new NumberFormat(f));          
       }
-      return new CompositeNumberFormat(format, formats);
+      return new CompositeNumberFormat(format, formats.toArray(new NumberFormat[0]));
     } 
     
     return new NumberFormat(format);
@@ -572,6 +569,18 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
       while (start < end && Character.isSpaceChar(text.charAt(end - 1)))
         end--;
 
+      // Text-minimal number
+      if ("TM".equals(pattern)) {
+        String s = text.substring(start, end);
+        return new BigDecimal(s);
+      }
+      
+      // Text-minimal number in scientific notation
+      if ("TME".equalsIgnoreCase(pattern)) {        
+        String s = text.substring(start, end);        
+        return new BigDecimal(s);
+      }
+      
       // Parse roman numeral
       if ("RN".equalsIgnoreCase(pattern)) {
         return BigDecimal.valueOf(RomanNumeral.parse(text, start, end));

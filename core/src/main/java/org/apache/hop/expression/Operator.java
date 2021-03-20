@@ -555,10 +555,9 @@ public class Operator implements Comparable<Operator> {
    * Check if the number of arguments is correct.
    *
    * @param len the number of arguments set
-   * @return true if the number of arguments is correct
+   * @throws error if not enough or too many arguments
    */
-  public boolean checkNumberOfArguments(int len) throws ExpressionException {
-    return true;
+  public void checkNumberOfArguments(int len) throws ExpressionException {
   }
 
   public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {

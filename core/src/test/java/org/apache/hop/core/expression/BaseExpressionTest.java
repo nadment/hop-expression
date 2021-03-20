@@ -28,7 +28,6 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.ExpressionParserException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
@@ -36,17 +35,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import java.math.BigDecimal;
-import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
 
-public class ExpressionTest {
+public class BaseExpressionTest {
 
   private RowExpressionContext context;
 
@@ -121,7 +119,7 @@ public class ExpressionTest {
     Value value = eval(s);
     if (value.isNull())
       Assert.fail("Return null value");
-    assertEquals(expected, value.toNumber(), 0.001);
+    assertEquals(expected, value.toNumber(), 0.000001);
   }
 
   protected void evalEquals(String s, BigDecimal expected) throws Exception {
@@ -154,8 +152,8 @@ public class ExpressionTest {
       Assert.fail("Syntax or result should be invalid");
       System.out.print('\n');
       System.out.flush();
-    } catch (ExpressionException | IllegalArgumentException ex) {
-      System.err.println(' '+ex.toString());
+    } catch (ParseException | ExpressionException | IllegalArgumentException ex) {
+      System.err.println(' '+ex.getMessage());
       System.err.flush();
     } catch (Exception ex) {
       Assert.fail("Uncatched exception " + ex.getClass());
@@ -165,7 +163,9 @@ public class ExpressionTest {
   @Test
   public void parser() throws Exception {
 
-    evalEquals("3*4/5/6", 3 * 4 / 5 / 6 );
+    evalEquals("CAST(1.75 as Integer)",2);
+    
+    //evalEquals("-.2", new BigDecimal("-0.2"));
     
     // evalEquals("TO_NUMBER('0.3-','#0.##-')", -0.3);
     // evalEquals("TO_NUMBER('65.169', '#########.0000')", 65.169);

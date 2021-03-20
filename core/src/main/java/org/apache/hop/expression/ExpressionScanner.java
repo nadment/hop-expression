@@ -16,19 +16,19 @@
  */
 package org.apache.hop.expression;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.i18n.BaseMessages;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** Parses an expression string to return the individual tokens. */
 public class ExpressionScanner {
 
   private static final Class<?> PKG = IExpression.class; // for i18n purposes
-
+  
   // TODO: Java 9 use unmodifiable Set.of()
   private static final Set<String> RESERVED_WORDS =
       new TreeSet<>(
@@ -70,7 +70,7 @@ public class ExpressionScanner {
     this.source = text;
   }
 
-  public Token tokenize() throws ExpressionParserException {
+  public Token tokenize() throws ParseException {
 
     while (index < source.length()) {
       char c = source.charAt(index);
@@ -137,9 +137,9 @@ public class ExpressionScanner {
             }
 
             if (c != '\'')
-              throw new ExpressionParserException(
-                  BaseMessages.getString(PKG, "ExpressionParser.MissingEndSingleQuotedString"),
-                  source,
+              throw new ParseException(
+                  BaseMessages.getString(PKG, "Expression.MissingEndSingleQuotedString"),
+                  
                   index);
 
             return new Token(Id.LITERAL_STRING, start, index, text.toString());
@@ -213,8 +213,8 @@ public class ExpressionScanner {
                 return new Token(Id.NOT_EQUAL, start);
               }
             }
-            throw new ExpressionParserException(
-                BaseMessages.getString(PKG, "ExpressionParser.UnexpectedCharacter"), source, start);
+            throw new ParseException(
+                BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"), start);
           }
 
 
@@ -229,8 +229,8 @@ public class ExpressionScanner {
                 return new Token(Id.CAST, start);
               }
             }
-            throw new ExpressionParserException(
-                BaseMessages.getString(PKG, "ExpressionParser.UnexpectedCharacter"), source, start);
+            throw new ParseException(
+                BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"), start);
           }
           
           // possible start of '/*' or '//' comment
@@ -257,9 +257,9 @@ public class ExpressionScanner {
                       index = end + 2;
                     } else index++;
                   } else {
-                    throw new ExpressionParserException(
-                        BaseMessages.getString(PKG, "ExpressionParser.MissingEndBlockComment"),
-                        source,
+                    throw new ParseException(
+                        BaseMessages.getString(PKG, "Expression.MissingEndBlockComment"),
+                        
                         index);
                   }
                 }
@@ -324,8 +324,8 @@ public class ExpressionScanner {
               }
             }
             // FIXME: End of bracket
-            throw new ExpressionParserException(
-                BaseMessages.getString(PKG, "ExpressionParser.SyntaxError"), source, index);
+            throw new ParseException(
+                BaseMessages.getString(PKG, "Expression.SyntaxError"), index);
           }
 
 
@@ -337,7 +337,7 @@ public class ExpressionScanner {
 
               c = source.charAt(index++);
               if (c != '{')
-                throw new ExpressionParserException("ExpressionException.SyntaxError", source, index);
+                throw new ParseException("Expression.SyntaxError", index);
 
               while (index < source.length()) {
                 c = source.charAt(++index);
@@ -347,14 +347,15 @@ public class ExpressionScanner {
               }
 
               if (c != '}')
-                throw new ExpressionParserException("ExpressionException.SyntaxError", source, index);
+                throw new ParseException("Expression.SyntaxError", index);
 
               String value = source.substring(start+2, index++);
               return new Token(Id.VARIABLE, start, index, value);
             }
-            throw new ExpressionParserException("ExpressionException.SyntaxError", source, index);
+            throw new ParseException("Expression.SyntaxError", index);
           }
 
+        case '.': // Number without zero .1
         case '0':
         case '1':
         case '2':
@@ -448,6 +449,7 @@ public class ExpressionScanner {
               case '~':
               case '+':
               case '-':
+              case '.':
               case '!':
               case '|':
               case '$':
@@ -464,6 +466,7 @@ public class ExpressionScanner {
                 }
             }
           }
+          
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 

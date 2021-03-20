@@ -253,7 +253,7 @@ import org.apache.hop.i18n.BaseMessages;
  * </tr>
  * </table>
  */
-public class DateTimeFormat extends BaseFormat {
+public class DateFormat extends BaseFormat {
 
   // Specifies the “century start” year for 2-digit years. This parameter prevents
   // ambiguous dates when importing or converting data with the YY date format
@@ -306,30 +306,31 @@ public class DateTimeFormat extends BaseFormat {
 
   private final String format;
 
-  private int currentYear;
-  private int currentMonth;
+ // private int currentYear;
+  //private int currentMonth;
 
   public static Instant parse(String value, String format, Locale local) throws ParseException {
 
-    DateTimeFormat parser = new DateTimeFormat(format);
-    ParsePosition position = new ParsePosition(0);
-    Instant instant = parser.parse(value, position);
+    DateFormat parser = new DateFormat(format);   
+    Instant instant = parser.parse(value);
     // System.out.println("ToDate('" + value + "','" + format + "')=" + instant);
 
     return instant;
   }
 
   public static String format(ZonedDateTime value, String format, Locale local) {
-    DateTimeFormat formatter = new DateTimeFormat(format);
+    DateFormat formatter = new DateFormat(format);
     return formatter.format(value, local);
   }
 
-  public DateTimeFormat(String format) {
+  public DateFormat(String format) {
     this.format = format;
   }
 
-  public Instant parse(String  text, ParsePosition position) throws ParseException {
+  public Instant parse(String  text) throws ParseException {
 
+    ParsePosition position = new ParsePosition(0);
+    
     // start at the first not white space symbol    
     for (int start = position.getIndex(); start <  text.length(); start++) {
       if (!Character.isSpaceChar(text.charAt(start))) {      

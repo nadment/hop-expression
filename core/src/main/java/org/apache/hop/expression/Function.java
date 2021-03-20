@@ -20,8 +20,9 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.value.ValueBigNumber;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -108,7 +109,7 @@ public class Function extends Operator {
         writer.append('(');
         operands[0].write(writer, leftPrec, rightPrec);
         writer.append(" FROM ");
-        //int ordinal = (int) ((Value) operands[1]).toInteger();
+        // int ordinal = (int) ((Value) operands[1]).toInteger();
         writer.append(operands[1].toString());
         writer.append(')');
         break;
@@ -129,7 +130,7 @@ public class Function extends Operator {
   }
 
   @Override
-  public boolean checkNumberOfArguments(int len) throws ExpressionException {
+  public void checkNumberOfArguments(int len) throws ExpressionException {
 
     int min = 0, max = Integer.MAX_VALUE;
     switch (kind) {
@@ -297,14 +298,16 @@ public class Function extends Operator {
       default:
         throw createInternalError(kind.name());
     }
-    if (len < min || len > max) {
-      return false;
-      // throw new
-      // ExpressionException(BaseMessages.getString(PKG,"Expression.InvalidNumberOfArguments",
-      // this.getName()));
+
+    if (len < min) {
+      throw new ExpressionException(
+          BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getName()));
     }
 
-    return true;
+    if (len > max) {
+      throw new ExpressionException(
+          BaseMessages.getString(PKG, "Expression.TooManyNumberOfArguments", this.getName()));
+    }
   }
 
   @Override
@@ -1187,11 +1190,12 @@ public class Function extends Operator {
               format = v.toString();
           }
 
-          switch (value.getDataType()) {
+          switch (value.getType()) {
             case INTEGER:
             case NUMBER:
             case BIGNUMBER:
-              //String str = JavaNumberFormat.format(value.toBigNumber(), format, context.getLocale());
+              // String str = JavaNumberFormat.format(value.toBigNumber(), format,
+              // context.getLocale());
               String str = NumberFormat.format(value.toBigNumber(), format, context.getLocale());
               return Value.of(str);
             case DATE:
@@ -1199,8 +1203,8 @@ public class Function extends Operator {
 
               if (format == null)
                 format = "DD-MON-YY HH.MI.SS.FF PM";
-              
-              return Value.of(DateTimeFormat.format(datetime, format, context.getLocale()));
+
+              return Value.of(DateFormat.format(datetime, format, context.getLocale()));
             case STRING:
               return value;
           }
@@ -1211,20 +1215,18 @@ public class Function extends Operator {
           if (value.isNull())
             return Value.NULL;
 
-          // No format and no precision/scale
+          // No format
           if (args.length == 1) {
-            return Value.of(NumberFormat.parse(value.toString(), 38, 0));
+            return Value.of(NumberFormat.parse(value.toString(), null, null));
           }
 
           Value v1 = args[1].eval(context);
-          if (v1.isString()) {
-            // TODO: if args==3 error
-            
-            BigDecimal result = NumberFormat.parse(value.toString(), v1.toString(), context.getLocale());
-            return Value.of(result);
+          if (args.length == 2) {
+            return Value
+                .of(NumberFormat.parse(value.toString(), v1.toString(), context.getLocale()));
           }
 
-
+          // Precision and scale
           int precision = (int) v1.toInteger();
           Value v2 = args[2].eval(context);
           int scale = (int) v2.toInteger();
@@ -1236,35 +1238,36 @@ public class Function extends Operator {
           if (value.isNull())
             return Value.NULL;
 
+          // No format
+          if (args.length == 1) {
+            return Value.of(NumberFormat.parse(value.toString(), null, null));
+          }
+
           // With format
           if (args.length == 2) {
             Value v1 = args[1].eval(context);
-            if (v1.isString()) {
-              try {
-                BigDecimal result = NumberFormat.parse(value.toString(), v1.toString(), context.getLocale());
-                return Value.of(result);
-              } catch (RuntimeException e) {
-                return Value.NULL;
-              }
+            try {
+              BigDecimal result =
+                  NumberFormat.parse(value.toString(), v1.toString(), context.getLocale());
+              return Value.of(result);
+            } catch (RuntimeException e) {
+              return Value.NULL;
             }
           }
 
-          // No format and no precision/scale
-          int precision = 38;
-          int scale = 0;
-
+          // Precision and scale
           if (args.length == 3) {
             Value v1 = args[1].eval(context);
-            precision = (int) v1.toInteger();
+            int precision = (int) v1.toInteger();
             Value v2 = args[2].eval(context);
-            scale = (int) v2.toInteger();
-          }
-          
-          try {
-            BigDecimal result = NumberFormat.parse(value.toString(), precision, scale);
-            return Value.of(result);
-          } catch (ParseException e) {
-            return Value.NULL;
+            int scale = (int) v2.toInteger();
+
+            try {
+              BigDecimal result = NumberFormat.parse(value.toString(), precision, scale);
+              return Value.of(result);
+            } catch (ParseException e) {
+              return Value.NULL;
+            }
           }
         }
 
@@ -1280,11 +1283,11 @@ public class Function extends Operator {
               format = v1.toString();
           }
 
-          switch (value.getDataType()) {
+          switch (value.getType()) {
             case DATE:
               return value;
             case STRING:
-              Instant instant = DateTimeFormat.parse(value.toString(), format, context.getLocale());
+              Instant instant = DateFormat.parse(value.toString(), format, context.getLocale());
               return Value.of(instant);
           }
         }
@@ -1301,12 +1304,12 @@ public class Function extends Operator {
               format = v1.toString();
           }
 
-          switch (value.getDataType()) {
+          switch (value.getType()) {
             case DATE:
               return value;
             case STRING:
               try {
-                Instant instant = DateTimeFormat.parse(value.toString(), format, context.getLocale());
+                Instant instant = DateFormat.parse(value.toString(), format, context.getLocale());
                 return Value.of(instant);
               } catch (RuntimeException e) {
                 return Value.NULL;
@@ -1573,7 +1576,7 @@ public class Function extends Operator {
           if (value.isNull())
             return Value.NULL;
 
-          switch (value.getDataType()) {
+          switch (value.getType()) {
             case INTEGER:
             case NUMBER:
             case BIGNUMBER:
@@ -1584,7 +1587,7 @@ public class Function extends Operator {
                   return Value.NULL;
                 scale = (int) pattern.toInteger();
               }
-              return Value.of(Function.truncate(value.toBigNumber(), scale));
+              return Value.of(truncate(value.toBigNumber(), scale));
 
             case DATE:
               Instant instant = value.toDate();
@@ -1823,12 +1826,17 @@ public class Function extends Operator {
           return getHash(value, "SHA-512");
         }
       }
-    } catch (Exception e) {
+    } catch (
+
+    Exception e) {
       throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.toString()), e);
+          BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.getMessage()),
+          e);
     }
 
-    throw createInternalError(kind.name());
+    throw
+
+    createInternalError(kind.name());
   }
 
   @Override
@@ -1960,8 +1968,12 @@ public class Function extends Operator {
     return str;
   }
 
-  public static BigDecimal truncate(BigDecimal b0, int b1) {
-    return b0.movePointRight(b1).setScale(0, RoundingMode.DOWN).movePointLeft(b1);
+  public static BigDecimal truncate(BigDecimal number, int b1) {
+
+    if (b1 > number.scale())
+      b1 = number.scale();
+
+    return number.movePointRight(b1).setScale(0, RoundingMode.DOWN).movePointLeft(b1);
   }
 
 

@@ -20,34 +20,214 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
-public class OperatorTest extends ExpressionTest {
+public class ExpressionTest extends BaseExpressionTest {
+
+  @Test
+  public void Comment() throws Exception {
+    evalTrue(" // Test line comment \n  true ");
+    evalTrue(" /* Test block comment */  true ");
+    evalTrue(" true /* Test block comment */");
+    evalTrue("/*\n * Comment on multi line\n *\n */ True");
+    evalTrue(
+        "/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
+
+    evalFails("/*   True");
+    evalFails("/*   True*");
+    evalFails("/* /* nested block comment */    True");
+  }
+
+  @Test
+  public void Identifier() throws Exception {
+    evalEquals("Age%2", 0);
+    evalEquals(" [Age]%2", 0);
+  }
+
+  @Test
+  public void LiteralDate() throws Exception {
+    evalEquals("Date '2019-02-25'", LocalDate.of(2019, 2, 25));
+    evalEquals("Date '28-02-25'", LocalDate.of(28, 2, 25));
+    evalEquals("Date '2028-Feb-25'", LocalDate.of(2028, 2, 25));
+  }
+
+  @Test
+  public void LiteralTime() throws Exception {
+    evalEquals("Time '23:48:59'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
+    evalEquals("Time '01:05'", LocalDateTime.of(1900, 1, 1, 1, 5, 0));
+    // evalEquals("Time '10:30 am'", LocalDateTime.of(1900, 1, 1, 10, 30,0));
+    // TODO: evalEquals("Time '06:25:15 PM'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
+  }
+
+  // @Test
+  public void LiteralTimestamp() throws Exception {
+    evalEquals("Timestamp '2019-02-25 23:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 00));
+    evalEquals("Timestamp '2019-02-25 23:59:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 59));
+    evalEquals("Timestamp '2019-01-01 15:28:59'", LocalDateTime.of(2019, 1, 1, 15, 28, 59));
+    evalEquals("TIMESTAMP  '2019-12-01 12:01:01.999999999'",
+        LocalDateTime.of(2019, 12, 1, 12, 01, 01, 999999999));
+  }
+
+  @Test
+  public void LiteralString() throws Exception {
+
+    // Single quote
+    evalTrue("'test'='test'");
+
+    // Single quote with two adjacent single quotes
+    evalEquals("'te''st'", "te'st");
+    // evalEquals("'te\"st'", "te\"st");
+
+    // Double quote
+    // evalEquals("\"te'st\"", "te'st");
+    // evalEquals("\"te\"\"st\"", "te\"st");
+
+    // Escape tab
+    // evalEquals("'\\t'", "\t");
+
+    // Escape backspace
+    // evalEquals("'\\b'", "\b");
+
+    // Escape form feed
+    // evalEquals("'\\f'", "\f");
+
+    // Escape newline
+    // evalEquals("'\\n'", "\n");
+
+    // Escape carriage return
+    // evalEquals("'\\r'", "\r");
+
+    // Escape 16 bit unicode
+    // evalEquals("'\\u20AC'", "€");
+
+    // Escape 32 bit unicode
+    // evalEquals("'\\U000020AC'", "€");
+
+  }
+
+
+  @Test
+  public void LiteralBinary() throws Exception {
+
+    // Hexadecimal
+    evalEquals("0xff", 255L);
+    evalEquals("0xfE", 254L);
+    evalEquals("0x0F", 15L);
+    evalFails("0X0F");
+    evalFails("0X0FG");
+
+    // Binary
+    evalEquals("0b10", 2);
+    evalEquals("0b00000010", 2);
+    evalEquals("0b011", 3);
+    evalEquals("0b000000011111111", 255);
+    evalEquals("0b00001010101010101010101010101101010101010101010101010101010101010101",
+        6.1489146933895936E18);
+    evalFails("0B010101");
+    evalFails("0B010501");
+  }
+
+
+  @Test
+  public void LiteralNumeric() throws Exception {
+
+    // Integer
+    evalEquals("-9223372036854775818", Long.MIN_VALUE);
+    evalEquals("9223372036854775807", Long.MAX_VALUE);
+
+    // Number
+    evalEquals("+.1", 0.1);
+    evalEquals("-.2", -0.2);
+    evalEquals("-0.2", -0.2);
+    evalEquals("-1.", -1);
+    evalEquals("2.3E2", 2.3E2);
+    evalEquals("-2.3E-2", -2.3E-2);
+    evalEquals("-2.3e-2", -2.3E-2);
+
+    // Big number
+    evalEquals("15167890123456789012345678901234567890", new BigDecimal("15167890123456789012345678901234567890"));
+
+    evalFails("..1");
+    evalFails(".0.1");
+    evalFails("2E2E2");
+    evalFails("2E-2.2");
+    evalFails("-2.3EE-2");
+    evalFails("-2.3E--2");
+  }
+
+  @Test
+  public void ReservedWord() throws Exception {
+    evalEquals("Upper([FROM])", "PARIS");
+  }
+
+  @Test
+  public void SyntaxError() throws Exception {
+    evalFails("'T'||'T");
+    evalFails("\"T\"||\"T");
+    evalFails("9!7");
+    evalFails("9+(");
+    evalFails("9+*(");
+    evalFails("Year(");
+    evalFails("Year)");
+    evalFails("Year()");
+    evalFails("Year(()");
+    evalFails("Year())");
+    evalFails("Year(1,2)");
+    evalFails("TRUE AND");
+    evalFails("5 BETWEEN 4 AND");
+    evalFails("5 BETWEEN 4 OR");
+    evalFails("case when 1=1 then 1 else 0");
+    evalFails("case when 1=1 then 1 else  end ");
+    evalFails("case 1 when 1  else 0 end");
+    evalFails("Cast(3 as NILL)");
+    evalFails("1 in ()    ");
+    evalFails("1 in (,2,3)");
+    evalFails("1 in (1,2,3");
+    evalFails("1 in (1,,3)");
+    evalFails("1 in (1,2,)");
+    evalFails("Date '2020-20-28'");
+    // evalEquals("-4**2",-16);
+  }
+
 
   @Test
   public void precedenceAndAssociativity() throws Exception {
-    
-    evalEquals("3*5/2", ((3 * 5) / 2d));
-    evalEquals("9/3*3", (9 / 3) * 3 );
-    evalEquals("1 + 2 * 3 * 4 + 5",((1 + ((2 * 3) * 4)) + 5));
-    evalEquals("3*4/5/6", 3 * 4 / 5 / 6 );
-    //evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4 / 5 / 6 - 7);
 
+    // Arithmetic
+    evalEquals("3*5/2", ((3 * 5) / 2d));
+    evalEquals("9/3*3", (9 / 3) * 3);
+    evalEquals("1 + 2 * 3 * 4 + 5", ((1 + ((2 * 3) * 4)) + 5));
+    evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
+    evalEquals("10*2+1", 21);
+    evalEquals("1+10*2", 21);
+    evalEquals("10*(2+1)", 30);
+    evalEquals("30/(5+5)", 3);
+    evalEquals("42%(3+2)", 2);
+    evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
+    evalEquals("Age-(10+3*10+50-2*25)", 0);
+    
+    // evalEquals("10**2+5", 105);
+    // evalEquals("5+10**2", 105);
+    // evalEquals("3*10**2", 300);
+    // evalEquals("10**2*3", 300);
+
+    // evalEquals("2*'1.23'",2.46); // TODO: Should be casted to number and not
+    // integer
 
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
     evalTrue("NOT 5 = 5 OR NOT 'Test' = 'X' AND NOT 5 = 4");
-    
+
     // Equals (=) has higher precedence than NOT "NOT (1=1)"
     evalTrue("NOT 2 = 1");
 
     // IS NULL has higher precedence than NOT
     evalFalse("NOT [NULLIS] IS NULL");
-    
+
     // IS NULL has lower precedence than comparison (1 = 1) IS NULL
     evalFalse("1 = 1 is null");
     evalTrue(" 3 > 5 IS FALSE");
 
     // BETWEEN, IN, LIKE have higher precedence than comparison
-    evalTrue("6 = 6 between 4 = 4 and 5 = 5");
+   // evalTrue("6 = 6 between 4 = 4 and 5 = 5");
   }
 
 
@@ -239,24 +419,6 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Null IS NULL");
   }
 
-  @Test
-  public void Arithmetic() throws Exception {
-    evalEquals("10*2+1", 21);
-    evalEquals("1+10*2", 21);
-    evalEquals("10*(2+1)", 30);
-    evalEquals("30/(5+5)", 3);
-    evalEquals("42%(3+2)", 2);
-    evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
-
-    evalEquals("Age-(10+3*10+50-2*25)", 0);
-    // evalEquals("10**2+5", 105);
-    // evalEquals("5+10**2", 105);
-    // evalEquals("3*10**2", 300);
-    // evalEquals("10**2*3", 300);
-
-    // evalEquals("2*'1.23'",2.46); // TODO: Should be casted to number and not
-    // integer
-  }
 
   @Test
   public void Addition() throws Exception {
@@ -287,7 +449,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("3 between 1 and 5");
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
-    //evalTrue("5 between -3+1 and 5");
+    evalTrue("5 between -3+1 and 5");
     evalTrue("'CH' between 'A' and 'E'");
     evalFalse("1 between 3 and 5");
     evalTrue("Age between 39.999 and 40.0001");
@@ -297,9 +459,6 @@ public class OperatorTest extends ExpressionTest {
     evalFails("Age between 10 and");
 
     evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
-
-    // FIXME: precedence of BETWEEN is higher than AND and OR, but lower than '+'
-    // evalTrue("10 between 5 and 8 + 2 or False and True");
   }
 
   @Test
@@ -316,16 +475,20 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("CAST('True' as Boolean)");
     evalFalse("CAST('False' as Boolean)");
 
+
     // Number to Boolean
     evalTrue("CAST(1 as Boolean)");
     evalTrue("1::Boolean");
     evalTrue("CAST(-12.1 as Boolean)");
     evalFalse("CAST(0 as Boolean)");
 
+    evalEquals("CAST(1.25 as Integer)",1);
+    evalEquals("CAST(1.75 as Integer)",2);
+    
     // Boolean to String
     evalEquals("CAST(true as String)", "TRUE");
     evalEquals("true::String", "TRUE");
-
+    
 
     // Date to String
     evalEquals("CAST(Date '2019-02-25' AS String)", "2019-02-25");
@@ -357,6 +520,8 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("'1234'::Number", 1234d);
     evalEquals("CAST('1234' as Number)", 1234d);
     evalEquals("CAST('1234.567' as Number)", 1234.567d);
+    evalEquals("CAST('  -1e-37  ' as Number)", -1e-37d);
+
 
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
@@ -367,10 +532,17 @@ public class OperatorTest extends ExpressionTest {
 
     evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124);
 
-    
-    evalEquals("CAST(12345678901234567890123456789012345678901234567890 as BigNumber)",
-        new BigDecimal("12345678901234567890123456789012345678901234567890"));
 
+    evalEquals("CAST(12345678901234567890123456789012345678 as BigNumber)",
+        new BigDecimal("12345678901234567890123456789012345678"));
+
+    
+    evalNull("CAST(Null as Boolean)");
+    evalNull("CAST(Null as String)");
+    evalNull("CAST(Null as Integer)");
+    evalNull("CAST(Null as Number)");
+    evalNull("CAST(Null as BigNumber)");
+    
     // Unsupported conversion
     evalFails("CAST(Date '2019-02-25' AS INTEGER)");
     evalFails("CAST(Date '2019-02-25' AS NUMBER)");
@@ -393,7 +565,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("+(40)", 40);
     evalEquals("+(Age)", 40);
     evalEquals("+40", 40);
-    evalEquals("1+ +2", 3);    
+    evalEquals("1+ +2", 3);
     evalNull("+null");
   }
 
@@ -403,7 +575,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("-40", -40);
     evalEquals("-Age", -40);
     evalEquals("+40", 40);
-    evalEquals("1+ -2", -1);    
+    evalEquals("1+ -2", -1);
     evalNull("-null");
   }
 
@@ -419,7 +591,8 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void Divide() throws Exception {
     evalEquals("Divide(10,4)", 2.5);
-    evalEquals("40/10", 4);
+    evalEquals("10/4", 2.5);
+    evalEquals("40/-10", -4);
     evalEquals("-40/-10", 4);
     evalEquals("5/2", 2.5);
     evalNull("null/1");
@@ -427,6 +600,7 @@ public class OperatorTest extends ExpressionTest {
     evalFails("40/0");
   }
 
+  @Deprecated
   public void Power() throws Exception {
     evalEquals("4**2", 16);
     evalEquals("-4**2", -16);
@@ -470,7 +644,6 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   public void LogicalNot() throws Exception {
-
     evalTrue("FLAG is not false");
     evalTrue("NULLIS is null");
     evalTrue("NOT (NULLIS is not null)");
@@ -507,15 +680,15 @@ public class OperatorTest extends ExpressionTest {
     evalNull("null AND null");
   }
 
-  @Test
+  @Deprecated
   public void LogicalXor() throws Exception {
-//    evalTrue("false XOR true");
-//    evalTrue("true XOR false");
-//    evalFalse("false XOR false");
-//    evalFalse("true XOR true");
-//    evalNull("true XOR null");
-//    evalNull("null XOR true");
-//    evalNull("null XOR null");
+    evalTrue("false XOR true");
+    evalTrue("true XOR false");
+    evalFalse("false XOR false");
+    evalFalse("true XOR true");
+    evalNull("true XOR null");
+    evalNull("null XOR true");
+    evalNull("null XOR null");
   }
 
   @Test
@@ -586,21 +759,23 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   public void CaseWhen() throws Exception {
-    
+
     // implicit ELSE NULL case
     evalNull("case when Age=10 then 10 end");
-    evalEquals("case when Age=40 then 10 end",10);
-    
+    evalEquals("case when Age=40 then 10 end", 10);
+
     // explicit ELSE case
     evalEquals("case when Age=40 then 10 else 50 end", 10);
-    
-    // multiple WHENs
-    evalEquals("case when Age=10+20 then 1*5  when Age=20+20 then 2*5 else 50 end", 10);
 
+    // Search CASE WHEN
+    evalEquals("case when Age=10+20 then 1*5 when Age=20+20 then 2*5 else 50 end", 10);
+
+    // Simple CASE
     evalEquals("case Age when 10 then 10 when 40 then 40 else 50 end", 40);
-    
+
     // Missing 'END'
     evalFails("case when Age=40 then 10 else 50");
   }
 
 }
+

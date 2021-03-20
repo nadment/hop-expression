@@ -30,12 +30,15 @@ public class ExpressionCall implements IExpression {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands;
+    operator.checkNumberOfArguments(operands.length);
   }
 
   public ExpressionCall(Operator operator, List<IExpression> operands) throws ExpressionException {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
+    
+    operator.checkNumberOfArguments(this.operands.length);
   }
 
   @Override

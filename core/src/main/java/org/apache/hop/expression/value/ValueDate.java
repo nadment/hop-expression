@@ -28,7 +28,7 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Value;
-import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.DateFormat;
 
 public class ValueDate extends Value {
 
@@ -51,7 +51,7 @@ public class ValueDate extends Value {
   }
 
   @Override
-  public DataType getDataType() {
+  public DataType getType() {
     return DataType.DATE;
   }
 
@@ -117,7 +117,7 @@ public class ValueDate extends Value {
 
     if (targetType == DataType.STRING) {
       ZonedDateTime dt = ZonedDateTime.ofInstant(value, context.getZone());
-      String result = DateTimeFormat.format(dt, format, context.getLocale());
+      String result = DateFormat.format(dt, format, context.getLocale());
 
       return new ValueString(result);
     }

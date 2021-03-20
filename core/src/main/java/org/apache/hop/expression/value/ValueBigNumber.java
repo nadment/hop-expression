@@ -16,17 +16,19 @@
  */
 package org.apache.hop.expression.value;
 
+import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Value;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ValueBigNumber extends Value {
-
+  
   /** The value 'zero'. */
   public static final ValueBigNumber ZERO = new ValueBigNumber(BigDecimal.ZERO);
 
@@ -34,19 +36,29 @@ public class ValueBigNumber extends Value {
   public static final ValueBigNumber ONE = new ValueBigNumber(BigDecimal.ONE);
 
   /** The default precision for a decimal value. */
-  static final int DEFAULT_PRECISION = 65535;
+  static final int DEFAULT_PRECISION = 38;
 
   /** The default scale for a decimal value. */
-  static final int DEFAULT_SCALE = 32767;
-
+  static final int DEFAULT_SCALE = 10;
+ 
+  /**
+   * The maximum allowed precision of numeric data types.
+   */
+  public static final int MAX_NUMERIC_PRECISION = 38;
+  
   private final BigDecimal value;
 
   public ValueBigNumber(BigDecimal value) {
     this.value = Objects.requireNonNull(value);
+    
+    int length = value.precision();
+    if (length > MAX_NUMERIC_PRECISION) {
+        throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.ValueTooLong", value.toString(), length));
+    }
   }
 
   @Override
-  public DataType getDataType() {
+  public DataType getType() {
     return DataType.BIGNUMBER;
   }
 
@@ -57,14 +69,14 @@ public class ValueBigNumber extends Value {
 
   @Override
   public Value convertTo(
-      final IExpressionContext context, final DataType targetType, String format) {
+      final IExpressionContext context, final DataType type, String format) {
 
-    if (targetType == DataType.STRING) {
+    if (type == DataType.STRING) {
       String result = NumberFormat.format(value, format, context.getLocale());
       return new ValueString(result);
     }
 
-    throw createUnsupportedConversionError(targetType);
+    throw createUnsupportedConversionError(type);
   }
 
   @Override
@@ -158,7 +170,7 @@ public class ValueBigNumber extends Value {
 
   @Override
   public Value divide(Value v) {
-    return Value.of(value.divide(v.toBigNumber(), MAX_SCALE, BigDecimal.ROUND_HALF_UP));
+    return Value.of(value.divide(v.toBigNumber(), DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP));
   }
 
   public Value remainder(Value v) {
@@ -167,6 +179,8 @@ public class ValueBigNumber extends Value {
 
   @Override
   public Value power(Value v) {
-    return Value.of(value.pow((int) v.toInteger()));
+    // TODO: BigDecimal doesn't support for fractional, so we use double
+    double result = FastMath.pow(value.doubleValue(), v.toNumber());
+    return Value.of(result);
   }
 }

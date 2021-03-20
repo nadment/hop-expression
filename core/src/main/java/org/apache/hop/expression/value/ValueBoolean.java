@@ -69,7 +69,7 @@ public class ValueBoolean extends Value {
   }
 
   @Override
-  public DataType getDataType() {
+  public DataType getType() {
     return DataType.BOOLEAN;
   }
 

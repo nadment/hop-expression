@@ -41,7 +41,7 @@ public class ValueInteger extends Value {
   }
 
   @Override
-  public DataType getDataType() {
+  public DataType getType() {
     return DataType.INTEGER;
   }
 
@@ -148,7 +148,7 @@ public class ValueInteger extends Value {
 
   @Override
   public Value add(Value v) {
-    if (this.getDataType().compareTo(v.getDataType()) >= 0) {
+    if (this.getType().compareTo(v.getType()) >= 0) {
       return Value.of(value + v.toInteger());
     }
 
@@ -157,11 +157,11 @@ public class ValueInteger extends Value {
 
   @Override
   public Value subtract(Value v) {
-    if (this.getDataType().compareTo(v.getDataType()) >= 0) {
+    if (this.getType().compareTo(v.getType()) >= 0) {
       return Value.of(value - v.toInteger());
     }
 
-    return this.convertTo(v.getDataType()).subtract(v);
+    return this.convertTo(v.getType()).subtract(v);
   }
 
   @Override
@@ -177,7 +177,7 @@ public class ValueInteger extends Value {
   public Value divide(Value v) {
     if (v.isBigNumber()) {
       return Value.of(
-          this.toBigNumber().divide(v.toBigNumber(), MAX_SCALE, BigDecimal.ROUND_HALF_UP));
+          this.toBigNumber().divide(v.toBigNumber(), ValueBigNumber.DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP));
     }
 
     return Value.of(this.toNumber() / v.toNumber());

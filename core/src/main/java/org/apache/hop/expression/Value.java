@@ -45,8 +45,6 @@ public abstract class Value implements IExpression, Comparable<Value> {
   
   private static SoftReference<Value[]> softCache;
   
-  protected int MAX_SCALE = 38;
-
   /** Boolean value of TRUE. */
   public static final Value TRUE = new ValueBoolean(true);
 
@@ -142,7 +140,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    *
    * @return the type of this Value
    */
-  public abstract DataType getDataType();
+  public abstract DataType getType();
 
   /**
    * Returns the value object
@@ -177,14 +175,14 @@ public abstract class Value implements IExpression, Comparable<Value> {
     Value left = this;
 
     // If not the same data type;
-    if (left.getDataType() != right.getDataType()) {
+    if (left.getType() != right.getType()) {
       if (left.isNull()) return -1;
       if (right.isNull()) return 1;
 
       // The lower order data type is converted
-      if (left.getDataType().compareTo(right.getDataType()) > 0)
-        right = right.convertTo(left.getDataType());
-      else left = left.convertTo(right.getDataType());
+      if (left.getType().compareTo(right.getType()) > 0)
+        right = right.convertTo(left.getType());
+      else left = left.convertTo(right.getType());
     }
 
     return left.compare(right);
@@ -193,17 +191,17 @@ public abstract class Value implements IExpression, Comparable<Value> {
   /**
    * Convert a value to the specified type.
    *
-   * @param targetType the type of the returned value
+   * @param type the type of the returned value
    * @return the converted value
    */
-  public Value convertTo(final DataType targetType) {
+  public Value convertTo(final DataType type) {
 
-    if (this.getDataType() == targetType) return this;
+    if (this.getType() == type) return this;
 
     // System.out.println("Convert " + this.toString() + " from " + this.getType() + " to " +
     // targetType);
 
-    switch (targetType) {
+    switch (type) {
       case BOOLEAN:
         return new ValueBoolean(this.toBoolean());
       case INTEGER:
@@ -221,7 +219,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
       case NONE:
         return NULL;
       default:
-        throw createUnsupportedConversionError(targetType);
+        throw createUnsupportedConversionError(type);
     }
   }
 
@@ -273,7 +271,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true if the value is a String.
    */
   public boolean isString() {
-    return this.getDataType() == DataType.STRING;
+    return this.getType() == DataType.STRING;
   }
 
   /**
@@ -292,7 +290,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true if this value has type boolean.
    */
   public boolean isBoolean() {
-    return this.getDataType() == DataType.BOOLEAN;
+    return this.getType() == DataType.BOOLEAN;
   }
 
   /**
@@ -301,7 +299,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true if this value is an integer
    */
   public boolean isInteger() {
-    return this.getDataType() == DataType.INTEGER;
+    return this.getType() == DataType.INTEGER;
   }
 
   /**
@@ -310,7 +308,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true is this value is a number
    */
   public boolean isNumber() {
-    return this.getDataType() == DataType.NUMBER;
+    return this.getType() == DataType.NUMBER;
   }
 
   /**
@@ -319,7 +317,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true is this value is a big number
    */
   public boolean isBigNumber() {
-    return this.getDataType() == DataType.BIGNUMBER;
+    return this.getType() == DataType.BIGNUMBER;
   }
 
   /**
@@ -328,7 +326,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true if the value is a Date
    */
   public boolean isDate() {
-    return this.getDataType() == DataType.DATE;
+    return this.getType() == DataType.DATE;
   }
 
   /**
@@ -337,7 +335,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return true if this value has type Binary
    */
   public boolean isBinary() {
-    return this.getDataType() == DataType.BINARY;
+    return this.getType() == DataType.BINARY;
   }
 
   /**
@@ -448,13 +446,13 @@ public abstract class Value implements IExpression, Comparable<Value> {
   protected final ExpressionException createUnsupportedConversionError(DataType type) {
     return new ExpressionException(
         BaseMessages.getString(
-            PKG, "Expression.UnsupportedConversion", this.toString(), this.getDataType(), type));
+            PKG, "Expression.UnsupportedConversion", this.toString(), this.getType(), type));
   }
 
   protected final ExpressionException createUnsupportedOperationError(String operation) {
     return new ExpressionException(
         BaseMessages.getString(
-            PKG, "Expression.UnsupportedOperationWithDataType", operation, this.getDataType()));
+            PKG, "Expression.UnsupportedOperationWithDataType", operation, this.getType()));
   }
 
   /**
@@ -466,7 +464,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
   protected final ExpressionException createConversionError(DataType to) {
     return new ExpressionException(
         BaseMessages.getString(
-            PKG, "Expression.ValueConversionError", this.getDataType(), to));
+            PKG, "Expression.ValueConversionError", this.getType(), to));
   }
   
   protected final ExpressionException createOverflowError() {
@@ -497,7 +495,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
           int index = hash & (OBJECT_CACHE_SIZE - 1); //   
           Value cached = cache[index];
           if (cached != null) {
-              if (cached.getDataType()== v.getDataType() && v.equals(cached)) {
+              if (cached.getType()== v.getType() && v.equals(cached)) {
                   return cached;
               }
           }

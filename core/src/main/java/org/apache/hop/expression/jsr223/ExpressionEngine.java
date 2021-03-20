@@ -18,6 +18,7 @@ package org.apache.hop.expression.jsr223;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.text.ParseException;
 import javax.script.AbstractScriptEngine;
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -88,8 +89,12 @@ public final class ExpressionEngine extends AbstractScriptEngine implements Scri
 
   @Override
   public CompiledScript compile(String script) throws ScriptException {
-    IExpression expression = ExpressionParser.parse(script);
-    return new CompiledExpression(this, expression);
+    try {
+      IExpression expression = ExpressionParser.parse(script);
+      return new CompiledExpression(this, expression);
+    } catch (ParseException e) {
+  throw new ScriptException("Unable to parse expression: "+script);
+    }
   }
 
   @Override

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Locale;
 
-public class FunctionTest extends ExpressionTest {
+public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Coalesce() throws Exception {
@@ -433,7 +433,7 @@ public class FunctionTest extends ExpressionTest {
     evalEquals("Power(3,2)", 9);
     evalEquals("Power(100,0.5)", 10);
     evalEquals("Power(0,0)", 1);
-    evalEquals("Power(123,0)", 1);
+    evalEquals("Power(999,0)", 1);    
     evalFails("Power()");
     evalFails("Power(3)");
     evalFails("Power(1,2,3)");
@@ -1056,13 +1056,13 @@ public class FunctionTest extends ExpressionTest {
     // Truncate numeric
     evalEquals("Truncate(-975.975)", -975);
     evalEquals("Trunc(-975.975,-1)", -970);
-    evalEquals("Truncate(-975.975,0)", -975);
-    evalEquals("Truncate(-975.975,2)", -975.97);
-    evalEquals("Truncate(-975.975,3)", -975.975);
-    evalEquals("Truncate(-975.975,50)", -975.975);
-    evalEquals("Truncate(123.456,-2)", 100);
-    evalNull("Truncate(-975.975,Null)");
-    evalNull("Truncate(NULL,2)");
+    evalEquals("Truncate(-975.975, 0)", -975);
+    evalEquals("Truncate(-975.975, 2)", -975.97);
+    evalEquals("Truncate(-975.975, 3)", -975.975);
+    evalEquals("Truncate(-975.975, 50)", -975.975);
+    evalEquals("Truncate(123.456, -2)", 100);
+    evalNull("Truncate(-975.975, Null)");
+    evalNull("Truncate(NULL, 2)");
 
     // Truncate date
     evalEquals("Truncate(TO_DATE('08-05-2020 15:35:32','DD-MM-YYYY HH24:MI:SS'))",

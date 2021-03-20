@@ -28,10 +28,6 @@ public class ExpressionException extends RuntimeException {
     super(message, exception);
   }
 
-  //	public ExpressionException(String messageID, Object... args) {
-  //		super(BaseMessages.getString(PKG, messageID, args));
-  //	}
-
   public String toString() {
     return this.getMessage();
   }

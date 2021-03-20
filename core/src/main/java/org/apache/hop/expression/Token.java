@@ -223,17 +223,17 @@ public class Token {
   private final Id id;
   private final int start;
   private final int end;
-  private final String value;
+  private final String text;
 
   protected Token(Id id, int start) {
     this(id, start, start + 1, id.source);
   }
 
-  protected Token(Id id, int start, int end, String value) {
+  protected Token(Id id, int start, int end, String text) {
     this.id = id;
     this.start = start;
     this.end = end;
-    this.value = value;
+    this.text = text;
   }
 
   public boolean is(Id id) {
@@ -266,12 +266,12 @@ public class Token {
   }
 
   /** Returns the token value. */
-  public String value() {
-    return value;
+  public String text() {
+    return text;
   }
 
   @Override
   public String toString() {
-    return id.name() + "(" + value + ")";
+    return id.name() + "(" + text + ")";
   }
 }

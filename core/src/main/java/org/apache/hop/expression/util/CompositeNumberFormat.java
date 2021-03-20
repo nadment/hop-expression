@@ -4,24 +4,22 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 public class CompositeNumberFormat implements IFormat<BigDecimal> {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
-  private final String format;
-  private final List<NumberFormat> formats;
+  private final String pattern;
+  private final NumberFormat[] formats;
 
-  public CompositeNumberFormat(String format, List<NumberFormat> formats) {
-    this.format = format;
-    this.formats = Collections.unmodifiableList(formats);
+  public CompositeNumberFormat(String pattern, NumberFormat[] formats) {
+    this.pattern = pattern;
+    this.formats = formats;
   }
 
   @Override
   public String format(BigDecimal value, Locale locale) {
-    return formats.get(0).format(value, locale);
+    return formats[0].format(value, locale);
   }
 
   @Override
@@ -34,7 +32,7 @@ public class CompositeNumberFormat implements IFormat<BigDecimal> {
       }
     }
     
-    throw new ParseException(BaseMessages.getString(PKG, "Expression.UnparsableNumber", text, format), 0);
+    throw new ParseException(BaseMessages.getString(PKG, "Expression.UnparsableNumber", text, pattern), 0);
   }
 
 }
