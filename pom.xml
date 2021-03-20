@@ -23,7 +23,7 @@
 	<parent>
 		<artifactId>hop</artifactId>
 		<groupId>org.apache.hop</groupId>
-		<version>0.60-SNAPSHOT</version>
+		<version>0.70-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -70,17 +70,6 @@
 
 	<repositories>
 		<repository>
-			<id>central</id>
-			<url>https://repo1.maven.org/maven2/</url>
-			<name>Maven Central</name>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
 			<id>apache</id>
 			<name>Apache</name>
 			<url>https://repository.apache.org/snapshots</url>
@@ -94,18 +83,5 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
-	<pluginRepositories>
-		<pluginRepository>
-			<id>apache.snapshots</id>
-			<url>https://repository.apache.org/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 
 </project>
