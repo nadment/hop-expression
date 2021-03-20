@@ -74,6 +74,17 @@
 		</plugins>
 	</build>	
 
+<distributionManagement>
+    <repository>
+        <id>oss.sonatype.org</id>
+        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+        <id>apache.snapshots</id>        
+        <url>https://repository.apache.org/snapshots/</url>
+    </snapshotRepository>
+</distributionManagement>
+
     <repositories>
         <repository>
             <id>central</id>
