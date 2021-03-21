@@ -30,7 +30,7 @@ import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
 import org.junit.Test;
 
-public class ExpressionPerformance {
+public class ExpressionPerformanceTest {
 
 	
 	public void perf(String e) throws ParseException {

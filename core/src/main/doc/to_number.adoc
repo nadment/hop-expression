@@ -26,8 +26,7 @@ TO_NUMBER(text [,format])
 == Usage
 
 
-
-include::..\numberformat.adoc[]
+include::numberformat.adoc[]
 
 === Alternate formats
 When parsing strings, it is possible to specify multiple alternative formats by separating format strings with the | character.

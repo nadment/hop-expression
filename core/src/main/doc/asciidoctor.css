@@ -17,9 +17,10 @@
 
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
 
-/* Default font. */
 body {
   font-family: Georgia,serif;
+  margin: 0.5em 5% 1em 5%;
+  background:rgb(255, 255, 225);
 }
 
 /* Title font. */
@@ -30,11 +31,6 @@ thead, p.table.header,
 #author, #revnumber, #revdate, #revremark,
 #footer {
   font-family: Arial,Helvetica,sans-serif;
-}
-
-body {
-  margin: 0.5em 5% 1em 5%;
-  background:rgb(255, 255, 225);
 }
 
 a {
@@ -64,20 +60,22 @@ h1, h2, h3, h4, h5, h6 {
 
 h1{
   border-bottom: 2px solid silver;
+  font-size: 1.5em;
 }
+
 h2 {
   padding-top: 0.5em;
+  font-size: 1.3em;
 }
+
 h3 {
   float: left;
+  font-size: 1.1em;
 }
 h3 + * {
   clear: left;
 }
 
-h1{font-size: 1.5em}
-h2{font-size: 1.3em}
-h3{font-size: 1.1em}
 h4{font-size: 1em}
 h5{font-size: 0.9em}
 

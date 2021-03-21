@@ -36,12 +36,12 @@
 		<!-- Third-party dependencies -->
 		<commons-lang.version>2.6</commons-lang.version>
   	<commons-vfs2.version>2.2</commons-vfs2.version>
- 		<commons-math3.version>3.6.1</commons-math3.version> 
+ 		<commons-math3.version>3.6.1</commons-math3.version> 	
 	</properties>
 
 	<build>
 		<plugins>
-			
+	
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -66,9 +66,9 @@
 							</attributes>
 						</configuration>
 					</execution>
-
 				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
@@ -79,7 +79,6 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-
 							<outputDirectory>
 								${project.build.outputDirectory}/docs
 							</outputDirectory>
@@ -94,6 +93,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 

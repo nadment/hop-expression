@@ -25,7 +25,7 @@ TO_DATE(text [,format])
 
 == Usage
 
-include::..\dateformat.adoc[]
+include::dateformat.adoc[]
 
 * An element in the date format model can only appear once. However, elements such as separators, padding characters can appear more than once.
 * If no format is specified, the standard format YYYY-MM-DD is used to interpret string.

@@ -28,11 +28,10 @@ TO_CHAR(date_or_timestamp[, 'format'])
 
 == Usage
 
+include::dateformat.adoc[]
 
-include::..\dateformat.adoc[]
 
-
-include::..\numberformat.adoc[]
+include::numberformat.adoc[]
 
 
 NOTE: Fill mode modifier; toggles between compact and fill modes.
