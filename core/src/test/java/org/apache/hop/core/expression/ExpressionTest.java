@@ -428,7 +428,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
     evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
-    //evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
+    evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
   }
 
   @Test
@@ -438,7 +438,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
     evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
     evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-    // TODO: evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
+    evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 
     evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
     evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);

@@ -25,7 +25,6 @@ import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Objects;
 
 public class ValueBigNumber extends Value {
@@ -37,10 +36,10 @@ public class ValueBigNumber extends Value {
   public static final ValueBigNumber ONE = new ValueBigNumber(BigDecimal.ONE);
 
   /** The default precision for a decimal value. */
-  static final int DEFAULT_PRECISION = 38;
+  static final int DEFAULT_PRECISION = 20;
 
   /** The default scale for a decimal value. */
-  static final int DEFAULT_SCALE = 10;
+  static final int DEFAULT_SCALE = 18;
  
   /**
    * The maximum allowed precision of numeric data types.
@@ -98,9 +97,8 @@ public class ValueBigNumber extends Value {
   @Override
   public String toString() {
     final String s = value.toString();
-    if (s.equals("0")) {
-      return s;
-    } else if (s.startsWith("0.")) {
+
+    if (s.startsWith("0.")) {
       // we want ".1" not "0.1"
       return s.substring(1);
     } else if (s.startsWith("-0.")) {

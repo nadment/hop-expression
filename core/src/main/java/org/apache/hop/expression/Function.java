@@ -20,6 +20,7 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.experimental.ScalarFunction;
 import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
@@ -59,6 +60,7 @@ import java.util.regex.Pattern;
 // TODO: implement REGEXP_REPLACE
 // TODO: implement OVERLAY
 // TODO: implement NULLIFZERO
+// TODO: implement DatePart YEAROFWEEK, YEAROFWEEKISO
 // TODO: FIRST_DAY(d, 'week') LAST_DAY(d, 'week') add format YEAR, MONTH, DAY, WEEK
 // TODO: JSON_EXTRACT() and -> operator
 

@@ -16,9 +16,11 @@
  */
 package org.apache.hop.expression;
 
+import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
+import java.time.temporal.WeekFields;
 
 /** Date part */
 public enum DatePart {
@@ -36,7 +38,14 @@ public enum DatePart {
 
   /** The years */
   YEAR("YY"),
-  /** The number (1 - 12) of the month */
+  
+  /** The years of week */
+  YEAROFWEEK("YOW"),
+  
+  /** The years of week ISO */
+  YEAROFWEEKISO("YOWISO"),
+  
+  /** The number (1 - 12) of the month */  
   MONTH("MM"),
 
   /** The number (1 - 31) of the day */
@@ -49,16 +58,16 @@ public enum DatePart {
    * A number (1 for Monday, …, 7 for Sunday) indicating the day of the week following the ISO-8601
    * standard
    */
-  DAYOFWEEK_ISO("DOW_ISO"),
+  DAYOFWEEKISO("DOWISO"),
 
   /** A number (1 - 366) indicating the day of the year */
   DAYOFYEAR("DOY"),
 
-  /** The number (0 - 54) of the week of the year */
+  /** The number (1 - 54) of the week of the year */
   WEEK("WEEKOFYEAR"),
 
   /** Week of the year (number from 1-53). */
-  WEEK_ISO("WEEKOFYEAR_ISO"),
+  WEEKISO("WEEKOFYEARISO"),
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
@@ -73,8 +82,11 @@ public enum DatePart {
   MINUTE("MI"),
   /** The second (0-59). */
   SECOND("SS"),
+  
   MILLISECOND("MS"),
+  
   MICROSECOND("MCS"),
+  
   NANOSECOND("NS");
 
   private final String alias;
@@ -132,11 +144,11 @@ public enum DatePart {
         int dow = dt.getDayOfWeek().getValue() + 1;
         if (dow == 8) dow = 1;
         return dow;
-      case DAYOFWEEK_ISO:
+      case DAYOFWEEKISO:
         return dt.getDayOfWeek().getValue();
       case WEEK:
         return dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-      case WEEK_ISO:
+      case WEEKISO:
         return dt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
       case WEEKOFMONTH:
         return dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -146,6 +158,13 @@ public enum DatePart {
         return dt.get(IsoFields.QUARTER_OF_YEAR);
       case YEAR:
         return dt.getYear();
+      case YEAROFWEEK:
+        WeekFields weekFields  = WeekFields.of(DayOfWeek.SUNDAY, 1);  
+        return dt.get(weekFields.weekBasedYear());
+//      case YEAROFWEEKISO:
+//        WeekFields weekFields  = WeekFields.ISO..of(DayOfWeek.MONDAY, 1);  
+//        return dt.get( weekFields.weekBasedYear());
+        
       case DECADE:
         return decade(dt.getYear());
       case CENTURY:

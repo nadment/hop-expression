@@ -466,7 +466,7 @@ public class Operator implements Comparable<Operator> {
 
   protected final Kind kind;
 
-  /** The name of the operator/function. Ex. "OVERLAY" or "TRIM" */
+  /** The name of the operator/function. Ex. "COS" or "TRIM" */
   private final String name;
 
   private final boolean isAlias;
