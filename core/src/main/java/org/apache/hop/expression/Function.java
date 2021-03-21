@@ -20,7 +20,6 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.experimental.ScalarFunction;
 import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
