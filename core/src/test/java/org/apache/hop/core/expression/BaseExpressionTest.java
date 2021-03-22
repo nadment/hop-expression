@@ -145,18 +145,18 @@ public class BaseExpressionTest {
     assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(s).toDate());
   }
 
-  protected void evalFails(String s) {
-    try {
-      System.out.print(s);
+  protected void evalFails(final String s) {
+//    Assert.assertThrows(ExpressionException.class, () -> {
+//      eval(s);
+//    });
+    
+    try {     
       eval(s);
-      Assert.fail("Syntax or result should be invalid");
-      System.out.print('\n');
-      System.out.flush();
+      Assert.fail(s+" Syntax or result should be invalid\n");
     } catch (ParseException | ExpressionException | IllegalArgumentException ex) {
-      System.err.println(' '+ex.getMessage());
-      System.err.flush();
+      //Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
     } catch (Exception ex) {
-      Assert.fail("Uncatched exception " + ex.getClass());
+      Assert.fail(s+" Uncatched exception " + ex.getClass());
     }
   }
 

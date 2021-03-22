@@ -433,7 +433,7 @@ public class Operator implements Comparable<Operator> {
   }
 
   private static String readAsciidoc(Kind kind) {
-    String file = "/docs/operator/" + kind.name().toLowerCase() + ".html";
+    String file = "/docs/" + kind.name().toLowerCase() + ".html";
 
     StringWriter writer = new StringWriter();
 
