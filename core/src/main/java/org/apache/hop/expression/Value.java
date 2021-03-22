@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.expression;
 
@@ -32,7 +30,8 @@ import org.apache.hop.i18n.BaseMessages;
 /**
  * An value represents a boolean, numeric, string, date or timestamp constant, or the value NULL.
  *
- * <p>Value is an immutable type.
+ * <p>
+ * Value is an immutable type.
  *
  * @author Nicolas ADMENT
  */
@@ -41,10 +40,10 @@ public abstract class Value implements IExpression, Comparable<Value> {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   // TODO: move to Const.OBJECT_CACHE_SIZE];
-  private static int OBJECT_CACHE_SIZE=1024;
-  
+  private static int OBJECT_CACHE_SIZE = 1024;
+
   private static SoftReference<Value[]> softCache;
-  
+
   /** Boolean value of TRUE. */
   public static final Value TRUE = new ValueBoolean(true);
 
@@ -75,7 +74,8 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return the value
    */
   public static Value of(byte[] value) {
-    if (value == null || value.length == 0) return NULL;
+    if (value == null || value.length == 0)
+      return NULL;
     return new ValueBinary(value);
   }
 
@@ -86,47 +86,61 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @return the value
    */
   public static Value of(Long value) {
-    if (value == null) return Value.NULL;
-    if (value == 0L) return ValueInteger.ZERO;
-    if (value == 1L) return ValueInteger.ONE;
+    if (value == null)
+      return Value.NULL;
+    if (value == 0L)
+      return ValueInteger.ZERO;
+    if (value == 1L)
+      return ValueInteger.ONE;
 
     return new ValueInteger(value);
   }
 
   /** Returns an integer Value that equals to {@code value}. */
   public static Value of(Integer value) {
-    if (value == null) return Value.NULL;
-    if (value == 0) return ValueInteger.ZERO;
-    if (value == 1) return ValueInteger.ONE;
+    if (value == null)
+      return Value.NULL;
+    if (value == 0)
+      return ValueInteger.ZERO;
+    if (value == 1)
+      return ValueInteger.ONE;
 
     return new ValueInteger(value.longValue());
   }
 
   /** Returns an big number Value that equals to {@code value}. */
   public static Value of(BigDecimal value) {
-    if (value == null) return Value.NULL;
-    if (BigDecimal.ZERO.equals(value)) return ValueBigNumber.ZERO;
-    if (BigDecimal.ONE.equals(value)) return ValueBigNumber.ONE;
+    if (value == null)
+      return Value.NULL;
+    if (BigDecimal.ZERO.equals(value))
+      return ValueBigNumber.ZERO;
+    if (BigDecimal.ONE.equals(value))
+      return ValueBigNumber.ONE;
 
-    return (ValueBigNumber) Value.cache(new ValueBigNumber(value));    
+    return Value.cache(new ValueBigNumber(value));
   }
 
   public static Value of(Double value) {
-    if (value == null || value.isNaN()) return Value.NULL;
-    if (value == 0.0) return ValueNumber.ZERO;
-    if (value == 1.0) return ValueNumber.ONE;
+    if (value == null || value.isNaN())
+      return Value.NULL;
+    if (value == 0.0)
+      return ValueNumber.ZERO;
+    if (value == 1.0)
+      return ValueNumber.ONE;
 
     return new ValueNumber(value);
   }
 
   /** Returns an string Value that equals to {@code value}. */
   public static Value of(String value) {
-    if (value == null) return Value.NULL;
+    if (value == null)
+      return Value.NULL;
     return new ValueString(value);
   }
 
   public static Value of(Instant value) {
-    if (value == null) return Value.NULL;
+    if (value == null)
+      return Value.NULL;
     return new ValueDate(value);
   }
 
@@ -152,7 +166,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
   @Override
   public int getCost() {
     return 1;
-  };
+  }
 
   /**
    * Compare this value against another value of the same data type.
@@ -176,13 +190,16 @@ public abstract class Value implements IExpression, Comparable<Value> {
 
     // If not the same data type;
     if (left.getType() != right.getType()) {
-      if (left.isNull()) return -1;
-      if (right.isNull()) return 1;
+      if (left.isNull())
+        return -1;
+      if (right.isNull())
+        return 1;
 
       // The lower order data type is converted
       if (left.getType().compareTo(right.getType()) > 0)
         right = right.convertTo(left.getType());
-      else left = left.convertTo(right.getType());
+      else
+        left = left.convertTo(right.getType());
     }
 
     return left.compare(right);
@@ -196,7 +213,8 @@ public abstract class Value implements IExpression, Comparable<Value> {
    */
   public Value convertTo(final DataType type) {
 
-    if (this.getType() == type) return this;
+    if (this.getType() == type)
+      return this;
 
     // System.out.println("Convert " + this.toString() + " from " + this.getType() + " to " +
     // targetType);
@@ -229,15 +247,15 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @param targetType the type of the returned value
    * @return the converted value
    */
-  public Value convertTo(
-      final IExpressionContext context, final DataType targetType, String format) {
+  public Value convertTo(final IExpressionContext context, final DataType targetType,
+      String format) {
     throw createUnsupportedConversionError(targetType);
   }
 
   /**
    * Check if the two values have the same hash code. No data conversion is made; this method
    * returns false if the other object is not of the same class. For some values, compareTo may
-   * return 0 even if equals return false. 
+   * return 0 even if equals return false.
    * 
    * Example: ValueDecimal 0 and 0.0
    *
@@ -444,15 +462,13 @@ public abstract class Value implements IExpression, Comparable<Value> {
   }
 
   protected final ExpressionException createUnsupportedConversionError(DataType type) {
-    return new ExpressionException(
-        BaseMessages.getString(
-            PKG, "Expression.UnsupportedConversion", this.toString(), this.getType(), type));
+    return new ExpressionException(BaseMessages.getString(PKG, "Expression.UnsupportedConversion",
+        this.toString(), this.getType(), type));
   }
 
   protected final ExpressionException createUnsupportedOperationError(String operation) {
-    return new ExpressionException(
-        BaseMessages.getString(
-            PKG, "Expression.UnsupportedOperationWithDataType", operation, this.getType()));
+    return new ExpressionException(BaseMessages.getString(PKG,
+        "Expression.UnsupportedOperationWithDataType", operation, this.getType()));
   }
 
   /**
@@ -463,10 +479,9 @@ public abstract class Value implements IExpression, Comparable<Value> {
    */
   protected final ExpressionException createConversionError(DataType to) {
     return new ExpressionException(
-        BaseMessages.getString(
-            PKG, "Expression.ValueConversionError", this.getType(), to));
+        BaseMessages.getString(PKG, "Expression.ValueConversionError", this.getType(), to));
   }
-  
+
   protected final ExpressionException createOverflowError() {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.Overflow", this.toString()));
@@ -476,38 +491,35 @@ public abstract class Value implements IExpression, Comparable<Value> {
   public IExpression optimize(IExpressionContext context) throws ExpressionException {
     return this;
   }
-  
+
   /**
-   * Check if a value is in the cache that is equal to this value. If yes,
-   * this value should be used to save memory. If the value is not in the
-   * cache yet, it is added.
+   * Check if a value is in the cache that is equal to this value. If yes, this value should be used
+   * to save memory. If the value is not in the cache yet, it is added.
    *
    * @param v the value to look for
    * @return the value in the cache or the value passed
    */
   static Value cache(Value v) {
-          int hash = v.hashCode();
-          Value[] cache;
-          if (softCache == null || (cache = softCache.get()) == null) {
-              cache = new Value[OBJECT_CACHE_SIZE];
-              softCache = new SoftReference<>(cache);
-          }
-          int index = hash & (OBJECT_CACHE_SIZE - 1); //   
-          Value cached = cache[index];
-          if (cached != null) {
-              if (cached.getType()== v.getType() && v.equals(cached)) {
-                  return cached;
-              }
-          }
-          cache[index] = v;
+    int hash = v.hashCode();
+    Value[] cache;
+    if (softCache == null || (cache = softCache.get()) == null) {
+      cache = new Value[OBJECT_CACHE_SIZE];
+      softCache = new SoftReference<>(cache);
+    }
+    int index = hash & (OBJECT_CACHE_SIZE - 1); //
+    Value cached = cache[index];
+    if (cached != null && cached.getType() == v.getType() && v.equals(cached)) {
+      return cached;
+    }
+    cache[index] = v;
 
-      return v;
+    return v;
   }
 
   /**
    * Clear the value cache. Used for testing.
    */
   public static void clearCache() {
-      softCache = null;
+    softCache = null;
   }
 }

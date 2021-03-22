@@ -19,7 +19,7 @@ package org.apache.hop.expression;
 public class Token {
 
   /** Enumerates the possible types of {@link Token}. */
-  public static enum Id {
+  public enum Id {
     AS,
 
     /** Variable "${var}" if scanner is used without variable environment substitution. */

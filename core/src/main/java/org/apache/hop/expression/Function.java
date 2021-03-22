@@ -132,7 +132,8 @@ public class Function extends Operator {
   @Override
   public void checkNumberOfArguments(int len) throws ExpressionException {
 
-    int min = 0, max = Integer.MAX_VALUE;
+    int min = 0;
+    int max = Integer.MAX_VALUE;
     switch (kind) {
       case CURRENT_DATE:
       case PI:

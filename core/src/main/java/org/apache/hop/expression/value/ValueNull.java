@@ -25,7 +25,9 @@ import org.apache.hop.expression.ExpressionException;
 /** Implementation of NULL. NULL is not a regular data type. */
 public class ValueNull extends Value {
 
-  public ValueNull() {}
+  public ValueNull() {
+    // No value
+  }
 
   @Override
   public DataType getType() {
@@ -42,20 +44,10 @@ public class ValueNull extends Value {
     return false;
   }
 
-  //	@Override
-  //	public double toNumber() {
-  //		return 0.0;
-  //	}
-  //
   @Override
   public String toString() {
     return null;
   }
-
-  //	@Override
-  //	public long toInteger() {
-  //		return 0L;
-  //	}
 
   @Override
   public int hashCode() {
@@ -66,7 +58,8 @@ public class ValueNull extends Value {
   public boolean equals(Object other) {
     return other == this;
   }
-
+  
+  @Override
   public boolean isNull() {
     return true;
   }

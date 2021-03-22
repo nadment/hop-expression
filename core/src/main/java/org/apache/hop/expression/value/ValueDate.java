@@ -32,7 +32,6 @@ import org.apache.hop.expression.util.DateFormat;
 
 public class ValueDate extends Value {
 
-  // FIXME: Format
   private static final DateTimeFormatter TIMESTAMP_FORMAT =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn")
           .withLocale(Locale.ROOT)
@@ -42,7 +41,7 @@ public class ValueDate extends Value {
           .withLocale(Locale.ROOT)
           .withZone(ZoneId.systemDefault());
 
-  private static final double SECONDS_BY_DAY = 24 * 60 * 60;
+  private static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   private final Instant value;
 
@@ -79,7 +78,8 @@ public class ValueDate extends Value {
   public Value eval(IExpressionContext context) throws ExpressionException {
     return this;
   }
-
+  
+  @Override
   public Instant toDate() {
     return value;
   }

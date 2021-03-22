@@ -44,7 +44,7 @@ public interface IExpression {
   
   public Kind getKind();
  
-  default public boolean is(Kind kind) {
+  public default boolean is(Kind kind) {
     return getKind() == kind;
   }
   

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.expression.value.ValueInteger;
 import org.apache.hop.i18n.BaseMessages;
 
@@ -441,7 +442,7 @@ public class Operator implements Comparable<Operator> {
       IOUtils.copy(is, writer);
     } catch (Exception e) {
       writer.append(e.getMessage());
-      System.err.println("Warning no documentation : " + kind);
+      LogChannel.GENERAL.logDebug("Warning no documentation : " + kind);
     }
 
     return writer.toString();
@@ -1108,7 +1109,7 @@ public class Operator implements Comparable<Operator> {
         }
 
       default:
-        System.out.println("Not optimised " + kind);
+        //System.out.println("Not optimised " + kind);
         return new ExpressionCall(this, operands);
     }
   }

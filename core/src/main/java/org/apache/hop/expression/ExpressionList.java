@@ -96,8 +96,8 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
 
   @Override
   public boolean isConstant() {
-    for (IExpression e : list) {
-      if (!e.isConstant()) {
+    for (IExpression expression : list) {
+      if (!expression.isConstant()) {
         return false;
       }
     }
@@ -128,7 +128,6 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
       }
       expression.write(writer, 2, 3);
     }
-    // if (parenthese)
     writer.append(')');
   }
 
