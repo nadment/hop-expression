@@ -34,7 +34,7 @@ import org.apache.hop.expression.Value;
 
 public final class ExpressionEngine extends AbstractScriptEngine implements ScriptEngine, Compilable {
 
-  private volatile ExpressionEngineFactory factory;
+  private ExpressionEngineFactory factory;
 
   @Override
   public ScriptEngineFactory getFactory() {

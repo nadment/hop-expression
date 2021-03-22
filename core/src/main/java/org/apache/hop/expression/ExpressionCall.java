@@ -98,8 +98,6 @@ public class ExpressionCall implements IExpression {
   @Override
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
 
-    final Operator operator = this.getOperator();
-
     if (leftPrec < operator.getLeftPrecedence()
         || (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
       writer.append('(');
