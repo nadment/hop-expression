@@ -83,7 +83,6 @@ public class ExpressionProposal implements IContentProposal {
 
   @Override
   public String toString() {
-
     return type.name() + ':' + label + '(' + content + ')';
   }
 }

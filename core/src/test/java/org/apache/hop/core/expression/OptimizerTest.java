@@ -36,7 +36,7 @@ public class OptimizerTest {
 		
 		int optimized = expression.getCost()-result.getCost();
 				
-		System.out.println("("+optimized+") optimize(" + e + ")["+expression.getCost()+"] >>> optimized(" + result+")["+result.getCost()+"]");
+		//System.out.println("("+optimized+") optimize(" + e + ")["+expression.getCost()+"] >>> optimized(" + result+")["+result.getCost()+"]");
 		return result;
 	}
 

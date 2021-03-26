@@ -18,6 +18,7 @@ package org.apache.hop.expression.value;
 
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Value;
@@ -43,13 +44,13 @@ public class ValueBinary extends Value {
   }
 
   @Override
-  public int hashCode() {
-    return value.hashCode();
+  public int hashCode() {    
+    return Arrays.hashCode(value);
   }
 
   @Override
   public boolean equals(Object other) {
-    return other instanceof ValueBinary && value.equals(((ValueBinary) other).value);
+    return other instanceof ValueBinary && Arrays.equals(value, ((ValueBinary) other).value);
   }
 
   @Override

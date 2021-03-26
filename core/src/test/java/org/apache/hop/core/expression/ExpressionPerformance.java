@@ -16,8 +16,6 @@
  */
 package org.apache.hop.core.expression;
 
-import java.text.ParseException;
-import java.util.Date;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
@@ -28,9 +26,10 @@ import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.Value;
-import org.junit.Test;
+import java.text.ParseException;
+import java.util.Date;
 
-public class ExpressionPerformanceTest {
+public class ExpressionPerformance {
 
 	
 	public void perf(String e) throws ParseException {
@@ -65,11 +64,10 @@ public class ExpressionPerformanceTest {
 		long endTime = System.currentTimeMillis();
 		long duration = endTime - startTime;
 
-		System.out.println("Performance(\""+e+"\") Duration for " + cycle + " cycles = " + duration);
+		//System.out.println("Performance(\""+e+"\") Duration for " + cycle + " cycles = " + duration);
 	}
 	
-	
-	@Test
+
 	public void performance() {
 
 		//perf("NOM||left(to_char(AGE+5,'000'),2)");

@@ -71,7 +71,7 @@ public class HtmlToolTip extends ToolTip {
   }
 
   private void onEvent(Event event) {
-    System.out.print(event);
+    //System.out.print(event);
     //		if (event.type==SWT.MouseHover) {
     //			System.out.print("Browser MouseHover");
     //			this.hide();

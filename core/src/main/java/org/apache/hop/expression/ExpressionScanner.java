@@ -436,6 +436,7 @@ public class ExpressionScanner {
             switch (c) {
               case '(':
                 isFunction = true;
+                break loop;
               case ')':
               case '/':
               case '*':

@@ -236,7 +236,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     // format.setMaximumIntegerDigits(precision);
     format.setMaximumFractionDigits(scale);
     BigDecimal result = (BigDecimal) format.parse(value);
-    result.setScale(scale, BigDecimal.ROUND_HALF_UP);
+    result = result.setScale(scale, BigDecimal.ROUND_HALF_UP);
 
     return result;
   }
@@ -364,7 +364,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
         // 0 behave the same as a 0, e.g. "09999.99" -> "00000.99"
         builder.append((leadZero) ? '0' : c);
         this.precision++;
-      } else if (c == 'X' | c == 'x') {
+      } else if (c == 'X' || c == 'x') {
         hexa = true;
         boolean upper = (c == 'X');
         for (; index < length; index++) {
@@ -715,8 +715,6 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
           }
         } else if (p == ',') {
           if (c == ',')
-            continue;
-          else if (c == ',')
             continue;
         } else if (p == 'G') {
           if (c == symbols.getGroupingSeparator())

@@ -114,7 +114,7 @@ public class ValueInteger extends Value {
 
   @Override
   public boolean toBoolean() {
-    return value != 0 ? true : false;
+    return value != 0;
   }
 
   @Override

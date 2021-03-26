@@ -266,6 +266,9 @@ public abstract class Value implements IExpression, Comparable<Value> {
   public abstract boolean equals(Object other);
 
   @Override
+  public abstract int hashCode();
+  
+  @Override
   public boolean isConstant() {
     return true;
   }

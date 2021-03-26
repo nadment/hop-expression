@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;
@@ -47,7 +48,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
     this.locale = Locale.ROOT;
     this.zone = UTC_ZONE;
-    this.random = new Random();
+    this.random = new SecureRandom();
     this.currentDate = Instant.now();
   }
 

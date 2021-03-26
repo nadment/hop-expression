@@ -30,10 +30,12 @@
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
 		<hop.version>0.70-SNAPSHOT</hop.version>
+		<jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
 		<sonar.projectKey>${project.artifactId}</sonar.projectKey>
-  	<sonar.organization>nadment</sonar.organization>
-  	<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-  	<sonar.exclusions>**/test/*</sonar.exclusions>
+		<sonar.organization>nadment</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.exclusions>**/test/*</sonar.exclusions>
+		<sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
 	<modules>
@@ -43,6 +45,32 @@
 	</modules>
 
 	<build>
+
+		<pluginManagement>
+			<plugins>
+
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>report</id>
+							<goals>
+								<goal>report-aggregate</goal>
+							</goals>
+							<phase>test</phase>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.sonarsource.scanner.maven</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>3.8.0.2131</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.rat</groupId>
@@ -69,53 +97,12 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.8.0.2131</version>
-			</plugin>
+
+			<!-- <plugin> -->
+			<!-- <groupId>org.sonarsource.scanner.maven</groupId> -->
+			<!-- <artifactId>sonar-maven-plugin</artifactId> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>apache</id>
-			<name>Apache</name>
-			<url>https://repository.apache.org/snapshots</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
-
-  <profiles>
-    <profile>
-      <id>coverage</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>prepare-agent</id>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  
 </project>

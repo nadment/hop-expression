@@ -111,11 +111,6 @@ public class WhereMeta extends BaseTransformMeta
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(getTransformIOMeta().getTargetStreams(), expression);
-  }
-
-  @Override
   public String getXml() throws HopValueException {
 
     StringBuilder xml = new StringBuilder(500);

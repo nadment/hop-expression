@@ -132,11 +132,12 @@ public class Function extends Operator {
   @Override
   public void checkNumberOfArguments(int len) throws ExpressionException {
 
-    int min = 0;
-    int max = Integer.MAX_VALUE;
+    int min;
+    int max;
     switch (kind) {
       case CURRENT_DATE:
       case PI:
+        min = 0;
         max = 0;
         break;
       case ABS:
@@ -1883,9 +1884,8 @@ public class Function extends Operator {
       String result = Hex.encodeHexString(md.digest());
       return Value.of(result);
     } catch (NoSuchAlgorithmException e) {
-      new ExpressionException("Unknow algorithm: " + algorithm);
+      throw new ExpressionException("Unknow algorithm: " + algorithm);
     }
-    return Value.NULL;
   }
 
   public static String soundex(String s) {
@@ -1901,7 +1901,7 @@ public class Function extends Operator {
     if (length < 0) {
       length = 0;
     } else if (length > PAD_LIMIT) {
-      new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
+      throw new IllegalArgumentException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
     }
 
     // If this parameter is omitted, the function will pad spaces
@@ -1938,7 +1938,7 @@ public class Function extends Operator {
       length = 0;
     }
     if (length > PAD_LIMIT) {
-      new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
+      throw new IllegalArgumentException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
     }
 
     // If this parameter is omitted, the function will pad spaces

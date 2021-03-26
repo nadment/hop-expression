@@ -584,6 +584,7 @@ public class DateFormat extends BaseFormat {
             index += 4;
             continue;
           }
+          break;
 
         case 'S':
           // Seconds
@@ -876,7 +877,7 @@ public class DateFormat extends BaseFormat {
 
             int nanos = value.getNano();
 
-            int ff = (int) (nanos * Math.pow(10, x - 9));
+            int ff = (int) (nanos * Math.pow(10d, x - 9d));
             appendZeroPadded(output, x, ff);
             index += 3;
             continue;

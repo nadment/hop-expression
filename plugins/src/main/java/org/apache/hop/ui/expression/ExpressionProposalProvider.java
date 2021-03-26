@@ -54,7 +54,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
   @Override
   public IContentProposal[] getProposals(String contents, int position) {
 
-    System.out.println(position + ":>" + contents);
+    // System.out.println(position + ":>" + contents);
 
     // Find significant characters entered by the user to restrict the number of
     // proposals
@@ -89,14 +89,14 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
       this.buildOperatorProposals(list, qualifier, position - start);
     }
 
-    System.out.println('\r');
+    // System.out.println('\r');
     return list.toArray(new IContentProposal[list.size()]);
   }
 
   protected void buildVariableProposals(
       List<IContentProposal> list, String qualifier, int position) {
 
-    System.out.println("list variables [" + qualifier + "] " + position);
+    // System.out.println("list variables [" + qualifier + "] " + position);
 
     if (variables != null) {
 
@@ -125,7 +125,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
   protected void buildOperatorProposals(
       List<IContentProposal> list, String qualifier, int position) {
 
-    System.out.println("list operators [" + qualifier + "] " + position);
+    // System.out.println("list operators [" + qualifier + "] " + position);
 
     for (Operator operator : Operator.getOperators()) {
 
@@ -151,7 +151,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
   protected void buildFieldProposals(List<IContentProposal> list, String qualifier, int position) {
 
-    System.out.println("list field [" + qualifier + "] " + position);
+    // System.out.println("list field [" + qualifier + "] " + position);
 
     if (rowMeta != null) {
       for (int i = 0; i < rowMeta.size(); i++) {

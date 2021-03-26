@@ -21,12 +21,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.gui.GuiResource;
-import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IToolTipProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider {
 

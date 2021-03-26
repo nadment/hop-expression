@@ -19,6 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
@@ -67,8 +68,9 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("FROM"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("PRICE"));
 
-    Object[] row = new Object[8];
+    Object[] row = new Object[9];
     row[0] = "TEST";
     row[1] = "F";
     row[2] = 40L;
@@ -77,6 +79,7 @@ public class BaseExpressionTest {
     row[5] = null;
     row[6] = 2020L;
     row[7] = "Paris";
+    row[8] = BigDecimal.valueOf(123456.789);
 
     context = new RowExpressionContext(rowMeta);
     context.setRow(row);

@@ -75,7 +75,7 @@ public class ValueNull extends Value {
   }
 
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
-    writer.append(this.toString());
+    writer.append("NULL");
   }
 
   @Override
