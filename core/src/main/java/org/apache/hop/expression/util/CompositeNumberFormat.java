@@ -44,7 +44,7 @@ public class CompositeNumberFormat implements IFormat<BigDecimal> {
       try {
         return format.parse(text, locale);
       } catch (Exception e) {
-        continue;
+        // Ignore try next format
       }
     }
     

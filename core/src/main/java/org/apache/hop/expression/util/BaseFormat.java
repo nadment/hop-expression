@@ -217,7 +217,7 @@ public abstract class BaseFormat {
   protected static String toWord(int number) {
     // variable to hold string representation of number
     StringBuilder words = new StringBuilder();
-    String unitsArray[] = {
+    String[] unitsArray = {
       "zero",
       "one",
       "two",
@@ -239,7 +239,7 @@ public abstract class BaseFormat {
       "eighteen",
       "nineteen"
     };
-    String tensArray[] = {
+    String[] tensArray = {
       "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"
     };
 

@@ -25,7 +25,7 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
 import java.text.ParseException;
 import java.util.Date;
 

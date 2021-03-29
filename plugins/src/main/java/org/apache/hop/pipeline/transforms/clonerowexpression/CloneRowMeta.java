@@ -22,12 +22,9 @@
 
 package org.apache.hop.pipeline.transforms.clonerowexpression;
 
-import java.text.ParseException;
-import java.util.List;
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
-import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopXmlException;
 import org.apache.hop.core.row.IRowMeta;
@@ -40,7 +37,8 @@ import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.Pipeline;
@@ -49,6 +47,8 @@ import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.w3c.dom.Node;
+import java.text.ParseException;
+import java.util.List;
 
 /*
  * Created on 27-06-2008
@@ -59,8 +59,8 @@ import org.w3c.dom.Node;
     name = "CloneRow.Name",
     description = "CloneRow.Description",
     image = "clonerow.svg",
-    categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility",
-    i18nPackageName = "org.apache.hop.pipeline.transforms.clonerow")
+    categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility"
+    )
 public class CloneRowMeta extends BaseTransformMeta
     implements ITransformMeta<CloneRow, CloneRowData> {
 
@@ -173,7 +173,7 @@ public class CloneRowMeta extends BaseTransformMeta
 
     // If value start with '='  this is a expression
     if (value.charAt(0) != '=') {
-      return Value.of(value);
+      return ValueString.of(value);
     }
 
     try {

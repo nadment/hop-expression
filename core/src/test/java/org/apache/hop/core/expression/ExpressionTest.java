@@ -31,15 +31,23 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue(
         "/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
 
+    evalFails(" /");
     evalFails("/*   True");
+    evalFails("/   True");
     evalFails("/*   True*");
     evalFails("/* /* nested block comment */    True");
   }
 
   @Test
   public void Identifier() throws Exception {
-    evalEquals("Age%2", 0);
+    evalEquals("Age%2", 0);   
     evalEquals(" [Age]%2", 0);
+    evalEquals("[IDENTIFIER SPACE]", "SPACE");
+    evalEquals("IDENTIFIER_UNDERSCORE", "UNDERSCORE");
+    evalEquals("[IDENTIFIER lower]", "lower");
+    
+    evalFails("[");
+    evalFails(" [ ");
   }
 
   @Test
@@ -139,6 +147,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("-0.2", -0.2);
     evalEquals("-1.", -1);
     evalEquals("2.3E2", 2.3E2);
+    evalEquals("2.3E+2", 2.3E2);
     evalEquals("-2.3E-2", -2.3E-2);
     evalEquals("-2.3e-2", -2.3E-2);
 
@@ -150,6 +159,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("2E2E2");
     evalFails("2E-2.2");
     evalFails("-2.3EE-2");
+    evalFails("-2.3E");
     evalFails("-2.3E--2");
   }
 
@@ -253,23 +263,27 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("true = 'Y'");
     evalTrue("true = 'Yes'");
     evalTrue("true = 'True'");
-
     evalTrue("false = false");
     evalFalse("true = false");
     evalFalse("false = true");
 
+     // String
+    evalTrue("'ABC' = 'ABC'");
+    evalFalse("'ABC' = 'abc'");
+    
+    // Date
+    evalTrue("Date '2019-01-01' = Date '2019-01-01'");
+    evalFalse("Date '2019-01-01' = Date '2018-01-01'");    
+    
     // Null
     evalNull("1 = null");
     evalNull("null = true");
     evalNull("null = false");
-    evalNull("null = null"); // NULL is not equal ( = ) to anything—not even to another NULL.
+   // NULL is not equal ( = ) to anything—not even to another NULL.
+    evalNull("null = null"); 
 
-
+    evalFails("NOM=");
     evalFails("NOM = ");
-
-    // Date
-    evalTrue("Date '2019-01-01' = Date '2019-01-01'");
-    evalFalse("Date '2019-01-01' = Date '2018-01-01'");
   }
 
   @Test
@@ -287,14 +301,21 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("true <> true");
     evalFalse("false <> false");
 
-    evalTrue("null <> 'bar'");
-    evalFalse("null <> null");
     evalFalse("2 <> 2.000");
     evalFalse("2.000 <> 2.00");
     evalFalse("true <> true");
     evalTrue("Date '2019-01-01' <> Date '2018-01-01'");
     evalFalse("Date '2019-01-01' <> Date '2019-01-01'");
+
+    evalNull("null <> 'bar'");
+    evalNull("'bar' <> null");
+    evalNull("null <> null");
+    
+    evalFails("NOM<>");
     evalFails("NOM <> ");
+    evalFails("NOM!");
+    evalFails("NOM ! ");
+
   }
 
   @Test
@@ -314,12 +335,14 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("'foo' > 'foo'");
     evalTrue("'foo' > 'bar'");
 
-    evalNull("null > 0");
-
     evalTrue("Date '2019-02-01' > Date '2019-01-01'");
     evalFalse("Date '2019-01-01' > Date '2019-01-01'");
     evalFalse("Date '2018-01-01' > Date '2019-01-01'");
+
+    evalNull("null > 0");
+    evalNull("1 > null");
     
+    evalFails("NOM>");
     evalFails("NOM > ");
   }
 
@@ -340,14 +363,15 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'foo' >= 'foo'");
     evalTrue("'foo' >= 'bar'");
 
-    evalNull("null >= 0");
-
-
     evalTrue("Date '2019-02-01' >= Date '2019-01-01'");
     evalTrue("Date '2019-01-01' >= Date '2019-01-01'");
     evalFalse("Date '2018-01-01' >= Date '2019-01-01'");
+
+    evalNull("null >= 0");
+    evalNull("1 >= null");
     
-    evalFails("NOM >= ");
+    evalFails("NOM>=");
+    evalFails("NOM >=");
   }
 
   @Test
@@ -367,12 +391,14 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("'foo' < 'foo'");
     evalFalse("'foo' < 'bar'");
 
-    evalNull("null < 0");
-
     evalTrue("Date '2019-01-01' < Date '2019-02-01'");
     evalFalse("Date '2019-01-01' < Date '2019-01-01'");
     evalFalse("Date '2019-01-01' < Date '2018-01-01'");
+
+    evalNull("null < 1");
+    evalNull("0 < null");
     
+    evalFails("NOM<");
     evalFails("NOM < ");
   }
 
@@ -393,12 +419,14 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'bar' <= 'foo'");
     evalFalse("'foo' <= 'bar'");
 
-    evalNull("null <= 0");
-
     evalTrue("Date '2019-01-01' <= Date '2019-02-01'");
     evalTrue("Date '2019-01-01' <= Date '2019-01-01'");    
     evalFalse("Date '2019-01-01' <= Date '2018-01-01'");
+
+    evalNull("null <= 1");
+    evalNull("0 <= null");
     
+    evalFails("NOM<=");
     evalFails("NOM <=");
   }
 
@@ -408,9 +436,12 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("SEX not in ('?','-','!')");
     evalTrue("2 in (1,2,3)");
     evalTrue("2.5 IN (1,2.5,3)");
-    evalTrue("'2' in (1,2,3)");
+    evalTrue("'2' in (null,1,2,3)");
     evalTrue("Date '2019-01-01' in (Date '2019-04-01',Date '2019-01-01',Date '2019-03-06')");
     evalFalse("2 in (1,2.5,3)");
+    evalTrue("2 in (null,1,2,3)");
+    evalFalse("2 in (null,null,null)");
+    evalNull("NULL in (1,2,3)");
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
   }
@@ -421,13 +452,13 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("True IS NOT False");
     evalTrue("FLAG is True");
     evalFalse("True IS False");
+    evalFalse("True IS Null");
     evalTrue("False IS False");
     evalFalse("False IS Null");
     evalFalse("Null is True");
     evalFalse("Null IS False");
     evalTrue("Null IS NULL");
   }
-
 
   @Test
   public void Addition() throws Exception {
@@ -440,9 +471,10 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
     evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
     
-    evalNull("5+NULL");
-    evalNull("NULL+5");
+    evalNull("5+NULL+5");
+    evalNull("+NULL+5");
     evalFails("5+");
+    evalFails("TRUE+FALSE");
   }
 
   @Test
@@ -456,6 +488,12 @@ public class ExpressionTest extends BaseExpressionTest {
 
     evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
     evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
+    
+    evalNull("5-NULL");
+    evalNull("NULL-5");
+    
+    evalFails("5-");
+    evalFails("TRUE-FALSE");
   }
 
   @Test
@@ -470,9 +508,15 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("Age not between 10 and 20");
     evalTrue("Age not between 10 and 20 and 'Test' is not null");
 
-    evalFails("Age between 10 and");
-
     evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
+    
+    evalNull("NULL between -10 and 20");
+    evalNull("1 between NULL and 20");
+    evalNull("1 between -10 and NULL");
+    
+    evalFails("Age between 10 and");
+    evalFails("Age between and 10");
+    evalFails("Age between and ");
   }
 
   @Test
@@ -480,6 +524,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     // String to Boolean
     evalTrue("'Yes'::Boolean");
+    evalTrue("'Yes' :: Boolean");
     evalTrue("CAST('YES' as Boolean)");
     evalTrue("CAST('yes' as Boolean)");
     evalTrue("CAST('Yes' as Boolean)");
@@ -491,6 +536,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("CAST('ON' as Boolean)");
     evalTrue("CAST('on' as Boolean)");
     evalTrue("CAST('On' as Boolean)");
+    evalTrue("CAST('oN' as Boolean)");
     evalFalse("CAST('OFF' as Boolean)");
     evalFalse("CAST('off' as Boolean)");
     evalFalse("CAST('Off' as Boolean)");
@@ -548,7 +594,6 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("CAST('1234.567' as Number)", 1234.567d);
     evalEquals("CAST('  -1e-37  ' as Number)", -1e-37d);
 
-
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
 
@@ -562,7 +607,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("CAST(12345678901234567890123456789012345678 as BigNumber)",
         new BigDecimal("12345678901234567890123456789012345678"));
 
-    
+    evalNull("CAST(Null as Binary)");
     evalNull("CAST(Null as Boolean)");
     evalNull("CAST(Null as String)");
     evalNull("CAST(Null as Integer)");
@@ -577,8 +622,10 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
 
     // Bad syntax
+    evalFails("'1234':");
     evalFails("'1234'::");
     evalFails("CAST('bad' AS)");
+    evalFails("CAST('bad' AS NULL)");
     evalFails("CAST(1234 AS STRING FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
 
@@ -612,6 +659,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("-4*-1", 4);
     evalEquals("2*-2", -4);
     evalNull("null*1");
+    evalNull("1*null");
   }
 
   @Test
@@ -623,6 +671,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("5/2", 2.5);
     evalNull("null/1");
     evalNull("null/0");
+    evalNull("1/null");
     evalFails("40/0");
   }
 
@@ -642,9 +691,17 @@ public class ExpressionTest extends BaseExpressionTest {
 
   @Test
   public void BitNot() throws Exception {
-    // evalEquals("~1", -2);
-    // evalEquals("~0", -1);
-    // evalEquals("~0xFF", 0x1);
+    evalEquals("~1", -2);
+    evalEquals("~ 1", -2);
+    evalEquals("~0", -1);
+    evalEquals("~4", -5);
+    evalEquals("~65504", -65505);
+    evalNull("~NULL");
+    evalFails("~");
+    evalFails("~ ");
+    
+    // Alias
+    evalEquals("BITNOT(1)", -2);
   }
 
   @Test
@@ -654,6 +711,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("100 & 2", 0);
     evalNull("100 & null");
     evalNull("NULL & 100");
+    evalFails("100&");
     evalFails("100 & ");
   }
 
@@ -664,6 +722,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("3 | 2", 3);
     evalNull("100 | null");
     evalNull("NULL | 100");
+    evalFails("3|");
     evalFails("3 | ");
   }
 
@@ -674,6 +733,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("100 ^ 2", 102);
     evalNull("100 ^ null");
     evalNull("NULL ^ 100");
+    evalFails("100^");
     evalFails("100 ^ ");
   }
 
@@ -732,6 +792,13 @@ public class ExpressionTest extends BaseExpressionTest {
   public void ILike() throws Exception {
     evalTrue("'test' ILIKE '%t%'");
     evalTrue("'test' ILIKE '%T%'");
+    
+    // Escape with other char
+    evalTrue("'Result 100% value' ilike 'RESULT%100^%%' escape '^'");
+    
+    evalNull("'test' ILIKE NULL");
+    evalNull("'test' ILIKE 'TEST' escape NULL");
+    evalNull("NULL ILIKE '%T%'");
   }
 
   @Test
@@ -781,10 +848,12 @@ public class ExpressionTest extends BaseExpressionTest {
     // TODO: evalTrue("'Amigo' like '[A-C]%'");
 
 
-    evalFalse("NULL like 'NULL'");
+    evalNull("NULL like 'NULL'");
+    evalNull("'test' LIKE NULL");
+    evalNull("'test' LIKE 'TEST' escape NULL");
     
     // NULL does not match NULL    
-    evalFalse("NULL like NULL");
+    evalNull("NULL like NULL");
   }
 
   @Test
@@ -818,4 +887,6 @@ public class ExpressionTest extends BaseExpressionTest {
   }
 
 }
+
+
 

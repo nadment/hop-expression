@@ -31,7 +31,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,8 +69,11 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("FROM"));
     rowMeta.addValueMeta(new ValueMetaBigNumber("PRICE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
-    Object[] row = new Object[9];
+    Object[] row = new Object[12];
     row[0] = "TEST";
     row[1] = "F";
     row[2] = 40L;
@@ -80,7 +83,10 @@ public class BaseExpressionTest {
     row[6] = 2020L;
     row[7] = "Paris";
     row[8] = BigDecimal.valueOf(123456.789);
-
+    row[9] = "SPACE";
+    row[10] = "UNDERSCORE";
+    row[11] = "lower";
+    
     context = new RowExpressionContext(rowMeta);
     context.setRow(row);
     context.setLocale(new Locale("fr", "BE"));
@@ -166,7 +172,8 @@ public class BaseExpressionTest {
   @Test
   public void parser() throws Exception {
 
-    evalEquals("CAST(1.75 as Integer)",2);
+    //evalEquals("CAST(1.75 as Integer)",2);
+    evalEquals("[IDENTIFIER SPACE]", "SPACE");
     
     //evalEquals("-.2", new BigDecimal("-0.2"));
     

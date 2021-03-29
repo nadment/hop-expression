@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.value.Value;
+
 public interface IAggregateFunction {
   public void initialize(IAggregateContext context);
   // Removes an input value from the current group.

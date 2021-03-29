@@ -12,20 +12,17 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.value;
 
-import java.lang.ref.SoftReference;
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.i18n.BaseMessages;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.Instant;
-import org.apache.hop.expression.value.ValueBigNumber;
-import org.apache.hop.expression.value.ValueBinary;
-import org.apache.hop.expression.value.ValueBoolean;
-import org.apache.hop.expression.value.ValueDate;
-import org.apache.hop.expression.value.ValueInteger;
-import org.apache.hop.expression.value.ValueNull;
-import org.apache.hop.expression.value.ValueNumber;
-import org.apache.hop.expression.value.ValueString;
-import org.apache.hop.i18n.BaseMessages;
 
 /**
  * An value represents a boolean, numeric, string, date or timestamp constant, or the value NULL.
@@ -39,109 +36,104 @@ public abstract class Value implements IExpression, Comparable<Value> {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
-  // TODO: move to Const.OBJECT_CACHE_SIZE];
-  private static int OBJECT_CACHE_SIZE = 1024;
-
-  private static SoftReference<Value[]> softCache;
-
-  /** Boolean value of TRUE. */
-  public static final Value TRUE = new ValueBoolean(true);
-
-  /** Boolean value of FALSE. */
-  public static final Value FALSE = new ValueBoolean(false);
-
   /** Unknown value of NULL. */
-  public static final Value NULL = new ValueNull();
+  public static final Value NULL = new Unknown();
 
-  /** Numeric literal value of PI. */
-  public static final Value PI = new ValueNumber(Math.PI);
+  /** Implementation of NULL. NULL is not a regular data type. */
+  private static final class Unknown extends Value {
 
+    public Unknown() {
+      // No value
+    }
 
-  /**
-   * Get the boolean value for the given boolean.
-   *
-   * @param b the boolean
-   * @return the value
-   */
-  public static Value of(boolean value) {
-    return value ? Value.TRUE : Value.FALSE;
-  }
+    @Override
+    public DataType getType() {
+      return DataType.NONE;
+    }
 
-  /**
-   * Get the value for the given binary.
-   *
-   * @param b the binary
-   * @return the value
-   */
-  public static Value of(byte[] value) {
-    if (value == null || value.length == 0)
-      return NULL;
-    return new ValueBinary(value);
-  }
+    @Override
+    public Object getObject() {
+      return null;
+    }
 
-  /**
-   * Get the integer value for the given long.
-   *
-   * @param b the boolean
-   * @return the value
-   */
-  public static Value of(Long value) {
-    if (value == null)
-      return Value.NULL;
-    if (value == 0L)
-      return ValueInteger.ZERO;
-    if (value == 1L)
-      return ValueInteger.ONE;
+    @Override
+    public boolean toBoolean() {
+      return false;
+    }
 
-    return new ValueInteger(value);
-  }
+    @Override
+    public String toString() {
+      return null;
+    }
 
-  /** Returns an integer Value that equals to {@code value}. */
-  public static Value of(Integer value) {
-    if (value == null)
-      return Value.NULL;
-    if (value == 0)
-      return ValueInteger.ZERO;
-    if (value == 1)
-      return ValueInteger.ONE;
+    @Override
+    public int hashCode() {
+      return 0;
+    }
 
-    return new ValueInteger(value.longValue());
-  }
+    @Override
+    public boolean equals(Object other) {
+      return other == this;
+    }
 
-  /** Returns an big number Value that equals to {@code value}. */
-  public static Value of(BigDecimal value) {
-    if (value == null)
-      return Value.NULL;
-    if (BigDecimal.ZERO.equals(value))
-      return ValueBigNumber.ZERO;
-    if (BigDecimal.ONE.equals(value))
-      return ValueBigNumber.ONE;
+    @Override
+    public boolean isNull() {
+      return true;
+    }
 
-    return Value.cache(new ValueBigNumber(value));
-  }
+    @Override
+    public Value negate() {
+      return this;
+    }
 
-  public static Value of(Double value) {
-    if (value == null || value.isNaN())
-      return Value.NULL;
-    if (value == 0.0)
-      return ValueNumber.ZERO;
-    if (value == 1.0)
-      return ValueNumber.ONE;
+    @Override
+    public Value eval(final IExpressionContext context) throws ExpressionException {
+      return this;
+    }
 
-    return new ValueNumber(value);
-  }
+    public void write(StringWriter writer, int leftPrec, int rightPrec) {
+      writer.append("NULL");
+    }
 
-  /** Returns an string Value that equals to {@code value}. */
-  public static Value of(String value) {
-    if (value == null)
-      return Value.NULL;
-    return new ValueString(value);
-  }
+    @Override
+    public int compare(final Value v) {
+      if (v.isNull())
+        return 0;
 
-  public static Value of(Instant value) {
-    if (value == null)
-      return Value.NULL;
-    return new ValueDate(value);
+      // null is always smaller
+      return -1;
+    }
+
+    @Override
+    public Value add(final Value v) {
+      return this;
+    }
+
+    @Override
+    public Value subtract(final Value v) {
+      return this;
+    }
+
+    @Override
+    public Value divide(final Value v) {
+      return this;
+    }
+
+    @Override
+    public Value multiply(Value v) {
+      return this;
+    }
+
+    @Override
+    public Value remainder(final Value v) {
+      return this;
+    }
+    
+    @Override
+    public Value power(final Value v) {
+      return this;
+    }
+
   }
 
   @Override
@@ -185,10 +177,11 @@ public abstract class Value implements IExpression, Comparable<Value> {
    * @param value the other value
    * @return 0 if both values are equal, -1 if this value is smaller, and 1 otherwise
    */
+  @Override
   public int compareTo(Value right) {
     Value left = this;
 
-    // If not the same data type;
+    // If not the same data type
     if (left.getType() != right.getType()) {
       if (left.isNull())
         return -1;
@@ -216,24 +209,21 @@ public abstract class Value implements IExpression, Comparable<Value> {
     if (this.getType() == type)
       return this;
 
-    // System.out.println("Convert " + this.toString() + " from " + this.getType() + " to " +
-    // targetType);
-
     switch (type) {
       case BOOLEAN:
-        return new ValueBoolean(this.toBoolean());
+        return ValueBoolean.of(this.toBoolean());
       case INTEGER:
-        return new ValueInteger(this.toInteger());
+        return ValueInteger.of(this.toInteger());
       case NUMBER:
-        return new ValueNumber(this.toNumber());
+        return ValueNumber.of(this.toNumber());
       case BIGNUMBER:
-        return new ValueBigNumber(this.toBigNumber());
+        return ValueBigNumber.of(this.toBigNumber());
       case STRING:
-        return new ValueString(this.toString());
+        return ValueString.of(this.toString());
       case DATE:
-        return new ValueDate(this.toDate());
+        return ValueDate.of(this.toDate());
       case BINARY:
-        return new ValueBinary(this.toBinary());
+        return ValueBinary.of(this.toBinary());
       case NONE:
         return NULL;
       default:
@@ -267,7 +257,7 @@ public abstract class Value implements IExpression, Comparable<Value> {
 
   @Override
   public abstract int hashCode();
-  
+
   @Override
   public boolean isConstant() {
     return true;
@@ -490,39 +480,12 @@ public abstract class Value implements IExpression, Comparable<Value> {
         BaseMessages.getString(PKG, "Expression.Overflow", this.toString()));
   }
 
+  protected final ExpressionException createDivisionByZeroError() {
+    return new ExpressionException(BaseMessages.getString(PKG, "Expression.DivisionByZero"));
+  }
+
   @Override
   public IExpression optimize(IExpressionContext context) throws ExpressionException {
     return this;
-  }
-
-  /**
-   * Check if a value is in the cache that is equal to this value. If yes, this value should be used
-   * to save memory. If the value is not in the cache yet, it is added.
-   *
-   * @param v the value to look for
-   * @return the value in the cache or the value passed
-   */
-  static Value cache(Value v) {
-    int hash = v.hashCode();
-    Value[] cache;
-    if (softCache == null || (cache = softCache.get()) == null) {
-      cache = new Value[OBJECT_CACHE_SIZE];
-      softCache = new SoftReference<>(cache);
-    }
-    int index = hash & (OBJECT_CACHE_SIZE - 1); //
-    Value cached = cache[index];
-    if (cached != null && cached.getType() == v.getType() && v.equals(cached)) {
-      return cached;
-    }
-    cache[index] = v;
-
-    return v;
-  }
-
-  /**
-   * Clear the value cache. Used for testing.
-   */
-  public static void clearCache() {
-    softCache = null;
   }
 }

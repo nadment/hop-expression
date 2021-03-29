@@ -27,7 +27,6 @@ import java.util.Objects;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Value;
 import org.apache.hop.expression.util.DateFormat;
 
 public class ValueDate extends Value {
@@ -43,9 +42,15 @@ public class ValueDate extends Value {
 
   private static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
+  public static Value of(Instant value) {
+    if (value == null)
+      return Value.NULL;
+    return new ValueDate(value);
+  }
+  
   private final Instant value;
 
-  public ValueDate(Instant date) {
+  protected ValueDate(Instant date) {
     this.value = Objects.requireNonNull(date);
   }
 
@@ -119,7 +124,7 @@ public class ValueDate extends Value {
       ZonedDateTime dt = ZonedDateTime.ofInstant(value, context.getZone());
       String result = DateFormat.format(dt, format, context.getLocale());
 
-      return new ValueString(result);
+      return ValueString.of(result);
     }
 
     throw createUnsupportedConversionError(targetType);
@@ -130,7 +135,7 @@ public class ValueDate extends Value {
     // Computes fraction of day
     if (v.isNumeric()) {
       long seconds = (long) (v.toNumber() * SECONDS_BY_DAY);
-      return Value.of(value.plusSeconds(seconds));
+      return new ValueDate(value.plusSeconds(seconds));
     }
 
     return super.add(v);
@@ -140,12 +145,12 @@ public class ValueDate extends Value {
   public Value subtract(Value v) {
     if (v.isNumeric()) {
       long seconds = (long) (v.toNumber() * SECONDS_BY_DAY);
-      return Value.of(value.minusSeconds(seconds));
+      return new ValueDate(value.minusSeconds(seconds));
     }
     if (v.isDate()) {
       long seconds = v.toDate().until(value, ChronoUnit.SECONDS);
       // Date diff return fraction of day
-      return Value.of(seconds / SECONDS_BY_DAY);
+      return ValueNumber.of(seconds / SECONDS_BY_DAY);
     }
 
     return super.subtract(v);

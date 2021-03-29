@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.expression;
 
@@ -28,10 +26,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.LogChannel;
+import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.value.ValueBoolean;
 import org.apache.hop.expression.value.ValueInteger;
+import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
-
-// TODO: implement RLIKE operator
 
 /**
  * Operators have the precedence levels. An operator on higher levels is evaluated before an
@@ -73,12 +72,13 @@ public class Operator implements Comparable<Operator> {
   /**
    * Logical negation <code>NOT</code> operator
    *
-   * <p>Syntax of the operator:
+   * <p>
+   * Syntax of the operator:
    *
    * <ul>
-   *   <li><code>field [NOT] TRUE</code>
-   *   <li><code>field [NOT] IN (list of values)</code>
-   *   <li><code>field [NOT] BETWEEN start AND end</code>
+   * <li><code>field [NOT] TRUE</code>
+   * <li><code>field [NOT] IN (list of values)</code>
+   * <li><code>field [NOT] BETWEEN start AND end</code>
    * </ul>
    */
   public static final Operator BOOLNOT = new Operator(Kind.LOGICAL_NOT, "NOT", 150, false, false);
@@ -92,12 +92,13 @@ public class Operator implements Comparable<Operator> {
   /**
    * An operator describing the <code>IS</code> operator.
    *
-   * <p>Syntax of the operator:
+   * <p>
+   * Syntax of the operator:
    *
    * <ul>
-   *   <li><code>field IS TRUE</code>
-   *   <li><code>field IS FALSE</code>
-   *   <li><code>field IS NULL</code>
+   * <li><code>field IS TRUE</code>
+   * <li><code>field IS FALSE</code>
+   * <li><code>field IS NULL</code>
    * </ul>
    */
   public static final Operator IS = new Operator(Kind.IS, "IS", 140, true, false);
@@ -106,28 +107,32 @@ public class Operator implements Comparable<Operator> {
    * Logical <code>IN</code> operator tests for a value's membership in a list of values. The IN
    * operator is a shorthand for multiple OR conditions.
    *
-   * <p>Syntax of the operator:
+   * <p>
+   * Syntax of the operator:
    *
    * <ul>
-   *   <li><code>field [NOT] IN list of values</code>
+   * <li><code>field [NOT] IN list of values</code>
    * </ul>
    *
-   * <p><b>NOTE</b> If the <code>NOT</code> clause is present the {@link
-   * org.apache.hop.core.ExpressionParser parser} will generate a equivalent to <code>
+   * <p>
+   * <b>NOTE</b> If the <code>NOT</code> clause is present the
+   * {@link org.apache.hop.core.ExpressionParser parser} will generate a equivalent to <code>
    * NOT (field IN list of values ...)</code>
    */
   public static final Operator IN = new Operator(Kind.IN, "IN", 120, true, false);
   /**
    * An operator describing the <code>LIKE</code> operator.
    *
-   * <p>Syntax of the operator:
+   * <p>
+   * Syntax of the operator:
    *
    * <ul>
-   *   <li><code>field [NOT] LIKE pattern ESCAPE char</code>
+   * <li><code>field [NOT] LIKE pattern ESCAPE char</code>
    * </ul>
    *
-   * <p><b>NOTE</b> If the <code>NOT</code> clause is present the {@link
-   * org.hop.expresssion.ExpressionParser} parser will generate a equivalent to <code>
+   * <p>
+   * <b>NOTE</b> If the <code>NOT</code> clause is present the
+   * {@link org.hop.expresssion.ExpressionParser} parser will generate a equivalent to <code>
    * NOT (field LIKE pattern ...)</code>
    */
   public static final Operator LIKE = new Operator(Kind.LIKE, "LIKE", 120, true, false);
@@ -141,12 +146,12 @@ public class Operator implements Comparable<Operator> {
   // -------------------------------------------------------------
 
   /** Comparison equals operator '<code>=</code>'. */
-  public static final Operator EQUALS = new Operator(Kind.EQUAL, "=", 130, true, false);
+  public static final Operator EQUAL = new Operator(Kind.EQUAL, "=", 130, true, false);
   /** Comparison not equals operator '<code>!=</code>'. */
-  public static final Operator NOT_EQUALS = new Operator(Kind.NOT_EQUALS, "!=", 130, true, true);
+  public static final Operator NOT_EQUAL = new Operator(Kind.NOT_EQUAL, "!=", 130, true, true);
   /** Comparison not equals operator '<code><></code>'. */
   public static final Operator LESS_THAN_OR_GREATER_THAN =
-      new Operator(Kind.NOT_EQUALS, "<>", 130, true, false);
+      new Operator(Kind.NOT_EQUAL, "<>", 130, true, false);
   /** Comparison less-than operator '<code>&lt;</code>'. */
   public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN, "<", 130, true, false);
   /** Comparison less-than-or-equal operator '<code>&lt;=</code>'. */
@@ -190,7 +195,7 @@ public class Operator implements Comparable<Operator> {
 
   /** Cast <code>::</code> operator. */
   public static final Operator CAST = new Operator(Kind.CAST, "::", 10, true, true);
-  
+
   /** An operator describing the <code>CASE</code> operator. */
   public static final Operator CASE = new Operator(Kind.CASE_WHEN, "CASE", 120, true, false);
 
@@ -198,38 +203,10 @@ public class Operator implements Comparable<Operator> {
   public static final Operator CONCAT = new Operator(Kind.CONCAT, "||", 110, true, true);
 
   /** Set of operators. */
-  private static final Set<Operator> operators =
-      new TreeSet<>(
-          Arrays.asList(
-              ADD,
-              SUBTRACT,
-              MULTIPLY,
-              DIVIDE,
-              POWER,
-              BITAND,
-              BITOR,
-              BITNOT,
-              BITXOR,
-              CAST,
-              MODULUS,
-              EQUALS,
-              GREATER_THAN,
-              GREATER_THAN_OR_EQUAL,
-              ILIKE,
-              LESS_THAN,
-              LESS_THAN_OR_EQUAL,
-              LESS_THAN_OR_GREATER_THAN,
-              NOT_EQUALS,
-              BOOLAND,
-              BETWEEN,
-              CASE,
-              CONCAT,
-              IN,
-              IS,
-              LIKE,
-              BOOLNOT,
-              BOOLOR,
-              BOOLXOR));
+  private static final Set<Operator> operators = new TreeSet<>(Arrays.asList(ADD, SUBTRACT,
+      MULTIPLY, DIVIDE, POWER, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN,
+      GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN,
+      NOT_EQUAL, BOOLAND, BETWEEN, CASE, CONCAT, IN, IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR));
 
   public static Set<Operator> getOperators() {
     return operators;
@@ -318,7 +295,7 @@ public class Operator implements Comparable<Operator> {
     addFunction(Kind.NVL2);
     addFunction(Kind.PI);
     addFunction(Kind.POWER);
-    addFunction(Kind.PREVIOUS_DAY);    
+    addFunction(Kind.PREVIOUS_DAY);
     addFunction(Kind.QUARTER);
     addFunction(Kind.RADIANS);
     addFunctionNotDeterministic(Kind.RAND);
@@ -372,13 +349,15 @@ public class Operator implements Comparable<Operator> {
   }
 
   public static Function getFunction(final Kind kind) {
-    if (kind == null) return null;
+    if (kind == null)
+      return null;
 
     return getFunction(kind.name());
   }
 
   public static Function getFunction(final String name) {
-    if (name == null) return null;
+    if (name == null)
+      return null;
 
     return FUNCTIONS_BY_NAME.get(name.toUpperCase());
   }
@@ -414,8 +393,8 @@ public class Operator implements Comparable<Operator> {
     }
   }
 
-  private static void createFunction(
-      Kind kind, String name, boolean isAlias, boolean isDeterministic) {
+  private static void createFunction(Kind kind, String name, boolean isAlias,
+      boolean isDeterministic) {
     Function function = new Function(kind, name, isAlias, isDeterministic);
     register(function);
     FUNCTIONS_BY_NAME.put(name, function);
@@ -438,7 +417,8 @@ public class Operator implements Comparable<Operator> {
 
     StringWriter writer = new StringWriter();
 
-    try (InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(file))) {
+    try (
+        InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(file))) {
       IOUtils.copy(is, writer);
     } catch (Exception e) {
       writer.append(e.getMessage());
@@ -451,7 +431,8 @@ public class Operator implements Comparable<Operator> {
   private String findDescription(Kind kind) {
     String doc = getHtmlDocumentation(kind);
 
-    if (doc == null) return "";
+    if (doc == null)
+      return "";
 
     int beginIndex = doc.indexOf("id=\"preamble\"");
     beginIndex = doc.indexOf("<p>", beginIndex);
@@ -494,8 +475,8 @@ public class Operator implements Comparable<Operator> {
    * @param leftPrecedence Left precedence
    * @param rightPrecedence Right precedence
    */
-  protected Operator(
-      Kind kind, String name, int leftPrecedence, int rightPrecedence, boolean isAlias) {
+  protected Operator(Kind kind, String name, int leftPrecedence, int rightPrecedence,
+      boolean isAlias) {
     super();
     this.kind = kind;
     this.name = name;
@@ -505,14 +486,10 @@ public class Operator implements Comparable<Operator> {
     this.description = findDescription(kind);
   }
 
-  protected Operator(
-      Kind kind, String name, int precedence, boolean leftAssociativity, boolean isAlias) {
-    this(
-        kind,
-        name,
-        leftPrec(precedence, leftAssociativity),
-        rightPrec(precedence, leftAssociativity),
-        isAlias);
+  protected Operator(Kind kind, String name, int precedence, boolean leftAssociativity,
+      boolean isAlias) {
+    this(kind, name, leftPrec(precedence, leftAssociativity),
+        rightPrec(precedence, leftAssociativity), isAlias);
   }
 
   protected static int leftPrec(int precedence, boolean leftAssociativity) {
@@ -559,18 +536,18 @@ public class Operator implements Comparable<Operator> {
    * @throws error if not enough or too many arguments
    */
   public void checkNumberOfArguments(int len) throws ExpressionException {
+    // Checked by parser
   }
 
   public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
     switch (kind) {
-      
-      case CAST:
-      {
+
+      case CAST: {
         Value value = args[0].eval(context);
+        if (value.isNull() )
+          return Value.NULL;
+
         Value type = args[1].eval(context);
-
-        if (value.isNull() || type.isNull()) return Value.NULL;
-
         DataType targetType = DataType.of(type.toString());
 
         if (args.length == 3) {
@@ -581,465 +558,423 @@ public class Operator implements Comparable<Operator> {
 
         return value.convertTo(targetType);
       }
-      
-      case BITAND:
-        {
-          Value left = args[0].eval(context);
-          if (left.isNull()) return left;
-          Value right = args[1].eval(context);
-          if (right.isNull()) return right;
 
-          return Value.of(left.toInteger() & right.toInteger());
+      case BITAND: {
+        Value left = args[0].eval(context);
+        if (left.isNull())
+          return left;
+        Value right = args[1].eval(context);
+        if (right.isNull())
+          return right;
+
+        return ValueInteger.of(left.toInteger() & right.toInteger());
+      }
+
+      case BITNOT: {
+        Value value = args[0].eval(context);
+        if (value.isNull())
+          return value;
+
+        return ValueInteger.of(~value.toInteger());
+      }
+
+      case BITOR: {
+        Value left = args[0].eval(context);
+        if (left.isNull())
+          return left;
+        Value right = args[1].eval(context);
+        if (right.isNull())
+          return right;
+
+        return ValueInteger.of(left.toInteger() | right.toInteger());
+      }
+
+      case BITXOR: {
+        Value left = args[0].eval(context);
+        if (left.isNull())
+          return left;
+        Value right = args[1].eval(context);
+        if (right.isNull())
+          return right;
+
+        return ValueInteger.of(left.toInteger() ^ right.toInteger());
+      }
+
+      case BETWEEN: {
+        Value operand = args[0].eval(context);
+        Value start = args[1].eval(context);
+        Value end = args[2].eval(context);
+
+        if (operand.isNull() || start.isNull() || end.isNull()) {
+          return Value.NULL;
         }
 
-      case BITNOT:
-        {
-          Value value = args[0].eval(context);
-          if (value.isNull()) return value;
+        return ValueBoolean.of(operand.compareTo(start) >= 0 && operand.compareTo(end) <= 0);
+      }
 
-          return Value.of(~value.toInteger());
-        }
+      case CASE_WHEN: {
+        int index = 0;
+        IExpression switchExpression = args[0];
+        ExpressionList whenList = (ExpressionList) args[1];
+        ExpressionList thenList = (ExpressionList) args[2];
+        IExpression elseExpression = args[3];
 
-      case BITOR:
-        {
-          Value left = args[0].eval(context);
-          if (left.isNull()) return left;
-          Value right = args[1].eval(context);
-          if (right.isNull()) return right;
-
-          return Value.of(left.toInteger() | right.toInteger());
-        }
-
-      case BITXOR:
-        {
-          Value left = args[0].eval(context);
-          if (left.isNull()) return left;
-          Value right = args[1].eval(context);
-          if (right.isNull()) return right;
-
-          return Value.of(left.toInteger() ^ right.toInteger());
-        }
-
-      case BETWEEN:
-        {
-          Value operand = args[0].eval(context);
-          Value start = args[1].eval(context);
-          Value end = args[2].eval(context);
-
-          if (operand.isNull() || start.isNull() || end.isNull()) {
-            return Value.NULL;
-          }
-
-          return Value.of(operand.compareTo(start) >= 0 && operand.compareTo(end) <= 0);
-        }
-
-      case CASE_WHEN:
-        {
-          int index = 0;
-          IExpression switchExpression = args[0];
-          ExpressionList whenList = (ExpressionList) args[1];
-          ExpressionList thenList = (ExpressionList) args[2];
-          IExpression elseExpression = args[3];
-
-          if (switchExpression == null) {
-            for (IExpression whenOperand : whenList) {
-              Value condition = whenOperand.eval(context);
-              if (condition.toBoolean() == true) {
-                return thenList.get(index).eval(context);
-              }
-              index++;
+        if (switchExpression == null) {
+          for (IExpression whenOperand : whenList) {
+            Value condition = whenOperand.eval(context);
+            if (condition.toBoolean()) {
+              return thenList.get(index).eval(context);
             }
-          } else {
-            Value condition = switchExpression.eval(context);
-            for (IExpression whenOperand : whenList) {
-              Value value = whenOperand.eval(context);
-              if (condition.compareTo(value) == 0) {
-                return thenList.get(index).eval(context);
-              }
-              index++;
+            index++;
+          }
+        } else {
+          Value condition = switchExpression.eval(context);
+          for (IExpression whenOperand : whenList) {
+            Value value = whenOperand.eval(context);
+            if (condition.compareTo(value) == 0) {
+              return thenList.get(index).eval(context);
             }
+            index++;
           }
-
-          return elseExpression.eval(context);
         }
 
-      case CONCAT:
-        {
-          StringBuilder builder = new StringBuilder();
-          for (IExpression operand : args) {
-            Value value = operand.eval(context);
-            if (!value.isNull()) builder.append(value);
-          }
+        return elseExpression.eval(context);
+      }
 
-          if (builder.length() == 0) return Value.NULL;
-
-          return Value.of(builder.toString());
+      case CONCAT: {
+        StringBuilder builder = new StringBuilder();
+        for (IExpression operand : args) {
+          Value value = operand.eval(context);
+          if (!value.isNull())
+            builder.append(value);
         }
 
-      case LIKE:
-        {
-          Value input = args[0].eval(context);
-          Value pattern = args[1].eval(context);
+        if (builder.length() == 0)
+          return Value.NULL;
 
-          if (input.isNull() || pattern.isNull()) {
-            return Value.FALSE;
-          }
+        return ValueString.of(builder.toString());
+      }
 
-          String escape = null;
-          if (args.length == 3) {
-            Value escapeValue = args[2].eval(context);
-            escape = escapeValue.toString();
-          }
-
-          final String regex = toRegexLike(pattern.toString(), escape);
-
-          Pattern p = Pattern.compile(regex, Pattern.DOTALL);
-
-          return Value.of(p.matcher(input.toString()).matches());
+      case LIKE: {
+        Value input = args[0].eval(context);
+        if (input.isNull() ) {
+          return Value.NULL;
+        }
+        Value pattern = args[1].eval(context);
+        if (pattern.isNull()) {
+          return Value.NULL;
         }
 
-      case ILIKE:
-        {
-          Value input = args[0].eval(context);
-          Value pattern = args[1].eval(context);
-
-          if (input.isNull() || pattern.isNull()) {
-            return Value.FALSE;
-          }
-
-          String escape = null;
-          if (args.length == 3) {
-            Value escapeValue = args[2].eval(context);
-            escape = escapeValue.toString();
-          }
-
-          final String regex = toRegexLike(pattern.toString(), escape);
-
-          Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-
-          return Value.of(p.matcher(input.toString()).matches());
-        }
-
-      case NEGATIVE:
-        {
-          Value value = args[0].eval(context);
-          return value.negate();
-        }
-
-      case LOGICAL_NOT:
-        {
-          Value operand = args[0].eval(context);
-
-          if (operand.isNull()) {
+        String escape = null;
+        if (args.length == 3) {
+          Value escapeValue = args[2].eval(context);
+          if (escapeValue.isNull() ) {
             return Value.NULL;
           }
-
-          return Value.of(!operand.toBoolean());
+          escape = escapeValue.toString();
         }
 
-      case LOGICAL_AND:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
-          if (left.isNull() || right.isNull()) {
+        final String regex = toRegexLike(pattern.toString(), escape);
+
+        Pattern p = Pattern.compile(regex, Pattern.DOTALL);
+
+        return ValueBoolean.of(p.matcher(input.toString()).matches());
+      }
+
+      case ILIKE: {
+        Value input = args[0].eval(context);
+        if (input.isNull() ) {
+          return Value.NULL;
+        }
+        Value pattern = args[1].eval(context);
+        if (pattern.isNull()) {
+          return Value.NULL;
+        }
+
+        String escape = null;
+        if (args.length == 3) {
+          Value escapeValue = args[2].eval(context);
+          if (escapeValue.isNull() ) {
             return Value.NULL;
           }
-          return Value.of(left.toBoolean() && right.toBoolean());
+          escape = escapeValue.toString();
         }
 
-      case LOGICAL_OR:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
-          if (left.isNull() && right.isNull()) {
-            return Value.NULL;
-          }
+        final String regex = toRegexLike(pattern.toString(), escape);
 
-          return Value.of(left.toBoolean() || right.toBoolean());
+        Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+
+        return ValueBoolean.of(p.matcher(input.toString()).matches());
+      }
+
+      case NEGATIVE: {
+        Value value = args[0].eval(context);
+        return value.negate();
+      }
+
+      case LOGICAL_NOT: {
+        Value value = args[0].eval(context);
+
+        if (value.isNull()) {
+          return Value.NULL;
         }
 
-      case LOGICAL_XOR:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          return Value.of(
-              (left.toBoolean() || right.toBoolean()) && !(left.toBoolean() && right.toBoolean()));
+        return ValueBoolean.of(!value.toBoolean());
+      }
+
+      case LOGICAL_AND: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
+        }
+        return ValueBoolean.of(left.toBoolean() && right.toBoolean());
+      }
+
+      case LOGICAL_OR: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        if (left.isNull() && right.isNull()) {
+          return Value.NULL;
         }
 
-      case ADD:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+        return ValueBoolean.of(left.toBoolean() || right.toBoolean());
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          return left.add(right);
+      case LOGICAL_XOR: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
+        return ValueBoolean.of(
+            (left.toBoolean() || right.toBoolean()) && !(left.toBoolean() && right.toBoolean()));
+      }
 
-      case SUBTRACT:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+      case ADD: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        
+        return left.add(right);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          return left.subtract(right);
-        }
+      case SUBTRACT: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        
+        return left.subtract(right);
+      }
 
-      case MULTIPLY:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+      case MULTIPLY: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        
+        return left.multiply(right);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          return left.multiply(right);
-        }
+      case DIVIDE: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        
+        return left.divide(right);
+      }
 
-      case DIVIDE:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
-
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          // prevent a division by zero ..
-          if (right.signum() == 0) throw createDivisionByZeroError();
-
-          return left.divide(right);
-        }
-
-      case MOD:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
-
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          // prevent a division by zero ..
-          if (right.signum() == 0) throw createDivisionByZeroError();
-
-          return left.remainder(right);
-        }
+      case MOD: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        
+        return left.remainder(right);
+      }
 
       case POWER: // Same implementation for operator and function
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+      {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+        
+        return left.power(right);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-          if (right.signum() < 0) throw new ArithmeticException("Cannot power negative " + right);
-          if (right.signum() == 0) return ValueInteger.ONE;
+      case EQUAL: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
 
-          return left.power(right);
+        // Treats NULLs as unknown values
+        // NULL is not equal ( = ) to anything—not even to another NULL.
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
 
-      case EQUAL:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
-
-          // Treats NULLs as unknown values
-          // NULL is not equal ( = ) to anything—not even to another NULL.
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
-
-          return Value.of(left.compareTo(right) == 0);
-        }
+        return ValueBoolean.of(left.compareTo(right) == 0);
+      }
 
       case LESS_THAN_OR_GREATER_THEN:
-      case NOT_EQUALS:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+      case NOT_EQUAL: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
 
-          if (left.isNull() && right.isNull()) {
-            return Value.FALSE;
-          }
-          if (left.isNull() || right.isNull()) {
-            return Value.TRUE;
-          }
-
-          return Value.of(left.compareTo(right) != 0);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
 
-      case LESS_THAN:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+        return ValueBoolean.of(left.compareTo(right) != 0);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
+      case LESS_THAN: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
 
-          return Value.of(left.compareTo(right) < 0);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
 
-      case LESS_THAN_OR_EQUAL:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+        return ValueBoolean.of(left.compareTo(right) < 0);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
+      case LESS_THAN_OR_EQUAL: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
 
-          return Value.of(left.compareTo(right) <= 0);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
 
-      case GREATER_THAN:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+        return ValueBoolean.of(left.compareTo(right) <= 0);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
+      case GREATER_THAN: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
 
-          return Value.of(left.compareTo(right) > 0);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
 
-      case GREATER_THAN_OR_EQUAL:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+        return ValueBoolean.of(left.compareTo(right) > 0);
+      }
 
-          if (left.isNull() || right.isNull()) {
-            return Value.NULL;
-          }
+      case GREATER_THAN_OR_EQUAL: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
 
-          return Value.of(left.compareTo(right) >= 0);
+        if (left.isNull() || right.isNull()) {
+          return Value.NULL;
         }
 
-      case IS:
-        {
-          Value left = args[0].eval(context);
-          Value right = args[1].eval(context);
+        return ValueBoolean.of(left.compareTo(right) >= 0);
+      }
 
-          return Value.of(left.equals(right));
+      case IS: {
+        Value left = args[0].eval(context);
+        Value right = args[1].eval(context);
+
+        return ValueBoolean.of(left.equals(right));
+      }
+
+      case IN: {
+        Value left = args[0].eval(context);
+        if (left.isNull()) {
+          return Value.NULL;
         }
 
-      case IN:
-        {
-          Value left = args[0].eval(context);
-          if (left.isNull()) {
-            return Value.FALSE;
+        ExpressionList list = (ExpressionList) args[1];
+        for (IExpression expression : list) {
+          Value value = expression.eval(context);
+          if (left.compareTo(value) == 0) {
+            return ValueBoolean.TRUE;
           }
-
-          ExpressionList list = (ExpressionList) args[1];
-          for (IExpression expression : list) {
-            Value value = expression.eval(context);
-            if (left.compareTo(value) == 0) {
-              return Value.TRUE;
-            }
-          }
-
-          return Value.FALSE;
         }
+
+        return ValueBoolean.FALSE;
+      }
 
       default:
         throw createInternalError(kind.name());
     }
   }
 
-  /* If leftOperand is an OrNode, then we modify the tree from:
+  /*
+   * If leftOperand is an OrNode, then we modify the tree from:
    *
-   *                              Or1
-   *                           /      \
-   *                      Or2              Nodex
-   *                   /      \                ...
-   *              left2        right2
+   * Or1 / \ Or2 Nodex / \ ... left2 right2
    *
-   *      to:
+   * to:
    *
-   *                                    Or1
-   *                                 /      \
-   *   changeToCNF(left2)          Or2
-   *                           /        \
-   *              changeToCNF(right2)  changeToCNF(Nodex)
+   * Or1 / \ changeToCNF(left2) Or2 / \ changeToCNF(right2) changeToCNF(Nodex)
    *
-   *  NOTE: We could easily switch places between changeToCNF(left2) and
-   *  changeToCNF(right2).
+   * NOTE: We could easily switch places between changeToCNF(left2) and changeToCNF(right2).
    */
 
   public IExpression optimize(IExpressionContext context, IExpression... operands)
       throws ExpressionException {
     switch (kind) {
       case NEGATIVE:
-      case LOGICAL_NOT:
-        {
-          IExpression operand = operands[0].optimize(context);
+      case LOGICAL_NOT: {
+        IExpression operand = operands[0].optimize(context);
 
-          if (operand.isConstant()) {
-            return eval(context, operand);
-          } else if (operand.is(this.kind)) {
-            // Eliminate double NOT or MINUS
-            ExpressionCall call = (ExpressionCall) operand;
-            return call.getOperands()[0];
-          }
-
-          return new ExpressionCall(this, operand);
+        if (operand.isConstant()) {
+          return eval(context, operand);
+        } else if (operand.is(this.kind)) {
+          // Eliminate double NOT or MINUS
+          ExpressionCall call = (ExpressionCall) operand;
+          return call.getOperands()[0];
         }
 
-      case LOGICAL_OR:
-        {
-          IExpression left = operands[0].optimize(context);
-          IExpression right = operands[1].optimize(context);
+        return new ExpressionCall(this, operand);
+      }
 
-          if (left.isConstant()) {
-            Value value = (Value) left;
+      case LOGICAL_OR: {
+        IExpression left = operands[0].optimize(context);
+        IExpression right = operands[1].optimize(context);
 
-            if (value.toBoolean()) return Value.TRUE;
-            if (!value.toBoolean()) return right;
-          }
+        if (left.isConstant()) {
+          Value value = (Value) left;
 
-          if (right.isConstant()) {
-            Value value = (Value) right;
-            if (value.toBoolean()) return Value.TRUE;
-            if (!value.toBoolean()) return left;
-          }
-          return new ExpressionCall(this, left, right);
+          if (value.toBoolean())
+            return ValueBoolean.TRUE;
+          if (!value.toBoolean())
+            return right;
         }
 
-      case LOGICAL_AND:
-        {
-          IExpression left = operands[0].optimize(context);
-          IExpression right = operands[1].optimize(context);
+        if (right.isConstant()) {
+          Value value = (Value) right;
+          if (value.toBoolean())
+            return ValueBoolean.TRUE;
+          if (!value.toBoolean())
+            return left;
+        }
+        return new ExpressionCall(this, left, right);
+      }
 
-          if (left.isConstant()) {
-            Value value = (Value) left;
+      case LOGICAL_AND: {
+        IExpression left = operands[0].optimize(context);
+        IExpression right = operands[1].optimize(context);
 
-            if (value.isNull() || (right.isConstant() && ((Value) right).isNull()))
-              return Value.NULL;
+        if (left.isConstant()) {
+          Value value = (Value) left;
 
-            if (!value.toBoolean()) return Value.FALSE;
-          }
+          if (value.isNull() || (right.isConstant() && ((Value) right).isNull()))
+            return Value.NULL;
 
-          if (right.isConstant()) {
-            Value value = (Value) right;
-            if (value.isNull()) return Value.NULL;
-            if (!value.toBoolean()) return Value.FALSE;
-          }
-
-          if (left.isConstant() && right.isConstant()) {
-            return eval(context, left, right);
-          }
-
-          return new ExpressionCall(this, left, right);
+          if (!value.toBoolean())
+            return ValueBoolean.FALSE;
         }
 
-        // Binary operator
+        if (right.isConstant()) {
+          Value value = (Value) right;
+          if (value.isNull())
+            return Value.NULL;
+          if (!value.toBoolean())
+            return ValueBoolean.FALSE;
+        }
+
+        if (left.isConstant() && right.isConstant()) {
+          return eval(context, left, right);
+        }
+
+        return new ExpressionCall(this, left, right);
+      }
+
+      // Binary operator
       case CONCAT:
       case CONTAINS:
       case ADD:
@@ -1049,67 +984,64 @@ public class Operator implements Comparable<Operator> {
       case MOD:
       case LOGICAL_XOR:
       case EQUAL:
-      case NOT_EQUALS:
+      case NOT_EQUAL:
       case LESS_THAN:
       case LESS_THAN_OR_EQUAL:
       case GREATER_THAN:
       case GREATER_THAN_OR_EQUAL:
       case IS:
-      case IN:
-        {
-          IExpression left = operands[0].optimize(context);
-          IExpression right = operands[1].optimize(context);
+      case IN: {
+        IExpression left = operands[0].optimize(context);
+        IExpression right = operands[1].optimize(context);
 
-          if (left.isConstant() && right.isConstant()) {
-            return eval(context, left, right);
-          }
-
-          return new ExpressionCall(this, left, right);
+        if (left.isConstant() && right.isConstant()) {
+          return eval(context, left, right);
         }
 
-      case LIKE:
-        {
-          IExpression left = operands[0].optimize(context);
-          IExpression right = operands[1].optimize(context);
+        return new ExpressionCall(this, left, right);
+      }
 
-          if (left.isConstant() && right.isConstant()) {
-            if (operands.length == 3) {
-              IExpression escape = operands[2].optimize(context);
-              return eval(context, left, right, escape);
-            }
-            return eval(context, left, right);
-          }
+      case LIKE: {
+        IExpression left = operands[0].optimize(context);
+        IExpression right = operands[1].optimize(context);
 
-          // TODO: optimize NULL LIKE X : convert to NULL
-          // TODO: optimize X LIKE NULL : convert to NULL
-          // TODO: optimize X LIKE '%' : convert to X IS NOT NULL
-          // TODO: optimize X LIKE 'Hello' : convert to X = 'Hello'
-          // TODO: optimize the common case of X LIKE 'foo%' to Starts_With(X,'foo')
-          // TODO: optimize the common case of X LIKE '%foo' to Ends_With(X,'foo')
-
+        if (left.isConstant() && right.isConstant()) {
           if (operands.length == 3) {
             IExpression escape = operands[2].optimize(context);
-            return new ExpressionCall(this, left, right, escape);
+            return eval(context, left, right, escape);
           }
-
-          return new ExpressionCall(this, left, right);
+          return eval(context, left, right);
         }
 
-      case BETWEEN:
-        {
-          IExpression operand = operands[0].optimize(context);
-          IExpression start = operands[1].optimize(context);
-          IExpression end = operands[2].optimize(context);
+        // TODO: optimize NULL LIKE X : convert to NULL
+        // TODO: optimize X LIKE NULL : convert to NULL
+        // TODO: optimize X LIKE '%' : convert to X IS NOT NULL
+        // TODO: optimize X LIKE 'Hello' : convert to X = 'Hello'
+        // TODO: optimize the common case of X LIKE 'foo%' to Starts_With(X,'foo')
+        // TODO: optimize the common case of X LIKE '%foo' to Ends_With(X,'foo')
 
-          if (operand.isConstant() && start.isConstant() && end.isConstant()) {
-            return eval(context, operand, start, end);
-          }
-
-          return new ExpressionCall(this, operand, start, end);
+        if (operands.length == 3) {
+          IExpression escape = operands[2].optimize(context);
+          return new ExpressionCall(this, left, right, escape);
         }
+
+        return new ExpressionCall(this, left, right);
+      }
+
+      case BETWEEN: {
+        IExpression operand = operands[0].optimize(context);
+        IExpression start = operands[1].optimize(context);
+        IExpression end = operands[2].optimize(context);
+
+        if (operand.isConstant() && start.isConstant() && end.isConstant()) {
+          return eval(context, operand, start, end);
+        }
+
+        return new ExpressionCall(this, operand, start, end);
+      }
 
       default:
-        //System.out.println("Not optimised " + kind);
+        // System.out.println("Not optimised " + kind);
         return new ExpressionCall(this, operands);
     }
   }
@@ -1120,126 +1052,118 @@ public class Operator implements Comparable<Operator> {
    */
   public void write(StringWriter writer, ExpressionCall call, int leftPrec, int rightPrec) {
     switch (kind) {
-      case BETWEEN:
-        {
-          IExpression[] operands = call.getOperands();
-          operands[0].write(writer, leftPrec, rightPrec);
-          writer.append(' ');
-          writer.append("BETWEEN");
-          writer.append(' ');
-          operands[1].write(writer, leftPrec, rightPrec);
-          writer.append(" AND ");
+      case BETWEEN: {
+        IExpression[] operands = call.getOperands();
+        operands[0].write(writer, leftPrec, rightPrec);
+        writer.append(' ');
+        writer.append("BETWEEN");
+        writer.append(' ');
+        operands[1].write(writer, leftPrec, rightPrec);
+        writer.append(" AND ");
+        operands[2].write(writer, leftPrec, rightPrec);
+        break;
+      }
+
+      case CASE_WHEN: {
+        IExpression[] operands = call.getOperands();
+
+        IExpression switchExpression = operands[0];
+        ExpressionList whenList = (ExpressionList) operands[1];
+        ExpressionList thenList = (ExpressionList) operands[2];
+        IExpression elseExpression = operands[3];
+
+        writer.append("CASE ");
+
+        // Form switch expression
+        if (switchExpression != null) {
+          switchExpression.write(writer, 0, 0);
+        }
+
+        int index = 0;
+        for (IExpression whenOperand : whenList) {
+          writer.append("WHEN ");
+          whenOperand.write(writer, 0, 0);
+          writer.append(" THEN ");
+          IExpression thenOperand = thenList.get(index++);
+          thenOperand.write(writer, 0, 0);
+        }
+        if (elseExpression != null) {
+          elseExpression.write(writer, leftPrec, rightPrec);
+        }
+        writer.append("END");
+        break;
+      }
+
+      case CONCAT: {
+        IExpression[] operands = call.getOperands();
+        operands[0].write(writer, leftPrec, rightPrec);
+        writer.append(this.getName());
+        operands[1].write(writer, leftPrec, rightPrec);
+        break;
+      }
+
+      case LIKE: {
+        IExpression[] operands = call.getOperands();
+        operands[0].write(writer, leftPrec, rightPrec);
+        writer.append(' ');
+        writer.append(this.getName());
+        writer.append(' ');
+        operands[1].write(writer, leftPrec, rightPrec);
+        if (call.getOperandCount() == 3) {
+          writer.append(" ESCAPE ");
           operands[2].write(writer, leftPrec, rightPrec);
-          break;
         }
+        break;
+      }
 
-      case CASE_WHEN:
-        {
-          IExpression[] operands = call.getOperands();
+      case NEGATIVE: {
+        IExpression[] operands = call.getOperands();
+        writer.append(this.getName());
+        operands[0].write(writer, leftPrec, rightPrec);
+        break;
+      }
 
-          IExpression switchExpression = operands[0];
-          ExpressionList whenList = (ExpressionList) operands[1];
-          ExpressionList thenList = (ExpressionList) operands[2];
-          IExpression elseExpression = operands[3];
-
-          writer.append("CASE ");
-
-          // Form switch expression
-          if (switchExpression != null) {
-            switchExpression.write(writer, 0, 0);
-          }
-
-          int index = 0;
-          for (IExpression whenOperand : whenList) {
-            writer.append("WHEN ");
-            whenOperand.write(writer, 0, 0);
-            writer.append(" THEN ");
-            IExpression thenOperand = thenList.get(index++);
-            thenOperand.write(writer, 0, 0);
-          }
-          if (elseExpression != null) {
-            elseExpression.write(writer, leftPrec, rightPrec);
-          }
-          writer.append("END");
-          break;
-        }
-
-      case CONCAT:
-        {
-          IExpression[] operands = call.getOperands();
-          operands[0].write(writer, leftPrec, rightPrec);
-          writer.append(this.getName());
-          operands[1].write(writer, leftPrec, rightPrec);
-          break;
-        }
-
-      case LIKE:
-        {
-          IExpression[] operands = call.getOperands();
-          operands[0].write(writer, leftPrec, rightPrec);
-          writer.append(' ');
-          writer.append(this.getName());
-          writer.append(' ');
-          operands[1].write(writer, leftPrec, rightPrec);
-          if (call.getOperandCount() == 3) {
-            writer.append(" ESCAPE ");
-            operands[2].write(writer, leftPrec, rightPrec);
-          }
-          break;
-        }
-
-      case NEGATIVE:
-        {
-          IExpression[] operands = call.getOperands();
-          writer.append(this.getName());
-          operands[0].write(writer, leftPrec, rightPrec);
-          break;
-        }
-
-      case LOGICAL_NOT:
-        {
-          IExpression[] operands = call.getOperands();
-          writer.append(this.getName());
-          writer.append(' ');
-          operands[0].write(writer, leftPrec, rightPrec);
-          break;
-        }
+      case LOGICAL_NOT: {
+        IExpression[] operands = call.getOperands();
+        writer.append(this.getName());
+        writer.append(' ');
+        operands[0].write(writer, leftPrec, rightPrec);
+        break;
+      }
 
       case LOGICAL_AND:
       case LOGICAL_OR:
       case LOGICAL_XOR:
       case EQUAL:
-      case NOT_EQUALS:
+      case NOT_EQUAL:
       case LESS_THAN_OR_GREATER_THEN:
       case LESS_THAN:
       case LESS_THAN_OR_EQUAL:
       case GREATER_THAN:
       case GREATER_THAN_OR_EQUAL:
       case IS:
-      case IN:
-        {
-          IExpression[] operands = call.getOperands();
-          operands[0].write(writer, leftPrec, rightPrec);
-          writer.append(' ');
-          writer.append(this.getName());
-          writer.append(' ');
-          operands[1].write(writer, leftPrec, rightPrec);
-          break;
-        }
+      case IN: {
+        IExpression[] operands = call.getOperands();
+        operands[0].write(writer, leftPrec, rightPrec);
+        writer.append(' ');
+        writer.append(this.getName());
+        writer.append(' ');
+        operands[1].write(writer, leftPrec, rightPrec);
+        break;
+      }
 
       case ADD:
       case SUBTRACT:
       case MULTIPLY:
       case DIVIDE:
-      case MOD:
-        {
-          // case POWER_OPERATOR:
-          IExpression[] operands = call.getOperands();
-          operands[0].write(writer, leftPrec, rightPrec);
-          writer.append(this.getName());
-          operands[1].write(writer, leftPrec, rightPrec);
-          break;
-        }
+      case MOD: {
+        // case POWER_OPERATOR:
+        IExpression[] operands = call.getOperands();
+        operands[0].write(writer, leftPrec, rightPrec);
+        writer.append(this.getName());
+        operands[1].write(writer, leftPrec, rightPrec);
+        break;
+      }
       default:
         throw createInternalError(kind.name());
     }
@@ -1250,9 +1174,6 @@ public class Operator implements Comparable<Operator> {
         BaseMessages.getString(PKG, "Expression.ArgumentOutOfRange", arg));
   }
 
-  protected final ExpressionException createDivisionByZeroError() {
-    return new ExpressionException(BaseMessages.getString(PKG, "Expression.DivisionByZero"));
-  }
 
   protected final ExpressionException createInternalError(final String error) {
     return new ExpressionException(BaseMessages.getString(PKG, "Expression.InternalError", error));
@@ -1322,7 +1243,8 @@ public class Operator implements Comparable<Operator> {
   public int compareTo(Operator o) {
 
     // Compare kind if same type
-    if (this.getClass().equals(o.getClass())) return this.name.compareTo(o.name);
+    if (this.getClass().equals(o.getClass()))
+      return this.name.compareTo(o.name);
 
     // Operator first and function last
     return (o instanceof Operator) ? 1 : 0;

@@ -19,15 +19,31 @@ package org.apache.hop.expression.value;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Value;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 
 public class ValueBoolean extends Value {
 
+
+  /** Boolean value of TRUE. */
+  public static final Value TRUE = new ValueBoolean(true);
+  
+  /** Boolean value of FALSE. */
+  public static final Value FALSE = new ValueBoolean(false);
+  
+  /**
+   * Get the boolean value for the given boolean.
+   *
+   * @param b the boolean
+   * @return the value
+   */
+  public static Value of(boolean value) {
+    return value ? TRUE : FALSE;
+  }
+  
   private final boolean value;
 
-  public ValueBoolean(boolean value) {
+  private ValueBoolean(boolean value) {
     this.value = value;
   }
 
@@ -84,7 +100,7 @@ public class ValueBoolean extends Value {
 
   @Override
   public Value negate() {
-    return value ? Value.FALSE : Value.TRUE;
+    return value ? ValueBoolean.FALSE : ValueBoolean.TRUE;
   }
 
   @Override

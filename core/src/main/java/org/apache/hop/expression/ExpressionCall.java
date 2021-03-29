@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.value.Value;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class ExpressionCall implements IExpression {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands;
+    
     operator.checkNumberOfArguments(operands.length);
   }
 

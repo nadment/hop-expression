@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
 import org.junit.Test;
 
 public class OptimizerTest {

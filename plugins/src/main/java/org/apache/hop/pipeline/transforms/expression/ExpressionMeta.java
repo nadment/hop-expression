@@ -63,6 +63,7 @@ public class ExpressionMeta extends BaseTransformMeta
   private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes
 
   /** Constants */
+  private static final String TAG_FIELD = "field"; // $NON-NLS-1$
   private static final String TAG_FIELD_EXPRESSION = "expression"; // $NON-NLS-1$
   private static final String TAG_FIELD_NAME = "field"; // $NON-NLS-1$
   private static final String TAG_FIELD_TYPE = "type"; // $NON-NLS-1$
@@ -77,7 +78,7 @@ public class ExpressionMeta extends BaseTransformMeta
     super();
     
     this.fields = new ArrayList<>();
-    for (ExpressionField field : this.getExpressionFields()) {
+    for (ExpressionField field : other.getExpressionFields()) {
       fields.add(new ExpressionField(field));
     }
   }
@@ -133,11 +134,11 @@ public class ExpressionMeta extends BaseTransformMeta
 
     try {
       Node nodes = XmlHandler.getSubNode(transformNode, "fields");
-      int count = XmlHandler.countNodes(nodes, "field");
+      int count = XmlHandler.countNodes(nodes, TAG_FIELD_NAME);
 
       fields = new ArrayList<>(count);
       for (int i = 0; i < count; i++) {
-        Node line = XmlHandler.getSubNodeByNr(nodes, "field", i);
+        Node line = XmlHandler.getSubNodeByNr(nodes, TAG_FIELD, i);
 
         ExpressionField value = new ExpressionField();
         value.setName(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_NAME), ""));

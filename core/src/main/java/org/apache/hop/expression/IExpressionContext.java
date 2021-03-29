@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.value.Value;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;

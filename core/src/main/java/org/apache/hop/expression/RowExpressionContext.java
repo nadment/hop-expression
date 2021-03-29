@@ -23,6 +23,14 @@ import java.util.Objects;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.value.ValueBigNumber;
+import org.apache.hop.expression.value.ValueBinary;
+import org.apache.hop.expression.value.ValueBoolean;
+import org.apache.hop.expression.value.ValueDate;
+import org.apache.hop.expression.value.ValueInteger;
+import org.apache.hop.expression.value.ValueNumber;
+import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 
 public class RowExpressionContext extends ExpressionContext {
@@ -40,6 +48,7 @@ public class RowExpressionContext extends ExpressionContext {
     this.row = row;
   }
 
+  @Override
   public Value resolve(String name) throws ExpressionException {
 
     int index = rowMeta.indexOfValue(name);
@@ -53,7 +62,7 @@ public class RowExpressionContext extends ExpressionContext {
           Boolean value = rowMeta.getBoolean(row, index);
           if (value == null) return Value.NULL;
 
-          return Value.of(value);
+          return ValueBoolean.of(value);
         case IValueMeta.TYPE_DATE:
         case IValueMeta.TYPE_TIMESTAMP:
           // No getTimestamp from RowMeta ???
@@ -61,22 +70,22 @@ public class RowExpressionContext extends ExpressionContext {
           if (date == null) return Value.NULL;
 
           //	LocalDateTime dt = LocalDateTime.ofInstant(date.toInstant(), getZone());
-          return Value.of(date.toInstant());
+          return ValueDate.of(date.toInstant());
         case IValueMeta.TYPE_STRING:
           String string = rowMeta.getString(row, index);
-          return Value.of(string);
+          return ValueString.of(string);
         case IValueMeta.TYPE_INTEGER:
           Long integer = rowMeta.getInteger(row, index);
-          return Value.of(integer);
+          return ValueInteger.of(integer);
         case IValueMeta.TYPE_NUMBER:
           Double number = rowMeta.getNumber(row, index);
-          return Value.of(number);
+          return ValueNumber.of(number);
         case IValueMeta.TYPE_BIGNUMBER:
           BigDecimal bignumber = rowMeta.getBigNumber(row, index);
-          return Value.of(bignumber);
+          return ValueBigNumber.of(bignumber);
         case IValueMeta.TYPE_BINARY:
           byte[] binary = rowMeta.getBinary(row, index);
-          return Value.of(binary);
+          return ValueBinary.of(binary);
       }
     } catch (HopValueException e) {
       throw new ExpressionException("Error field value " + e.toString());

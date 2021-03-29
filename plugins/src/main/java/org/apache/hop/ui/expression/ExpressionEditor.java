@@ -141,7 +141,7 @@ public class ExpressionEditor extends SashForm {
     ds.setTransfer(new Transfer[] {TextTransfer.getInstance()});
     ds.addDragListener(
         new DragSourceAdapter() {
-
+          @Override
           public void dragStart(DragSourceEvent event) {
             TreeItem item = tree.getSelection()[0];
 
@@ -149,7 +149,7 @@ public class ExpressionEditor extends SashForm {
               event.doit = true;
             } else event.doit = false;
           }
-
+          @Override
           public void dragSetData(DragSourceEvent event) {
             // Set the data to be the first selected item's text
             event.data = labelProvider.getText(tree.getSelection()[0].getData());
@@ -170,7 +170,7 @@ public class ExpressionEditor extends SashForm {
     Map<String, TreeItem> items = new HashMap<>();
     for (Category category : Category.values()) {
 
-      if (category == Category.None) continue;
+      if (category == Category.NONE) continue;
 
       TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
       item.setImage(GuiResource.getInstance().getImageFolder());

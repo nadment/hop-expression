@@ -211,7 +211,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
   private static IFormat<BigDecimal> create(String format) {
 
-    if ( format.indexOf('|')>0 ) {
+    if ( format.indexOf('|')>=0 ) {
       List<NumberFormat> formats = new ArrayList<>(); 
       for(String f: format.split("\\|")) {
         IFormat<BigDecimal> fmt = cache.get(f);
@@ -642,37 +642,33 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
         }
       }
 
+      String symbol;
       switch (this.currency) {
-        case LOCAL_: {
-          String symbol = symbols.getCurrencySymbol();
+        case LOCAL_: 
+          symbol = symbols.getCurrencySymbol();
           if (text.regionMatches(start, symbol, 0, symbol.length()))
             start += symbol.length();
           break;
-        }
-        case _LOCAL: {
-          String symbol = symbols.getCurrencySymbol();
+        case _LOCAL: 
+          symbol = symbols.getCurrencySymbol();
           if (text.regionMatches(end - symbol.length(), symbol, 0, symbol.length()))
             end -= symbol.length();
           break;
-        }
-        case ISO_: {
-          String code = symbols.getCurrency().getCurrencyCode();
-          if (text.regionMatches(start, code, 0, code.length()))
-            start += code.length();
+        case ISO_: 
+          symbol = symbols.getCurrency().getCurrencyCode();
+          if (text.regionMatches(start, symbol, 0, symbol.length()))
+            start += symbol.length();
           break;
-        }
-        case _ISO: {
-          String code = symbols.getCurrency().getCurrencyCode();
-          if (text.regionMatches(end - code.length(), code, 0, code.length()))
-            end -= code.length();
-          break;
-        }
-        case DOLLARS: {
+        case _ISO: 
+          symbol = symbols.getCurrency().getCurrencyCode();
+          if (text.regionMatches(end - symbol.length(), symbol, 0, symbol.length()))
+            end -= symbol.length();
+          break;        
+        case DOLLARS: 
           char c = text.charAt(start);
           if (c == '$')
             start++;
-          break;
-        }
+          break;        
         default:
           break;
       }
@@ -924,29 +920,24 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     }
 
     // Add currency symbol
-
+    //
     switch (this.currency) {
       case LOCAL_:
         output.insert(0, symbols.getCurrencySymbol());
         length += symbols.getCurrencySymbol().length();
         break;
       case _LOCAL:
-        String cs = symbols.getCurrencySymbol();
-        output.append(cs);
+        output.append(symbols.getCurrencySymbol());
         length += symbols.getCurrencySymbol().length();
         break;
-      case ISO_: {
-        String code = symbols.getCurrency().getCurrencyCode();
-        output.insert(0, code);
-        length += code.length();
-        break;
-      }
-      case _ISO: {
-        String code = symbols.getCurrency().getCurrencyCode();
-        output.append(code);
-        length += code.length();
-        break;
-      }
+      case ISO_: 
+        output.insert(0, symbols.getCurrency().getCurrencyCode());
+        length += symbols.getCurrency().getCurrencyCode().length();
+        break;      
+      case _ISO:
+        output.append(symbols.getCurrency().getCurrencyCode());
+        length += symbols.getCurrency().getCurrencyCode().length();
+        break;      
       case DOLLARS:
         output.insert(0, '$');
         length += 1;
@@ -956,9 +947,11 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     }
 
     // Add sign
+    //
     length += addSign(output, number.signum());
 
     // Add scientific notation
+    //
     if (scientific > 0) {
       output.append('E');
       output.append(power < 0 ? '-' : '+');

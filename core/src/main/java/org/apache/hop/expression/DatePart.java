@@ -118,7 +118,6 @@ public enum DatePart {
       }
     }
     
-//    throw new EnumConstantNotPresentException(DataType.class, s);
     throw new IllegalArgumentException("Invalid date part: "+s);
   }
 

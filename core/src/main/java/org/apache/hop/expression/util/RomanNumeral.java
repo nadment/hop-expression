@@ -56,7 +56,7 @@ public class RomanNumeral {
    * @param end the ending index, exclusive.
    * @return The arabic long value
    */
-  static public long parse(String str, int start, int end)
+  public static long parse(String str, int start, int end)
   {
       long result = 0L;
       
@@ -91,7 +91,7 @@ public class RomanNumeral {
   /**
    * This function returns value of a Roman symbol
    */
-  static private int parse(char r)
+  private static int parse(char r)
   {
     switch(r) {
       case 'I': return 1;

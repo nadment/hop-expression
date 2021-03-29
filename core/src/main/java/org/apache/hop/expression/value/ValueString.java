@@ -24,15 +24,22 @@ import java.util.Objects;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Value;
 import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.i18n.BaseMessages;
 
 public class ValueString extends Value {
+
+  /** Returns an string Value that equals to {@code value}. */
+  public static Value of(String value) {
+    if (value == null)
+      return Value.NULL;
+    return new ValueString(value);
+  }
+  
   /** The string data. */
   private final String value;
 
-  public ValueString(String value) {
+  protected ValueString(String value) {
     this.value = Objects.requireNonNull(value);
   }
 
@@ -152,7 +159,7 @@ public class ValueString extends Value {
 
       return (long) Double.parseDouble(value);
     } catch (NumberFormatException e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+      throw createInvalidNumberError();
     }
   }
 
@@ -161,7 +168,7 @@ public class ValueString extends Value {
     try {
       return Double.parseDouble(value);
     } catch (NumberFormatException e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+      throw createInvalidNumberError();
     }
   }
 
@@ -170,7 +177,12 @@ public class ValueString extends Value {
     try {
       return new BigDecimal(value.trim());
     } catch (NumberFormatException e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+      throw createInvalidNumberError();
     }
+  }
+  
+  protected final ExpressionException createInvalidNumberError() {
+    return new ExpressionException(
+        BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
   }
 }

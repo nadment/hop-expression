@@ -29,7 +29,8 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -64,7 +65,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
     String value = variables.resolve(source);
 
     if (value.charAt(0) != '=') {
-      return Value.of(value);
+      return ValueString.of(value);
     }
 
     IExpression expression;
@@ -166,7 +167,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
         if (meta.isAddCloneNum()) {
           // Let's add to clone number
           // Clone starts at number 1 (0 is for the original row)
-          Long clonenum = new Long(i + 1L);
+          Long clonenum = i + 1L;
           outputRowData[rowIndex] = clonenum;
         }
       }

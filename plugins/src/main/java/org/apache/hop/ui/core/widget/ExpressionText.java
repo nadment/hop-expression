@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.ui.core.widget;
 
@@ -81,77 +79,36 @@ public class ExpressionText extends Composite {
     this(variables, composite, flags, toolTipText, null, null);
   }
 
-  public ExpressionText(
-      IVariables variables,
-      Composite composite,
-      int flags,
-      IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface) {
+  public ExpressionText(IVariables variables, Composite composite, int flags,
+      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface) {
     this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface);
   }
 
-  public ExpressionText(
-      IVariables variables,
-      Composite composite,
-      int flags,
-      String toolTipText,
-      IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface) {
+  public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText,
+      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface) {
     super(composite, SWT.NONE);
-    initialize(
-        variables,
-        composite,
-        flags,
-        toolTipText,
-        getCaretPositionInterface,
-        insertTextInterface,
-        null);
+    initialize(variables, composite, flags, toolTipText, getCaretPositionInterface,
+        insertTextInterface, null);
   }
 
-  public ExpressionText(
-      Composite composite,
-      IVariables variables,
-      int flags,
-      IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface,
+  public ExpressionText(Composite composite, IVariables variables, int flags,
+      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
       SelectionListener selectionListener) {
-    this(
-        variables,
-        composite,
-        flags,
-        null,
-        getCaretPositionInterface,
-        insertTextInterface,
+    this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface,
         selectionListener);
   }
 
-  public ExpressionText(
-      IVariables variables,
-      Composite composite,
-      int flags,
-      String toolTipText,
-      IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface,
+  public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText,
+      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
       SelectionListener selectionListener) {
     super(composite, SWT.NONE);
-    initialize(
-        variables,
-        composite,
-        flags,
-        toolTipText,
-        getCaretPositionInterface,
-        insertTextInterface,
-        selectionListener);
+    initialize(variables, composite, flags, toolTipText, getCaretPositionInterface,
+        insertTextInterface, selectionListener);
   }
 
-  protected void initialize(
-      IVariables variables,
-      Composite composite,
-      int flags,
-      String toolTipText,
-      IGetCaretPosition getCaretPositionInterface,
-      IInsertText insertTextInterface,
-      SelectionListener selectionListener) {
+  protected void initialize(IVariables variables, Composite composite, int flags,
+      String toolTipText, IGetCaretPosition getCaretPositionInterface,
+      IInsertText insertTextInterface, SelectionListener selectionListener) {
 
     this.toolTipText = toolTipText;
     this.getCaretPositionInterface = getCaretPositionInterface;
@@ -172,25 +129,20 @@ public class ExpressionText extends Composite {
     wText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
     // add button
-    Image image =
-        SwtSvgImageUtil.getImage(
-            Display.getCurrent(),
-            getClass().getClassLoader(),
-            "expression.svg",
-            14, //$NON-NLS-1$
-            14);
+    Image image = SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(),
+        "expression.svg", 14, // $NON-NLS-1$
+        14);
 
     wToolBar = new ToolBar(this, SWT.FLAT);
     final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
     toolItem.setImage(image);
     toolItem.setToolTipText("Browse");
-    toolItem.addSelectionListener(
-        new SelectionAdapter() {
-          @Override
-          public void widgetSelected(SelectionEvent e) {
-            openExpressionDialog(composite.getShell());
-          }
-        });
+    toolItem.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        openExpressionDialog(composite.getShell());
+      }
+    });
 
     wToolBar.setLayoutData(
         new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.HORIZONTAL_ALIGN_CENTER));
@@ -198,9 +150,8 @@ public class ExpressionText extends Composite {
     modifyListenerTooltipText = getModifyListenerTooltipText(wText);
     wText.addModifyListener(modifyListenerTooltipText);
 
-    controlSpaceKeyAdapter =
-        new ControlSpaceKeyAdapter(
-            variables, wText, getCaretPositionInterface, insertTextInterface);
+    controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText, getCaretPositionInterface,
+        insertTextInterface);
     wText.addKeyListener(controlSpaceKeyAdapter);
   }
 
@@ -292,10 +243,12 @@ public class ExpressionText extends Composite {
     wText.addSelectionListener(lsDef);
   }
 
+  @Override
   public void addKeyListener(KeyListener lsKey) {
     wText.addKeyListener(lsKey);
   }
 
+  @Override
   public void addFocusListener(FocusListener lsFocus) {
     wText.addFocusListener(lsFocus);
   }
@@ -304,18 +257,22 @@ public class ExpressionText extends Composite {
     wText.setEchoChar(c);
   }
 
+  @Override
   public void setEnabled(boolean flag) {
     wText.setEnabled(flag);
   }
 
+  @Override
   public boolean setFocus() {
     return wText.setFocus();
   }
 
+  @Override
   public void addTraverseListener(TraverseListener tl) {
     wText.addTraverseListener(tl);
   }
 
+  @Override
   public void setToolTipText(String toolTipText) {
     this.toolTipText = toolTipText;
     wText.setToolTipText(toolTipText);

@@ -18,15 +18,15 @@ package org.apache.hop.expression;
 
 /** Enumeration of the categories of operator */
 public enum Category {
-  Bitwise,
-  Comparison,
-  Conditional,
-  Conversion,
-  Cryptographic,
-  Date,
-  Logical,
-  Mathematical,
-  String,
-  Trigonometry,
-  None
+  BITWISE,
+  COMPARISON,
+  CONDITIONAL,
+  CONVERSION,
+  CRYPTOGRAPHIC,
+  DATE,
+  LOGICAL,
+  MATHEMATICAL,
+  STRING,
+  TRIGONOMETRY,
+  NONE
 }

@@ -21,15 +21,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Value;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 
 public class ValueBinary extends Value {
+  /**
+   * Get the value for the given binary.
+   *
+   * @param b the binary
+   * @return the value
+   */
+  public static Value of(byte[] value) {
+    if (value == null || value.length == 0)
+      return NULL;
+    return new ValueBinary(value);
+  }
+
+  
   /** The binary data. */
   private final byte[] value;
 
-  public ValueBinary(byte[] value) {
+  
+  protected ValueBinary(byte[] value) {
     this.value = Objects.requireNonNull(value);
   }
 

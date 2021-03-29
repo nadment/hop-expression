@@ -24,7 +24,7 @@ import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;

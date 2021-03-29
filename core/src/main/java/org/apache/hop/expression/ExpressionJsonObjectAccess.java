@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.value.Value;
 import java.io.StringWriter;
 
 public class ExpressionJsonObjectAccess implements IExpression {

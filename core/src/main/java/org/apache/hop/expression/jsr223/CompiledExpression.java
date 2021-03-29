@@ -22,7 +22,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Value;
+import org.apache.hop.expression.value.Value;
 
 public class CompiledExpression extends CompiledScript {
 

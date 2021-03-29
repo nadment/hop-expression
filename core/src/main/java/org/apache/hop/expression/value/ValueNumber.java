@@ -19,7 +19,6 @@ package org.apache.hop.expression.value;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Value;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -29,14 +28,29 @@ public class ValueNumber extends Value {
 
   private final double value;
 
-  /** Number value of 0. */
+  /** Numeric literal value of 0. */
   public static final Value ZERO = new ValueNumber(0.0);
 
-  /** Number value of 1. */
+  /** Numeric literal value of 1. */
   public static final Value ONE = new ValueNumber(1.0);
 
+  /** Numeric literal value of PI. */
+  public static final Value PI = new ValueNumber(Math.PI);
 
-  public ValueNumber(double value) {
+
+
+  public static Value of(Double value) {
+    if (value == null || value.isNaN())
+      return NULL;
+    if (value == 0.0)
+      return ZERO;
+    if (value == 1.0)
+      return ONE;
+
+    return new ValueNumber(value);
+  }
+  
+  protected ValueNumber(double value) {
     this.value = value;
   }
 
@@ -78,14 +92,16 @@ public class ValueNumber extends Value {
   public Value eval(IExpressionContext context) throws ExpressionException {
     return this;
   }
-
+  
+  @Override
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
     writer.append(this.toString());
   }
 
   @Override
   public int signum() {
-    return value == 0 ? 0 : (value < 0 ? -1 : 1);
+    if ( value== 0 ) return 0;    
+    return (value < 0) ? -1 : 1;
   }
 
   @Override
@@ -106,6 +122,7 @@ public class ValueNumber extends Value {
     return value;
   }
 
+  @Override
   public BigDecimal toBigNumber() {
     return BigDecimal.valueOf(value);
   }
@@ -126,7 +143,7 @@ public class ValueNumber extends Value {
 
     if (targetType == DataType.STRING) {
       String result = NumberFormat.format(this.toBigNumber(), format, context.getLocale());
-      return new ValueString(result);
+      return ValueString.of(result);
     }
 
     throw createUnsupportedConversionError(targetType);
@@ -134,8 +151,10 @@ public class ValueNumber extends Value {
 
   @Override
   public Value add(Value v) {
+    if (v.isNull())
+      return NULL;
     if (this.getType().compareTo(v.getType()) >= 0) {
-      return Value.of(value + v.toNumber());
+      return ValueNumber.of(value + v.toNumber());
     }
 
     return v.add(this);
@@ -143,8 +162,10 @@ public class ValueNumber extends Value {
 
   @Override
   public Value subtract(Value v) {
+    if (v.isNull())
+      return NULL;
     if (this.getType().compareTo(v.getType()) >= 0) {
-      return Value.of(value - v.toNumber());
+      return ValueNumber.of(value - v.toNumber());
     }
 
     return this.convertTo(v.getType()).subtract(v);
@@ -155,30 +176,48 @@ public class ValueNumber extends Value {
     if (v.isBigNumber()) {
       return v.multiply(this);
     }
-    return Value.of(value * v.toNumber());
+    if (v.isNull())
+      return NULL;
+    return ValueNumber.of(value * v.toNumber());
   }
 
   @Override
   public Value divide(Value v) {
+    if (v.isNull())
+      return NULL;
+    // prevent a division by zero ..
+    if (v.signum() == 0)
+      throw createDivisionByZeroError();    
     if (v.isBigNumber()) {
-      return Value.of(
+      return ValueBigNumber.of(
           this.toBigNumber().divide(v.toBigNumber(), ValueBigNumber.DEFAULT_SCALE, BigDecimal.ROUND_HALF_UP));
     }
 
-    return Value.of(value / v.toNumber());
+    return ValueNumber.of(value / v.toNumber());
   }
 
   @Override
   public Value remainder(Value v) {
+    if (v.isNull())
+      return NULL;
+    // prevent a division by zero ..
+    if (v.signum() == 0)
+      throw createDivisionByZeroError();    
     if (v.isBigNumber()) {
-      return Value.of(this.toBigNumber().remainder(v.toBigNumber()));
+      return ValueBigNumber.of(this.toBigNumber().remainder(v.toBigNumber()));
     }
 
-    return Value.of(value % v.toNumber());
+    return ValueNumber.of(value % v.toNumber());
   }
 
   @Override
   public Value power(Value v) {
-    return Value.of(Math.pow(value, v.toNumber()));
+    if (v.isNull())
+      return NULL;
+    if (v.signum() == 0)
+      return ONE;
+    if (v.signum() < 0)
+      throw new ArithmeticException("Cannot power negative " + v);
+    return ValueNumber.of(Math.pow(value, v.toNumber()));
   }
 }
