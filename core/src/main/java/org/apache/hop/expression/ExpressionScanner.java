@@ -404,7 +404,7 @@ public class ExpressionScanner {
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 
-          if (isFunction && Operator.getFunction(name) != null) {
+          if (isFunction && OperatorRegistry.getInstance().getFunction(name) != null) {
             return new Token(Id.FUNCTION, start, index, name);
           }
 

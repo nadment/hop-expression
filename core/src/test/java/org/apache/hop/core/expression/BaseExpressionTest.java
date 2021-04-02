@@ -32,8 +32,10 @@ import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.value.Value;
+import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -46,7 +48,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class BaseExpressionTest {
-
+  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  
   private RowExpressionContext context;
 
   public ExpressionContext getContext() {

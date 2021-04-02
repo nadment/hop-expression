@@ -21,11 +21,11 @@ import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -175,7 +175,7 @@ public class ExpressionEditor extends SashForm {
     HashMap<Kind, String> mapDisplay = new HashMap<>();
 
     // Primary operator
-    for (Operator o : Operator.getOperators()) {
+    for (Operator o : OperatorRegistry.getInstance().getOperators()) {
       
       if ( !categories.contains(o.getCategory()))
         categories.add(o.getCategory());
@@ -187,7 +187,7 @@ public class ExpressionEditor extends SashForm {
     }
 
     // Alias operator
-    for (Operator o : Operator.getOperators()) {
+    for (Operator o : OperatorRegistry.getInstance().getOperators()) {
       if (o.isAlias()) {
         String alias = mapDisplay.get(o.getKind());
         mapDisplay.replace(o.getKind(), String.join(", ", alias, o.getName()));

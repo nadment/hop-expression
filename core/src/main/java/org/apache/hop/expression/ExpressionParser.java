@@ -679,7 +679,7 @@ public class ExpressionParser {
   /** Function */
   private IExpression parseFunction(Token token) throws ParseException {
 
-    Function function = Operator.getFunction(token.text());
+    Function function = OperatorRegistry.getInstance().getFunction(token.text());
     List<IExpression> operands = new ArrayList<>();
 
     if (is(Id.LPARENTHESIS))
@@ -713,7 +713,7 @@ public class ExpressionParser {
     else if (Kind.EXTRACT == function.kind) {
 
       DatePart part = DatePart.of(next().text());
-
+      
       // Replace EXTRACT with the corresponding function
       switch (part) {
         case YEAR:
@@ -726,10 +726,10 @@ public class ExpressionParser {
         case WEEK:
         case DAYOFYEAR:
         case DAYOFWEEK:
-          function = Operator.getFunction(part.name());
+          function = OperatorRegistry.getInstance().getFunction(part.name());
           break;
         default:
-          function = Operator.getFunction(Kind.EXTRACT);
+          function = OperatorRegistry.getInstance().getFunction("EXTRACT");
           operands.add(ValueString.of(part.name()));
           break;
       }

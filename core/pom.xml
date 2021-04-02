@@ -120,7 +120,15 @@
 			<version>${commons-vfs2.version}</version>
 		</dependency>
 
-		<!-- test dependencies -->
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.apache.hop</groupId>
+      <artifactId>hop-core</artifactId>
+      <version>${hop.version}</version>
+      <classifier>tests</classifier>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

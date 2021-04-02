@@ -14,20 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
@@ -36,6 +22,11 @@ import org.apache.hop.expression.value.ValueBoolean;
 import org.apache.hop.expression.value.ValueInteger;
 import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * Operators have the precedence levels. An operator on higher levels is evaluated before an
@@ -50,9 +41,6 @@ public class Operator implements Comparable<Operator> {
   private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
   private static final ConcurrentHashMap<Kind, String> docs = new ConcurrentHashMap<>();
-
-  /** Set of functions or alias by name. */
-  private static final HashMap<String, Function> FUNCTIONS_BY_NAME = new HashMap<>(256);
 
   // -------------------------------------------------------------
   // BITWISE OPERATORS
@@ -99,7 +87,6 @@ public class Operator implements Comparable<Operator> {
   // -------------------------------------------------------------
   // COMPARISON OPERATORS
   // -------------------------------------------------------------
-
 
   /**
    * An operator describing the <code>IS</code> operator.
@@ -209,106 +196,6 @@ public class Operator implements Comparable<Operator> {
 
   /** String concatenation operator '<code>||</code>'. */
   public static final Operator CONCAT = new Operator(Kind.CONCAT, "||", 110, true, true,"i18n::Operator.Category.String");
-
-  /** Set of operators. */
-  private static final Set<Operator> operators = new TreeSet<>(Arrays.asList(ADD, SUBTRACT,
-      MULTIPLY, DIVIDE, POWER, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN,
-      GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN,
-      NOT_EQUAL, BOOLAND, BETWEEN, CASE, CONCAT, IN, IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR));
-
-  public static Set<Operator> getOperators() {
-    return operators;
-  }
-
-
-  // -------------------------------------------------------------
-  // FUNCTIONS
-  // -------------------------------------------------------------
-  static {
-    List<Method> methods = findAnnotatedMethods(Function.class, ScalarFunction.class);
-    for (Method method : methods) {
-      try {
-        ScalarFunction annotation = method.getAnnotation(ScalarFunction.class);
-        Kind kind = Kind.valueOf(annotation.name());
-        
-        // Create function
-        createFunction(kind, annotation.name(), false, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
-        
-        // Create alias
-        for (String name : annotation.alias()) {
-          createFunction(kind, name, true, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
-        }
-      } catch (Exception e) {
-        System.out.println("Error registring fucntion " + method);
-      }
-    }
-  }
-
-  private static List<Method> findAnnotatedMethods(Class<?> clazz,
-      Class<? extends Annotation> annotationClass) {
-    Method[] methods = clazz.getMethods();
-    List<Method> annotatedMethods = new ArrayList<Method>(methods.length);
-    for (Method method : methods) {
-      if (method.isAnnotationPresent(annotationClass)) {
-        annotatedMethods.add(method);
-      }
-    }
-    return annotatedMethods;
-  }
-  
-  private static void createFunction(Kind kind, String name, boolean isAlias,
-      boolean isDeterministic, Method method, int min, int max, String category) {
-    Function function = new Function(kind, name, isAlias, isDeterministic, method, min, max, category);
-    register(function);
-    FUNCTIONS_BY_NAME.put(name, function);
-  }
-
-  
-  public static Function getFunction(final Kind kind) {
-    if (kind == null)
-      return null;
-
-    return getFunction(kind.name());
-  }
-
-  public static Function getFunction(final String name) {
-    if (name == null)
-      return null;
-
-    return FUNCTIONS_BY_NAME.get(name.toUpperCase());
-  }
-
-  /**
-   * Register operator like function
-   *
-   * @param operator
-   */
-  protected static void register(Operator operator) {
-    operators.add(operator);
-  }
-
-  // protected static void addFunction(Kind kind) {
-  // createFunction(kind, kind.name(), false, true);
-  // }
-  //
-  // protected static void addFunction(Kind kind, String... alias) {
-  // createFunction(kind, kind.name(), false, true);
-  // for (String name : alias) {
-  // createFunction(kind, name, true, true);
-  // }
-  // }
-  //
-  // protected static void addFunctionNotDeterministic(Kind kind) {
-  // addFunctionNotDeterministic(kind, kind.name());
-  // }
-  //
-  // protected static void addFunctionNotDeterministic(Kind kind, String... alias) {
-  // createFunction(kind, kind.name(), false, false);
-  // for (String name : alias) {
-  // createFunction(kind, name, true, false);
-  // }
-  // }
-
 
   public static String getHtmlDocumentation(Kind kind) {
     String doc = docs.get(kind);
