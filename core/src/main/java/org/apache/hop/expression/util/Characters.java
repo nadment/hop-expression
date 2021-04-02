@@ -79,7 +79,7 @@ public class Characters {
     }
     return (FLAGS[ch] & IS_ALPHA) != 0;
   }
-
+ 
   /**
    * Determines if the specified character is alphabetic or digit
    *
@@ -92,8 +92,17 @@ public class Characters {
     }
     return (FLAGS[ch] & (IS_ALPHA | IS_DIGIT)) != 0;
   }
-
-  public static boolean isExponentChar(char ch) {
+  /**
+   * Determines if the specified character is space or tab
+   *
+   * @param ch
+   * @return
+   */
+  public static boolean isSpace(char ch) {
+    return ch == ' ' || ch == '\t' || ch=='\n';
+  }
+  
+  public static boolean isExponent(char ch) {
     return ch == 'e' || ch == 'E';
   }
 }

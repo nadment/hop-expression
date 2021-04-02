@@ -145,22 +145,32 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
   private static final Map<String, IFormat<BigDecimal>> cache = new ConcurrentHashMap<>();
 
-  public static enum Sign {
+  public static enum SignMode {
     DEFAULT,
     /** Trailing minus */
-    _MI,
+    TRAILING_MI,
     /** Leading minus */
-    MI_,
+    MI_LEADING,
     /** Trailing sign */
-    _S,
+    TRAILING_S,
     /** Leading sign */
-    S_,
+    S_LEADING,
     /** Angle brackets */
     PR
   };
 
   public static enum CurrencyMode {
-    NONE, DOLLARS, LOCAL_, _LOCAL, ISO_, _ISO
+    NONE, 
+    /** Dollars symbol */
+    DOLLARS, 
+    /** Leading local currency symbol */
+    LOCAL_LEADING,
+    /** Trailing local currency symbol */
+    TRAILING_LOCAL,
+    /** Leading ISO currency code */
+    ISO_LEADING, 
+    /** Trailing ISO currency code */
+    TRAILING_ISO
   };
 
   // Original format
@@ -189,7 +199,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
   private boolean localSymbols = true;
 
   private CurrencyMode currency = CurrencyMode.NONE;
-  private Sign sign = Sign.DEFAULT;
+  private SignMode sign = SignMode.DEFAULT;
   private String pattern = "";
   private int v = 0;
 
@@ -199,27 +209,18 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
       format = "TM";
     if (locale == null)
       locale = Locale.ENGLISH;
-    
-    IFormat<BigDecimal> fmt = cache.get(format);
-    if (fmt == null) {
-      fmt = create(format);
-      cache.put(format, fmt);
-    }
-    
+
+    IFormat<BigDecimal> fmt = cache.computeIfAbsent(format, f -> create(f));    
     return fmt.parse(value, locale);
   }
 
   private static IFormat<BigDecimal> create(String format) {
 
     if ( format.indexOf('|')>=0 ) {
-      List<NumberFormat> formats = new ArrayList<>(); 
-      for(String f: format.split("\\|")) {
-        IFormat<BigDecimal> fmt = cache.get(f);
-        if ( fmt==null ) {
-          fmt = new NumberFormat(f);
-          cache.put(format, fmt);
-        }
-        formats.add(new NumberFormat(f));          
+      List<IFormat<BigDecimal>> formats = new ArrayList<>(); 
+      for(String pattern: format.split("\\|")) {
+        IFormat<BigDecimal> fmt = cache.computeIfAbsent(pattern, f -> new NumberFormat(f)); 
+        formats.add(fmt);          
       }
       return new CompositeNumberFormat(format, formats.toArray(new NumberFormat[0]));
     } 
@@ -291,23 +292,23 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
     // S element can appear only in the first or last position of a number format.
     if (startsWithIgnoreCase(format, index, "S")) {
-      this.sign = Sign.S_;
+      this.sign = SignMode.S_LEADING;
       index += 1;
     } else if (endsWithIgnoreCase(format, "S")) {
-      this.sign = Sign._S;
+      this.sign = SignMode.TRAILING_S;
       length -= 1;
     } else if (startsWithIgnoreCase(format, index, "MI")) {
-      this.sign = Sign.MI_;
+      this.sign = SignMode.MI_LEADING;
       index += 2;
     }
     // MI element can appear only in the last position of a number format.
     else if (endsWithIgnoreCase(format, "MI")) {
-      this.sign = Sign._MI;
+      this.sign = SignMode.TRAILING_MI;
       length -= 2;
     }
     // PR element can appear only in the last position of a number format.
     else if (endsWithIgnoreCase(format, "PR")) {
-      this.sign = Sign.PR;
+      this.sign = SignMode.PR;
       length -= 2;
     }
 
@@ -324,12 +325,12 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     }
     // Prefix local currency symbol
     else if (startsWithIgnoreCase(format, index, "L")) {
-      this.currency = CurrencyMode.LOCAL_;
+      this.currency = CurrencyMode.LOCAL_LEADING;
       index++;
     }
     // Prefix ISO currency abbreviation
     else if (startsWithIgnoreCase(format, index, "C")) {
-      this.currency = CurrencyMode.ISO_;
+      this.currency = CurrencyMode.ISO_LEADING;
       index++;
     }
 
@@ -445,24 +446,24 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     }
     // Local currency symbol
     else if (startsWithIgnoreCase(format, index, "L")) {
-      this.currency = CurrencyMode._LOCAL;
+      this.currency = CurrencyMode.TRAILING_LOCAL;
       index += 1;
     }
     // ISO currency abbreviation
     else if (startsWithIgnoreCase(format, index, "C")) {
-      this.currency = CurrencyMode._ISO;
+      this.currency = CurrencyMode.TRAILING_ISO;
       index += 1;
     }
 
     // Sign
     if (startsWithIgnoreCase(format, index, "S")) {
-      this.sign = Sign._S;
+      this.sign = SignMode.TRAILING_S;
       index += 1;
     } else if (startsWithIgnoreCase(format, index, "MI")) {
-      this.sign = Sign._MI;
+      this.sign = SignMode.TRAILING_MI;
       index += 2;
     } else if (startsWithIgnoreCase(format, index, "PR")) {
-      this.sign = Sign.PR;
+      this.sign = SignMode.PR;
       index += 2;
     }
 
@@ -478,9 +479,9 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
   public String toString() {
 
     StringBuilder s = new StringBuilder();
-    if (sign == Sign.S_) {
+    if (sign == SignMode.S_LEADING) {
       s.append('S');
-    } else if (sign == Sign.MI_) {
+    } else if (sign == SignMode.MI_LEADING) {
       s.append("MI");
     }
 
@@ -494,9 +495,9 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
     if (currency == CurrencyMode.DOLLARS) {
       s.append('$');
-    } else if (currency == CurrencyMode.LOCAL_) {
+    } else if (currency == CurrencyMode.LOCAL_LEADING) {
       s.append("L");
-    } else if (currency == CurrencyMode.ISO_) {
+    } else if (currency == CurrencyMode.ISO_LEADING) {
       s.append("C");
     }
 
@@ -507,18 +508,18 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     }
 
     // Currency
-    if (currency == CurrencyMode._LOCAL) {
+    if (currency == CurrencyMode.TRAILING_LOCAL) {
       s.append("L");
-    } else if (currency == CurrencyMode._ISO) {
+    } else if (currency == CurrencyMode.TRAILING_ISO) {
       s.append("C");
     }
 
     // Sign
-    if (sign == Sign._S) {
+    if (sign == SignMode.TRAILING_S) {
       s.append('S');
-    } else if (sign == Sign._MI) {
+    } else if (sign == SignMode.TRAILING_MI) {
       s.append("MI");
-    } else if (sign == Sign.PR) {
+    } else if (sign == SignMode.PR) {
       s.append("PR");
     }
     return s.toString();
@@ -562,11 +563,11 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
       boolean isNegative = false;
 
       // Skip start space
-      while (start < end && Character.isSpaceChar(text.charAt(start)))
+      while (start < end && Characters.isSpace(text.charAt(start)))
         start++;
 
       // Skip end space
-      while (start < end && Character.isSpaceChar(text.charAt(end - 1)))
+      while (start < end && Characters.isSpace(text.charAt(end - 1)))
         end--;
 
       // Text-minimal number
@@ -587,32 +588,32 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
       }
 
       // Detect sign
-      if (this.sign == Sign.PR) {
+      if (this.sign == SignMode.PR) {
         if (text.charAt(start) == '<' && text.charAt(end - 1) == '>') {
           start++;
           end--;
           isNegative = true;
         }
-      } else if (this.sign == Sign._MI) {
+      } else if (this.sign == SignMode.TRAILING_MI) {
         if (text.charAt(end - 1) == '-') {
           end--;
           isNegative = true;
 
           // Skip end space
-          while (start < end && Character.isSpaceChar(text.charAt(end - 1)))
+          while (start < end && Characters.isSpace(text.charAt(end - 1)))
             end--;
         }
-      } else if (this.sign == Sign.MI_) {
+      } else if (this.sign == SignMode.MI_LEADING) {
         char c = text.charAt(start);
         if (c == '-' || c == '+') {
           start++;
           if (c == '-')
             isNegative = true;
           // Skip start space
-          while (start < end && Character.isSpaceChar(text.charAt(start)))
+          while (start < end && Characters.isSpace(text.charAt(start)))
             start++;
         }
-      } else if (this.sign == Sign._S) {
+      } else if (this.sign == SignMode.TRAILING_S) {
         char c = text.charAt(end - 1);
         if (c == '-') {
           end--;
@@ -622,7 +623,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
         } else {
           throw createUnparsableNumber(text, start);
         }
-      } else if (this.sign == Sign.S_) {
+      } else if (this.sign == SignMode.S_LEADING) {
         char c = text.charAt(start);
         if (c == '-') {
           start++;
@@ -632,7 +633,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
         } else {
           throw createUnparsableNumber(text, start);
         }
-      } else if (this.sign == Sign.DEFAULT) {
+      } else if (this.sign == SignMode.DEFAULT) {
         char c = text.charAt(start);
         if (c == '-') {
           start++;
@@ -644,22 +645,22 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
       String symbol;
       switch (this.currency) {
-        case LOCAL_: 
+        case LOCAL_LEADING: 
           symbol = symbols.getCurrencySymbol();
           if (text.regionMatches(start, symbol, 0, symbol.length()))
             start += symbol.length();
           break;
-        case _LOCAL: 
+        case TRAILING_LOCAL: 
           symbol = symbols.getCurrencySymbol();
           if (text.regionMatches(end - symbol.length(), symbol, 0, symbol.length()))
             end -= symbol.length();
           break;
-        case ISO_: 
+        case ISO_LEADING: 
           symbol = symbols.getCurrency().getCurrencyCode();
           if (text.regionMatches(start, symbol, 0, symbol.length()))
             start += symbol.length();
           break;
-        case _ISO: 
+        case TRAILING_ISO: 
           symbol = symbols.getCurrency().getCurrencyCode();
           if (text.regionMatches(end - symbol.length(), symbol, 0, symbol.length()))
             end -= symbol.length();
@@ -727,7 +728,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
       if (dot != -1) {
         for (int i = dot + 1; i < end; i++) {
           char c = text.charAt(i);
-          if (Character.isDigit(c)) {
+          if (Characters.isDigit(c)) {
             digits.append(c);
             fraction++;
           } else {
@@ -922,19 +923,19 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     // Add currency symbol
     //
     switch (this.currency) {
-      case LOCAL_:
+      case LOCAL_LEADING:
         output.insert(0, symbols.getCurrencySymbol());
         length += symbols.getCurrencySymbol().length();
         break;
-      case _LOCAL:
+      case TRAILING_LOCAL:
         output.append(symbols.getCurrencySymbol());
         length += symbols.getCurrencySymbol().length();
         break;
-      case ISO_: 
+      case ISO_LEADING: 
         output.insert(0, symbols.getCurrency().getCurrencyCode());
         length += symbols.getCurrency().getCurrencyCode().length();
         break;      
-      case _ISO:
+      case TRAILING_ISO:
         output.append(symbols.getCurrency().getCurrencyCode());
         length += symbols.getCurrency().getCurrencyCode().length();
         break;      
@@ -966,7 +967,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     }
 
     if (fillMode) {
-      int position = (sign == Sign.MI_) ? 1 : 0;
+      int position = (sign == SignMode.MI_LEADING) ? 1 : 0;
       while (output.length() < length) {
         output.insert(position, ' ');
       }
@@ -993,19 +994,19 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
       // Returns negative value with a leading minus sign (-) and positive value with
       // a leading plus sign (+).
-      case S_:
+      case S_LEADING:
         output.insert(0, (signum < 0) ? '-' : '+');
         break;
 
       // Returns negative value with a trailing minus sign (-) and positive value with
       // a trailing plus sign (+).
-      case _S:
+      case TRAILING_S:
         output.append((signum < 0) ? '-' : '+');
         break;
 
       // Returns negative value with a leading minus sign (-) and positive value with
       // a leading blank.
-      case MI_:
+      case MI_LEADING:
         if (signum < 0) {
           output.insert(0, '-');
         } else if (fillMode) {
@@ -1016,7 +1017,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
       // Returns negative value with a trailing minus sign (-) and positive value with
       // a trailing blank.
-      case _MI:
+      case TRAILING_MI:
         if (signum < 0) {
           output.append('-');
         } else if (fillMode) {

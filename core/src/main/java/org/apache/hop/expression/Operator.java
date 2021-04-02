@@ -16,9 +16,13 @@ package org.apache.hop.expression;
 
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.LogChannel;
+import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.value.Value;
 import org.apache.hop.expression.value.ValueBoolean;
 import org.apache.hop.expression.value.ValueInteger;
@@ -54,16 +59,16 @@ public class Operator implements Comparable<Operator> {
   // -------------------------------------------------------------
 
   /** Bitwise AND operator "&". */
-  public static final Operator BITAND = new Operator(Kind.BITAND, "&", 70, true, true);
+  public static final Operator BITAND = new Operator(Kind.BITAND, "&", 70, true, true,"i18n::Operator.Category.Bitwise");
 
   /** Bitwise OR operator "|". */
-  public static final Operator BITOR = new Operator(Kind.BITOR, "|", 90, true, true);
+  public static final Operator BITOR = new Operator(Kind.BITOR, "|", 90, true, true,"i18n::Operator.Category.Bitwise");
 
   /** Bitwise NOT operator "~". */
-  public static final Operator BITNOT = new Operator(Kind.BITNOT, "~", 40, true, true);
+  public static final Operator BITNOT = new Operator(Kind.BITNOT, "~", 40, true, true,"i18n::Operator.Category.Bitwise");
 
   /** Bitwise XOR operator "^". */
-  public static final Operator BITXOR = new Operator(Kind.BITXOR, "^", 80, true, true);
+  public static final Operator BITXOR = new Operator(Kind.BITXOR, "^", 80, true, true,"i18n::Operator.Category.Bitwise");
 
   // -------------------------------------------------------------
   // LOGICAL OPERATORS
@@ -81,13 +86,20 @@ public class Operator implements Comparable<Operator> {
    * <li><code>field [NOT] BETWEEN start AND end</code>
    * </ul>
    */
-  public static final Operator BOOLNOT = new Operator(Kind.LOGICAL_NOT, "NOT", 150, false, false);
+  public static final Operator BOOLNOT = new Operator(Kind.LOGICAL_NOT, "NOT", 150, false, false,"i18n::Operator.Category.Logical");
   /** Logical disjunction <code>OR</code> operator. */
-  public static final Operator BOOLOR = new Operator(Kind.LOGICAL_OR, "OR", 180, true, false);
+  public static final Operator BOOLOR = new Operator(Kind.LOGICAL_OR, "OR", 180, true, false,"i18n::Operator.Category.Logical");
   /** Logical conjunction <code>AND</code> operator. */
-  public static final Operator BOOLAND = new Operator(Kind.LOGICAL_AND, "AND", 160, true, false);
+  public static final Operator BOOLAND = new Operator(Kind.LOGICAL_AND, "AND", 160, true, false,"i18n::Operator.Category.Logical");
   /** Logical <code>XOR</code> operator. */
-  public static final Operator BOOLXOR = new Operator(Kind.LOGICAL_XOR, "XOR", 170, true, false);
+  public static final Operator BOOLXOR = new Operator(Kind.LOGICAL_XOR, "XOR", 170, true, false,"i18n::Operator.Category.Logical");
+  
+  
+
+  // -------------------------------------------------------------
+  // COMPARISON OPERATORS
+  // -------------------------------------------------------------
+
 
   /**
    * An operator describing the <code>IS</code> operator.
@@ -101,7 +113,7 @@ public class Operator implements Comparable<Operator> {
    * <li><code>field IS NULL</code>
    * </ul>
    */
-  public static final Operator IS = new Operator(Kind.IS, "IS", 140, true, false);
+  public static final Operator IS = new Operator(Kind.IS, "IS", 140, true, false,"i18n::Operator.Category.Comparison");
 
   /**
    * Logical <code>IN</code> operator tests for a value's membership in a list of values. The IN
@@ -119,7 +131,7 @@ public class Operator implements Comparable<Operator> {
    * {@link org.apache.hop.core.ExpressionParser parser} will generate a equivalent to <code>
    * NOT (field IN list of values ...)</code>
    */
-  public static final Operator IN = new Operator(Kind.IN, "IN", 120, true, false);
+  public static final Operator IN = new Operator(Kind.IN, "IN", 120, true, false,"i18n::Operator.Category.Comparison");
   /**
    * An operator describing the <code>LIKE</code> operator.
    *
@@ -135,72 +147,68 @@ public class Operator implements Comparable<Operator> {
    * {@link org.hop.expresssion.ExpressionParser} parser will generate a equivalent to <code>
    * NOT (field LIKE pattern ...)</code>
    */
-  public static final Operator LIKE = new Operator(Kind.LIKE, "LIKE", 120, true, false);
+  public static final Operator LIKE = new Operator(Kind.LIKE, "LIKE", 120, true, false,"i18n::Operator.Category.Comparison");
 
-  public static final Operator ILIKE = new Operator(Kind.ILIKE, "ILIKE", 120, true, false);
+  public static final Operator ILIKE = new Operator(Kind.ILIKE, "ILIKE", 120, true, false,"i18n::Operator.Category.Comparison");
 
-  public static final Operator BETWEEN = new Operator(Kind.BETWEEN, "BETWEEN", 120, true, false);
-
-  // -------------------------------------------------------------
-  // COMPARISON OPERATORS
-  // -------------------------------------------------------------
+  public static final Operator BETWEEN = new Operator(Kind.BETWEEN, "BETWEEN", 120, true, false,"i18n::Operator.Category.Conversion");
 
   /** Comparison equals operator '<code>=</code>'. */
-  public static final Operator EQUAL = new Operator(Kind.EQUAL, "=", 130, true, false);
+  public static final Operator EQUAL = new Operator(Kind.EQUAL, "=", 130, true, false,"i18n::Operator.Category.Comparison");
   /** Comparison not equals operator '<code>!=</code>'. */
-  public static final Operator NOT_EQUAL = new Operator(Kind.NOT_EQUAL, "!=", 130, true, true);
+  public static final Operator NOT_EQUAL = new Operator(Kind.NOT_EQUAL, "!=", 130, true, true,"i18n::Operator.Category.Comparison");
   /** Comparison not equals operator '<code><></code>'. */
   public static final Operator LESS_THAN_OR_GREATER_THAN =
-      new Operator(Kind.NOT_EQUAL, "<>", 130, true, false);
+      new Operator(Kind.NOT_EQUAL, "<>", 130, true, false,"i18n::Operator.Category.Comparison");
   /** Comparison less-than operator '<code>&lt;</code>'. */
-  public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN, "<", 130, true, false);
+  public static final Operator LESS_THAN = new Operator(Kind.LESS_THAN, "<", 130, true, false,"i18n::Operator.Category.Comparison");
   /** Comparison less-than-or-equal operator '<code>&lt;=</code>'. */
   public static final Operator LESS_THAN_OR_EQUAL =
-      new Operator(Kind.LESS_THAN_OR_EQUAL, "<=", 130, true, false);
+      new Operator(Kind.LESS_THAN_OR_EQUAL, "<=", 130, true, false,"i18n::Operator.Category.Comparison");
   /** Comparison greater-than operator '<code>&gt;</code>'. */
   public static final Operator GREATER_THAN =
-      new Operator(Kind.GREATER_THAN, ">", 130, true, false);
+      new Operator(Kind.GREATER_THAN, ">", 130, true, false,"i18n::Operator.Category.Comparison");
   /** Comparison greater-than-or-equal operator '<code>&gt;=</code>'. */
   public static final Operator GREATER_THAN_OR_EQUAL =
-      new Operator(Kind.GREATER_THAN_OR_EQUAL, ">=", 130, true, false);
+      new Operator(Kind.GREATER_THAN_OR_EQUAL, ">=", 130, true, false,"i18n::Operator.Category.Comparison");
 
   // -------------------------------------------------------------
   // ARITHMETIC OPERATORS
   // -------------------------------------------------------------
 
   /** Arithmetic unary negative operator '<code>-</code>'. */
-  public static final Operator NEGATIVE = new Operator(Kind.NEGATIVE, "-", 30, true, false);
+  public static final Operator NEGATIVE = new Operator(Kind.NEGATIVE, "-", 30, true, false, "i18n::Operator.Category.Mathematical");
 
   /** Arithmetic power operator '<code>**</code>'. */
-  public static final Operator POWER = new Operator(Kind.POWER, "**", 70, true, true);
+  public static final Operator POWER = new Operator(Kind.POWER, "**", 70, true, true,"i18n::Operator.Category.Mathematical");
 
   /** Arithmetic multiplication operator '<code>*</code>'. */
-  public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY, "*", 50, true, true);
+  public static final Operator MULTIPLY = new Operator(Kind.MULTIPLY, "*", 50, true, true,"i18n::Operator.Category.Mathematical");
 
   /** Arithmetic division operator '<code>/</code>'. */
-  public static final Operator DIVIDE = new Operator(Kind.DIVIDE, "/", 50, true, true);
+  public static final Operator DIVIDE = new Operator(Kind.DIVIDE, "/", 50, true, true,"i18n::Operator.Category.Mathematical");
 
   /** Arithmetic modulus operator '<code>%</code>'. */
-  public static final Operator MODULUS = new Operator(Kind.MOD, "%", 50, true, true);
+  public static final Operator MODULUS = new Operator(Kind.MOD, "%", 50, true, true,"i18n::Operator.Category.Mathematical");
 
   /** Arithmetic addition operator '<code>+</code>'. */
-  public static final Operator ADD = new Operator(Kind.ADD, "+", 100, true, true);
+  public static final Operator ADD = new Operator(Kind.ADD, "+", 100, true, true,"i18n::Operator.Category.Mathematical");
 
   /** Arithmetic subtraction operator '<code>-</code>'. */
-  public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT, "-", 100, true, true);
+  public static final Operator SUBTRACT = new Operator(Kind.SUBTRACT, "-", 100, true, true,"i18n::Operator.Category.Mathematical");
 
   // -------------------------------------------------------------
   // SPECIAL OPERATORS
   // -------------------------------------------------------------
 
   /** Cast <code>::</code> operator. */
-  public static final Operator CAST = new Operator(Kind.CAST, "::", 10, true, true);
+  public static final Operator CAST = new Operator(Kind.CAST, "::", 10, true, true,"i18n::Operator.Category.Conversion");
 
   /** An operator describing the <code>CASE</code> operator. */
-  public static final Operator CASE = new Operator(Kind.CASE_WHEN, "CASE", 120, true, false);
+  public static final Operator CASE = new Operator(Kind.CASE_WHEN, "CASE", 120, true, false,"i18n::Operator.Category.Conditional");
 
   /** String concatenation operator '<code>||</code>'. */
-  public static final Operator CONCAT = new Operator(Kind.CONCAT, "||", 110, true, true);
+  public static final Operator CONCAT = new Operator(Kind.CONCAT, "||", 110, true, true,"i18n::Operator.Category.String");
 
   /** Set of operators. */
   private static final Set<Operator> operators = new TreeSet<>(Arrays.asList(ADD, SUBTRACT,
@@ -212,142 +220,50 @@ public class Operator implements Comparable<Operator> {
     return operators;
   }
 
+
   // -------------------------------------------------------------
   // FUNCTIONS
   // -------------------------------------------------------------
   static {
-    addFunction(Kind.ABS);
-    addFunction(Kind.ADD);
-    addFunction(Kind.ADD_DAYS);
-    addFunction(Kind.ADD_HOURS);
-    addFunction(Kind.ADD_MINUTES);
-    addFunction(Kind.ADD_MONTHS);
-    addFunction(Kind.ADD_SECONDS);
-    addFunction(Kind.ADD_WEEKS);
-    addFunction(Kind.ADD_YEARS);
-    addFunction(Kind.ACOS);
-    addFunction(Kind.ACOSH);
-    addFunction(Kind.ASCII);
-    addFunction(Kind.ASIN);
-    addFunction(Kind.ASINH);
-    addFunction(Kind.ATAN);
-    addFunction(Kind.ATANH);
-    addFunction(Kind.ATAN2);
-    addFunction(Kind.BITAND);
-    addFunction(Kind.BITGET);
-    addFunction(Kind.BITNOT);
-    addFunction(Kind.BITOR);
-    addFunction(Kind.BITXOR);
-    addFunction(Kind.CAST);
-    addFunction(Kind.CBRT);
-    addFunction(Kind.CEIL, "CEILING");
-    addFunction(Kind.CHR);
-    addFunction(Kind.COALESCE);
-    addFunction(Kind.CONCAT);
-    addFunction(Kind.COS);
-    addFunction(Kind.COSH);
-    addFunction(Kind.COT);
-    addFunction(Kind.CONTAINS);
-    addFunctionNotDeterministic(Kind.CURRENT_DATE, "SYSDATE");
-    addFunction(Kind.DATE);
-    addFunction(Kind.DAYNAME);
-    addFunction(Kind.DAY, "DAYOFMONTH");
-    addFunction(Kind.DAYOFWEEK);
-    addFunction(Kind.DAYOFWEEK_ISO);
-    addFunction(Kind.DAYOFYEAR);
-    addFunction(Kind.DAYS_BETWEEN);
-    addFunction(Kind.DECODE);
-    addFunction(Kind.DEGREES);
-    addFunction(Kind.DIVIDE);
-    addFunction(Kind.EXTRACT);
-    addFunction(Kind.EQUAL_NULL);
-    addFunction(Kind.ENDSWITH);
-    addFunction(Kind.EXP);
-    addFunction(Kind.FIRST_DAY);
-    addFunction(Kind.FLOOR);
-    addFunction(Kind.GREATEST);
-    addFunction(Kind.HOUR);
-    addFunction(Kind.HOURS_BETWEEN);
-    addFunction(Kind.IF);
-    addFunction(Kind.IFNULL, "NVL");
-    addFunction(Kind.INITCAP);
-    addFunction(Kind.INSTR);
-    addFunction(Kind.LAST_DAY);
-    addFunction(Kind.LEAST);
-    addFunction(Kind.LEFT);
-    addFunction(Kind.LENGTH);
-    addFunction(Kind.LN);
-    addFunction(Kind.LOG);
-    addFunction(Kind.LOG10);
-    addFunction(Kind.LOWER, "LCASE");
-    addFunction(Kind.LPAD);
-    addFunction(Kind.LTRIM);
-    addFunction(Kind.MD5);
-    addFunction(Kind.MINUTE);
-    addFunction(Kind.MINUTES_BETWEEN);
-    addFunction(Kind.MOD);
-    addFunction(Kind.MONTH);
-    addFunction(Kind.MONTHNAME);
-    addFunction(Kind.MONTHS_BETWEEN);
-    addFunction(Kind.MULTIPLY);
-    addFunction(Kind.NEXT_DAY);
-    addFunction(Kind.NULLIF);
-    addFunction(Kind.NVL2);
-    addFunction(Kind.PI);
-    addFunction(Kind.POWER);
-    addFunction(Kind.PREVIOUS_DAY);
-    addFunction(Kind.QUARTER);
-    addFunction(Kind.RADIANS);
-    addFunctionNotDeterministic(Kind.RAND);
-    addFunction(Kind.REGEXP_LIKE);
-    addFunction(Kind.REPEAT);
-    addFunction(Kind.REPLACE);
-    addFunction(Kind.REVERSE);
-    addFunction(Kind.RIGHT);
-    addFunction(Kind.ROUND);
-    addFunction(Kind.RPAD);
-    addFunction(Kind.RTRIM);
-    addFunction(Kind.SHA1);
-    addFunction(Kind.SHA256);
-    addFunction(Kind.SHA384);
-    addFunction(Kind.SHA512);
-    addFunction(Kind.SECOND);
-    addFunction(Kind.SECONDS_BETWEEN);
-    addFunction(Kind.SIGN);
-    addFunction(Kind.SIN);
-    addFunction(Kind.SINH);
-    addFunction(Kind.SOUNDEX);
-    addFunction(Kind.SPACE);
-    addFunction(Kind.SQRT);
-    addFunction(Kind.STARTSWITH);
-    addFunction(Kind.STRINGDECODE);
-    addFunction(Kind.STRINGENCODE);
-    addFunction(Kind.SUBSTRING, "SUBSTR", "MID");
-    addFunction(Kind.SUBTRACT);
-    addFunction(Kind.TAN);
-    addFunction(Kind.TANH);
-    addFunction(Kind.TO_BOOLEAN);
-    addFunction(Kind.TO_CHAR);
-    addFunction(Kind.TO_DATE);
-    addFunction(Kind.TO_NUMBER);
-    addFunction(Kind.TRANSLATE);
-    addFunction(Kind.TRIM);
-    addFunction(Kind.TRUNCATE, "TRUNC");
-    addFunction(Kind.TRY_CAST);
-    addFunction(Kind.TRY_TO_BOOLEAN);
-    addFunction(Kind.TRY_TO_DATE);
-    addFunction(Kind.TRY_TO_NUMBER);
-    addFunction(Kind.UNICODE);
-    addFunction(Kind.UPPER, "UCASE");
-    addFunction(Kind.URLDECODE);
-    addFunction(Kind.URLENCODE);
-    addFunction(Kind.WEEK);
-    addFunction(Kind.WEEKOFMONTH);
-    addFunction(Kind.WEEK_ISO);
-    addFunction(Kind.YEAR);
-    addFunction(Kind.YEARS_BETWEEN);
+    List<Method> methods = findAnnotatedMethods(Function.class, ScalarFunction.class);
+    for (Method method : methods) {
+      try {
+        ScalarFunction annotation = method.getAnnotation(ScalarFunction.class);
+        Kind kind = Kind.valueOf(annotation.name());
+        
+        // Create function
+        createFunction(kind, annotation.name(), false, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+        
+        // Create alias
+        for (String name : annotation.alias()) {
+          createFunction(kind, name, true, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+        }
+      } catch (Exception e) {
+        System.out.println("Error registring fucntion " + method);
+      }
+    }
   }
 
+  private static List<Method> findAnnotatedMethods(Class<?> clazz,
+      Class<? extends Annotation> annotationClass) {
+    Method[] methods = clazz.getMethods();
+    List<Method> annotatedMethods = new ArrayList<Method>(methods.length);
+    for (Method method : methods) {
+      if (method.isAnnotationPresent(annotationClass)) {
+        annotatedMethods.add(method);
+      }
+    }
+    return annotatedMethods;
+  }
+  
+  private static void createFunction(Kind kind, String name, boolean isAlias,
+      boolean isDeterministic, Method method, int min, int max, String category) {
+    Function function = new Function(kind, name, isAlias, isDeterministic, method, min, max, category);
+    register(function);
+    FUNCTIONS_BY_NAME.put(name, function);
+  }
+
+  
   public static Function getFunction(final Kind kind) {
     if (kind == null)
       return null;
@@ -371,34 +287,28 @@ public class Operator implements Comparable<Operator> {
     operators.add(operator);
   }
 
-  protected static void addFunction(Kind kind) {
-    createFunction(kind, kind.name(), false, true);
-  }
+  // protected static void addFunction(Kind kind) {
+  // createFunction(kind, kind.name(), false, true);
+  // }
+  //
+  // protected static void addFunction(Kind kind, String... alias) {
+  // createFunction(kind, kind.name(), false, true);
+  // for (String name : alias) {
+  // createFunction(kind, name, true, true);
+  // }
+  // }
+  //
+  // protected static void addFunctionNotDeterministic(Kind kind) {
+  // addFunctionNotDeterministic(kind, kind.name());
+  // }
+  //
+  // protected static void addFunctionNotDeterministic(Kind kind, String... alias) {
+  // createFunction(kind, kind.name(), false, false);
+  // for (String name : alias) {
+  // createFunction(kind, name, true, false);
+  // }
+  // }
 
-  protected static void addFunction(Kind kind, String... alias) {
-    createFunction(kind, kind.name(), false, true);
-    for (String name : alias) {
-      createFunction(kind, name, true, true);
-    }
-  }
-
-  protected static void addFunctionNotDeterministic(Kind kind) {
-    addFunctionNotDeterministic(kind, kind.name());
-  }
-
-  protected static void addFunctionNotDeterministic(Kind kind, String... alias) {
-    createFunction(kind, kind.name(), false, false);
-    for (String name : alias) {
-      createFunction(kind, name, true, false);
-    }
-  }
-
-  private static void createFunction(Kind kind, String name, boolean isAlias,
-      boolean isDeterministic) {
-    Function function = new Function(kind, name, isAlias, isDeterministic);
-    register(function);
-    FUNCTIONS_BY_NAME.put(name, function);
-  }
 
   public static String getHtmlDocumentation(Kind kind) {
     String doc = docs.get(kind);
@@ -465,6 +375,8 @@ public class Operator implements Comparable<Operator> {
    */
   private final int rightPrecedence;
 
+  private final String category;
+  
   private final String description;
 
   /**
@@ -476,20 +388,21 @@ public class Operator implements Comparable<Operator> {
    * @param rightPrecedence Right precedence
    */
   protected Operator(Kind kind, String name, int leftPrecedence, int rightPrecedence,
-      boolean isAlias) {
+      boolean isAlias, String category) {
     super();
     this.kind = kind;
     this.name = name;
     this.leftPrecedence = leftPrecedence;
     this.rightPrecedence = rightPrecedence;
     this.isAlias = isAlias;
+    this.category = TranslateUtil.translate(category, Operator.class); 
     this.description = findDescription(kind);
   }
 
   protected Operator(Kind kind, String name, int precedence, boolean leftAssociativity,
-      boolean isAlias) {
+      boolean isAlias, String category) {
     this(kind, name, leftPrec(precedence, leftAssociativity),
-        rightPrec(precedence, leftAssociativity), isAlias);
+        rightPrec(precedence, leftAssociativity), isAlias, category);
   }
 
   protected static int leftPrec(int precedence, boolean leftAssociativity) {
@@ -542,76 +455,18 @@ public class Operator implements Comparable<Operator> {
   public Value eval(IExpressionContext context, IExpression... args) throws ExpressionException {
     switch (kind) {
 
-      case CAST: {
-        Value value = args[0].eval(context);
-        if (value.isNull() )
-          return Value.NULL;
-
-        Value type = args[1].eval(context);
-        DataType targetType = DataType.of(type.toString());
-
-        if (args.length == 3) {
-          // Format can be ValueNull
-          Value format = args[2].eval(context);
-          return value.convertTo(context, targetType, format.toString());
-        }
-
-        return value.convertTo(targetType);
-      }
-
-      case BITAND: {
-        Value left = args[0].eval(context);
-        if (left.isNull())
-          return left;
-        Value right = args[1].eval(context);
-        if (right.isNull())
-          return right;
-
-        return ValueInteger.of(left.toInteger() & right.toInteger());
-      }
-
-      case BITNOT: {
-        Value value = args[0].eval(context);
-        if (value.isNull())
-          return value;
-
-        return ValueInteger.of(~value.toInteger());
-      }
-
-      case BITOR: {
-        Value left = args[0].eval(context);
-        if (left.isNull())
-          return left;
-        Value right = args[1].eval(context);
-        if (right.isNull())
-          return right;
-
-        return ValueInteger.of(left.toInteger() | right.toInteger());
-      }
-
-      case BITXOR: {
-        Value left = args[0].eval(context);
-        if (left.isNull())
-          return left;
-        Value right = args[1].eval(context);
-        if (right.isNull())
-          return right;
-
-        return ValueInteger.of(left.toInteger() ^ right.toInteger());
-      }
-
-      case BETWEEN: {
-        Value operand = args[0].eval(context);
-        Value start = args[1].eval(context);
-        Value end = args[2].eval(context);
-
-        if (operand.isNull() || start.isNull() || end.isNull()) {
-          return Value.NULL;
-        }
-
-        return ValueBoolean.of(operand.compareTo(start) >= 0 && operand.compareTo(end) <= 0);
-      }
-
+      case CAST:
+        return cast(context, args);
+      case BITAND:
+        return bitand(context, args);
+      case BITNOT:
+        return bitnot(context, args);
+      case BITOR:
+        return bitor(context, args);
+      case BITXOR:
+        return bitxor(context, args);
+      case BETWEEN: 
+        return between(context, args);
       case CASE_WHEN: {
         int index = 0;
         IExpression switchExpression = args[0];
@@ -641,23 +496,13 @@ public class Operator implements Comparable<Operator> {
         return elseExpression.eval(context);
       }
 
-      case CONCAT: {
-        StringBuilder builder = new StringBuilder();
-        for (IExpression operand : args) {
-          Value value = operand.eval(context);
-          if (!value.isNull())
-            builder.append(value);
-        }
+      case CONCAT:
+        return concat(context, args);
 
-        if (builder.length() == 0)
-          return Value.NULL;
-
-        return ValueString.of(builder.toString());
-      }
 
       case LIKE: {
         Value input = args[0].eval(context);
-        if (input.isNull() ) {
+        if (input.isNull()) {
           return Value.NULL;
         }
         Value pattern = args[1].eval(context);
@@ -668,7 +513,7 @@ public class Operator implements Comparable<Operator> {
         String escape = null;
         if (args.length == 3) {
           Value escapeValue = args[2].eval(context);
-          if (escapeValue.isNull() ) {
+          if (escapeValue.isNull()) {
             return Value.NULL;
           }
           escape = escapeValue.toString();
@@ -683,7 +528,7 @@ public class Operator implements Comparable<Operator> {
 
       case ILIKE: {
         Value input = args[0].eval(context);
-        if (input.isNull() ) {
+        if (input.isNull()) {
           return Value.NULL;
         }
         Value pattern = args[1].eval(context);
@@ -694,7 +539,7 @@ public class Operator implements Comparable<Operator> {
         String escape = null;
         if (args.length == 3) {
           Value escapeValue = args[2].eval(context);
-          if (escapeValue.isNull() ) {
+          if (escapeValue.isNull()) {
             return Value.NULL;
           }
           escape = escapeValue.toString();
@@ -751,49 +596,18 @@ public class Operator implements Comparable<Operator> {
             (left.toBoolean() || right.toBoolean()) && !(left.toBoolean() && right.toBoolean()));
       }
 
-      case ADD: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        
-        return left.add(right);
-      }
-
-      case SUBTRACT: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        
-        return left.subtract(right);
-      }
-
-      case MULTIPLY: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        
-        return left.multiply(right);
-      }
-
-      case DIVIDE: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        
-        return left.divide(right);
-      }
-
-      case MOD: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        
-        return left.remainder(right);
-      }
-
-      case POWER: // Same implementation for operator and function
-      {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        
-        return left.power(right);
-      }
-
+      case ADD:
+        return add(context, args);
+      case SUBTRACT:
+        return subtract(context, args);
+      case MULTIPLY:
+        return multiply(context, args);
+      case DIVIDE:
+        return divide(context, args);
+      case MOD:
+        return mod(context, args);
+      case POWER:
+        return power(context, args);
       case EQUAL: {
         Value left = args[0].eval(context);
         Value right = args[1].eval(context);
@@ -1169,13 +983,13 @@ public class Operator implements Comparable<Operator> {
     }
   }
 
-  protected final ExpressionException createArgumentOutOfRangeError(Object arg) {
+  protected static final ExpressionException createArgumentOutOfRangeError(Object arg) {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.ArgumentOutOfRange", arg));
   }
 
 
-  protected final ExpressionException createInternalError(final String error) {
+  protected static final ExpressionException createInternalError(final String error) {
     return new ExpressionException(BaseMessages.getString(PKG, "Expression.InternalError", error));
   }
 
@@ -1231,11 +1045,11 @@ public class Operator implements Comparable<Operator> {
     return javaPattern.toString();
   }
 
-  private ExpressionException createInvalidEscapeCharacter(String s) {
+  private static ExpressionException createInvalidEscapeCharacter(String s) {
     return new ExpressionException("Invalid escape character '" + s + "'");
   }
 
-  private ExpressionException createInvalidEscapeSequence(String s, int i) {
+  private static ExpressionException createInvalidEscapeSequence(String s, int i) {
     return new ExpressionException("Invalid escape sequence '" + s + "', " + i);
   }
 
@@ -1253,8 +1067,167 @@ public class Operator implements Comparable<Operator> {
   public Kind getKind() {
     return kind;
   }
-
+  
+  /**
+   * Get the category of operator
+   * @return
+   */
+  public String getCategory() {
+    return category;
+  }
+  
+  /**
+   * Get the description of operator
+   * @return
+   */
   public String getDescription() {
     return description;
   }
+
+  public static Value between(final IExpressionContext context, final IExpression... args) {
+    Value operand = args[0].eval(context);
+    Value start = args[1].eval(context);
+    Value end = args[2].eval(context);
+
+    if (operand.isNull() || start.isNull() || end.isNull()) {
+      return Value.NULL;
+    }
+
+    return ValueBoolean.of(operand.compareTo(start) >= 0 && operand.compareTo(end) <= 0);
+  }
+  
+  @ScalarFunction(name = "CAST", minArgs = 2, maxArgs = 3, category = "i18n::Operator.Category.Conversion")
+  public static Value cast(final IExpressionContext context, final IExpression... args) {
+    Value value = args[0].eval(context);
+    if (value.isNull())
+      return Value.NULL;
+
+    Value type = args[1].eval(context);
+    DataType targetType = DataType.of(type.toString());
+
+    if (args.length == 3) {
+      // Format can be ValueNull
+      Value format = args[2].eval(context);
+      return value.convertTo(context, targetType, format.toString());
+    }
+
+    return value.convertTo(targetType);
+  }
+
+
+  @ScalarFunction(name = "CONCAT", minArgs = 2, maxArgs = Integer.MAX_VALUE, category = "i18n::Operator.Category.String")
+  public static Value concat(final IExpressionContext context, final IExpression... args) {
+    StringBuilder builder = new StringBuilder();
+    for (IExpression operand : args) {
+      Value value = operand.eval(context);
+      if (!value.isNull())
+        builder.append(value);
+    }
+
+    if (builder.length() == 0)
+      return Value.NULL;
+
+    return ValueString.of(builder.toString());
+  }
+
+  @ScalarFunction(name = "ADD", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical")
+  public static Value add(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+
+    return left.add(right);
+  }
+
+  @ScalarFunction(name = "SUBTRACT", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical")
+  public static Value subtract(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+
+    return left.subtract(right);
+  }
+
+  @ScalarFunction(name = "MULTIPLY", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical")
+  public static Value multiply(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+
+    return left.multiply(right);
+  }
+
+  @ScalarFunction(name = "DIVIDE", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical")
+  public static Value divide(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+
+    return left.divide(right);
+  }
+
+  @ScalarFunction(name = "MOD", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical")
+  public static Value mod(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+
+    return left.remainder(right);
+  }
+
+  @ScalarFunction(name = "POWER", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical")
+  public static Value power(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+
+    return left.power(right);
+  }
+
+  // -------------------------------------------------------------
+  // BITWISE
+  // -------------------------------------------------------------
+
+
+  @ScalarFunction(name = "BITNOT", category = "i18n::Operator.Category.Bitwise")
+  public static Value bitnot(final IExpressionContext context, final IExpression... args) {
+    Value value = args[0].eval(context);
+    if (value.isNull())
+      return value;
+
+    return ValueInteger.of(~value.toInteger());
+  }
+
+  @ScalarFunction(name = "BITAND", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Bitwise")
+  public static Value bitand(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    if (left.isNull())
+      return left;
+    Value right = args[1].eval(context);
+    if (right.isNull())
+      return right;
+
+    return ValueInteger.of(left.toInteger() & right.toInteger());
+  }
+
+  @ScalarFunction(name = "BITOR", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Bitwise")
+  public static Value bitor(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    if (left.isNull())
+      return left;
+    Value right = args[1].eval(context);
+    if (right.isNull())
+      return right;
+
+    return ValueInteger.of(left.toInteger() | right.toInteger());
+  }
+
+  @ScalarFunction(name = "BITXOR", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Bitwise")
+  public static Value bitxor(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    if (left.isNull())
+      return left;
+    Value right = args[1].eval(context);
+    if (right.isNull())
+      return right;
+
+    return ValueInteger.of(left.toInteger() ^ right.toInteger());
+  }
+
+
+
 }

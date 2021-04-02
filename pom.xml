@@ -23,13 +23,13 @@
 	<parent>
 		<artifactId>hop</artifactId>
 		<groupId>org.apache.hop</groupId>
-		<version>0.70-SNAPSHOT</version>
+		<version>0.99-SNAPSHOT</version>
 	</parent>
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
-		<hop.version>0.70-SNAPSHOT</hop.version>
+		<hop.version>0.99-SNAPSHOT</hop.version>
 		<jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
 		<sonar.projectKey>${project.artifactId}</sonar.projectKey>
 		<sonar.organization>nadment</sonar.organization>

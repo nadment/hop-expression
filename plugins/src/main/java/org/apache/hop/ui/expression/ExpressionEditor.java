@@ -52,8 +52,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ExpressionEditor extends SashForm {
   private static final Class<?> PKG = ExpressionEditor.class;
@@ -166,25 +169,17 @@ public class ExpressionEditor extends SashForm {
     treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
     treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
 
-    // Create operator category
-    Map<String, TreeItem> items = new HashMap<>();
-    for (Category category : Category.values()) {
-
-      if (category == Category.NONE) continue;
-
-      TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
-      item.setImage(GuiResource.getInstance().getImageFolder());
-      item.setText(
-          BaseMessages.getString(
-              PKG, "Expression.Operators.Category." + category.name() + ".Label"));
-      items.put(category.name(), item);
-    }
-
+ 
+    Set<String> categories = new TreeSet<>();
     List<Operator> primaryOperators = new ArrayList<>();
     HashMap<Kind, String> mapDisplay = new HashMap<>();
 
     // Primary operator
     for (Operator o : Operator.getOperators()) {
+      
+      if ( !categories.contains(o.getCategory()))
+        categories.add(o.getCategory());
+      
       if (!o.isAlias()) {
         primaryOperators.add(o);
         mapDisplay.put(o.getKind(), o.getName());
@@ -199,10 +194,19 @@ public class ExpressionEditor extends SashForm {
       }
     }
 
-    // Create item operator
+    // Create tree item category
+    Map<String, TreeItem> items = new HashMap<>();
+    for (String category : categories) {
+      TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
+      item.setImage(GuiResource.getInstance().getImageFolder());
+      item.setText(category);          
+      items.put(category, item);
+    }
+    
+    // Create tree item operator
     for (Operator operator : primaryOperators) {
 
-      TreeItem parentItem = items.get(operator.getKind().category());
+      TreeItem parentItem = items.get(operator.getCategory());
 
       TreeItem item;
       if (parentItem == null) item = new TreeItem(tree, SWT.NULL);

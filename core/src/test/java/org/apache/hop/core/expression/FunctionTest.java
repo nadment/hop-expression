@@ -279,6 +279,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Years_Between(Timestamp '2001-01-01 12:00:00',Timestamp '2000-01-01 00:00:00')",
         -1);
     evalNull("Years_Between(NULL, Date '2007-11-09')");
+    evalNull("Years_Between(Date '2007-11-09',NULL)");
     evalNull("Years_Between(NULL, NULL)");
     evalFails("Years_Between(Date '2007-11-09')");
   }
@@ -290,7 +291,7 @@ public class FunctionTest extends BaseExpressionTest {
     
     
    // evalEquals("Months_Between(Date '2007-11-10',Date '2007-12-09')", -0.967742);
-    // If the months and days are identical, the result is an integer.
+    // TODO: If the months and days are identical, the result is an integer.
     evalEquals("Months_Between(Date '2007-11-09',Date '2007-12-09')", 0.967741935483871);
    
     evalNull("Months_Between(Date '2007-11-09',NULL)");
@@ -1128,6 +1129,11 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','TZM')", "00"); // Time Zone Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00"); // Time Zone Hour
 
+    //evalEquals("To_Char(Date '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56"); // Time 
+    //evalEquals("To_Char(Date '2019-02-13 15:34:56','HH12:MI:SS')", "15:34:56"); // Time 
+   // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56"); // Time
+
+        
     // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
     // evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
     // evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short
@@ -1148,13 +1154,18 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
     evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, Month.MARCH, 1));
     evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, Month.FEBRUARY, 25));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",
-        LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
     evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
     evalEquals("To_Date('01/02/-100','DD/MM/SYYYY')", LocalDate.of(-100, 2, 1));
 
+    evalEquals("To_Date('01/02/10','DD/MM/YY')", LocalDate.of(2010, 2, 1));
+    evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
+    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1));
+    
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
 
@@ -1190,6 +1201,7 @@ public class FunctionTest extends BaseExpressionTest {
         LocalDateTime.of(2003, 12, 31, 12, 59, 33));
 
     // Is interpreted as 24 December 2009, 23:00:00
+    evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH:MI:SS AM')",LocalDateTime.of(2009, 12, 24, 23, 0, 0));
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
@@ -1425,13 +1437,13 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void StringEncode() throws Exception {
-    evalEquals("StringEncode('	')", "\\t");
+    evalEquals("StringEncode('\t\r\n\f')", "\\t\\r\\n\\f");
     evalNull("StringEncode(NULL)");
   }
 
   @Test
   public void StringDecode() throws Exception {
-    evalEquals("StringDecode('\t')", "\t");
+    evalEquals("StringDecode('\t\r\n\f')", "\t\r\n\f");
     evalNull("StringDecode(NULL)");
   }
 

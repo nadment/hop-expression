@@ -338,7 +338,7 @@ public class ExpressionScanner {
           }
 
           // Exponentiation part
-          if (index < source.length() && Characters.isExponentChar(source.charAt(index))) {
+          if (index < source.length() && Characters.isExponent(source.charAt(index))) {
             index++;
 
             if (index < source.length()
@@ -354,7 +354,7 @@ public class ExpressionScanner {
         }
 
         default:
-          if (Character.isWhitespace(c)) {
+          if (Characters.isSpace(c)) {
             ++index;
             continue;
           }
@@ -393,7 +393,7 @@ public class ExpressionScanner {
                 break loop;
 
               default:
-                if (Character.isWhitespace(c)) {
+                if (Characters.isSpace(c)) {
                   break loop;
                 } else {
                   ++index;

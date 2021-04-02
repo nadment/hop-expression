@@ -134,7 +134,7 @@ public class ExpressionMeta extends BaseTransformMeta
 
     try {
       Node nodes = XmlHandler.getSubNode(transformNode, "fields");
-      int count = XmlHandler.countNodes(nodes, TAG_FIELD_NAME);
+      int count = XmlHandler.countNodes(nodes, TAG_FIELD);
 
       fields = new ArrayList<>(count);
       for (int i = 0; i < count; i++) {

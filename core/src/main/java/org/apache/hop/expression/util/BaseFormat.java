@@ -22,6 +22,10 @@ import org.apache.hop.expression.IExpression;
 
 public abstract class BaseFormat {
 
+  protected BaseFormat() {
+    super();
+  }
+
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
   protected static boolean startsWithIgnoreCase(String str, int offset, String prefix) {
@@ -97,8 +101,7 @@ public abstract class BaseFormat {
     int index = position.getIndex();
     int result = 0;
     if (index + length > value.length()) length = value.length() - index;
-
-    // boolean negative = false;
+    
     char sign = value.charAt(index);
     if (sign == '-' || sign == '+') {
       index++;

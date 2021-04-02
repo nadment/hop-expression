@@ -16,17 +16,23 @@
  */
 package org.apache.hop.expression;
 
-/** Enumeration of the categories of operator */
-public enum Category {
-  BITWISE,
-  COMPARISON,
-  CONDITIONAL,
-  CONVERSION,
-  CRYPTOGRAPHIC,
-  DATE,
-  LOGICAL,
-  MATHEMATICAL,
-  STRING,
-  TRIGONOMETRY,
-  NONE
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface ScalarFunction
+{
+    String name() default "";
+
+    String[] alias() default {};
+
+    String category() default "None";
+    
+    boolean deterministic() default true;   
+    
+    int minArgs() default 1;
+    int maxArgs() default 1;
 }

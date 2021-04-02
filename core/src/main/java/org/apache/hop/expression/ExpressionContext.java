@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Random;
 
 import javax.script.SimpleScriptContext;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.value.Value;
 import org.apache.hop.i18n.BaseMessages;
 
@@ -32,8 +33,9 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   protected static final ZoneId UTC_ZONE = ZoneId.of("UTC");
 
   /**
-   * TODO: Control Two-digit year, when set to 1980, values of 79 and 80 parsed as 2079 and 1980
-   * respectively.
+   * This parameter prevents ambiguous dates when importing or converting data with the YY date format.
+   * Control Two-digit year, when set to 1980, values of 79 and 80 parsed as 2079 and 1980
+   * respectively. 
    */
   public static final String TWO_DIGIT_CENTURY_START = "TWO_DIGIT_CENTURY_START";
 
@@ -43,6 +45,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   private Locale locale;
   private Random random;
   private Instant currentDate;
+  private int twoDigitCenturyStart = 1970;
 
   public ExpressionContext() {
     super();
@@ -51,6 +54,15 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     this.zone = UTC_ZONE;
     this.random = new SecureRandom();
     this.currentDate = Instant.now();
+
+    try {
+      String variable =
+          Variables.getADefaultVariableSpace().getVariable(TWO_DIGIT_CENTURY_START, "1970");
+      this.twoDigitCenturyStart = Integer.parseInt(variable);
+    } catch (NumberFormatException e) {
+      throw new ExpressionException(
+          BaseMessages.getString(PKG, "Expression.InvalidVariable", TWO_DIGIT_CENTURY_START));
+    }
   }
 
   @Override
@@ -80,5 +92,9 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   public Instant getCurrentDate() {
     return currentDate;
+  }
+
+  public int getTwoDigitCenturyStart() {
+    return twoDigitCenturyStart;
   }
 }

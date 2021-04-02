@@ -18,61 +18,61 @@ package org.apache.hop.expression;
 
 /** Enumerates the possible types of {@link IExpression}. */
 public enum Kind {
-  VALUE(Category.NONE),
+  VALUE,
 
-  LIST(Category.NONE),
+  LIST,
 
-  IDENTIFIER(Category.NONE),
+  IDENTIFIER,
 
   // -------------------------------------------------------------
   // BITWISE
   // -------------------------------------------------------------
 
-  BITGET(Category.BITWISE),
+  BITGET,
 
   /** The bitwise AND operation. */
-  BITAND(Category.BITWISE),
+  BITAND,
 
   /** The bitwise OR operation. */
-  BITOR(Category.BITWISE),
+  BITOR,
 
   /** The bitwise NOT operation. */
-  BITNOT(Category.BITWISE),
+  BITNOT,
 
   /** The bitwise XOR operation. */
-  BITXOR(Category.BITWISE),
+  BITXOR,
 
-  // LSHIFT(Category.Bitwise),
+  // LSHIFT,
 
-  // RSHIFT(Category.Bitwise),
+  // RSHIFT,
 
   // -------------------------------------------------------------
   // COMPARISON
   // -------------------------------------------------------------
 
   /** Contains function */
-  CONTAINS(Category.COMPARISON),
+  CONTAINS,
 
   /** The "IN" operator. */
-  IN(Category.COMPARISON),
+  IN,
 
   /** The "BETWEEN" operator. */
-  BETWEEN(Category.COMPARISON),
+  BETWEEN,
 
   /** The less-than operator '&lt;'. */
-  LESS_THAN(Category.COMPARISON),
+  LESS_THAN,
 
   /** The greater-than operator '&gt;'. */
-  GREATER_THAN(Category.COMPARISON),
+  GREATER_THAN,
 
   /** The less-than-or-equal operator '&lt;='. */
-  LESS_THAN_OR_EQUAL(Category.COMPARISON),
+  LESS_THAN_OR_EQUAL,
 
   /** The greater-than-or-equal operator '&gt;='. */
-  GREATER_THAN_OR_EQUAL(Category.COMPARISON),
+  GREATER_THAN_OR_EQUAL,
 
   /** The equals operator '='. */
-  EQUAL(Category.COMPARISON),
+  EQUAL,
 
   /**
    * Compares whether two expressions are equal.
@@ -81,24 +81,24 @@ public enum Kind {
    * Note that this is different from the EQUAL comparison operator (=), which treats NULLs as
    * unknown values.
    */
-  EQUAL_NULL(Category.COMPARISON),
+  EQUAL_NULL,
 
   /** The not-equals operator "&lt;&gt;". @See {@link #LESS_THAN_OR_GREATER_THEN} */
-  NOT_EQUAL(Category.COMPARISON),
+  NOT_EQUAL,
 
   /** The not-equals operator '!=' @See {@link #NOT_EQUAL_OPERATOR} */
-  LESS_THAN_OR_GREATER_THEN(Category.COMPARISON),
+  LESS_THAN_OR_GREATER_THEN,
 
   /** The IS NULL or <code>IS TRUE</code> operator. */
-  IS(Category.COMPARISON),
+  IS,
 
   /** The LIKE operator. */
-  LIKE(Category.COMPARISON),
+  LIKE,
 
   /** The ILIKE case-insensitive operator. */
-  ILIKE(Category.COMPARISON),
+  ILIKE,
 
-  REGEXP_LIKE(Category.COMPARISON),
+  REGEXP_LIKE,
 
   /**
    * The function returns TRUE if the first value starts with second value. Both values must be data
@@ -106,7 +106,7 @@ public enum Kind {
    *
    * @see {@link #ENDSWITH}
    */
-  STARTSWITH(Category.COMPARISON),
+  STARTSWITH,
 
   /**
    * The function returns TRUE if the first value ends with second value. Both values must be data
@@ -114,121 +114,121 @@ public enum Kind {
    *
    * @see {@link #STARTSWITH}
    */
-  ENDSWITH(Category.COMPARISON),
+  ENDSWITH,
 
   // -------------------------------------------------------------
   // CONDITIONAL
   // -------------------------------------------------------------
 
   /** Case when operator */
-  CASE_WHEN(Category.CONDITIONAL),
+  CASE_WHEN,
 
   /**
    * The COALESCE function returns the first of its arguments that is not null. Null is returned
    * only if all arguments are null.
    */
-  COALESCE(Category.CONDITIONAL),
+  COALESCE,
 
   /** Single-level if-then-else expression. Similar to CASE, but only allows a single condition. */
-  IF(Category.CONDITIONAL),
+  IF,
 
   /** The IFNULL function replace the null with value (Alias NVL). */
-  IFNULL(Category.CONDITIONAL),
+  IFNULL,
 
   /** The function NULLIF */
-  NULLIF(Category.CONDITIONAL),
+  NULLIF,
 
-  NVL2(Category.CONDITIONAL),
+  NVL2,
 
   /**
    * The function returns the largest value that is not NULL, or NULL if all values are NULL.
    *
    * @see {@link #LEAST}
    */
-  GREATEST(Category.CONDITIONAL),
+  GREATEST,
 
   /**
    * The function returns the smallest value that is not NULL, or NULL if all values are NULL.
    *
    * @see {@link #GREATEST}
    */
-  LEAST(Category.CONDITIONAL),
+  LEAST,
 
   // -------------------------------------------------------------
   // LOGICAL
   // -------------------------------------------------------------
 
   /** The logical <code>AND</code> operator. */
-  LOGICAL_AND(Category.LOGICAL),
+  LOGICAL_AND,
 
   /** The logical <code>NOT</code> operator. */
-  LOGICAL_NOT(Category.LOGICAL),
+  LOGICAL_NOT,
 
   /** The logical <code>OR</code> operator. */
-  LOGICAL_OR(Category.LOGICAL),
+  LOGICAL_OR,
 
   /** The logical <code>XOR</code> operator. */
-  LOGICAL_XOR(Category.LOGICAL),
+  LOGICAL_XOR,
 
   // -------------------------------------------------------------
   // STRING
   // -------------------------------------------------------------
 
   /** String concatenation operator '<code>||</code>'. @See {@link #CONCAT} */
-  CONCAT(Category.STRING),
+  CONCAT,
 
   /**
    * Compares the select expression to each search expression in order. As soon as a search
    * expression matches the selection expression, the corresponding result expression is returned.
    */
-  DECODE(Category.STRING),
+  DECODE,
 
   /**
    * The function decode string using the Java string literal encoding format. Special characters
    * are \b, \t, \n, \f, \r, \", \\, \<octal>, \\u<unicode>.
    */
-  STRINGDECODE(Category.STRING),
+  STRINGDECODE,
   /**
    * The function encode special characters in a string using the Java string literal encoding
    * format. Special characters are \b, \t, \n, \f, \r, \", \\, \<octal>, \\u<unicode>.
    */
-  STRINGENCODE(Category.STRING),
+  STRINGENCODE,
 
   /** Returns a string that contains a phonetic representation of the input string. */
-  SOUNDEX(Category.STRING),
+  SOUNDEX,
 
   /** The function convert a string value to lower case. @See {@link #LOWER}, {@link #INITCAP} */
-  UPPER(Category.STRING),
+  UPPER,
 
   /** The function convert a string value to upper case. @See {@link #INITCAP}, {@link #UPPER} */
-  LOWER(Category.STRING),
+  LOWER,
 
   /**
    * Returns a string with the first letter of each word in uppercase and the subsequent letters in
    * lowercase. @See {@link #LOWER}, {@link #UPPER}
    */
-  INITCAP(Category.STRING),
+  INITCAP,
 
   /**
    * The function extracts a number of characters from a string (starting from left). @See {@link
    * #RIGHT}
    */
-  LEFT(Category.STRING),
+  LEFT,
 
   /**
    * The function extracts a number of characters from a string (starting from right). @See {@link
    * #LEFT}
    */
-  RIGHT(Category.STRING),
+  RIGHT,
 
   /** The function returns the number of characters of the specified string. */
-  LENGTH(Category.STRING),
+  LENGTH,
 
   /**
    * The function return the ASCII value of the first character in a string. If the string is empty,
    * a value of 0 is returned.
    */
-  ASCII(Category.STRING),
+  ASCII,
 
   /**
    * The function return the Unicode code point for the first Unicode character in a string. If the
@@ -236,7 +236,7 @@ public enum Kind {
    *
    * @see {@link #CHR}, {@link #ASCII},
    */
-  UNICODE(Category.STRING),
+  UNICODE,
 
   /**
    * The function converts a Unicode code point (including 7-bit ASCII) into the character that
@@ -244,107 +244,107 @@ public enum Kind {
    *
    * @see {@link #ASCII}
    */
-  CHR(Category.STRING),
+  CHR,
 
   /**
    * The function encode the string as a URL.
    *
    * @see {@link #URLDECODE}
    */
-  URLENCODE(Category.STRING),
+  URLENCODE,
 
   /**
    * The function decode the URL to a string.
    *
    * @see {@link #URLENCODE}
    */
-  URLDECODE(Category.STRING),
+  URLDECODE,
 
   /**
    * Returns the position in the string that is the first character of a specified occurrence of the
    * substring.
    */
-  INSTR(Category.STRING),
+  INSTR,
 
   /**
    * The function removes leading and trailing characters from a string.
    *
    * @see {@link #LTRIM}, {@link #RTRIM}
    */
-  TRIM(Category.STRING),
+  TRIM,
 
   /**
    * The function removes leading characters from a string.
    *
    * @see {@link #TRIM}, {@link #RTRIM}
    */
-  LTRIM(Category.STRING),
+  LTRIM,
 
   /**
    * The function removes leading characters from a string.
    *
    * @see {@link #TRIM}, {@link #LTRIM}
    */
-  RTRIM(Category.STRING),
+  RTRIM,
 
   /**
    * The function left-pads a string with another string, to a certain length.
    *
    * @see {@link #RPAD}
    */
-  LPAD(Category.STRING),
+  LPAD,
 
   /**
    * The function right-pads a string with another string, to a certain length.
    *
    * @see {@link #LPAD}
    */
-  RPAD(Category.STRING),
+  RPAD,
 
   /** Returns a string consisting of a the specified number of blank spaces. */
-  SPACE(Category.STRING),
+  SPACE,
 
   /** The function repeats a string as many times as specified. */
-  REPEAT(Category.STRING),
+  REPEAT,
 
   /**
    * Removes all occurrences of a specified substring, and optionally replaces them with another
    * string.
    */
-  REPLACE(Category.STRING),
+  REPLACE,
 
   /**
    * The function reverses the order of characters in a string value, or of bytes in a binary value.
    */
-  REVERSE(Category.STRING),
+  REVERSE,
 
   /**
    * Returns the portion of the string from string, startingfrom the character/byte specified by
    * start, with optionally limited length.
    */
-  SUBSTRING(Category.STRING),
+  SUBSTRING,
 
   /** Translates original from the characters in findChars to the characters in replaceChars. */
-  TRANSLATE(Category.STRING),
+  TRANSLATE,
 
   // -------------------------------------------------------------
   // MATHEMATICAL
   // -------------------------------------------------------------
 
   /** The arithmetic division operator '/'. */
-  DIVIDE(Category.MATHEMATICAL),
+  DIVIDE,
 
   /** The arithmetic multiplication operator '*'. */
-  MULTIPLY(Category.MATHEMATICAL),
+  MULTIPLY,
 
   /** Returns the exponential value of a numeric expression. */
-  EXP(Category.MATHEMATICAL),
+  EXP,
 
   /** The arithmetic power operator '**' or function. */
-  POWER(Category.MATHEMATICAL),
+  POWER,
 
   /** The arithmetic remainder operator '%'. The function returns the remainder division. */
-  MOD(Category.MATHEMATICAL),
+  MOD,
 
   //	/**
   //	 * The arithmetic unary plus (positive) operator '+'.
@@ -352,57 +352,57 @@ public enum Kind {
   //	POSITIVE(Category.Arithmetic),
 
   /** The arithmetic unary minus (negative) operator '-'. */
-  NEGATIVE(Category.MATHEMATICAL),
+  NEGATIVE,
 
   /** The arithmetic addition operator '+'. */
-  ADD(Category.MATHEMATICAL),
+  ADD,
 
   /** The arithmetic subtract operator '-'. */
-  SUBTRACT(Category.MATHEMATICAL),
+  SUBTRACT,
 
   /** Returns the absolute (positive) value of the numeric value. */
-  ABS(Category.MATHEMATICAL),
+  ABS,
 
   /** Returns the values rounded to the nearest equal or larger integer. */
-  CEIL(Category.MATHEMATICAL),
+  CEIL,
 
   /** Function to converts radians to degrees. */
-  DEGREES(Category.MATHEMATICAL),
+  DEGREES,
 
   /** Returns the values rounded to the nearest equal or smaller integer. */
-  FLOOR(Category.MATHEMATICAL),
+  FLOOR,
 
   /** Returns the number of PI. */
-  PI(Category.MATHEMATICAL),
+  PI,
 
   /** The function converts degrees to radians. */
-  RADIANS(Category.MATHEMATICAL),
+  RADIANS,
 
-  RAND(Category.MATHEMATICAL),
+  RAND,
 
   /** Returns the values rounded to the nearest integer. */
-  ROUND(Category.MATHEMATICAL),
+  ROUND,
 
   /** Returns the natural logarithm of a numeric value. */
-  LN(Category.MATHEMATICAL),
+  LN,
 
   /** Returns the specified base logarithm of a numeric value. */
-  LOG(Category.MATHEMATICAL),
+  LOG,
 
   /** Returns the base 10 logarithm of a numeric value. */
-  LOG10(Category.MATHEMATICAL),
+  LOG10,
 
   /** Returns the sign of a number. */
-  SIGN(Category.MATHEMATICAL),
+  SIGN,
 
   /** Returns the cubic root of a numeric expression. @See {@link #SQRT} */
-  CBRT(Category.MATHEMATICAL),
+  CBRT,
 
   /** Returns the square-root of a non-negative numeric expression. @See {@link #CBRT} */
-  SQRT(Category.MATHEMATICAL),
+  SQRT,
 
   /** Round down numeric expressions or truncates a date or timestamp to the specified part. */
-  TRUNCATE(Category.MATHEMATICAL),
+  TRUNCATE,
 
   // -------------------------------------------------------------
   // TRIGONOMETRY
@@ -411,147 +411,147 @@ public enum Kind {
   /**
    * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
    */
-  ACOS(Category.TRIGONOMETRY),
-  ACOSH(Category.TRIGONOMETRY),
+  ACOS,
+  ACOSH,
 
-  ASIN(Category.TRIGONOMETRY),
-  ASINH(Category.TRIGONOMETRY),
+  ASIN,
+  ASINH,
 
-  ATAN(Category.TRIGONOMETRY),
-  ATANH(Category.TRIGONOMETRY),
+  ATAN,
+  ATANH,
 
-  ATAN2(Category.TRIGONOMETRY),
+  ATAN2,
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  COS(Category.TRIGONOMETRY),
+  COS,
 
   /** Returns the hyperbolic cosine of its argument. */
-  COSH(Category.TRIGONOMETRY),
+  COSH,
 
   /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
-  COT(Category.TRIGONOMETRY),
+  COT,
 
   /** Calculates the trigonometric sine of the angle in radians. */
-  SIN(Category.TRIGONOMETRY),
+  SIN,
 
   /** Calculates the hyperbolic sine of its argument. */
-  SINH(Category.TRIGONOMETRY),
+  SINH,
 
   /** Calculates the tangent of its argument, the argument should be expressed in radians. */
-  TAN(Category.TRIGONOMETRY),
+  TAN,
 
   /** Calculates the hyperbolic tangent of its argument. */
-  TANH(Category.TRIGONOMETRY),
+  TANH,
 
   // -------------------------------------------------------------
   // DATE AND TIME
   // -------------------------------------------------------------
 
   /** Adds or subtracts a specified number of days to a date or timestamp */
-  ADD_DAYS(Category.DATE),
+  ADD_DAYS,
 
   /** Adds or subtracts a specified number of hours to a date or timestamp */
-  ADD_HOURS(Category.DATE),
+  ADD_HOURS,
 
   /** Adds or subtracts a specified number of minutes to a date or timestamp */
-  ADD_MINUTES(Category.DATE),
+  ADD_MINUTES,
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
-  ADD_MONTHS(Category.DATE),
+  ADD_MONTHS,
 
   /** Adds or subtracts a specified number of seconds to a date or timestamp */
-  ADD_SECONDS(Category.DATE),
+  ADD_SECONDS,
 
   /** Adds or subtracts a specified number of weeks to a date or timestamp */
-  ADD_WEEKS(Category.DATE),
+  ADD_WEEKS,
 
   /** Adds or subtracts a specified number of years to a date or timestamp */
-  ADD_YEARS(Category.DATE),
+  ADD_YEARS,
 
   /** DATE function */
-  DATE(Category.DATE),
+  DATE,
 
   /** Returns the current date value. */
-  CURRENT_DATE(Category.DATE),
+  CURRENT_DATE,
 
   /** Returns the first day of the month. */
-  FIRST_DAY(Category.DATE),
+  FIRST_DAY,
 
   /** Returns the last day of the month. */
-  LAST_DAY(Category.DATE),
+  LAST_DAY,
 
   /** Returns the date of the first specified day of week that occurs after the input date. */
-  NEXT_DAY(Category.DATE),
+  NEXT_DAY,
 
   /** Returns the date of the first specified day of week that occurs before the input date. */
-  PREVIOUS_DAY(Category.DATE),
+  PREVIOUS_DAY,
   
   /** The year of a date */
-  YEAR(Category.DATE),
+  YEAR,
 
   /** Quarter of the year (number from 1-4). */
-  QUARTER(Category.DATE),
+  QUARTER,
 
   /** Month of the year (number from 1-12). */
-  MONTH(Category.DATE),
+  MONTH,
 
   /** Returns the name of the month (in English). */
-  MONTHNAME(Category.DATE),
+  MONTHNAME,
 
   /** Week of the year (number from 1-54). */
-  WEEK(Category.DATE),
+  WEEK,
 
   /** Week from the beginning of the month (0-5) */
-  WEEKOFMONTH(Category.DATE),
+  WEEKOFMONTH,
 
   /** Returns the name of the weekday (in English). */
-  DAYNAME(Category.DATE),
+  DAYNAME,
 
   /** Day of the month (number from 1-31). */
-  DAY(Category.DATE),
+  DAY,
 
   /** Day of the year (number from 1-366). */
-  DAYOFYEAR(Category.DATE),
+  DAYOFYEAR,
 
   /** Day of the week (Sunday=1 to Saturday=7). */
-  DAYOFWEEK(Category.DATE),
+  DAYOFWEEK,
 
   /** Day of the week (Monday=1 to Sunday=7). */
-  DAYOFWEEK_ISO(Category.DATE),
+  DAYOFWEEK_ISO,
 
   /** Week of the year (number from 1-53). */
-  WEEK_ISO(Category.DATE),
+  WEEK_ISO,
 
   /** The hour (0-23). @See {@link #MINUTE}, {@link #SECOND} */
-  HOUR(Category.DATE),
+  HOUR,
 
   /** The minute (0-59). @See {@link #HOUR}, {@link #SECOND} */
-  MINUTE(Category.DATE),
+  MINUTE,
 
   /** The second (0-59). @See {@link #HOUR}, {@link #MINUTE} */
-  SECOND(Category.DATE),
+  SECOND,
 
   /** Returns number of days between two date values. */
-  DAYS_BETWEEN(Category.DATE),
+  DAYS_BETWEEN,
 
   /** Returns number of months between two date. */
-  MONTHS_BETWEEN(Category.DATE),
+  MONTHS_BETWEEN,
 
   /** Returns number of years between two date. */
-  YEARS_BETWEEN(Category.DATE),
+  YEARS_BETWEEN,
   /** Return the number of minutes between two timestamps */
-  MINUTES_BETWEEN(Category.DATE),
+  MINUTES_BETWEEN,
 
   /** Return the number of hours between two timestamps */
-  HOURS_BETWEEN(Category.DATE),
+  HOURS_BETWEEN,
 
   /** Return the number of seconds between two timestamps */
-  SECONDS_BETWEEN(Category.DATE),
+  SECONDS_BETWEEN,
 
   /**
    * Function to extract date part: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
    */
-  EXTRACT(Category.DATE),
+  EXTRACT,
 
   // -------------------------------------------------------------
   // CONVERTION
@@ -561,24 +561,24 @@ public enum Kind {
    * Converts a value of one data type into another data type <code>::</code> or <code>
    * CAST(value AS type FORMAT format)</code>.
    */
-  CAST(Category.CONVERSION),
+  CAST,
   /** Converts a value of one data type into another data type if the cast succeeds; otherwise, returns null.*/ 
-  TRY_CAST(Category.CONVERSION),
+  TRY_CAST,
   
   /** Converts a string or numeric expression to a boolean value. */
-  TO_BOOLEAN(Category.CONVERSION),
-  TRY_TO_BOOLEAN(Category.CONVERSION),
+  TO_BOOLEAN,
+  TRY_TO_BOOLEAN,
   
   /** Converts a numeric or date expression to a string value. */
-  TO_CHAR(Category.CONVERSION),
+  TO_CHAR,
 
   /** Converts a string expression to a date value. */
-  TO_DATE(Category.CONVERSION),
-  TRY_TO_DATE(Category.CONVERSION),
+  TO_DATE,
+  TRY_TO_DATE,
   
   /** Converts a string expression to a number value. */
-  TO_NUMBER(Category.CONVERSION),
-  TRY_TO_NUMBER(Category.CONVERSION),
+  TO_NUMBER,
+  TRY_TO_NUMBER,
 
   // -------------------------------------------------------------
   // CRYPTOGRAPHIC
@@ -590,7 +590,7 @@ public enum Kind {
    *
    * @see {@link #SHA1}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
    */
-  MD5(Category.CRYPTOGRAPHIC),
+  MD5,
 
   /**
    * The function calculate the SHA-1 hash of a data value. The hash will be returned as a 40
@@ -598,7 +598,7 @@ public enum Kind {
    *
    * @see {@link #MD5}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
    */
-  SHA1(Category.CRYPTOGRAPHIC),
+  SHA1,
 
   /**
    * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
@@ -606,7 +606,7 @@ public enum Kind {
    *
    * @see {@link #MD5}, {@link #SHA1}, {@link #SHA384}, {@link #SHA512}
    */
-  SHA256(Category.CRYPTOGRAPHIC),
+  SHA256,
 
   /**
    * The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96
@@ -614,7 +614,7 @@ public enum Kind {
    *
    * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA512}
    */
-  SHA384(Category.CRYPTOGRAPHIC),
+  SHA384,
 
   /**
    * The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128
@@ -622,15 +622,5 @@ public enum Kind {
    *
    * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA384}
    */
-  SHA512(Category.CRYPTOGRAPHIC);
-
-  private final Category category;
-
-  Kind(final Category category) {
-    this.category = category;
-  }
-
-  public String category() {
-    return category.name();
-  }
+  SHA512;
 }
