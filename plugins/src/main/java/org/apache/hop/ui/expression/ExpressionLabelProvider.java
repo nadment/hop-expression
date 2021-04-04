@@ -19,6 +19,7 @@ package org.apache.hop.ui.expression;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorUtils;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -63,11 +64,11 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
       ExpressionProposal proposal = (ExpressionProposal) element;
 
       switch (proposal.getType()) {
-        case Function:
-        case Field:
+        case FUNCTION:
+        case FIELD:
           element = proposal.getData();
           break;
-        case Variable:
+        case VARIABLE:
           return imageVariable;
           //return GuiResource.getInstance().getImageVariable();
         default:
@@ -105,7 +106,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
     if (element instanceof Operator) {
       Operator operator = (Operator) element;
 
-      return Operator.getHtmlDocumentation(operator.getKind());
+      return OperatorUtils.getHtml(operator.getName());
     }
 
     return null;

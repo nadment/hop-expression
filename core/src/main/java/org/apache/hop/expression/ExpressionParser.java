@@ -60,11 +60,22 @@ public class ExpressionParser {
   private List<Token> tokens = new ArrayList<>();
   private int index = 0;
 
-  public static IExpression parse(String source) throws ParseException {
+  public static IExpression parse(String source) throws ExpressionException {
     ExpressionParser parser = new ExpressionParser(source);
-    IExpression expression = parser.parse();
-    // return expression.optimize(new ExpressionContext());
-    return expression;
+    try {
+      IExpression expression = parser.parse();
+      // return expression.optimize(new ExpressionContext());
+      return expression;
+
+    }
+    catch(ParseException e) {
+      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", e.getErrorOffset(), e.getMessage());
+      throw new ExpressionException(message, e ); 
+    }
+    catch(ExpressionException e) {
+      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(), e.getMessage());
+      throw new ExpressionException(message, e );       
+    }
   }
 
   protected ExpressionParser(String source) {
@@ -387,7 +398,7 @@ public class ExpressionParser {
           return Value.NULL;
         case IDENTIFIER:
           return new ExpressionIdentifier(token.text());
-        case LITERAL_STRING:
+        case LITERAL_STRING:          
           return parseLiteralText(token);
         case LITERAL_NUMBER:
           return parseLiteralNumber(token);
@@ -396,14 +407,15 @@ public class ExpressionParser {
         case LITERAL_BINARY_BIT:
           return parseLiteralBinaryBit(token);
         case DATE:
-          return parseLiteralDate();
+          return parseLiteralDate(next());
         case TIME:
-          return parseLiteralTime();
+          return parseLiteralTime(next());
         case TIMESTAMP:
-          return parseLiteralTimestamp();
+          return parseLiteralTimestamp(next());
         case CASE:
           // FIXME: Case is not at the good place
           return parseCaseWhen();
+        
         case FUNCTION:
           return parseFunction(token);
         case LPARENTHESIS:
@@ -526,29 +538,20 @@ public class ExpressionParser {
    * Parses a date literal. The parsing is strict and requires months to be less than 12, days to be
    * less than 31, etc.
    */
-  private Value parseLiteralDate() throws ParseException {
-
-    // The real literal text DATE 'literal'
-    Token token = next();
-
-    Instant instant;
+  private Value parseLiteralDate(Token token) throws ParseException {
     try {
-      instant = DateFormat.parse(token.text(), "YYYY-MM-DD", Locale.ENGLISH);
+      Instant instant = DateFormat.parse(token.text(), "YYYY-MM-DD", Locale.ENGLISH);
+      return ValueDate.of(instant);
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidDate", token.text()),
           this.getPosition());
     }
-
-    return ValueDate.of(instant);
   }
 
   /** Parses a time literal. */
-  private Value parseLiteralTime() throws ParseException {
+  private Value parseLiteralTime(Token token) throws ParseException {
 
     try {
-      // The real literal text TIME 'literal'
-      Token token = next();
-
       DateTimeFormatter format = DateTimeFormatter.ISO_TIME;
       // if ( token.getLength()==16 )
       // format = TIME_FORMAT_NANO6;
@@ -571,17 +574,15 @@ public class ExpressionParser {
    * Parses a date literal. The parsing is strict and requires months to be less than 12, days to be
    * less than 31, etc.
    */
-  private Value parseLiteralTimestamp() throws ParseException {
+  private Value parseLiteralTimestamp(Token token) throws ParseException {
 
     try {
-      // The real literal text TIMESTAMP 'literal'
-      Token token = next();
-
+      String text = token.text();
       DateTimeFormatter format = TIMESTAMP_FORMAT;
-      if (token.text().length() == 26)
+      if (text.length() == 26)
         format = TIMESTAMP_FORMAT_NANO6;
 
-      LocalDateTime datetime = LocalDateTime.parse(token.text(), format);
+      LocalDateTime datetime = LocalDateTime.parse(text, format);
 
       // System.out.println(token.getText()+" parse to "+datetime.toString() );
 
@@ -644,10 +645,7 @@ public class ExpressionParser {
 
     if (next(Id.ELSE)) {
       elseExpression = this.parseLogicalOr();
-    } else {
-      // implicit ELSE NULL case
-      elseExpression = Value.NULL;
-    }
+    } 
 
     if (!next(Id.END)) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.CASE),
@@ -674,6 +672,8 @@ public class ExpressionParser {
     }
     return expression;
   }
+  
+
 
 
   /** Function */
@@ -690,13 +690,13 @@ public class ExpressionParser {
     }
 
     /** Cast(expression AS dataType FORMAT pattern) */
-    if (Kind.CAST == function.kind || Kind.TRY_CAST == function.kind) {
+    if ( function.getKind()==Kind.CAST || function.getKind()==Kind.TRY_CAST) {
 
       operands.add(this.parseLogicalOr());
 
       if (!next(Id.AS)) {
-        throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidFunctionCastAs"),
-            this.getPosition());
+        throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
+            token.start());
       }
 
       DataType type = parseDataType();
@@ -705,12 +705,18 @@ public class ExpressionParser {
 
       if (is(Id.FORMAT)) {
         next();
-        operands.add(this.parseLiteralText(next()));
+        token = next();
+        if ( token.is(Token.Id.LITERAL_STRING))
+          operands.add(this.parseLiteralText(token));
+        else
+          throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
+              token.start());
+          
       }
     }
 
     /** Extract(datePart FROM expression) */
-    else if (Kind.EXTRACT == function.kind) {
+    if ( function.getKind()==Kind.EXTRACT ) {
 
       DatePart part = DatePart.of(next().text());
       
@@ -736,7 +742,7 @@ public class ExpressionParser {
 
       if (!next(Id.FROM)) {
         throw new ParseException(
-            BaseMessages.getString(PKG, "Expression.InvalidFunctionExtractFrom"),
+            BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
             this.getPosition());
       }
 

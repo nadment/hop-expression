@@ -100,7 +100,7 @@ public class ExpressionCall implements IExpression {
   @Override
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
 
-    if (leftPrec < operator.getLeftPrecedence()
+    if ((leftPrec < operator.getLeftPrecedence() && (rightPrec != 0))
         || (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
       writer.append('(');
       operator.write(writer, this, 0, 0);

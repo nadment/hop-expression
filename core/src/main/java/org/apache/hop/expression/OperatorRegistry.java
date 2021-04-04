@@ -43,15 +43,19 @@ public class OperatorRegistry {
          ScalarFunction annotation = method.getAnnotation(ScalarFunction.class);
          
          log.logBasic("Register function " + annotation.name());
-         
-         Kind kind = Kind.valueOf(annotation.name());
-                  
+                   
          // Create function
-         createFunction(kind, annotation.name(), false, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+         Function function = new Function(annotation.name(), null, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+         operators.add(function);
+         functions.put(function.getName(), function);
+                 
+         // Create function alias
+         for (String alias : annotation.alias()) {
+           log.logBasic("Register alias " + alias + " to function "+ annotation.name());
          
-         // Create alias
-         for (String name : annotation.alias()) {
-           createFunction(kind, name, true, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+           function = new Function(annotation.name(), alias, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+           operators.add(function);
+           functions.put(alias, function);     
          }
        } catch (Exception e) {
          log.logError("Error registring function " + method, e);
@@ -96,7 +100,7 @@ public class OperatorRegistry {
   private List<Method> findAnnotatedMethods(Class<?> clazz,
       Class<? extends Annotation> annotationClass) {
     Method[] methods = clazz.getMethods();
-    List<Method> annotatedMethods = new ArrayList<Method>(methods.length);
+    List<Method> annotatedMethods = new ArrayList<>(methods.length);
     for (Method method : methods) {
       if (method.isAnnotationPresent(annotationClass)) {
         annotatedMethods.add(method);
@@ -105,10 +109,4 @@ public class OperatorRegistry {
     return annotatedMethods;
   }
   
-  private void createFunction(Kind kind, String name, boolean isAlias,
-      boolean isDeterministic, Method method, int min, int max, String category) {
-    Function function = new Function(kind, name, isAlias, isDeterministic, method, min, max, category);
-    operators.add(function);
-    functions.put(name, function);
-  }
 }

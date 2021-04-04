@@ -43,7 +43,7 @@ public class JavaNumberFormat {
     }
   };
 
-  private static final Map<String, DecimalFormatThreadLocal> CACHE = new ConcurrentHashMap<>();
+  private static final Map<String, DecimalFormatThreadLocal> cache = new ConcurrentHashMap<>();
 
   /**
    * Returns a cached {@link DecimalFormat} instance
@@ -52,11 +52,7 @@ public class JavaNumberFormat {
    * @return the DecimalFormat instance
    */
   private static DecimalFormat getDecimalFormat(final String format) {
-    DecimalFormatThreadLocal threadLocal = CACHE.get(format);
-    if (threadLocal == null) {
-      threadLocal = new DecimalFormatThreadLocal(format);
-      CACHE.put(format, threadLocal);
-    }
+    DecimalFormatThreadLocal threadLocal = cache.computeIfAbsent(format, f -> new DecimalFormatThreadLocal(f));
 
     return threadLocal.get();
   }

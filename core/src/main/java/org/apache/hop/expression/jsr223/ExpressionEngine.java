@@ -26,6 +26,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.value.Value;
@@ -86,8 +87,8 @@ public final class ExpressionEngine extends AbstractScriptEngine
     try {
       IExpression expression = ExpressionParser.parse(script);
       return new CompiledExpression(this, expression);
-    } catch (ParseException e) {
-      throw new ScriptException("Unable to parse expression: " + script);
+    } catch (ExpressionException e) {
+      throw new ScriptException("Unable to compile expression: " + script);
     }
   }
 

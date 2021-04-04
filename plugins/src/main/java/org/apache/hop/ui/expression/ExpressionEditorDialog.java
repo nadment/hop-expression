@@ -106,7 +106,7 @@ public class ExpressionEditorDialog extends Dialog {
     btnOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     btnOK.setLayoutData(
         new FormDataBuilder().bottom().right(btnCancel, -ConstUi.SMALL_MARGIN).result());
-    btnOK.addListener(SWT.Selection, Event -> onOkPressed());
+    btnOK.addListener(SWT.Selection, event -> onOkPressed());
 
     BaseTransformDialog.setSize(shell);
 

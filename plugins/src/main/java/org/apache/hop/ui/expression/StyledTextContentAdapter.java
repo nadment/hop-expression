@@ -61,15 +61,15 @@ public class StyledTextContentAdapter implements IControlContentAdapter, IContro
 
   @Override
   public Rectangle getInsertionBounds(Control control) {
-    StyledText StyledText = (StyledText) control;
-    int caretOrigin = StyledText.getCaretOffset();
+    StyledText styledText = (StyledText) control;
+    int caretOrigin = styledText.getCaretOffset();
     // We fudge the y pixels due to problems with getCaretLocation
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=52520
     return new Rectangle(
-        caretOrigin + StyledText.getClientArea().x,
-        0 + StyledText.getClientArea().y,
+        caretOrigin + styledText.getClientArea().x,
+        0 + styledText.getClientArea().y,
         1,
-        StyledText.getLineHeight());
+        styledText.getLineHeight());
   }
 
   @Override

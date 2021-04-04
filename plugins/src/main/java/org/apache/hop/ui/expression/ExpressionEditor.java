@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.ui.expression;
 
@@ -22,8 +20,6 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionScanner;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.i18n.BaseMessages;
@@ -35,24 +31,20 @@ import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,7 +76,8 @@ public class ExpressionEditor extends SashForm {
   }
 
   protected void createEditor(final Composite parent) {
-    textEditor = new StyledText(parent, SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+    textEditor =
+        new StyledText(parent, SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
     textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
@@ -104,21 +97,16 @@ public class ExpressionEditor extends SashForm {
     KeyStroke keyStroke = KeyStroke.getInstance(modifierKeys, SWT.SPACE);
 
     contentProposalProvider = new ExpressionProposalProvider();
-    
-    ContentProposalAdapter contentProposalAdapter =
-        new ContentProposalAdapter(
-            textEditor,
-            new StyledTextContentAdapter(),
-            contentProposalProvider,
-            keyStroke,
-            new char[] {'(', '$'});
+
+    ContentProposalAdapter contentProposalAdapter = new ContentProposalAdapter(textEditor,
+        new StyledTextContentAdapter(), contentProposalProvider, keyStroke, new char[] {'(', '$'});
     contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
     contentProposalAdapter.setLabelProvider(new ExpressionLabelProvider());
     contentProposalAdapter.setPropagateKeys(true);
     contentProposalAdapter.setAutoActivationDelay(10);
     contentProposalAdapter.setPopupSize(new Point(300, 200));
 
-    // Avoid Enter key to be inserted when selected content proposal    
+    // Avoid Enter key to be inserted when selected content proposal
     textEditor.addListener(SWT.KeyDown, (event) -> {
       try {
         KeyStroke k = KeyStroke.getInstance("Enter");
@@ -141,23 +129,24 @@ public class ExpressionEditor extends SashForm {
 
     // Create the drag source on the tree
     DragSource ds = new DragSource(tree, DND.DROP_MOVE);
-    ds.setTransfer(new Transfer[] {TextTransfer.getInstance()});
-    ds.addDragListener(
-        new DragSourceAdapter() {
-          @Override
-          public void dragStart(DragSourceEvent event) {
-            TreeItem item = tree.getSelection()[0];
+    ds.setTransfer(TextTransfer.getInstance());
+    ds.addDragListener(new DragSourceAdapter() {
+      @Override
+      public void dragStart(DragSourceEvent event) {
+        TreeItem item = tree.getSelection()[0];
 
-            if (item != null && item.getData() != null) {
-              event.doit = true;
-            } else event.doit = false;
-          }
-          @Override
-          public void dragSetData(DragSourceEvent event) {
-            // Set the data to be the first selected item's text
-            event.data = labelProvider.getText(tree.getSelection()[0].getData());
-          }
-        });
+        if (item != null && item.getData() != null) {
+          event.doit = true;
+        } else
+          event.doit = false;
+      }
+
+      @Override
+      public void dragSetData(DragSourceEvent event) {
+        // Set the data to be the first selected item's text
+        event.data = labelProvider.getText(tree.getSelection()[0].getData());
+      }
+    });
 
     if (isUseField) {
       treeItemField = new TreeItem(tree, SWT.NULL);
@@ -169,28 +158,34 @@ public class ExpressionEditor extends SashForm {
     treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
     treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
 
- 
+
     Set<String> categories = new TreeSet<>();
     List<Operator> primaryOperators = new ArrayList<>();
-    HashMap<Kind, String> mapDisplay = new HashMap<>();
+    HashMap<String, String> mapDisplay = new HashMap<>();
 
-    // Primary operator
+    // Inventory operator without alias first and category
     for (Operator o : OperatorRegistry.getInstance().getOperators()) {
-      
-      if ( !categories.contains(o.getCategory()))
+
+      if (!categories.contains(o.getCategory())) {
         categories.add(o.getCategory());
-      
-      if (!o.isAlias()) {
+      }
+
+      if (o.getAlias() == null) {
         primaryOperators.add(o);
-        mapDisplay.put(o.getKind(), o.getName());
+        mapDisplay.put(o.getName(), o.getName());
       }
     }
 
     // Alias operator
     for (Operator o : OperatorRegistry.getInstance().getOperators()) {
-      if (o.isAlias()) {
-        String alias = mapDisplay.get(o.getKind());
-        mapDisplay.replace(o.getKind(), String.join(", ", alias, o.getName()));
+      if (o.getAlias() != null) {
+        if (mapDisplay.containsKey(o.getName())) {
+          String str = mapDisplay.get(o.getName());
+          mapDisplay.replace(o.getName(), String.join(", ", str, o.getAlias()));
+        } else {
+          primaryOperators.add(o);
+          mapDisplay.put(o.getName(), o.getAlias());
+        }
       }
     }
 
@@ -199,20 +194,22 @@ public class ExpressionEditor extends SashForm {
     for (String category : categories) {
       TreeItem item = new TreeItem(treeItemOperator, SWT.NULL);
       item.setImage(GuiResource.getInstance().getImageFolder());
-      item.setText(category);          
+      item.setText(category);
       items.put(category, item);
     }
-    
+
     // Create tree item operator
     for (Operator operator : primaryOperators) {
 
       TreeItem parentItem = items.get(operator.getCategory());
 
       TreeItem item;
-      if (parentItem == null) item = new TreeItem(tree, SWT.NULL);
-      else item = new TreeItem(parentItem, SWT.NULL);
+      if (parentItem == null)
+        item = new TreeItem(tree, SWT.NULL);
+      else
+        item = new TreeItem(parentItem, SWT.NULL);
       item.setImage(labelProvider.getImage(operator));
-      item.setText(mapDisplay.get(operator.getKind()));
+      item.setText(mapDisplay.get(operator.getName()));
       item.setData(operator);
     }
 
@@ -278,27 +275,24 @@ public class ExpressionEditor extends SashForm {
 
       this.contentProposalProvider.setRowMeta(rowMeta);
 
-      Display.getDefault()
-          .asyncExec(
-              () -> {
-                treeItemField.removeAll();
+      Display.getDefault().asyncExec(() -> {
+        treeItemField.removeAll();
 
-                for (int i = 0; i < rowMeta.size(); i++) {
-                  IValueMeta valueMeta = rowMeta.getValueMeta(i);
+        for (int i = 0; i < rowMeta.size(); i++) {
+          IValueMeta valueMeta = rowMeta.getValueMeta(i);
 
-                  // Escape field name matching reserved words or function
-                  String name = valueMeta.getName();
-                  if (ExpressionScanner.getReservedWords().contains(name.toUpperCase())
-                      || Function.getFunction(name) != null) {
-                    name = '[' + name + ']';
-                  }
+          // Escape field name matching reserved words or function name
+          String name = valueMeta.getName();
+          if (ExpressionScanner.isReservedWord(name) || ExpressionScanner.isFunctionName(name)) {
+            name = '[' + name + ']';
+          }
 
-                  TreeItem item = new TreeItem(treeItemField, SWT.NULL);
-                  item.setImage(labelProvider.getImage(valueMeta));
-                  item.setText(valueMeta.getName());
-                  item.setData(name);
-                }
-              });
+          TreeItem item = new TreeItem(treeItemField, SWT.NULL);
+          item.setImage(labelProvider.getImage(valueMeta));
+          item.setText(valueMeta.getName());
+          item.setData(name);
+        }
+      });
     }
   }
 }

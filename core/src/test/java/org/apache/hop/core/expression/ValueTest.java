@@ -63,11 +63,11 @@ public class ValueTest {
 
     assertEquals(ValueBoolean.TRUE, ValueBoolean.of(true));
     assertEquals(ValueBoolean.FALSE, ValueBoolean.of(false));
-    assertEquals(ValueBoolean.TRUE.toString(), "TRUE");
-    assertEquals(ValueBoolean.FALSE.toString(), "FALSE");
     assertEquals(ValueBoolean.TRUE.getObject(), Boolean.TRUE);
     assertEquals(ValueBoolean.FALSE.getObject(), Boolean.FALSE);
 
+    assertEquals(ValueBoolean.TRUE.toString(), "TRUE");
+    assertEquals(ValueBoolean.FALSE.toString(), "FALSE");    
     assertEquals(ValueBoolean.TRUE.toInteger(), 1L);
     assertEquals(ValueBoolean.FALSE.toInteger(), 0L);
     assertEquals(ValueBoolean.TRUE.toNumber(), 1D, 0.0000001);
@@ -101,6 +101,8 @@ public class ValueTest {
     assertEquals(ValueInteger.of(1L), ValueInteger.ONE);
     assertEquals(ValueInteger.of(Integer.valueOf(1)), ValueInteger.ONE);
     assertEquals(ValueInteger.of(2L), ValueInteger.of(2));
+    assertEquals(ValueInteger.of(123).getObject(), 123L);
+    
     assertEquals(ValueInteger.of(2L).toInteger(), 2L);
     assertEquals(ValueInteger.of(2L).toNumber(), 2D, 0.0000001);
     assertEquals(ValueInteger.of(2L).toBigNumber(), BigDecimal.valueOf(2));
@@ -137,6 +139,7 @@ public class ValueTest {
     assertEquals(ValueNumber.of(Math.PI), ValueNumber.PI);
     assertFalse(ValueNumber.ZERO.toBoolean());
     assertTrue(ValueNumber.ONE.toBoolean());
+    assertEquals(ValueNumber.of(123.456).getObject(), 123.456);
     assertEquals(ValueNumber.of(123.456).toInteger(), 123);
     assertEquals(ValueNumber.of(123.456).toNumber(), 123.456, 0.0000001);
     // assertEquals(ValueNumber.ZERO.toBigNumber(), BigDecimal.ZERO);

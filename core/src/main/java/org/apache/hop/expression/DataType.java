@@ -57,4 +57,20 @@ public enum DataType {
     }
     throw new IllegalArgumentException("Invalid data type: "+s);
   }
+  
+
+  /**
+   * Check if data type exist.
+   * 
+   * @param str the name to check
+   * @return 
+   */  
+  public static boolean exist(final String s) {
+    for (DataType type : DataType.values()) {
+      if (type.name().equalsIgnoreCase(s)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

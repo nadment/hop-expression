@@ -36,6 +36,15 @@ public class ExpressionScanner {
     return RESERVED_WORDS;
   }
 
+  public static boolean isReservedWord(String name) {
+    return ExpressionScanner.getReservedWords().contains(name.toUpperCase());
+  }
+
+  public static  boolean isFunctionName(String name) {
+    return OperatorRegistry.getInstance().getFunction(name) != null;
+  }
+  
+  
   private String source;
 
   private int index = 0;
@@ -283,9 +292,8 @@ public class ExpressionScanner {
               String value = source.substring(start + 1, index - 1).toUpperCase();
               return new Token(Id.IDENTIFIER, start, index, value);
             }
-          }
-          // FIXME: End of bracket
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.SyntaxError"), index);
+          }        
+          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"),            index);
         }
 
         case '.': // Number without zero .1
@@ -404,7 +412,7 @@ public class ExpressionScanner {
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 
-          if (isFunction && OperatorRegistry.getInstance().getFunction(name) != null) {
+          if (isFunction && isFunctionName(name) ) {
             return new Token(Id.FUNCTION, start, index, name);
           }
 
@@ -413,18 +421,12 @@ public class ExpressionScanner {
             return new Token(Id.valueOf(name), start, index, name);
           }
 
-          try {
-            DataType.of(name);
+          if ( DataType.exist(name) ) {
             return new Token(Id.DATATYPE, start, index, name);
-          } catch (RuntimeException e) {
-            // Ignore
           }
 
-          try {
-            DatePart.of(name);
-            return new Token(Id.DATEPART, start, index, name);
-          } catch (RuntimeException e) {
-            // Ignore
+          if ( DatePart.exist(name) ) {
+            return new Token(Id.DATEPART, start, index, name);          
           }
 
           return new Token(Id.IDENTIFIER, start, index, identifier);

@@ -30,7 +30,7 @@ public class RowExpressionBindings implements Bindings {
 
   /** Default constructor uses a <code>HashMap</code>. */
   public RowExpressionBindings() {
-    this(new HashMap<String, Object>());
+    this(new HashMap<>());
   }
 
   /**

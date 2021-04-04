@@ -24,10 +24,10 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 public class ExpressionProposal implements IContentProposal {
 
   enum Type {
-    Field,
-    Operator,
-    Function,
-    Variable
+    FIELD,
+    OPERATOR,
+    FUNCTION,
+    VARIABLE
   }
 
   private Type type;

@@ -48,6 +48,21 @@ public class ExpressionTest extends BaseExpressionTest {
     
     evalFails("[");
     evalFails(" [ ");
+    evalFails("] ");
+    evalFails(" ]");   
+    evalFails("[]");
+    
+    writeEquals("IDENTIFIER");    
+    // Reserved word
+    writeEquals("[CASE]");
+    // Data type
+    writeEquals("[NUMBER]");
+    // Part name
+    writeEquals("[CENTURY]");    
+    // Function name
+    writeEquals("[YEAR]");
+    // Contains space
+    writeEquals("[IDENTIFIER SPACE]+1");
   }
 
   @Test
@@ -55,6 +70,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("Date '2019-02-25'", LocalDate.of(2019, 2, 25));
     evalEquals("Date '28-02-25'", LocalDate.of(28, 2, 25));
     evalEquals("Date '2028-Feb-25'", LocalDate.of(2028, 2, 25));
+    
+    writeEquals("DATE '2028-02-25'");
   }
 
   @Test
@@ -109,6 +126,7 @@ public class ExpressionTest extends BaseExpressionTest {
     // Escape 32 bit unicode
     // evalEquals("'\\U000020AC'", "€");
 
+    writeEquals("'Test string'");
   }
 
 
@@ -161,6 +179,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("-2.3EE-2");
     evalFails("-2.3E");
     evalFails("-2.3E--2");
+    
+    writeEquals("-2.3E-2","-.023");
   }
 
   @Test
@@ -196,8 +216,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("Date '2020-20-28'");
     // evalEquals("-4**2",-16);
   }
-
-
+  
   @Test
   public void precedenceAndAssociativity() throws Exception {
 
@@ -284,6 +303,8 @@ public class ExpressionTest extends BaseExpressionTest {
 
     evalFails("NOM=");
     evalFails("NOM = ");
+    
+    writeEquals("AGE=40");
   }
 
   @Test
@@ -444,6 +465,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("NULL in (1,2,3)");
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
+    
+    writeEquals("AGE IN (10,20,30,40)");
   }
 
   @Test
@@ -458,6 +481,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("Null is True");
     evalFalse("Null IS False");
     evalTrue("Null IS NULL");
+    
+    writeEquals("FIELD IS TRUE");
   }
 
   @Test
@@ -517,6 +542,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("Age between 10 and");
     evalFails("Age between and 10");
     evalFails("Age between and ");
+    
+    writeEquals("FIELD BETWEEN 10 AND 20");
   }
 
   @Test
@@ -626,11 +653,21 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("'1234'::");
     evalFails("CAST('bad' AS)");
     evalFails("CAST('bad' AS NULL)");
+    evalFails("CAST('2020-01-01' AS NULL)");
     evalFails("CAST(1234 AS STRING FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
+    evalFails("CAST(Date '2019-02-25' AS String FORMAT NULL)");
+    
 
     // Bad data type
     evalFails("Cast(123 as Nill)");
+    
+    
+    writeEquals("CAST(NULL AS BINARY)");
+    writeEquals("CAST('1234' AS NUMBER)");
+    writeEquals("1234::NUMBER");
+    
+  //  writeEquals("CAST('2019-02-25' AS DATE FORMAT 'YYYY-MM-DD')");    
   }
 
   @Test
@@ -748,6 +785,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("NOT NULL");
     evalFails("FLAG is ");
     evalFails("NOT");
+    writeEquals("FIELD IS NOT TRUE","NOT FIELD IS TRUE");
   }
 
   @Test
@@ -762,6 +800,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("null OR false");
     evalNull("null OR null");
     evalFails("false OR");
+    
+    writeEquals("FIELD1 OR FIELD2");
   }
 
   @Test
@@ -775,6 +815,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("false AND null");
     evalNull("null AND false");
     evalNull("null AND null");
+    writeEquals("FIELD1 AND FIELD2");
   }
 
   @Deprecated
@@ -786,6 +827,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("true XOR null");
     evalNull("null XOR true");
     evalNull("null XOR null");
+    writeEquals("FIELD1 XOR FIELD2");
   }
 
   @Test
@@ -854,6 +896,8 @@ public class ExpressionTest extends BaseExpressionTest {
     
     // NULL does not match NULL    
     evalNull("NULL like NULL");
+    
+    writeEquals("FIELD1 LIKE '%ADD!_%' ESCAPE '!'");
   }
 
   @Test
@@ -864,6 +908,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("'TEST'||null", "TEST");
     evalEquals("null||'TEST'", "TEST");
     evalNull("null||null");
+    
+    writeEquals("FIELD1||'TEST'");
   }
 
   @Test
@@ -884,6 +930,10 @@ public class ExpressionTest extends BaseExpressionTest {
 
     // Missing 'END'
     evalFails("case when Age=40 then 10 else 50");
+    
+    writeEquals("CASE WHEN AGE=40 THEN 10 END");
+    writeEquals("CASE WHEN AGE=40 THEN TRUE ELSE FALSE END");
+    writeEquals("CASE AGE WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
   }
 
 }

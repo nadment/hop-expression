@@ -206,7 +206,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("RPad(NULL,-8)");
     evalFails("RPad('test')");
     // Test PAD_LIMIT
-    evalFails("RLPad('test',10000)");
+    evalFails("RPad('test',10000)");
   }
 
   @Test
@@ -412,7 +412,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Add_Days(Date '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalNull("Add_Days(Null,140)");
     evalNull("Add_Days(Date '2019-01-15',Null)");
-    evalFails("Add_Day(Date '2019-01-15')");
+    evalFails("Add_Days(Date '2019-01-15')");
   }
 
   @Test
@@ -810,13 +810,17 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("To_Boolean()");
     evalFails("To_Boolean('test')");
     evalFails("To_Boolean(1,2,3)");
+  }
 
+  @Test
+  public void Try_To_Boolean() throws Exception {
     evalTrue("Try_To_Boolean(1)");
     evalFalse("Try_To_Boolean(0)");
     evalNull("Try_To_Boolean('falsee')");
     evalNull("Try_To_Boolean('x')");
+    evalNull("Try_To_Boolean(NULL)");
   }
-
+  
   @Test
   public void To_Number() throws Exception {
 
@@ -910,6 +914,8 @@ public class FunctionTest extends BaseExpressionTest {
     // Parse multi format
     evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234);
 
+    evalNull("TO_NUMBER(NULL)");
+    
     // You can specify only one decimal separator in a number format model.
     evalFails("TO_NUMBER('123.456','9D999D9')");
     evalFails("TO_NUMBER('123.456','9.999.9')");
@@ -920,6 +926,15 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("TO_NUMBER('-0.2','999.999,99')");
   }
 
+  @Test
+  public void Try_To_Number() throws Exception {
+    
+  // TODO: evalNull("TRY_TO_NUMBER('-0.2','99.99S')");
+    
+    // bad format should fails
+    //evalFails("TRY_TO_NUMBER('123.456','9D999D9')");
+  }
+  
   @Test
   public void To_Char() throws Exception {
     // Text
@@ -1236,7 +1251,12 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("TRY_CAST('2019-99-25' AS Date)");
     evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
 
+    
+    evalNull("TRY_CAST(NULL AS Date)");
+    
     // Bad syntax
+    evalFails("TRY_CAST('2020-01-021' AS NULL)");
+    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
     evalFails("TRY_CAST('bad' AS)");
     evalFails("TRY_CAST(1234 AS STRING FORMAT )");
     evalFails("TRY_CAST(Date '2019-02-25' AS String FORMAT )");
@@ -1513,6 +1533,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Log(10,100)", 2);
     evalNull("Log(10,null)");
     evalNull("Log(null,1)");
+    evalFails("Log(10,0)");
     evalFails("Log(-2)");
     evalFails("Log(1)");
     evalFails("Log(x,y)");

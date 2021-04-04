@@ -36,13 +36,13 @@ public class ExpressionEngineFactory implements ScriptEngineFactory {
   private static final ExpressionEngine EXPRESSION_ENGINE = new ExpressionEngine();
 
   static {
-    List<String> n = new ArrayList<String>(1);
+    List<String> n = new ArrayList<>(1);
     n.add(LANGUAGE_NAME);
     NAMES = Collections.unmodifiableList(n);
 
     EXTENSIONS = NAMES;
 
-    n = new ArrayList<String>(1);
+    n = new ArrayList<>(1);
     n.add("application/x-" + LANGUAGE_NAME);
     MIME_TYPES = Collections.unmodifiableList(n);
   }

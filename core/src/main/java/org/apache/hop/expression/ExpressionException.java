@@ -20,9 +20,6 @@ public class ExpressionException extends RuntimeException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 
-  protected String expression;
-  protected int position;  // -1 if not known; should be known in all reasonable cases
-
   /**
    * Construct a new expression exception.
    * 
@@ -42,23 +39,5 @@ public class ExpressionException extends RuntimeException {
     super(message, exception);
   }
   
-  /**
-   * Construct a new expression exception.
-   * 
-   * @param expression the expression string
-   * @param position the position in the expression string where the problem occurred
-   * @param message a descriptive message
-   */
-  public ExpressionException(String expression, int position, String message) {
-      super(message);
-      this.expression = expression;
-      this.position = position;
-  }
-  
-  /**
-   * Return the position in the expression string where the problem occurred.
-   */
-  public final int getPosition() {
-      return this.position;
-  }
+ 
 }

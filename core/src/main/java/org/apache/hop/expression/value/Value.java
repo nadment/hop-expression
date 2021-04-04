@@ -378,6 +378,10 @@ public abstract class Value implements IExpression, Comparable<Value> {
     throw createUnsupportedConversionError(DataType.BINARY);
   }
 
+  /**
+   * Get the value as integer value with implicit coercion.
+   * @return the integer value
+   */
   public long toInteger() throws ExpressionException {
     throw createUnsupportedConversionError(DataType.INTEGER);
   }

@@ -157,6 +157,8 @@ public class ValueDate extends Value {
   }
 
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
+    writer.append("DATE '");
     writer.append(this.toString());
+    writer.append('\'');
   }
 }

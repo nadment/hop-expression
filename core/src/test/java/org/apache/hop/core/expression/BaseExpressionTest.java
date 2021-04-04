@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.Instant;
@@ -165,19 +166,37 @@ public class BaseExpressionTest {
     try {     
       eval(s);
       Assert.fail(s+" Syntax or result should be invalid\n");
-    } catch (ParseException | ExpressionException | IllegalArgumentException ex) {
+    } catch ( ExpressionException | IllegalArgumentException ex) {
       //Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
+      System.out.println(s+" > "+ex.toString());
     } catch (Exception ex) {
       Assert.fail(s+" Uncatched exception " + ex.getClass());
     }
   }
 
+  protected void writeEquals(String original) throws Exception {
+    writeEquals(original, original);
+  }
+
+  protected void writeEquals(String original, String result) throws Exception {
+
+    IExpression expression = ExpressionParser.parse(original);
+    
+    StringWriter writer = new StringWriter();   
+    expression.write(writer, 0, 0);
+    assertEquals(result, writer.toString());
+  }
+
+
   @Test
   public void parser() throws Exception {
-
+  
+   // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
     //evalEquals("CAST(1.75 as Integer)",2);
-    evalEquals("[IDENTIFIER SPACE]", "SPACE");
-    
+    //evalEquals("[IDENTIFIER SPACE]", "SPACE");
+    //evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
+
+    //writeEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')");
     //evalEquals("-.2", new BigDecimal("-0.2"));
     
     // evalEquals("TO_NUMBER('0.3-','#0.##-')", -0.3);

@@ -100,27 +100,45 @@ public enum DatePart {
   }
 
   /**
-   * Create date part, or null if not found
+   * Create date part for the given name or throws exception if not exist.
    *
    * <p>This method ignore case and search alias too
    *
-   * @param s
-   * @return
+   * @param str
+   * @return DatePart
    */
-  public static DatePart of(String s) {
+  public static DatePart of(String str) {
     for (DatePart part : DatePart.values()) {
-      if (part.name().equalsIgnoreCase(s)) {
+      if (part.name().equalsIgnoreCase(str)) {
         return part;
       }
 
-      if (part.alias != null && part.alias.equalsIgnoreCase(s)) {
+      if (part.alias != null && part.alias.equalsIgnoreCase(str)) {
         return part;
       }
     }
     
-    throw new IllegalArgumentException("Invalid date part: "+s);
+    throw new IllegalArgumentException("Invalid date part: "+str);
   }
 
+  /**
+   * Check if date part exist.
+   * 
+   * @param str the name to check
+   * @return 
+   */  
+  public static boolean exist(final String str) {
+    for (DatePart part : DatePart.values()) {
+      if (part.name().equalsIgnoreCase(str)) {
+        return true;
+      }
+      if (part.alias != null && part.alias.equalsIgnoreCase(str)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   private static int millennium(int year) {
     return year > 0 ? (year + 999) / 1000 : year / 1000;
   }

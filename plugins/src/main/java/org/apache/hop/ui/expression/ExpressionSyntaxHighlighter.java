@@ -31,24 +31,24 @@ import org.eclipse.swt.graphics.Color;
 
 public class ExpressionSyntaxHighlighter implements LineStyleListener {
 
-  private Color BLACK;
-  private Color RED;
-  private Color GREEN;
-  private Color DARK_GREEN;
-  private Color BLUE;
-  private Color INDIGO;
-  private Color PURPLE;
-  private Color ORANGE;
+  private Color black;
+  private Color red;
+  private Color green;
+  private Color darkgreen;
+  private Color blue;
+  private Color indigo;
+  private Color purple;
+  private Color orange;
 
   public ExpressionSyntaxHighlighter() {
-    BLACK = GuiResource.getInstance().getColorBlack();
-    RED = GuiResource.getInstance().getColorRed();
-    DARK_GREEN = GuiResource.getInstance().getColor(10, 93, 0);
-    GREEN = GuiResource.getInstance().getColor(8, 154, 0);
-    BLUE = GuiResource.getInstance().getColorBlue();
-    PURPLE = GuiResource.getInstance().getColor(255, 0, 255);
-    ORANGE = GuiResource.getInstance().getColorOrange();
-    INDIGO = GuiResource.getInstance().getColorIndigo();
+    black = GuiResource.getInstance().getColorBlack();
+    red = GuiResource.getInstance().getColorRed();
+    darkgreen = GuiResource.getInstance().getColor(10, 93, 0);
+    green = GuiResource.getInstance().getColor(8, 154, 0);
+    blue = GuiResource.getInstance().getColorBlue();
+    purple = GuiResource.getInstance().getColor(255, 0, 255);
+    orange = GuiResource.getInstance().getColorOrange();
+    indigo = GuiResource.getInstance().getColorIndigo();
   }
 
   @Override
@@ -56,7 +56,7 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
     StyledText styledText = ((StyledText) event.widget);
 
     try {
-      ArrayList<StyleRange> ranges = new ArrayList<StyleRange>();
+      ArrayList<StyleRange> ranges = new ArrayList<>();
       ExpressionScanner scanner = new ExpressionScanner(styledText.getText());
 
       for (Token token = scanner.tokenize(); token != null; token = scanner.tokenize()) {
@@ -72,24 +72,24 @@ public class ExpressionSyntaxHighlighter implements LineStyleListener {
   public Color getColor(Token token) {
     switch (token.id()) {
       case COMMENT:
-        return DARK_GREEN;
+        return darkgreen;
       case IDENTIFIER:
-        return BLACK;
+        return black;
       case FUNCTION:
-        return PURPLE;
+        return purple;
       case VARIABLE:
-        return RED;
+        return red;
       case DATATYPE:
       case DATEPART:
-        return INDIGO;
+        return indigo;
       case LITERAL_STRING:
-        return GREEN;
+        return green;
       case LITERAL_NUMBER:
       case LITERAL_BINARY_BIT:
       case LITERAL_BINARY_HEX:
-        return ORANGE;
+        return orange;
       default:
-        return BLUE;
+        return blue;
     }
   }
 }

@@ -20,7 +20,6 @@ public class Token {
 
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
-    AS,
 
     /** Variable "${var}" if scanner is used without variable environment substitution. */
     VARIABLE,
@@ -45,10 +44,14 @@ public class Token {
      */
     CONCAT("||"),
 
+    CAST,
+    AS,
+    /** CAST(numeric AS datatype FORMAT '9999') */
+    FORMAT,
     /**
      * Cast operator <code>::<code>
      */
-    CAST("::"),
+    CAST_OP("::"),
     
     /**
      * Contains operator <code>=~<code>
@@ -96,8 +99,7 @@ public class Token {
 
     FROM,
 
-    /** CAST(numeric AS datatype FORMAT '9999') */
-    FORMAT,
+
 
     /** The arithmetic division operator, "/". */
     DIVIDE("/"),
