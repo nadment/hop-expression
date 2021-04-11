@@ -41,7 +41,7 @@ public class ExpressionTest extends BaseExpressionTest {
   @Test
   public void Identifier() throws Exception {
     evalEquals("Age%2", 0);   
-    evalEquals(" [Age]%2", 0);
+    evalEquals(" \t\n[Age]%2", 0);
     evalEquals("[IDENTIFIER SPACE]", "SPACE");
     evalEquals("IDENTIFIER_UNDERSCORE", "UNDERSCORE");
     evalEquals("[IDENTIFIER lower]", "lower");
@@ -490,7 +490,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("0xF+0", 15);
     evalEquals("0b00011+0", 3);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
-    evalEquals("PRICE+1", 123456.789+1);
+    evalEquals("PRICE+PRICE", -10.24);
+    evalEquals("AMOUNT+1", 123456.789+1);
 
     evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
     evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
@@ -650,6 +651,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     // Bad syntax
     evalFails("'1234':");
+    evalFails("'1234':NUMBER");
     evalFails("'1234'::");
     evalFails("CAST('bad' AS)");
     evalFails("CAST('bad' AS NULL)");
@@ -665,9 +667,8 @@ public class ExpressionTest extends BaseExpressionTest {
     
     writeEquals("CAST(NULL AS BINARY)");
     writeEquals("CAST('1234' AS NUMBER)");
-    writeEquals("1234::NUMBER");
-    
-  //  writeEquals("CAST('2019-02-25' AS DATE FORMAT 'YYYY-MM-DD')");    
+    writeEquals("CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
+    writeEquals("1234::NUMBER");   
   }
 
   @Test
@@ -897,6 +898,7 @@ public class ExpressionTest extends BaseExpressionTest {
     // NULL does not match NULL    
     evalNull("NULL like NULL");
     
+    writeEquals("FIELD1 LIKE 'ADD%'");
     writeEquals("FIELD1 LIKE '%ADD!_%' ESCAPE '!'");
   }
 
@@ -921,12 +923,14 @@ public class ExpressionTest extends BaseExpressionTest {
 
     // explicit ELSE case
     evalEquals("case when Age=40 then 10 else 50 end", 10);
+    evalEquals("case when Age>80 then 'A' else 'B' end", "B");
 
     // Search CASE WHEN
     evalEquals("case when Age=10+20 then 1*5 when Age=20+20 then 2*5 else 50 end", 10);
 
     // Simple CASE
     evalEquals("case Age when 10 then 10 when 40 then 40 else 50 end", 40);
+    evalEquals("case Age when 10 then 10 when 20 then 20 else -1 end", -1);
 
     // Missing 'END'
     evalFails("case when Age=40 then 10 else 50");

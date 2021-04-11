@@ -17,10 +17,8 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.value.Value;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Locale;
-import java.util.Random;
 
 public interface IExpressionContext {
 
@@ -37,13 +35,16 @@ public interface IExpressionContext {
   public Locale getLocale();
 
   public ZoneId getZone();
-
+  
   /**
-   * Returns the current date.
+   * Gets the value of an attribute in a given scope.
    *
-   * @return the date.
+   * @param name The name of the attribute to retrieve.
+   * @return The value of the attribute. Returns <code>null</code> is the name
+   * does not exist.
+   *
+   * @throws IllegalArgumentException if the name is empty.
+   * @throws NullPointerException if the name is null.
    */
-  public Instant getCurrentDate();
-
-  public Random getRandom();
+  public Object getAttribute(String name);
 }

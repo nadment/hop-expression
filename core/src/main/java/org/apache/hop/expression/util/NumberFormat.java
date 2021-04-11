@@ -145,7 +145,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
 
   private static final Map<String, IFormat<BigDecimal>> cache = new ConcurrentHashMap<>();
 
-  public static enum SignMode {
+  public enum SignMode {
     DEFAULT,
     /** Trailing minus */
     TRAILING_MI,
@@ -157,9 +157,9 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     S_LEADING,
     /** Angle brackets */
     PR
-  };
+  }
 
-  public static enum CurrencyMode {
+  public enum CurrencyMode {
     NONE, 
     /** Dollars symbol */
     DOLLARS, 
@@ -171,7 +171,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     ISO_LEADING, 
     /** Trailing ISO currency code */
     TRAILING_ISO
-  };
+  }
 
   // Original format
   private final String format;
@@ -203,15 +203,13 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
   private String pattern = "";
   private int v = 0;
 
-  public static final BigDecimal parse(String value, String format, Locale locale)
+  public static final BigDecimal parse(String value, String format)
       throws ParseException {
     if (format == null)
       format = "TM";
-    if (locale == null)
-      locale = Locale.ENGLISH;
-
-    IFormat<BigDecimal> fmt = cache.computeIfAbsent(format, f -> create(f));    
-    return fmt.parse(value, locale);
+        
+    IFormat<BigDecimal> fmt = cache.computeIfAbsent(format, NumberFormat::create);
+    return fmt.parse(value);
   }
 
   private static IFormat<BigDecimal> create(String format) {
@@ -242,24 +240,13 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     return result;
   }
 
-  public static String format(BigDecimal value, String format) {
-    return format(value, format, Locale.ENGLISH);
-  }
 
-  public static String format(BigDecimal value, String format, Locale local) {
+  public static String format(BigDecimal value, String format) {
     if (format == null)
       format = "TM";    
-    
-    IFormat<BigDecimal> fmt = cache.get(format);
-    
-    // Not in cache
-    if (fmt == null) {
-      fmt = create(format);
-      
-      cache.put(format, fmt);
-    }
-
-    return fmt.format(value, local);
+        
+    IFormat<BigDecimal> fmt = cache.computeIfAbsent(format, NumberFormat::create);  
+    return fmt.format(value);
   }
 
   protected NumberFormat(final String format) {
@@ -337,8 +324,6 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     // Integer part
     boolean leadZero = false;
     boolean definedGroups = false;
-
-    boolean hexa = false;
     StringBuilder builder = new StringBuilder();
     for (; index < length; index++, this.separator++) {
       char c = format.charAt(index);
@@ -366,7 +351,6 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
         builder.append((leadZero) ? '0' : c);
         this.precision++;
       } else if (c == 'X' || c == 'x') {
-        hexa = true;
         boolean upper = (c == 'X');
         for (; index < length; index++) {
           builder.append(upper ? 'X' : 'x');
@@ -553,9 +537,9 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
    * @return the parsed value
    * @throws ParseException
    */
-  public BigDecimal parse(String text, Locale locale) throws ParseException {
+  public BigDecimal parse(String text) throws ParseException {
 
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
+    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
 
     int start = 0; // first not white space symbol
     try {
@@ -755,7 +739,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
    * @param locale the locale to use
    * @return the formatted number
    */
-  public String format(BigDecimal number, Locale locale) {
+  public String format(BigDecimal number) {
 
     // Short-circuit logic for formats that don't follow common logic below
 
@@ -814,7 +798,7 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
       return hex;
     }
 
-    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
+    DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
 
     // Adjust number scale to format scale
     if (this.scale < number.scale()) {

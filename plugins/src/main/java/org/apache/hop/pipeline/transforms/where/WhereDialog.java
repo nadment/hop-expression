@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.pipeline.transforms.where;
 
@@ -61,9 +59,9 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
   private final WhereMeta input;
   private ExpressionEditor wEditor;
   private ModifyListener lsMod;
-  
-  public WhereDialog(
-      Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta, String name) {
+
+  public WhereDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
+      String name) {
     super(parent, variables, (BaseTransformMeta) in, pipelineMeta, name);
     input = (WhereMeta) in;
   }
@@ -88,25 +86,19 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     props.setLook(shell);
 
     // Default listener (for hitting "enter")
-    lsDef =
-        new SelectionAdapter() {
-          @Override
-          public void widgetDefaultSelected(SelectionEvent e) {
-            ok();
-          }
-        };
+    lsDef = new SelectionAdapter() {
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e) {
+        ok();
+      }
+    };
 
     // The ModifyListener used on all controls. It will update the meta object to
     // indicate that changes are being made.
-    lsMod =
-        new ModifyListener() {
-          @Override
-          public void modifyText(ModifyEvent e) {
-            baseTransformMeta.setChanged();
-
-            wOk.setEnabled(isValid());
-          }
-        };
+    lsMod = e -> {
+      baseTransformMeta.setChanged();
+      wOk.setEnabled(isValid());
+    };
 
     this.createContents(shell);
 
@@ -123,13 +115,12 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     this.transformMeta.setChanged(changed);
 
     // Detect X or ALT-F4 or something that kills this window...
-    shell.addShellListener(
-        new ShellAdapter() {
-          @Override
-          public void shellClosed(ShellEvent e) {
-            cancel();
-          }
-        });
+    shell.addShellListener(new ShellAdapter() {
+      @Override
+      public void shellClosed(ShellEvent e) {
+        cancel();
+      }
+    });
 
     // Set/Restore the dialog size based on last position on screen
     setSize(shell);
@@ -149,26 +140,21 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     // The "transformName" variable is inherited from BaseTransformDialog
     return transformName;
-  }  
+  }
 
   public Image getImage() {
 
-    IPlugin plugin =
-        PluginRegistry.getInstance()
-            .getPlugin(TransformPluginType.class, this.transformMeta.getPluginId());
+    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
+        this.transformMeta.getPluginId());
 
     if (plugin.getImageFile() != null) {
-      return SwtSvgImageUtil.getImage(
-          shell.getDisplay(),
-          getClass().getClassLoader(),
-          plugin.getImageFile(),
-          ConstUi.ICON_SIZE,
-          ConstUi.ICON_SIZE);
+      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
+          plugin.getImageFile(), ConstUi.ICON_SIZE, ConstUi.ICON_SIZE);
     }
 
     return GuiResource.getInstance().getImageError();
-  }  
-  
+  }
+
   protected void setWidgetsContent(final WhereMeta meta) {
     if (meta.getExpression() != null) {
       this.wEditor.setText(meta.getExpression());
@@ -205,12 +191,8 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     Composite area = new Composite(parent, SWT.NONE);
     area.setLayout(new FormLayout());
-    area.setLayoutData(
-        new FormDataBuilder()
-            .top(titleSeparator, Const.FORM_MARGIN)
-            .bottom(wOk, -Const.FORM_MARGIN)
-            .fullWidth()
-            .result());
+    area.setLayoutData(new FormDataBuilder().top(titleSeparator, Const.FORM_MARGIN)
+        .bottom(wOk, -Const.FORM_MARGIN).fullWidth().result());
     props.setLook(area);
 
     this.createDialogArea(area);
@@ -245,32 +227,29 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
     deco.setDescriptionText(BaseMessages.getString("System.TransformNameMissing.Msg"));
-    deco.setImage(
-        FieldDecorationRegistry.getDefault()
-            .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR)
-            .getImage());
+    deco.setImage(FieldDecorationRegistry.getDefault()
+        .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).getImage());
     deco.setShowOnlyOnFocus(true);
     deco.hide();
 
-    wTransformName.addModifyListener(
-        new ModifyListener() {
-          public void modifyText(ModifyEvent e) {
-            if (wTransformName.getText().length() > 0) {
-              deco.hide();
-            } else {
-              deco.show();
-            }
+    wTransformName.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        if (wTransformName.getText().length() > 0) {
+          deco.hide();
+        } else {
+          deco.show();
+        }
 
-            baseTransformMeta.setChanged();
+        baseTransformMeta.setChanged();
 
-            wOk.setEnabled(isValid());
-          }
-        });
+        wOk.setEnabled(isValid());
+      }
+    });
 
     return composite;
   }
-  
-  
+
+
   protected Control createDialogArea(final Composite parent) {
 
     wEditor = new ExpressionEditor(parent, SWT.NONE, true);
@@ -278,19 +257,18 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
 
     // Search the fields in the background
-    new Thread(
-            () -> {
-              try {
-                TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
-                if (transformMeta != null) {
-                  IRowMeta rowMeta = pipelineMeta.getPrevTransformFields(this.getVariables(), transformMeta);
-                  wEditor.setRowMeta(rowMeta);
-                }
-              } catch (HopException e) {
-                logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), e);
-              }
-            })
-        .start();
+    new Thread(() -> {
+      try {
+        TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
+        if (transformMeta != null) {
+          IRowMeta rowMeta =
+              pipelineMeta.getPrevTransformFields(this.getVariables(), transformMeta);
+          wEditor.setRowMeta(rowMeta);
+        }
+      } catch (HopException e) {
+        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), e);
+      }
+    }).start();
 
     return parent;
   }

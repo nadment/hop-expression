@@ -16,13 +16,13 @@
  */
 package org.apache.hop.expression.value;
 
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpressionContext;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionException;
 
 public class ValueBinary extends Value {
   /**

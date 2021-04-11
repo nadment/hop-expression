@@ -19,6 +19,7 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
@@ -28,10 +29,10 @@ import org.junit.Test;
 public class OptimizerTest {
 
 	protected IExpression optimize(String e) throws Exception {
-
+	  
 		IExpression expression = ExpressionParser.parse(e);
 
-		ExpressionContext context = new ExpressionContext();
+		ExpressionContext context = new ExpressionContext(new Variables());
 		IExpression result = expression.optimize(context);
 		
 		int optimized = expression.getCost()-result.getCost();
@@ -82,7 +83,9 @@ public class OptimizerTest {
 		optimizeFalse("not true");
 		optimizeTrue("not false");
 		optimizeFalse("true and false");
+	    optimizeFalse("false and true");
 		optimizeTrue("true or false");
+	    optimizeTrue("false or true");
 		optimizeNull("true and null");
 		optimizeTrue("true is true");
 		optimizeTrue("false is false");

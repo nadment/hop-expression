@@ -39,11 +39,6 @@
   </notepads>
   <order>
     <hop>
-      <from>Expression</from>
-      <to>Where</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>Where</from>
       <to>FALSE</to>
       <enabled>Y</enabled>
@@ -54,13 +49,18 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Clone row</from>
-      <to>Expression</to>
+      <from>Where</from>
+      <to>TRUE</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Where</from>
-      <to>TRUE</to>
+      <from>Clone row</from>
+      <to>Expression 2</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Expression 2</from>
+      <to>Where</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -75,7 +75,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <nrclones>1000</nrclones>
+    <nrclones>100000000</nrclones>
     <addcloneflag>N</addcloneflag>
     <cloneflagfield/>
     <nrcloneinfield>N</nrcloneinfield>
@@ -106,8 +106,8 @@
     <clonenumfield>DYNAMIC_FIELD_NAME</clonenumfield>
     <attributes/>
     <GUI>
-      <xloc>240</xloc>
-      <yloc>16</yloc>
+      <xloc>256</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform>
@@ -253,7 +253,7 @@
     </GUI>
   </transform>
   <transform>
-    <name>Expression</name>
+    <name>Expression 2</name>
     <type>Expression</type>
     <description/>
     <distribute>Y</distribute>
@@ -321,7 +321,7 @@ Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${
       </field>
       <field>
         <field>LITERAL_BIGNUMBER</field>
-        <expression>12345678901234567890123456789012345678901234567890.123456</expression>
+        <expression>123456789012345678901234567890.123456</expression>
         <type>BigNumber</type>
       </field>
       <field>
@@ -388,10 +388,15 @@ UCASE('${os.name}')</expression>
         <expression>[FIELD_NUMBER]::STRING</expression>
         <type>String</type>
       </field>
+      <field>
+        <field>USE_EXPRESSION_RESULT</field>
+        <expression>LITERAL_INTEGER*3</expression>
+        <type>Integer</type>
+      </field>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>400</xloc>
+      <xloc>416</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>

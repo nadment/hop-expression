@@ -21,6 +21,8 @@ public enum Kind {
   LIST,
 
   IDENTIFIER,
+  
+  JSON,
 
   // -------------------------------------------------------------
   // Operator Function
@@ -95,13 +97,13 @@ public enum Kind {
   GREATER_THAN,
 
   /** The less-than-or-equal operator '&lt;='. */
-  LESS_THAN_OR_EQUAL,
+  LESS_THAN_OR_EQUAL_TO,
 
   /** The greater-than-or-equal operator '&gt;='. */
-  GREATER_THAN_OR_EQUAL,
+  GREATER_THAN_OR_EQUAL_TO,
 
   /** The equals operator '='. */
-  EQUAL,
+  EQUAL_TO,
 
   /**
    * Compares whether two expressions are equal.
@@ -114,7 +116,7 @@ public enum Kind {
   EQUAL_NULL,
 
   /** The not-equals operator "&lt;&gt;". @See {@link #LESS_THAN_OR_GREATER_THEN} */
-  NOT_EQUAL,
+  NOT_EQUAL_TO,
 
   /** The not-equals operator '!=' @See {@link #NOT_EQUAL_OPERATOR} */
   LESS_THAN_OR_GREATER_THEN,

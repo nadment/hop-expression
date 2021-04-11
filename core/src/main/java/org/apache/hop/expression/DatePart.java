@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.expression;
 
@@ -38,14 +36,14 @@ public enum DatePart {
 
   /** The years */
   YEAR("YY"),
-  
+
   /** The years of week */
   YEAROFWEEK("YOW"),
-  
+
   /** The years of week ISO */
   YEAROFWEEKISO("YOWISO"),
-  
-  /** The number (1 - 12) of the month */  
+
+  /** The number (1 - 12) of the month */
   MONTH("MM"),
 
   /** The number (1 - 31) of the day */
@@ -82,11 +80,11 @@ public enum DatePart {
   MINUTE("MI"),
   /** The second (0-59). */
   SECOND("SS"),
-  
+
   MILLISECOND("MS"),
-  
+
   MICROSECOND("MCS"),
-  
+
   NANOSECOND("NS");
 
   private final String alias;
@@ -102,7 +100,8 @@ public enum DatePart {
   /**
    * Create date part for the given name or throws exception if not exist.
    *
-   * <p>This method ignore case and search alias too
+   * <p>
+   * This method ignore case and search alias too
    *
    * @param str
    * @return DatePart
@@ -117,16 +116,16 @@ public enum DatePart {
         return part;
       }
     }
-    
-    throw new IllegalArgumentException("Invalid date part: "+str);
+
+    throw new IllegalArgumentException("Invalid date part: " + str);
   }
 
   /**
    * Check if date part exist.
    * 
    * @param str the name to check
-   * @return 
-   */  
+   * @return
+   */
   public static boolean exist(final String str) {
     for (DatePart part : DatePart.values()) {
       if (part.name().equalsIgnoreCase(str)) {
@@ -138,7 +137,7 @@ public enum DatePart {
     }
     return false;
   }
-  
+
   private static int millennium(int year) {
     return year > 0 ? (year + 999) / 1000 : year / 1000;
   }
@@ -159,7 +158,8 @@ public enum DatePart {
         return dt.getDayOfYear();
       case DAYOFWEEK:
         int dow = dt.getDayOfWeek().getValue() + 1;
-        if (dow == 8) dow = 1;
+        if (dow == 8)
+          dow = 1;
         return dow;
       case DAYOFWEEKISO:
         return dt.getDayOfWeek().getValue();
@@ -176,12 +176,12 @@ public enum DatePart {
       case YEAR:
         return dt.getYear();
       case YEAROFWEEK:
-        WeekFields weekFields  = WeekFields.of(DayOfWeek.SUNDAY, 1);  
+        WeekFields weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1);
         return dt.get(weekFields.weekBasedYear());
-//      case YEAROFWEEKISO:
-//        WeekFields weekFields  = WeekFields.ISO..of(DayOfWeek.MONDAY, 1);  
-//        return dt.get( weekFields.weekBasedYear());
-        
+      case YEAROFWEEKISO:
+        // TODO: Verify DAYOFWEEKISO
+        WeekFields weekFieldsISo = WeekFields.of(DayOfWeek.MONDAY, 1);
+        return dt.get(weekFieldsISo.weekBasedYear());
       case DECADE:
         return decade(dt.getYear());
       case CENTURY:
@@ -202,8 +202,8 @@ public enum DatePart {
         return dt.getNano();
       case EPOCH:
         return dt.toEpochSecond();
+      default:
+        throw new ExpressionException("Invalid date part: " + this);
     }
-
-    throw new ExpressionException("Invalid date part: " + this);
   }
 }

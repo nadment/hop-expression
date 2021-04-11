@@ -38,7 +38,7 @@ public class ValueTest {
   @Test
   public void Null() throws Exception {
     assertTrue(Value.NULL.isNull());
-    assertEquals(Value.NULL.getKind(),Kind.VALUE);
+    assertEquals(Kind.VALUE, Value.NULL.getKind());
     assertNull(Value.NULL.getObject());
     assertNull(Value.NULL.toString());
     assertTrue(Value.NULL.equals(Value.NULL));
@@ -52,10 +52,12 @@ public class ValueTest {
 
   @Test
   public void String() throws Exception {
-    assertEquals(ValueString.of(null), Value.NULL);
+    assertEquals(Value.NULL, ValueString.of(null));
     assertEquals(ValueString.of("Test").toString(), "Test");
     assertTrue(ValueString.of("Test").isString());
-    assertThrows(ExpressionException.class, () -> { ValueString.of("Test").signum(); });
+    assertThrows(ExpressionException.class, () -> {
+      ValueString.of("Test").signum();
+    });
   }
 
   @Test
@@ -66,14 +68,14 @@ public class ValueTest {
     assertEquals(ValueBoolean.TRUE.getObject(), Boolean.TRUE);
     assertEquals(ValueBoolean.FALSE.getObject(), Boolean.FALSE);
 
-    assertEquals(ValueBoolean.TRUE.toString(), "TRUE");
-    assertEquals(ValueBoolean.FALSE.toString(), "FALSE");    
-    assertEquals(ValueBoolean.TRUE.toInteger(), 1L);
-    assertEquals(ValueBoolean.FALSE.toInteger(), 0L);
-    assertEquals(ValueBoolean.TRUE.toNumber(), 1D, 0.0000001);
-    assertEquals(ValueBoolean.FALSE.toNumber(), 0D, 0.0000001);
-    assertEquals(ValueBoolean.TRUE.toBigNumber(), BigDecimal.ONE);
-    assertEquals(ValueBoolean.FALSE.toBigNumber(), BigDecimal.ZERO);
+    assertEquals("TRUE", ValueBoolean.TRUE.toString());
+    assertEquals("FALSE", ValueBoolean.FALSE.toString());
+    assertEquals(1L, ValueBoolean.TRUE.toInteger());
+    assertEquals(0L, ValueBoolean.FALSE.toInteger());
+    assertEquals(1D, ValueBoolean.TRUE.toNumber(), 0.0000001);
+    assertEquals(0D, ValueBoolean.FALSE.toNumber(), 0.0000001);
+    assertEquals(BigDecimal.ONE, ValueBoolean.TRUE.toBigNumber());
+    assertEquals(BigDecimal.ZERO, ValueBoolean.FALSE.toBigNumber());
     assertThrows(ExpressionException.class, () -> {
       ValueBoolean.TRUE.toDate();
     });
@@ -82,12 +84,10 @@ public class ValueTest {
     assertTrue(ValueBoolean.FALSE.isBoolean());
     assertFalse(ValueBoolean.TRUE.isNull());
     assertFalse(ValueBoolean.FALSE.isNull());
-
-    assertEquals(ValueBoolean.TRUE.negate(), ValueBoolean.FALSE);
-    assertEquals(ValueBoolean.FALSE.negate(), ValueBoolean.TRUE);
+    assertEquals(ValueBoolean.FALSE, ValueBoolean.TRUE.negate());
+    assertEquals(ValueBoolean.TRUE, ValueBoolean.FALSE.negate());
 
     assertNotEquals(ValueBoolean.TRUE, ValueBoolean.FALSE);
-    assertTrue(ValueBoolean.TRUE.equals(ValueBoolean.of(true)));
     assertTrue(ValueBoolean.TRUE.compare(ValueBoolean.FALSE) > 0);
     assertTrue(ValueBoolean.FALSE.compare(ValueBoolean.TRUE) < 0);
     assertTrue(ValueBoolean.FALSE.compare(ValueBoolean.FALSE) == 0);
@@ -96,95 +96,106 @@ public class ValueTest {
 
   @Test
   public void Integer() throws Exception {
-    assertEquals(ValueInteger.of((Long) null), Value.NULL);
-    assertEquals(ValueInteger.of(0L), ValueInteger.ZERO);
-    assertEquals(ValueInteger.of(1L), ValueInteger.ONE);
-    assertEquals(ValueInteger.of(Integer.valueOf(1)), ValueInteger.ONE);
+    assertEquals(Value.NULL, ValueInteger.of((Long) null));
+    assertEquals(ValueInteger.ZERO, ValueInteger.of(0L));
+    assertEquals(ValueInteger.ONE, ValueInteger.of(1L));
+    assertEquals(ValueInteger.ONE, ValueInteger.of(Integer.valueOf(1)));
     assertEquals(ValueInteger.of(2L), ValueInteger.of(2));
-    assertEquals(ValueInteger.of(123).getObject(), 123L);
-    
-    assertEquals(ValueInteger.of(2L).toInteger(), 2L);
-    assertEquals(ValueInteger.of(2L).toNumber(), 2D, 0.0000001);
+    assertEquals(123L, ValueInteger.of(123).getObject());
+    assertEquals(123L, ValueInteger.of(123L).toInteger());
+    assertEquals(123D, ValueInteger.of(123L).toNumber(), 0.0000001);
     assertEquals(ValueInteger.of(2L).toBigNumber(), BigDecimal.valueOf(2));
-    assertEquals(ValueInteger.of(-2L).toString(), "-2");
+    assertEquals("-2", ValueInteger.of(-2L).toString());
     assertFalse(ValueInteger.ZERO.toBoolean());
     assertTrue(ValueInteger.ONE.toBoolean());
-    
+
     assertTrue(ValueInteger.ZERO.isNumeric());
     assertTrue(ValueInteger.ZERO.isInteger());
     assertFalse(ValueInteger.ZERO.isNumber());
-    assertFalse(ValueInteger.ZERO.isBigNumber());    
+    assertFalse(ValueInteger.ZERO.isBigNumber());
 
-    assertTrue(ValueInteger.of(123).equals(ValueInteger.of(123)));
     assertTrue(ValueInteger.ONE.compare(ValueInteger.ZERO) > 0);
-    assertEquals(ValueInteger.ONE.negate(),ValueInteger.of(-1));    
+    assertEquals(ValueInteger.ONE.negate(), ValueInteger.of(-1));
     assertTrue(ValueInteger.ONE.add(Value.NULL).isNull());
     assertTrue(ValueInteger.ONE.subtract(Value.NULL).isNull());
     assertTrue(ValueInteger.ONE.multiply(Value.NULL).isNull());
     assertTrue(ValueInteger.ONE.divide(Value.NULL).isNull());
     assertTrue(ValueInteger.ONE.remainder(Value.NULL).isNull());
 
-    assertThrows(ExpressionException.class, () -> { ValueInteger.of(Long.MIN_VALUE).negate(); });
-    assertThrows(ExpressionException.class, () -> { ValueInteger.ONE.divide(ValueInteger.ZERO); });
-    assertThrows(ExpressionException.class, () -> { ValueInteger.ONE.remainder(ValueInteger.ZERO); });
-    
+    assertThrows(ExpressionException.class, () -> {
+      ValueInteger.of(Long.MIN_VALUE).negate();
+    });
+    assertThrows(ExpressionException.class, () -> {
+      ValueInteger.ONE.divide(ValueInteger.ZERO);
+    });
+    assertThrows(ExpressionException.class, () -> {
+      ValueInteger.ONE.remainder(ValueInteger.ZERO);
+    });
+
     assertNotEquals(ValueInteger.ZERO, ValueBigNumber.ZERO);
   }
 
   @Test
   public void Number() throws Exception {
-    assertEquals(ValueNumber.of(null), Value.NULL);
-    assertEquals(ValueNumber.of(0D), ValueNumber.ZERO);
-    assertEquals(ValueNumber.of(1D), ValueNumber.ONE);
-    assertEquals(ValueNumber.of(Math.PI), ValueNumber.PI);
+    assertEquals(Value.NULL, ValueNumber.of(null));
+    assertEquals(ValueNumber.ZERO, ValueNumber.of(0D));
+    assertEquals(ValueNumber.ONE, ValueNumber.of(1D));
+    assertEquals(ValueNumber.PI, ValueNumber.of(Math.PI));
     assertFalse(ValueNumber.ZERO.toBoolean());
     assertTrue(ValueNumber.ONE.toBoolean());
-    assertEquals(ValueNumber.of(123.456).getObject(), 123.456);
-    assertEquals(ValueNumber.of(123.456).toInteger(), 123);
-    assertEquals(ValueNumber.of(123.456).toNumber(), 123.456, 0.0000001);
+    assertEquals(123.456, ValueNumber.of(123.456).getObject());
+    assertEquals(123, ValueNumber.of(123.456).toInteger());
+    assertEquals(123.456, ValueNumber.of(123.456).toNumber(), 0.0000001);
     // assertEquals(ValueNumber.ZERO.toBigNumber(), BigDecimal.ZERO);
     // assertEquals(ValueNumber.ONE.toBigNumber(), BigDecimal.ONE);
-    //assertEquals(ValueNumber.of(-0.1230).toString(), "-.123");
-    assertEquals(ValueNumber.of(-2.1230).toString(), "-2.123");
-    
+    // assertEquals(ValueNumber.of(-0.1230).toString(), "-.123");
+    assertEquals("-2.123", ValueNumber.of(-2.1230).toString() );
+
     assertFalse(ValueNumber.ZERO.isInteger());
     assertTrue(ValueNumber.ZERO.isNumber());
     assertTrue(ValueNumber.ZERO.isNumeric());
     assertFalse(ValueNumber.ZERO.isBigNumber());
-    
+
     assertTrue(ValueNumber.of(123.456).equals(ValueNumber.of(123.456)));
     assertTrue(ValueNumber.ONE.compare(ValueNumber.ZERO) > 0);
     assertTrue(ValueNumber.of(-2.1230).add(Value.NULL).isNull());
     assertEquals(ValueNumber.of(-2.1230).add(ValueInteger.of(1)).toNumber(), -1.123, 0.0000001);
-    assertEquals(ValueNumber.of(-2.1230).subtract(ValueInteger.of(1)).toNumber(), -3.123, 0.0000001);
+    assertEquals(ValueNumber.of(-2.1230).subtract(ValueInteger.of(1)).toNumber(), -3.123,
+        0.0000001);
 
-    
+
     assertTrue(ValueNumber.ONE.add(Value.NULL).isNull());
     assertTrue(ValueNumber.ONE.subtract(Value.NULL).isNull());
     assertTrue(ValueNumber.ONE.multiply(Value.NULL).isNull());
     assertTrue(ValueNumber.ONE.divide(Value.NULL).isNull());
     assertTrue(ValueNumber.ONE.remainder(Value.NULL).isNull());
-    
-    assertThrows(ExpressionException.class, () -> { ValueNumber.ONE.divide(ValueNumber.ZERO); });
-    assertThrows(ExpressionException.class, () -> { ValueNumber.ONE.remainder(ValueNumber.ZERO); });
 
-    
+    assertThrows(ExpressionException.class, () -> {
+      ValueNumber.ONE.divide(ValueNumber.ZERO);
+    });
+    assertThrows(ExpressionException.class, () -> {
+      ValueNumber.ONE.remainder(ValueNumber.ZERO);
+    });
+
+
   }
 
   @Test
   public void BigNumber() throws Exception {
-    assertEquals(ValueBigNumber.of(null), Value.NULL);
-    
-    assertEquals(ValueBigNumber.of(BigDecimal.ZERO), ValueBigNumber.ZERO);
-    assertEquals(ValueBigNumber.of(BigDecimal.ONE), ValueBigNumber.ONE);
-    assertEquals(ValueBigNumber.of(1L), ValueBigNumber.ONE);
-    //assertEquals(ValueBigNumber.of(1.0D), ValueBigNumber.ONE);
+    assertEquals(Value.NULL, ValueBigNumber.of(null));
+
+    assertEquals(ValueBigNumber.ZERO, ValueBigNumber.of(BigDecimal.ZERO));
+    assertEquals(ValueBigNumber.ZERO, ValueBigNumber.of(0L));
+    assertEquals(ValueBigNumber.ONE, ValueBigNumber.of(BigDecimal.ONE));
+    assertEquals(ValueBigNumber.ONE, ValueBigNumber.of(1L));
+    // assertEquals(ValueBigNumber.of(1.0D), ValueBigNumber.ONE);
     assertEquals(ValueBigNumber.of(BigDecimal.valueOf(2)),
         ValueBigNumber.of(BigDecimal.valueOf(2)));
+
     assertFalse(ValueBigNumber.ZERO.toBoolean());
     assertTrue(ValueBigNumber.ONE.toBoolean());
-    assertEquals(ValueBigNumber.ZERO.toBigNumber(), BigDecimal.ZERO);
-    assertEquals(ValueBigNumber.ONE.toBigNumber(), BigDecimal.ONE);
+    assertEquals(BigDecimal.ZERO, ValueBigNumber.ZERO.toBigNumber());
+    assertEquals(BigDecimal.ONE, ValueBigNumber.ONE.toBigNumber());
     assertNotEquals(ValueNumber.ZERO, ValueBigNumber.ZERO);
     assertNotEquals(ValueBigNumber.ZERO, ValueBigNumber.ONE);
 
@@ -194,19 +205,25 @@ public class ValueTest {
     assertTrue(ValueBigNumber.of(BigDecimal.valueOf(123E-28))
         .equals(ValueBigNumber.of(BigDecimal.valueOf(123E-28))));
     assertTrue(ValueBigNumber.ONE.compare(ValueBigNumber.ZERO) > 0);
-    assertEquals(ValueBigNumber.ONE.negate(),ValueBigNumber.of(-1));
+    assertEquals(ValueBigNumber.ONE.negate(), ValueBigNumber.of(-1));
     assertTrue(ValueBigNumber.ONE.add(Value.NULL).isNull());
     // assertEquals(ValueBigNumber.ZERO.add(ValueNumber.of(5D)),ValueBigNumber.of(5));
-    
-    assertThrows(ExpressionException.class, () -> { ValueBigNumber.ONE.divide(ValueBigNumber.ZERO); });
-    assertThrows(ExpressionException.class, () -> { ValueBigNumber.ONE.remainder(ValueBigNumber.ZERO); });
+
+    assertThrows(ExpressionException.class, () -> {
+      ValueBigNumber.ONE.divide(ValueBigNumber.ZERO);
+    });
+    assertThrows(ExpressionException.class, () -> {
+      ValueBigNumber.ONE.remainder(ValueBigNumber.ZERO);
+    });
 
   }
 
   @Test
   public void Date() throws Exception {
-    assertEquals(ValueDate.of(null), Value.NULL);
-    assertThrows(ExpressionException.class, () -> { ValueDate.of(Instant.now()).signum(); });
+    assertEquals(Value.NULL, ValueDate.of(null));
+    assertThrows(ExpressionException.class, () -> {
+      ValueDate.of(Instant.now()).signum();
+    });
   }
 }
 

@@ -31,7 +31,7 @@ public class ExpressionJsonObjectAccess implements IExpression {
 
   @Override
   public Kind getKind() {
-    return Kind.IDENTIFIER;
+    return Kind.JSON;
   }
   
   public String getName() {
@@ -50,9 +50,9 @@ public class ExpressionJsonObjectAccess implements IExpression {
 
   @Override
   public void write(StringWriter writer, int leftPrec, int rightPrec) {    
-    writer.append('[');
+    writer.append('{');
     writer.append(this.name);
-    writer.append(']');
+    writer.append('}');
   }
 
   @Override

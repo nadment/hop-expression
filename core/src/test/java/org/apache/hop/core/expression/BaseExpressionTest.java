@@ -23,6 +23,7 @@ import org.apache.hop.core.row.value.ValueMetaBigNumber;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
@@ -30,7 +31,6 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.value.Value;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.Assert;
@@ -39,19 +39,17 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Locale;
 
 public class BaseExpressionTest {
   @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
   
-  private RowExpressionContext context;
+  private ExpressionContext context;
 
   public ExpressionContext getContext() {
     return context;
@@ -72,12 +70,13 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("FROM"));
-    rowMeta.addValueMeta(new ValueMetaBigNumber("PRICE"));
+    rowMeta.addValueMeta(new ValueMetaNumber("PRICE"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("AMOUNT"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
-    Object[] row = new Object[12];
+    Object[] row = new Object[13];
     row[0] = "TEST";
     row[1] = "F";
     row[2] = 40L;
@@ -86,18 +85,14 @@ public class BaseExpressionTest {
     row[5] = null;
     row[6] = 2020L;
     row[7] = "Paris";
-    row[8] = BigDecimal.valueOf(123456.789);
-    row[9] = "SPACE";
-    row[10] = "UNDERSCORE";
-    row[11] = "lower";
+    row[8] = -5.12D;
+    row[9] = BigDecimal.valueOf(123456.789);
+    row[10] = "SPACE";
+    row[11] = "UNDERSCORE";
+    row[12] = "lower";
     
-    context = new RowExpressionContext(rowMeta);
+    context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
-    context.setLocale(new Locale("fr", "BE"));
-  }
-
-  protected void setLocale(Locale locale) {
-    context.setLocale(locale);
   }
   
   protected Value eval(String s) throws Exception {
@@ -166,9 +161,9 @@ public class BaseExpressionTest {
     try {     
       eval(s);
       Assert.fail(s+" Syntax or result should be invalid\n");
-    } catch ( ExpressionException | IllegalArgumentException ex) {
+    } catch (ExpressionException ex) {
       //Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
-      System.out.println(s+" > "+ex.toString());
+     // System.out.println(s+" > "+ex.toString());
     } catch (Exception ex) {
       Assert.fail(s+" Uncatched exception " + ex.getClass());
     }
@@ -190,7 +185,7 @@ public class BaseExpressionTest {
 
   @Test
   public void parser() throws Exception {
-  
+    evalFails("Extract(NULL from Date '2021-01-01')");
    // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
     //evalEquals("CAST(1.75 as Integer)",2);
     //evalEquals("[IDENTIFIER SPACE]", "SPACE");

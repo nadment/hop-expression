@@ -20,7 +20,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.ParseException;
 import java.time.Instant;
-import java.util.Locale;
 
 public class CompositeDateFormat implements IFormat<Instant> {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
@@ -34,12 +33,12 @@ public class CompositeDateFormat implements IFormat<Instant> {
   }
 
   @Override
-  public String format(Instant value, Locale locale) {
+  public String format(Instant value) {
     return null; //formats[0].format(value, locale);
   }
 
   @Override
-  public Instant parse(String text, Locale locale) throws ParseException {
+  public Instant parse(String text) throws ParseException {
 //    for (DateTimeFormat format : formats) {
 //      try {
 //        return format.parse(text, locale);

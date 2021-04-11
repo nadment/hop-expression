@@ -103,7 +103,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
     // The ModifyListener used on all controls. It will update the meta object to
     // indicate that changes are being made.
-    lsMod = (e) -> {
+    lsMod = e -> {
       baseTransformMeta.setChanged();
       wOk.setEnabled(isValid());
     };

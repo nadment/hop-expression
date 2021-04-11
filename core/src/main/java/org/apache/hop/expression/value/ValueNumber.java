@@ -142,7 +142,7 @@ public class ValueNumber extends Value {
       final IExpressionContext context, final DataType targetType, String format) {
 
     if (targetType == DataType.STRING) {
-      String result = NumberFormat.format(this.toBigNumber(), format, context.getLocale());
+      String result = NumberFormat.format(this.toBigNumber(), format);
       return ValueString.of(result);
     }
 

@@ -14,16 +14,31 @@
  */
 package org.apache.hop.expression;
 
-import java.security.SecureRandom;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.Random;
-
-import javax.script.SimpleScriptContext;
+import org.apache.hop.core.exception.HopValueException;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.value.ValueBigNumber;
+import org.apache.hop.expression.value.ValueBinary;
+import org.apache.hop.expression.value.ValueBoolean;
+import org.apache.hop.expression.value.ValueDate;
+import org.apache.hop.expression.value.ValueInteger;
+import org.apache.hop.expression.value.ValueNumber;
+import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
+import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
 
@@ -39,22 +54,56 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
    */
   public static final String TWO_DIGIT_CENTURY_START = "TWO_DIGIT_CENTURY_START";
 
-  public static final String WEEK_START = "WEEK_START";
+  /**
+   * The date format used for conversions between dates and strings. 
+   */
+  public static final String NLS_DATE_FORMAT = "NLS_DATE_FORMAT";
+  
+  /**
+   * The timestamp format used for conversions between timestamps and strings
+   */
+  public static final String NLS_TIMESTAMP_FORMAT = "NLS_TIMESTAMP_FORMAT";
+  
+  /**
+   * Defines the first day of a week.
+   * The integer value follows the ISO-8601 standard, from 1 (Monday) to 7 (Sunday).
+   */
+  public static final String NLS_FIRST_DAY_OF_WEEK = "WEEK_START";
+  
+  public static final String ATTRIBUTE_CURRENT_DATE = "DATE";
+  /*package*/ static final String ATTRIBUTE_RANDOM = "RANDOM";
 
+  private IVariables variables;
+  private IRowMeta rowMeta;
+  private Object[] row;
+  
   private ZoneId zone;
   private Locale locale;
-  private Random random;
-  private Instant currentDate;
   private int twoDigitCenturyStart = 1970;
 
-  public ExpressionContext() {
+
+  public ExpressionContext(IVariables variables, IRowMeta rowMeta) {
+    this(variables);
+    
+    this.rowMeta = Objects.requireNonNull(rowMeta);
+  }  
+  
+  public ExpressionContext(IVariables variables) {
     super();
 
-    this.locale = Locale.ROOT;
-    this.zone = UTC_ZONE;
-    this.random = new SecureRandom();
-    this.currentDate = Instant.now();
+    this.variables = variables;
+    this.locale = Locale.getDefault();
+    this.zone = UTC_ZONE;   
+    
+    this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"), ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"), ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(TWO_DIGIT_CENTURY_START, variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ScriptContext.ENGINE_SCOPE);
 
+   
+    final Calendar calendar = Calendar.getInstance(locale);
+    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
+    
+     
     try {
       String variable =
           Variables.getADefaultVariableSpace().getVariable(TWO_DIGIT_CENTURY_START, "1970");
@@ -63,38 +112,86 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
       throw new ExpressionException(
           BaseMessages.getString(PKG, "Expression.InvalidVariable", TWO_DIGIT_CENTURY_START));
     }
+
+    // Initialize  
+    this.setAttribute(ATTRIBUTE_CURRENT_DATE, Instant.now(), ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(ATTRIBUTE_RANDOM, new SecureRandom(), ScriptContext.ENGINE_SCOPE);
   }
 
+  
+  public void setRow(Object[] row) {
+    this.row = row;
+  }
+  
   @Override
   public Value resolve(String name) throws ExpressionException {
-    throw new ExpressionException(BaseMessages.getString(PKG, "Expression.OptimizerError", name));
+
+    if ( rowMeta==null )
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.NoRowMeta", name));
+    
+    int index = rowMeta.indexOfValue(name);
+    if (index < 0)
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FieldNotFound", name));
+
+    IValueMeta valueMeta = rowMeta.getValueMeta(index);
+    try {
+      switch (valueMeta.getType()) {
+        case IValueMeta.TYPE_BOOLEAN:
+          Boolean value = rowMeta.getBoolean(row, index);
+          if (value == null) return Value.NULL;
+
+          return ValueBoolean.of(value);
+        case IValueMeta.TYPE_DATE:
+        case IValueMeta.TYPE_TIMESTAMP:
+          // No getTimestamp from RowMeta ???
+          Date date = rowMeta.getDate(row, index);
+          if (date == null) return Value.NULL;
+          return ValueDate.of(date.toInstant());
+        case IValueMeta.TYPE_STRING:
+          String string = rowMeta.getString(row, index);
+          return ValueString.of(string);
+        case IValueMeta.TYPE_INTEGER:
+          Long integer = rowMeta.getInteger(row, index);
+          return ValueInteger.of(integer);
+        case IValueMeta.TYPE_NUMBER:
+          Double number = rowMeta.getNumber(row, index);
+          return ValueNumber.of(number);
+        case IValueMeta.TYPE_BIGNUMBER:
+          BigDecimal bignumber = rowMeta.getBigNumber(row, index);
+          return ValueBigNumber.of(bignumber);
+        case IValueMeta.TYPE_BINARY:
+          byte[] binary = rowMeta.getBinary(row, index);
+          return ValueBinary.of(binary);
+      }
+    } catch (HopValueException e) {
+      throw new ExpressionException("Error resolve field value "+name+":" + e.toString());
+    }
+
+    return null;
   }
 
   public Locale getLocale() {
-    return locale;
+    return Locale.getDefault();
   }
 
-  public void setLocale(Locale locale) {
-    this.locale = locale;
-  }
+//  public void setLocale(Locale locale) {
+//    this.locale = locale;
+//  }
 
   public ZoneId getZone() {
     return zone;
   }
 
-  public void setZone(ZoneId zone) {
-    this.zone = zone;
-  }
-
-  public Random getRandom() {
-    return random;
-  }
-
-  public Instant getCurrentDate() {
-    return currentDate;
-  }
+//  public void setZone(ZoneId zone) {
+//    this.zone = zone;
+//  }
 
   public int getTwoDigitCenturyStart() {
     return twoDigitCenturyStart;
   }
+  
+  public int getFirstDayOfWeek() {
+    return 1;
+  }
 }
+

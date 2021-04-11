@@ -127,7 +127,7 @@ public class ValueBigNumber extends Value {
       final IExpressionContext context, final DataType type, String format) {
 
     if (type == DataType.STRING) {
-      String result = NumberFormat.format(value, format, context.getLocale());
+      String result = NumberFormat.format(value, format);
       return ValueString.of(result);
     }
 

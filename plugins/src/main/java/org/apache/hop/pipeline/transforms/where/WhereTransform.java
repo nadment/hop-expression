@@ -16,14 +16,12 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
-import java.text.ParseException;
-import java.util.List;
-
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.util.Utils;
+import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.value.Value;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -31,6 +29,7 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.pipeline.transform.errorhandling.IStream;
+import java.util.List;
 
 /** @author Nicolas ADMENT */
 public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
@@ -78,7 +77,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
       // Parse expression
       try {
         data.condition = ExpressionParser.parse(expression);
-      } catch (ParseException e) {
+      } catch (ExpressionException e) {
         throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getExpression()), e);
       }
 
@@ -87,7 +86,9 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
       // use meta.getFields() to change it, so it reflects the output row
       // structure
       meta.getFields(data.outputRowMeta, getTransformName(), null, null, this, null);
-
+      
+      data.expressionContext = new ExpressionContext(this, getInputRowMeta());
+      
       // Cache the position of the RowSet for the output.
       List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
 
@@ -120,10 +121,9 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
       }
     }
 
-    // TODO: create one context per thread
-    RowExpressionContext context = new RowExpressionContext(getInputRowMeta());
-    context.setRow(row);
-    Value keep = data.condition.eval(context);
+    
+    data.expressionContext.setRow(row);
+    Value keep = data.condition.eval(data.expressionContext);
 
     if (keep.isNull() || !keep.toBoolean()) {
       // put the row to the FALSE output row stream

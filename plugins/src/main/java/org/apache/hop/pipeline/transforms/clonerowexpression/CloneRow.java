@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Hop : The Hop Orchestration Platform
  *
@@ -6,17 +7,15 @@
  *
  *******************************************************************************
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *
  ******************************************************************************/
 
@@ -26,9 +25,9 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowDataUtil;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.value.Value;
 import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
@@ -37,7 +36,6 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.ITransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import java.text.ParseException;
 
 /**
  * Clone input row.
@@ -48,20 +46,15 @@ import java.text.ParseException;
 public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
     implements ITransform<CloneRowMeta, CloneRowData> {
 
-  private static final Class<?> PKG =
-      CloneRowMeta.class; // for i18n purposes, needed by Translator!!
+  private static final Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by
+                                                          // Translator!!
 
-  public CloneRow(
-      TransformMeta transformMeta,
-      CloneRowMeta meta,
-      CloneRowData data,
-      int copyNr,
-      PipelineMeta pipelineMeta,
-      Pipeline pipeline) {
+  public CloneRow(TransformMeta transformMeta, CloneRowMeta meta, CloneRowData data, int copyNr,
+      PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
-  public Value evaluate(String source)  throws HopException {
+  public Value evaluate(String source) throws HopException {
     String value = variables.resolve(source);
 
     if (value.charAt(0) != '=') {
@@ -71,12 +64,15 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
     IExpression expression;
     try {
       expression = ExpressionParser.parse(value.substring(1));
-    } catch (ParseException e) {
-    throw new HopException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
+    } catch (ExpressionException e) {
+      throw new HopException(
+          BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
 
-  }
+    }
+    
+    ExpressionContext context = new ExpressionContext(this);
 
-    return expression.eval(new ExpressionContext());
+    return expression.eval(context);
   }
 
   @Override
@@ -117,8 +113,10 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
       String nrclonesString = resolve(meta.getNrClones());
       try {
         data.numberOfClones = ExpressionParser.parse(nrclonesString);
-      } catch (ParseException e) {
-        throw new HopException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()), e);
+      } catch (ExpressionException e) {
+        throw new HopException(
+            BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),
+            e);
 
       }
       if (log.isDebug()) {
@@ -146,7 +144,8 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
 
     putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
 
-    RowExpressionContext context = new RowExpressionContext(getInputRowMeta());
+    // TODO: Move to CloneRowData
+    ExpressionContext context = new ExpressionContext(this, getInputRowMeta());
     context.setRow(r);
     Value value = data.numberOfClones.eval(context);
 

@@ -75,9 +75,9 @@ public class OperatorRegistry {
   
   /** Set of operators. */
   private final Set<Operator> operators = new TreeSet<>(Arrays.asList(Operator.ADD, Operator.SUBTRACT,
-      Operator.MULTIPLY, Operator.DIVIDE, Operator.POWER, Operator.BITAND, Operator.BITOR, Operator.BITNOT, Operator.BITXOR, Operator.CAST, Operator.MODULUS, Operator.EQUAL, Operator.GREATER_THAN,
-      Operator.GREATER_THAN_OR_EQUAL, Operator.ILIKE, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL, Operator.LESS_THAN_OR_GREATER_THAN,
-      Operator.NOT_EQUAL, Operator.BOOLAND, Operator.BETWEEN, Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS, Operator.LIKE, Operator.BOOLNOT, Operator.BOOLOR, Operator.BOOLXOR));
+      Operator.MULTIPLY, Operator.DIVIDE, Operator.POWER, Operator.BITAND, Operator.BITOR, Operator.BITNOT, Operator.BITXOR, Operator.CAST, Operator.MODULUS, Operator.EQUAL_TO, Operator.GREATER_THAN,
+      Operator.GREATER_THAN_OR_EQUAL_TO, Operator.ILIKE, Operator.LESS_THAN, Operator.LESS_THAN_OR_EQUAL_TO, Operator.LESS_THAN_OR_GREATER_THAN,
+      Operator.NOT_EQUAL_TO, Operator.BOOLAND, Operator.BETWEEN, Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS, Operator.LIKE, Operator.BOOLNOT, Operator.BOOLOR, Operator.BOOLXOR));
 
   public Set<Operator> getOperators() {
     return operators;

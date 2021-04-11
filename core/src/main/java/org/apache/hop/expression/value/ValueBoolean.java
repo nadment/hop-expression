@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.value;
 
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpressionContext;
+import java.io.StringWriter;
+import java.math.BigDecimal;
 
 public class ValueBoolean extends Value {
 

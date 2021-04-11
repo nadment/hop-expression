@@ -20,7 +20,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Locale;
 
 public class CompositeNumberFormat implements IFormat<BigDecimal> {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
@@ -34,15 +33,15 @@ public class CompositeNumberFormat implements IFormat<BigDecimal> {
   }
 
   @Override
-  public String format(BigDecimal value, Locale locale) {
-    return formats[0].format(value, locale);
+  public String format(BigDecimal value) {
+    return formats[0].format(value);
   }
 
   @Override
-  public BigDecimal parse(String text, Locale locale) throws ParseException {
+  public BigDecimal parse(String text) throws ParseException {
     for (IFormat<BigDecimal> format : formats) {
       try {
-        return format.parse(text, locale);
+        return format.parse(text);
       } catch (Exception e) {
         // Ignore try next format
       }

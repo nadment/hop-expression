@@ -35,6 +35,7 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.value.Value;
@@ -47,7 +48,6 @@ import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.w3c.dom.Node;
-import java.text.ParseException;
 import java.util.List;
 
 /*
@@ -178,8 +178,8 @@ public class CloneRowMeta extends BaseTransformMeta
 
     try {
       IExpression expression = ExpressionParser.parse(value.substring(1));
-      return expression.eval(new ExpressionContext());
-    } catch (ParseException e) {
+      return expression.eval(new ExpressionContext(variables));
+    } catch (ExpressionException e) {
       throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
     }
   }

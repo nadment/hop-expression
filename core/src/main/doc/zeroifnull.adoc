@@ -14,17 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CONTAINS
+= ZEROIFNULL
 
-Returns true if string contains pattern.
+Returns 0 if its argument is null; otherwise, returns its argument.
+		
 
 == Syntax
 ----
-CONTAINS(expr1, expr2)
+ZEROIFNULL(expression)
 ----
 
 == Usage
 
-Returns the value True if expr2 is found inside expr1. 
-Returns NULL if either input expression is NULL.
-Otherwise, returns False.
+The input should be an expression that evaluates to a numeric value (or NULL).

@@ -14,6 +14,9 @@
  */
 package org.apache.hop.expression.util;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.i18n.BaseMessages;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -33,10 +36,6 @@ import java.time.temporal.JulianFields;
 import java.time.temporal.WeekFields;
 import java.util.IllegalFormatFlagsException;
 import java.util.Locale;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.i18n.BaseMessages;
 
 /**
  * Expression date/time format model for <code>TO_DATE(string, format)</code> and
@@ -282,7 +281,7 @@ public class DateFormat extends BaseFormat {
 
   private final String format;
 
-  public static Instant parse(String value, String format, Locale local) throws ParseException {
+  public static Instant parse(String value, String format) throws ParseException {
 
     DateFormat parser = new DateFormat(format);
     Instant instant = parser.parse(value);
@@ -290,9 +289,9 @@ public class DateFormat extends BaseFormat {
     return instant;
   }
 
-  public static String format(ZonedDateTime value, String format, Locale local) {
+  public static String format(ZonedDateTime value, String format) {
     DateFormat formatter = new DateFormat(format);
-    return formatter.format(value, local);
+    return formatter.format(value);
   }
 
   public DateFormat(String format) {
@@ -654,7 +653,7 @@ public class DateFormat extends BaseFormat {
    * @param format the format pattern to use (if any)
    * @return the formatted timestamp
    */
-  public String format(ZonedDateTime value, Locale local) {
+  public String format(ZonedDateTime value) {
 
     StringBuilder output = new StringBuilder();
     boolean fillMode = true;

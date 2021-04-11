@@ -14,9 +14,13 @@
  */
 package org.apache.hop.expression.jsr223;
 
+import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.value.Value;
 import java.io.IOException;
 import java.io.Reader;
-import java.text.ParseException;
 import javax.script.AbstractScriptEngine;
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -25,11 +29,6 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
 
 public final class ExpressionEngine extends AbstractScriptEngine
     implements ScriptEngine, Compilable {

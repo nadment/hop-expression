@@ -21,6 +21,7 @@ import org.apache.hop.expression.value.ValueInteger;
 import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.regex.Pattern;
 
@@ -148,25 +149,25 @@ public class Operator implements Comparable<Operator> {
       new Operator(Kind.BETWEEN, "BETWEEN", 120, true, "i18n::Operator.Category.Comparison");
 
   /** Comparison equals operator '<code>=</code>'. */
-  public static final Operator EQUAL =
-      new Operator(Kind.EQUAL, "=", 130, true, "i18n::Operator.Category.Comparison");
+  public static final Operator EQUAL_TO =
+      new Operator(Kind.EQUAL_TO, "=", 130, true, "i18n::Operator.Category.Comparison");
   /** Comparison not equals operator '<code>!=</code>'. */
-  public static final Operator NOT_EQUAL =
-      new Operator(Kind.NOT_EQUAL, "!=", 130, true, "i18n::Operator.Category.Comparison");
+  public static final Operator NOT_EQUAL_TO =
+      new Operator(Kind.NOT_EQUAL_TO, "!=", 130, true, "i18n::Operator.Category.Comparison");
   /** Comparison not equals operator '<code><></code>'. */
   public static final Operator LESS_THAN_OR_GREATER_THAN =
-      new Operator(Kind.NOT_EQUAL, "<>", 130, true, "i18n::Operator.Category.Comparison");
-  /** Comparison less-than operator '<code>&lt;</code>'. */
+      new Operator(Kind.NOT_EQUAL_TO, "<>", 130, true, "i18n::Operator.Category.Comparison");
+  /** Comparison less than operator '<code>&lt;</code>'. */
   public static final Operator LESS_THAN =
       new Operator(Kind.LESS_THAN, "<", 130, true, "i18n::Operator.Category.Comparison");
-  /** Comparison less-than-or-equal operator '<code>&lt;=</code>'. */
-  public static final Operator LESS_THAN_OR_EQUAL =
-      new Operator(Kind.LESS_THAN_OR_EQUAL, "<=", 130, true, "i18n::Operator.Category.Comparison");
-  /** Comparison greater-than operator '<code>&gt;</code>'. */
+  /** Comparison less than or equal operator '<code>&lt;=</code>'. */
+  public static final Operator LESS_THAN_OR_EQUAL_TO =
+      new Operator(Kind.LESS_THAN_OR_EQUAL_TO, "<=", 130, true, "i18n::Operator.Category.Comparison");
+  /** Comparison greater than operator '<code>&gt;</code>'. */
   public static final Operator GREATER_THAN =
       new Operator(Kind.GREATER_THAN, ">", 130, true, "i18n::Operator.Category.Comparison");
-  /** Comparison greater-than-or-equal operator '<code>&gt;=</code>'. */
-  public static final Operator GREATER_THAN_OR_EQUAL = new Operator(Kind.GREATER_THAN_OR_EQUAL,
+  /** Comparison greater than or equal operator '<code>&gt;=</code>'. */
+  public static final Operator GREATER_THAN_OR_EQUAL_TO = new Operator(Kind.GREATER_THAN_OR_EQUAL_TO,
       ">=", 130, true, "i18n::Operator.Category.Comparison");
 
   // -------------------------------------------------------------
@@ -261,7 +262,8 @@ public class Operator implements Comparable<Operator> {
     this.category = TranslateUtil.translate(category, Operator.class);
     this.description = OperatorUtils.findDescription(kind.name());
   }
-
+ 
+  
   /**
    * Creates an function operator specifying left and right precedence.
    *
@@ -273,13 +275,17 @@ public class Operator implements Comparable<Operator> {
   protected Operator(String name, String alias, int leftPrecedence, int rightPrecedence,
       String category) {
     super();
-    
+
     // Special syntax
-    if ( "CAST".equals(name) ) this.kind = Kind.CAST;
-    else if ( "TRY_CAST".equals(name) ) this.kind = Kind.TRY_CAST;
-    else if ( "EXTRACT".equals(name) ) this.kind = Kind.EXTRACT;
-    else this.kind = Kind.FUNCTION;
-    
+    if ("CAST".equals(name))
+      this.kind = Kind.CAST;
+    else if ("TRY_CAST".equals(name))
+      this.kind = Kind.TRY_CAST;
+    else if ("EXTRACT".equals(name))
+      this.kind = Kind.EXTRACT;
+    else
+      this.kind = Kind.FUNCTION;
+
     this.name = name;
     this.alias = alias;
     this.leftPrecedence = leftPrecedence;
@@ -365,58 +371,24 @@ public class Operator implements Comparable<Operator> {
         return bitxor(context, args);
       case BETWEEN:
         return between(context, args);
-      case CASE_WHEN: 
+      case CASE_WHEN:
         return casewhen(context, args);
       case CONCAT:
         return concat(context, args);
       case LIKE:
         return like(context, args);
-      case ILIKE: 
+      case ILIKE:
         return ilike(context, args);
-      case NEGATIVE: {
-        Value value = args[0].eval(context);
-        return value.negate();
-      }
-
-      case LOGICAL_NOT: {
-        Value value = args[0].eval(context);
-
-        if (value.isNull()) {
-          return Value.NULL;
-        }
-
-        return ValueBoolean.of(!value.toBoolean());
-      }
-
-      case LOGICAL_AND: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        if (left.isNull() || right.isNull()) {
-          return Value.NULL;
-        }
-        return ValueBoolean.of(left.toBoolean() && right.toBoolean());
-      }
-
-      case LOGICAL_OR: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        if (left.isNull() && right.isNull()) {
-          return Value.NULL;
-        }
-
-        return ValueBoolean.of(left.toBoolean() || right.toBoolean());
-      }
-
-      case LOGICAL_XOR: {
-        Value left = args[0].eval(context);
-        Value right = args[1].eval(context);
-        if (left.isNull() || right.isNull()) {
-          return Value.NULL;
-        }
-        return ValueBoolean.of(
-            (left.toBoolean() || right.toBoolean()) && !(left.toBoolean() && right.toBoolean()));
-      }
-
+      case NEGATIVE: 
+        return negative(context, args);
+      case LOGICAL_NOT: 
+        return boolnot(context, args);
+      case LOGICAL_AND: 
+        return booland(context, args);
+      case LOGICAL_OR: 
+        return boolor(context, args);
+      case LOGICAL_XOR: 
+        return boolxor(context, args);
       case ADD:
         return add(context, args);
       case SUBTRACT:
@@ -429,7 +401,7 @@ public class Operator implements Comparable<Operator> {
         return mod(context, args);
       case POWER:
         return power(context, args);
-      case EQUAL: {
+      case EQUAL_TO: {
         Value left = args[0].eval(context);
         Value right = args[1].eval(context);
 
@@ -443,7 +415,7 @@ public class Operator implements Comparable<Operator> {
       }
 
       case LESS_THAN_OR_GREATER_THEN:
-      case NOT_EQUAL: {
+      case NOT_EQUAL_TO: {
         Value left = args[0].eval(context);
         Value right = args[1].eval(context);
 
@@ -465,7 +437,7 @@ public class Operator implements Comparable<Operator> {
         return ValueBoolean.of(left.compareTo(right) < 0);
       }
 
-      case LESS_THAN_OR_EQUAL: {
+      case LESS_THAN_OR_EQUAL_TO: {
         Value left = args[0].eval(context);
         Value right = args[1].eval(context);
 
@@ -487,7 +459,7 @@ public class Operator implements Comparable<Operator> {
         return ValueBoolean.of(left.compareTo(right) > 0);
       }
 
-      case GREATER_THAN_OR_EQUAL: {
+      case GREATER_THAN_OR_EQUAL_TO: {
         Value left = args[0].eval(context);
         Value right = args[1].eval(context);
 
@@ -618,12 +590,12 @@ public class Operator implements Comparable<Operator> {
       case DIVIDE:
       case MOD:
       case LOGICAL_XOR:
-      case EQUAL:
-      case NOT_EQUAL:
+      case EQUAL_TO:
+      case NOT_EQUAL_TO:
       case LESS_THAN:
-      case LESS_THAN_OR_EQUAL:
+      case LESS_THAN_OR_EQUAL_TO:
       case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL:
+      case GREATER_THAN_OR_EQUAL_TO:
       case IS:
       case IN: {
         IExpression left = operands[0].optimize(context);
@@ -676,7 +648,6 @@ public class Operator implements Comparable<Operator> {
       }
 
       default:
-        // System.out.println("Not optimised " + kind);
         return new ExpressionCall(this, operands);
     }
   }
@@ -720,8 +691,8 @@ public class Operator implements Comparable<Operator> {
           writer.append(" WHEN ");
           whenOperand.write(writer, 0, 0);
           IExpression thenOperand = thenList.get(index++);
-          writer.append(" THEN ");          
-          thenOperand.write(writer, 0, 0);         
+          writer.append(" THEN ");
+          thenOperand.write(writer, 0, 0);
         }
         if (elseExpression != null) {
           writer.append(" ELSE ");
@@ -730,7 +701,7 @@ public class Operator implements Comparable<Operator> {
         writer.append(" END");
         break;
       }
-      
+
       case CONCAT: {
         IExpression[] operands = call.getOperands();
         operands[0].write(writer, leftPrec, rightPrec);
@@ -782,7 +753,7 @@ public class Operator implements Comparable<Operator> {
         break;
       }
 
-      case CAST:{
+      case CAST: {
         // case POWER_OPERATOR:
         IExpression[] operands = call.getOperands();
         operands[0].write(writer, leftPrec, rightPrec);
@@ -790,14 +761,14 @@ public class Operator implements Comparable<Operator> {
         writer.append(operands[1].toString());
         break;
       }
-        
-      case EQUAL:
-      case NOT_EQUAL:
+
+      case EQUAL_TO:
+      case NOT_EQUAL_TO:
       case LESS_THAN_OR_GREATER_THEN:
       case LESS_THAN:
-      case LESS_THAN_OR_EQUAL:
+      case LESS_THAN_OR_EQUAL_TO:
       case GREATER_THAN:
-      case GREATER_THAN_OR_EQUAL:
+      case GREATER_THAN_OR_EQUAL_TO:
       case ADD:
       case SUBTRACT:
       case MULTIPLY:
@@ -918,7 +889,7 @@ public class Operator implements Comparable<Operator> {
     return description;
   }
 
-  public static Value between(final IExpressionContext context, final IExpression... args) {
+  public Value between(final IExpressionContext context, final IExpression... args) {
     Value operand = args[0].eval(context);
     Value start = args[1].eval(context);
     Value end = args[2].eval(context);
@@ -932,7 +903,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "CAST", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.Conversion")
-  public static Value cast(final IExpressionContext context, final IExpression... args) {
+  public Value cast(final IExpressionContext context, final IExpression... args) {
     Value value = args[0].eval(context);
     if (value.isNull())
       return Value.NULL;
@@ -955,7 +926,7 @@ public class Operator implements Comparable<Operator> {
    */
   @ScalarFunction(name = "TRY_CAST", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.Conversion")
-  public static Value try_cast(final IExpressionContext context, final IExpression... args) {
+  public Value try_cast(final IExpressionContext context, final IExpression... args) {
     Value value = args[0].eval(context);
     Value type = args[1].eval(context);
 
@@ -980,10 +951,10 @@ public class Operator implements Comparable<Operator> {
       return Value.NULL;
     }
   }
-  
+
   @ScalarFunction(name = "CONCAT", minArgs = 2, maxArgs = Integer.MAX_VALUE,
       category = "i18n::Operator.Category.String")
-  public static Value concat(final IExpressionContext context, final IExpression... args) {
+  public Value concat(final IExpressionContext context, final IExpression... args) {
     StringBuilder builder = new StringBuilder();
     for (IExpression operand : args) {
       Value value = operand.eval(context);
@@ -997,7 +968,7 @@ public class Operator implements Comparable<Operator> {
     return ValueString.of(builder.toString());
   }
 
-  public static Value ilike(final IExpressionContext context, final IExpression... args) {
+  public Value ilike(final IExpressionContext context, final IExpression... args) {
     Value input = args[0].eval(context);
     if (input.isNull()) {
       return Value.NULL;
@@ -1022,8 +993,8 @@ public class Operator implements Comparable<Operator> {
 
     return ValueBoolean.of(p.matcher(input.toString()).matches());
   }
-  
-  public static Value like(final IExpressionContext context, final IExpression... args) {
+
+  public Value like(final IExpressionContext context, final IExpression... args) {
     Value input = args[0].eval(context);
     if (input.isNull()) {
       return Value.NULL;
@@ -1048,8 +1019,8 @@ public class Operator implements Comparable<Operator> {
 
     return ValueBoolean.of(p.matcher(input.toString()).matches());
   }
-  
-  public static Value casewhen(final IExpressionContext context, final IExpression... args) {
+
+  public Value casewhen(final IExpressionContext context, final IExpression... args) {
     int index = 0;
     IExpression switchExpression = args[0];
     ExpressionList whenList = (ExpressionList) args[1];
@@ -1076,14 +1047,18 @@ public class Operator implements Comparable<Operator> {
     }
 
     // implicit ELSE NULL case
-    if ( elseExpression==null ) return Value.NULL;
-    
+    if (elseExpression == null)
+      return Value.NULL;
+
     return elseExpression.eval(context);
   }
-  
-  
 
+  public Value negative(final IExpressionContext context, final IExpression... args) {
+    Value value = args[0].eval(context);
+    return value.negate();
 
+  }
+  
   @ScalarFunction(name = "ADD", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
   public static Value add(final IExpressionContext context, final IExpression... args) {
@@ -1095,7 +1070,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "SUBTRACT", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
-  public static Value subtract(final IExpressionContext context, final IExpression... args) {
+  public Value subtract(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     Value right = args[1].eval(context);
 
@@ -1104,7 +1079,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "MULTIPLY", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
-  public static Value multiply(final IExpressionContext context, final IExpression... args) {
+  public Value multiply(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     Value right = args[1].eval(context);
 
@@ -1113,7 +1088,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "DIVIDE", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
-  public static Value divide(final IExpressionContext context, final IExpression... args) {
+  public Value divide(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     Value right = args[1].eval(context);
 
@@ -1122,7 +1097,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "MOD", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
-  public static Value mod(final IExpressionContext context, final IExpression... args) {
+  public Value mod(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     Value right = args[1].eval(context);
 
@@ -1131,7 +1106,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "POWER", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
-  public static Value power(final IExpressionContext context, final IExpression... args) {
+  public Value power(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     Value right = args[1].eval(context);
 
@@ -1144,7 +1119,7 @@ public class Operator implements Comparable<Operator> {
 
 
   @ScalarFunction(name = "BITNOT", category = "i18n::Operator.Category.Bitwise")
-  public static Value bitnot(final IExpressionContext context, final IExpression... args) {
+  public Value bitnot(final IExpressionContext context, final IExpression... args) {
     Value value = args[0].eval(context);
     if (value.isNull())
       return value;
@@ -1154,7 +1129,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "BITAND", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Bitwise")
-  public static Value bitand(final IExpressionContext context, final IExpression... args) {
+  public Value bitand(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     if (left.isNull())
       return left;
@@ -1167,7 +1142,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "BITOR", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Bitwise")
-  public static Value bitor(final IExpressionContext context, final IExpression... args) {
+  public Value bitor(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     if (left.isNull())
       return left;
@@ -1180,7 +1155,7 @@ public class Operator implements Comparable<Operator> {
 
   @ScalarFunction(name = "BITXOR", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Bitwise")
-  public static Value bitxor(final IExpressionContext context, final IExpression... args) {
+  public Value bitxor(final IExpressionContext context, final IExpression... args) {
     Value left = args[0].eval(context);
     if (left.isNull())
       return left;
@@ -1191,6 +1166,47 @@ public class Operator implements Comparable<Operator> {
     return ValueInteger.of(left.toInteger() ^ right.toInteger());
   }
 
+  // -------------------------------------------------------------
+  // LOGICAL
+  // -------------------------------------------------------------
 
+  public Value boolnot(final IExpressionContext context, final IExpression... args) {
+    Value value = args[0].eval(context);
+
+    if (value.isNull()) {
+      return Value.NULL;
+    }
+
+    return ValueBoolean.of(!value.toBoolean());
+  }
+
+  public Value booland(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+    if (left.isNull() || right.isNull()) {
+      return Value.NULL;
+    }
+    return ValueBoolean.of(left.toBoolean() && right.toBoolean());
+  }
+
+  public Value boolor(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+    if (left.isNull() && right.isNull()) {
+      return Value.NULL;
+    }
+
+    return ValueBoolean.of(left.toBoolean() || right.toBoolean());
+  }
+
+  public Value boolxor(final IExpressionContext context, final IExpression... args) {
+    Value left = args[0].eval(context);
+    Value right = args[1].eval(context);
+    if (left.isNull() || right.isNull()) {
+      return Value.NULL;
+    }
+    return ValueBoolean
+        .of((left.toBoolean() || right.toBoolean()) && !(left.toBoolean() && right.toBoolean()));
+  }
 
 }

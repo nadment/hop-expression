@@ -22,9 +22,10 @@ import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.value.Value;
 import java.text.ParseException;
 import java.util.Date;
@@ -51,7 +52,7 @@ public class ExpressionPerformance {
 		row[4] = true;
 		row[5] = null;
 
-		RowExpressionContext context = new RowExpressionContext(rowMeta);
+		ExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
 		context.setRow(row);
 				
 		long cycle = 10000000;

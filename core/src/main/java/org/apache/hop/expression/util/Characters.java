@@ -28,6 +28,9 @@ public class Characters {
   private static final byte IS_HEXDIGIT = 0x02;
 
   private static final byte IS_ALPHA = 0x04;
+  
+  private static final byte IS_DELIMITER = 0x08;
+  
 
   static {
     for (int ch = '0'; ch <= '9'; ch++) {
@@ -45,6 +48,12 @@ public class Characters {
     for (int ch = 'a'; ch <= 'z'; ch++) {
       FLAGS[ch] |= IS_ALPHA;
     }
+
+    char[] delimiters = {' ','.',',',':',';','\t','\'','?','!','@','"','^','#','$','&','~','_','=','+','-','*','%','/','|','\\','[',']','(',')','{','}','<','>'}; 
+    for (int ch:delimiters) {
+      FLAGS[ch] |= IS_DELIMITER;
+    }
+    
   }
 
   /**
@@ -92,9 +101,27 @@ public class Characters {
     }
     return (FLAGS[ch] & (IS_ALPHA | IS_DIGIT)) != 0;
   }
+  
+  /**
+   * Is the character a word delimiter
+   * 
+   * ! ? @ " ^ # $ & ~ _ , . : ; = + - * % / | \ [ ] ( ) { } < >
+   * 
+   * @param ch  the character to check
+   * @return true if it is a delimiter
+   */
+  public static boolean isWordDelimiter(char ch) {
+    if (ch > 255) {
+      return false;
+    }
+    return (FLAGS[ch] & (IS_DELIMITER)) != 0;
+  }
+  
   /**
    * Determines if the specified character is space or tab
-   *
+   *  
+ 
+   *  
    * @param ch
    * @return
    */
@@ -105,4 +132,6 @@ public class Characters {
   public static boolean isExponent(char ch) {
     return ch == 'e' || ch == 'E';
   }
+  
+  
 }

@@ -17,11 +17,10 @@
 package org.apache.hop.expression.util;
 
 import java.text.ParseException;
-import java.util.Locale;
 
 public interface IFormat<V> {
   
-  public String format(V value, Locale locale);
+  public String format(V value);
 
-  public V parse(String value, Locale locale) throws ParseException;
+  public V parse(String value) throws ParseException;
 }

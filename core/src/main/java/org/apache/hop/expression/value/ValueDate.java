@@ -16,6 +16,10 @@
  */
 package org.apache.hop.expression.value;
 
+import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.util.DateFormat;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -24,10 +28,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Objects;
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.util.DateFormat;
 
 public class ValueDate extends Value {
 
@@ -122,7 +122,7 @@ public class ValueDate extends Value {
 
     if (targetType == DataType.STRING) {
       ZonedDateTime dt = ZonedDateTime.ofInstant(value, context.getZone());
-      String result = DateFormat.format(dt, format, context.getLocale());
+      String result = DateFormat.format(dt, format);
 
       return ValueString.of(result);
     }

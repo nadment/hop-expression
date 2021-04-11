@@ -18,10 +18,10 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.value.Value;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -93,7 +93,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           metadataProvider);
       data.expressions = new IExpression[data.outputRowMeta.size()];
 
-      RowExpressionContext context = new RowExpressionContext(getInputRowMeta());
+      ExpressionContext context = new ExpressionContext(this, data.outputRowMeta);
       data.expressionContext = context;
 
       // For all fields expression
@@ -133,19 +133,19 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
     // output values
     Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
 
+    // Evaluate expression
+    ExpressionContext context = data.expressionContext;
+    
+    // Use output row as context, so second expression can use result from the first 
+    context.setRow(outputRowValues);
+    
     for (ExpressionField field : meta.getExpressionFields()) {
 
       int index = data.outputRowMeta.indexOfValue(field.getName());
 
-      Value value = null;
       try {
-
-        // Evaluate expression
-        RowExpressionContext context = data.expressionContext;
-        context.setRow(row);
-
         IExpression expression = data.expressions[index];
-        value = expression.eval(context);
+        Value value = expression.eval(context);
 
         if (log.isDetailed()) {
           logDetailed("field [" + field.getName() + "] has expression [" + value + "]");

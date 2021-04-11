@@ -14,18 +14,17 @@
  */
 package org.apache.hop.expression.value;
 
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.time.Instant;
-import java.util.Locale;
-import java.util.Objects;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.i18n.BaseMessages;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.time.Instant;
+import java.util.Objects;
 
 public class ValueString extends Value {
 
@@ -74,7 +73,7 @@ public class ValueString extends Value {
 
     if (targetType == DataType.DATE) {
       try {
-        Instant result = DateFormat.parse(value, format, Locale.ENGLISH);
+        Instant result = DateFormat.parse(value, format);
         return new ValueDate(result);
       } catch (RuntimeException | ParseException e) {
         throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidDate", value));
@@ -154,10 +153,11 @@ public class ValueString extends Value {
   public long toInteger() {
     try {
 
-      if (value.indexOf('.') < 0)
-        return Long.parseLong(value);
-
-      return (long) Double.parseDouble(value);
+      if (value.indexOf('.') >= 0 || value.indexOf('e') >= 0 || value.indexOf('E') >= 0) {
+        return (long) Double.parseDouble(value);
+      }
+      
+      return Long.parseLong(value);
     } catch (NumberFormatException e) {
       throw createInvalidNumberError();
     }

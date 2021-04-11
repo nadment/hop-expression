@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SUBSTRING, SUBSTR, MID
+= SUBSTRING, SUBSTR
 
 Returns the portion of the string from string, starting from the character/byte specified by start, with optionally limited	length.
 		
@@ -22,7 +22,6 @@ Returns the portion of the string from string, starting from the character/byte 
 ----
 SUBSTRING(string, start[, length])
 SUBSTR(string, start[, length])
-MID(string, start[, length])
 ----
 
 == Usage

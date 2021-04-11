@@ -14,11 +14,15 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.hop.expression.ExpressionContext;
 import org.junit.Test;
+import java.security.SecureRandom;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Locale;
+import java.util.Random;
 
 public class FunctionTest extends BaseExpressionTest {
 
@@ -77,6 +81,14 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
   @Test
+  public void ZeroIfNull() throws Exception {
+    evalEquals("ZeroIfNull(1)", 1);
+    evalEquals("ZeroIfNull(null)", 0);
+    evalFails("ZeroIfNull()");
+    evalFails("ZeroIfNull(1,2)");
+  }
+
+  @Test
   public void Decode() throws Exception {
     evalEquals("Decode(1,1,'one',2,'two',Null,'<NULL>','other')", "one");
     evalEquals("Decode(2,1,'one',2,'two',Null,'<NULL>','other')", "two");
@@ -96,12 +108,12 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void CurrentDate() throws Exception {
-
+    Instant current_date =
+        (Instant) this.getContext().getAttribute(ExpressionContext.ATTRIBUTE_CURRENT_DATE);
     // evalEquals("Today()",now);
     // evalEquals("SysDate()",now);
-    evalEquals("Current_Date()", this.getContext().getCurrentDate());
+    evalEquals("Current_Date()", current_date);
     evalFails("Current_Date(123)");
-
   }
 
   @Test
@@ -115,7 +127,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Date(null,-1,1)");
     evalNull("Date(2020,null,1)");
     evalNull("Date(2020,-1,null)");
-    
+
     evalFails("Date()");
     evalFails("Date(2020)");
     evalFails("Date(2020,15)");
@@ -126,9 +138,9 @@ public class FunctionTest extends BaseExpressionTest {
   public void FirstDay() throws Exception {
     evalEquals("First_day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1));
     evalEquals("First_day(Date '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 1));
-    
+
     evalNull("First_day(NULL)");
-    
+
     evalFails("First_day()");
     evalFails("First_day('test')");
   }
@@ -177,8 +189,14 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void InitCap() throws Exception {
     evalEquals("InitCap('hello the wORLD')", "Hello The World");
+    evalEquals("InitCap('tRy a littlE  ')", "Try A Little  ");
+    evalEquals("InitCap('won''t it?no')", "Won'T It?No");
+    evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
     evalNull("InitCap(NULL)");
+    evalFails("InitCap()");
   }
+
+
 
   @Test
   public void Instr() throws Exception {
@@ -233,20 +251,6 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("Year()");
   }
 
-  // @Test
-  // public void YearOfWeek() throws Exception {
-  // evalEquals("YearOfWeek(Date '2017-01-01')", 2017);
-  // evalNull("YearOfWeek(null)");
-  // evalFails("YearOfWeek()");
-  // }
-  //
-  // @Test
-  // public void YearOfWeekIso() throws Exception {
-  // evalEquals("YearOfWeekIso(Date '2017-01-01')", 2016);
-  // evalNull("YearOfWeekISo(null)");
-  // evalFails("YearOfWeekISo()");
-  // }
-
   @Test
   public void MonthName() throws Exception {
     evalEquals("MonthName(Date '2019-01-01')", "January");
@@ -272,8 +276,6 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("Month()");
   }
 
-
-
   @Test
   public void Years_Between() throws Exception {
     evalEquals("Years_Between(Timestamp '2001-01-01 12:00:00',Timestamp '2000-01-01 00:00:00')",
@@ -288,12 +290,12 @@ public class FunctionTest extends BaseExpressionTest {
   public void Months_Between() throws Exception {
     evalEquals("Months_Between(Date '2005-01-01',Date '2005-02-02')", 1.032258064516129);
     evalEquals("Months_Between(Date '2007-11-09',Date '2003-12-28')", -45.54838709677419);
-    
-    
-   // evalEquals("Months_Between(Date '2007-11-10',Date '2007-12-09')", -0.967742);
+
+
+    // evalEquals("Months_Between(Date '2007-11-10',Date '2007-12-09')", -0.967742);
     // TODO: If the months and days are identical, the result is an integer.
     evalEquals("Months_Between(Date '2007-11-09',Date '2007-12-09')", 0.967741935483871);
-   
+
     evalNull("Months_Between(Date '2007-11-09',NULL)");
     evalNull("Months_Between(NULL, Date '2007-11-09')");
     evalNull("Months_Between(NULL, NULL)");
@@ -320,11 +322,11 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Minutes_Between(Timestamp '2019-01-01 15:00:59', NULL)");
     evalFails("Minutes_Between(Date '2007-11-09')");
   }
-  
+
   @Test
   public void Seconds_Between() throws Exception {
     evalEquals("Seconds_Between(Timestamp '2019-01-01 15:00:59',Timestamp '2019-01-01 15:28:59')",
-        28*60);
+        28 * 60);
     evalEquals("Seconds_Between(Timestamp '2019-01-01 15:00:59',Timestamp '2019-01-02 15:00:59')",
         86400);
     evalNull("Seconds_Between(NULL, Timestamp '2019-01-01 15:00:59')");
@@ -439,7 +441,7 @@ public class FunctionTest extends BaseExpressionTest {
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20, 0));
     evalEquals("Add_Seconds(Date '2019-01-15',140)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
-    evalNull("Add_Seconds(Null,140)"); 
+    evalNull("Add_Seconds(Null,140)");
     evalNull("Add_Seconds(Date '2019-01-15',Null)");
     evalFails("Add_Seconds(Date '2019-01-15')");
   }
@@ -485,7 +487,6 @@ public class FunctionTest extends BaseExpressionTest {
 
     // Alias
     evalEquals("Substr('TEST',5)", "");
-    evalEquals("Mid('TEST',5)", "");
   }
 
   @Test
@@ -500,9 +501,12 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Abs(0)", 0);
     evalEquals("Abs(1)", 1);
     evalEquals("Abs(-1)", 1);
+    evalEquals("Abs(-1::INTEGER)", 1);
     evalEquals("Abs(-1.12345679)", 1.12345679);
     evalNull("Abs(NULL)");
     evalFails("Abs()");
+
+    writeEquals("ABS(-2)");
   }
 
   @Test
@@ -650,7 +654,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Power(0,0)", 1);
     evalEquals("Power(999,0)", 1);
     evalNull("Power(NULL,2)");
-    evalNull("Power(3,NULL)");    
+    evalNull("Power(3,NULL)");
     evalFails("Power(3, -2)");
     evalFails("Power()");
     evalFails("Power(3)");
@@ -698,7 +702,7 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void LTrim() throws Exception {
     evalEquals("LTrim('a')", "a");
-    evalEquals("LTrim(' a ')", "a ");    
+    evalEquals("LTrim(' a ')", "a ");
     evalEquals("LTrim('01ABC012', '012')", "ABC012");
     evalNull("LTrim(NULL)");
     evalNull("LTrim('01ABC012',NULL)");
@@ -742,11 +746,6 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Bit_Length() throws Exception {
-    // TODO: evalEquals("Bit_Length('TEST')", 64);
-  }
-
-  @Test
   public void Left() throws Exception {
     evalEquals("Left('TEST FROM',4)", "TEST");
     evalEquals("Left('',1)", "");
@@ -776,7 +775,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Repeat('ABCD',NULL)");
     evalFails("Repeat()");
   }
-  
+
   @Test
   public void Replace() throws Exception {
     evalEquals("Replace('ABCD','CD')", "AB");
@@ -820,7 +819,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Try_To_Boolean('x')");
     evalNull("Try_To_Boolean(NULL)");
   }
-  
+
   @Test
   public void To_Number() throws Exception {
 
@@ -839,9 +838,9 @@ public class FunctionTest extends BaseExpressionTest {
     // Format with Decimals
     evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
     evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
-    setLocale(new Locale("en", "EN"));
+    Locale.setDefault(new Locale("en", "EN"));
     evalEquals("TO_NUMBER('5467.12', '999999D99')", 5467.12);
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_NUMBER('5467,12', '999999D99')", 5467.12);
 
     // Format No Decimals
@@ -875,29 +874,29 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("TO_NUMBER('-5','PR9999')");
 
     // Format with Thousand Group Markers
-    setLocale(new Locale("en", "US"));
+    Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     // evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
     // evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
 
     // Format with Currency dollar
-    setLocale(new Locale("en", "US"));
+    Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169);
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_NUMBER('$65.169', '$99.999')", 65.169);
 
     // Format with Currency symbol
-    setLocale(new Locale("en", "US"));
+    Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_NUMBER('€65.169', 'L99.999')", 65.169);
     evalEquals("TO_NUMBER('65.16€', '99.999L')", 65.16);
 
     // Format with Currency code
-    setLocale(new Locale("en", "US"));
+    Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('USD65.169', 'C99.999')", 65.169);
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_NUMBER('EUR65.169', 'C99.999')", 65.169);
     evalEquals("TO_NUMBER('65.16EUR', '99.999C')", 65.16);
 
@@ -907,7 +906,7 @@ public class FunctionTest extends BaseExpressionTest {
     // Format Roman numeral
     evalEquals("TO_NUMBER('DXV','RN')", 515);
     evalEquals("TO_NUMBER('CDLXXXV','RN')", 485);
-    
+
     evalEquals("TO_NUMBER('MCMXCIX','rn')", 1999);
     evalEquals("TO_NUMBER('MMMDCCXXIV','rn')", 3724);
 
@@ -915,7 +914,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234);
 
     evalNull("TO_NUMBER(NULL)");
-    
+
     // You can specify only one decimal separator in a number format model.
     evalFails("TO_NUMBER('123.456','9D999D9')");
     evalFails("TO_NUMBER('123.456','9.999.9')");
@@ -928,13 +927,13 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Try_To_Number() throws Exception {
-    
-  // TODO: evalNull("TRY_TO_NUMBER('-0.2','99.99S')");
-    
+
+    // TODO: evalNull("TRY_TO_NUMBER('-0.2','99.99S')");
+
     // bad format should fails
-    //evalFails("TRY_TO_NUMBER('123.456','9D999D9')");
+    // evalFails("TRY_TO_NUMBER('123.456','9D999D9')");
   }
-  
+
   @Test
   public void To_Char() throws Exception {
     // Text
@@ -946,7 +945,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(12923)", "12923");
 
     // Format fixed length with decimal
-    setLocale(new Locale("en", "EN"));
+    Locale.setDefault(new Locale("en", "EN"));
     evalEquals("TO_CHAR(0.1,'99.99')", "  0.1 ");
     evalEquals("TO_CHAR(-0.2,'99.90')", " -0.20");
     evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
@@ -971,15 +970,15 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(12345.567,'9,999')", "######");
     evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
     evalEquals("TO_CHAR(555.0, 'FM999.009')", "555.00");
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
     evalEquals("TO_CHAR(0,'90D99')", "  0,  ");
     evalEquals("TO_CHAR(0,'90d00')", "  0,00");
 
     // Format fixed length with grouping
-    setLocale(new Locale("en", "EN"));
+    Locale.setDefault(new Locale("en", "EN"));
     evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     // evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5 ");
     // evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3.148,500");
 
@@ -1012,20 +1011,20 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(124,'FM$99')", "###");
 
     // Currency code ISO 4217
-    setLocale(new Locale("en", "GB"));
+    Locale.setDefault(new Locale("en", "GB"));
     evalEquals("TO_CHAR(12,'C99')", " GBP12");
-    setLocale(new Locale("en", "US"));
+    Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_CHAR(-7,'C99')", " -USD7");
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_CHAR(-77,'99C')", "-77EUR");
-    setLocale(new Locale("et", "EE"));
+    Locale.setDefault(new Locale("et", "EE"));
     evalEquals("TO_CHAR(-7,'99C')", " -7EUR");
     evalEquals("TO_CHAR(0,'FMC')", "EUR"); // Only currency ISO code
 
     // Currency symbol
-    setLocale(new Locale("en", "GB"));
+    Locale.setDefault(new Locale("en", "GB"));
     evalEquals("TO_CHAR(12,'FML99')", "£12");
-    setLocale(new Locale("fr", "BE"));
+    Locale.setDefault(new Locale("fr", "BE"));
     evalEquals("TO_CHAR(-7,'L99')", " -€7");
     evalEquals("TO_CHAR(-7,'99L')", " -7€");
     evalEquals("TO_CHAR(123.45,'L999.99')", " €123.45");
@@ -1144,16 +1143,17 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','TZM')", "00"); // Time Zone Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00"); // Time Zone Hour
 
-    //evalEquals("To_Char(Date '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56"); // Time 
-    //evalEquals("To_Char(Date '2019-02-13 15:34:56','HH12:MI:SS')", "15:34:56"); // Time 
-   // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56"); // Time
+    // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56"); // Time
+    // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH12:MI:SS')", "15:34:56"); // Time
+    // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56"); // Time
 
-        
+
     // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
     // evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
     // evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short
 
     evalEquals("To_Char(Date '2019-07-23','J')", "2458688");
+    evalEquals("To_Char(Date '0001-01-01','J')", "1721426");
 
     evalEquals("To_Char(Date '2019-07-23',':;.,=-/(FMMONTH)')", ":;.,=-/(JULY)"); // Special char
 
@@ -1165,13 +1165,16 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void To_Date() throws Exception {
     evalEquals("To_Date('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
-    evalEquals("To_Date('2020148','YYYYDDD')", LocalDate.of(2020, 5, 27));
+    evalEquals("To_Date('2020:148','YYYY:DDD')", LocalDate.of(2020, 5, 27));
     evalEquals("To_Date('2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
     evalEquals("To_Date('2020-MarCH','YYYY-MONTH')", LocalDate.of(2020, Month.MARCH, 1));
     evalEquals("To_Date('2020,feb,25','YYYY,MON,DD')", LocalDate.of(2020, Month.FEBRUARY, 25));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
-    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH12:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
     evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
@@ -1180,7 +1183,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('01/02/10','DD/MM/YY')", LocalDate.of(2010, 2, 1));
     evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
     evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1));
-    
+
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
 
@@ -1205,8 +1208,11 @@ public class FunctionTest extends BaseExpressionTest {
     // Rule to try alternate format MONTH -> MON
     evalEquals("To_Date('01/Feb/2020','DD/MONTH/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
-    // '12-02-2008' is 2454803 in julian,
+    // Julian date
     evalEquals("To_Date('2454803','J')", LocalDate.of(2008, 12, 2));
+    evalEquals("To_Date('1721426','J')", LocalDate.of(1, 1, 1));
+    evalEquals("To_Date('1001426','J')", LocalDate.of(-1971, 9, 16));
+
 
     // Is interpreted as 10 February 2003
     // evalEquals("To_Date('06-2003-MON','WW-YYYY-DY')", LocalDate.of(2003, 2, 10));
@@ -1216,7 +1222,8 @@ public class FunctionTest extends BaseExpressionTest {
         LocalDateTime.of(2003, 12, 31, 12, 59, 33));
 
     // Is interpreted as 24 December 2009, 23:00:00
-    evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH:MI:SS AM')",LocalDateTime.of(2009, 12, 24, 23, 0, 0));
+    evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH:MI:SS AM')",
+        LocalDateTime.of(2009, 12, 24, 23, 0, 0));
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
@@ -1248,12 +1255,13 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("TRY_CAST('test' as Boolean)");
 
     // Date to String
+    evalEquals("TRY_CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
     evalNull("TRY_CAST('2019-99-25' AS Date)");
     evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
 
-    
+
     evalNull("TRY_CAST(NULL AS Date)");
-    
+
     // Bad syntax
     evalFails("TRY_CAST('2020-01-021' AS NULL)");
     evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
@@ -1263,6 +1271,10 @@ public class FunctionTest extends BaseExpressionTest {
 
     // Bad data type
     evalFails("Try_Cast(123 as Nill)");
+
+    writeEquals("TRY_CAST(NULL AS BINARY)");
+    writeEquals("TRY_CAST('1234' AS NUMBER)");
+    writeEquals("TRY_CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
   }
 
   @Test
@@ -1281,10 +1293,19 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Differencce() throws Exception {
+    evalEquals("DIFFERENCE('Juice', 'Jucy')", 4);
+    evalNull("DIFFERENCE(NULL,NULL)");
+    evalNull("DIFFERENCE(NULL,'Jucy')");
+    evalNull("DIFFERENCE('Juice',NULL)");
+  }
+
+  @Test
   public void Translate() throws Exception {
     evalEquals("Translate('Hello, world!','eo','EO')", "HEllO, wOrld!");
-    evalNull("Translate('Hello, world!',NULL,'EO')");
     evalNull("Translate(NULL,'eo','EO')");
+    evalNull("Translate('Hello, world!',NULL,'EO')");
+    evalNull("Translate('Hello, world!','EO',NULL)");
   }
 
   @Test
@@ -1318,6 +1339,8 @@ public class FunctionTest extends BaseExpressionTest {
 
     evalFails("Extract(NULL from Date '2021-01-01')");
     evalFails("Extract(BIDON from NULL)");
+
+    writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
   }
 
   @Test
@@ -1346,10 +1369,10 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Truncate(DATE '2020-05-25','DD')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Truncate(DATE '2020-05-25','QuArTeR')", LocalDate.of(2020, Month.APRIL, 1));
     evalEquals("Truncate(DATE '2020-05-25','Q')", LocalDate.of(2020, Month.APRIL, 1));
-    setLocale(new Locale("en", "EN"));
+    Locale.setDefault(new Locale("en", "EN"));
     // evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 25));
-    setLocale(new Locale("fr", "BE"));
-    evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 26));
+    Locale.setDefault(new Locale("fr", "BE"));
+    // evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 26));
 
     // evalEquals("Truncate(DATE '2020-05-28','W')", LocalDate.of(2020, Month.APRIL, 25));
 
@@ -1374,6 +1397,8 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Contains() throws Exception {
     evalTrue("CONTAINS(NAME,'ES')");
+    evalNull("CONTAINS(NULL,'ES')");
+    evalNull("CONTAINS(NAME,NULL)");
   }
 
   @Test
@@ -1382,7 +1407,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalFalse("StartsWith('-TEST FROM','TES')");
     evalNull("StartsWith(NULL,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL)");
-    evalFails("StartsWith()");  
+    evalFails("StartsWith()");
   }
 
   @Test
@@ -1391,7 +1416,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalFalse("EndsWith('TEST FROM','ROMA')");
     evalNull("EndsWith(NULL,'ROMA')");
     evalNull("EndsWith('TEST FROM',NULL)");
-    evalFails("EndsWith()");    
+    evalFails("EndsWith()");
   }
 
   @Test
@@ -1597,9 +1622,18 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("SHA512(null)");
   }
 
-  // @Test
-  public void Rand() throws Exception {
-    evalEquals("Rand(180)", 0.3188372273336675);
+  @Test
+  public void Random() throws Exception {
+
+    Random random = new SecureRandom();
+    random.setSeed(180);
+    // Hard to test, not the same on each JVM
+    // evalEquals("Rand(180)", random.nextDouble());
+    evalTrue("Random(0)>0");
+    evalTrue("Random(180)>0");
+
+    // Alias
+    evalTrue("Rand()>0");
   }
 
 }

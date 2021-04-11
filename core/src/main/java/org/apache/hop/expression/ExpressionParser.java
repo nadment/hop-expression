@@ -37,23 +37,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Locale;
 
 public class ExpressionParser {
 
   private static final Class<?> PKG = IExpression.class; // for i18n purposes
-
-  /** locale-neutral big decimal format. */
-  // public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.0b", new
-  // DecimalFormatSymbols(Locale.ENGLISH));
 
   /** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss". */
   public static final DateTimeFormatter TIMESTAMP_FORMAT =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss.nnnnnn". */
-  public static final DateTimeFormatter TIMESTAMP_FORMAT_NANO6 =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnnnnn");
+  public static final DateTimeFormatter TIMESTAMP_FORMAT_NANO6 =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnnnnn");
 
   private final String source;
 
@@ -67,6 +61,10 @@ public class ExpressionParser {
       // return expression.optimize(new ExpressionContext());
       return expression;
 
+    }
+    catch(IllegalArgumentException e) {
+      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(), e.getMessage());
+      throw new ExpressionException(message, e ); 
     }
     catch(ParseException e) {
       String message = BaseMessages.getString(PKG, "Expression.SyntaxError", e.getErrorOffset(), e.getMessage());
@@ -163,23 +161,6 @@ public class ExpressionParser {
     return expression;
   }
 
-  /**
-   * Parse logical XOR expression
-   *
-   * <p>
-   * LogicalAndExpression ( XOR LogicalAndExpression )*
-   *
-   * @return Expression
-   */
-  @Deprecated
-  private IExpression parseLogicalXor() throws ParseException {
-    IExpression expression = this.parseLogicalAnd();
-    while (next(Id.XOR)) {
-      expression = new ExpressionCall(Operator.BOOLXOR, expression, parseLogicalAnd());
-    }
-
-    return expression;
-  }
 
   /**
    * Parse logical AND expression
@@ -440,10 +421,10 @@ public class ExpressionParser {
     IExpression expression = this.parseRelational();
 
     if (next(Id.EQUAL)) {
-      return new ExpressionCall(Operator.EQUAL, expression, this.parseRelational());
+      return new ExpressionCall(Operator.EQUAL_TO, expression, this.parseRelational());
     }
     if (next(Id.NOT_EQUAL)) {
-      return new ExpressionCall(Operator.NOT_EQUAL, expression, this.parseRelational());
+      return new ExpressionCall(Operator.NOT_EQUAL_TO, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_GREATER_THAN)) {
       return new ExpressionCall(Operator.LESS_THAN_OR_GREATER_THAN, expression,
@@ -453,13 +434,13 @@ public class ExpressionParser {
       return new ExpressionCall(Operator.GREATER_THAN, expression, this.parseRelational());
     }
     if (next(Id.GREATER_THAN_OR_EQUAL)) {
-      return new ExpressionCall(Operator.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new ExpressionCall(Operator.GREATER_THAN_OR_EQUAL_TO, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN)) {
       return new ExpressionCall(Operator.LESS_THAN, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_EQUAL)) {
-      return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL_TO, expression, this.parseRelational());
     }
 
     return expression;
@@ -483,7 +464,7 @@ public class ExpressionParser {
   }
 
   private Value parseLiteralNumber(Token token) throws ParseException {
-    BigDecimal number = NumberFormat.parse(token.text(), "TM", Locale.ENGLISH);
+    BigDecimal number = NumberFormat.parse(token.text(), "TM");
     return ValueBigNumber.of(number);
   }
 
@@ -540,7 +521,7 @@ public class ExpressionParser {
    */
   private Value parseLiteralDate(Token token) throws ParseException {
     try {
-      Instant instant = DateFormat.parse(token.text(), "YYYY-MM-DD", Locale.ENGLISH);
+      Instant instant = DateFormat.parse(token.text(), "YYYY-MM-DD");
       return ValueDate.of(instant);
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidDate", token.text()),
@@ -559,8 +540,6 @@ public class ExpressionParser {
       // format = TIME_FORMAT_NANO7;
       //
       LocalTime time = LocalTime.parse(token.text(), format);
-
-      // System.out.println(token.getText() + " parse to " + time.toString());
 
       LocalDateTime datetime = LocalDateTime.of(LocalDate.of(1900, 1, 1), time);
       return ValueDate.of(datetime.toInstant(ZoneOffset.UTC));
@@ -665,10 +644,7 @@ public class ExpressionParser {
     if (next(Id.CAST)) {
       DataType type = parseDataType();
       Value targetType = ValueString.of(type.name());
-
-      IExpression result = new ExpressionCall(Operator.CAST, expression, targetType);
-
-      return result;
+      return new ExpressionCall(Operator.CAST, expression, targetType);
     }
     return expression;
   }
