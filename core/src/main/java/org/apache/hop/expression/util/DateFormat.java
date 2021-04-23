@@ -607,10 +607,13 @@ public class DateFormat extends BaseFormat {
             continue;
           }
           break;
-      }
 
-      throw new ParseException("Error parsing date '" + text + "' with format '" + format + '\'',
-          position.getErrorIndex());
+        default:
+          throw new ParseException(
+              "Error parsing date '" + text + "' with format '" + format + '\'',
+              position.getErrorIndex());
+
+      }
     }
 
     // Build the date
@@ -1259,6 +1262,4 @@ public class DateFormat extends BaseFormat {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
   }
-
-
 }
