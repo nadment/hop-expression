@@ -15,8 +15,7 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -31,7 +30,8 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,8 +47,9 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class BaseExpressionTest {
-  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-  
+  @ClassRule
+  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+
   private ExpressionContext context;
 
   public ExpressionContext getContext() {
@@ -90,82 +91,81 @@ public class BaseExpressionTest {
     row[10] = "SPACE";
     row[11] = "UNDERSCORE";
     row[12] = "lower";
-    
+
     context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
   }
-  
-  protected Value eval(String s) throws Exception {
+
+  protected Object eval(String s) throws Exception {
+
     IExpression expression = ExpressionParser.parse(s);
+    Optimizer optimizer = new Optimizer();
+    expression = optimizer.optimize(context, expression);
+    
     return expression.eval(context);
   }
 
   protected void evalNull(String s) throws Exception {
-    assertTrue(eval(s).isNull());
+    assertNull(eval(s));
   }
 
   protected void evalTrue(String s) throws Exception {
-    assertTrue(eval(s).toBoolean());
+    assertEquals(Boolean.TRUE, eval(s));
   }
 
   protected void evalFalse(String s) throws Exception {
-    assertFalse(eval(s).toBoolean());
+    assertEquals(Boolean.FALSE, eval(s));
   }
 
   protected void evalEquals(String s, String expected) throws Exception {
-    assertEquals(expected, eval(s).toString());
+    Object value = eval(s);    
+    assertEquals(expected, (String) eval(s));
   }
 
   protected void evalEquals(String s, Long expected) throws Exception {
-    Value value = eval(s);
-    if (value.isNull())
-      Assert.fail("Return null value");
-    assertEquals(expected.longValue(), value.toInteger());
+    Object value = eval(s);
+    assertEquals(expected, (Long) value);
   }
 
   protected void evalEquals(String s, double expected) throws Exception {
-    Value value = eval(s);
-    if (value.isNull())
-      Assert.fail("Return null value");
-    assertEquals(expected, value.toNumber(), 0.000001);
+    Object value = eval(s);
+    assertEquals(expected, Operator.coerceToNumber(value), 0.000001);
   }
 
   protected void evalEquals(String s, BigDecimal expected) throws Exception {
-    Value value = eval(s);
-    if (value.isNull())
-      Assert.fail("Return null value");
-    assertEquals(expected, value.toBigNumber());
+    Object value = eval(s);
+    assertEquals(expected, (BigDecimal) value);
   }
 
   protected void evalEquals(String s, Instant expected) throws Exception {
-    assertEquals(expected, eval(s).toDate());
+    assertEquals(expected, eval(s));
   }
 
   protected void evalEquals(String s, LocalTime expected) throws Exception {
-    assertEquals(Instant.from(expected), eval(s).toDate());
+    assertEquals(Instant.from(expected), eval(s));
   }
 
   protected void evalEquals(String s, LocalDate expected) throws Exception {
-    assertEquals(expected.atStartOfDay(ZoneId.of("UTC")).toInstant(), eval(s).toDate());
+    assertEquals(expected.atStartOfDay(ZoneId.of("UTC")).toInstant(), eval(s));
   }
 
   protected void evalEquals(String s, LocalDateTime expected) throws Exception {
-    assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(s).toDate());
+    assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(s));
   }
 
   protected void evalFails(final String s) {
-//    Assert.assertThrows(ExpressionException.class, () -> {
-//      eval(s);
-//    });
-    
-    try {     
+    // Assert.assertThrows(ExpressionException.class, () -> {
+    // eval(s);
+    // });
+
+    try {
       eval(s);
-      Assert.fail(s+" Syntax or result should be invalid\n");
+      Assert.fail(s + " Syntax or result should be invalid\n");
     } catch (ExpressionException ex) {
-      //Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
-     // System.out.println(s+" > "+ex.toString());
+      // Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
+      // System.out.println(s+" > "+ex.toString());
     } catch (Exception ex) {
-      Assert.fail(s+" Uncatched exception " + ex.getClass());
+      Assert.fail(s + " Uncatched exception " + ex.getClass());
     }
   }
 
@@ -176,8 +176,8 @@ public class BaseExpressionTest {
   protected void writeEquals(String original, String result) throws Exception {
 
     IExpression expression = ExpressionParser.parse(original);
-    
-    StringWriter writer = new StringWriter();   
+
+    StringWriter writer = new StringWriter();
     expression.write(writer, 0, 0);
     assertEquals(result, writer.toString());
   }
@@ -185,15 +185,24 @@ public class BaseExpressionTest {
 
   @Test
   public void parser() throws Exception {
-    evalFails("Extract(NULL from Date '2021-01-01')");
-   // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
-    //evalEquals("CAST(1.75 as Integer)",2);
-    //evalEquals("[IDENTIFIER SPACE]", "SPACE");
-    //evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
+   
+//BigDecimal v0 = BigDecimal.valueOf(0);
+//BigDecimal v1 = BigDecimal.valueOf(0.1);
+//BigDecimal v2 = BigDecimal.valueOf(123.11);
 
-    //writeEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')");
-    //evalEquals("-.2", new BigDecimal("-0.2"));
+evalTrue("'amigo' like 'a%o'");
+    //evalEquals("5/(60*24)", 5);
+   // evalEquals("CAST('1234.567' as Integer)", 1235L);
     
+    // evalFails("Extract(NULL from Date '2021-01-01')");
+    // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
+    // evalEquals("CAST(1.75 as Integer)",2);
+    // evalEquals("[IDENTIFIER SPACE]", "SPACE");
+    // evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
+
+    // writeEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')");
+    // evalEquals("-.2", new BigDecimal("-0.2"));
+
     // evalEquals("TO_NUMBER('0.3-','#0.##-')", -0.3);
     // evalEquals("TO_NUMBER('65.169', '#########.0000')", 65.169);
     // evalEquals("TO_CHAR(-65.169, '$-###,000.000')", "$-065.169");
@@ -206,8 +215,8 @@ public class BaseExpressionTest {
     // evalEquals("TO_CHAR(0.003,'0.999')", " 0.003");
     // evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");
     // evalEquals("TO_CHAR(0.1,'99.99')", " 0.1 ");
-    //evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234);
-    
+    // evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234);
+
     // evalEquals("TO_CHAR(0,'90.99')", " 0. ");
     // evalEquals("TO_CHAR(-0.2,'99.90')", " -.20");
     // evalEquals("TO_CHAR(555.0, 'FM999.909')","555.00");

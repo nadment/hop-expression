@@ -21,6 +21,7 @@ public class Token {
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
 
+
     /** Variable "${var}" if scanner is used without variable environment substitution. */
     VARIABLE,
 
@@ -52,11 +53,6 @@ public class Token {
      * Cast operator <code>::<code>
      */
     CAST_OP("::"),
-    
-    /**
-     * Contains operator <code>=~<code>
-     */
-    CONTAINS("=~"),
 
     /** Comment */
     COMMENT,
@@ -98,8 +94,6 @@ public class Token {
     FUNCTION,
 
     FROM,
-
-
 
     /** The arithmetic division operator, "/". */
     DIVIDE("/"),

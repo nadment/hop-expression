@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
 import java.io.StringWriter;
 
 public class ExpressionJsonObjectAccess implements IExpression {
@@ -44,7 +43,7 @@ public class ExpressionJsonObjectAccess implements IExpression {
   }
 
   @Override
-  public Value eval(IExpressionContext context) throws ExpressionException {
+  public Object eval(IExpressionContext context) throws ExpressionException {
     return context.resolve(this.name);
   }
 
@@ -58,15 +57,5 @@ public class ExpressionJsonObjectAccess implements IExpression {
   @Override
   public String toString() {
     return this.name;
-  }
-
-  @Override
-  public boolean isConstant() {
-    return false;
-  }
-
-  @Override
-  public IExpression optimize(IExpressionContext context) throws ExpressionException {
-    return this;
   }
 }

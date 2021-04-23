@@ -16,6 +16,9 @@
  */
 package org.apache.hop.expression;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+
 /**
  * Enumeration of the data type which can be used to construct a expression.
  *
@@ -57,6 +60,20 @@ public enum DataType {
     }
     throw new IllegalArgumentException("Invalid data type: "+s);
   }
+
+  public static DataType get(final Object object) {
+    if ( object==null) return NONE;
+    if ( object instanceof Boolean ) return BOOLEAN;
+    if ( object instanceof String ) return STRING;
+    if ( object instanceof BigDecimal ) return BIGNUMBER;
+    if ( object instanceof Double ) return NUMBER;
+    if ( object instanceof Long ) return INTEGER;
+    if ( object instanceof Instant ) return DATE;
+    if ( object instanceof byte[] ) return BINARY;
+       
+    throw new IllegalArgumentException("Invalid data type object: "+object);
+  }
+
   
 
   /**

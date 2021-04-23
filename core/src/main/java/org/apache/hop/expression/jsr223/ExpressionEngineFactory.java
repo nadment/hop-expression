@@ -19,7 +19,6 @@ package org.apache.hop.expression.jsr223;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
 import java.time.ZoneId;
 import java.util.Locale;
 
@@ -30,7 +29,7 @@ public interface IExpressionContext {
    * @return the resolved value.
    * @throws ExpressionException if an error occurs.
    */
-  public Value resolve(String name) throws ExpressionException;
+  public Object resolve(String name) throws ExpressionException;
 
   public Locale getLocale();
 

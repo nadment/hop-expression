@@ -16,14 +16,12 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
-
 public interface IAggregateFunction {
   public void initialize(IAggregateContext context);
   // Removes an input value from the current group.
-  public void delete(IAggregateContext context, Value value);
+  public void delete(IAggregateContext context, Object value);
   // Merges two aggregation contexts
   public void merge(IAggregateContext context, IAggregateContext other);
-  public boolean iterate(IAggregateContext context, Value value);
-  public Value terminate(IAggregateContext context);
+  public boolean iterate(IAggregateContext context, Object value);
+  public Object terminate(IAggregateContext context);
 }

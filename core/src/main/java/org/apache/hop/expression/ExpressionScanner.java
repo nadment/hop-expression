@@ -18,33 +18,12 @@ import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.TreeSet;
 
 /** Parses an expression string to return the individual tokens. */
 public class ExpressionScanner {
 
-  private static final Class<?> PKG = IExpression.class; // for i18n purposes
+  private static final Class<?> PKG = ExpressionScanner.class; // for i18n purposes
 
-  // TODO: Java 9 use unmodifiable Set.of()
-  private static final Set<String> RESERVED_WORDS = new TreeSet<>(Arrays.asList("AS", "AND",
-      "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN",
-      "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR"));
-
-  public static Set<String> getReservedWords() {
-    return RESERVED_WORDS;
-  }
-
-  public static boolean isReservedWord(String name) {
-    return ExpressionScanner.getReservedWords().contains(name.toUpperCase());
-  }
-
-  public static  boolean isFunctionName(String name) {
-    return OperatorRegistry.getInstance().getFunction(name) != null;
-  }
-  
-  
   private String source;
 
   private int index = 0;
@@ -67,35 +46,6 @@ public class ExpressionScanner {
 
         case ')':
           return new Token(Id.RPARENTHESIS, index++);
-
-        // Double-quoted literal text.
-        // case '"': {
-        // StringBuilder text = new StringBuilder();
-        // int start = pos++;
-        // while (pos < source.length()) {
-        // c = source.charAt(pos++);
-        // if (c == '"') {
-        // if (pos < source.length()) {
-        // char c2 = source.charAt(pos);
-        // // encountered consecutive double-quotes
-        // if (c2 == '"') {
-        // ++pos;
-        // text.append(c);
-        // continue;
-        // }
-        // }
-        // break;
-        // }
-        // text.append(c);
-        // }
-        //
-        // if (c != '"')
-        // throw new
-        // ExpressionParserException("ExpressionException.MissingEndDoubleQuotedString", source,
-        // pos);
-        //
-        // return new ExpressionToken(Id.LITERAL_TEXT, start, text.toString());
-        // }
 
         // Single-quoted literal text.
         case '\'': {
@@ -292,8 +242,9 @@ public class ExpressionScanner {
               String value = source.substring(start + 1, index - 1).toUpperCase();
               return new Token(Id.IDENTIFIER, start, index, value);
             }
-          }        
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"),            index);
+          }
+          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"),
+              index);
         }
 
         case '.': // Number without zero .1
@@ -371,62 +322,33 @@ public class ExpressionScanner {
           // Other characters, e.g. *, ! are also included
           // in identifiers.
           int start = index++;
-          boolean isFunction = false;
-          loop: while (index < source.length()) {
+          while (index < source.length()) {
             c = source.charAt(index);
-            switch (c) {
-              case '(':
-                isFunction = true;
-                break loop;
-              case ')':
-              case '/':
-              case '*':
-              case '%':
-              case ',':
-              case '^':
-              case '&':
-              case '>':
-              case '<':
-              case '=':
-              case '~':
-              case '+':
-              case '-':
-              case '.':
-              case '!':
-              case '|':
-              case '$':
-              case ':':
-              case '[':
-              case ']':
-                break loop;
+            if (Characters.isSpace(c) || "()/*%,^&><=~+-.!|$:[]".indexOf(c) >= 0)
+              break;
 
-              default:
-                if (Characters.isSpace(c)) {
-                  break loop;
-                } else {
-                  ++index;
-                }
-            }
+            index++;
           }
 
+          ExpressionRegistry registry = ExpressionRegistry.getInstance();
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 
-          if (isFunction && isFunctionName(name) ) {
+          if (c == '(' && registry.isFunctionName(name)) {
             return new Token(Id.FUNCTION, start, index, name);
           }
 
           // Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR
-          if (RESERVED_WORDS.contains(name)) {
+          if (registry.isReservedWord(name)) {
             return new Token(Id.valueOf(name), start, index, name);
           }
 
-          if ( DataType.exist(name) ) {
+          if (DataType.exist(name)) {
             return new Token(Id.DATATYPE, start, index, name);
           }
 
-          if ( DatePart.exist(name) ) {
-            return new Token(Id.DATEPART, start, index, name);          
+          if (DatePart.exist(name)) {
+            return new Token(Id.DATEPART, start, index, name);
           }
 
           return new Token(Id.IDENTIFIER, start, index, identifier);

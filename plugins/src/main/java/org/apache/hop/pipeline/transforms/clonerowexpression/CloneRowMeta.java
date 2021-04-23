@@ -38,8 +38,6 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
-import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.Pipeline;
@@ -168,17 +166,18 @@ public class CloneRowMeta extends BaseTransformMeta
     clonenumfield = null;
   }
 
-  public Value evaluate(String source, IVariables variables) throws HopTransformException {
+  public String evaluate(String source, IVariables variables) throws HopTransformException {
     String value = variables.resolve(source);
 
     // If value start with '='  this is a expression
     if (value.charAt(0) != '=') {
-      return ValueString.of(value);
+      return value;
     }
 
     try {
       IExpression expression = ExpressionParser.parse(value.substring(1));
-      return expression.eval(new ExpressionContext(variables));
+      Object result = expression.eval(new ExpressionContext(variables));      
+      return String.valueOf(result);
     } catch (ExpressionException e) {
       throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
     }
@@ -195,7 +194,7 @@ public class CloneRowMeta extends BaseTransformMeta
       throws HopTransformException {
     // Output field (boolean) ?
     if (addcloneflag) {
-      String realfieldValue = evaluate(cloneflagfield, variables).toString();
+      String realfieldValue = String.valueOf(evaluate(cloneflagfield, variables));
       if (!Utils.isEmpty(realfieldValue)) {
         IValueMeta v = new ValueMetaBoolean(realfieldValue);
         v.setOrigin(origin);
@@ -204,7 +203,7 @@ public class CloneRowMeta extends BaseTransformMeta
     }
     // Output clone row number
     if (addclonenum) {
-      String realfieldValue = evaluate(clonenumfield, variables).toString();
+      String realfieldValue = evaluate(clonenumfield, variables);
       if (!Utils.isEmpty(realfieldValue)) {
         IValueMeta v = new ValueMetaInteger(realfieldValue);
         v.setOrigin(origin);

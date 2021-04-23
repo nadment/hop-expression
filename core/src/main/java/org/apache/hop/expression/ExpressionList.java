@@ -1,26 +1,24 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /** Immutable list of expression. */
 public class ExpressionList implements IExpression, Iterable<IExpression> {
@@ -29,25 +27,25 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
    * Iterator implementation used to efficiently expose contents of an ExpressionList as read-only
    * iterator.
    */
-  public class ExpressionIterator implements Iterator<IExpression> {
+  public class Iterator implements java.util.Iterator<IExpression> {
 
     private int index;
 
-    public ExpressionIterator() {
+    public Iterator() {
       index = 0;
     }
 
     @Override
     public boolean hasNext() {
-      return index < list.length;
+      return index < values.length;
     }
 
     @Override
     public IExpression next() {
-      if (index >= list.length) {
+      if (index >= values.length) {
         throw new NoSuchElementException();
       }
-      return list[index++];
+      return values[index++];
     }
 
     @Override
@@ -59,19 +57,18 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
   /** An immutable, empty ExpressionList. */
   public static final ExpressionList EMPTY = new ExpressionList() {};
 
-  private final IExpression[] list;
-
-  public ExpressionList() {
-    super();
-    this.list = new IExpression[0];
-  }
+  private final IExpression[] values;
 
   public ExpressionList(IExpression... expressions) {
-    this.list = expressions;
+    this.values = expressions;
   }
 
   public ExpressionList(List<IExpression> expressions) {
-    this.list = expressions.toArray(new IExpression[0]);
+    this.values = expressions.toArray(new IExpression[0]);
+  }
+
+  public ExpressionList(Set<IExpression> expressions) {
+    this.values = expressions.toArray(new IExpression[0]);
   }
 
   public Kind getKind() {
@@ -81,49 +78,47 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
   @Override
   public int getCost() {
     int cost = 1;
-    for (IExpression e : list) {
+    for (IExpression e : values) {
       cost += e.getCost();
     }
     return cost;
   }
 
   public IExpression get(int index) {
-    return list[index];
+    return values[index];
   }
 
   public boolean isEmpty() {
-    return list.length == 0;
-  }
-
-  @Override
-  public boolean isConstant() {
-    for (IExpression expression : list) {
-      if (!expression.isConstant()) {
-        return false;
-      }
-    }
-    return true;
+    return values.length == 0;
   }
 
   public int size() {
-    return list.length;
+    return values.length;
   }
 
   public IExpression[] toArray() {
-    return list;
+    return values;
   }
 
   @Override
-  public Value eval(IExpressionContext context) throws ExpressionException {
+  public Object eval(IExpressionContext context) throws ExpressionException {
     throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
+  }
+
+  @Override
+  public String toString() {
+    StringWriter writer = new StringWriter();
+    write(writer, 0, 0);
+    return writer.toString();
   }
 
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
 
     writer.append('(');
     boolean first = true;
-    for (IExpression expression : list) {
-      if (first) first = false;
+    for (IExpression expression : values) {
+      if (first)
+        first = false;
       else {
         writer.append(',');
       }
@@ -132,13 +127,12 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
     writer.append(')');
   }
 
-  @Override
-  public Iterator<IExpression> iterator() {
-    return new ExpressionIterator();
+  Stream<IExpression> stream() {
+    return Stream.of(values);
   }
 
   @Override
-  public IExpression optimize(IExpressionContext context) throws ExpressionException {
-    return this;
+  public java.util.Iterator<IExpression> iterator() {
+    return new Iterator();
   }
 }

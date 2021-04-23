@@ -28,8 +28,6 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
-import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -54,11 +52,11 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
-  public Value evaluate(String source) throws HopException {
+  public Object evaluate(String source) throws HopException {
     String value = variables.resolve(source);
 
     if (value.charAt(0) != '=') {
-      return ValueString.of(value);
+      return value;
     }
 
     IExpression expression;
@@ -147,9 +145,9 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
     // TODO: Move to CloneRowData
     ExpressionContext context = new ExpressionContext(this, getInputRowMeta());
     context.setRow(r);
-    Value value = data.numberOfClones.eval(context);
+    Object value = data.numberOfClones.eval(context);
 
-    int nrClones = (int) value.toInteger();
+    int nrClones = (int) value;
 
     for (int i = 0; i < nrClones && !isStopped(); i++) {
       // Output now all clones row

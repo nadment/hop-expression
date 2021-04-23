@@ -16,7 +16,8 @@ under the License.
 ////
 = URLDECODE
 
-The function onverts a encoded string using the Java string literal encoding format.
+The function decode a string used in a query part of a URL.
+
 
 == Syntax
 ----

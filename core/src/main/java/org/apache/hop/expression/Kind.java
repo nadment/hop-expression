@@ -14,9 +14,11 @@
  */
 package org.apache.hop.expression;
 
+import java.util.Collection;
+
 /** Enumerates the possible types of {@link IExpression}. */
 public enum Kind {
-  VALUE,
+  LITERAL,
 
   LIST,
 
@@ -31,6 +33,9 @@ public enum Kind {
   FUNCTION,
 
   EXTRACT,
+  
+  STARTSWITH,
+  ENDSWITH,
   
   /**
    * Converts a value of one data type into another data type <code>::</code> or <code>
@@ -97,13 +102,13 @@ public enum Kind {
   GREATER_THAN,
 
   /** The less-than-or-equal operator '&lt;='. */
-  LESS_THAN_OR_EQUAL_TO,
+  LESS_THAN_OR_EQUAL,
 
   /** The greater-than-or-equal operator '&gt;='. */
-  GREATER_THAN_OR_EQUAL_TO,
+  GREATER_THAN_OR_EQUAL,
 
   /** The equals operator '='. */
-  EQUAL_TO,
+  EQUAL,
 
   /**
    * Compares whether two expressions are equal.
@@ -115,11 +120,11 @@ public enum Kind {
    */
   EQUAL_NULL,
 
-  /** The not-equals operator "&lt;&gt;". @See {@link #LESS_THAN_OR_GREATER_THEN} */
-  NOT_EQUAL_TO,
+  /** The not-equals operator "&lt;&gt;". @See {@link #LESS_THAN_OR_GREATER_THAN} */
+  NOT_EQUAL,
 
-  /** The not-equals operator '!=' @See {@link #NOT_EQUAL_OPERATOR} */
-  LESS_THAN_OR_GREATER_THEN,
+  /** The not-equals operator '!=' @See {@link #NOT_EQUAL} */
+  LESS_THAN_OR_GREATER_THAN,
 
   /** The IS NULL or <code>IS TRUE</code> operator. */
   IS,
@@ -173,4 +178,8 @@ public enum Kind {
   /** The arithmetic subtract operator '-'. */
   SUBTRACT
   ;
+  
+  public final boolean is(Collection<Kind> category) {
+    return category.contains(this);
+  }
 }

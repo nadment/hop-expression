@@ -14,16 +14,14 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
 import java.io.StringWriter;
 
-public class ExpressionIdentifier implements IExpression {
+public class Identifier implements IExpression {
 
   private final String name;
 
-  public ExpressionIdentifier(final String name) {
+  public Identifier(final String name) {
     super();
-
     this.name = name;
   }
 
@@ -42,35 +40,41 @@ public class ExpressionIdentifier implements IExpression {
   }
 
   @Override
-  public Value eval(IExpressionContext context) throws ExpressionException {
+  public Object eval(IExpressionContext context) throws ExpressionException {
     return context.resolve(this.name);
   }
 
   @Override
   public void write(StringWriter writer, int leftPrec, int rightPrec) {
     // If identifier name contains space or is a reserved word or a function name
-    if (name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name) || DataType.exist(name) || DatePart.exist(name) || ExpressionScanner.isFunctionName(name) ) {
+    if (name.indexOf(' ') >= 0 || ExpressionRegistry.getInstance().isReservedWord(name) || DataType.exist(name) || DatePart.exist(name) || ExpressionRegistry.getInstance().isFunctionName(name) ) {
       writer.append('[');
       writer.append(this.name);
       writer.append(']');
-    } else
+    } else {
       writer.append(this.name);
+    }
   }
 
+  @Override
+  public int hashCode() {
+     return name.hashCode();
+  }
 
+  @Override
+  public boolean equals(Object o) {    
+    if (this == o)
+        return true;    
+    if (o == null)
+        return false;
+    if (getClass() != o.getClass())
+        return false;
+    
+    return name.equals(((Identifier)o).name);
+  }
   
   @Override
   public String toString() {
     return this.name;
-  }
-
-  @Override
-  public boolean isConstant() {
-    return false;
-  }
-
-  @Override
-  public IExpression optimize(IExpressionContext context) throws ExpressionException {
-    return this;
   }
 }

@@ -22,7 +22,7 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.Operator;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -123,9 +123,9 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
 
     
     data.expressionContext.setRow(row);
-    Value keep = data.condition.eval(data.expressionContext);
+    Object keep = data.condition.eval(data.expressionContext);
 
-    if (keep.isNull() || !keep.toBoolean()) {
+    if (keep==null || ! Operator.coerceToBoolean(keep)) {
       // put the row to the FALSE output row stream
       if (data.falseRowSet != null) {
         if (log.isRowLevel()) {

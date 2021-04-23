@@ -20,7 +20,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.ExpressionRegistry;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.ui.expression.ExpressionProposal.Type;
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -127,7 +127,7 @@ public class ExpressionProposalProvider implements IContentProposalProvider {
 
     // System.out.println("list operators [" + qualifier + "] " + position);
 
-    for (Operator operator : OperatorRegistry.getInstance().getOperators()) {
+    for (Operator operator : ExpressionRegistry.getInstance().getOperators()) {
 
       String name = (operator.getAlias() == null) ? operator.getName() : operator.getAlias();
 

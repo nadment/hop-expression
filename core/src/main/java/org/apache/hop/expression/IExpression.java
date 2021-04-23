@@ -16,11 +16,12 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
+
 import java.io.StringWriter;
+import java.util.Set;
 
 /**
- * An expression is a combination of one or more values, resolvable identifiers, operators and
+ * An expression is a combination of one or more literal, resolvable identifiers, operators and
  * functions that evaluate to a value.
  *
  * @author Nicolas ADMENT
@@ -28,25 +29,15 @@ import java.io.StringWriter;
 public interface IExpression {
 
   /**
-   * Check if this expression will always return the same value.
+   * Returns the type of expression.
    *
-   * @return if the expression is constant
+   * @return a {@link Kind} value, never null
+   * @see #isA
    */
-  public boolean isConstant();
-
-
-  /**
-   * Return the resulting value for the current context.
-   *
-   * @param context the context
-   * @return the result
-   */
-  public Value eval(IExpressionContext context) throws ExpressionException;
-  
   public Kind getKind();
-  
-  public default boolean is(Kind kind) {
-    return getKind() == kind;
+    
+  public default boolean is(Set<Kind> category) {
+    return getKind().is(category);
   }
   
   /**
@@ -58,14 +49,14 @@ public interface IExpression {
   public int getCost();
 
   /**
-   * Try to optimize the expression.
+   * Evaluates the expression.
    *
-   * @param context the context
-   * @return the optimized expression
+   * @param context The context against which the expression will be evaluated.
+   *
+   * @return The result of evaluating the expression.
    */
-  public IExpression optimize(IExpressionContext context) throws ExpressionException;
-  
-
+  public Object eval(IExpressionContext context) throws ExpressionException;
+    
   /**
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.

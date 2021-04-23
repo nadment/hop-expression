@@ -26,7 +26,6 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -59,7 +58,7 @@ public class ExpressionPerformance {
 		long startTime = System.currentTimeMillis();
 		for (long i = cycle; i > 0; i--) {
 			@SuppressWarnings("unused")
-			Value result = expression.eval(context);
+			Object result = expression.eval(context);
 		}
 
 		long endTime = System.currentTimeMillis();

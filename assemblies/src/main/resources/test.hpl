@@ -55,11 +55,11 @@
     </hop>
     <hop>
       <from>Clone row</from>
-      <to>Expression 2</to>
+      <to>Expression</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Expression 2</from>
+      <from>Expression</from>
       <to>Where</to>
       <enabled>Y</enabled>
     </hop>
@@ -253,7 +253,7 @@
     </GUI>
   </transform>
   <transform>
-    <name>Expression 2</name>
+    <name>Expression</name>
     <type>Expression</type>
     <description/>
     <distribute>Y</distribute>
@@ -278,11 +278,6 @@ Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${
         <field>LITERAL_TIMESTAMP</field>
         <expression>Date '2020-05-18 15:28:59'</expression>
         <type>Timestamp</type>
-      </field>
-      <field>
-        <field>LITERAL_NULL</field>
-        <expression>NULL</expression>
-        <type>String</type>
       </field>
       <field>
         <field>LITERAL_STRING</field>
@@ -310,8 +305,13 @@ Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${
         <type>Boolean</type>
       </field>
       <field>
+        <field>LITERAL_NULL</field>
+        <expression>NULL</expression>
+        <type>String</type>
+      </field>
+      <field>
         <field>LITERAL_BINARY_BIT</field>
-        <expression>0b10011101110011</expression>
+        <expression>0b000000010000000000000010000000000000001000010011101110011</expression>
         <type>Binary</type>
       </field>
       <field>

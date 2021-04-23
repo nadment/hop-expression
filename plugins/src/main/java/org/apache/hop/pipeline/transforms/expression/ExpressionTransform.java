@@ -14,15 +14,16 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
+import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
+import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -58,7 +59,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       logDebug(BaseMessages.getString(PKG, "ExpressionTransform.Log.InitBeforeStartProcessing"));
     }
   }
-  
+
   @Override
   public boolean processRow() throws HopException {
 
@@ -96,6 +97,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       ExpressionContext context = new ExpressionContext(this, data.outputRowMeta);
       data.expressionContext = context;
 
+      Optimizer optimizer = new Optimizer();
+      
       // For all fields expression
       for (ExpressionField field : meta.getExpressionFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
@@ -116,15 +119,21 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         // Parse and optimize expression
         try {
           IExpression expression = ExpressionParser.parse(source);
-          data.expressions[index] = expression.optimize(context);
+          data.expressions[index] = optimizer.optimize(context, expression);
         } catch (Exception ex) {
           String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.SyntaxError",
               field.getName(), field.getExpression(), ex.toString());
 
-          logError(message);
-          setErrors(1);
-          stopAll();
-          return false;
+          logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.UnexpectedeError" ) + " : " + ex.toString() );
+          logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.ErrorStackTrace" )
+            + Const.CR + Const.getSimpleStackTrace( ex ) + Const.CR + Const.getStackTracker( ex ) );
+          
+          throw new HopException(message, ex);
+          
+          //logError(message);
+          //setErrors(1);
+          //stopAll();
+          //return false;
         }
       }
     }
@@ -135,17 +144,17 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
     // Evaluate expression
     ExpressionContext context = data.expressionContext;
-    
-    // Use output row as context, so second expression can use result from the first 
+
+    // Use output row as context, so second expression can use result from the first
     context.setRow(outputRowValues);
-    
+
     for (ExpressionField field : meta.getExpressionFields()) {
 
       int index = data.outputRowMeta.indexOfValue(field.getName());
 
       try {
         IExpression expression = data.expressions[index];
-        Value value = expression.eval(context);
+        Object value = expression.eval(context);
 
         if (log.isDetailed()) {
           logDetailed("field [" + field.getName() + "] has expression [" + value + "]");
@@ -153,11 +162,18 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = convertValue(valueMeta, value);
-      } catch (ExpressionException ex) {
+
+        // FIXME: Don't work with Instant
+        // outputRowValues[index] = valueMeta.convertData(valueMeta,value);
+      } catch (Exception ex) {
         String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateError",
             field.getName(), field.getExpression(), ex.toString());
-        logError(message);
-        throw new HopException(message);
+        logError(message);       
+        logError(Const.getStackTracker(ex));
+        setErrors(1);
+        stopAll();
+        setOutputDone(); // signal end to receiver(s)
+        return false;                
       }
     }
 
@@ -175,29 +191,30 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
     return true;
   }
 
-  public Object convertValue(IValueMeta meta, Value value) throws HopValueException {
+  public Object convertValue(IValueMeta meta, Object value) throws HopValueException {
 
-    if (value.isNull())
+    if (value == null)
       return null;
 
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
       case IValueMeta.TYPE_STRING:
-        return value.toString();
+        // return meta.getString(value);
+        return Operator.coerceToString(value);
       case IValueMeta.TYPE_NUMBER:
-        return value.toNumber();
+        return Operator.coerceToNumber(value);
       case IValueMeta.TYPE_INTEGER:
-        return value.toInteger();
+        return Operator.coerceToInteger(value);
       case IValueMeta.TYPE_DATE:
-        return java.util.Date.from(value.toDate());
+        return java.util.Date.from(Operator.coerceToDate(value));
       case IValueMeta.TYPE_TIMESTAMP:
-        return java.sql.Timestamp.from(value.toDate());
+        return java.sql.Timestamp.from(Operator.coerceToDate(value));
       case IValueMeta.TYPE_BIGNUMBER:
-        return value.toBigNumber();
+        return Operator.coerceToBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:
-        return value.toBoolean();
+        return Operator.coerceToBoolean(value);
       case IValueMeta.TYPE_BINARY:
-        return value.toBinary();
+        return Operator.coerceToBinary(value);
       default:
         throw new HopValueException(
             value + " : I can't convert the specified value to data type : " + meta.getType());

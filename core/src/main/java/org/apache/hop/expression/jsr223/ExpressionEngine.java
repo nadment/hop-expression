@@ -18,7 +18,6 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.value.Value;
 import java.io.IOException;
 import java.io.Reader;
 import javax.script.AbstractScriptEngine;
@@ -52,9 +51,7 @@ public final class ExpressionEngine extends AbstractScriptEngine
   public Object eval(String script, ScriptContext context) throws ScriptException {
     try {
       IExpression expression = ExpressionParser.parse(script);
-      Value result = expression.eval((ExpressionContext) context);
-
-      return result;
+      return expression.eval((ExpressionContext) context);
     } catch (Exception e) {
       throw new ScriptException(e);
     }

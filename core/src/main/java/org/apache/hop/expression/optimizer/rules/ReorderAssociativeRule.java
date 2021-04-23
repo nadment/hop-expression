@@ -14,32 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.jsr223;
+package org.apache.hop.expression.optimizer.rules;
 
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionCall;
 import org.apache.hop.expression.IExpression;
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import java.util.EnumSet;
 
-public class CompiledExpression extends CompiledScript {
+public class ReorderAssociativeRule implements Rule {
 
-  private final ExpressionEngine engine;
-  private final IExpression expression;
-
-  public CompiledExpression(ExpressionEngine engine, IExpression expression) {
-    this.engine = engine;
-    this.expression = expression;
-  }
+  EnumSet<Kind> ASSOCIATIVE =
+      EnumSet.of(Kind.ADD, Kind.LOGICAL_AND, Kind.LOGICAL_OR, Kind.MULTIPLY);
 
   @Override
-  public Object eval(ScriptContext context) throws ScriptException {
-    return expression.eval((ExpressionContext) context);
-  }
+  public IExpression apply(IExpressionContext context, ExpressionCall call) {
 
-  @Override
-  public ScriptEngine getEngine() {
-    return engine;
+    if (call.is(ASSOCIATIVE)) {
+      IExpression left = call.getOperand(0);
+      IExpression right = call.getOperand(1);
+
+      // Swap operands
+      if (left.getCost() > right.getCost()) {
+        return call.clone(right, left);
+      }
+    }
+    return call;
   }
 }

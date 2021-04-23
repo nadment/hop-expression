@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,13 +16,15 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.value.Value;
+import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 
 /** A <code>ExpressionCall</code> is a call to an {@link Operator operator}. */
 public class ExpressionCall implements IExpression {
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private final Operator operator;
   private final IExpression[] operands;
@@ -31,7 +33,7 @@ public class ExpressionCall implements IExpression {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands;
-    
+
     operator.checkNumberOfArguments(operands.length);
   }
 
@@ -39,26 +41,21 @@ public class ExpressionCall implements IExpression {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
-    
+
     operator.checkNumberOfArguments(this.operands.length);
   }
 
   @Override
-  public Value eval(IExpressionContext context) throws ExpressionException {
-    return operator.eval(context, operands);
-  }
-
-  @Override
-  public IExpression optimize(IExpressionContext context) throws ExpressionException {
-    return operator.optimize(context, operands);
-  }
-  
-  public boolean isConstant() {
-    return false;
-  }
-
-  public boolean isNull() {
-    return false;
+  public Object eval(IExpressionContext context) throws ExpressionException {
+    try {
+      return operator.eval(context, operands);
+    } catch (InvocationTargetException e) {
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionError",
+          operator.getName(), e.getTargetException().getMessage()), e);
+    } catch (Exception e) {
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionError",
+          operator.getName(), e.getMessage()), e);
+    }
   }
 
   @Override
@@ -77,7 +74,7 @@ public class ExpressionCall implements IExpression {
   }
 
   /**
-   * Accessor to the operator
+   * Get to the operator
    *
    * @return the operator
    */
@@ -89,12 +86,42 @@ public class ExpressionCall implements IExpression {
     return operands;
   }
 
+  public IExpression getOperand(int index) {
+    return operands[index];
+  }
+
   /**
-   * Returns a count of operands of this expression. In real life there are unary (count == 1),
-   * binary (count == 2) and ternary (count == 3) expressions.
+   * Returns a count of operands of this expression.
    */
   public int getOperandCount() {
     return operands.length;
+  }
+
+  /**
+   * Creates a new call to the same operator with different operands.
+   *
+   * @param operands Operands to call
+   * @return New call
+   */
+  public ExpressionCall clone(List<IExpression> operands) {
+    return new ExpressionCall(operator, operands);
+  }
+
+  /**
+   * Creates a new call to the same operator with different operands.
+   *
+   * @param operands Operands to call
+   * @return New call
+   */
+  public ExpressionCall clone(IExpression... operands) {
+    return new ExpressionCall(operator, operands);
+  }
+
+  @Override
+  public String toString() {
+    StringWriter writer = new StringWriter();
+    write(writer, 0, 0);
+    return writer.toString();
   }
 
   @Override

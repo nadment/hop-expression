@@ -89,6 +89,14 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
   @Test
+  public void NullIfZero() throws Exception {
+    evalEquals("NullIfZero(1)", 1);
+    evalNull("NullIfZero(0)");
+    evalNull("NullIfZero(0.000)");
+    evalNull("NullIfZero(-0.0)");
+  } 
+     
+  @Test
   public void Decode() throws Exception {
     evalEquals("Decode(1,1,'one',2,'two',Null,'<NULL>','other')", "one");
     evalEquals("Decode(2,1,'one',2,'two',Null,'<NULL>','other')", "two");
@@ -613,8 +621,8 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Tan() throws Exception {
-    evalEquals("Tan(84.4)", -0.45017764606194366);
-    evalEquals("Tan(0)", 0);
+    evalEquals("Tan(84.4)", -0.45017764606194366D);
+    evalEquals("Tan(0)", 0D);
     evalNull("Tan(NULL)");
     evalFails("Tan()");
     evalFails("Tan(0,1)");
@@ -622,8 +630,8 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Tanh() throws Exception {
-    evalEquals("Tanh(1.234)", 0.8437356626);
-    evalEquals("Tanh(0)", 0);
+    evalEquals("Tanh(1.234)", 0.8437356626D);
+    evalEquals("Tanh(0)", 0D);
     evalNull("Tanh(NULL)");
     evalFails("Tanh()");
     evalFails("Tanh(0,1)");
@@ -649,10 +657,10 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Power() throws Exception {
-    evalEquals("Power(3,2)", 9);
-    evalEquals("Power(100,0.5)", 10);
-    evalEquals("Power(0,0)", 1);
-    evalEquals("Power(999,0)", 1);
+    evalEquals("Power(3,2)", 9D);
+    evalEquals("Power(100,0.5)", 10D);
+    evalEquals("Power(0,0)", 1D);
+    evalEquals("Power(999,0)", 1D);
     evalNull("Power(NULL,2)");
     evalNull("Power(3,NULL)");
     evalFails("Power(3, -2)");
@@ -663,9 +671,9 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Sign() throws Exception {
-    evalEquals("Sign(0.3)", 1);
-    evalEquals("Sign(0)", 0);
-    evalEquals("Sign(-5)", -1);
+    evalEquals("Sign(0.3)", 1L);
+    evalEquals("Sign(0)", 0L);
+    evalEquals("Sign(-5)", -1L);
     evalFails("Sign()");
     evalFails("Sign(1,2)");
     evalNull("Sign(NULL)");
@@ -826,8 +834,8 @@ public class FunctionTest extends BaseExpressionTest {
     // No precision/scale and no format
     evalEquals("TO_NUMBER('12.3456')", 12.3456);
     evalEquals("TO_NUMBER('98.76546')", 98.76546);
-    evalEquals("TO_NUMBER('1.2E3')", 1200);
-    evalEquals("TO_NUMBER('1.2E-3')", 0.0012);
+    evalEquals("TO_NUMBER('1.2E3')", 1200D);
+    evalEquals("TO_NUMBER('1.2E-3')", 0.0012D);
 
     // Precision and scale
     // evalEquals("TO_NUMBER('12.3456',10,1)", 12.3);
@@ -844,7 +852,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("TO_NUMBER('5467,12', '999999D99')", 5467.12);
 
     // Format No Decimals
-    evalEquals("TO_NUMBER('4687841', '9999999')", 4687841);
+    evalEquals("TO_NUMBER('4687841', '9999999')", 4687841D);
 
     // Trailing space
     evalEquals("TO_NUMBER('   5467.12', '999999.99')", 5467.12);
@@ -1347,13 +1355,13 @@ public class FunctionTest extends BaseExpressionTest {
   public void Truncate() throws Exception {
 
     // Truncate numeric
-    evalEquals("Truncate(-975.975)", -975);
-    evalEquals("Trunc(-975.975,-1)", -970);
-    evalEquals("Truncate(-975.975, 0)", -975);
+    evalEquals("Truncate(-975.975)", -975D);
+    evalEquals("Trunc(-975.975,-1)", -970D);
+    evalEquals("Truncate(-975.975, 0)", -975D);
     evalEquals("Truncate(-975.975, 2)", -975.97);
     evalEquals("Truncate(-975.975, 3)", -975.975);
     evalEquals("Truncate(-975.975, 50)", -975.975);
-    evalEquals("Truncate(123.456, -2)", 100);
+    evalEquals("Truncate(123.456, -2)", 100D);
     evalNull("Truncate(-975.975, Null)");
     evalNull("Truncate(NULL, 2)");
 
@@ -1482,13 +1490,21 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void StringEncode() throws Exception {
-    evalEquals("StringEncode('\t\r\n\f')", "\\t\\r\\n\\f");
+    evalEquals("StringEncode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"");
+    // Encode 16 bit unicode
+    evalEquals("StringEncode('€')", "\\u20AC");
+    
     evalNull("StringEncode(NULL)");
   }
 
   @Test
   public void StringDecode() throws Exception {
-    evalEquals("StringDecode('\t\r\n\f')", "\t\r\n\f");
+    evalEquals("StringDecode('\\t\\r\\n\\f\\b\\\"')", "\t\r\n\f\b\"");
+    // Decode 16 bit unicode
+    evalEquals("StringDecode('\\u20AC')", "€");
+    // TODO: Decode 32 bit unicode
+    //evalEquals("StringDecode('\\U000020AC')", "€");
+    
     evalNull("StringDecode(NULL)");
   }
 

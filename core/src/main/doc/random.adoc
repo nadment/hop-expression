@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= RANDOM
+= RANDOM, RAND
 
 Return a random number between 0 (inclusive) and 1 (exclusive). If seed is specified, it returns a repeatable sequence of random numbers.
 

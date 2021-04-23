@@ -18,13 +18,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.util.DateFormat;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.value.Value;
-import org.apache.hop.expression.value.ValueBigNumber;
-import org.apache.hop.expression.value.ValueBinary;
-import org.apache.hop.expression.value.ValueBoolean;
-import org.apache.hop.expression.value.ValueDate;
-import org.apache.hop.expression.value.ValueInteger;
-import org.apache.hop.expression.value.ValueString;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -58,19 +51,13 @@ public class ExpressionParser {
     ExpressionParser parser = new ExpressionParser(source);
     try {
       IExpression expression = parser.parse();
-      // return expression.optimize(new ExpressionContext());
-      return expression;
-
-    }
-    catch(IllegalArgumentException e) {
-      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(), e.getMessage());
-      throw new ExpressionException(message, e ); 
+      return expression;      
     }
     catch(ParseException e) {
       String message = BaseMessages.getString(PKG, "Expression.SyntaxError", e.getErrorOffset(), e.getMessage());
       throw new ExpressionException(message, e ); 
     }
-    catch(ExpressionException e) {
+    catch(ExpressionException | IllegalArgumentException e) {
       String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(), e.getMessage());
       throw new ExpressionException(message, e );       
     }
@@ -124,7 +111,7 @@ public class ExpressionParser {
     // System.out.println("Parse: " + source);
 
     if (StringUtils.isEmpty(source))
-      return Value.NULL;
+      return Literal.UNKNOWN;
 
     // Tokenize
     ExpressionScanner scanner = new ExpressionScanner(source);
@@ -338,7 +325,7 @@ public class ExpressionParser {
   }
 
   /** Literal TRUE | FALSE | NULL */
-  private Value parseLiteralBasic() throws ParseException {
+  private Literal parseLiteralBasic() throws ParseException {
 
     Token token = next();
 
@@ -348,11 +335,11 @@ public class ExpressionParser {
 
     switch (token.id()) {
       case TRUE:
-        return ValueBoolean.TRUE;
+        return Literal.TRUE;
       case FALSE:
-        return ValueBoolean.FALSE;
+        return Literal.FALSE;
       case NULL:
-        return Value.NULL;
+        return Literal.UNKNOWN;
       default:
         // Syntax error
     }
@@ -361,8 +348,8 @@ public class ExpressionParser {
   }
 
   /** Literal text */
-  private Value parseLiteralText(Token token) throws ParseException {
-    return ValueString.of(token.text());
+  private Literal parseLiteralText(Token token) {
+    return new Literal(token.text());
   }
 
   /** Term = Literal | Identifier | Function | '(' Expression ')' */
@@ -372,13 +359,13 @@ public class ExpressionParser {
     if (token != null) {
       switch (token.id()) {
         case TRUE:
-          return ValueBoolean.TRUE;
+          return Literal.TRUE;
         case FALSE:
-          return ValueBoolean.FALSE;
+          return Literal.FALSE;
         case NULL:
-          return Value.NULL;
+          return Literal.UNKNOWN;
         case IDENTIFIER:
-          return new ExpressionIdentifier(token.text());
+          return new Identifier(token.text());
         case LITERAL_STRING:          
           return parseLiteralText(token);
         case LITERAL_NUMBER:
@@ -395,8 +382,7 @@ public class ExpressionParser {
           return parseLiteralTimestamp(next());
         case CASE:
           // FIXME: Case is not at the good place
-          return parseCaseWhen();
-        
+          return parseCaseWhen();        
         case FUNCTION:
           return parseFunction(token);
         case LPARENTHESIS:
@@ -421,10 +407,10 @@ public class ExpressionParser {
     IExpression expression = this.parseRelational();
 
     if (next(Id.EQUAL)) {
-      return new ExpressionCall(Operator.EQUAL_TO, expression, this.parseRelational());
+      return new ExpressionCall(Operator.EQUAL, expression, this.parseRelational());
     }
     if (next(Id.NOT_EQUAL)) {
-      return new ExpressionCall(Operator.NOT_EQUAL_TO, expression, this.parseRelational());
+      return new ExpressionCall(Operator.NOT_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_GREATER_THAN)) {
       return new ExpressionCall(Operator.LESS_THAN_OR_GREATER_THAN, expression,
@@ -434,13 +420,13 @@ public class ExpressionParser {
       return new ExpressionCall(Operator.GREATER_THAN, expression, this.parseRelational());
     }
     if (next(Id.GREATER_THAN_OR_EQUAL)) {
-      return new ExpressionCall(Operator.GREATER_THAN_OR_EQUAL_TO, expression, this.parseRelational());
+      return new ExpressionCall(Operator.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN)) {
       return new ExpressionCall(Operator.LESS_THAN, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_EQUAL)) {
-      return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL_TO, expression, this.parseRelational());
+      return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
     }
 
     return expression;
@@ -463,12 +449,12 @@ public class ExpressionParser {
     return expression;
   }
 
-  private Value parseLiteralNumber(Token token) throws ParseException {
+  private Literal parseLiteralNumber(Token token) throws ParseException {
     BigDecimal number = NumberFormat.parse(token.text(), "TM");
-    return ValueBigNumber.of(number);
+    return Literal.of(number);
   }
 
-  private Value parseLiteralBinaryHexa(Token token) throws ParseException {
+  private Literal parseLiteralBinaryHexa(Token token) throws ParseException {
 
     String s = token.text();
 
@@ -489,13 +475,13 @@ public class ExpressionParser {
         result = result << 8;
         result = result | (bytes[i] & 0xFF);
       }
-      return ValueInteger.of(result);
+      return new Literal(result);
     }
 
-    return ValueBinary.of(bytes);
+    return new Literal(bytes);
   }
 
-  private Value parseLiteralBinaryBit(Token token) throws ParseException {
+  private Literal parseLiteralBinaryBit(Token token) throws ParseException {
 
     String s = token.text();
     BitSet bitset = new BitSet(s.length());
@@ -509,20 +495,20 @@ public class ExpressionParser {
 
     if (bitset.length() <= 32) {
       // Value as integer if less than or equals 32 bits
-      return ValueInteger.of(bitset.toLongArray()[0]);
+      return new Literal(bitset.toLongArray()[0]);
     }
 
-    return ValueBinary.of(bitset.toByteArray());
+    return new Literal(bitset.toByteArray());
   }
 
   /**
    * Parses a date literal. The parsing is strict and requires months to be less than 12, days to be
    * less than 31, etc.
    */
-  private Value parseLiteralDate(Token token) throws ParseException {
+  private Literal parseLiteralDate(Token token) throws ParseException {
     try {
       Instant instant = DateFormat.parse(token.text(), "YYYY-MM-DD");
-      return ValueDate.of(instant);
+      return new Literal(instant);
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidDate", token.text()),
           this.getPosition());
@@ -530,7 +516,7 @@ public class ExpressionParser {
   }
 
   /** Parses a time literal. */
-  private Value parseLiteralTime(Token token) throws ParseException {
+  private Literal parseLiteralTime(Token token) throws ParseException {
 
     try {
       DateTimeFormatter format = DateTimeFormatter.ISO_TIME;
@@ -542,7 +528,7 @@ public class ExpressionParser {
       LocalTime time = LocalTime.parse(token.text(), format);
 
       LocalDateTime datetime = LocalDateTime.of(LocalDate.of(1900, 1, 1), time);
-      return ValueDate.of(datetime.toInstant(ZoneOffset.UTC));
+      return new Literal(datetime.toInstant(ZoneOffset.UTC));
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTime"),
           this.getPosition());
@@ -553,7 +539,7 @@ public class ExpressionParser {
    * Parses a date literal. The parsing is strict and requires months to be less than 12, days to be
    * less than 31, etc.
    */
-  private Value parseLiteralTimestamp(Token token) throws ParseException {
+  private Literal parseLiteralTimestamp(Token token) throws ParseException {
 
     try {
       String text = token.text();
@@ -565,7 +551,7 @@ public class ExpressionParser {
 
       // System.out.println(token.getText()+" parse to "+datetime.toString() );
 
-      return ValueDate.of(datetime.toInstant(ZoneOffset.UTC));
+      return new Literal(datetime.toInstant(ZoneOffset.UTC));
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp"),
           this.getPosition());
@@ -603,7 +589,7 @@ public class ExpressionParser {
   /** Case When Then Else End ) */
   private IExpression parseCaseWhen() throws ParseException {
     IExpression valueExpression = null;
-    IExpression elseExpression = null;
+    IExpression elseExpression = Literal.UNKNOWN;
     List<IExpression> whenList = new ArrayList<>();
     List<IExpression> thenList = new ArrayList<>();
 
@@ -643,19 +629,15 @@ public class ExpressionParser {
     IExpression expression = this.parseTerm();
     if (next(Id.CAST)) {
       DataType type = parseDataType();
-      Value targetType = ValueString.of(type.name());
-      return new ExpressionCall(Operator.CAST, expression, targetType);
+      return new ExpressionCall(Operator.CAST, expression, new Literal(type));
     }
     return expression;
   }
   
-
-
-
   /** Function */
   private IExpression parseFunction(Token token) throws ParseException {
 
-    Function function = OperatorRegistry.getInstance().getFunction(token.text());
+    Function function = ExpressionRegistry.getInstance().getFunction(token.text());
     List<IExpression> operands = new ArrayList<>();
 
     if (is(Id.LPARENTHESIS))
@@ -676,8 +658,7 @@ public class ExpressionParser {
       }
 
       DataType type = parseDataType();
-
-      operands.add(ValueString.of(type.name()));
+      operands.add(new Literal(type));
 
       if (is(Id.FORMAT)) {
         next();
@@ -708,11 +689,11 @@ public class ExpressionParser {
         case WEEK:
         case DAYOFYEAR:
         case DAYOFWEEK:
-          function = OperatorRegistry.getInstance().getFunction(part.name());
+          function = ExpressionRegistry.getInstance().getFunction(part.name());
           break;
         default:
-          function = OperatorRegistry.getInstance().getFunction("EXTRACT");
-          operands.add(ValueString.of(part.name()));
+          function = ExpressionRegistry.getInstance().getFunction("EXTRACT");
+          operands.add(new Literal(part));
           break;
       }
 

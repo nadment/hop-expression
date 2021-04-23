@@ -817,7 +817,9 @@ public final class NumberFormat extends BaseFormat implements IFormat<BigDecimal
     String unscaled = number.unscaledValue().abs().toString();
 
     int dot = unscaled.length();
-    dot = dot - number.scale();
+    //dot = dot - number.scale();
+    
+    dot = number.precision()- number.scale();
     int length = 0;
 
     StringBuilder output = new StringBuilder();

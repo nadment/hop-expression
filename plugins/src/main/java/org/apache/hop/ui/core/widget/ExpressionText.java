@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.ToolItem;
 public class ExpressionText extends Composite {
   protected static Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by Translator!!
 
-  protected String toolTipText;
+  //protected String toolTipText;
 
   protected IGetCaretPosition getCaretPositionInterface;
 
@@ -110,7 +110,7 @@ public class ExpressionText extends Composite {
       String toolTipText, IGetCaretPosition getCaretPositionInterface,
       IInsertText insertTextInterface, SelectionListener selectionListener) {
 
-    this.toolTipText = toolTipText;
+
     this.getCaretPositionInterface = getCaretPositionInterface;
     this.insertTextInterface = insertTextInterface;
     this.variables = variables;
@@ -153,6 +153,8 @@ public class ExpressionText extends Composite {
     controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText, getCaretPositionInterface,
         insertTextInterface);
     wText.addKeyListener(controlSpaceKeyAdapter);
+    
+    this.setToolTipText(toolTipText);
   }
 
   protected void openExpressionDialog(Shell shell) {
@@ -193,12 +195,13 @@ public class ExpressionText extends Composite {
         if (textField.getEchoChar() == '\0') { // Can't show passwords ;-)
 
           String tip = textField.getText();
-          if (!Utils.isEmpty(tip) && !Utils.isEmpty(toolTipText)) {
-            tip += Const.CR + Const.CR + toolTipText;
+          
+          if (!Utils.isEmpty(tip) && !Utils.isEmpty(getToolTipText())) {
+            tip += Const.CR + Const.CR + getToolTipText();
           }
 
           if (Utils.isEmpty(tip)) {
-            tip = toolTipText;
+            tip = getToolTipText();
           }
           textField.setToolTipText(variables.resolve(tip));
         }
@@ -274,7 +277,7 @@ public class ExpressionText extends Composite {
 
   @Override
   public void setToolTipText(String toolTipText) {
-    this.toolTipText = toolTipText;
+    super.setToolTipText(toolTipText);
     wText.setToolTipText(toolTipText);
     modifyListenerTooltipText.modifyText(null);
   }
