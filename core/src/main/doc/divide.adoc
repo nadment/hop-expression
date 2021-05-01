@@ -21,8 +21,8 @@ Divide 2 numeric values.
 == Syntax
 
 ----
-DIVIDE(numeric_expression, numeric_expression)
+DIVIDE(<numeric1>, <numeric2>)
 ----
 ----
-numeric_expression / numeric_expression
+<numeric1> / <numeric2>
 ----

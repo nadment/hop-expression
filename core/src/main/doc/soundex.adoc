@@ -20,7 +20,7 @@ Returns a string that contains a phonetic representation of the input string.
 
 == Syntax
 ----
-SOUNDEX(string)
+SOUNDEX(<string>)
 ----
 
 == Usage

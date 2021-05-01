@@ -20,5 +20,5 @@ Determines whether the value of one expression is in an interval defined by two 
 
 == Syntax
 ----
-expression [NOT] BETWEEN start_expr AND end_expr
+<expression> [NOT] BETWEEN <start_expr> AND <end_expr>
 ----

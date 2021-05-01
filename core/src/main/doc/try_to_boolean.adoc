@@ -14,19 +14,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= <
+= TRY_TO_BOOLEAN
 
-First expression is less than second expression.
+Converts the input text or numeric expression to a Boolean value.
 
 == Syntax
 ----
-<expression1> < <expression2>
+TRY_TO_BOOLEAN(<text_or_numeric>)
 ----
 
 == Usage
 
+For a text expression, string must be::
+* 'true', 't', 'yes', 'y', 'on', '1' return TRUE.
+* 'false', 'f', 'no', 'n', 'off', '0' return FALSE.
+*  All other strings return NULL.
 
+Strings are case-insensitive.
 
-Returns::
+For a numeric expression::
+* 0 returns FALSE.
+* All non-zero values return TRUE.
 
-Boolean

@@ -20,9 +20,9 @@ Performs a bitwise OR operation between two integer values.
 
 == Syntax
 ----
-BITOR(integer, integer)
+BITOR(<integer>, <integer>)
 ----
 The | operator provides alternative syntax.
 ----
-integer | integer
+<integer> | <integer>
 ----

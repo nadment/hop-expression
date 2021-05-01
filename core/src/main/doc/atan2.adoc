@@ -20,10 +20,10 @@ This function calculates the inverse tangent (arc tangent) of the ratio of its t
 
 == Syntax
 ----
-ATAN2( y , x )
+ATAN2( <y> , <x> )
 ----
 
-NOTE: The first parameter is the Y coordinate, not the X coordinate.
+NOTE: The first parameter is the <y> coordinate, not the <x> coordinate.
 
 == Usage
 

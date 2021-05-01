@@ -20,7 +20,7 @@ This function returns the number of days between two date values.
 
 == Syntax
 ----
-DAYS_BETWEEN(date1, date2)
+DAYS_BETWEEN(<date1>, <date2>)
 ----
 
 == Usage

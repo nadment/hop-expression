@@ -21,10 +21,10 @@ Multiply 2 numeric values.
 == Syntax
 
 ----
-MULTIPLY(numeric_expression, numeric_expression)
+MULTIPLY(<numeric1>, <numeric2>)
 ----
 
 The * operator provides alternative syntax.
 ----
-numeric_expression * numeric_expression
+<numeric1> * <numeric2>
 ----

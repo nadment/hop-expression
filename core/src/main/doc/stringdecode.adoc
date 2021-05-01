@@ -21,7 +21,7 @@ under the License.
 
 == Syntax
 ----
-STRINGDECODE(string)
+STRINGDECODE(<string>)
 ----
 
 == Usage

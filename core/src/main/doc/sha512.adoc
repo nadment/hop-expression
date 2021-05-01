@@ -16,16 +16,16 @@ under the License.
 ////
 = SHA512
 
-The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128 characters hex-encoded string.
+The function calculate the SHA-512 hash of a data value.
 
 == Syntax
 ----
-SHA512(string)
+SHA512(<string>)
 ----
 
 == Usage
 
-
+* The hash will be returned as a 128 characters hex-encoded string.
 
 Returns::
 

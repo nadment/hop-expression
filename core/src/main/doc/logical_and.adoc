@@ -20,5 +20,5 @@ Matches both expression.
 
 == Syntax
 ----
-boolean AND boolean
+<boolean1> AND <boolean2>
 ----

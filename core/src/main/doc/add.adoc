@@ -20,9 +20,9 @@ Sum of 2 numeric values.
 
 == Syntax +
 ----
-ADD(numeric_expr,numeric_expr)
+ADD(<numeric1>, <numeric2>)
 ----
 The + operator provides alternative syntax.
 ----
-numeric_expr + numeric_expr
+<numeric1> + <numeric2>
 ----

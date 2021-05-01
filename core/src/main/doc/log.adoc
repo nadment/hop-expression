@@ -16,13 +16,13 @@ under the License.
 ////
 = LOG
 
-This function calculates the logarithm of n with base b.
+This function calculates the logarithm of <number> with base <b>.
 
 == Syntax
 ----
-LOG10(b,n)
+LOG10(<b>,<number>)
 ----
 
 == Usage
 
-Argument must be a positive numeric value.
+* Argument must be a positive numeric value.

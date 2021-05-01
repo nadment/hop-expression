@@ -20,5 +20,5 @@ Does not match the expression.
 
 == Syntax
 ----
-NOT boolean
+NOT <boolean>
 ----

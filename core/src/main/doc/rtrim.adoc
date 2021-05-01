@@ -20,7 +20,7 @@ Returns the string with trailing characters removed.
 
 == Syntax
 ----
-RTRIM(string[, characters])
+RTRIM(<string>[, <characters>])
 ----
 
 == Usage

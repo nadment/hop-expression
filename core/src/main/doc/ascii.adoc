@@ -20,7 +20,7 @@ This function returns the numeric value of the first character in a string that 
 
 == Syntax
 ----
-ASCII(char)
+ASCII(<char>)
 ----
 
 == Usage

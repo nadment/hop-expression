@@ -20,7 +20,7 @@ Compares whether two expressions are equal. The function is NULL-safe, meaning i
 
 == Syntax
 ----
-EQUAL_NULL(expression, expression)
+EQUAL_NULL(<expression>, <expression>)
 ----
 
 TIP: Note that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown values.

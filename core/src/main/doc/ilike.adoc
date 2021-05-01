@@ -26,5 +26,5 @@ The escape character instructs the operator to treat the wildcard characters as 
 
 == Syntax
 ----
-string [NOT] ILIKE pattern [ESCAPE escape]
+<string> [NOT] ILIKE <pattern> [ESCAPE <escape>]
 ----

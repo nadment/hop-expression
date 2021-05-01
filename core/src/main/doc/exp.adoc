@@ -20,5 +20,5 @@ This function computes the exponential value of a numeric expression.
 
 == Syntax
 ----
-EXP(numeric_expression)
+EXP(<numeric>)
 ----

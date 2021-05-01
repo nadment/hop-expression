@@ -20,7 +20,7 @@ Returns the first day of the month.
 
 == Syntax
 ----
-FIRST_DAY(date)
+FIRST_DAY(<date>)
 ----
 
 See also xref:last_day.adoc[LAST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]

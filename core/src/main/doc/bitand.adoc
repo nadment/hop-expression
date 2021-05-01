@@ -20,10 +20,10 @@ Performs a bitwise AND operation between two integer values.
 
 == Syntax
 ----
-BITAND(integer, integer) 
+BITAND(<integer>, <integer>) 
 ----
 
 The & operator provides alternative syntax.
 ----
-integer & integer
+<integer> & <integer>
 ----

@@ -20,7 +20,7 @@ Returns TRUE if the first expression starts with second expression. Both values 
 
 == Syntax
 ----
-STARTSWITH(string, string)
+STARTSWITH(<string>, <string>)
 ----
 
 == Usage

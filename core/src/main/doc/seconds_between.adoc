@@ -20,7 +20,7 @@ This function returns the number of seconds between two timestamps.
 
 == Syntax
 ----
-SECONDS_BETWEEN(datetime1, datetime2)
+SECONDS_BETWEEN(<datetime1>, <datetime2>)
 ----
 
 == Usage

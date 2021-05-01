@@ -20,7 +20,7 @@ This function calculates the square-root of a non-negative numeric expression.
 
 == Syntax
 ----
-SQRT(numeric_expression)
+SQRT(<numeric>)
 ----
 
 == Usage

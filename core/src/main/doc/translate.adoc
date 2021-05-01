@@ -16,11 +16,11 @@ under the License.
 ////
 = TRANSLATE
 
-Translates original from the characters in findChars to the characters in replaceChars.
+Translates string from the characters in <findChars> to the characters in <replaceChars>.
 
 == Syntax
 ----
-TRANSLATE(original, findChars, replaceChars)
+TRANSLATE(<string>, <findChars>, <replaceChars>)
 ----
 
 == Usage

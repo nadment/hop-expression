@@ -17,12 +17,17 @@ under the License.
 = INSTR
 
 Returns the position in the string that is the first character of a specified occurrence of the substring.
-The first position in the string is 1. 
-If substring is not found in string, then the INSTR function will return 0.			
-If the start_position is negative, the INSTR function counts back start_position number of characters from the end of string and then searches towards the beginning of string.
 		
 
 == Syntax
 ----
 INSTR(string, pattern[, start_position])
 ----
+
+== Usage
+
+The first position in the string is 1.
+
+If substring is not found in string, then the INSTR function will return 0.
+			
+If the start_position is negative, the INSTR function counts back start_position number of characters from the end of string and then searches towards the beginning of string.

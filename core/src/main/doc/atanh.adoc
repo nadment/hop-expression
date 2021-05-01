@@ -20,6 +20,6 @@ This function calculates the inverse (arc) hyperbolic tangent of its argument.
 
 == Syntax
 ----
-ATANH(numeric_expr)
+ATANH(<number>)
 ----
 

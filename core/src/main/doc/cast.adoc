@@ -22,10 +22,10 @@ The :: operator provides alternative syntax.
 
 == Syntax
 ----
-CAST(value AS dataType [FORMAT format])
+CAST(<value> AS <dataType> [FORMAT <format>])
 ----
 ----
-value::dataType
+<value>::<dataType>
 ----
 
 == Usage

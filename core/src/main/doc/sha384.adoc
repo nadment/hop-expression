@@ -16,16 +16,16 @@ under the License.
 ////
 = SHA384
 
-The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96 characters hex-encoded string.
+The function calculate the SHA-384 hash of a data value.
 
 == Syntax
 ----
-SHA384(string)
+SHA384(<string>)
 ----
 
 == Usage
 
-
+* The hash will be returned as a 96 characters hex-encoded string.
 
 Returns::
 

@@ -22,8 +22,8 @@ The || operator provides alternative syntax.
 
 == Syntax
 ----
-CONCAT(string1, string2[, string3...])
+CONCAT(<string1>, <string2>[, <string3>...])
 ----
 ----
-string1 || string2
+<string1> || <string2>
 ----

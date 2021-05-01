@@ -22,11 +22,11 @@ Compares the select expression to each search expression in order. As soon as a 
 == Syntax
 
 ----
-DECODE(expr, search1 , result1 [, search2, result2 ... ][, default ])
+DECODE(<expr>, <search1> , <result1> [, <search2>, <result2> ... ][, <default> ])
 ----
 
-expr::	This is the select expression.
-searchN:: The search expressions indicate the values to compare to the select expression. 
+<expr>::	This is the select expression.
+<searchN>:: The search expressions indicate the values to compare to the select expression. 
 
 == Usage
 

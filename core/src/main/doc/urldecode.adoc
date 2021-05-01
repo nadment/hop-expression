@@ -21,7 +21,7 @@ The function decode a string used in a query part of a URL.
 
 == Syntax
 ----
-URLDECODE(string)
+URLDECODE(<string>)
 ----
 
 == Usage

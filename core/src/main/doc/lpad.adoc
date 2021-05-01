@@ -20,7 +20,7 @@ Left-pads a string with another string, to a certain length.
 
 == Syntax
 ----
-LPAD(string, padded_length [, pad_string])
+LPAD(<string>, <padded_length> [, <pad_string>])
 ----
 
 == USage 

@@ -20,5 +20,5 @@ Returns the name of the month (in English).
 
 == Syntax
 ----
-MONTH_NAME(date_or_timestamp)
+MONTH_NAME(<date_or_timestamp>)
 ----

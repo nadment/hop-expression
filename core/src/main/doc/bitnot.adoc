@@ -20,9 +20,9 @@ Performs a bitwise NOT operation on an integer value.
 
 == Syntax
 ----
-BITNOT(integer)
+BITNOT(<integer>)
 ----
 The ~ operator provides alternative syntax.
 ----
-~ integer
+~ <integer>
 ----

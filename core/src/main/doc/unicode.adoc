@@ -20,7 +20,7 @@ Returns the Unicode code point for the first Unicode character in a string. If t
 
 == Syntax
 ----
-UNICODE(string)
+UNICODE(<string>)
 ----
 
 == Usage

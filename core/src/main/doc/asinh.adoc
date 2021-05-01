@@ -20,5 +20,5 @@ This function calculates the inverse (arc) hyperbolic sine of its argument.
 
 == Syntax
 ----
-ASINH(numeric_expr)
+ASINH(<number>)
 ----

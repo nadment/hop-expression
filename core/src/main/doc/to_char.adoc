@@ -20,10 +20,10 @@ Converts a number, date or timestamp to a string.
 
 == Syntax
 ----
-TO_CHAR(numeric[, 'format'])
+TO_CHAR(<numeric>[, <format>])
 ----
 ----
-TO_CHAR(date_or_timestamp[, 'format'])
+TO_CHAR(<date_or_timestamp>[, <format>])
 ----
 
 == Usage

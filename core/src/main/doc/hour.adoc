@@ -20,10 +20,10 @@ Returns the hour of the specified timestamp.
 
 == Syntax
 ----
-HOUR(timestamp)
+HOUR(<timestamp>)
 ----
 
 == Usage
 
 * Returns an integer between 0 and 23.
-* Equivalent to xref:extract.adoc[EXTRACT](HOUR FROM date). 
+* Equivalent to xref:extract.adoc[EXTRACT](HOUR FROM <timestamp>). 

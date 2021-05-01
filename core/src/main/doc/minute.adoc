@@ -20,10 +20,10 @@ Returns the minute component of the specified timestamp.
 
 == Syntax
 ----
-MINUTE(timestamp)
+MINUTE(<timestamp>)
 ----
 
 == Usage
 
 * Returns an integer between 0 and 59.
-* Equivalent to xref:extract.adoc[EXTRACT](MINUTE FROM date).
+* Equivalent to xref:extract.adoc[EXTRACT](MINUTE FROM <timestamp>).

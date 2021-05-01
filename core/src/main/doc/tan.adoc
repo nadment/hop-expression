@@ -20,7 +20,7 @@ This function calculates the tangent of its argument.
 
 == Syntax
 ----
-TAN(numeric_expression)
+TAN(<numeric>)
 ----
 
 == Usage

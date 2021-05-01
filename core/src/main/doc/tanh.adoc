@@ -20,7 +20,7 @@ This function calculates the hyperbolic tangent of its argument.
 
 == Syntax
 ----
-TANH(numeric_expression)
+TANH(<numeric>)
 ----
 
 == Usage

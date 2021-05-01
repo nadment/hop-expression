@@ -20,12 +20,12 @@ Reverses the order of characters in a string.
 
 == Syntax
 ----
-REVERSE(string)
+REVERSE(<string>)
 ----
 
 == Usage
 
-
+If <string> is NULL, the result is also NULL.
 
 Returns::
 

@@ -20,7 +20,7 @@ Extracts a number of characters from a string (starting from right).
 		
 == Syntax
 ----
-RIGHT(string[, length])
+RIGHT(<string>[, <length>])
 ----
 
 See also xref:left.adoc[LEFT]

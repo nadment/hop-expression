@@ -20,7 +20,7 @@ First expression is equal than second expression.
 
 == Syntax
 ----
-expression = expression
+<expression> = <expression>
 ----
 
 TIP: NULL is not equal ( = ) to anything—not even to another NULL.

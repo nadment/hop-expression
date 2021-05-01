@@ -20,7 +20,7 @@ Returns the number of characters of the specified string.
 
 == Syntax
 ----
-LENGTH(string)
+LENGTH(<string>)
 ----
 
 == Usage

@@ -20,10 +20,10 @@ This function returns the integer that specifies the year of the specified date 
 
 == Syntax
 ----
-YEAR(date)
+YEAR(<date>)
 ----
 
 == Usage
 
 * Returns an integer.
-* Equivalent to xref:extract.adoc[EXTRACT](YEAR FROM date).
+* Equivalent to xref:extract.adoc[EXTRACT](YEAR FROM <date>).
