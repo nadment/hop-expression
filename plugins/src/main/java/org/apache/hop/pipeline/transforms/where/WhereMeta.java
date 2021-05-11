@@ -144,8 +144,8 @@ public class WhereMeta extends BaseTransformMeta
       PipelineMeta pipelineMeta,
       TransformMeta transformMeta,
       IRowMeta prev,
-      String input[],
-      String output[],
+      String[] input,
+      String[] output,
       IRowMeta info,
       IVariables variables,
       IHopMetadataProvider metadataProvider) {
@@ -323,6 +323,7 @@ public class WhereMeta extends BaseTransformMeta
    *
    * @param stream The optional stream to handle.
    */
+  @Override
   public void handleStreamSelection(final IStream stream) {
     // This transform targets another transform.
     // Make sure that we don't specify the same step for true and false...

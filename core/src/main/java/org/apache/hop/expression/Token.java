@@ -47,6 +47,8 @@ public class Token {
 
     CAST,
     AS,
+    /** The AT TIME ZONE */
+    AT,
     /** CAST(numeric AS datatype FORMAT '9999') */
     FORMAT,
     /**
@@ -87,6 +89,9 @@ public class Token {
     /** The "TIMESTAMP" word for literal timesamp. */
     TIMESTAMP,
 
+    /** The AT TIME ZONE */
+    ZONE,
+    
     /** Identifier */
     IDENTIFIER,
 

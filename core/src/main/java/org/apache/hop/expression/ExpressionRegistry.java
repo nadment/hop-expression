@@ -32,9 +32,9 @@ public class ExpressionRegistry {
   private static final ExpressionRegistry registry = new ExpressionRegistry();
 
   // TODO: Java 9 use unmodifiable Set.of()
-  private static final Set<String> RESERVED_WORDS = new TreeSet<>(Arrays.asList("AS", "AND",
+  private static final Set<String> RESERVED_WORDS = new TreeSet<>(Arrays.asList("AS", "AND", "AT",
       "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN",
-      "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR"));
+      "IS", "LIKE", "NOT", "NULL", "OR", "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE"));
 
   public Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -47,7 +47,6 @@ public class ExpressionRegistry {
   public boolean isFunctionName(String name) {
     return getFunction(name) != null;
   }
-
 
   /**
    * Initialize the registry, keep private to keep this a singleton

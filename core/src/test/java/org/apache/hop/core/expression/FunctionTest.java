@@ -94,8 +94,8 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("NullIfZero(0)");
     evalNull("NullIfZero(0.000)");
     evalNull("NullIfZero(-0.0)");
-  } 
-     
+  }
+
   @Test
   public void Decode() throws Exception {
     evalEquals("Decode(1,1,'one',2,'two',Null,'<NULL>','other')", "one");
@@ -249,7 +249,6 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("LPad('test')");
     // Test PAD_LIMIT
     evalFails("LPad('test',10000)");
-
   }
 
   @Test
@@ -1080,6 +1079,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','B.C.')", "A.D.");
     evalEquals("To_Char(Date '2019-07-23','B.c.')", "A.d.");
     evalEquals("To_Char(Date '2019-07-23','b.c.')", "a.d.");
+    evalEquals("To_Char(Date(-10,07,23),'b.c.')", "b.c.");
 
     // Punctuation is reproduced in the result
     evalEquals("To_Char(Date '2019-07-23','dd/mm/yyyy')", "23/07/2019");
@@ -1146,14 +1146,25 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','Dy')", "Tue"); // Day name
     evalEquals("To_Char(Date '2019-07-23','dy')", "tue"); // Day name
 
+
+    // evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456789','yyyy-mm-dd hh:mi:ss.FF')",
+    // "2020-12-03 01:02:03.123456789");
+
+
     evalEquals("To_Char(Date '2019-07-23','TZR')", "UTC"); // Time Zone Region
     evalEquals("To_Char(Date '2019-07-23','TZH')", "+00"); // Time Zone Hour
     evalEquals("To_Char(Date '2019-07-23','TZM')", "00"); // Time Zone Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00"); // Time Zone Hour
 
-    // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56"); // Time
-    // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH12:MI:SS')", "15:34:56"); // Time
-    // evalEquals("To_Char(Date '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56"); // Time
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56"); // Time
+    evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','HH12:MI:SS AM')", "03:34:56 AM"); // Time
+                                                                                           // 12
+                                                                                           // hours
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH12:MI:SS AM')", "03:34:56 PM"); // Time
+                                                                                           // 12
+                                                                                           // hours
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56"); // Time 24
+                                                                                     // hours
 
 
     // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
@@ -1183,6 +1194,15 @@ public class FunctionTest extends BaseExpressionTest {
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 3, 34, 56));
     evalEquals("To_Date('2019-02-13 15:34:56','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
+
+
+    // Separator T
+    evalEquals("To_Date('2019-02-13T15:34:56','YYYY-MM-DD HH24:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
+    evalEquals("To_Date('2019-02-13T15:34:56','YYYY-MM-DD\"T\"HH24:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
+
+
     evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
@@ -1191,6 +1211,18 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('01/02/10','DD/MM/YY')", LocalDate.of(2010, 2, 1));
     evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
     evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1));
+
+    // TO VERIFY
+    evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
+
+    // Time zone offset
+    evalEquals("To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56));
+
 
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
@@ -1206,6 +1238,9 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('2020-12','YYYY-MM')", LocalDate.of(2020, Month.DECEMBER, 1));
     evalEquals("To_Date('2020-02','YYYY-DD')", LocalDate.of(2020, Month.JANUARY, 2));
     evalEquals("To_Date('12-02','MM-DD')", LocalDate.of(1970, Month.DECEMBER, 2));
+    evalEquals("To_Date('2019-02-13','YYYY-MM-DD HH24:MI:SS')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 0, 0));
+
 
     // Rule to try alternate format MM -> MON and MONTH
     evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
@@ -1234,6 +1269,7 @@ public class FunctionTest extends BaseExpressionTest {
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
+
 
     // Is interpreted as 12 May 2003, 00:00:10.123
     // evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
@@ -1339,9 +1375,9 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
     evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
-    evalEquals("Extract(millisecond from Time '00:00:01.1234567')", 123);
-    evalEquals("Extract(microsecond from Time '00:00:01.1234567')", 123456);
-    evalEquals("Extract(nanosecond from Time '00:00:01.1234567')", 123456700);
+    // evalEquals("Extract(millisecond from Timestamp '2020-05-25 00:00:01.1234567')", 123);
+    // evalEquals("Extract(microsecond from Timestamp '2020-05-25 00:00:01.1234567')", 123456);
+    evalEquals("Extract(nanosecond  from Timestamp '2020-05-25 00:00:01.1234567')", 1234567);
 
     evalNull("Extract(SECOND from NULL)");
 
@@ -1431,6 +1467,70 @@ public class FunctionTest extends BaseExpressionTest {
   public void Regexp_Like() throws Exception {
     evalTrue("Regexp_Like('12345TEST','123[:alnum:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
+    evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
+
+    evalTrue("Regexp_Like('A','[a-z]','i')");
+    evalFalse("Regexp_Like('A','[a-z]','c')");
+    
+    // An empty pattern '' matches nothing
+    evalFalse("Regexp_Like('','')");
+    evalFalse("Regexp_Like('ABC','')");
+    
+    evalNull("Regexp_Like(null,'A')");
+    evalNull("Regexp_Like('A', null)");
+
+    evalFails("Regexp_Like()");
+    evalFails("Regexp_Like('A')");
+    evalFails("Regexp_Like('A','[a-z]','z')");
+  }
+
+  @Test
+  public void Regexp_Replace() throws Exception {
+    evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234");
+    evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
+    evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
+
+    evalEquals("Regexp_Replace('This line    contains    more      than one   spacing      between      words', '( ){2,}', ' ')", "This line contains more than one spacing between words");
+    evalEquals("Regexp_Replace('ABCEFG', 'A..','WXYZ')", "WXYZEFG");
+    evalEquals("Regexp_Replace('ABCEFG', '[A-Z]','',1,1)", "BCEFG");
+
+    // An empty pattern matches nothing
+    evalEquals("Regexp_Replace('ABCDEEEEEEFG', '','E')", "ABCDEEEEEEFG");
+    
+    // Back reference
+    evalEquals("Regexp_Replace('FIRSTNAME MIDDLENAME LASTNAME','(.*) (.*) (.*)','\\3, \\1 \\2')",
+        "LASTNAME, FIRSTNAME MIDDLENAME");
+
+    evalNull("Regexp_Replace(null,'A')");
+    evalNull("Regexp_Replace('A', null)");
+
+    evalFails("Regexp_Replace()");
+  }
+
+  @Test
+  public void Regexp_Instr() throws Exception {
+    evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6);
+    evalEquals("Regexp_Instr('hello to YOU', '(.o).', 1, 3, 1,'i')",13);    
+    evalEquals("Regexp_Instr('REGEXP_INSTR is an advanced extension of the INSTR function','[:a-z]{3,8}', 3, 2, 1)", 37);
+    
+    // An empty pattern matches nothing
+    evalEquals("Regexp_Instr('email@apache.org', '')", 0);
+  }
+
+  @Test
+  public void Regexp_Substr() throws Exception {
+    evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache");
+    evalEquals("regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)", "regexp_substr");
+    
+    // [[:alnum:]] >>> \p{Alnum}
+    //evalEquals("regexp_substr('http://www.apache.org/products', 'http://([a-zA-Z0-9]+\\.?){3,4}/?')", "http://www.apache.org/");
+    
+    // An empty pattern matches nothing
+    evalNull("regexp_substr('email@apache.org', '')");
+    
+    evalNull("regexp_substr(null,  '@[^.]*')");
+    evalNull("regexp_substr('email@apache.org', null)");
+    
   }
 
   @Test
@@ -1493,7 +1593,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("StringEncode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"");
     // Encode 16 bit unicode
     evalEquals("StringEncode('€')", "\\u20AC");
-    
+
     evalNull("StringEncode(NULL)");
   }
 
@@ -1503,8 +1603,8 @@ public class FunctionTest extends BaseExpressionTest {
     // Decode 16 bit unicode
     evalEquals("StringDecode('\\u20AC')", "€");
     // TODO: Decode 32 bit unicode
-    //evalEquals("StringDecode('\\U000020AC')", "€");
-    
+    // evalEquals("StringDecode('\\U000020AC')", "€");
+
     evalNull("StringDecode(NULL)");
   }
 
@@ -1653,3 +1753,4 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
 }
+

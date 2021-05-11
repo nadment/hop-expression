@@ -16,17 +16,12 @@ package org.apache.hop.expression;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.util.DateFormat;
+import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -34,13 +29,6 @@ import java.util.List;
 public class ExpressionParser {
 
   private static final Class<?> PKG = IExpression.class; // for i18n purposes
-
-  /** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss". */
-  public static final DateTimeFormatter TIMESTAMP_FORMAT =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-  /** The DateTimeFormatter for timestamps, "yyyy-MM-dd HH:mm:ss.nnnnnn". */
-  public static final DateTimeFormatter TIMESTAMP_FORMAT_NANO6 =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnnnnn");
 
   private final String source;
 
@@ -341,10 +329,9 @@ public class ExpressionParser {
       case NULL:
         return Literal.UNKNOWN;
       default:
-        // Syntax error
+        // Syntax error        
+        throw new ParseException(" ERROR2 ", token.start());
     }
-    
-    throw new ParseException(" ERROR2 ", token.start());
   }
 
   /** Literal text */
@@ -393,7 +380,7 @@ public class ExpressionParser {
             return expression;
           }
           throw new ParseException(BaseMessages.getString(PKG, "Expression.UnbalancedParenthesis"),
-              this.getPosition());
+              token.start());
         default:
           // Syntax error
       }
@@ -450,7 +437,7 @@ public class ExpressionParser {
   }
 
   private Literal parseLiteralNumber(Token token) throws ParseException {
-    BigDecimal number = NumberFormat.parse(token.text(), "TM");
+    BigDecimal number = NumberFormat.ofPattern("TM").parse(token.text());
     return Literal.of(number);
   }
 
@@ -507,54 +494,39 @@ public class ExpressionParser {
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
     try {
-      Instant instant = DateFormat.parse(token.text(), "YYYY-MM-DD");
+      DateTimeFormat format = DateTimeFormat.ofPattern("YYYY-MM-DD");
+      Instant instant = format.parse(token.text());
       return new Literal(instant);
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidDate", token.text()),
-          this.getPosition());
+          token.start());
     }
   }
 
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
-
     try {
-      DateTimeFormatter format = DateTimeFormatter.ISO_TIME;
-      // if ( token.getLength()==16 )
-      // format = TIME_FORMAT_NANO6;
-      // else if ( token.getLength()==17 )
-      // format = TIME_FORMAT_NANO7;
-      //
-      LocalTime time = LocalTime.parse(token.text(), format);
-
-      LocalDateTime datetime = LocalDateTime.of(LocalDate.of(1900, 1, 1), time);
-      return new Literal(datetime.toInstant(ZoneOffset.UTC));
+      DateTimeFormat format = DateTimeFormat.ofPattern("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
+      Instant instant = format.parse(token.text());
+      return new Literal(instant);
     } catch (Exception e) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTime"),
-          this.getPosition());
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTime", token.text()),
+          token.start());
     }
   }
 
   /**
-   * Parses a date literal. The parsing is strict and requires months to be less than 12, days to be
+   * Parses a timestamp literal. The parsing is strict and requires months to be less than 12, days to be
    * less than 31, etc.
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
-
     try {
-      String text = token.text();
-      DateTimeFormatter format = TIMESTAMP_FORMAT;
-      if (text.length() == 26)
-        format = TIMESTAMP_FORMAT_NANO6;
-
-      LocalDateTime datetime = LocalDateTime.parse(text, format);
-
-      // System.out.println(token.getText()+" parse to "+datetime.toString() );
-
-      return new Literal(datetime.toInstant(ZoneOffset.UTC));
+      DateTimeFormat format = DateTimeFormat.ofPattern("YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS");
+      Instant instant = format.parse(token.text());
+      return new Literal(instant);      
     } catch (Exception e) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp"),
-          this.getPosition());
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp", token.text()),
+          token.start());
     }
   }
 
@@ -644,7 +616,7 @@ public class ExpressionParser {
       token = next();
     else {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
-          this.getPosition());
+          token.start());
     }
 
     /** Cast(expression AS dataType FORMAT pattern) */
@@ -667,8 +639,7 @@ public class ExpressionParser {
           operands.add(this.parseLiteralText(token));
         else
           throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
-              token.start());
-          
+              token.start());          
       }
     }
 
@@ -676,28 +647,9 @@ public class ExpressionParser {
     if ( function.getKind()==Kind.EXTRACT ) {
 
       DatePart part = DatePart.of(next().text());
-      
-      // Replace EXTRACT with the corresponding function
-      switch (part) {
-        case YEAR:
-        case MONTH:
-        case QUARTER:
-        case DAY:
-        case HOUR:
-        case MINUTE:
-        case SECOND:
-        case WEEK:
-        case DAYOFYEAR:
-        case DAYOFWEEK:
-          function = ExpressionRegistry.getInstance().getFunction(part.name());
-          break;
-        default:
-          function = ExpressionRegistry.getInstance().getFunction("EXTRACT");
-          operands.add(new Literal(part));
-          break;
-      }
+      operands.add(new Literal(part));
 
-      if (!next(Id.FROM)) {
+      if (!next(Id.FROM)) {        
         throw new ParseException(
             BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
             this.getPosition());
@@ -705,6 +657,14 @@ public class ExpressionParser {
 
       operands.add(this.parseLogicalOr());
 
+//      if (next(Id.AT)) {
+//        if (next(Id.TIME)) {
+//          if (next(Id.ZONE)) {
+//            operands.add(this.parseLogicalOr());
+//          }
+//        }        
+//      }
+      
     } else {
 
       // No param function

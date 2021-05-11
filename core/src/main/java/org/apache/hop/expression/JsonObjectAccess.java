@@ -18,11 +18,11 @@ package org.apache.hop.expression;
 
 import java.io.StringWriter;
 
-public class ExpressionJsonObjectAccess implements IExpression {
+public class JsonObjectAccess implements IExpression {
 
   private final String name;
 
-  public ExpressionJsonObjectAccess(final String name) {
+  public JsonObjectAccess(final String name) {
     super();
 
     this.name = name;
@@ -39,12 +39,12 @@ public class ExpressionJsonObjectAccess implements IExpression {
   
   @Override
   public int getCost() {
-    return 2;
+    return 1;
   }
 
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-    return context.resolve(this.name);
+    return null;
   }
 
   @Override

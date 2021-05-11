@@ -65,9 +65,7 @@ public class HtmlToolTip extends ToolTip {
     }
 
     String doc = this.getText(event);
-    if (!Utils.isEmpty(doc)) return true;
-
-    return false;
+    return !Utils.isEmpty(doc);
   }
 
   private void onEvent(Event event) {

@@ -41,7 +41,6 @@ public class LiteralTest {
 
   @Test
   public void Boolean() throws Exception {
-
     assertEquals(Boolean.TRUE, Literal.TRUE.eval(null));
     assertEquals(Boolean.FALSE, Literal.FALSE.eval(null));
     assertEquals(Literal.TRUE, Literal.of(true));
@@ -77,7 +76,7 @@ public class LiteralTest {
   public void Date() throws Exception {
     Instant instant = Instant.ofEpochMilli(0);
     assertEquals(instant, Literal.of(instant).eval(null));
-    
+    assertEquals(Literal.of(instant), Literal.of(instant));   
   }
 }
 

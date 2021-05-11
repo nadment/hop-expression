@@ -17,7 +17,7 @@ package org.apache.hop.expression;
 
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.core.util.TranslateUtil;
-import org.apache.hop.expression.util.DateFormat;
+import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
@@ -401,7 +401,7 @@ public class Operator implements Comparable<Operator> {
     // Checked by parser
   }
 
-  public Object eval(IExpressionContext context, IExpression... args) throws Exception {
+  public Object eval(IExpressionContext context, IExpression... args) throws ExpressionException {
     switch (kind) {
       case CAST:
         return cast(context, args);
@@ -446,10 +446,10 @@ public class Operator implements Comparable<Operator> {
       case POWER:
         return power(context, args);
       case EQUAL:
-        return equal(context, args);
+        return equalTo(context, args);
       case LESS_THAN_OR_GREATER_THAN:
       case NOT_EQUAL:
-        return notEqual(context, args);
+        return notEqualTo(context, args);
       case LESS_THAN:
         return lessThan(context, args);
       case LESS_THAN_OR_EQUAL:
@@ -489,7 +489,6 @@ public class Operator implements Comparable<Operator> {
         writer.append(" AND ");
         call.getOperand(2).write(writer, leftPrec, rightPrec);
         break;
-
 
       case CASE_WHEN: {
         writer.append("CASE");
@@ -1235,7 +1234,7 @@ public class Operator implements Comparable<Operator> {
     return Boolean.logicalXor(coerceToBoolean(left), coerceToBoolean(right));
   }
 
-  public Object equal(final IExpressionContext context, final IExpression... args) {
+  public Object equalTo(final IExpressionContext context, final IExpression... args) {
     // Treats NULLs as unknown values
     // NULL is not equal ( = ) to anything—not even to another NULL.
     Object left = args[0].eval(context);
@@ -1249,7 +1248,7 @@ public class Operator implements Comparable<Operator> {
     return compareTo(left, right) == 0;
   }
 
-  public Object notEqual(final IExpressionContext context, final IExpression... args) {
+  public Object notEqualTo(final IExpressionContext context, final IExpression... args) {
     Object left = args[0].eval(context);
     if (left == null) {
       return null;
@@ -1471,7 +1470,7 @@ public class Operator implements Comparable<Operator> {
    */
   public static Object convertTo(Object value, final DataType type) {
 
-    if (DataType.get(value) == type)
+    if (DataType.fromJava(value) == type)
       return value;
 
     switch (type) {
@@ -1486,7 +1485,8 @@ public class Operator implements Comparable<Operator> {
       case STRING:
         if (value instanceof Instant) {
           ZonedDateTime dt = ZonedDateTime.ofInstant((Instant) value, ZoneId.of("UTC"));
-          return DateFormat.format(dt, "YYYY-MM-DD");
+          DateTimeFormat format = DateTimeFormat.ofPattern("YYYY-MM-DD");
+          return format.format(dt);
         }
         return coerceToString(value);
       case DATE:
@@ -1500,9 +1500,9 @@ public class Operator implements Comparable<Operator> {
     }
   }
 
-  public static Object convertTo(Object value, final DataType type, String format) {
+  public static Object convertTo(Object value, final DataType type, String pattern) {
 
-    DataType sourceType = DataType.get(value);
+    DataType sourceType = DataType.fromJava(value);
     if (sourceType == type)
       return value;
 
@@ -1517,16 +1517,18 @@ public class Operator implements Comparable<Operator> {
         return coerceToBigNumber(value);
       case STRING:
         if (value instanceof Number) {
-          return NumberFormat.format(coerceToBigNumber(value), format);
+          return NumberFormat.ofPattern(pattern).format(coerceToBigNumber(value));
         } else if (value instanceof Instant) {
           ZonedDateTime dt = ZonedDateTime.ofInstant((Instant) value, ZoneId.of("UTC"));
-          return DateFormat.format(dt, format);
+          DateTimeFormat formatter = DateTimeFormat.ofPattern(pattern);
+          return formatter.format(dt);
         }
         return coerceToString(value);
       case DATE:
         if (sourceType == DataType.STRING) {
           try {
-            return DateFormat.parse((String) value, format);
+            DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
+            return format.parse((String) value);
           } catch (RuntimeException | ParseException e) {
             throw new ExpressionException(
                 BaseMessages.getString(PKG, "Expression.InvalidDate", value));
@@ -1790,7 +1792,7 @@ public class Operator implements Comparable<Operator> {
   protected static final ExpressionException errorUnsupportedConversion(Object value,
       DataType type) {
     return new ExpressionException(BaseMessages.getString(PKG, "Expression.UnsupportedConversion",
-        value, DataType.get(value), type));
+        value, DataType.fromJava(value), type));
   }
 
 }

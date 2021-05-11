@@ -232,18 +232,14 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     deco.setShowOnlyOnFocus(true);
     deco.hide();
 
-    wTransformName.addModifyListener(new ModifyListener() {
-      public void modifyText(ModifyEvent e) {
-        if (wTransformName.getText().length() > 0) {
-          deco.hide();
-        } else {
-          deco.show();
-        }
-
-        baseTransformMeta.setChanged();
-
-        wOk.setEnabled(isValid());
+    wTransformName.addListener(SWT.Modify, event -> {
+      if (wTransformName.getText().length() > 0) {
+        deco.hide();
+      } else {
+        deco.show();
       }
+      baseTransformMeta.setChanged();
+      wOk.setEnabled(isValid());
     });
 
     return composite;

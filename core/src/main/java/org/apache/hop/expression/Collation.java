@@ -21,26 +21,24 @@ import java.nio.charset.Charset;
 import java.text.Collator;
 import java.util.Locale;
 
-public class ExpressionCollation implements Serializable {
+public class Collation implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  protected final String name;
-  protected final Charset charset;
-  protected final Locale locale;
-  protected final String strength;
- 
-  public ExpressionCollation(Locale locale, Charset charset, String strength) {
+  private final String name;
+  private final Charset charset;
+  private final Locale locale;
+   
+  public Collation(Locale locale, Charset charset) {
     this.locale = locale;
-    this.charset = charset;
-    this.strength = strength;
-    this.name = charset.name().toUpperCase(Locale.ROOT) + "$" + String.valueOf(locale) + "$" + strength;    
+    this.charset = charset;    
+    this.name = charset.name().toUpperCase(Locale.ROOT) + "$" + String.valueOf(locale);    
   }
   
   @Override public boolean equals(Object o) {
     return this == o
-        || o instanceof ExpressionCollation
-        && name.equals(((ExpressionCollation) o).name);
+        || o instanceof Collation
+        && name.equals(((Collation) o).name);
   }
 
   @Override public int hashCode() {

@@ -32,8 +32,6 @@
 		<commons-lang.version>2.6</commons-lang.version>
 		<commons-vfs2.version>2.2</commons-vfs2.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
-		 <sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
-				
 	</properties>
 
 	<build>
@@ -42,7 +40,7 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.8</version>
+				<version>2.0.0</version>
 				<executions>
 					<execution>
 						<id>output-html</id>

@@ -100,7 +100,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
       Optimizer optimizer = new Optimizer();
       
       // For all fields expression
-      for (ExpressionField field : meta.getExpressionFields()) {
+      for (ExpressionField field : meta.getFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
 
         // Resolve variable
@@ -148,7 +148,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
     // Use output row as context, so second expression can use result from the first
     context.setRow(outputRowValues);
 
-    for (ExpressionField field : meta.getExpressionFields()) {
+    for (ExpressionField field : meta.getFields()) {
 
       int index = data.outputRowMeta.indexOfValue(field.getName());
 

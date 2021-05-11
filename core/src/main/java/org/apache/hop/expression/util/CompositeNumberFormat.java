@@ -21,13 +21,13 @@ import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
-public class CompositeNumberFormat implements IFormat<BigDecimal> {
+public class CompositeNumberFormat extends NumberFormat {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
   private final String pattern;
-  private final NumberFormat[] formats;
+  private final SimpleNumberFormat[] formats;
 
-  public CompositeNumberFormat(String pattern, NumberFormat[] formats) {
+  public CompositeNumberFormat(String pattern, SimpleNumberFormat[] formats) {
     this.pattern = pattern;
     this.formats = formats;
   }
@@ -39,7 +39,7 @@ public class CompositeNumberFormat implements IFormat<BigDecimal> {
 
   @Override
   public BigDecimal parse(String text) throws ParseException {
-    for (IFormat<BigDecimal> format : formats) {
+    for (SimpleNumberFormat format : formats) {
       try {
         return format.parse(text);
       } catch (Exception e) {

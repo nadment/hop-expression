@@ -61,7 +61,7 @@ public enum DataType {
     throw new IllegalArgumentException("Invalid data type: "+s);
   }
 
-  public static DataType get(final Object object) {
+  public static DataType fromJava(final Object object) {
     if ( object==null) return NONE;
     if ( object instanceof Boolean ) return BOOLEAN;
     if ( object instanceof String ) return STRING;

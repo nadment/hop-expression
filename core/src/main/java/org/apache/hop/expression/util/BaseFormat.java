@@ -113,9 +113,10 @@ public abstract class BaseFormat {
     for (int i = 0; i < length; i++) {
       int digit = Character.digit(value.charAt(index++), 10);
       if (digit < 0) {
-        position.setErrorIndex(index);
-        throw new NumberFormatException(
-            "Invalid number: " + value.substring(position.getIndex(), position.getIndex() + i));
+        break;
+       // position.setErrorIndex(index);
+      //  throw new NumberFormatException(
+       //     "Invalid number: " + value.substring(position.getIndex(), position.getIndex() + i));
       }
       result *= 10;
       result += digit;

@@ -77,7 +77,21 @@ public class OptimizerTest {
     optimize("FIELD LIKE '%o'","ENDSWITH(FIELD,'o')");    
     optimize("FIELD LIKE '%Hello%'","CONTAINS(FIELD,'Hello')");
   }
-  
+
+  @Test
+  public void simplifyExtractRule() throws Exception {
+    optimize("EXTRACT(YEAR FROM OrderDate)","YEAR(OrderDate)");
+    optimize("EXTRACT(MONTH FROM OrderDate)","MONTH(OrderDate)");
+    optimize("EXTRACT(QUARTER FROM OrderDate)","QUARTER(OrderDate)");
+    optimize("EXTRACT(DAY FROM OrderDate)","DAY(OrderDate)");
+    optimize("EXTRACT(HOUR FROM OrderDate)","HOUR(OrderDate)");
+    optimize("EXTRACT(MINUTE FROM OrderDate)","MINUTE(OrderDate)");
+    optimize("EXTRACT(SECOND FROM OrderDate)","SECOND(OrderDate)");
+    optimize("EXTRACT(WEEK FROM OrderDate)","WEEK(OrderDate)");
+    optimize("EXTRACT(DAYOFYEAR FROM OrderDate)","DAYOFYEAR(OrderDate)");
+    optimize("EXTRACT(DAYOFWEEK FROM OrderDate)","DAYOFWEEK(OrderDate)");
+  }
+ 
   @Test
   public void simplifyBooleanRule() throws Exception {
     optimizeFalse("not true");
@@ -162,8 +176,8 @@ public class OptimizerTest {
     
   @Test
   public void permutationRule() throws Exception {
-    optimize("1+AGE+3+FIELD+5"); 
-    optimize("AGE+3+1");
-    optimize("4*AGE*0.5");
+    //optimize("1+AGE+3+FIELD+5","8+AGE+FIELD"); 
+    optimize("AGE+3+1","4+AGE");
+    // TODO: optimize("4*AGE*0.5","2.0*AGE");
   }
 }

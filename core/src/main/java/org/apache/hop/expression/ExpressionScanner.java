@@ -77,18 +77,8 @@ public class ExpressionScanner {
           return new Token(Id.LITERAL_STRING, start, index, text.toString());
         }
 
-        case '=': {
-          int start = index++;
-          if (index < source.length()) {
-            c = source.charAt(index);
-            // Operator contains <code>=~</code>
-            // if (c == '~') {
-            // index++;
-            // return new Token(Id.CONTAINS, start);
-            // }
-          }
-          return new Token(Id.EQUAL, start);
-        }
+        case '=':
+          return new Token(Id.EQUAL, index++);        
 
         case '+':
           return new Token(Id.PLUS, index++);

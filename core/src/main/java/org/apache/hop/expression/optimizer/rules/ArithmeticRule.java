@@ -21,7 +21,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 
 public class ArithmeticRule implements Rule {

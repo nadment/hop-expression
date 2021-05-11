@@ -21,7 +21,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,7 +46,7 @@ import java.util.Locale;
  * <th>
  * <td>Input</td>
  * <td>Output</td>
- * <td>Closest {@link SimpleDateFormat} Equivalent</td></th>
+ * <td>Closest {@link SimpleDateTimeFormat} Equivalent</td></th>
  * <tr>
  * <td>- / , . ; : "text"</td>
  * <td>Reproduced verbatim.</td>
@@ -250,7 +249,7 @@ import java.util.Locale;
  * </tr>
  * </table>
  */
-public class DateFormat extends BaseFormat {
+/* package */ class SimpleDateTimeFormat extends DateTimeFormat {
 
   // TODO: Specifies the “century start” year for 2-digit years. This parameter prevents
   // ambiguous dates when importing or converting data with the YY date format
@@ -279,23 +278,10 @@ public class DateFormat extends BaseFormat {
   /** Seconds per hour. */
   private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
-  private final String format;
+  private final String pattern;
 
-  public static Instant parse(String value, String format) throws ParseException {
-
-    DateFormat parser = new DateFormat(format);
-    Instant instant = parser.parse(value);
-
-    return instant;
-  }
-
-  public static String format(ZonedDateTime value, String format) {
-    DateFormat formatter = new DateFormat(format);
-    return formatter.format(value);
-  }
-
-  public DateFormat(String format) {
-    this.format = format;
+  public SimpleDateTimeFormat(String pattern) {
+    this.pattern = pattern;
   }
 
   public Instant parse(String text) throws ParseException {
@@ -323,20 +309,20 @@ public class DateFormat extends BaseFormat {
     int minute = 0;
     int second = 0;
     int nanos = 0;
-    // TODO: parse time zone hour and minute
     int timeZoneHour = 0;
     int timeZoneMinute = 0;
 
     boolean isPM = false;
-    boolean isTimeFormat12 = false;
+    boolean isHourFormat12 = false;
     boolean isEpochDay = false;
     boolean isDayOfYear = false;
-    boolean isTimeZoneHHMM = false;
+    boolean isTimeZoneOffset = false;
+    int length = pattern.length();
     int index = 0;
-    while (index < format.length()) {
+    while (index < length) {
 
       // Ignore case for parsing
-      char c = Character.toUpperCase(format.charAt(index));
+      char c = Character.toUpperCase(pattern.charAt(index));
 
       // Use first letter for optimization
       switch (c) {
@@ -356,35 +342,33 @@ public class DateFormat extends BaseFormat {
           position.setIndex(position.getIndex() + 1);
           continue;
 
-        // TODO: Character string literals enclosed in double quotation marks.
-
         case 'A':
           // Meridian indicator
-          if (startsWithIgnoreCase(format, index, "AM")) {
+          if (startsWithIgnoreCase(pattern, index, "AM")) {
             String str = parseString(text, position, AM_PM);
             if (str == null)
               break;
             if (str.charAt(0) == 'P')
               isPM = true;
-            isTimeFormat12 = true;
+            isHourFormat12 = true;
             index += 2;
             continue;
           }
 
           // Meridian indicator with period
-          if (startsWithIgnoreCase(format, index, "A.M.")) {
+          if (startsWithIgnoreCase(pattern, index, "A.M.")) {
             String str = parseString(text, position, AM_PM);
             if (str == null)
               break;
             if (str.charAt(0) == 'P')
               isPM = true;
-            isTimeFormat12 = true;
+            isHourFormat12 = true;
             index += 4;
             continue;
           }
 
           // Era designator
-          if (startsWithIgnoreCase(format, index, "AD")) {
+          if (startsWithIgnoreCase(pattern, index, "AD")) {
             String str = parseString(text, position, AD_BC);
             if (str == null)
               break;
@@ -397,7 +381,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Era designator with period
-          if (startsWithIgnoreCase(format, index, "A.D.")) {
+          if (startsWithIgnoreCase(pattern, index, "A.D.")) {
             String str = parseString(text, position, AD_BC);
             if (str == null)
               break;
@@ -412,7 +396,7 @@ public class DateFormat extends BaseFormat {
 
         case 'B':
           // Era designator
-          if (startsWithIgnoreCase(format, index, "BC")) {
+          if (startsWithIgnoreCase(pattern, index, "BC")) {
             String str = parseString(text, position, AD_BC);
             if (str == null)
               break;
@@ -425,7 +409,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Era designator with period
-          if (startsWithIgnoreCase(format, index, "B.C.")) {
+          if (startsWithIgnoreCase(pattern, index, "B.C.")) {
             String str = parseString(text, position, AD_BC);
             if (str == null)
               break;
@@ -440,7 +424,7 @@ public class DateFormat extends BaseFormat {
 
         case 'D':
           // Day of year (1-366)
-          if (startsWithIgnoreCase(format, index, "DDD")) {
+          if (startsWithIgnoreCase(pattern, index, "DDD")) {
             dayOfYear = parseInt(text, position, "DDD".length());
             isDayOfYear = true;
             isEpochDay = false;
@@ -449,7 +433,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Day of month (1-31)
-          if (startsWithIgnoreCase(format, index, "DD")) {
+          if (startsWithIgnoreCase(pattern, index, "DD")) {
             day = parseInt(text, position, "DD".length());
             isDayOfYear = false;
             isEpochDay = false;
@@ -467,7 +451,21 @@ public class DateFormat extends BaseFormat {
         }
 
         case 'F':
-          // Fractional seconds FF("^(FF[0-9]?)"),
+          // Fractional seconds FF("^(FF[0-9]?)"),777777777
+          if (startsWithIgnoreCase(pattern, index, "FF")) {
+            index += 2;
+            int x = 9;
+            if (index < length) {
+              c = pattern.charAt(index);
+              if (Characters.isDigit(c)) {
+                x = c - '0';
+                index++;
+              }
+            }
+            nanos = parseInt(text, position, x);
+            continue;
+          }
+
           throw new ParseException("Parsing format F not supported yet", 0);
 
         case 'J': {
@@ -481,14 +479,14 @@ public class DateFormat extends BaseFormat {
         }
         case 'M':
           // Minutes (0-59)
-          if (startsWithIgnoreCase(format, index, "MI")) {
+          if (startsWithIgnoreCase(pattern, index, "MI")) {
             minute = parseInt(text, position, 2);
             index += 2;
             continue;
           }
 
           // Month number (1-12)
-          if (startsWithIgnoreCase(format, index, "MM")) {
+          if (startsWithIgnoreCase(pattern, index, "MM")) {
             index += 2;
 
             try {
@@ -502,7 +500,7 @@ public class DateFormat extends BaseFormat {
             continue;
           }
           // Full name of month (parse before MON)
-          else if (startsWithIgnoreCase(format, index, "MONTH")) {
+          if (startsWithIgnoreCase(pattern, index, "MONTH")) {
             index += 5;
             month = parseMonthName(text, position);
             isDayOfYear = false;
@@ -510,7 +508,7 @@ public class DateFormat extends BaseFormat {
             continue;
           }
           // Abbreviated name of month (parse after MONTH)
-          else if (startsWithIgnoreCase(format, index, "MON")) {
+          if (startsWithIgnoreCase(pattern, index, "MON")) {
             index += 3;
             month = parseMonthName(text, position);
             isDayOfYear = false;
@@ -521,25 +519,25 @@ public class DateFormat extends BaseFormat {
 
         case 'H':
           // Hour of day (1-23)
-          if (startsWithIgnoreCase(format, index, "HH24")) {
+          if (startsWithIgnoreCase(pattern, index, "HH24")) {
             hour = parseInt(text, position, 2);
-            isTimeFormat12 = false;
+            isHourFormat12 = false;
             index += 4;
             continue;
           }
 
           // Hour of day (1-12)
-          if (startsWithIgnoreCase(format, index, "HH12")) {
+          if (startsWithIgnoreCase(pattern, index, "HH12")) {
             hour = parseInt(text, position, 2);
-            isTimeFormat12 = true;
+            isHourFormat12 = true;
             index += 4;
             continue;
           }
 
           // Hour of day (1-12)
-          if (startsWithIgnoreCase(format, index, "HH")) {
+          if (startsWithIgnoreCase(pattern, index, "HH")) {
             hour = parseInt(text, position, 2);
-            isTimeFormat12 = true;
+            isHourFormat12 = true;
             index += 2;
             continue;
           }
@@ -551,14 +549,14 @@ public class DateFormat extends BaseFormat {
 
         case 'R':
           // Roman numeral month (I-XII; January = I).
-          if (startsWithIgnoreCase(format, index, "RM")) {
+          if (startsWithIgnoreCase(pattern, index, "RM")) {
             index += 2;
             month = parseMonthRoman(text, position);
             continue;
           }
 
           // 4-digit year
-          if (startsWithIgnoreCase(format, index, "RRRR")) {
+          if (startsWithIgnoreCase(pattern, index, "RRRR")) {
             year = parseInt(text, position, 4);
             // Years between 00-49 will be given the 21st century (the year 2000)
             if (year >= 0 && year <= 49)
@@ -574,14 +572,14 @@ public class DateFormat extends BaseFormat {
 
         case 'S':
           // Seconds
-          if (startsWithIgnoreCase(format, index, "SS")) {
+          if (startsWithIgnoreCase(pattern, index, "SS")) {
             second = parseInt(text, position, 2);
             index += 2;
             continue;
           }
 
           // 4-digit year; S prefixes BC dates with a minus sign
-          if (startsWithIgnoreCase(format, index, "SYYYY")) {
+          if (startsWithIgnoreCase(pattern, index, "SYYYY")) {
             year = parseSignedInt(text, position, 5);
             isEpochDay = false;
             index += 5;
@@ -589,9 +587,24 @@ public class DateFormat extends BaseFormat {
           }
           break;
 
+        case 'T':
+          // Time zone hour [+-][0]0
+          if (startsWithIgnoreCase(pattern, index, "TZH")) {
+            timeZoneHour = parseSignedInt(text, position, 3);
+            index += 3;
+          }
+
+          // Time zone minute
+          if (startsWithIgnoreCase(pattern, index, "TZM")) {
+            timeZoneMinute = parseInt(text, position, 2);
+            index += 3;
+          }
+          break;
+
+
         case 'Y':
           // 4-digit year
-          if (startsWithIgnoreCase(format, index, "YYYY")) {
+          if (startsWithIgnoreCase(pattern, index, "YYYY")) {
             year = parseInt(text, position, 4);
             isEpochDay = false;
             index += 4;
@@ -599,7 +612,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Last 2-digit year
-          if (startsWithIgnoreCase(format, index, "YY")) {
+          if (startsWithIgnoreCase(pattern, index, "YY")) {
             year = parseInt(text, position, 2);
             year += (year < TWO_DIGIT_CENTURY_START - 1900) ? 2000 : 1900;
             isEpochDay = false;
@@ -608,9 +621,25 @@ public class DateFormat extends BaseFormat {
           }
           break;
 
+        case '"':
+          index++;
+          int pos = position.getIndex();
+          while (true) {
+            if (index == pattern.length()) {
+              throw new ParseException(
+                  "Error parsing date '" + text + "' with format '" + pattern + '\'', pos);
+            }
+            char s = pattern.charAt(index++);
+            if (s == '"')
+              break;
+            pos++;
+          }
+          position.setIndex(pos);
+          break;
+
         default:
           throw new ParseException(
-              "Error parsing date '" + text + "' with format '" + format + '\'',
+              "Error parsing date '" + text + "' with format '" + pattern + '\'',
               position.getErrorIndex());
 
       }
@@ -631,21 +660,20 @@ public class DateFormat extends BaseFormat {
       }
     }
 
-    if (isTimeFormat12) {
+    if (isHourFormat12) {
       hour = hour % 12;
       if (isPM) {
         hour += 12;
       }
     }
     LocalTime time = LocalTime.of(hour, minute, second, nanos);
+    LocalDateTime datetime = LocalDateTime.of(date, time);
 
-    LocalDateTime dt = LocalDateTime.of(date, time);
-
-    if (isTimeZoneHHMM) {
-      return dt.toInstant(ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute));
+    if (timeZoneHour != 00 || timeZoneMinute != 00) {
+      return datetime.toInstant(ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute));
     }
 
-    return dt.toInstant(ZoneOffset.UTC);
+    return datetime.toInstant(ZoneOffset.UTC);
   }
 
   /**
@@ -662,20 +690,20 @@ public class DateFormat extends BaseFormat {
     boolean fillMode = true;
     int index = 0;
 
-    while (index < format.length()) {
+    while (index < pattern.length()) {
 
       Capitalization cap;
 
       // Ignore case for parsing
-      char c = Character.toUpperCase(format.charAt(index));
+      char c = Character.toUpperCase(pattern.charAt(index));
 
       // Use first letter for optimization
       switch (c) {
         case '\"':
           // Literal text
           index++;
-          for (; index < format.length(); index++) {
-            char ch = format.charAt(index);
+          for (; index < pattern.length(); index++) {
+            char ch = pattern.charAt(index);
             if (ch == '"') {
               index++;
               break;
@@ -686,7 +714,7 @@ public class DateFormat extends BaseFormat {
 
         case 'A':
           // AD indicator without periods
-          if ((cap = match(format, index, "AD")) != null) {
+          if ((cap = match(pattern, index, "AD")) != null) {
             String era = (value.getYear() > 0) ? "AD" : "BC";
             output.append(cap.apply(era));
             index += 2;
@@ -694,21 +722,21 @@ public class DateFormat extends BaseFormat {
           }
 
           // AD indicator with periods
-          if ((cap = match(format, index, "A.D.")) != null) {
+          if ((cap = match(pattern, index, "A.D.")) != null) {
             String era = (value.getYear() > 0) ? "A.D." : "B.C.";
             output.append(cap.apply(era));
             index += 4;
             continue;
           }
 
-          if ((cap = match(format, index, "AM")) != null) {
+          if ((cap = match(pattern, index, "AM")) != null) {
             String am = (value.getHour() < 12) ? "AM" : "PM";
             output.append(cap.apply(am));
             index += 2;
             continue;
           }
 
-          if ((cap = match(format, index, "A.M.")) != null) {
+          if ((cap = match(pattern, index, "A.M.")) != null) {
             boolean isAM = value.getHour() < 12;
             String am = isAM ? "A.M." : "P.M.";
             output.append(cap.apply(am));
@@ -719,7 +747,7 @@ public class DateFormat extends BaseFormat {
 
         case 'B':
           // AD indicator without periods
-          if ((cap = match(format, index, "BC")) != null) {
+          if ((cap = match(pattern, index, "BC")) != null) {
             String era = (value.getYear() > 0) ? "AD" : "BC";
             output.append(cap.apply(era));
             index += 2;
@@ -727,7 +755,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // AD indicator with periods
-          if ((cap = match(format, index, "B.C.")) != null) {
+          if ((cap = match(pattern, index, "B.C.")) != null) {
             String era = (value.getYear() > 0) ? "A.D." : "B.C.";
             output.append(cap.apply(era));
             index += 4;
@@ -737,7 +765,7 @@ public class DateFormat extends BaseFormat {
 
         case 'C':
           // Century
-          if (startsWithIgnoreCase(format, index, "CC")) {
+          if (startsWithIgnoreCase(pattern, index, "CC")) {
             int year = Math.abs(value.getYear());
             int century = year / 100;
             if ((year % 100) != 0) {
@@ -751,7 +779,7 @@ public class DateFormat extends BaseFormat {
 
         case 'D':
           // Day of year (1-366)
-          if (startsWithIgnoreCase(format, index, "DDD")) {
+          if (startsWithIgnoreCase(pattern, index, "DDD")) {
             if (fillMode) {
               appendZeroPadded(output, value.getDayOfYear(), "DDD".length());
             } else {
@@ -762,7 +790,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Day of month (1-31)
-          if (startsWithIgnoreCase(format, index, "DD")) {
+          if (startsWithIgnoreCase(pattern, index, "DD")) {
 
             if (fillMode) {
               appendZeroPadded(output, value.getDayOfMonth(), "DD".length());
@@ -774,7 +802,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Long date format 'Tuesday, April 12, 1952 AD'
-          if (startsWithIgnoreCase(format, index, "DL")) {
+          if (startsWithIgnoreCase(pattern, index, "DL")) {
             DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
             output.append(value.format(formatter));
             index += 2;
@@ -782,7 +810,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Short date format 'MM/DD/RRRR'.
-          if (startsWithIgnoreCase(format, index, "DS")) {
+          if (startsWithIgnoreCase(pattern, index, "DS")) {
             appendZeroPadded(output, value.getMonthValue(), "DD".length());
             output.append('/');
             appendZeroPadded(output, value.getDayOfMonth(), "MM".length());
@@ -793,7 +821,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Abbreviated name of day
-          if ((cap = match(format, index, "DY")) != null) {
+          if ((cap = match(pattern, index, "DY")) != null) {
             String day = value.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
             output.append(cap.apply(day));
             index += 2;
@@ -801,7 +829,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Name of day
-          if ((cap = match(format, index, "DAY")) != null) {
+          if ((cap = match(pattern, index, "DAY")) != null) {
             String day =
                 cap.apply(value.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
             if (fillMode) {
@@ -813,7 +841,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Day of week (1=Sunday-7)
-          if (startsWithIgnoreCase(format, index, "D")) {
+          if (startsWithIgnoreCase(pattern, index, "D")) {
             output.append((value.getDayOfWeek().getValue() + 1) % 7);
             index += 1;
             continue;
@@ -822,9 +850,9 @@ public class DateFormat extends BaseFormat {
 
         case 'F':
           // Fractional seconds
-          if (startsWithIgnoreCase(format, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7",
+          if (startsWithIgnoreCase(pattern, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7",
               "FF8", "FF9")) {
-            int x = format.charAt(index + 2) - '0';
+            int x = pattern.charAt(index + 2) - '0';
 
             int nanos = value.getNano();
 
@@ -833,7 +861,7 @@ public class DateFormat extends BaseFormat {
             index += 3;
             continue;
           }
-          if (startsWithIgnoreCase(format, index, "FF")) {
+          if (startsWithIgnoreCase(pattern, index, "FF")) {
             appendZeroPadded(output, value.getNano(), 9);
             index += 2;
             continue;
@@ -841,7 +869,7 @@ public class DateFormat extends BaseFormat {
 
           // Fill mode modifier; toggles between compact and fill modes for any elements
           // following the modifier in the model.
-          if (startsWithIgnoreCase(format, index, "FM")) {
+          if (startsWithIgnoreCase(pattern, index, "FM")) {
             fillMode = !fillMode;
             index += 2;
             continue;
@@ -849,7 +877,7 @@ public class DateFormat extends BaseFormat {
 
           // TODO: Exact match modifier; toggles between lax and exact match modes for any
           // elements following the modifier in the model.
-          if (startsWithIgnoreCase(format, index, "FX")) {
+          if (startsWithIgnoreCase(pattern, index, "FX")) {
             index += 2;
             continue;
           }
@@ -857,20 +885,20 @@ public class DateFormat extends BaseFormat {
 
         case 'H':
           // Hour of day in 24 hour format (0-23)
-          if (startsWithIgnoreCase(format, index, "HH24")) {
+          if (startsWithIgnoreCase(pattern, index, "HH24")) {
             appendZeroPadded(output, value.getHour(), 2);
             index += 4;
             continue;
           }
           // Hour of day in 12 hour format (1-12)
-          if (startsWithIgnoreCase(format, index, "HH12")) {
+          if (startsWithIgnoreCase(pattern, index, "HH12")) {
             int h12 = (value.getHour() + 11) % 12 + 1;
             appendZeroPadded(output, h12, 2);
             index += 4;
             continue;
           }
           // Hour of day in 12 hour format (1-12)
-          if (startsWithIgnoreCase(format, index, "HH")) {
+          if (startsWithIgnoreCase(pattern, index, "HH")) {
             int h12 = (value.getHour() + 11) % 12 + 1;
             appendZeroPadded(output, h12, "HH".length());
             index += 2;
@@ -880,7 +908,7 @@ public class DateFormat extends BaseFormat {
 
         case 'I':
           // 4-digit year based on the ISO standard.
-          if (startsWithIgnoreCase(format, index, "IYYY")) {
+          if (startsWithIgnoreCase(pattern, index, "IYYY")) {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             appendZeroPadded(output, weekYear, 4);
             index += 4;
@@ -888,7 +916,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Last 3 digits of ISO year.
-          if (startsWithIgnoreCase(format, index, "IYY")) {
+          if (startsWithIgnoreCase(pattern, index, "IYY")) {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             appendZeroPadded(output, weekYear % 1000, 3);
             index += 3;
@@ -896,7 +924,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Last 2 digits of ISO year.
-          if (startsWithIgnoreCase(format, index, "IY")) {
+          if (startsWithIgnoreCase(pattern, index, "IY")) {
             int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             appendZeroPadded(output, weekYear % 100, 2);
             index += 2;
@@ -904,7 +932,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Week of year (1-52 or 1-53) based on the ISO standard
-          if (startsWithIgnoreCase(format, index, "IW")) {
+          if (startsWithIgnoreCase(pattern, index, "IW")) {
             int week = value.get(WeekFields.ISO.weekOfYear());
             output.append(week);
             index += 2;
@@ -931,14 +959,14 @@ public class DateFormat extends BaseFormat {
 
         case 'M':
           // Minute (0-59)
-          if (startsWithIgnoreCase(format, index, "MI")) {
+          if (startsWithIgnoreCase(pattern, index, "MI")) {
             appendZeroPadded(output, value.getMinute(), "MI".length());
             index += 2;
             continue;
           }
 
           // Month (01-12; January = 01)
-          if (startsWithIgnoreCase(format, index, "MM")) {
+          if (startsWithIgnoreCase(pattern, index, "MM")) {
             if (fillMode) {
               appendZeroPadded(output, value.getMonthValue(), "MM".length());
             } else {
@@ -949,7 +977,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Name of month, padded with blanks
-          if ((cap = match(format, index, "MONTH")) != null) {
+          if ((cap = match(pattern, index, "MONTH")) != null) {
             String month =
                 cap.apply(value.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
             if (fillMode) {
@@ -961,7 +989,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Abbreviated name of month
-          if ((cap = match(format, index, "MON")) != null) {
+          if ((cap = match(pattern, index, "MON")) != null) {
             String month = value.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
             output.append(cap.apply(month));
             index += 3;
@@ -970,14 +998,14 @@ public class DateFormat extends BaseFormat {
           break;
 
         case 'P':
-          if ((cap = match(format, index, "PM")) != null) {
+          if ((cap = match(pattern, index, "PM")) != null) {
             String am = (value.getHour() < 12) ? "AM" : "PM";
             output.append(cap.apply(am));
             index += 2;
             continue;
           }
 
-          if ((cap = match(format, index, "P.M.")) != null) {
+          if ((cap = match(pattern, index, "P.M.")) != null) {
             boolean isAM = value.getHour() < 12;
             String am = isAM ? "A.M." : "P.M.";
             output.append(cap.apply(am));
@@ -998,7 +1026,7 @@ public class DateFormat extends BaseFormat {
 
         case 'R':
           // Roman numeral month (I-XII; January = I)
-          if ((cap = match(format, index, "RM")) != null) {
+          if ((cap = match(pattern, index, "RM")) != null) {
             output.append(cap.apply(RomanNumeral.format(value.getMonthValue())));
             index += 2;
             continue;
@@ -1007,25 +1035,25 @@ public class DateFormat extends BaseFormat {
 
         case 'S':
           // Seconds past midnight (0-86399)
-          if (startsWithIgnoreCase(format, index, "SSSSS")) {
-            int seconds = (int) (value.getNano() / 1_000_000_000);
+          if (startsWithIgnoreCase(pattern, index, "SSSSS")) {
+            int seconds = value.getNano() / 1_000_000_000;
             output.append(seconds);
             index += 5;
             continue;
           }
 
           // Second (0-59)
-          if (startsWithIgnoreCase(format, index, "SS")) {
+          if (startsWithIgnoreCase(pattern, index, "SS")) {
             appendZeroPadded(output, value.getSecond(), "SS".length());
             index += 2;
             continue;
           }
 
           // Signed century
-          if (startsWithIgnoreCase(format, index, "SCC")) {
+          if (startsWithIgnoreCase(pattern, index, "SCC")) {
             int year = value.getYear();
             int century = year / 100;
-            if (((int) year % 100) != 0) {
+            if ((year % 100) != 0) {
               century += 1;
             }
 
@@ -1041,7 +1069,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // 4-digit year; S prefixes BC dates with a minus sign.
-          if (startsWithIgnoreCase(format, index, "SYYYY")) {
+          if (startsWithIgnoreCase(pattern, index, "SYYYY")) {
             int year = value.getYear();
             if (fillMode) {
               output.append(year < 0 ? '-' : ' ');
@@ -1053,7 +1081,7 @@ public class DateFormat extends BaseFormat {
             continue;
           }
 
-          if ((cap = match(format, index, "SYEAR")) != null) {
+          if ((cap = match(pattern, index, "SYEAR")) != null) {
             int year = value.getYear();
             output.append(year < 0 ? '-' : ' ');
             output.append(cap.apply(toWord(year)));
@@ -1064,21 +1092,21 @@ public class DateFormat extends BaseFormat {
 
         case 'T':
           // Time zone region
-          if (startsWithIgnoreCase(format, index, "TZR")) {
+          if (startsWithIgnoreCase(pattern, index, "TZR")) {
             output.append(value.getZone().toString());
             index += 3;
             continue;
           }
 
           // TODO: Time zone region with Daylight Saving Time information included
-          if (startsWithIgnoreCase(format, index, "TZD")) {
+          if (startsWithIgnoreCase(pattern, index, "TZD")) {
             // output.append(getTimeZone(value, true));
             index += 3;
             continue;
           }
 
           // Time zone hour
-          if (startsWithIgnoreCase(format, index, "TZH")) {
+          if (startsWithIgnoreCase(pattern, index, "TZH")) {
             ZoneOffset offset = value.getOffset();
             int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
             output.append(hours < 0 ? '-' : '+');
@@ -1088,7 +1116,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Time zone minute
-          if (startsWithIgnoreCase(format, index, "TZM")) {
+          if (startsWithIgnoreCase(pattern, index, "TZM")) {
             ZoneOffset offset = value.getOffset();
             int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
             appendZeroPadded(output, Math.abs(minutes), "MM".length());
@@ -1097,7 +1125,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Short time format
-          if ((cap = match(format, index, "TS")) != null) {
+          if ((cap = match(pattern, index, "TS")) != null) {
             int h12 = (value.getHour() + 11) % 12 + 1;
             output.append(h12).append(':');
             appendZeroPadded(output, value.getMinute(), "MI".length());
@@ -1114,7 +1142,7 @@ public class DateFormat extends BaseFormat {
         case 'W':
           // Week of year (1-53) where week 1 starts on the first day of the year and
           // continues to the seventh day of the year.
-          if (startsWithIgnoreCase(format, index, "WW")) {
+          if (startsWithIgnoreCase(pattern, index, "WW")) {
             int weekOfYear = value.get(WeekFields.SUNDAY_START.weekOfYear());
             output.append(weekOfYear);
             index += 2;
@@ -1133,7 +1161,7 @@ public class DateFormat extends BaseFormat {
 
         case 'Y':
           // 4-digit year
-          if (startsWithIgnoreCase(format, index, "YYYY", "RRRR")) {
+          if (startsWithIgnoreCase(pattern, index, "YYYY", "RRRR")) {
             int year = Math.abs(value.getYear());
             if (fillMode) {
               appendZeroPadded(output, year, 4);
@@ -1145,14 +1173,14 @@ public class DateFormat extends BaseFormat {
           }
 
           // Last 3 digits of year.
-          if (startsWithIgnoreCase(format, index, "YYY")) {
+          if (startsWithIgnoreCase(pattern, index, "YYY")) {
             int year = Math.abs(value.getYear());
             appendZeroPadded(output, year % 1000, 3);
             index += 3;
             continue;
           }
           // Last 2 digits of year.
-          if (startsWithIgnoreCase(format, index, "YY", "RR")) {
+          if (startsWithIgnoreCase(pattern, index, "YY", "RR")) {
             int year = Math.abs(value.getYear());
             appendZeroPadded(output, year % 100, 2);
             index += 2;
@@ -1160,7 +1188,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Year with comma in this position.
-          if (startsWithIgnoreCase(format, index, "Y,YYY")) {
+          if (startsWithIgnoreCase(pattern, index, "Y,YYY")) {
             int year = Math.abs(value.getYear());
             output.append(new DecimalFormat("#,###").format(year));
             index += 5;
@@ -1168,7 +1196,7 @@ public class DateFormat extends BaseFormat {
           }
 
           // Year
-          if ((cap = match(format, index, "YEAR")) != null) {
+          if ((cap = match(pattern, index, "YEAR")) != null) {
             int year = Math.abs(value.getYear());
             output.append(cap.apply(toWord(year)));
             index += 4;
@@ -1200,7 +1228,7 @@ public class DateFormat extends BaseFormat {
           break;
       }
 
-      throw new IllegalFormatFlagsException(format);
+      throw new IllegalFormatFlagsException(pattern);
     }
 
     return output.toString();
@@ -1262,4 +1290,25 @@ public class DateFormat extends BaseFormat {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (this == obj) {
+      return true;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    SimpleDateTimeFormat other = (SimpleDateTimeFormat) obj;
+    return pattern.equals(other.pattern);
+  }
+
+  @Override
+  public int hashCode() {
+    return pattern.hashCode();
+  }
+
 }

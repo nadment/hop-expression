@@ -85,7 +85,16 @@ public enum DatePart {
 
   MICROSECOND("MCS"),
 
-  NANOSECOND("NS");
+  NANOSECOND("NS"),
+
+  // TIMEZONE_REGION,
+
+  /** The hour component of the time zone offset */
+  TIMEZONE_HOUR,
+  /** The minute component of the time zone offset */
+  TIMEZONE_MINUTE
+
+  ;
 
   private final String alias;
 
@@ -176,12 +185,10 @@ public enum DatePart {
       case YEAR:
         return dt.getYear();
       case YEAROFWEEK:
-        WeekFields weekFields = WeekFields.of(DayOfWeek.SUNDAY, 1);
-        return dt.get(weekFields.weekBasedYear());
+        return dt.get(WeekFields.of(DayOfWeek.SUNDAY, 1).weekBasedYear());
       case YEAROFWEEKISO:
         // TODO: Verify DAYOFWEEKISO
-        WeekFields weekFieldsISo = WeekFields.of(DayOfWeek.MONDAY, 1);
-        return dt.get(weekFieldsISo.weekBasedYear());
+        return dt.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekBasedYear());
       case DECADE:
         return decade(dt.getYear());
       case CENTURY:
@@ -202,6 +209,8 @@ public enum DatePart {
         return dt.getNano();
       case EPOCH:
         return dt.toEpochSecond();
+      case TIMEZONE_HOUR:
+      case TIMEZONE_MINUTE:
       default:
         throw new ExpressionException("Invalid date part: " + this);
     }

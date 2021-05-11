@@ -106,7 +106,7 @@ public class ExpressionEditor extends SashForm {
     contentProposalAdapter.setPopupSize(new Point(300, 200));
 
     // Avoid Enter key to be inserted when selected content proposal
-    textEditor.addListener(SWT.KeyDown, (event) -> {
+    textEditor.addListener(SWT.KeyDown, event -> {
       try {
         KeyStroke k = KeyStroke.getInstance("Enter");
         if (k.getNaturalKey() == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
@@ -115,7 +115,6 @@ public class ExpressionEditor extends SashForm {
       } catch (Exception e) {
         // Ignore
       }
-
     });
   }
 

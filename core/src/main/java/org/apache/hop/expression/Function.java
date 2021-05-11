@@ -20,9 +20,10 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.util.Characters;
-import org.apache.hop.expression.util.DateFormat;
+import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -47,7 +48,9 @@ import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
 
@@ -61,8 +64,6 @@ public class Function extends Operator {
   private static final int PAD_LIMIT = 8192;
 
   private static final Soundex SOUNDEX = new Soundex();
-
-
 
   private final Method method;
 
@@ -92,11 +93,22 @@ public class Function extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression... args) throws Exception {
-    Object[] parameters = new Object[2];
-    parameters[0] = context;
-    parameters[1] = args;
-    return method.invoke(this, parameters);
+  public Object eval(final IExpressionContext context, final IExpression... args)
+      throws ExpressionException {
+
+    try {
+      Object[] parameters = new Object[2];
+      parameters[0] = context;
+      parameters[1] = args;
+      return method.invoke(this, parameters);
+    } catch (InvocationTargetException e) {
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionCallError",
+          this.getName(), e.getTargetException().getMessage()), e);
+    } catch (Exception e) {
+      throw new ExpressionException(
+          BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.getMessage()),
+          e);
+    }
   }
 
   @ScalarFunction(name = "CURRENT_DATE", alias = {"NOW", "SYSDATE"}, deterministic = false,
@@ -825,15 +837,17 @@ public class Function extends Operator {
     return str;
   }
 
- 
-  private static int makeRegexpFlags(String stringFlags) {
-    int flags = 0;
-    if (stringFlags != null) {
-      for (int i = 0; i < stringFlags.length(); ++i) {
-        switch (stringFlags.charAt(i)) {
+
+  private static int parseRegexpFlags(String str) {
+    int flags = Pattern.UNICODE_CASE;
+    if (str != null) {
+      for (int i = 0; i < str.length(); ++i) {
+        switch (str.charAt(i)) {
+          // Enables case-insensitive matching
           case 'i':
             flags |= Pattern.CASE_INSENSITIVE;
             break;
+          // Enables case-sensitive matching
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
@@ -1123,7 +1137,7 @@ public class Function extends Operator {
       char c = s.charAt(i);
       if (c == '\\') {
         if (i + 1 >= s.length()) {
-          throw createFormatException(s, i);
+          throw createFormatPatternException(s, i);
         }
         c = s.charAt(++i);
         switch (c) {
@@ -1165,7 +1179,7 @@ public class Function extends Operator {
             try {
               c = (char) (Integer.parseInt(s.substring(i + 1, i + 5), 16));
             } catch (NumberFormatException e) {
-              throw createFormatException(s, i);
+              throw createFormatPatternException(s, i);
             }
             i += 4;
             builder.append(c);
@@ -1183,7 +1197,7 @@ public class Function extends Operator {
             // builder.append(c);
             // }
 
-            throw createFormatException(s, i);
+            throw createFormatPatternException(s, i);
         }
       } else {
         builder.append(c);
@@ -1406,21 +1420,21 @@ public class Function extends Operator {
 
     return value;
   }
-  
-/**
- * Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
- */
+
+  /**
+   * Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
+   */
   @ScalarFunction(name = "NULLIFZERO", minArgs = 1, maxArgs = 1,
       category = "i18n::Operator.Category.Conditional")
   public Object nullIfZero(final IExpressionContext context, final IExpression... args) {
     Object value = args[0].eval(context);
 
-    if (coerceToInteger(value)==0L)
+    if (coerceToInteger(value) == 0L)
       return null;
 
     return value;
   }
-  
+
   /**
    * The function repeats a string as many times as specified.
    */
@@ -1536,20 +1550,270 @@ public class Function extends Operator {
     return string.substring(start - 1, end - 1);
   }
 
-  @ScalarFunction(name = "REGEXP_LIKE", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(name = "REGEXP_LIKE", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.Comparison")
   public Object regexp_like(final IExpressionContext context, final IExpression... args) {
+
     Object v0 = args[0].eval(context);
     if (v0 == null) {
-      return Boolean.FALSE;
+      return null;
     }
+    String input = v0.toString();
+
     Object v1 = args[1].eval(context);
     if (v1 == null) {
-      return Boolean.FALSE;
+      return null;
     }
-    Pattern pattern = Pattern.compile(v1.toString(), Pattern.DOTALL);
-    return pattern.matcher(v0.toString()).find();
+    String regexp = v1.toString();
+    // An empty pattern matches nothing
+    if (regexp.length() == 0)
+      return Boolean.FALSE;
+
+    int flags = Pattern.UNICODE_CASE;
+    if (args.length == 3) {
+      Object v2 = args[2].eval(context);
+      flags = parseRegexpFlags(v2.toString());
+    }
+
+    try {
+      Pattern pattern = Pattern.compile(regexp, flags);
+      return pattern.matcher(input).find();
+    } catch (PatternSyntaxException e) {
+      throw createRegexpPatternException(regexp);
+    }
   }
+
+
+  @ScalarFunction(name = "REGEXP_REPLACE", minArgs = 2, maxArgs = 6,
+      category = "i18n::Operator.Category.String")
+  public Object regexp_replace(final IExpressionContext context, final IExpression... args) {
+    Object v0 = args[0].eval(context);
+    if (v0 == null) {
+      return null;
+    }
+    String input = v0.toString();
+
+    Object v1 = args[1].eval(context);
+    if (v1 == null) {
+      return null;
+    }
+    String regexp = v1.toString();
+
+    // An empty pattern matches nothing
+    if (regexp.length() == 0)
+      return input;
+
+    // Default empty string
+    String replacement = "";
+    if (args.length >= 3) {
+      Object v2 = args[2].eval(context);
+      if (v2 != null) {
+        replacement = v2.toString();
+      }
+    }
+
+    // Default position 1
+    int position = 1;
+    if (args.length >= 4) {
+      Object v3 = args[3].eval(context);
+      if (v3 != null) {
+        position = coerceToInteger(v3).intValue();
+      }
+    }
+
+    // Default occurrence 0
+    int occurrence = 0;
+    if (args.length >= 5) {
+      Object v4 = args[4].eval(context);
+      if (v4 != null) {
+        occurrence = coerceToInteger(v4).intValue();
+      }
+    }
+
+    int flags = Pattern.UNICODE_CASE;
+    if (args.length == 6) {
+      Object v5 = args[5].eval(context);
+      flags = parseRegexpFlags(v5.toString());
+    }
+
+    try {
+
+      // Back reference
+      if ((replacement.indexOf('\\') >= 0) || (replacement.indexOf('$') >= 0)) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < replacement.length(); i++) {
+          char c = replacement.charAt(i);
+          if (c == '$') {
+            sb.append('\\');
+          } else if (c == '\\' && ++i < replacement.length()) {
+            c = replacement.charAt(i);
+            sb.append(c >= '0' && c <= '9' ? '$' : '\\');
+          }
+          sb.append(c);
+        }
+        replacement = sb.toString();
+      }
+
+      Matcher matcher =
+          Pattern.compile(regexp, flags).matcher(input).region(position - 1, input.length());
+      if (occurrence == 0) {
+        return matcher.replaceAll(replacement);
+      } else {
+        StringBuffer buffer = new StringBuffer();
+        int index = 1;
+        while (matcher.find()) {
+          if (index == occurrence) {
+            matcher.appendReplacement(buffer, replacement);
+            break;
+          }
+          index++;
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+      }
+    } catch (PatternSyntaxException e) {
+      throw createRegexpPatternException(regexp);
+    } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
+      // TODO: i18n
+      throw new ExpressionException(
+          BaseMessages.getString(PKG, "Error regexp replace {0}", replacement));
+    }
+  }
+
+  @ScalarFunction(name = "REGEXP_SUBSTR", minArgs = 2, maxArgs = 4,
+      category = "i18n::Operator.Category.String")
+  public Object regexp_substr(final IExpressionContext context, final IExpression... args) {
+    Object v0 = args[0].eval(context);
+    if (v0 == null) {
+      return null;
+    }
+    String input = v0.toString();
+
+    Object v1 = args[1].eval(context);
+    if (v1 == null) {
+      return null;
+    }
+    String regexp = v1.toString();
+    // An empty pattern matches nothing
+    if (regexp.length() == 0)
+      return null;
+
+    // Default position 1
+    int position = 1;
+    if (args.length >= 3) {
+      Object v2 = args[2].eval(context);
+      if (v2 != null) {
+        position = coerceToInteger(v2).intValue();
+      }
+    }
+
+    // Default occurrence
+    int occurrence = 0;
+    if (args.length >= 4) {
+      Object v3 = args[3].eval(context);
+      if (v3 != null) {
+        occurrence = coerceToInteger(v3).intValue();
+      }
+    }
+
+    int flags = Pattern.UNICODE_CASE;
+    if (args.length == 5) {
+      Object v4 = args[5].eval(context);
+      flags = parseRegexpFlags(v4.toString());
+    }
+
+    try {
+      Matcher matcher = Pattern.compile(regexp, flags).matcher(input);
+
+      boolean found = matcher.find(position);
+      for (int index = 1; index < occurrence && found; index++) {
+        found = matcher.find();
+      }
+
+      if (found) {
+        return matcher.group(0); // subexpression);
+      }
+
+      return null;
+    } catch (PatternSyntaxException e) {
+      throw createRegexpPatternException(regexp);
+    }
+  }
+
+
+  @ScalarFunction(name = "REGEXP_INSTR", minArgs = 2, maxArgs = 6,
+      category = "i18n::Operator.Category.String")
+  public Object regexp_instr(final IExpressionContext context, final IExpression... args) {
+    Object v0 = args[0].eval(context);
+    if (v0 == null) {
+      return null;
+    }
+    String input = v0.toString();
+
+    Object v1 = args[1].eval(context);
+    if (v1 == null) {
+      return null;
+    }
+    String regexp = v1.toString();
+    // An empty pattern matches nothing
+    if (regexp.length() == 0)
+      return 0L;
+
+
+    // Default position 1
+    int position = 1;
+    if (args.length >= 3) {
+      Object v2 = args[2].eval(context);
+      if (v2 != null) {
+        position = coerceToInteger(v2).intValue();
+      }
+    }
+
+    // Default occurrence
+    int occurrence = 0;
+    if (args.length >= 4) {
+      Object v3 = args[3].eval(context);
+      if (v3 != null) {
+        occurrence = coerceToInteger(v3).intValue();
+      }
+    }
+
+    // Return-option
+    int returnOption = 0;
+    if (args.length >= 5) {
+      Object v4 = args[4].eval(context);
+      if (v4 != null) {
+        returnOption = coerceToInteger(v4).intValue();
+      }
+    }
+
+    // Flags
+    int flags = Pattern.UNICODE_CASE;
+    if (args.length == 6) {
+      Object v5 = args[5].eval(context);
+      flags = parseRegexpFlags(v5.toString());
+    }
+
+    try {
+      Matcher matcher =
+          Pattern.compile(regexp, flags).matcher(input).region(position - 1, input.length());
+
+      boolean found = matcher.find(position);
+      for (int index = 1; index < occurrence && found; index++) {
+        found = matcher.find();
+      }
+
+      if (found) {
+        return Long.valueOf(1L + ((returnOption == 0) ? matcher.start() : matcher.end()));
+      }
+
+      return 0L;
+    } catch (PatternSyntaxException e) {
+      throw createRegexpPatternException(regexp);
+    }
+  }
+
+
 
   /**
    * Converts a string or numeric expression to a boolean value.
@@ -1586,25 +1850,21 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    String format = null;
+    String pattern = null;
     if (args.length > 1) {
       Object v1 = args[1].eval(context);
       if (v1 != null)
-        format = coerceToString(v1);
+        pattern = coerceToString(v1);
     }
 
-    switch (DataType.get(value)) {
+    switch (DataType.fromJava(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
-        return NumberFormat.format(coerceToBigNumber(value), format);
+        return NumberFormat.ofPattern(pattern).format(coerceToBigNumber(value));
       case DATE:
         ZonedDateTime datetime = coerceToDate(value).atZone(context.getZone());
-
-        if (format == null)
-          format = "DD-MON-YY HH.MI.SS.FF PM";
-
-        return DateFormat.format(datetime, format);
+        return DateTimeFormat.ofPattern(pattern).format(datetime);
       case STRING:
         return value;
 
@@ -1613,7 +1873,7 @@ public class Function extends Operator {
       case NONE:
     }
 
-    throw createUnexpectedDataTypeException(this, DataType.get(value));
+    throw createUnexpectedDataTypeException(this, DataType.fromJava(value));
   }
 
   /** Converts a string expression to a number value. */
@@ -1621,25 +1881,25 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Conversion")
   public Object to_number(final IExpressionContext context, final IExpression... args)
       throws ParseException {
-    String value = coerceToString(args[0].eval(context));
-    if (value == null)
+    Object v0 = args[0].eval(context);
+    if (v0 == null)
       return null;
 
     // No format
     if (args.length == 1) {
-      return NumberFormat.parse(value, null);
+      return NumberFormat.ofPattern(null).parse(coerceToString(v0));
     }
 
     Object v1 = args[1].eval(context);
     if (args.length == 2) {
-      return NumberFormat.parse(value, coerceToString(v1));
+      return NumberFormat.ofPattern(coerceToString(v1)).parse(coerceToString(v0));
     }
 
     // Precision and scale
     int precision = coerceToInteger(v1).intValue();
     Object v2 = args[2].eval(context);
     int scale = coerceToInteger(v2).intValue();
-    return NumberFormat.parse(value, precision, scale);
+    return NumberFormat.parse(coerceToString(v0), precision, scale);
   }
 
   @ScalarFunction(name = "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
@@ -1653,13 +1913,13 @@ public class Function extends Operator {
     try {
       // No format
       if (args.length == 1) {
-        return NumberFormat.parse(value.toString(), null);
+        return NumberFormat.ofPattern(null).parse(value.toString());
       }
 
       // With format
       if (args.length == 2) {
         Object v1 = args[1].eval(context);
-        return NumberFormat.parse(value.toString(), v1.toString());
+        return NumberFormat.ofPattern(coerceToString(v1)).parse(coerceToString(value));
       }
 
       // Precision and scale
@@ -1687,22 +1947,22 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    String format = null;
+    String pattern = null;
     if (args.length > 1) {
       Object v1 = args[1].eval(context);
       if (v1 != null)
-        format = coerceToString(v1);
+        pattern = coerceToString(v1);
     } else {
-      format = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+      pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
     }
 
-    switch (DataType.get(value)) {
+    switch (DataType.fromJava(value)) {
       case DATE:
         return value;
       case STRING:
-        return DateFormat.parse(value.toString(), format);
+        return DateTimeFormat.ofPattern(pattern).parse(value.toString());
       default:
-        throw createUnexpectedDataTypeException(this, DataType.get(value));
+        throw createUnexpectedDataTypeException(this, DataType.fromJava(value));
     }
   }
 
@@ -1717,21 +1977,22 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    String format = null;
+    String pattern = null;
     if (args.length > 1) {
       Object v1 = args[1].eval(context);
       if (v1 != null)
-        format = v1.toString();
+        pattern = v1.toString();
     } else {
-      format = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+      pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
     }
 
-    switch (DataType.get(value)) {
+    switch (DataType.fromJava(value)) {
       case DATE:
         return value;
       case STRING:
         try {
-          return DateFormat.parse(value.toString(), format);
+          DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
+          return format.parse(coerceToString(value));
         } catch (ParseException | RuntimeException e) {
           // Ignore
         }
@@ -1753,7 +2014,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    switch (DataType.get(value)) {
+    switch (DataType.fromJava(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
@@ -1829,7 +2090,7 @@ public class Function extends Operator {
       case STRING:
       case BOOLEAN:
       default:
-        throw createUnexpectedDataTypeException(this, DataType.get(value));
+        throw createUnexpectedDataTypeException(this, DataType.fromJava(value));
     }
   }
 
@@ -2363,9 +2624,13 @@ public class Function extends Operator {
   }
 
 
-  private static ExpressionException createFormatException(String s, int i) {
+  private static ExpressionException createFormatPatternException(String s, int i) {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Bad format {0} at position {1}", s, i));
+  }
+
+  private static ExpressionException createRegexpPatternException(String s) {
+    return new ExpressionException(BaseMessages.getString(PKG, "Bad regexp {0}", s));
   }
 
   private static ExpressionException createUnexpectedDataTypeException(Function function,

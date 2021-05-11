@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.ToolItem;
  * variables.
  */
 public class ExpressionText extends Composite {
-  protected static Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by Translator!!
+  protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by Translator!!
 
   //protected String toolTipText;
 

@@ -17,8 +17,8 @@
 package org.apache.hop.pipeline.transforms.expression;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.core.injection.Injection;
-import org.apache.hop.core.row.value.ValueMetaFactory;
+import org.apache.hop.metadata.api.HopMetadataProperty;
+import java.util.Objects;
 
 /**
  * Contains the properties of the fields to set with expression.
@@ -42,26 +42,29 @@ public class ExpressionField {
     this.precision=other.precision;
   }
   
-  /** The target field name */
+  /** The target field name */  
+  @HopMetadataProperty(key = "name", injectionKeyDescription = "ExpressionMeta.Injection.Field.Name")
   private String name;
 
+  @HopMetadataProperty(key = "expression", injectionKeyDescription = "ExpressionMeta.Injection.Field.Expression")
   private String expression;
-  private int type;
+  
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Type")
+  private String type;
 
-  @Injection(name = "LENGTH", group = "FIELDS")
-  private int length = -1;
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
+  private int length;
 
-  @Injection(name = "PRECISION", group = "FIELDS")
-  private int precision = -1;
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
+  private int precision;
 
-  @Injection(name = "FORMAT", group = "FIELDS")
+  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Format")
   private String format;
 
   public String getName() {
     return name;
   }
 
-  @Injection(name = "NAME", group = "FIELDS")
   public void setName(final String name) {
     this.name = StringUtils.stripToNull(name);
   }
@@ -70,26 +73,16 @@ public class ExpressionField {
     return expression;
   }
 
-  @Injection(name = "EXPRESSION", group = "FIELDS")
   public void setExpression(final String expression) {
-    this.expression = StringUtils.stripToNull(expression);
+    this.expression = expression;
   }
 
-  public int getType() {
+  public String getType() {
     return type;
   }
 
-  public void setType(int type) {
-    this.type = type;
-  }
-
-  private String getTypeDesc() {
-    return ValueMetaFactory.getValueMetaName(type);
-  }
-
-  @Injection(name = "TYPE", group = "FIELDS")
-  public void setType(final String name) {
-    this.type = ValueMetaFactory.getIdForValueMeta(name);
+  public void setType(String type) {
+    this.type = StringUtils.stripToNull(type);
   }
 
   public int getLength() {
@@ -105,7 +98,7 @@ public class ExpressionField {
   }
 
   public void setFormat(String format) {
-    this.format = format;
+    this.format = StringUtils.stripToNull(format);
   }
 
   public int getPrecision() {
@@ -117,7 +110,24 @@ public class ExpressionField {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ExpressionField that = (ExpressionField) o;
+    return Objects.equals(name, that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
+  }
+  
+  @Override
   public String toString() {
-    return name + ":" + getTypeDesc() + "(" + length + "," + precision + ")";
+    return name + ":" + type + "(" + length + "," + precision + ")";
   }
 }

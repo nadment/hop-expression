@@ -16,9 +16,7 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,15 +45,7 @@ public class ExpressionCall implements IExpression {
 
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-    try {
       return operator.eval(context, operands);
-    } catch (InvocationTargetException e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionError",
-          operator.getName(), e.getTargetException().getMessage()), e);
-    } catch (Exception e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionError",
-          operator.getName(), e.getMessage()), e);
-    }
   }
 
   @Override

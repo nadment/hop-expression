@@ -41,52 +41,56 @@ public class ExpressionTest extends BaseExpressionTest {
 
   @Test
   public void Identifier() throws Exception {
-    
+
     Identifier identifier = new Identifier("NAME");
     assertEquals("NAME", identifier.getName());
-    
-    evalEquals("Age%2", 0);   
+    assertEquals(new Identifier("NAME"), identifier);
+    assertEquals(new Identifier("NAME").hashCode(), identifier.hashCode());
+
+    evalEquals("Age%2", 0);
     evalEquals(" \t\n[Age]%2", 0);
     evalEquals("[IDENTIFIER SPACE]", "SPACE");
     evalEquals("IDENTIFIER_UNDERSCORE", "UNDERSCORE");
     evalEquals("[IDENTIFIER lower]", "lower");
-    
+
     evalFails("[");
     evalFails(" [ ");
     evalFails("] ");
-    evalFails(" ]");   
+    evalFails(" ]");
     evalFails("[]");
-    
-    writeEquals("IDENTIFIER");    
+
+    writeEquals("IDENTIFIER");
     // Reserved word
     writeEquals("[CASE]");
-    // Data type
+    writeEquals("[LIKE]");
+    // Data type name
     writeEquals("[NUMBER]");
-    // Part name
-    writeEquals("[CENTURY]");    
+    // Date part name
+    writeEquals("[CENTURY]");
     // Function name
     writeEquals("[YEAR]");
+    writeEquals("[UPPER]");
     // Contains space
     writeEquals("[IDENTIFIER SPACE]+1");
   }
-  
+
   @Test
   public void LiteralBoolean() throws Exception {
     evalTrue("True");
     evalFalse("FaLsE");
     evalNull("NULL");
   }
-  
-    @Test
-    public void CoercionBoolean() throws Exception {
- 
+
+  @Test
+  public void CoercionBoolean() throws Exception {
+
     // Coercion Number to Boolean
-     evalTrue("true = 1");
+    evalTrue("true = 1");
     evalTrue("false = 0");
-    
+
     // Coercion String to Boolean
     evalTrue("'1'=true");
-    evalTrue("'On'=true");    
+    evalTrue("'On'=true");
     evalTrue("'Y'=true");
     evalTrue("true = 'Y'");
     evalTrue("'Yes'=true");
@@ -94,7 +98,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'T'=true");
     evalTrue("'TRUE'=true");
     evalTrue("true = 'True'");
-    
+
     evalTrue("'0'=false");
     evalTrue("'N'=false");
     evalTrue("'NO'=false");
@@ -105,28 +109,59 @@ public class ExpressionTest extends BaseExpressionTest {
 
   @Test
   public void LiteralDate() throws Exception {
-    evalEquals("Date '2019-02-25'", LocalDate.of(2019, 2, 25));
-    evalEquals("Date '28-02-25'", LocalDate.of(28, 2, 25));
-    evalEquals("Date '2028-Feb-25'", LocalDate.of(2028, 2, 25));
-    
-    writeEquals("DATE '2028-02-25'");
+    evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
+    evalEquals("Date '21-02-25'", LocalDate.of(21, 2, 25));
+    evalEquals("Date '2021-Feb-25'", LocalDate.of(2021, 2, 25));
+
+    writeEquals("DATE '2021-02-25'");
   }
 
   @Test
   public void LiteralTime() throws Exception {
-    evalEquals("Time '23:48:59'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
-    evalEquals("Time '01:05'", LocalDateTime.of(1900, 1, 1, 1, 5, 0));
-    // evalEquals("Time '10:30 am'", LocalDateTime.of(1900, 1, 1, 10, 30,0));
-    // TODO: evalEquals("Time '06:25:15 PM'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
+    //evalEquals("Time '23:48:59'", LocalDateTime.of(1970, 1, 1, 23, 48, 59));
+    //evalEquals("Time '01:05'", LocalDateTime.of(1970, 1, 1, 1, 5, 0));
+    //evalEquals("Time '10:30 am'", LocalDateTime.of(1900, 1, 1, 10, 30,0));
+    //evalEquals("Time '06:25:15 PM'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
   }
 
-  // @Test
+  @Test
   public void LiteralTimestamp() throws Exception {
-    evalEquals("Timestamp '2019-02-25 23:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 00));
-    evalEquals("Timestamp '2019-02-25 23:59:59'", LocalDateTime.of(2019, 2, 25, 23, 59, 59));
-    evalEquals("Timestamp '2019-01-01 15:28:59'", LocalDateTime.of(2019, 1, 1, 15, 28, 59));
-    evalEquals("TIMESTAMP  '2019-12-01 12:01:01.999999999'",
-        LocalDateTime.of(2019, 12, 1, 12, 01, 01, 999999999));
+    evalEquals("Timestamp '2021-02-25 2:59'", LocalDateTime.of(2021, 2, 25, 2, 59, 00));
+    evalEquals("Timestamp '2021-02-25 23:59'", LocalDateTime.of(2021, 2, 25, 23, 59, 00));
+    evalEquals("Timestamp '2021-02-25 23:59:59'", LocalDateTime.of(2021, 2, 25, 23, 59, 59));
+    evalEquals("Timestamp '2021-01-01 15:28:59'", LocalDateTime.of(2021, 1, 1, 15, 28, 59));
+    
+    // Time zone offset
+    evalEquals("Timestamp '2021-01-01 15:28:59 +2:00'", LocalDateTime.of(2021, 1, 1, 13, 28, 59));
+    evalEquals("Timestamp '2021-01-01 15:28:59 +02:00'", LocalDateTime.of(2021, 1, 1, 13, 28, 59));
+    evalEquals("Timestamp '2021-01-01 15:28:59 -02:00'", LocalDateTime.of(2021, 1, 1, 17, 28, 59));
+    
+    // TIMESTAMP '2004-02-19 8:00:00 US/Pacific');
+    
+    // Fraction seconds
+    evalEquals("Timestamp '2021-12-01 12:01:01.123456789'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456789));
+    evalEquals("Timestamp '2021-12-01 12:01:01.12345678'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 12345678));
+    evalEquals("Timestamp '2021-12-01 12:01:01.1234567'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 1234567));
+    evalEquals("Timestamp '2021-12-01 12:01:01.123456'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456));
+    evalEquals("Timestamp '2021-12-01 12:01:01.12345'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 12345));
+    evalEquals("Timestamp '2021-12-01 12:01:01.1234'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 1234));
+    evalEquals("Timestamp '2021-12-01 12:01:01.123'",
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123));
+    evalEquals("Timestamp '2021-12-01 12:01:01.12'", LocalDateTime.of(2021, 12, 1, 12, 01, 01, 12));
+    evalEquals("Timestamp '2021-12-01 12:01:01.1'", LocalDateTime.of(2021, 12, 1, 12, 01, 01, 1));
+   
+    
+    
+
+
+
+    writeEquals("TIMESTAMP '2021-12-01 12:01:01.123456789'");
   }
 
   @Test
@@ -183,7 +218,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("-2.3e-2", -2.3E-2);
 
     // Big number
-    evalEquals("15167890123456789012345678901234567890", new BigDecimal("15167890123456789012345678901234567890"));
+    evalEquals("15167890123456789012345678901234567890",
+        new BigDecimal("15167890123456789012345678901234567890"));
 
     evalFails("..1");
     evalFails(".0.1");
@@ -192,8 +228,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("-2.3EE-2");
     evalFails("-2.3E");
     evalFails("-2.3E--2");
-    
-    writeEquals("-2.3E-2","-.023");
+
+    writeEquals("-2.3E-2", "-.023");
   }
 
   @Test
@@ -229,7 +265,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("Date '2020-20-28'");
     // evalEquals("-4**2",-16);
   }
-  
+
   @Test
   public void precedenceAndAssociativity() throws Exception {
 
@@ -245,13 +281,13 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("42%(3+2)", 2);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("Age-(10+3*10+50-2*25)", 0);
-    
+
     // evalEquals("10**2+5", 105);
     // evalEquals("5+10**2", 105);
     // evalEquals("3*10**2", 300);
     // evalEquals("10**2*3", 300);
 
-    // evalEquals("2*'1.23'",2.46); // TODO: Should be casted to number and not
+     evalEquals("2*'1.23'",2.46);
     // integer
 
     // NOT has higher precedence than AND, which has higher precedence than OR
@@ -269,7 +305,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue(" 3 > 5 IS FALSE");
 
     // BETWEEN, IN, LIKE have higher precedence than comparison
-   // evalTrue("6 = 6 between 4 = 4 and 5 = 5");
+    // evalTrue("6 = 6 between 4 = 4 and 5 = 5");
   }
 
 
@@ -295,24 +331,24 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("true = false");
     evalFalse("false = true");
 
-     // String
+    // String
     evalTrue("'ABC' = 'ABC'");
     evalFalse("'ABC' = 'abc'");
-    
+
     // Date
     evalTrue("Date '2019-01-01' = Date '2019-01-01'");
-    evalFalse("Date '2019-01-01' = Date '2018-01-01'");    
-    
+    evalFalse("Date '2019-01-01' = Date '2018-01-01'");
+
     // Null
     evalNull("1 = null");
     evalNull("null = true");
     evalNull("null = false");
-   // NULL is not equal ( = ) to anything—not even to another NULL.
-    evalNull("null = null"); 
+    // NULL is not equal ( = ) to anything—not even to another NULL.
+    evalNull("null = null");
 
     evalFails("NOM=");
     evalFails("NOM = ");
-    
+
     writeEquals("AGE=40");
   }
 
@@ -340,7 +376,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("null <> 'bar'");
     evalNull("'bar' <> null");
     evalNull("null <> null");
-    
+
     evalFails("NOM<>");
     evalFails("NOM <> ");
     evalFails("NOM!");
@@ -371,7 +407,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     evalNull("null > 0");
     evalNull("1 > null");
-    
+
     evalFails("NOM>");
     evalFails("NOM > ");
   }
@@ -399,7 +435,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     evalNull("null >= 0");
     evalNull("1 >= null");
-    
+
     evalFails("NOM>=");
     evalFails("NOM >=");
   }
@@ -427,7 +463,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     evalNull("null < 1");
     evalNull("0 < null");
-    
+
     evalFails("NOM<");
     evalFails("NOM < ");
   }
@@ -450,12 +486,12 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("'foo' <= 'bar'");
 
     evalTrue("Date '2019-01-01' <= Date '2019-02-01'");
-    evalTrue("Date '2019-01-01' <= Date '2019-01-01'");    
+    evalTrue("Date '2019-01-01' <= Date '2019-01-01'");
     evalFalse("Date '2019-01-01' <= Date '2018-01-01'");
 
     evalNull("null <= 1");
     evalNull("0 <= null");
-    
+
     evalFails("NOM<=");
     evalFails("NOM <=");
   }
@@ -468,14 +504,16 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("2.5 IN (1,2.5,3)");
     evalTrue("'2' in (null,1,2,3)");
     evalTrue("Date '2019-01-01' in (Date '2019-04-01',Date '2019-01-01',Date '2019-03-06')");
+    //evalFalse("2 in ()");
     evalFalse("2 in (1,2.5,3)");
     evalTrue("2 in (null,1,2,3)");
     evalFalse("2 in (null,null,null)");
-    evalFalse("1 not in (null,1)");    
+    evalFalse("1 not in (null,1)");
     evalNull("NULL in (1,2,3)");
+    evalNull("NULL in (null)");    
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
-    
+
     writeEquals("AGE IN (10,20,30,40)");
   }
 
@@ -491,7 +529,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("Null is True");
     evalFalse("Null IS False");
     evalTrue("Null IS NULL");
-    
+
     writeEquals("FIELD IS TRUE");
   }
 
@@ -501,12 +539,12 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("0b00011+0", 3);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
     evalEquals("PRICE+PRICE", -10.24);
-    evalEquals("AMOUNT+1", 123456.789+1);
+    evalEquals("AMOUNT+1", 123456.789 + 1);
 
     evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
     evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
     evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
-    
+
     evalNull("5+NULL+5");
     evalNull("+NULL+5");
     evalFails("5+");
@@ -525,10 +563,10 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
     evalEquals("Date '2019-02-23'-Date '2019-02-25'", -2);
     evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
-    
+
     evalNull("5-NULL");
     evalNull("NULL-5");
-    
+
     evalFails("5-");
     evalFails("TRUE-FALSE");
   }
@@ -546,15 +584,15 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("Age not between 10 and 20 and 'Test' is not null");
 
     evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
-    
+
     evalNull("NULL between -10 and 20");
     evalNull("1 between NULL and 20");
     evalNull("1 between -10 and NULL");
-    
+
     evalFails("Age between 10 and");
     evalFails("Age between and 10");
     evalFails("Age between and ");
-    
+
     writeEquals("FIELD BETWEEN 10 AND 20");
   }
 
@@ -593,13 +631,13 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("CAST(-12.1 as Boolean)");
     evalFalse("CAST(0 as Boolean)");
 
-    evalEquals("CAST(1.25 as Integer)",1);
-   // TODO: evalEquals("CAST(1.75 as Integer)",2);
-    
+    evalEquals("CAST(1.25 as Integer)", 1);
+    // TODO: evalEquals("CAST(1.75 as Integer)",2);
+
     // Boolean to String
     evalEquals("CAST(true as String)", "TRUE");
     evalEquals("true::String", "TRUE");
-    
+
 
     // Date to String
     evalEquals("CAST(Date '2019-02-25' AS String)", "2019-02-25");
@@ -607,7 +645,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
     // evalEquals("Cast(Time '23:48:59' as String)", "23:48:59");
 
-    // TODO: evalEquals("Timestamp '1900-01-04 12:00'", 3.5);
+    // evalEquals("Timestamp '1900-01-04 12:00'::Number", 3.5);
 
     // evalEquals("Time '23:48:59'+1.5", "23:48:59");
 
@@ -652,7 +690,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("CAST(Null as Integer)");
     evalNull("CAST(Null as Number)");
     evalNull("CAST(Null as BigNumber)");
-    
+
     // Unsupported conversion
     evalFails("CAST(Date '2019-02-25' AS INTEGER)");
     evalFails("CAST(Date '2019-02-25' AS NUMBER)");
@@ -670,15 +708,15 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("CAST(1234 AS STRING FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT NULL)");
-    
+
 
     // Bad data type
     evalFails("Cast(123 as Nill)");
-        
-    writeEquals("CAST(NULL AS BINARY)","CAST(NULL AS BINARY)");
-    writeEquals("CAST('1234' AS NUMBER)","CAST('1234' AS NUMBER)");
+
+    writeEquals("CAST(NULL AS BINARY)", "CAST(NULL AS BINARY)");
+    writeEquals("CAST('1234' AS NUMBER)", "CAST('1234' AS NUMBER)");
     writeEquals("CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
-    writeEquals("'1234'::NUMBER","CAST('1234' AS NUMBER)");   
+    writeEquals("'1234'::NUMBER", "CAST('1234' AS NUMBER)");
   }
 
   @Test
@@ -747,7 +785,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("~NULL");
     evalFails("~");
     evalFails("~ ");
-    
+
     // Alias
     evalEquals("BITNOT(1)", -2);
   }
@@ -796,7 +834,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalNull("NOT NULL");
     evalFails("FLAG is ");
     evalFails("NOT");
-    writeEquals("FIELD IS NOT TRUE","NOT FIELD IS TRUE");
+    writeEquals("FIELD IS NOT TRUE", "NOT FIELD IS TRUE");
   }
 
   @Test
@@ -811,7 +849,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFalse("null OR false");
     evalNull("null OR null");
     evalFails("false OR");
-    
+
     writeEquals("FIELD1 OR FIELD2");
   }
 
@@ -829,26 +867,14 @@ public class ExpressionTest extends BaseExpressionTest {
     writeEquals("FIELD1 AND FIELD2");
   }
 
-  @Deprecated
-  public void LogicalXor() throws Exception {
-    evalTrue("false XOR true");
-    evalTrue("true XOR false");
-    evalFalse("false XOR false");
-    evalFalse("true XOR true");
-    evalNull("true XOR null");
-    evalNull("null XOR true");
-    evalNull("null XOR null");
-    writeEquals("FIELD1 XOR FIELD2");
-  }
-
   @Test
   public void ILike() throws Exception {
     evalTrue("'test' ILIKE '%t%'");
     evalTrue("'test' ILIKE '%T%'");
-    
+
     // Escape with other char
     evalTrue("'Result 100% value' ilike 'RESULT%100^%%' escape '^'");
-    
+
     evalNull("'test' ILIKE NULL");
     evalNull("'test' ILIKE 'TEST' escape NULL");
     evalNull("NULL ILIKE '%T%'");
@@ -905,15 +931,15 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'ABCDEFG' like 'ABCDE%'");
     evalTrue("'ABCDEFG' like '%DEFG'");
     evalTrue("'ABCDEFG' like '%CDE%'");
-   
+
 
     evalNull("NULL like 'NULL'");
     evalNull("'test' LIKE NULL");
     evalNull("'test' LIKE 'TEST' escape NULL");
-    
-    // NULL does not match NULL    
+
+    // NULL does not match NULL
     evalNull("NULL like NULL");
-    
+
     writeEquals("FIELD1 LIKE 'ADD%'");
     writeEquals("FIELD1 LIKE '%ADD!_%' ESCAPE '!'");
   }
@@ -926,7 +952,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("'TEST'||null", "TEST");
     evalEquals("null||'TEST'", "TEST");
     evalNull("null||null");
-    
+
     writeEquals("FIELD1||'TEST'");
   }
 
@@ -951,14 +977,13 @@ public class ExpressionTest extends BaseExpressionTest {
     // Missing 'END'
     evalFails("case when Age=40 then 10 else 50");
 
-    // Implicit ELSE NULL 
-    writeEquals("CASE WHEN AGE=40 THEN 10 END","CASE WHEN AGE=40 THEN 10 ELSE NULL END");
-    
+    // Implicit ELSE NULL
+    writeEquals("CASE WHEN AGE=40 THEN 10 END", "CASE WHEN AGE=40 THEN 10 ELSE NULL END");
+
     writeEquals("CASE WHEN AGE=40 THEN TRUE ELSE FALSE END");
     writeEquals("CASE AGE WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
   }
 
 }
-
 
 

@@ -14,22 +14,22 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.time.ZonedDateTime;
 
 /**
  * Expression representing a literal value.
  */
 public class Literal implements IExpression {
-  private static final DateTimeFormatter TIMESTAMP_FORMAT =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn").withLocale(Locale.ROOT)
-          .withZone(ZoneId.systemDefault());
-  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-      .withLocale(Locale.ROOT).withZone(ZoneId.systemDefault());
+//  private static final DateTimeFormatter TIMESTAMP_FORMAT =
+//      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn").withLocale(Locale.ROOT)
+//          .withZone(ZoneId.systemDefault());
+//  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//      .withLocale(Locale.ROOT).withZone(ZoneId.systemDefault());
 
   public static final Literal UNKNOWN = new Literal(null);
   public static final Literal TRUE = new Literal(Boolean.TRUE);
@@ -44,10 +44,6 @@ public class Literal implements IExpression {
 
     if (value instanceof Boolean) {
       return ((boolean) value) ? TRUE : FALSE;
-    }
-
-    if (value instanceof String) {     
-      return new Literal((String) value);
     }
 
     if (value instanceof BigDecimal) {
@@ -77,8 +73,8 @@ public class Literal implements IExpression {
       return new Literal(number);
     }
     
-    if (value instanceof Instant) {      
-      return new Literal((Instant) value);
+    if (value instanceof String || value instanceof Instant) {      
+      return new Literal(value);
     }
     
     throw new IllegalArgumentException("Invalid literal: "+value);
@@ -143,13 +139,19 @@ public class Literal implements IExpression {
       writer.append('\'');
       writer.append((String) value);
       writer.append('\'');
-    } else if (value instanceof Instant) {
-      writer.append("DATE '");
+    } 
+    else if (value instanceof Instant) {
       Instant instant = (Instant) value;
-      if (instant.getNano() > 0)
-        writer.append(TIMESTAMP_FORMAT.format(instant));
-      else
-        writer.append(DATE_FORMAT.format(instant));
+      if (instant.getNano() > 0) {
+        writer.append("TIMESTAMP '");
+        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant,ZoneId.of("UTC"));
+        writer.append(DateTimeFormat.ofPattern("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
+      }      
+      else {
+        writer.append("DATE '");
+        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant,ZoneId.of("UTC"));
+        writer.append(DateTimeFormat.ofPattern("YYYY-MM-DD").format(datetime));
+      }
       writer.append('\'');
     } else {
       writer.append(Operator.coerceToString(value));

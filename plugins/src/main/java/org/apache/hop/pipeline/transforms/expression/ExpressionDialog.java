@@ -16,6 +16,7 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.plugins.IPlugin;
@@ -42,7 +43,6 @@ import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -152,12 +152,12 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
   protected void setWidgetsContent(final ExpressionMeta meta) {
     int i = 0;
-    for (ExpressionField value : meta.getExpressionFields()) {
+    for (ExpressionField value : meta.getFields()) {
 
       TableItem item = wTableFields.getTable().getItem(i++);
       item.setText(1, Const.NVL(value.getName(), ""));
       item.setText(2, Const.NVL(value.getExpression(), ""));
-      item.setText(3, Const.NVL(ValueMetaFactory.getValueMetaName(value.getType()), ""));
+      item.setText(3, Const.NVL(value.getType(), ""));
       if (value.getLength() >= 0) {
         item.setText(4, String.valueOf(value.getLength()));
       }
@@ -179,21 +179,20 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     this.transformName = this.wTransformName.getText();
 
     int count = wTableFields.nrNonEmpty();
-    List<ExpressionField> values = new ArrayList<>(count);
+    List<ExpressionField> fields = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
       TableItem item = wTableFields.getNonEmpty(i);
 
       ExpressionField value = new ExpressionField();
-      value.setName(item.getText(1));
+      value.setName(StringUtils.stripToNull(item.getText(1)));
       value.setExpression(item.getText(2));
-      value.setType(ValueMetaFactory.getIdForValueMeta(item.getText(3)));
+      value.setType(item.getText(3));
       value.setLength(Const.toInt(item.getText(4), -1));
       value.setPrecision(Const.toInt(item.getText(5), -1));
-
-      values.add(value);
+      fields.add(value);
     }
 
-    meta.setExpressionValues(values);
+    meta.setFields(fields);
   }
 
   protected final Control createContents(final Composite parent) {
@@ -259,18 +258,14 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     deco.setShowOnlyOnFocus(true);
     deco.hide();
 
-    wTransformName.addModifyListener(new ModifyListener() {
-      public void modifyText(ModifyEvent e) {
+    wTransformName.addListener(SWT.Modify, event ->  {
         if (wTransformName.getText().length() > 0) {
           deco.hide();
         } else {
           deco.show();
         }
-
         baseTransformMeta.setChanged();
-
-        wOk.setEnabled(isValid());
-      }
+        wOk.setEnabled(isValid());   
     });
 
     return composite;
@@ -283,7 +278,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
             ColumnInfo.COLUMN_TYPE_TEXT, false),
         new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Expression.Label"),
             ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.ValueType.Label"),
+        new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Type.Label"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getValueMetaNames()),
         new ColumnInfo(BaseMessages.getString(PKG, "ExpressionDialog.ColumnInfo.Length.Label"),
             ColumnInfo.COLUMN_TYPE_TEXT, false),
@@ -315,7 +310,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
     wTableFields =
         new TableView(this.getVariables(), parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            columns, this.input.getExpressionFields().size(), lsMod, props);
+            columns, this.input.getFields().size(), lsMod, props);
     wTableFields.setLayoutData(new FormDataBuilder().top().bottom().left().right().result());
     wTableFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
 

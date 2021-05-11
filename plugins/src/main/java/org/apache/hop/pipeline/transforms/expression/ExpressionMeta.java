@@ -16,33 +16,26 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.hop.core.CheckResult;
-import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.exception.HopTransformException;
-import org.apache.hop.core.exception.HopValueException;
-import org.apache.hop.core.exception.HopXmlException;
-import org.apache.hop.core.injection.InjectionDeep;
-import org.apache.hop.core.injection.InjectionSupported;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import org.w3c.dom.Node;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This transform create field value with expression.
@@ -56,19 +49,13 @@ import org.w3c.dom.Node;
     image = "expression.svg",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     keywords = {"script", "sql", "function"})
-@InjectionSupported(localizationPrefix = "ExpressionMeta.Injection.")
 public class ExpressionMeta extends BaseTransformMeta
     implements ITransformMeta<ExpressionTransform, ExpressionData> {
 
   private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes
-
-  /** Constants */
-  private static final String TAG_FIELD = "field"; // $NON-NLS-1$
-  private static final String TAG_FIELD_EXPRESSION = "expression"; // $NON-NLS-1$
-  private static final String TAG_FIELD_NAME = "field"; // $NON-NLS-1$
-  private static final String TAG_FIELD_TYPE = "type"; // $NON-NLS-1$
-
-  @InjectionDeep private List<ExpressionField> fields;
+ 
+  @HopMetadataProperty(groupKey = "fields", key = "field", injectionGroupDescription = "ExpressionMeta.Injection.Fields", injectionKeyDescription = "ExpressionMeta.Injection.Field")
+  private List<ExpressionField> fields;
 
   public ExpressionMeta() {
     super();
@@ -78,7 +65,7 @@ public class ExpressionMeta extends BaseTransformMeta
     super();
     
     this.fields = new ArrayList<>();
-    for (ExpressionField field : other.getExpressionFields()) {
+    for (ExpressionField field : other.getFields()) {
       fields.add(new ExpressionField(field));
     }
   }
@@ -109,51 +96,6 @@ public class ExpressionMeta extends BaseTransformMeta
   }
 
   @Override
-  public String getXml() throws HopValueException {
-
-    StringBuilder xml = new StringBuilder(500);
-
-    xml.append("<fields>");
-    for (ExpressionField value : this.getExpressionFields()) {
-      xml.append("<field>");
-      xml.append(XmlHandler.addTagValue(TAG_FIELD_NAME, value.getName()));
-      xml.append(XmlHandler.addTagValue(TAG_FIELD_EXPRESSION, value.getExpression()));
-      xml.append(
-          XmlHandler.addTagValue(
-              TAG_FIELD_TYPE, ValueMetaFactory.getValueMetaName(value.getType())));
-      xml.append("</field>");
-    }
-    xml.append("</fields>");
-
-    return xml.toString();
-  }
-
-  @Override
-  public void loadXml(Node transformNode, IHopMetadataProvider metadataProvider)
-      throws HopXmlException {
-
-    try {
-      Node nodes = XmlHandler.getSubNode(transformNode, "fields");
-      int count = XmlHandler.countNodes(nodes, TAG_FIELD);
-
-      fields = new ArrayList<>(count);
-      for (int i = 0; i < count; i++) {
-        Node line = XmlHandler.getSubNodeByNr(nodes, TAG_FIELD, i);
-
-        ExpressionField value = new ExpressionField();
-        value.setName(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_NAME), ""));
-        value.setExpression(Const.NVL(XmlHandler.getTagValue(line, TAG_FIELD_EXPRESSION), ""));
-        value.setType(XmlHandler.getTagValue(line, TAG_FIELD_TYPE));
-
-        fields.add(value);
-      }
-    } catch (Exception e) {
-      throw new HopXmlException(
-          BaseMessages.getString(PKG, "ExpressionMeta.Exception.UnableToReadXML"), e);
-    }
-  }
-
-  @Override
   public void getFields(
       IRowMeta rowMeta,
       String transformName,
@@ -167,11 +109,11 @@ public class ExpressionMeta extends BaseTransformMeta
       IRowMeta unalteredInputRowMeta = rowMeta.clone();
 
       // add the output fields if specified
-      for (ExpressionField field : this.getExpressionFields()) {
+      for (ExpressionField field : this.getFields()) {
         if (!Utils.isEmpty(field.getName())) {
 
           // create ValueMeta
-          IValueMeta vm = ValueMetaFactory.createValueMeta(field.getName(), field.getType());
+          IValueMeta vm = ValueMetaFactory.createValueMeta(field.getName(), ValueMetaFactory.getIdForValueMeta(field.getType()));
           vm.setOrigin(transformName);
           vm.setLength(field.getLength(), field.getPrecision());
 
@@ -257,11 +199,11 @@ public class ExpressionMeta extends BaseTransformMeta
     }
   }
 
-  public List<ExpressionField> getExpressionFields() {
+  public List<ExpressionField> getFields() {
     return this.fields;
   }
 
-  public void setExpressionValues(final List<ExpressionField> values) {
+  public void setFields(final List<ExpressionField> values) {
     this.fields = values;
   }
 }

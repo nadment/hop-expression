@@ -24,6 +24,7 @@ import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
 import org.apache.hop.expression.optimizer.rules.DeterministicRule;
 import org.apache.hop.expression.optimizer.rules.ReorderAssociativeRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyBooleanRule;
+import org.apache.hop.expression.optimizer.rules.SimplifyExtractRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyInRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyLikeRule;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class Optimizer {
   }
 
   private static final List<Rule> RULES = Arrays.asList(new ReorderAssociativeRule(),
-      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new CombineConcatRule(),
+      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(), new CombineConcatRule(),
       new SimplifyBooleanRule(), new DeterministicRule());
 
   /**
@@ -88,7 +89,7 @@ public class Optimizer {
         expression = rule.apply(context, (ExpressionCall) expression);
       }
     }
-    
+
     
 //    IExpression expression = call;
 //    for (Rule rule : RULES) {

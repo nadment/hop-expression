@@ -43,6 +43,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -119,7 +120,7 @@ public class BaseExpressionTest {
 
   protected void evalEquals(String s, String expected) throws Exception {
     Object value = eval(s);    
-    assertEquals(expected, (String) eval(s));
+    assertEquals(expected, (String) value);
   }
 
   protected void evalEquals(String s, Long expected) throws Exception {
@@ -190,45 +191,10 @@ public class BaseExpressionTest {
 //BigDecimal v1 = BigDecimal.valueOf(0.1);
 //BigDecimal v2 = BigDecimal.valueOf(123.11);
 
-evalTrue("'amigo' like 'a%o'");
-    //evalEquals("5/(60*24)", 5);
-   // evalEquals("CAST('1234.567' as Integer)", 1235L);
+    // Time zone offset
+    evalEquals("To_Date('2019-02-13T15:34:56 +8:00','YYYY-MM-DD\"T\"HH24:MI:SS TZH:TZM')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
     
-    // evalFails("Extract(NULL from Date '2021-01-01')");
-    // evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
-    // evalEquals("CAST(1.75 as Integer)",2);
-    // evalEquals("[IDENTIFIER SPACE]", "SPACE");
-    // evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
 
-    // writeEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')");
-    // evalEquals("-.2", new BigDecimal("-0.2"));
-
-    // evalEquals("TO_NUMBER('0.3-','#0.##-')", -0.3);
-    // evalEquals("TO_NUMBER('65.169', '#########.0000')", 65.169);
-    // evalEquals("TO_CHAR(-65.169, '$-###,000.000')", "$-065.169");
-    //
-    // setLocale(new Locale("fr", "BE"));
-    // evalEquals("TO_NUMBER('5467,12', '999999D99')", 5467.12);
-    // evalEquals("TO_CHAR(0.1,'99.99')", " 0.1 ");
-    // evalEquals("TO_CHAR(0.1,'99.99')", " 0.1 ");
-    // evalEquals("TO_CHAR(0.3,'FM00.99')", "00.3");
-    // evalEquals("TO_CHAR(0.003,'0.999')", " 0.003");
-    // evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");
-    // evalEquals("TO_CHAR(0.1,'99.99')", " 0.1 ");
-    // evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234);
-
-    // evalEquals("TO_CHAR(0,'90.99')", " 0. ");
-    // evalEquals("TO_CHAR(-0.2,'99.90')", " -.20");
-    // evalEquals("TO_CHAR(555.0, 'FM999.909')","555.00");
-
-
-    // setLocale(new Locale("en", "US"));
-    // evalEquals("TO_NUMBER('$65.169', 'L99.999')", 65.169);
-
-    // evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
-    // evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12_345_678);
-    // evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
-    // evalEquals("TO_NUMBER('12,345,678', '999G999G999')", 12_345_678);
   }
 
 
