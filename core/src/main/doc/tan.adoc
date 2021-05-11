@@ -20,14 +20,13 @@ This function calculates the tangent of its argument.
 
 == Syntax
 ----
-TAN(<numeric>)
+TAN( <numeric> )
 ----
+
+Returns:: Number
 
 == Usage
 
-The argument should be expressed in radians.
+* The argument should be expressed in radians.
 
 
-Returns::
-
-numeric

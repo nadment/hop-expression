@@ -21,9 +21,9 @@ Returns the second value if first value is null. This function replace the null 
 
 == Syntax
 ----
-IFNULL(<expression>, <expression>)
+IFNULL( <expression> , <expression> )
 ----
 ----
-NVL(<expression>, <expression>)
+NVL( <expression>, <expression> )
 ----
 

@@ -20,7 +20,7 @@ Subtract of 2 numeric values.
 
 == Syntax
 ----
-SUBTRACT(<numeric1>, <numeric2>)
+SUBTRACT( <numeric1> , <numeric2> )
 ----
 The - operator provides alternative syntax.
 ----

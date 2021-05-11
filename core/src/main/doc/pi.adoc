@@ -22,3 +22,5 @@ This function returns the constant value of pi.
 ----
 PI()
 ----
+
+Return type:: Number

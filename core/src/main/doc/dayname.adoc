@@ -20,5 +20,5 @@ This function returns the name of the day of week (in English).
 
 == Syntax
 ----
-DAYNAME(<date_or_timestamp>)
+DAYNAME( <date_or_timestamp> )
 ----

@@ -20,8 +20,11 @@ The function calculate the SHA-256 hash of a data value.
 
 == Syntax
 ----
-SHA256(<string>)
+SHA256( <string> )
 ----
+
+<string>:: A string expression, the message to be hashed.
+Returns:: String
 
 == Usage
 

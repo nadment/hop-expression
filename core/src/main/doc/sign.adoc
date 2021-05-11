@@ -23,6 +23,8 @@ The function returns the sign for the numeric expression.
 SIGN(<numeric>)
 ----
 
+Return type:: Integer
+
 == Usage
 
 * It returns a value of -1 for negative expressions, a value of 0 for zero expressions and a value of +1 for positive expressions. 

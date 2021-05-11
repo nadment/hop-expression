@@ -21,7 +21,7 @@ Multiply 2 numeric values.
 == Syntax
 
 ----
-MULTIPLY(<numeric1>, <numeric2>)
+MULTIPLY( <numeric1> , <numeric2> )
 ----
 
 The * operator provides alternative syntax.

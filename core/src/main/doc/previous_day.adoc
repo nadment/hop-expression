@@ -20,7 +20,7 @@ This function returns the date of the first specified day of week that occurs be
 
 == Syntax
 ----
-PREVIOUS_DAY(<date>, <weekday>)
+PREVIOUS_DAY( <date> , <weekday> )
 ----
 
 

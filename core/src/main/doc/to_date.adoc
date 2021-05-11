@@ -20,7 +20,7 @@ This function converts a string into a date.
 
 == Syntax
 ----
-TO_DATE(<text>[, <format>])
+TO_DATE( <text> [, <format> ] )
 ----
 
 == Usage

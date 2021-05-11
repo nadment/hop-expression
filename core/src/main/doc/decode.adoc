@@ -22,7 +22,7 @@ Compares the select expression to each search expression in order. As soon as a 
 == Syntax
 
 ----
-DECODE(<expr>, <search1> , <result1> [, <search2>, <result2> ... ][, <default> ])
+DECODE( <expr> , <search1> , <result1> [, <search2> , <result2>... ] [, <default> ] )
 ----
 
 <expr>::	This is the select expression.

@@ -20,10 +20,10 @@ Returns the day of month of the specified date or timestamp.
 		
 == Syntax
 ----
-DAY(<date_or_timestamp>)
+DAY( <date_or_timestamp> )
 ----
 ----
-DAYOFMONTH(<date_or_timestamp>)
+DAYOFMONTH( <date_or_timestamp> )
 ----
 
 == Usage

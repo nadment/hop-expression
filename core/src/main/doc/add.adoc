@@ -20,7 +20,7 @@ Sum of 2 numeric values.
 
 == Syntax +
 ----
-ADD(<numeric1>, <numeric2>)
+ADD( <numeric1> , <numeric2> )
 ----
 The + operator provides alternative syntax.
 ----

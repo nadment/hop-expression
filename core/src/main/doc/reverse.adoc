@@ -20,13 +20,11 @@ Reverses the order of characters in a string.
 
 == Syntax
 ----
-REVERSE(<string>)
+REVERSE( <string> )
 ----
+
+Returns:: String
 
 == Usage
 
-If <string> is NULL, the result is also NULL.
-
-Returns::
-
-String
+If argument is NULL, the result is also NULL.

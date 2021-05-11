@@ -20,7 +20,7 @@ This function adds or subtracts a specified number of weeks to a date or timesta
 		
 == Syntax
 ----
-ADD_WEEKS(<date_or_timestamp>, <integer>)
+ADD_WEEKS( <date_or_timestamp> , <integer> )
 ----
 
 == Usage

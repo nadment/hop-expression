@@ -20,7 +20,7 @@ This function calculates the inverse sine (arc sine) of its argument.
 
 == Syntax
 ----
-ASIN(<numeric>)
+ASIN( <numeric> )
 ----
 
 == Usage

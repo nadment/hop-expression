@@ -20,7 +20,7 @@ This function compute the number of hours between two dates.
 
 == Syntax
 ----
-HOURS_BETWEEN(<time1>, <time2>)
+HOURS_BETWEEN( <time1> , <time2> )
 ----
 
 == Usage

@@ -22,8 +22,8 @@ When used with a date or timestamp, truncates the timestamp to a date (day) valu
 
 == Syntax
 ----
-TRUNCATE(<numeric>, <scale>)
-TRUNC(<numeric>, <scale>)
+TRUNCATE( <numeric> , <scale> )
+TRUNC( <numeric> , <scale> )
 ----
 
 == Usage

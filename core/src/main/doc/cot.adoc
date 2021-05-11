@@ -20,5 +20,5 @@ This function calculates the trigonometric cotangent of the angle in radians spe
 
 == Syntax
 ----
-COT(<numeric>)
+COT( <numeric> )
 ----

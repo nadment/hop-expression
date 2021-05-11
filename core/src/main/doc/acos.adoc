@@ -20,7 +20,7 @@ This function calculates the arc cosine, the angle in radians whose cosine is th
 
 == Syntax
 ----
-ACOS(<number>)
+ACOS( <number> )
 ----
 
 == Usage 

@@ -20,7 +20,7 @@ Returns the hour of the specified timestamp.
 
 == Syntax
 ----
-HOUR(<timestamp>)
+HOUR( <timestamp> )
 ----
 
 == Usage

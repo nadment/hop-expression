@@ -14,24 +14,33 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= REGEXP_LIKE
+= REGEXP_REPLACE
 
-Match a string based on a regular expression pattern.
+Replace substring in a string by a new substring using a regular expression.
 
 == Syntax
 ----
-REGEXP_LIKE( <subject> , <pattern> [, <parameters> ] )
+REGEXP_REPLACE( <source> , <pattern> [, <replacement> [, <position> [, <occurrence> [, <parameters>]]]] )
 ----
+
+== Arguments
 
 <source>:: The string to be searched for.
 <pattern>:: The regular expression pattern.
+<replacement>:: The string that replaces the matched pattern. This argument is optional. Default value is ''.
+<position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
+<occurrence>:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
 * c – Perform case-sensitive matching.
 * i – Perform case-insensitive matching.
 
+Return type:: String
+
 == Usage
 
-* The function implicitly anchors a pattern at both ends.
+* If no matches are found, returns the original subject.
+* The replacement string can contain backreferences to capture groups. A capture group is a regular expression that is enclosed within parentheses (( )).
+
 
 
 

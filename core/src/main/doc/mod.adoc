@@ -20,7 +20,7 @@ This function returns the remainder of the division of <m> by <n>.
 
 == Syntax
 ----
-MOD(<m>, <n>)
+MOD( <m> , <n> )
 ----
 The % operator provides alternative syntax.
 ----

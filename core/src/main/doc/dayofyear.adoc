@@ -20,7 +20,7 @@ Returns the day of year of the date or timestamp.
 
 == Syntax
 ----
-DAYOFYEAR(<date_or_timestamp>)
+DAYOFYEAR( <date_or_timestamp> )
 ----
 
 == Usage

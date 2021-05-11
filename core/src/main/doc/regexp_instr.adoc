@@ -14,24 +14,27 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= REGEXP_LIKE
+= REGEXP_INSTR
 
-Match a string based on a regular expression pattern.
+Searches a string using a regular expression pattern and returns an integer that indicates the beginning
+position or ending position of the matched substring. 
 
 == Syntax
 ----
-REGEXP_LIKE( <subject> , <pattern> [, <parameters> ] )
+REGEXP_INSTR( <subject> , <pattern> [, <position> [, <occurrence> [, <return_options> [, <parameters> ]]]] )
 ----
 
 <source>:: The string to be searched for.
 <pattern>:: The regular expression pattern.
+<replacement>:: The string that replaces the matched pattern. This argument is optional. Default value is ''.
+<position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
+<occurrence>:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
 * c – Perform case-sensitive matching.
 * i – Perform case-insensitive matching.
 
+Return type:: Integer
+
 == Usage
 
-* The function implicitly anchors a pattern at both ends.
-
-
-
+* If no match is found, then the function returns 0.

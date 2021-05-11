@@ -20,13 +20,7 @@ This function calculates the trigonometric sine of the angle in radians.
 
 == Syntax
 ----
-SIN(<numeric>)
+SIN( <numeric> )
 ----
 
-== Usage
-
-
-
-Returns::
-
-numeric
+Return:: Number

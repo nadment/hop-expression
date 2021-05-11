@@ -21,13 +21,7 @@ under the License.
 
 == Syntax
 ----
-STRINGDECODE(<string>)
+STRINGDECODE( <string> )
 ----
 
-== Usage
-
-
-
-Returns::
-
-String
+Returns:: String

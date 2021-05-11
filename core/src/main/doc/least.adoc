@@ -21,7 +21,7 @@ The function returns the smallest value in a set of expressions.
 
 == Syntax
 ----
-LEAST(<expression1> [,<expressionN>...])
+LEAST( <expression1> [, <expressionN>... ] )
 ----
 
 See also xref:greatest.adoc[GREATEST]

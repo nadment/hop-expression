@@ -20,7 +20,7 @@ This function returns the number of minutes between two timestamps.
 
 == Syntax
 ----
-MINUTES_BETWEEN(<datetime1>, <datetime2>)
+MINUTES_BETWEEN( <datetime1> , <datetime2> )
 ----
 
 == Usage

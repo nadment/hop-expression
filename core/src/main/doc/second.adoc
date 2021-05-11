@@ -20,7 +20,7 @@ Returns the second of the specified timestamp.
 
 == Syntax
 ----
-SECOND(<timestamp>)
+SECOND( <timestamp> )
 ----
 
 == Usage

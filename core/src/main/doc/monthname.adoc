@@ -14,11 +14,11 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= MONTH_NAME
+= MONTHNAME
 
 Returns the name of the month (in English).
 
 == Syntax
 ----
-MONTH_NAME(<date_or_timestamp>)
+MONTHNAME( <date_or_timestamp> )
 ----

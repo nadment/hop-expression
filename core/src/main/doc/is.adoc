@@ -19,8 +19,9 @@ under the License.
 Check whether a value is or is not null, true or false.
 
 == Syntax
+[source,sql]
 ----
-IS [NOT] TRUE|FALSE|NULL
+IS [NOT] TRUE | FALSE | NULL
 ----
 
 

@@ -20,7 +20,7 @@ This function computes a number raised to the specified power.
 
 == Syntax
 ----
-POWER(<base>, <exponent>)
+POWER( <base> , <exponent> )
 ----
 The ** operator provides alternative syntax.
 ----

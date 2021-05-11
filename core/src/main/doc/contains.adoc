@@ -20,7 +20,7 @@ Returns true if string contains pattern.
 
 == Syntax
 ----
-CONTAINS(<expr1>, <expr2>)
+CONTAINS( <expr1> , <expr2> )
 ----
 
 == Usage

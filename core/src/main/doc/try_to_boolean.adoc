@@ -20,8 +20,10 @@ Converts the input text or numeric expression to a Boolean value.
 
 == Syntax
 ----
-TRY_TO_BOOLEAN(<text_or_numeric>)
+TRY_TO_BOOLEAN( <text_or_numeric> )
 ----
+
+Return:: Boolean
 
 == Usage
 

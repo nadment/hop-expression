@@ -20,5 +20,5 @@ This function calculates the hyperbolic cosine of its argument.
 
 == Syntax
 ----
-COSH(<numeric>)
+COSH( <numeric> )
 ----

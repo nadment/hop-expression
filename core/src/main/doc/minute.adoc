@@ -20,7 +20,7 @@ Returns the minute component of the specified timestamp.
 
 == Syntax
 ----
-MINUTE(<timestamp>)
+MINUTE( <timestamp> )
 ----
 
 == Usage

@@ -21,7 +21,7 @@ Case-sensitive matching of strings based on comparison with a pattern.
 == Syntax
 [source,sql]
 ----
-<string> [NOT] LIKE <pattern> [ESCAPE <escape>]
+<string> [NOT] LIKE <pattern> [ ESCAPE <escape> ]
 ----
 
 == Usage

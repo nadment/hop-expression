@@ -20,7 +20,7 @@ Returns the values rounded to the nearest integer.
 
 == Syntax
 ----
-ROUND(<numeric>)
+ROUND( <numeric> )
 ----
 
 See also xref:ceil.adoc[CEIL], xref:floor.adoc[FLOOR]

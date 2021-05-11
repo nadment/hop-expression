@@ -20,7 +20,7 @@ This function returns the day of week of the specified date or timestamp.
 
 == Syntax
 ----
-DAYOFWEEK(<date_or_timestamp>)
+DAYOFWEEK( <date_or_timestamp> )
 ----
 
 == Usage

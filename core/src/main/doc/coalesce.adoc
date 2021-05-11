@@ -16,14 +16,15 @@ under the License.
 ////
 = COALESCE
 
-The function returns the first of its arguments that is not null. Null is returned only if all arguments are null
+The function returns the first of its arguments that is not null.
 
 == Syntax
 
 ----
-COALESCE(<expr1>, <expr2>[, <exprN>...])
+COALESCE( <expr1> , <expr2> [, <exprN>... ] )
 ----
 
 == Usage
 
-All arguments must have the same data type.
+* All arguments must have the same data type.
+* Null is returned only if all arguments are null.

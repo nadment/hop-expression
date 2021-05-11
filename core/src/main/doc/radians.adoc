@@ -20,7 +20,7 @@ Converts degrees to radians.
 
 == Syntax
 ----
-RADIANS(numeric_expression)
+RADIANS( <numeric> )
 ----
 
 == Usage

@@ -20,13 +20,12 @@ The function calculate the SHA-384 hash of a data value.
 
 == Syntax
 ----
-SHA384(<string>)
+SHA384( <string> )
 ----
+
+<string>:: A string expression, the message to be hashed.
+Returns:: String
 
 == Usage
 
 * The hash will be returned as a 96 characters hex-encoded string.
-
-Returns::
-
-Number

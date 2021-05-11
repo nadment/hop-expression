@@ -20,13 +20,11 @@ This function calculates the square-root of a non-negative numeric expression.
 
 == Syntax
 ----
-SQRT(<numeric>)
+SQRT( <numeric> )
 ----
 
 == Usage
 
 If the input expression is negative, an error will be reported.
 
-Returns::
-
-numeric
+Return:: Number

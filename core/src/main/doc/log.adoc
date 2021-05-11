@@ -20,7 +20,7 @@ This function calculates the logarithm of <number> with base <b>.
 
 == Syntax
 ----
-LOG10(<b>,<number>)
+LOG10( <b> , <number> )
 ----
 
 == Usage

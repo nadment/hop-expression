@@ -20,10 +20,10 @@ This function return the week of the year.
 
 == Syntax
 ----
-WEEK(<date>)
+WEEK( <date> )
 ----
 ----
-WEEKOFYEAR(<date>)
+WEEKOFYEAR( <date> )
 ----
 
 == Usage

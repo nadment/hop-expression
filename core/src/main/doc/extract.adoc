@@ -20,7 +20,7 @@ Extracts the specified date or time part from a date, time, or timestamp.
 
 == Syntax
 ----
-EXTRACT(<part> FROM <date_or_timestamp>)
+EXTRACT( <part> FROM <date_or_timestamp> )
 ----
 
 == Usage

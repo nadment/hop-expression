@@ -16,7 +16,7 @@ under the License.
 ////
 = CONCAT, ||
 
-This function returns the result of concatenation of two or more string.
+This function combines multiple strings into one.
 
 The || operator provides alternative syntax.
 
@@ -25,5 +25,5 @@ The || operator provides alternative syntax.
 CONCAT(<string1>, <string2>[, <string3>...])
 ----
 ----
-<string1> || <string2>
+<string1> || <string2> [ || ... ]
 ----

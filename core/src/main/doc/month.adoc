@@ -20,7 +20,7 @@ Returns the month of the specified date or timestamp.
 
 == Syntax
 ----
-MONTH(<date>)
+MONTH( <date> )
 ----
 
 == Usage

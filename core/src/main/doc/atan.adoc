@@ -21,7 +21,7 @@ This function calculates the inverse tangent (arc tangent) of a number.
 
 == Syntax
 ----
-ATAN(<number>)
+ATAN( <number> )
 ----
 
 == Usage
