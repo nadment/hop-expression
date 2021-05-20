@@ -106,8 +106,8 @@
     <clonenumfield>DYNAMIC_FIELD_NAME</clonenumfield>
     <attributes/>
     <GUI>
-      <xloc>256</xloc>
-      <yloc>272</yloc>
+      <xloc>272</xloc>
+      <yloc>368</yloc>
     </GUI>
   </transform>
   <transform>
@@ -265,133 +265,188 @@
     </partitioning>
     <fields>
       <field>
-        <field>FIELD_STRING</field>
         <expression>/** 
  * Multi line comment
  * 
  */
 
 Left(Upper(FIELD_STRING),5) || '|' || TO_CHAR([YEAR]+1,'FM9999') || CASE when ${DYNAMIC_FIELD_NAME}%2>0 then 'A' else 'B' end</expression>
+        <length>-1</length>
+        <name>FIELD_STRING</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>LITERAL_TIMESTAMP</field>
         <expression>Date '2020-05-18 15:28:59'</expression>
+        <length>-1</length>
+        <name>LITERAL_TIMESTAMP</name>
+        <precision>-1</precision>
         <type>Timestamp</type>
       </field>
       <field>
-        <field>LITERAL_STRING</field>
         <expression>'Escape single quotes in expression is to use two single '' quotes '</expression>
+        <length>-1</length>
+        <name>LITERAL_STRING</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>LITERAL_NUMBER</field>
         <expression>-2.3E-2</expression>
+        <length>-1</length>
+        <name>LITERAL_NUMBER</name>
+        <precision>-1</precision>
         <type>Number</type>
       </field>
       <field>
-        <field>LITERAL_INTEGER</field>
         <expression>123456</expression>
+        <length>-1</length>
+        <name>LITERAL_INTEGER</name>
+        <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
-        <field>LITERAL_DATE</field>
         <expression>Date '2020-05-18'</expression>
+        <length>-1</length>
+        <name>LITERAL_DATE</name>
+        <precision>-1</precision>
         <type>Date</type>
       </field>
       <field>
-        <field>LITERAL_BOOLEAN</field>
         <expression>TRUE</expression>
+        <length>-1</length>
+        <name>LITERAL_BOOLEAN</name>
+        <precision>-1</precision>
         <type>Boolean</type>
       </field>
       <field>
-        <field>LITERAL_NULL</field>
         <expression>NULL</expression>
+        <length>-1</length>
+        <name>LITERAL_NULL</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>LITERAL_BINARY_BIT</field>
         <expression>0b000000010000000000000010000000000000001000010011101110011</expression>
+        <length>-1</length>
+        <name>LITERAL_BINARY_BIT</name>
+        <precision>-1</precision>
         <type>Binary</type>
       </field>
       <field>
-        <field>LITERAL_BINARY_HEX</field>
         <expression>0xFFFEEEE0000AAA0</expression>
+        <length>-1</length>
+        <name>LITERAL_BINARY_HEX</name>
+        <precision>-1</precision>
         <type>Binary</type>
       </field>
       <field>
-        <field>LITERAL_BIGNUMBER</field>
         <expression>123456789012345678901234567890.123456</expression>
+        <length>-1</length>
+        <name>LITERAL_BIGNUMBER</name>
+        <precision>-1</precision>
         <type>BigNumber</type>
       </field>
       <field>
-        <field>ROOT COST CENTER</field>
         <expression>// When a field name contains one or more space, the field name must be enclosed in square brackets.
 
 Left([COST CENTER],3)</expression>
+        <length>-1</length>
+        <name>ROOT COST CENTER</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>OS_NAME</field>
         <expression>// Support function alias 
 UCASE('${os.name}')</expression>
+        <length>-1</length>
+        <name>OS_NAME</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>MATH</field>
         <expression>100+3*COS(FIELD_NUMBER%1)/SIN(-10.58)</expression>
+        <length>-1</length>
+        <name>MATH</name>
+        <precision>-1</precision>
         <type>Number</type>
       </field>
       <field>
-        <field>NEXT_YEAR</field>
         <expression>// Reserved keyword enclosed in square brackets is an identifier
 [YEAR]+1</expression>
+        <length>-1</length>
+        <name>NEXT_YEAR</name>
+        <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
-        <field>AGE</field>
         <expression>DAYS_BETWEEN(Date '1980-05-18',Date(2020,6,29))</expression>
+        <length>-1</length>
+        <name>AGE</name>
+        <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
-        <field>TOMORROW</field>
         <expression>trunc(CURRENT_DATE() + 1,'DAY')</expression>
+        <length>-1</length>
+        <name>TOMORROW</name>
+        <precision>-1</precision>
         <type>Date</type>
       </field>
       <field>
-        <field>FIRST_DAY_OF_CURRENT_WEEK</field>
         <expression>trunc(CURRENT_DATE(),'WEEK')</expression>
+        <length>-1</length>
+        <name>FIRST_DAY_OF_CURRENT_WEEK</name>
+        <precision>-1</precision>
         <type>Date</type>
       </field>
       <field>
-        <field>FIRST_DAY_NEXT_MONTH</field>
         <expression>ADD_DAYS(LAST_DAY(CURRENT_DATE()),1)</expression>
+        <length>-1</length>
+        <name>FIRST_DAY_NEXT_MONTH</name>
+        <precision>-1</precision>
         <type>Date</type>
       </field>
       <field>
-        <field>CAST_STRING_TO_INTEGER</field>
         <expression>Cast(TO_CHAR(Current_date(),'YYYYMMDD') as INTEGER)</expression>
+        <length>-1</length>
+        <name>CAST_STRING_TO_INTEGER</name>
+        <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
-        <field>CAST_STRING_TO_BOOLEAN</field>
         <expression>'Yes'::Boolean</expression>
+        <length>-1</length>
+        <name>CAST_STRING_TO_BOOLEAN</name>
+        <precision>-1</precision>
         <type>Boolean</type>
       </field>
       <field>
-        <field>CAST_NUMBER_TO_STRING_WITH_FORMAT</field>
         <expression>Cast([FIELD_NUMBER] as STRING format 'FML999G999G990D00S')</expression>
+        <length>-1</length>
+        <name>CAST_NUMBER_TO_STRING_WITH_FORMAT</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>CAST_NUMBER_TO_STRING</field>
         <expression>[FIELD_NUMBER]::STRING</expression>
+        <length>-1</length>
+        <name>CAST_NUMBER_TO_STRING</name>
+        <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <field>USE_EXPRESSION_RESULT</field>
         <expression>LITERAL_INTEGER*3</expression>
+        <length>-1</length>
+        <name>USE_EXPRESSION_RESULT</name>
+        <precision>-1</precision>
         <type>Integer</type>
+      </field>
+      <field>
+        <expression>Regexp_Replace(LITERAL_STRING, 's+','s')</expression>
+        <length>-1</length>
+        <name>TEST</name>
+        <precision>-1</precision>
+        <type>String</type>
       </field>
     </fields>
     <attributes/>

@@ -52,7 +52,7 @@ import java.util.List;
 public class ExpressionMeta extends BaseTransformMeta
     implements ITransformMeta<ExpressionTransform, ExpressionData> {
 
-  private static final Class<?> PKG = ExpressionMeta.class; // for i18n purposes
+  private static final Class<?> PKG = ExpressionMeta.class;
  
   @HopMetadataProperty(groupKey = "fields", key = "field", injectionGroupDescription = "ExpressionMeta.Injection.Fields", injectionKeyDescription = "ExpressionMeta.Injection.Field")
   private List<ExpressionField> fields;
@@ -138,8 +138,8 @@ public class ExpressionMeta extends BaseTransformMeta
       PipelineMeta pipelineMeta,
       TransformMeta transformMeta,
       IRowMeta prev,
-      String input[],
-      String output[],
+      String[] input,
+      String[] output,
       IRowMeta info,
       IVariables variables,
       IHopMetadataProvider metadataProvider) {

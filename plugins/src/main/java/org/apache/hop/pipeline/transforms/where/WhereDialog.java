@@ -29,6 +29,7 @@ import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
+import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.expression.ExpressionEditor;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
@@ -85,13 +86,6 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     props.setLook(shell);
 
-    // Default listener (for hitting "enter")
-    lsDef = new SelectionAdapter() {
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e) {
-        ok();
-      }
-    };
 
     // The ModifyListener used on all controls. It will update the meta object to
     // indicate that changes are being made.
@@ -114,29 +108,12 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     // during dialog population
     this.transformMeta.setChanged(changed);
 
-    // Detect X or ALT-F4 or something that kills this window...
-    shell.addShellListener(new ShellAdapter() {
-      @Override
-      public void shellClosed(ShellEvent e) {
-        cancel();
-      }
-    });
-
-    // Set/Restore the dialog size based on last position on screen
-    setSize(shell);
-
     // Set focus on transform name
     wTransformName.setText(this.transformName);
     wTransformName.selectAll();
     wTransformName.setFocus();
 
-    // Open dialog and enter event loop
-    shell.open();
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch()) {
-        display.sleep();
-      }
-    }
+    BaseDialog.defaultShellHandling(shell, c -> ok(), c -> cancel());
 
     // The "transformName" variable is inherited from BaseTransformDialog
     return transformName;
@@ -222,7 +199,6 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -ConstUi.ICON_SIZE).result());
     wTransformName.addModifyListener(lsMod);
-    wTransformName.addSelectionListener(lsDef);
     props.setLook(wTransformName);
 
     final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);

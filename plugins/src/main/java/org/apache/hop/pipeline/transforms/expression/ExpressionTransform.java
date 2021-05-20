@@ -129,11 +129,6 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
             + Const.CR + Const.getSimpleStackTrace( ex ) + Const.CR + Const.getStackTracker( ex ) );
           
           throw new HopException(message, ex);
-          
-          //logError(message);
-          //setErrors(1);
-          //stopAll();
-          //return false;
         }
       }
     }
@@ -199,7 +194,6 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
       case IValueMeta.TYPE_STRING:
-        // return meta.getString(value);
         return Operator.coerceToString(value);
       case IValueMeta.TYPE_NUMBER:
         return Operator.coerceToNumber(value);

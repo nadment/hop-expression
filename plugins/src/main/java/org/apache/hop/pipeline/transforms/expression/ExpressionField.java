@@ -37,7 +37,6 @@ public class ExpressionField {
     this.expression = other.expression;
     this.name=other.name;
     this.type = other.type;
-    this.format=other.format;
     this.length=other.length;
     this.precision=other.precision;
   }
@@ -53,13 +52,10 @@ public class ExpressionField {
   private String type;
 
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Length")
-  private int length;
+  private int length = -1;
 
   @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Precision")
-  private int precision;
-
-  @HopMetadataProperty(injectionKeyDescription = "ExpressionMeta.Injection.Field.Format")
-  private String format;
+  private int precision = -1;
 
   public String getName() {
     return name;
@@ -91,14 +87,6 @@ public class ExpressionField {
 
   public void setLength(int length) {
     this.length = length;
-  }
-
-  public String getFormat() {
-    return format;
-  }
-
-  public void setFormat(String format) {
-    this.format = StringUtils.stripToNull(format);
   }
 
   public int getPrecision() {
