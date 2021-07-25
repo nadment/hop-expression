@@ -20,7 +20,10 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 
-/** Date part */
+/**
+ * A date part can be used with expression functions such as extract(). It describes a
+ * part of a date / datetime value
+ */
 public enum DatePart {
   /** The number of seconds since 1970-01-01 00:00:00.00 */
   EPOCH,
@@ -31,7 +34,7 @@ public enum DatePart {
   /** First day of its century. */
   CENTURY,
 
-  /** First day of its decade. */
+  /** First day of its decade. The year divided by 10. */
   DECADE,
 
   /** The years */
@@ -49,11 +52,11 @@ public enum DatePart {
   /** The number (1 - 31) of the day */
   DAY("DD"),
 
-  /** A number (1 for Sunday, 2 for Monday, …, 7 for Saturday) indicating the day of the week */
+  /** A number (1 = Sunday, 2 = Monday, …, 7 = Saturday) indicating the day of the week */
   DAYOFWEEK("DOW"),
 
   /**
-   * A number (1 for Monday, …, 7 for Sunday) indicating the day of the week following the ISO-8601
+   * A number (1 = Monday, …, 7 = Sunday) indicating the day of the week following the ISO-8601
    * standard
    */
   DAYOFWEEKISO("DOWISO"),
@@ -70,7 +73,7 @@ public enum DatePart {
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
 
-  /** The quarter (1, 2, 3, or 4) of the year */
+  /** The quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
   QUARTER("Q"),
 
   /** The hour (0-23). */
@@ -78,20 +81,24 @@ public enum DatePart {
 
   /** The minute (0-59). */
   MINUTE("MI"),
+  
   /** The second (0-59). */
   SECOND("SS"),
-
+  
+  /** The millisecond. */
   MILLISECOND("MS"),
-
+  
+  /** The microsecond. */
   MICROSECOND("MCS"),
-
+  
+  /** The nanosecond. */
   NANOSECOND("NS"),
 
   // TIMEZONE_REGION,
 
-  /** The hour component of the time zone offset */
+  /** The time zone offset's hour part. */
   TIMEZONE_HOUR,
-  /** The minute component of the time zone offset */
+  /**  The time zone offset's minute part. */
   TIMEZONE_MINUTE
 
   ;
