@@ -65,7 +65,8 @@ public class BaseOptimizerTest {
 
   @Test
   public void test() throws Exception {
-    optimize("1+AGE+3"); // TODO: operator swap
-    //optimize("AGE+3+1");
+    //optimize("1+AGE+3"); // TODO: operator swap
+    optimize("EXTRACT(YEAR FROM OrderDate)", "YEAR(OrderDate)");
+    // optimize("AGE+3+1");
   }
 }

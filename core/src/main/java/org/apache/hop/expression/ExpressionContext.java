@@ -39,35 +39,36 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   protected static final ZoneId UTC_ZONE = ZoneId.of("UTC");
 
   /**
-   * This parameter prevents ambiguous dates when importing or converting data with the YY date format.
+   * This parameter prevents ambiguous dates when importing or converting data with the YY date
+   * format.
    * Control Two-digit year, when set to 1980, values of 79 and 80 parsed as 2079 and 1980
-   * respectively. 
+   * respectively.
    */
   public static final String TWO_DIGIT_CENTURY_START = "TWO_DIGIT_CENTURY_START";
 
   /**
-   * The date format used for conversions between dates and strings. 
+   * The date format used for conversions between dates and strings.
    */
   public static final String NLS_DATE_FORMAT = "NLS_DATE_FORMAT";
-  
+
   /**
    * The timestamp format used for conversions between timestamps and strings
    */
   public static final String NLS_TIMESTAMP_FORMAT = "NLS_TIMESTAMP_FORMAT";
-  
+
   /**
    * Defines the first day of a week.
    * The integer value follows the ISO-8601 standard, from 1 (Monday) to 7 (Sunday).
    */
   public static final String NLS_FIRST_DAY_OF_WEEK = "WEEK_START";
-  
+
   public static final String ATTRIBUTE_CURRENT_DATE = "DATE";
-  /*package*/ static final String ATTRIBUTE_RANDOM = "RANDOM";
+  public static final String ATTRIBUTE_RANDOM = "RANDOM";
 
   private IVariables variables;
   private IRowMeta rowMeta;
   private Object[] row;
-  
+
   private ZoneId zone;
   private Locale locale;
   private int twoDigitCenturyStart = 1970;
@@ -75,51 +76,54 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   public ExpressionContext(IVariables variables, IRowMeta rowMeta) {
     this(variables);
-    
+
     this.rowMeta = Objects.requireNonNull(rowMeta);
-  }  
-  
+  }
+
   public ExpressionContext(IVariables variables) {
     super();
 
     this.variables = variables;
     this.locale = Locale.getDefault();
-    this.zone = UTC_ZONE;   
-    
-    this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"), ScriptContext.ENGINE_SCOPE);
-    this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"), ScriptContext.ENGINE_SCOPE);
-    this.setAttribute(TWO_DIGIT_CENTURY_START, variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ScriptContext.ENGINE_SCOPE);
+    this.zone = UTC_ZONE;
 
-   
+    this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"),
+        ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"),
+        ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(TWO_DIGIT_CENTURY_START,
+        variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ScriptContext.ENGINE_SCOPE);
+
+
     final Calendar calendar = Calendar.getInstance(locale);
     DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
-    
-     
+
+
     try {
-      String variable =
-          Variables.getADefaultVariableSpace().getVariable(TWO_DIGIT_CENTURY_START, "1970");
+      String variable = variables.getVariable(TWO_DIGIT_CENTURY_START, "1970");
       this.twoDigitCenturyStart = Integer.parseInt(variable);
     } catch (NumberFormatException e) {
       throw new ExpressionException(
           BaseMessages.getString(PKG, "Expression.InvalidVariable", TWO_DIGIT_CENTURY_START));
     }
 
-    // Initialize  
+    // Initialize
     this.setAttribute(ATTRIBUTE_CURRENT_DATE, Instant.now(), ScriptContext.ENGINE_SCOPE);
     this.setAttribute(ATTRIBUTE_RANDOM, new SecureRandom(), ScriptContext.ENGINE_SCOPE);
   }
 
-  
+
   public void setRow(Object[] row) {
     this.row = row;
   }
-  
+
   @Override
   public Object resolve(String name) throws ExpressionException {
 
-    if ( rowMeta==null )
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.NoRowMeta", name));
     
+    if (rowMeta == null)
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.NoRowMeta", name));
+
     int index = rowMeta.indexOfValue(name);
     if (index < 0)
       throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FieldNotFound", name));
@@ -127,13 +131,14 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     IValueMeta valueMeta = rowMeta.getValueMeta(index);
     try {
       switch (valueMeta.getType()) {
-        case IValueMeta.TYPE_BOOLEAN:          
-         return  rowMeta.getBoolean(row, index);
+        case IValueMeta.TYPE_BOOLEAN:
+          return rowMeta.getBoolean(row, index);
         case IValueMeta.TYPE_DATE:
         case IValueMeta.TYPE_TIMESTAMP:
           // No getTimestamp from RowMeta ???
           Date date = rowMeta.getDate(row, index);
-          if (date == null) return null;
+          if (date == null)
+            return null;
           return date.toInstant();
         case IValueMeta.TYPE_STRING:
           return rowMeta.getString(row, index);
@@ -147,7 +152,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
           return rowMeta.getBinary(row, index);
       }
     } catch (HopValueException e) {
-      throw new ExpressionException("Error resolve field value "+name+":" + e.toString());
+      throw new ExpressionException("Error resolve field value " + name + ":" + e.toString());
     }
 
     return null;
@@ -157,22 +162,22 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     return Locale.getDefault();
   }
 
-//  public void setLocale(Locale locale) {
-//    this.locale = locale;
-//  }
+  // public void setLocale(Locale locale) {
+  // this.locale = locale;
+  // }
 
   public ZoneId getZone() {
     return zone;
   }
 
-//  public void setZone(ZoneId zone) {
-//    this.zone = zone;
-//  }
+  // public void setZone(ZoneId zone) {
+  // this.zone = zone;
+  // }
 
   public int getTwoDigitCenturyStart() {
     return twoDigitCenturyStart;
   }
-  
+
   public int getFirstDayOfWeek() {
     return 1;
   }

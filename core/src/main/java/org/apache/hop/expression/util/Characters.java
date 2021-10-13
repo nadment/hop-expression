@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,9 +28,9 @@ public class Characters {
   private static final byte IS_HEXDIGIT = 0x02;
 
   private static final byte IS_ALPHA = 0x04;
-  
+
   private static final byte IS_DELIMITER = 0x08;
-  
+
 
   static {
     for (int ch = '0'; ch <= '9'; ch++) {
@@ -49,11 +49,13 @@ public class Characters {
       FLAGS[ch] |= IS_ALPHA;
     }
 
-    char[] delimiters = {' ','.',',',':',';','\t','\'','?','!','@','"','^','#','$','&','~','_','=','+','-','*','%','/','|','\\','[',']','(',')','{','}','<','>'}; 
-    for (int ch:delimiters) {
+    char[] delimiters =
+        {' ', '.', ',', ':', ';', '\t', '\'', '?', '!', '@', '"', '^', '#', '$', '&', '~', '_', '=',
+            '+', '-', '*', '%', '/', '|', '\\', '[', ']', '(', ')', '{', '}', '<', '>'};
+    for (int ch : delimiters) {
       FLAGS[ch] |= IS_DELIMITER;
     }
-    
+
   }
 
   /**
@@ -88,7 +90,7 @@ public class Characters {
     }
     return (FLAGS[ch] & IS_ALPHA) != 0;
   }
- 
+
   /**
    * Determines if the specified character is alphabetic or digit
    *
@@ -101,13 +103,13 @@ public class Characters {
     }
     return (FLAGS[ch] & (IS_ALPHA | IS_DIGIT)) != 0;
   }
-  
+
   /**
    * Is the character a word delimiter
    * 
    * ! ? @ " ^ # $ & ~ _ , . : ; = + - * % / | \ [ ] ( ) { } < >
    * 
-   * @param ch  the character to check
+   * @param ch the character to check
    * @return true if it is a delimiter
    */
   public static boolean isWordDelimiter(char ch) {
@@ -116,22 +118,22 @@ public class Characters {
     }
     return (FLAGS[ch] & (IS_DELIMITER)) != 0;
   }
-  
+
   /**
    * Determines if the specified character is space or tab
-   *  
- 
-   *  
+   * 
+   * 
+   * 
    * @param ch
    * @return
    */
   public static boolean isSpace(char ch) {
-    return ch == ' ' || ch == '\t' || ch=='\n';
+    return ch == ' ' || ch == '\t' || ch == '\n';
   }
-  
+
   public static boolean isExponent(char ch) {
     return ch == 'e' || ch == 'E';
   }
-  
-  
+
+
 }

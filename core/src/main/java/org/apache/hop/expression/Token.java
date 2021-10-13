@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,8 +45,7 @@ public class Token {
      */
     CONCAT("||"),
 
-    CAST,
-    AS,
+    CAST, AS,
     /** The AT TIME ZONE */
     AT,
     /** CAST(numeric AS datatype FORMAT '9999') */
@@ -91,7 +90,7 @@ public class Token {
 
     /** The AT TIME ZONE */
     ZONE,
-    
+
     /** Identifier */
     IDENTIFIER,
 
@@ -109,10 +108,10 @@ public class Token {
     /** ESCAPE word for like operator */
     ESCAPE,
 
-    //		/**
-    //		 * TOOD: remove or implement:  The arithmetic power operator, "**".
-    //		 */
-    //		POWER("**"),
+    // /**
+    // * TOOD: remove or implement: The arithmetic power operator, "**".
+    // */
+    // POWER("**"),
 
     /** The arithmetic remainder operator, "MOD" (and "%" in some dialects). */
     MODULUS("%"),
@@ -151,7 +150,8 @@ public class Token {
     /**
      * Compares whether two expressions are equal.
      *
-     * <p>The function is NULL-safe, meaning it treats NULLs as known values for comparing equality.
+     * <p>
+     * The function is NULL-safe, meaning it treats NULLs as known values for comparing equality.
      * Note that this is different from the EQUAL comparison operator (=), which treats NULLs as
      * unknown values.
      */
@@ -193,16 +193,9 @@ public class Token {
     /** The literal value "FALSE". */
     FALSE,
 
-    ELSE,
-    THEN,
-    END,
-    WHEN,
+    ELSE, THEN, END, WHEN,
 
-    HOUR,
-    MINUTE,
-    SECOND,
-    DATATYPE,
-    DATEPART;
+    HOUR, MINUTE, SECOND, DATATYPE, DATEPART;
 
     private final String source;
 
@@ -216,7 +209,8 @@ public class Token {
 
     @Override
     public String toString() {
-      if (this.source.equals(this.name())) return source;
+      if (this.source.equals(this.name()))
+        return source;
       return this.name() + '(' + source + ')';
     }
   }
@@ -245,25 +239,25 @@ public class Token {
     return id;
   }
 
-  /** 
+  /**
    * Returns the start index of the token in the original source.
    */
   public int start() {
     return start;
   }
 
-  /** 
+  /**
    * Returns the end index of the token in the original source.
    */
   public int end() {
     return end;
   }
-  
-  /** 
+
+  /**
    * Returns the length of the token.
    */
   public int length() {
-    return end-start;
+    return end - start;
   }
 
   /** Returns the token value. */

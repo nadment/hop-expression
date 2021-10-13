@@ -33,7 +33,7 @@ under the License.
 |DS||Short date format 
 |E|&#10003;|Abbreviated era name (Japanese, Chinese, Thai) 
 |EE|&#10003;|Full era name (Japanese, Chinese, Thai)
-|FF[1-9]||Fractional seconds
+|FF FF0 FF3 FF6 FF9||Fractional seconds. FF0 (seconds), FF3 (milliseconds), FF6 (microseconds), FF9 (nanoseconds). Specifying FF is equivalent to FF6
 |FM||Returns values with no leading or trailing spaces 
 |FX||Requires exact matches between character data and format model [NOT_IMPLEMENTED] 
 |HH HH12||Hour in AM/PM (1-12)
@@ -59,7 +59,7 @@ under the License.
 |TS||Short time format 
 |TZD||Daylight savings time zone abbreviation 
 |TZR||Time zone region information
-|TZH||Time zone hour
+|TZH||Time zone hour. Can be prefixed by +/- for sign.
 |TZM||Time zone minute
 |X||Local radix character
 |===

@@ -45,9 +45,11 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public void write(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
-    if (name.indexOf(' ') >= 0 || ExpressionRegistry.getInstance().isReservedWord(name) || DataType.exist(name) || DatePart.exist(name) || ExpressionRegistry.getInstance().isFunctionName(name) ) {
+    if (name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name)
+        || Type.exist(name) || DatePart.exist(name)
+        || OperatorRegistry.getInstance().isFunctionName(name)) {
       writer.append('[');
       writer.append(this.name);
       writer.append(']');
@@ -58,21 +60,21 @@ public class Identifier implements IExpression {
 
   @Override
   public int hashCode() {
-     return name.hashCode();
+    return name.hashCode();
   }
 
   @Override
-  public boolean equals(Object o) {    
+  public boolean equals(Object o) {
     if (this == o)
-        return true;    
+      return true;
     if (o == null)
-        return false;
+      return false;
     if (getClass() != o.getClass())
-        return false;
-    
-    return name.equals(((Identifier)o).name);
+      return false;
+
+    return name.equals(((Identifier) o).name);
   }
-  
+
   @Override
   public String toString() {
     return this.name;

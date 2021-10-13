@@ -138,27 +138,27 @@ public abstract class NumberFormat extends BaseFormat {
 
   private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
-  public static NumberFormat ofPattern(String pattern)  {
+  public static NumberFormat ofPattern(String pattern) {
     if (pattern == null)
       pattern = "TM";
-    
-    return cache.computeIfAbsent(pattern, NumberFormat::create);  
+
+    return cache.computeIfAbsent(pattern, NumberFormat::create);
   }
-  
+
   private static NumberFormat create(String pattern) {
 
-    if ( pattern.indexOf('|')>=0 ) {
-      List<NumberFormat> formats = new ArrayList<>(); 
-      for(String p: pattern.split("\\|")) {
-        NumberFormat format = new SimpleNumberFormat(p); 
-        formats.add(format);          
+    if (pattern.indexOf('|') >= 0) {
+      List<NumberFormat> formats = new ArrayList<>();
+      for (String p : pattern.split("\\|")) {
+        NumberFormat format = new SimpleNumberFormat(p);
+        formats.add(format);
       }
       return new CompositeNumberFormat(pattern, formats.toArray(new SimpleNumberFormat[0]));
-    } 
-    
+    }
+
     return new SimpleNumberFormat(pattern);
   }
-  
+
   public static final BigDecimal parse(String value, int precision, int scale)
       throws ParseException {
 
@@ -172,7 +172,7 @@ public abstract class NumberFormat extends BaseFormat {
 
     return result;
   }
-  
+
   /**
    * Parses text from a string to produce a <code>Number</code>.
    * 
@@ -181,6 +181,7 @@ public abstract class NumberFormat extends BaseFormat {
    * @throws ParseException
    */
   public abstract BigDecimal parse(String text) throws ParseException;
+
   /**
    * Format number with number format.
    *
@@ -188,5 +189,5 @@ public abstract class NumberFormat extends BaseFormat {
    * @param locale the locale to use
    * @return the formatted number
    */
-  public abstract String format(BigDecimal number);  
+  public abstract String format(BigDecimal number);
 }

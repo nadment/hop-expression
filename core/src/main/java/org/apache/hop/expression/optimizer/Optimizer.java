@@ -14,11 +14,11 @@
  */
 package org.apache.hop.expression.optimizer;
 
-import org.apache.hop.expression.ExpressionCall;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.optimizer.rules.ArithmeticRule;
 import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
 import org.apache.hop.expression.optimizer.rules.DeterministicRule;
@@ -34,12 +34,12 @@ import java.util.List;
 public class Optimizer {
 
   public interface Rule {
-    public IExpression apply(IExpressionContext context, ExpressionCall call);
+    public IExpression apply(IExpressionContext context, OperatorCall call);
   }
 
   private static final List<Rule> RULES = Arrays.asList(new ReorderAssociativeRule(),
-      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(), new CombineConcatRule(),
-      new SimplifyBooleanRule(), new DeterministicRule());
+      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(),
+      new CombineConcatRule(), new SimplifyBooleanRule(), new DeterministicRule());
 
   /**
    * Try to optimize the expression.
@@ -51,8 +51,8 @@ public class Optimizer {
   public IExpression optimize(IExpressionContext context, IExpression expression)
       throws ExpressionException {
 
-    if (expression instanceof ExpressionCall) {
-      return optimizeCall(context, (ExpressionCall) expression);
+    if (expression instanceof OperatorCall) {
+      return optimizeCall(context, (OperatorCall) expression);
     } else if (expression instanceof ExpressionList) {
       return optimizeList(context, (ExpressionList) expression);
     }
@@ -70,37 +70,38 @@ public class Optimizer {
     return new ExpressionList(elements);
   }
 
-  protected IExpression optimizeCall(IExpressionContext context, ExpressionCall call) {
+  protected IExpression optimizeCall(IExpressionContext context, OperatorCall call) {
 
-    List<IExpression> operands = new ArrayList<>(call.getOperandCount());
+    IExpression operands[] = new IExpression[call.getOperandCount()];
+
     for (int i = 0; i < call.getOperandCount(); i++) {
       IExpression operand = optimize(context, call.getOperand(i));
       for (Rule rule : RULES) {
-        if (operand instanceof ExpressionCall) {
-          operand = rule.apply(context, (ExpressionCall) operand);
-        } 
+        if (operand instanceof OperatorCall) {
+          operand = rule.apply(context, (OperatorCall) operand);
+        }
       }
-      operands.add(operand);
+      operands[i] = operand;
     }
     IExpression expression = call.clone(operands);
-    
-    for (Rule rule : RULES) {    
-      if (expression instanceof ExpressionCall) {
-        expression = rule.apply(context, (ExpressionCall) expression);
+
+    for (Rule rule : RULES) {
+      if (expression instanceof OperatorCall) {
+        expression = rule.apply(context, (OperatorCall) expression);
       }
     }
 
-    
-//    IExpression expression = call;
-//    for (Rule rule : RULES) {
-//      if (expression instanceof ExpressionCall) {
-//        expression = rule.apply(context, (ExpressionCall) expression);
-//      } else
-//        break;
-//    }
 
-//    if (!original.equals(expression) && expression instanceof ExpressionCall)
-//      return optimizeCall(context, (ExpressionCall) expression);
+    // IExpression expression = call;
+    // for (Rule rule : RULES) {
+    // if (expression instanceof ExpressionCall) {
+    // expression = rule.apply(context, (ExpressionCall) expression);
+    // } else
+    // break;
+    // }
+
+    // if (!original.equals(expression) && expression instanceof ExpressionCall)
+    // return optimizeCall(context, (ExpressionCall) expression);
 
     return expression;
   }

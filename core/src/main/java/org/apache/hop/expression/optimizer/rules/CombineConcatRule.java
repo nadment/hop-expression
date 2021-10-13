@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,31 +16,30 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
-import org.apache.hop.expression.ExpressionCall;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CombineConcatRule implements Rule {
   @Override
-  public IExpression apply(IExpressionContext context, ExpressionCall call) {
+  public IExpression apply(IExpressionContext context, OperatorCall call) {
 
-    if (call.getKind()==Kind.CONCAT) {
+    if (call.is(Operator.CONCAT)) {
       ArrayList<IExpression> operands = new ArrayList<>();
 
       for (IExpression expression : call.getOperands()) {
-        if (expression.getKind()==Kind.CONCAT) {
-          operands.addAll(Arrays.asList(((ExpressionCall) expression).getOperands()));
+        if (expression.is(Operator.CONCAT)) {
+          operands.addAll(Arrays.asList(((OperatorCall) expression).getOperands()));
         } else {
           operands.add(expression);
         }
       }
 
-      return new ExpressionCall(Operator.CONCAT, operands);
+      return call.clone(operands);
     }
 
     return call;

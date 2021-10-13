@@ -75,13 +75,12 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <nrclones>100000000</nrclones>
     <addcloneflag>N</addcloneflag>
-    <cloneflagfield/>
-    <nrcloneinfield>N</nrcloneinfield>
-    <nrclonefield>bb</nrclonefield>
     <addclonenum>Y</addclonenum>
     <clonenumfield>ROWNUM</clonenumfield>
+    <nrclonefield>bb</nrclonefield>
+    <nrcloneinfield>N</nrcloneinfield>
+    <nrclones>100000000</nrclones>
     <attributes/>
     <GUI>
       <xloc>240</xloc>
@@ -123,103 +122,68 @@
     </partitioning>
     <fields>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_STRING</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>String</type>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_NUMBER</name>
+        <precision>-1</precision>
         <type>Number</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_BOOLEAN</name>
+        <precision>-1</precision>
         <type>Boolean</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
       </field>
       <field>
-        <name>FIELD_DATE</name>
-        <type>Date</type>
+        <set_empty_string>N</set_empty_string>
         <format>yyyy-MM-dd</format>
-        <currency/>
-        <decimal/>
-        <group/>
         <length>-1</length>
+        <name>FIELD_DATE</name>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>Date</type>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_INTEGER</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>Integer</type>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_JSON</name>
+        <precision>-1</precision>
         <type>JSON</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_BINARY</name>
+        <precision>-1</precision>
         <type>Binary</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>YEAR</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>Integer</type>
       </field>
       <field>
-        <name>COST CENTER</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>COST CENTER</name>
+        <precision>-1</precision>
+        <type>String</type>
       </field>
     </fields>
     <data>
@@ -258,7 +222,7 @@
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
-    <copies>1</copies>
+    <copies>2</copies>
     <partitioning>
       <method>none</method>
       <schema_name/>
@@ -445,6 +409,13 @@ UCASE('${os.name}')</expression>
         <expression>Regexp_Replace(LITERAL_STRING, 's+','s')</expression>
         <length>-1</length>
         <name>TEST</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>UUID()</expression>
+        <length>-1</length>
+        <name>UUID</name>
         <precision>-1</precision>
         <type>String</type>
       </field>

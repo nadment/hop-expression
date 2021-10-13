@@ -204,8 +204,6 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("InitCap()");
   }
 
-
-
   @Test
   public void Instr() throws Exception {
     evalEquals("Instr('abcdefgh','abc')", 1);
@@ -658,6 +656,7 @@ public class FunctionTest extends BaseExpressionTest {
   public void Power() throws Exception {
     evalEquals("Power(3,2)", 9D);
     evalEquals("Power(100,0.5)", 10D);
+    evalEquals("Power(-4,2)", 16D);
     evalEquals("Power(0,0)", 1D);
     evalEquals("Power(999,0)", 1D);
     evalNull("Power(NULL,2)");
@@ -884,8 +883,8 @@ public class FunctionTest extends BaseExpressionTest {
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
     Locale.setDefault(new Locale("fr", "BE"));
-    // evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
-    // evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
+    evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
+    evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
 
     // Format with Currency dollar
     Locale.setDefault(new Locale("en", "US"));
@@ -1241,7 +1240,13 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('2019-02-13','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 0, 0));
 
+    // Fractional seconds. FF0 (seconds), FF3 (milliseconds), FF6 (microseconds), FF9 (nanoseconds).
+    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
+    evalEquals("To_Date('2019-02-13 19:34:56.123','YYYY-MM-DD HH24:MI:SS.FF3')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123000000));
+    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF6')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
+    evalEquals("To_Date('2019-02-13 19:34:56.123456789','YYYY-MM-DD HH24:MI:SS.FF9')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456789));
 
+    
     // Rule to try alternate format MM -> MON and MONTH
     evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     // Rule to try alternate format MM -> MON and MONTH
@@ -1270,6 +1275,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
+    
 
     // Is interpreted as 12 May 2003, 00:00:10.123
     // evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
@@ -1375,9 +1381,9 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
     evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
-    // evalEquals("Extract(millisecond from Timestamp '2020-05-25 00:00:01.1234567')", 123);
-    // evalEquals("Extract(microsecond from Timestamp '2020-05-25 00:00:01.1234567')", 123456);
-    evalEquals("Extract(nanosecond  from Timestamp '2020-05-25 00:00:01.1234567')", 1234567);
+    evalEquals("Extract(Millisecond from Timestamp '2020-05-25 00:00:01.123456')", 123);
+    evalEquals("Extract(Microsecond from Timestamp '2020-05-25 00:00:01.123456')", 123456);
+    evalEquals("Extract(Nanosecond from Timestamp '2020-05-25 00:00:01.123456')", 123456000);
 
     evalNull("Extract(SECOND from NULL)");
 
@@ -1471,11 +1477,11 @@ public class FunctionTest extends BaseExpressionTest {
 
     evalTrue("Regexp_Like('A','[a-z]','i')");
     evalFalse("Regexp_Like('A','[a-z]','c')");
-    
+
     // An empty pattern '' matches nothing
     evalFalse("Regexp_Like('','')");
     evalFalse("Regexp_Like('ABC','')");
-    
+
     evalNull("Regexp_Like(null,'A')");
     evalNull("Regexp_Like('A', null)");
 
@@ -1490,13 +1496,15 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
     evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
 
-    evalEquals("Regexp_Replace('This line    contains    more      than one   spacing      between      words', '( ){2,}', ' ')", "This line contains more than one spacing between words");
+    evalEquals(
+        "Regexp_Replace('This line    contains    more      than one   spacing      between      words', '( ){2,}', ' ')",
+        "This line contains more than one spacing between words");
     evalEquals("Regexp_Replace('ABCEFG', 'A..','WXYZ')", "WXYZEFG");
     evalEquals("Regexp_Replace('ABCEFG', '[A-Z]','',1,1)", "BCEFG");
 
     // An empty pattern matches nothing
     evalEquals("Regexp_Replace('ABCDEEEEEEFG', '','E')", "ABCDEEEEEEFG");
-    
+
     // Back reference
     evalEquals("Regexp_Replace('FIRSTNAME MIDDLENAME LASTNAME','(.*) (.*) (.*)','\\3, \\1 \\2')",
         "LASTNAME, FIRSTNAME MIDDLENAME");
@@ -1510,9 +1518,11 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Regexp_Instr() throws Exception {
     evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6);
-    evalEquals("Regexp_Instr('hello to YOU', '(.o).', 1, 3, 1,'i')",13);    
-    evalEquals("Regexp_Instr('REGEXP_INSTR is an advanced extension of the INSTR function','[:a-z]{3,8}', 3, 2, 1)", 37);
-    
+    evalEquals("Regexp_Instr('hello to YOU', '(.o).', 1, 3, 1,'i')", 13);
+    evalEquals(
+        "Regexp_Instr('REGEXP_INSTR is an advanced extension of the INSTR function','[:a-z]{3,8}', 3, 2, 1)",
+        37);
+
     // An empty pattern matches nothing
     evalEquals("Regexp_Instr('email@apache.org', '')", 0);
   }
@@ -1520,17 +1530,19 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Regexp_Substr() throws Exception {
     evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache");
-    evalEquals("regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)", "regexp_substr");
-    
+    evalEquals("regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)",
+        "regexp_substr");
+
     // [[:alnum:]] >>> \p{Alnum}
-    //evalEquals("regexp_substr('http://www.apache.org/products', 'http://([a-zA-Z0-9]+\\.?){3,4}/?')", "http://www.apache.org/");
-    
+    // evalEquals("regexp_substr('http://www.apache.org/products',
+    // 'http://([a-zA-Z0-9]+\\.?){3,4}/?')", "http://www.apache.org/");
+
     // An empty pattern matches nothing
     evalNull("regexp_substr('email@apache.org', '')");
-    
+
     evalNull("regexp_substr(null,  '@[^.]*')");
     evalNull("regexp_substr('email@apache.org', null)");
-    
+
   }
 
   @Test

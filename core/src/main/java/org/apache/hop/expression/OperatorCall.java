@@ -20,37 +20,31 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Objects;
 
-/** A <code>ExpressionCall</code> is a call to an {@link Operator operator}. */
-public class ExpressionCall implements IExpression {
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
+/** A <code>OperatorCall</code> is a call to an {@link Operator operator}. */
+public class OperatorCall implements IExpression {
 
-  private final Operator operator;
-  private final IExpression[] operands;
+  protected final Operator operator;
+  protected final IExpression[] operands;
 
-  public ExpressionCall(Operator operator, IExpression... operands) throws ExpressionException {
+  public OperatorCall(Operator operator, IExpression... operands) throws ExpressionException {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands;
-
-    operator.checkNumberOfArguments(operands.length);
   }
 
-  public ExpressionCall(Operator operator, List<IExpression> operands) throws ExpressionException {
+  public OperatorCall(Operator operator, List<IExpression> operands) throws ExpressionException {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
-
-    operator.checkNumberOfArguments(this.operands.length);
   }
 
-  @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-      return operator.eval(context, operands);
+    return operator.eval(context, operands);
   }
 
   @Override
   public Kind getKind() {
-    return operator.kind;
+    return Kind.OPERATOR;
   }
 
   @Override
@@ -92,9 +86,19 @@ public class ExpressionCall implements IExpression {
    *
    * @param operands Operands to call
    * @return New call
+   * @throws EXpressionException
    */
-  public ExpressionCall clone(List<IExpression> operands) {
-    return new ExpressionCall(operator, operands);
+  public OperatorCall clone(IExpression... operands) {
+    return new OperatorCall(operator, operands);
+    // try {
+    // @SuppressWarnings("unchecked")
+    // Constructor<OperatorCall> constructor =
+    // (Constructor<OperatorCall>) this.getClass().getConstructor(IExpression[].class);
+    // return constructor.newInstance((Object) operands);
+    // } catch (NoSuchMethodException | SecurityException | InstantiationException
+    // | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    // throw new ExpressionException("Error clone",e);
+    // }
   }
 
   /**
@@ -102,28 +106,37 @@ public class ExpressionCall implements IExpression {
    *
    * @param operands Operands to call
    * @return New call
+   * @throws EXpressionException
    */
-  public ExpressionCall clone(IExpression... operands) {
-    return new ExpressionCall(operator, operands);
+  public OperatorCall clone(List<IExpression> operands) {
+    return new OperatorCall(operator, operands);
+  }
+
+  @Override
+  public void write(StringWriter writer) {
+    operator.write(writer, operands);
   }
 
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    write(writer, 0, 0);
+    write(writer);
     return writer.toString();
   }
 
-  @Override
-  public void write(StringWriter writer, int leftPrec, int rightPrec) {
 
-    if ((leftPrec < operator.getLeftPrecedence() && (rightPrec != 0))
-        || (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
-      writer.append('(');
-      operator.write(writer, this, 0, 0);
-      writer.append(')');
-    } else {
-      operator.write(writer, this, leftPrec, rightPrec);
-    }
-  }
+
+  // @Override
+  // public void write(StringWriter writer, int leftPrec, int rightPrec) {
+  //
+  // if ((leftPrec < operator.getLeftPrecedence() && (rightPrec != 0))
+  // || (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
+  // writer.append('(');
+  // operator.write(writer, this, 0, 0);
+  // writer.append(')');
+  // } else {
+  // operator.write(writer, this, leftPrec, rightPrec);
+  // }
+  // }
+
 }

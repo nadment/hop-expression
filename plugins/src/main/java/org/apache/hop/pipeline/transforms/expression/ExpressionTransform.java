@@ -124,8 +124,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.SyntaxError",
               field.getName(), field.getExpression(), ex.toString());
 
-          logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.UnexpectedeError" ) + " : " + ex.toString() );
-          logError( BaseMessages.getString( PKG, "ScriptValuesMod.Log.ErrorStackTrace" )
+          logError( BaseMessages.getString( PKG, "ExpressionTransform.Log.UnexpectedeError" ) + " : " + ex.toString() );
+          logError( BaseMessages.getString( PKG, "ExpressionTransform.Log.ErrorStackTrace" )
             + Const.CR + Const.getSimpleStackTrace( ex ) + Const.CR + Const.getStackTracker( ex ) );
           
           throw new HopException(message, ex);

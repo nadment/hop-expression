@@ -25,11 +25,6 @@ import java.time.ZonedDateTime;
  * Expression representing a literal value.
  */
 public class Literal implements IExpression {
-//  private static final DateTimeFormatter TIMESTAMP_FORMAT =
-//      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.nnn").withLocale(Locale.ROOT)
-//          .withZone(ZoneId.systemDefault());
-//  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//      .withLocale(Locale.ROOT).withZone(ZoneId.systemDefault());
 
   public static final Literal UNKNOWN = new Literal(null);
   public static final Literal TRUE = new Literal(Boolean.TRUE);
@@ -72,12 +67,12 @@ public class Literal implements IExpression {
         return ONE;
       return new Literal(number);
     }
-    
-    if (value instanceof String || value instanceof Instant) {      
+
+    if (value instanceof String || value instanceof Instant) {
       return new Literal(value);
     }
-    
-    throw new IllegalArgumentException("Invalid literal: "+value);
+
+    throw new IllegalArgumentException("Invalid literal: " + value);
   }
 
   private Object value;
@@ -116,7 +111,7 @@ public class Literal implements IExpression {
 
     if (other instanceof Literal) {
       Literal o = (Literal) other;
-      if (value == null ) {
+      if (value == null) {
         return (o.value == null);
       }
       return value.equals(o.value);
@@ -127,29 +122,27 @@ public class Literal implements IExpression {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    write(writer,0,0);    
+    write(writer);
     return writer.toString();
   }
-  
+
   @Override
-  public void write(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer) {
     if (value == null) {
       writer.append("NULL");
     } else if (value instanceof String) {
       writer.append('\'');
       writer.append((String) value);
       writer.append('\'');
-    } 
-    else if (value instanceof Instant) {
+    } else if (value instanceof Instant) {
       Instant instant = (Instant) value;
       if (instant.getNano() > 0) {
         writer.append("TIMESTAMP '");
-        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant,ZoneId.of("UTC"));
+        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
         writer.append(DateTimeFormat.ofPattern("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
-      }      
-      else {
+      } else {
         writer.append("DATE '");
-        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant,ZoneId.of("UTC"));
+        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
         writer.append(DateTimeFormat.ofPattern("YYYY-MM-DD").format(datetime));
       }
       writer.append('\'');

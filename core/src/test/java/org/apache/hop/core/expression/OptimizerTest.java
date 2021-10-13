@@ -65,44 +65,44 @@ public class OptimizerTest {
 
   @Test
   public void simplifyInRule() throws Exception {
-    optimize("FIELD in ([FIELD], FIELD,1,2,1,null,FIELD,null)","FIELD IN (1,2,NULL,FIELD)");
+    optimize("FIELD in ([FIELD], FIELD,1,2,1,null,FIELD,null)", "FIELD IN (1,2,NULL,FIELD)");
   }
-  
+
   @Test
   public void simplifyLikeRule() throws Exception {
     optimizeNull("FIELD LIKE NULL");
     optimizeNull("NULL LIKE FIELD");
-    optimize("FIELD LIKE 'Hello'","FIELD='Hello'");
-    optimize("FIELD LIKE 'H%'","STARTSWITH(FIELD,'H')");
-    optimize("FIELD LIKE '%o'","ENDSWITH(FIELD,'o')");    
-    optimize("FIELD LIKE '%Hello%'","CONTAINS(FIELD,'Hello')");
+    optimize("FIELD LIKE 'Hello'", "FIELD='Hello'");
+    optimize("FIELD LIKE 'H%'", "STARTSWITH(FIELD,'H')");
+    optimize("FIELD LIKE '%o'", "ENDSWITH(FIELD,'o')");
+    optimize("FIELD LIKE '%Hello%'", "CONTAINS(FIELD,'Hello')");
   }
 
   @Test
   public void simplifyExtractRule() throws Exception {
-    optimize("EXTRACT(YEAR FROM OrderDate)","YEAR(OrderDate)");
-    optimize("EXTRACT(MONTH FROM OrderDate)","MONTH(OrderDate)");
-    optimize("EXTRACT(QUARTER FROM OrderDate)","QUARTER(OrderDate)");
-    optimize("EXTRACT(DAY FROM OrderDate)","DAY(OrderDate)");
-    optimize("EXTRACT(HOUR FROM OrderDate)","HOUR(OrderDate)");
-    optimize("EXTRACT(MINUTE FROM OrderDate)","MINUTE(OrderDate)");
-    optimize("EXTRACT(SECOND FROM OrderDate)","SECOND(OrderDate)");
-    optimize("EXTRACT(WEEK FROM OrderDate)","WEEK(OrderDate)");
-    optimize("EXTRACT(DAYOFYEAR FROM OrderDate)","DAYOFYEAR(OrderDate)");
-    optimize("EXTRACT(DAYOFWEEK FROM OrderDate)","DAYOFWEEK(OrderDate)");
+    optimize("EXTRACT(YEAR FROM OrderDate)", "YEAR(OrderDate)");
+    optimize("EXTRACT(MONTH FROM OrderDate)", "MONTH(OrderDate)");
+    optimize("EXTRACT(QUARTER FROM OrderDate)", "QUARTER(OrderDate)");
+    optimize("EXTRACT(DAY FROM OrderDate)", "DAY(OrderDate)");
+    optimize("EXTRACT(HOUR FROM OrderDate)", "HOUR(OrderDate)");
+    optimize("EXTRACT(MINUTE FROM OrderDate)", "MINUTE(OrderDate)");
+    optimize("EXTRACT(SECOND FROM OrderDate)", "SECOND(OrderDate)");
+    optimize("EXTRACT(WEEKOFYEAR FROM OrderDate)", "WEEKOFYEAR(OrderDate)");
+    optimize("EXTRACT(DAYOFYEAR FROM OrderDate)", "DAYOFYEAR(OrderDate)");
+    optimize("EXTRACT(DAYOFWEEK FROM OrderDate)", "DAYOFWEEK(OrderDate)");
   }
- 
+
   @Test
   public void simplifyBooleanRule() throws Exception {
     optimizeFalse("not true");
     optimizeTrue("not false");
     optimizeTrue("not not true");
     optimizeFalse("not not false");
-    optimize("not(FIELD>5)","FIELD<=5");
-    optimize("not(FIELD>=5)","FIELD<5");
-    optimize("not(FIELD<5)","FIELD>=5");
-    optimize("not(FIELD<=5)","FIELD>5");    
-    
+    optimize("not(FIELD>5)", "FIELD<=5");
+    optimize("not(FIELD>=5)", "FIELD<5");
+    optimize("not(FIELD<5)", "FIELD>=5");
+    optimize("not(FIELD<=5)", "FIELD>5");
+
     optimizeTrue("true or true");
     optimizeTrue("true or false");
     optimizeTrue("false or true");
@@ -166,18 +166,18 @@ public class OptimizerTest {
     optimize("DayOfMonth(Date '2019-02-15')", "15");
     optimize("DayOfMonth(Date(2019,2,15))", "15");
   }
-  
+
   @Test
   public void combineConcatsRule() throws Exception {
     // Same syntax but cost reduced
-    optimize("'A'||FIELD1||FIELD2||'C'","'A'||FIELD1||FIELD2||'C'");     
-    optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')))","'A'||FIELD1||FIELD2||'C'");
+    optimize("'A'||FIELD1||FIELD2||'C'", "'A'||FIELD1||FIELD2||'C'");
+    optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')))", "'A'||FIELD1||FIELD2||'C'");
   }
-    
+
   @Test
   public void permutationRule() throws Exception {
-    //optimize("1+AGE+3+FIELD+5","8+AGE+FIELD"); 
-    optimize("AGE+3+1","4+AGE");
+    // optimize("1+AGE+3+FIELD+5","8+AGE+FIELD");
+    optimize("AGE+3+1", "4+AGE");
     // TODO: optimize("4*AGE*0.5","2.0*AGE");
   }
 }

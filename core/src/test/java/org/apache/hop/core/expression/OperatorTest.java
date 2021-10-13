@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class ExpressionTest extends BaseExpressionTest {
+public class OperatorTest extends BaseExpressionTest {
 
   @Test
   public void Comment() throws Exception {
@@ -74,12 +74,6 @@ public class ExpressionTest extends BaseExpressionTest {
     writeEquals("[IDENTIFIER SPACE]+1");
   }
 
-  @Test
-  public void LiteralBoolean() throws Exception {
-    evalTrue("True");
-    evalFalse("FaLsE");
-    evalNull("NULL");
-  }
 
   @Test
   public void CoercionBoolean() throws Exception {
@@ -105,131 +99,6 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'OFF'=false");
     evalTrue("'F'=false");
     evalTrue("'FALSE'=false");
-  }
-
-  @Test
-  public void LiteralDate() throws Exception {
-    evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
-    evalEquals("Date '21-02-25'", LocalDate.of(21, 2, 25));
-    evalEquals("Date '2021-Feb-25'", LocalDate.of(2021, 2, 25));
-
-    writeEquals("DATE '2021-02-25'");
-  }
-
-  @Test
-  public void LiteralTime() throws Exception {
-    //evalEquals("Time '23:48:59'", LocalDateTime.of(1970, 1, 1, 23, 48, 59));
-    //evalEquals("Time '01:05'", LocalDateTime.of(1970, 1, 1, 1, 5, 0));
-    //evalEquals("Time '10:30 am'", LocalDateTime.of(1900, 1, 1, 10, 30,0));
-    //evalEquals("Time '06:25:15 PM'", LocalDateTime.of(1900, 1, 1, 23, 48, 59));
-  }
-
-  @Test
-  public void LiteralTimestamp() throws Exception {
-    evalEquals("Timestamp '2021-02-25 2:59'", LocalDateTime.of(2021, 2, 25, 2, 59, 00));
-    evalEquals("Timestamp '2021-02-25 23:59'", LocalDateTime.of(2021, 2, 25, 23, 59, 00));
-    evalEquals("Timestamp '2021-02-25 23:59:59'", LocalDateTime.of(2021, 2, 25, 23, 59, 59));
-    evalEquals("Timestamp '2021-01-01 15:28:59'", LocalDateTime.of(2021, 1, 1, 15, 28, 59));
-    
-    // Time zone offset
-    evalEquals("Timestamp '2021-01-01 15:28:59 +2:00'", LocalDateTime.of(2021, 1, 1, 13, 28, 59));
-    evalEquals("Timestamp '2021-01-01 15:28:59 +02:00'", LocalDateTime.of(2021, 1, 1, 13, 28, 59));
-    evalEquals("Timestamp '2021-01-01 15:28:59 -02:00'", LocalDateTime.of(2021, 1, 1, 17, 28, 59));
-    
-    // TIMESTAMP '2004-02-19 8:00:00 US/Pacific');
-    
-    // Fraction seconds
-    evalEquals("Timestamp '2021-12-01 12:01:01.123456789'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456789));
-    evalEquals("Timestamp '2021-12-01 12:01:01.12345678'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 12345678));
-    evalEquals("Timestamp '2021-12-01 12:01:01.1234567'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 1234567));
-    evalEquals("Timestamp '2021-12-01 12:01:01.123456'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456));
-    evalEquals("Timestamp '2021-12-01 12:01:01.12345'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 12345));
-    evalEquals("Timestamp '2021-12-01 12:01:01.1234'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 1234));
-    evalEquals("Timestamp '2021-12-01 12:01:01.123'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123));
-    evalEquals("Timestamp '2021-12-01 12:01:01.12'", LocalDateTime.of(2021, 12, 1, 12, 01, 01, 12));
-    evalEquals("Timestamp '2021-12-01 12:01:01.1'", LocalDateTime.of(2021, 12, 1, 12, 01, 01, 1));
-   
-    
-    
-
-
-
-    writeEquals("TIMESTAMP '2021-12-01 12:01:01.123456789'");
-  }
-
-  @Test
-  public void LiteralString() throws Exception {
-
-    // Single quote
-    evalTrue("'test'='test'");
-
-    // Single quote with two adjacent single quotes
-    evalEquals("'te''st'", "te'st");
-    // evalEquals("'te\"st'", "te\"st");
-
-    writeEquals("'Test string'");
-  }
-
-
-  @Test
-  public void LiteralBinary() throws Exception {
-
-    // Hexadecimal
-    evalEquals("0xff", 255L);
-    evalEquals("0xfE", 254L);
-    evalEquals("0x0F", 15L);
-    evalFails("0X0F");
-    evalFails("0X0FG");
-
-    // Binary
-    evalEquals("0b10", 2L);
-    evalEquals("0b00000010", 2L);
-    evalEquals("0b011", 3L);
-    evalEquals("0b000000011111111", 255L);
-    evalEquals("0b00001010101010101010101010101101010101010101010101010101010101010101",
-        6.1489146933895936E18);
-    evalFails("0B010101");
-    evalFails("0B010501");
-  }
-
-
-  @Test
-  public void LiteralNumeric() throws Exception {
-
-    // Integer
-    evalEquals("-9223372036854775818", Long.MIN_VALUE);
-    evalEquals("9223372036854775807", Long.MAX_VALUE);
-
-    // Number
-    evalEquals("+.1", 0.1);
-    evalEquals("-.2", -0.2);
-    evalEquals("-0.2", -0.2);
-    evalEquals("-1.", -1);
-    evalEquals("2.3E2", 2.3E2);
-    evalEquals("2.3E+2", 2.3E2);
-    evalEquals("-2.3E-2", -2.3E-2);
-    evalEquals("-2.3e-2", -2.3E-2);
-
-    // Big number
-    evalEquals("15167890123456789012345678901234567890",
-        new BigDecimal("15167890123456789012345678901234567890"));
-
-    evalFails("..1");
-    evalFails(".0.1");
-    evalFails("2E2E2");
-    evalFails("2E-2.2");
-    evalFails("-2.3EE-2");
-    evalFails("-2.3E");
-    evalFails("-2.3E--2");
-
-    writeEquals("-2.3E-2", "-.023");
   }
 
   @Test
@@ -263,7 +132,6 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("1 in (1,,3)");
     evalFails("1 in (1,2,)");
     evalFails("Date '2020-20-28'");
-    // evalEquals("-4**2",-16);
   }
 
   @Test
@@ -282,12 +150,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("Age-(10+3*10+50-2*25)", 0);
 
-    // evalEquals("10**2+5", 105);
-    // evalEquals("5+10**2", 105);
-    // evalEquals("3*10**2", 300);
-    // evalEquals("10**2*3", 300);
-
-     evalEquals("2*'1.23'",2.46);
+    evalEquals("2*'1.23'", 2.46);
     // integer
 
     // NOT has higher precedence than AND, which has higher precedence than OR
@@ -356,8 +219,9 @@ public class ExpressionTest extends BaseExpressionTest {
   public void NotEqualTo() throws Exception {
     evalTrue("'bar' != 'foo'");
     evalTrue("NAME <> 'tEST'");
-    evalFalse("Age <> 40");
     evalFalse("Age != 40");
+    evalFalse("Age <> 40");
+
     evalTrue("1 <> 2");
     evalTrue("10 <> 0x10");
     evalFalse("1 <> '1'");
@@ -504,13 +368,13 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("2.5 IN (1,2.5,3)");
     evalTrue("'2' in (null,1,2,3)");
     evalTrue("Date '2019-01-01' in (Date '2019-04-01',Date '2019-01-01',Date '2019-03-06')");
-    //evalFalse("2 in ()");
     evalFalse("2 in (1,2.5,3)");
     evalTrue("2 in (null,1,2,3)");
     evalFalse("2 in (null,null,null)");
     evalFalse("1 not in (null,1)");
     evalNull("NULL in (1,2,3)");
-    evalNull("NULL in (null)");    
+    evalNull("NULL in (null)");
+
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
 
@@ -535,6 +399,7 @@ public class ExpressionTest extends BaseExpressionTest {
 
   @Test
   public void Addition() throws Exception {
+    evalEquals("Add(10,-0.5)", 9.5);
     evalEquals("0xF+0", 15);
     evalEquals("0b00011+0", 3);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
@@ -631,6 +496,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("CAST(-12.1 as Boolean)");
     evalFalse("CAST(0 as Boolean)");
 
+    // Number to Integer
     evalEquals("CAST(1.25 as Integer)", 1);
     // TODO: evalEquals("CAST(1.75 as Integer)",2);
 
@@ -673,7 +539,8 @@ public class ExpressionTest extends BaseExpressionTest {
 
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
-
+    evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2020, 1, 19, 11,23,44));
+    
     // Binary to Integer
     evalEquals("CAST(0x123 as Integer)", 291L);
 
@@ -695,7 +562,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("CAST(Date '2019-02-25' AS INTEGER)");
     evalFails("CAST(Date '2019-02-25' AS NUMBER)");
     evalFails("CAST(TRUE AS DATE)");
-    evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
+    evalFails("CAST(Date '2019-02-25' AS BOOLEAN )");
     evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
 
     // Bad syntax
@@ -761,20 +628,6 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("40/0");
   }
 
-  @Deprecated
-  public void Power() throws Exception {
-    evalEquals("4**2", 16);
-    evalEquals("-4**2", -16);
-    evalNull("null**1");
-    evalEquals("4**0", 1);
-    evalEquals("-4**0", -1);
-    evalEquals("(-2)**0", 1);
-    evalEquals("2**(3**2)", 512);
-    evalEquals("2**3**2", 512);
-    // -2**2=-(2**2)=-4
-    evalEquals("-2**2", -4);
-  }
-
   @Test
   public void BitNot() throws Exception {
     evalEquals("~1", -2);
@@ -824,7 +677,7 @@ public class ExpressionTest extends BaseExpressionTest {
   }
 
   @Test
-  public void LogicalNot() throws Exception {
+  public void BoolNot() throws Exception {
     evalTrue("FLAG is not false");
     evalTrue("NULLIS is null");
     evalTrue("NOT (NULLIS is not null)");
@@ -838,7 +691,7 @@ public class ExpressionTest extends BaseExpressionTest {
   }
 
   @Test
-  public void LogicalOr() throws Exception {
+  public void BoolOr() throws Exception {
     evalTrue("true OR true");
     evalTrue("true OR false");
     evalTrue("false OR true");
@@ -854,7 +707,7 @@ public class ExpressionTest extends BaseExpressionTest {
   }
 
   @Test
-  public void LogicalAnd() throws Exception {
+  public void BoolAnd() throws Exception {
     evalTrue("true AND true");
     evalFalse("true AND false");
     evalFalse("false AND true");

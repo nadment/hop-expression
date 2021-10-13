@@ -19,9 +19,9 @@ import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.ExpressionRegistry;
 import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -162,7 +162,7 @@ public class ExpressionEditor extends SashForm {
     HashMap<String, String> mapDisplay = new HashMap<>();
 
     // Inventory operator without alias first and category
-    for (Operator o : ExpressionRegistry.getInstance().getOperators()) {
+    for (Operator o : OperatorRegistry.getInstance().getOperators()) {
 
       if (!categories.contains(o.getCategory())) {
         categories.add(o.getCategory());
@@ -175,7 +175,7 @@ public class ExpressionEditor extends SashForm {
     }
 
     // Alias operator
-    for (Operator o : ExpressionRegistry.getInstance().getOperators()) {
+    for (Operator o : OperatorRegistry.getInstance().getOperators()) {
       if (o.getAlias() != null) {
         if (mapDisplay.containsKey(o.getName())) {
           String str = mapDisplay.get(o.getName());
@@ -281,7 +281,7 @@ public class ExpressionEditor extends SashForm {
 
           // Escape field name matching reserved words or function name
           String name = valueMeta.getName();
-          if (ExpressionRegistry.getInstance().isReservedWord(name) || ExpressionRegistry.getInstance().isFunctionName(name)) {
+          if (ExpressionScanner.isReservedWord(name) || OperatorRegistry.getInstance().isFunctionName(name)) {
             name = '[' + name + ']';
           }
 

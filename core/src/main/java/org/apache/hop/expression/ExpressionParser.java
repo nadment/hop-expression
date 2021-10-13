@@ -16,6 +16,7 @@ package org.apache.hop.expression;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Token.Id;
+import org.apache.hop.expression.operator.Function;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
@@ -39,15 +40,15 @@ public class ExpressionParser {
     ExpressionParser parser = new ExpressionParser(source);
     try {
       IExpression expression = parser.parse();
-      return expression;      
-    }
-    catch(ParseException e) {
-      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", e.getErrorOffset(), e.getMessage());
-      throw new ExpressionException(message, e ); 
-    }
-    catch(ExpressionException | IllegalArgumentException e) {
-      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(), e.getMessage());
-      throw new ExpressionException(message, e );       
+      return expression;
+    } catch (ParseException e) {
+      String message =
+          BaseMessages.getString(PKG, "Expression.SyntaxError", e.getErrorOffset(), e.getMessage());
+      throw new ExpressionException(message, e);
+    } catch (ExpressionException | IllegalArgumentException e) {
+      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(),
+          e.getMessage());
+      throw new ExpressionException(message, e);
     }
   }
 
@@ -130,12 +131,11 @@ public class ExpressionParser {
   private IExpression parseLogicalOr() throws ParseException {
     IExpression expression = this.parseLogicalAnd();
     while (next(Id.OR)) {
-      expression = new ExpressionCall(Operator.BOOLOR, expression, parseLogicalAnd());
+      expression = new OperatorCall(Operator.BOOLOR, expression, parseLogicalAnd());
     }
 
     return expression;
   }
-
 
   /**
    * Parse logical AND expression
@@ -148,7 +148,7 @@ public class ExpressionParser {
   private IExpression parseLogicalAnd() throws ParseException {
     IExpression expression = this.parseLogicalNot();
     while (next(Id.AND)) {
-      expression = new ExpressionCall(Operator.BOOLAND, expression, parseLogicalNot());
+      expression = new OperatorCall(Operator.BOOLAND, expression, parseLogicalNot());
     }
 
     return expression;
@@ -163,7 +163,7 @@ public class ExpressionParser {
   private IExpression parseLogicalNot() throws ParseException {
 
     if (next(Id.NOT)) {
-      return new ExpressionCall(Operator.BOOLNOT, this.parseLogicalNot());
+      return new OperatorCall(Operator.BOOLNOT, parseLogicalNot());
     }
 
     return this.parseIs();
@@ -182,9 +182,9 @@ public class ExpressionParser {
       if (next(Id.NOT)) {
         not = true;
       }
-      IExpression result = new ExpressionCall(Operator.IS, expression, this.parseLiteralBasic());
+      IExpression result = new OperatorCall(Operator.IS, expression, parseLiteralBasic());
       if (not)
-        return new ExpressionCall(Operator.BOOLNOT, result);
+        return new OperatorCall(Operator.BOOLNOT, result);
       return result;
     }
     return expression;
@@ -210,19 +210,19 @@ public class ExpressionParser {
 
       if (next(Id.ESCAPE)) {
         IExpression escape = this.parseCast();
-        expression = new ExpressionCall(Operator.LIKE, expression, pattern, escape);
+        expression = new OperatorCall(Operator.LIKE, expression, pattern, escape);
       } else
-        expression = new ExpressionCall(Operator.LIKE, expression, pattern);
+        expression = new OperatorCall(Operator.LIKE, expression, pattern);
     } else if (next(Id.ILIKE)) {
       IExpression pattern = this.parseAdditive();
 
       if (next(Id.ESCAPE)) {
         IExpression escape = this.parseAdditive();
-        expression = new ExpressionCall(Operator.ILIKE, expression, pattern, escape);
+        expression = new OperatorCall(Operator.ILIKE, expression, pattern, escape);
       } else
-        expression = new ExpressionCall(Operator.ILIKE, expression, pattern);
+        expression = new OperatorCall(Operator.ILIKE, expression, pattern);
     } else if (next(Id.IN)) {
-      expression = new ExpressionCall(Operator.IN, expression, this.parseList());
+      expression = new OperatorCall(Operator.IN, expression, this.parseList());
     } else if (next(Id.BETWEEN)) {
       IExpression begin = this.parseAdditive();
       if (!next(Id.AND)) {
@@ -232,11 +232,11 @@ public class ExpressionParser {
       }
       IExpression end = this.parseAdditive();
 
-      expression = new ExpressionCall(Operator.BETWEEN, expression, begin, end);
+      expression = new OperatorCall(Operator.BETWEEN, expression, begin, end);
     }
 
     if (not) {
-      return new ExpressionCall(Operator.BOOLNOT, expression);
+      return new OperatorCall(Operator.BOOLNOT, expression);
     }
 
     return expression;
@@ -252,11 +252,11 @@ public class ExpressionParser {
 
     while (hasNext()) {
       if (next(Id.MULTIPLY)) {
-        expression = new ExpressionCall(Operator.MULTIPLY, expression, this.parseBitwiseNot());
+        expression = new OperatorCall(Operator.MULTIPLY, expression, this.parseBitwiseNot());
       } else if (next(Id.DIVIDE)) {
-        expression = new ExpressionCall(Operator.DIVIDE, expression, this.parseBitwiseNot());
+        expression = new OperatorCall(Operator.DIVIDE, expression, this.parseBitwiseNot());
       } else if (next(Id.MODULUS)) {
-        expression = new ExpressionCall(Operator.MODULUS, expression, this.parseBitwiseNot());
+        expression = new OperatorCall(Operator.MODULUS, expression, this.parseBitwiseNot());
       } else
         break;
     }
@@ -267,7 +267,7 @@ public class ExpressionParser {
   /** ( UnaryExpression)* */
   private IExpression parseBitwiseNot() throws ParseException {
     if (next(Id.BITWISE_NOT)) {
-      return new ExpressionCall(Operator.BITNOT, this.parseUnary());
+      return new OperatorCall(Operator.BITNOT, this.parseUnary());
     }
     return this.parseUnary();
   }
@@ -276,7 +276,7 @@ public class ExpressionParser {
   private IExpression parseBitwiseAnd() throws ParseException {
     IExpression expression = this.parseFactor();
     if (next(Id.BITWISE_AND)) {
-      return new ExpressionCall(Operator.BITAND, expression, this.parseFactor());
+      return new OperatorCall(Operator.BITAND, expression, this.parseFactor());
     }
     return expression;
   }
@@ -285,7 +285,7 @@ public class ExpressionParser {
   private IExpression parseBitwiseOr() throws ParseException {
     IExpression expression = this.parseBitwiseXor();
     if (next(Id.BITWISE_OR)) {
-      return new ExpressionCall(Operator.BITOR, expression, this.parseBitwiseXor());
+      return new OperatorCall(Operator.BITOR, expression, this.parseBitwiseXor());
     }
     return expression;
   }
@@ -294,7 +294,7 @@ public class ExpressionParser {
   private IExpression parseBitwiseXor() throws ParseException {
     IExpression expression = this.parseBitwiseAnd();
     if (next(Id.BITWISE_XOR)) {
-      return new ExpressionCall(Operator.BITXOR, expression, this.parseBitwiseAnd());
+      return new OperatorCall(Operator.BITXOR, expression, this.parseBitwiseAnd());
     }
     return expression;
   }
@@ -303,7 +303,7 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ParseException {
 
     if (next(Id.MINUS)) {
-      return new ExpressionCall(Operator.NEGATIVE, this.parseCast());
+      return new OperatorCall(Operator.NEGATIVE, this.parseCast());
     }
     if (next(Id.PLUS)) {
       // Ignore
@@ -329,7 +329,7 @@ public class ExpressionParser {
       case NULL:
         return Literal.UNKNOWN;
       default:
-        // Syntax error        
+        // Syntax error
         throw new ParseException(" ERROR2 ", token.start());
     }
   }
@@ -353,7 +353,7 @@ public class ExpressionParser {
           return Literal.UNKNOWN;
         case IDENTIFIER:
           return new Identifier(token.text());
-        case LITERAL_STRING:          
+        case LITERAL_STRING:
           return parseLiteralText(token);
         case LITERAL_NUMBER:
           return parseLiteralNumber(token);
@@ -369,7 +369,7 @@ public class ExpressionParser {
           return parseLiteralTimestamp(next());
         case CASE:
           // FIXME: Case is not at the good place
-          return parseCaseWhen();        
+          return parseCaseWhen();
         case FUNCTION:
           return parseFunction(token);
         case LPARENTHESIS:
@@ -394,26 +394,26 @@ public class ExpressionParser {
     IExpression expression = this.parseRelational();
 
     if (next(Id.EQUAL)) {
-      return new ExpressionCall(Operator.EQUAL, expression, this.parseRelational());
+      return new OperatorCall(Operator.EQUAL, expression, this.parseRelational());
     }
     if (next(Id.NOT_EQUAL)) {
-      return new ExpressionCall(Operator.NOT_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(Operator.NOT_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_GREATER_THAN)) {
-      return new ExpressionCall(Operator.LESS_THAN_OR_GREATER_THAN, expression,
+      return new OperatorCall(Operator.LESS_THAN_OR_GREATER_THAN, expression,
           this.parseRelational());
     }
     if (next(Id.GREATER_THAN)) {
-      return new ExpressionCall(Operator.GREATER_THAN, expression, this.parseRelational());
+      return new OperatorCall(Operator.GREATER_THAN, expression, this.parseRelational());
     }
     if (next(Id.GREATER_THAN_OR_EQUAL)) {
-      return new ExpressionCall(Operator.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(Operator.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN)) {
-      return new ExpressionCall(Operator.LESS_THAN, expression, this.parseRelational());
+      return new OperatorCall(Operator.LESS_THAN, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_EQUAL)) {
-      return new ExpressionCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
     }
 
     return expression;
@@ -424,11 +424,11 @@ public class ExpressionParser {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
       if (next(Id.PLUS)) {
-        expression = new ExpressionCall(Operator.ADD, expression, this.parseBitwiseOr());
+        expression = new OperatorCall(Operator.ADD, expression, this.parseBitwiseOr());
       } else if (next(Id.MINUS)) {
-        expression = new ExpressionCall(Operator.SUBTRACT, expression, this.parseBitwiseOr());
+        expression = new OperatorCall(Operator.SUBTRACT, expression, this.parseBitwiseOr());
       } else if (next(Id.CONCAT)) {
-        expression = new ExpressionCall(Operator.CONCAT, expression, this.parseBitwiseOr());
+        expression = new OperatorCall(Operator.CONCAT, expression, this.parseBitwiseOr());
       } else
         break;
     }
@@ -506,7 +506,8 @@ public class ExpressionParser {
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
     try {
-      DateTimeFormat format = DateTimeFormat.ofPattern("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
+      DateTimeFormat format =
+          DateTimeFormat.ofPattern("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
       Instant instant = format.parse(token.text());
       return new Literal(instant);
     } catch (Exception e) {
@@ -516,17 +517,41 @@ public class ExpressionParser {
   }
 
   /**
-   * Parses a timestamp literal. The parsing is strict and requires months to be less than 12, days to be
+   * Parses a timestamp literal. The parsing is strict and requires months to be less than 12, days
+   * to be
    * less than 31, etc.
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
     try {
-      DateTimeFormat format = DateTimeFormat.ofPattern("YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS");
+      String pattern =
+          "YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS";
+      switch (token.text().length()) {
+        case 29:
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
+          break;
+        case 26:
+          if ( token.text().indexOf('.')>0 )
+            pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
+          else 
+            pattern = "YYYY-MM-DD HH24:MI:SS TZH:TZM";            
+          break;
+        case 23:
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
+          break;
+        case 20:
+          pattern = "YYYY-MM-DD HH24:MI:SS";
+          break;
+          
+        default:
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS";
+      }
+
+      DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
       Instant instant = format.parse(token.text());
-      return new Literal(instant);      
+      return new Literal(instant);
     } catch (Exception e) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp", token.text()),
-          token.start());
+      throw new ParseException(
+          BaseMessages.getString(PKG, "Expression.InvalidTimestamp", token.text()), token.start());
     }
   }
 
@@ -553,8 +578,7 @@ public class ExpressionParser {
         break;
       } while (true);
     }
-    throw new ParseException(
-        BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
+    throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
         this.getPosition());
   }
 
@@ -582,14 +606,14 @@ public class ExpressionParser {
 
     if (next(Id.ELSE)) {
       elseExpression = this.parseLogicalOr();
-    } 
+    }
 
     if (!next(Id.END)) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.CASE),
           this.getPosition());
     }
 
-    return new ExpressionCall(Operator.CASE, valueExpression, new ExpressionList(whenList),
+    return new OperatorCall(Operator.CASE, valueExpression, new ExpressionList(whenList),
         new ExpressionList(thenList), elseExpression);
   }
 
@@ -600,16 +624,16 @@ public class ExpressionParser {
   private IExpression parseCast() throws ParseException {
     IExpression expression = this.parseTerm();
     if (next(Id.CAST)) {
-      DataType type = parseDataType();
-      return new ExpressionCall(Operator.CAST, expression, new Literal(type));
+      Type type = parseType();
+      return new OperatorCall(Operator.CAST, expression, new Literal(type));
     }
     return expression;
   }
-  
+
   /** Function */
   private IExpression parseFunction(Token token) throws ParseException {
 
-    Function function = ExpressionRegistry.getInstance().getFunction(token.text());
+    Function function = OperatorRegistry.getInstance().getFunction(token.text());
     List<IExpression> operands = new ArrayList<>();
 
     if (is(Id.LPARENTHESIS))
@@ -620,36 +644,36 @@ public class ExpressionParser {
     }
 
     /** Cast(expression AS dataType FORMAT pattern) */
-    if ( function.getKind()==Kind.CAST || function.getKind()==Kind.TRY_CAST) {
+    if ("CAST".equals(function.getName()) || "TRY_CAST".equals(function.getName())) {
 
       operands.add(this.parseLogicalOr());
 
       if (!next(Id.AS)) {
-        throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
-            token.start());
+        throw new ParseException(
+            BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"), token.start());
       }
 
-      DataType type = parseDataType();
+      Type type = parseType();
       operands.add(new Literal(type));
 
       if (is(Id.FORMAT)) {
         next();
         token = next();
-        if ( token.is(Token.Id.LITERAL_STRING))
+        if (token.is(Token.Id.LITERAL_STRING))
           operands.add(this.parseLiteralText(token));
         else
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
-              token.start());          
+          throw new ParseException(
+              BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"), token.start());
       }
     }
 
     /** Extract(datePart FROM expression) */
-    if ( function.getKind()==Kind.EXTRACT ) {
+    else if ("EXTRACT".equals(function.getName())) {
 
       DatePart part = DatePart.of(next().text());
       operands.add(new Literal(part));
 
-      if (!next(Id.FROM)) {        
+      if (!next(Id.FROM)) {
         throw new ParseException(
             BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
             this.getPosition());
@@ -657,20 +681,22 @@ public class ExpressionParser {
 
       operands.add(this.parseLogicalOr());
 
-//      if (next(Id.AT)) {
-//        if (next(Id.TIME)) {
-//          if (next(Id.ZONE)) {
-//            operands.add(this.parseLogicalOr());
-//          }
-//        }        
-//      }
-      
+      // if (next(Id.AT)) {
+      // if (next(Id.TIME)) {
+      // if (next(Id.ZONE)) {
+      // operands.add(this.parseLogicalOr());
+      // }
+      // }
+      // }
+
+
     } else {
 
       // No param function
       if (is(Id.RPARENTHESIS)) {
         next();
-        return new ExpressionCall(function, operands);
+        function.checkNumberOfArguments(operands);
+        return new OperatorCall(function, operands);
       }
 
       operands.add(this.parseLogicalOr());
@@ -688,10 +714,12 @@ public class ExpressionParser {
           token.start());
     }
 
-    return new ExpressionCall(function, operands);
+    function.checkNumberOfArguments(operands);
+
+    return new OperatorCall(function, operands);
   }
 
-  private DataType parseDataType() throws ParseException {
+  private Type parseType() throws ParseException {
     Token token = next();
     if (token == null) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingDataType"),
@@ -699,7 +727,7 @@ public class ExpressionParser {
     }
 
     try {
-      return DataType.of(token.text());
+      return Type.of(token.text());
     } catch (RuntimeException e) {
       throw new ParseException(
           BaseMessages.getString(PKG, "Expression.InvalidDataType", token.text()), token.start());

@@ -47,16 +47,24 @@
     <dependencySets>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
-		       <outputDirectory>lib</outputDirectory>
+             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>org.apache.hop:hop-expression-core:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
+            <useProjectArtifact>false</useProjectArtifact>        
             <includes>
                 <include>org.apache.hop:hop-expression-plugins:jar</include>
             </includes>
         </dependencySet>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>org.eclipse.platform:org.eclipse.jface:jar</include>
+            </includes>
+        </dependencySet>
+                  
     </dependencySets>
 </assembly>

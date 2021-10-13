@@ -108,11 +108,11 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    write(writer, 0, 0);
+    write(writer);
     return writer.toString();
   }
 
-  public void write(StringWriter writer, int leftPrec, int rightPrec) {
+  public void write(StringWriter writer) {
 
     writer.append('(');
     boolean first = true;
@@ -122,7 +122,7 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
       else {
         writer.append(',');
       }
-      expression.write(writer, 2, 3);
+      expression.write(writer);
     }
     writer.append(')');
   }

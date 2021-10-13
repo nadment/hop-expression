@@ -12,17 +12,26 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.Type;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -45,9 +54,12 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -65,42 +77,49 @@ public class Function extends Operator {
 
   private static final Soundex SOUNDEX = new Soundex();
 
+  private final Object instance;
   private final Method method;
-
   private final int minArgs;
   private final int maxArgs;
 
-  protected Function(String name, String alias, boolean isDeterministic, Method method, int min,
-      int max, String category) {
-    super(name, alias, 10, 10, isDeterministic, category);
+  public Function(String name, String alias, boolean isDeterministic, Object instance,
+      Method method, int min, int max, String category) throws ExpressionException {
+    super(name, alias, isDeterministic, category);
 
+    this.instance = instance;
     this.method = method;
     this.minArgs = min;
     this.maxArgs = max;
   }
 
-  @Override
-  public void checkNumberOfArguments(int len) throws ExpressionException {
-    if (len < minArgs) {
+  /**
+   * Check if the number of arguments is correct.
+   *
+   * @param len the number of arguments set
+   * @throws error if not enough or too many arguments
+   */
+  public void checkNumberOfArguments(List<IExpression> operands) throws ExpressionException {
+
+    if (operands.size() < minArgs) {
       throw new ExpressionException(
           BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getName()));
     }
 
-    if (len > maxArgs) {
+    if (operands.size() > maxArgs) {
       throw new ExpressionException(
           BaseMessages.getString(PKG, "Expression.TooManyNumberOfArguments", this.getName()));
     }
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression... args)
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
     try {
       Object[] parameters = new Object[2];
       parameters[0] = context;
-      parameters[1] = args;
-      return method.invoke(this, parameters);
+      parameters[1] = operands;
+      return method.invoke((instance == null) ? this : instance, parameters);
     } catch (InvocationTargetException e) {
       throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionCallError",
           this.getName(), e.getTargetException().getMessage()), e);
@@ -111,9 +130,29 @@ public class Function extends Operator {
     }
   }
 
+  @Override
+  public void write(StringWriter writer, IExpression[] operands) {
+    if (instance instanceof Operator) {
+      ((Operator) instance).write(writer, operands);
+    } else {
+
+      writer.append(this.getName());
+      writer.append('(');
+      boolean first = true;
+      for (IExpression operand : operands) {
+        if (!first)
+          writer.append(',');
+        else
+          first = false;
+        operand.write(writer);
+      }
+      writer.append(')');
+    }
+  }
+
   @ScalarFunction(name = "CURRENT_DATE", alias = {"NOW", "SYSDATE"}, deterministic = false,
       minArgs = 0, maxArgs = 0, category = "i18n::Operator.Category.Date")
-  public Object current_date(final IExpressionContext context, final IExpression... args)
+  public Object current_date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
     return context.getAttribute(ExpressionContext.ATTRIBUTE_CURRENT_DATE);
@@ -127,64 +166,70 @@ public class Function extends Operator {
    * The function calculate the MD5 hash of a data value. The hash will be returned as a 32
    * characters hex-encoded string.
    *
-   * @see {@link #SHA1}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
+   * @see {@link #sha1}, {@link #sha256}, {@link #sha384}, {@link #sha512}
    */
   @ScalarFunction(name = "MD5", category = "i18n::Operator.Category.Cryptographic")
-  public Object md5(final IExpressionContext context, final IExpression... args) {
-    return getHash(args[0].eval(context), "MD5");
+  public Object md5(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "MD5");
   }
 
   /**
    * The function calculate the SHA-1 hash of a data value. The hash will be returned as a 40
    * characters hex-encoded string.
    *
-   * @see {@link #MD5}, {@link #SHA256}, {@link #SHA384}, {@link #SHA512}
+   * @see {@link #md5}, {@link #sha256}, {@link #sha384}, {@link #sha512}
    */
   @ScalarFunction(name = "SHA1", category = "i18n::Operator.Category.Cryptographic")
-  public Object sha1(final IExpressionContext context, final IExpression... args) {
-    return getHash(args[0].eval(context), "SHA-1");
+  public Object sha1(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-1");
   }
 
   /**
    * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
    * characters hex-encoded string.
    *
-   * @see {@link #MD5}, {@link #SHA1}, {@link #SHA384}, {@link #SHA512}
+   * @see {@link #md5}, {@link #sha1}, {@link #sha384}, {@link #sha512}
    */
   @ScalarFunction(name = "SHA256", category = "i18n::Operator.Category.Cryptographic")
-  public Object sha256(final IExpressionContext context, final IExpression... args) {
-    return getHash(args[0].eval(context), "SHA-256");
+  public Object sha256(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-256");
   }
 
   /**
    * The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96
    * characters hex-encoded string.
    *
-   * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA512}
+   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha512}
    */
   @ScalarFunction(name = "SHA384", category = "i18n::Operator.Category.Cryptographic")
-  public Object sha384(final IExpressionContext context, final IExpression... args) {
-    return getHash(args[0].eval(context), "SHA-384");
+  public Object sha384(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-384");
   }
 
   /**
    * The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128
    * characters hex-encoded string.
    *
-   * @see {@link #MD5}, {@link #SHA1}, {@link #SHA256}, {@link #SHA384}
+   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha384}
    */
   @ScalarFunction(name = "SHA512", category = "i18n::Operator.Category.Cryptographic")
-  public Object sha512(final IExpressionContext context, final IExpression... args) {
-    return getHash(args[0].eval(context), "SHA-512");
+  public Object sha512(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-512");
   }
 
   @ScalarFunction(name = "BITGET", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Bitwise")
-  public Object bitget(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object bitget(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
@@ -196,14 +241,16 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "PI", minArgs = 0, maxArgs = 0,
       category = "i18n::Operator.Category.Mathematical")
-  public Object pi(final IExpressionContext context, final IExpression... args) {
+  public Object pi(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
     return Math.PI;
   }
 
   /** Returns the absolute (positive) value of the numeric value. */
   @ScalarFunction(name = "ABS", category = "i18n::Operator.Category.Mathematical")
-  public Object abs(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object abs(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
 
@@ -222,8 +269,9 @@ public class Function extends Operator {
 
   /** Returns the sign of a number. */
   @ScalarFunction(name = "SIGN", category = "i18n::Operator.Category.Mathematical")
-  public Object sign(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object sign(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
     Double number = coerceToNumber(value);
@@ -234,8 +282,9 @@ public class Function extends Operator {
 
   /** Function to converts radians to degrees. */
   @ScalarFunction(name = "DEGREES", category = "i18n::Operator.Category.Mathematical")
-  public Object degrees(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object degrees(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.toDegrees(coerceToNumber(value));
@@ -243,8 +292,9 @@ public class Function extends Operator {
 
   /** The function converts degrees to radians. */
   @ScalarFunction(name = "RADIANS", category = "i18n::Operator.Category.Mathematical")
-  public Object radians(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object radians(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.toRadians(coerceToNumber(value));
@@ -252,8 +302,9 @@ public class Function extends Operator {
 
   /** Returns the exponential value of a numeric expression. */
   @ScalarFunction(name = "EXP", category = "i18n::Operator.Category.Mathematical")
-  public Object exp(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object exp(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.exp(coerceToNumber(value));
@@ -262,8 +313,9 @@ public class Function extends Operator {
   /** Returns the values rounded to the nearest equal or larger integer. */
   @ScalarFunction(name = "CEIL", alias = "CEILING",
       category = "i18n::Operator.Category.Mathematical")
-  public Object ceil(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object ceil(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     if (value instanceof Long)
@@ -276,8 +328,9 @@ public class Function extends Operator {
 
   /** Returns the values rounded to the nearest equal or smaller integer. */
   @ScalarFunction(name = "FLOOR", category = "i18n::Operator.Category.Mathematical")
-  public Object floor(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object floor(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     if (value instanceof Long)
@@ -290,8 +343,9 @@ public class Function extends Operator {
 
   /** Returns the values rounded to the nearest integer. */
   @ScalarFunction(name = "ROUND", category = "i18n::Operator.Category.Mathematical")
-  public Object round(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object round(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
     return FastMath.round(coerceToNumber(value));
@@ -299,25 +353,35 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "RANDOM", alias = "RAND", deterministic = false, minArgs = 0, maxArgs = 1,
       category = "i18n::Operator.Category.Mathematical")
-  public Object random(final IExpressionContext context, final IExpression... args) {
+  public Object random(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
 
     Random random = (Random) context.getAttribute(ExpressionContext.ATTRIBUTE_RANDOM);
 
-    if (args.length == 1) {
-      Object value = args[0].eval(context);
+    if (operands.length == 1) {
+      Object value = operands[0].eval(context);
       // FIXME: What if multi random with different SEED ?
       random.setSeed(coerceToInteger(value));
     }
     return random.nextDouble();
   }
 
+  /** Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122) */
+  @ScalarFunction(name = "UUID", minArgs = 0, maxArgs = 0, deterministic = false,
+      category = "i18n::Operator.Category.String")
+  public Object uuid(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+
+    return UUID.randomUUID().toString();
+  }
 
   /**
    * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
    */
   @ScalarFunction(name = "ACOS", category = "i18n::Operator.Category.Trigonometry")
-  public Object acos(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object acos(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     Double d = coerceToNumber(value);
@@ -328,16 +392,18 @@ public class Function extends Operator {
   }
 
   @ScalarFunction(name = "ACOSH", category = "i18n::Operator.Category.Trigonometry")
-  public Object acosh(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object acosh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.acosh(coerceToNumber(value));
   }
 
   @ScalarFunction(name = "ASINH", category = "i18n::Operator.Category.Trigonometry")
-  public Object asinh(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object asinh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -345,8 +411,9 @@ public class Function extends Operator {
   }
 
   @ScalarFunction(name = "ATAN", category = "i18n::Operator.Category.Trigonometry")
-  public Object atan(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object atan(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -354,8 +421,9 @@ public class Function extends Operator {
   }
 
   @ScalarFunction(name = "ATANH", category = "i18n::Operator.Category.Trigonometry")
-  public Object atanh(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object atanh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -364,11 +432,12 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "ATAN2", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Trigonometry")
-  public Object atan2(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object atan2(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
@@ -377,8 +446,9 @@ public class Function extends Operator {
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
   @ScalarFunction(name = "COS", category = "i18n::Operator.Category.Trigonometry")
-  public Object cos(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object cos(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.cos(coerceToNumber(value));
@@ -386,8 +456,9 @@ public class Function extends Operator {
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
   @ScalarFunction(name = "COSH", category = "i18n::Operator.Category.Trigonometry")
-  public Object cosh(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object cosh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.cosh(coerceToNumber(value));
@@ -395,8 +466,9 @@ public class Function extends Operator {
 
   /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
   @ScalarFunction(name = "COT", category = "i18n::Operator.Category.Trigonometry")
-  public Object cot(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object cot(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -408,8 +480,9 @@ public class Function extends Operator {
   }
 
   @ScalarFunction(name = "ASIN", category = "i18n::Operator.Category.Trigonometry")
-  public Object asin(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object asin(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.asin(coerceToNumber(value));
@@ -419,9 +492,9 @@ public class Function extends Operator {
    * Calculates the trigonometric sine of the angle in radians.
    */
   @ScalarFunction(name = "SIN", category = "i18n::Operator.Category.Trigonometry")
-  public Object sin(final IExpressionContext context, final IExpression... args)
+  public Object sin(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = args[0].eval(context);
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
 
@@ -432,8 +505,9 @@ public class Function extends Operator {
    * Calculates the hyperbolic sine of its argument.
    */
   @ScalarFunction(name = "SINH", category = "i18n::Operator.Category.Trigonometry")
-  public Object sinh(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object sinh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.sinh(coerceToNumber(value));
@@ -443,8 +517,9 @@ public class Function extends Operator {
    * Calculates the tangent of its argument, the argument should be expressed in radians.
    */
   @ScalarFunction(name = "TAN", category = "i18n::Operator.Category.Trigonometry")
-  public Object tan(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object tan(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.tan(coerceToNumber(value));
@@ -454,8 +529,9 @@ public class Function extends Operator {
    * Calculates the hyperbolic tangent of its argument.
    */
   @ScalarFunction(name = "TANH", category = "i18n::Operator.Category.Trigonometry")
-  public Object tanh(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object tanh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.tanh(coerceToNumber(value));
@@ -465,8 +541,9 @@ public class Function extends Operator {
    * Returns the natural logarithm of a numeric value.
    */
   @ScalarFunction(name = "LN", category = "i18n::Operator.Category.Trigonometry")
-  public Object ln(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object ln(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     Double number = coerceToNumber(value);
@@ -480,12 +557,13 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "LOG", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Trigonometry")
-  public Object log(final IExpressionContext context, final IExpression... args) {
-    Object base = args[0].eval(context);
+  public Object log(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object base = operands[0].eval(context);
     if (base == null)
       return null;
 
-    Object value = args[1].eval(context);
+    Object value = operands[1].eval(context);
     if (value == null)
       return null;
     Double number = coerceToNumber(value);
@@ -499,8 +577,9 @@ public class Function extends Operator {
    * Returns the base 10 logarithm of a numeric value.
    */
   @ScalarFunction(name = "LOG10", category = "i18n::Operator.Category.Trigonometry")
-  public Object log10(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object log10(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     Double number = coerceToNumber(value);
@@ -515,8 +594,9 @@ public class Function extends Operator {
    * @See {@link #SQRT}
    */
   @ScalarFunction(name = "CBRT", category = "i18n::Operator.Category.Mathematical")
-  public final Object cbrt(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object cbrt(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return FastMath.cbrt(coerceToNumber(value));
@@ -528,8 +608,9 @@ public class Function extends Operator {
    * @See {@link #CBRT}
    */
   @ScalarFunction(name = "SQRT", category = "i18n::Operator.Category.Mathematical")
-  public Object sqrt(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object sqrt(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     Double number = coerceToNumber(value);
@@ -538,6 +619,27 @@ public class Function extends Operator {
     return FastMath.sqrt(number);
   }
 
+  @ScalarFunction(name = "POWER", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Mathematical")
+  public Object power(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object left = operands[0].eval(context);
+    Object right = operands[1].eval(context);
+    if (left == null || right == null) {
+      return null;
+    }
+    // if (left instanceof BigDecimal ) {
+    // return coerceToBigNumber(left).pow(coerceToInteger(right).intValue());
+    // }
+
+    Double power = coerceToNumber(right);
+    if (power == 0)
+      return 1L;
+    if (power < 0)
+      throw new ArithmeticException("Cannot power negative " + power);
+
+    return FastMath.pow(coerceToNumber(left), coerceToNumber(right));
+  }
 
   private static Object getHash(Object value, String algorithm) {
     if (value == null)
@@ -554,14 +656,15 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "TRANSLATE", minArgs = 3, maxArgs = 3,
       category = "i18n::Operator.Category.String")
-  public Object translate(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object translate(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    Object v2 = args[2].eval(context);
+    Object v2 = operands[2].eval(context);
     if (v2 == null)
       return null;
 
@@ -604,8 +707,9 @@ public class Function extends Operator {
    * a value of 0 is returned.
    */
   @ScalarFunction(name = "ASCII", category = "i18n::Operator.Category.String")
-  public Object ascii(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object ascii(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     String string = value.toString();
@@ -620,11 +724,12 @@ public class Function extends Operator {
    * The function converts a Unicode code point (including 7-bit ASCII) into the character that
    * matches the input Unicode. If an invalid code point is specified, an error is returned.
    *
-   * @see {@link #ASCII}
+   * @see {@link #ascii}
    */
   @ScalarFunction(name = "CHR", category = "i18n::Operator.Category.String")
-  public Object chr(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object chr(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     int codePoint = coerceToInteger(value).intValue();
@@ -640,8 +745,9 @@ public class Function extends Operator {
    * Returns a string consisting of a the specified number of blank spaces.
    */
   @ScalarFunction(name = "SPACE", category = "i18n::Operator.Category.String")
-  public Object space(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object space(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     int length = Math.max(0, coerceToInteger(value).intValue());
@@ -657,8 +763,9 @@ public class Function extends Operator {
    * The function reverses the order of characters in a string value, or of bytes in a binary value.
    */
   @ScalarFunction(name = "REVERSE", category = "i18n::Operator.Category.String")
-  public Object reverse(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object reverse(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -679,8 +786,9 @@ public class Function extends Operator {
    * Returns a string that contains a phonetic representation of the input string.
    */
   @ScalarFunction(name = "SOUNDEX", category = "i18n::Operator.Category.String")
-  public Object soundex(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object soundex(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return SOUNDEX.soundex(coerceToString(value));
@@ -688,11 +796,12 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "DIFFERENCE", category = "i18n::Operator.Category.String", minArgs = 2,
       maxArgs = 2)
-  public Object difference(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object difference(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
@@ -710,8 +819,9 @@ public class Function extends Operator {
    * @see {@link #CHR}, {@link #ASCII},
    */
   @ScalarFunction(name = "UNICODE", category = "i18n::Operator.Category.String")
-  public Object unicode(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object unicode(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     String string = value.toString();
@@ -725,23 +835,24 @@ public class Function extends Operator {
   /**
    * The function left-pads a string with another string, to a certain length.
    *
-   * @see {@link #RPAD}
+   * @see {@link #rpad}
    */
   @ScalarFunction(name = "LPAD", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.String")
-  public Object lpad(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object lpad(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
     String str = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     int length = coerceToInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
-    if (args.length == 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length == 3) {
+      Object v2 = operands[2].eval(context);
       pad = v2.toString();
     }
 
@@ -782,23 +893,24 @@ public class Function extends Operator {
   /**
    * The function right-pads a string with another string, to a certain length.
    *
-   * @see {@link #LPAD}
+   * @see {@link #lpad}
    */
   @ScalarFunction(name = "RPAD", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.String")
-  public Object rpad(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object rpad(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
     String str = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     int length = coerceToInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
-    if (args.length == 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length == 3) {
+      Object v2 = operands[2].eval(context);
       pad = v2.toString();
     }
 
@@ -869,34 +981,37 @@ public class Function extends Operator {
    * The function returns the number of characters of the specified string.
    */
   @ScalarFunction(name = "LENGTH", category = "i18n::Operator.Category.String")
-  public Object length(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object length(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
     return Long.valueOf(coerceToString(value).length());
   }
 
   /**
-   * The function convert a string value to upper case.
+   * The function convert a string value to lower case.
    * 
-   * @See {@link #INITCAP}, {@link #UPPER}
+   * @See {@link #initcap}, {@link #upper}
    */
   @ScalarFunction(name = "LOWER", alias = "LCASE", category = "i18n::Operator.Category.String")
-  public Object lower(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object lower(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return coerceToString(value).toLowerCase(Locale.getDefault());
   }
 
   /**
-   * The function convert a string value to lower case.
+   * The function convert a string value to upper case.
    * 
-   * @See {@link #LOWER}, {@link #INITCAP}
+   * @See {@link #lower}, {@link #initcap}
    */
   @ScalarFunction(name = "UPPER", alias = "UCASE", category = "i18n::Operator.Category.String")
-  public Object upper(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object upper(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     return coerceToString(value).toUpperCase(Locale.getDefault());
@@ -904,11 +1019,12 @@ public class Function extends Operator {
 
   /**
    * Returns a string with the first letter of each word in uppercase and the subsequent letters in
-   * lowercase. @See {@link #LOWER}, {@link #UPPER}
+   * lowercase. @See {@link #lower}, {@link #upper}
    */
   @ScalarFunction(name = "INITCAP", category = "i18n::Operator.Category.String")
-  public Object initcap(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object initcap(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -935,20 +1051,21 @@ public class Function extends Operator {
   /**
    * The function removes leading and trailing characters from a string.
    *
-   * @see {@link #LTRIM}, {@link #RTRIM}
+   * @see {@link #ltrim}, {@link #rtrim}
    */
   @ScalarFunction(name = "TRIM", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.String")
-  public Object trim(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object trim(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
     String string = value.toString();
     String characters = null;
 
-    if (args.length == 2) {
-      Object stripChars = args[1].eval(context);
+    if (operands.length == 2) {
+      Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
 
@@ -961,20 +1078,21 @@ public class Function extends Operator {
   /**
    * The function removes leading characters from a string.
    *
-   * @see {@link #TRIM}, {@link #RTRIM}
+   * @see {@link #trim}, {@link #rtrim}
    */
   @ScalarFunction(name = "LTRIM", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.String")
-  public Object ltrim(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object ltrim(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
     String string = value.toString();
     String characters = null;
 
-    if (args.length == 2) {
-      Object stripChars = args[1].eval(context);
+    if (operands.length == 2) {
+      Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
       characters = stripChars.toString();
@@ -986,20 +1104,21 @@ public class Function extends Operator {
   /**
    * The function removes leading characters from a string.
    *
-   * @see {@link #TRIM}, {@link #LTRIM}
+   * @see {@link #trim}, {@link #ltrim}
    */
   @ScalarFunction(name = "RTRIM", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.String")
-  public Object rtrim(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object rtrim(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
     String string = value.toString();
     String characters = null;
 
-    if (args.length == 2) {
-      Object stripChars = args[1].eval(context);
+    if (operands.length == 2) {
+      Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
       characters = stripChars.toString();
@@ -1011,17 +1130,18 @@ public class Function extends Operator {
   /**
    * The function extracts a number of characters from a string (starting from left).
    * 
-   * @See {@link #RIGHT}
+   * @See {@link #right}
    */
   @ScalarFunction(name = "LEFT", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.String")
-  public Object left(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object left(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
     String s = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
     int count = coerceToInteger(v1).intValue();
@@ -1037,17 +1157,18 @@ public class Function extends Operator {
   /**
    * The function extracts a number of characters from a string (starting from right)
    * 
-   * @See {@link #LEFT}
+   * @See {@link #left}
    */
   @ScalarFunction(name = "RIGHT", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.String")
-  public Object right(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object right(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
     String s = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
     int count = coerceToInteger(v1).intValue();
@@ -1065,8 +1186,9 @@ public class Function extends Operator {
    * Encodes special characters in a string using the Java string literal encoding format.
    */
   @ScalarFunction(name = "STRINGENCODE", category = "i18n::Operator.Category.String")
-  public Object stringEncode(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object stringEncode(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     String s = value.toString();
@@ -1125,8 +1247,9 @@ public class Function extends Operator {
    * are \b, \t, \n, \f, \r, \", \, \\uXXXX.
    */
   @ScalarFunction(name = "STRINGDECODE", category = "i18n::Operator.Category.String")
-  public Object stringDecode(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object stringDecode(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     String s = value.toString();
@@ -1210,11 +1333,12 @@ public class Function extends Operator {
   /**
    * The function encode the string as a URL.
    *
-   * @see {@link #URLDECODE}
+   * @see {@link #urldecode}
    */
   @ScalarFunction(name = "URLENCODE", category = "i18n::Operator.Category.String")
-  public Object urlEncode(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object urlEncode(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     try {
@@ -1227,11 +1351,12 @@ public class Function extends Operator {
   /**
    * The function decode the URL to a string.
    *
-   * @see {@link #URLENCODE}
+   * @see {@link #urlencode}
    */
   @ScalarFunction(name = "URLDECODE", category = "i18n::Operator.Category.String")
-  public Object urlDecode(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object urlDecode(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     try {
@@ -1256,9 +1381,10 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "EQUAL_NULL", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Comparison")
-  public Object equal_null(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
-    Object v1 = args[1].eval(context);
+  public Object equal_null(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    Object v1 = operands[1].eval(context);
 
     // Treats NULLs as known values
     if (v0 == null && v1 == null) {
@@ -1282,9 +1408,10 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "LEAST", minArgs = 1, maxArgs = Integer.MAX_VALUE,
       category = "i18n::Operator.Category.Conditional")
-  public Object least(final IExpressionContext context, final IExpression... args) {
+  public Object least(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
     Object result = null;
-    for (IExpression operand : args) {
+    for (IExpression operand : operands) {
       Object value = operand.eval(context);
       // null is always smaller
       if (value == null)
@@ -1304,9 +1431,10 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "GREATEST", minArgs = 1, maxArgs = Integer.MAX_VALUE,
       category = "i18n::Operator.Category.Conditional")
-  public Object greatest(final IExpressionContext context, final IExpression... args) {
+  public Object greatest(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
     Object result = null;
-    for (IExpression operand : args) {
+    for (IExpression operand : operands) {
       Object value = operand.eval(context);
       if (compareTo(result, value) < 0)
         result = value;
@@ -1320,12 +1448,13 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "IF", minArgs = 3, maxArgs = 3,
       category = "i18n::Operator.Category.Conditional")
-  public Object iff(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object iff(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    return args[coerceToBoolean(value) ? 1 : 2].eval(context);
+    return operands[coerceToBoolean(value) ? 1 : 2].eval(context);
   }
 
   /**
@@ -1333,10 +1462,11 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "IFNULL", alias = "NVL", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Conditional")
-  public Object ifnull(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object ifnull(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
-      return args[1].eval(context);
+      return operands[1].eval(context);
     return value;
   }
 
@@ -1346,8 +1476,9 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "COALESCE", minArgs = 1, maxArgs = Integer.MAX_VALUE,
       category = "i18n::Operator.Category.Conditional")
-  public Object coalesce(final IExpressionContext context, final IExpression... args) {
-    for (IExpression operand : args) {
+  public Object coalesce(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    for (IExpression operand : operands) {
       Object value = operand.eval(context);
       if (value != null)
         return value;
@@ -1358,14 +1489,15 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "NVL2", minArgs = 3, maxArgs = 3,
       category = "i18n::Operator.Category.Conditional")
-  public Object nvl2(final IExpressionContext context, final IExpression... args) {
-    Object condition = args[0].eval(context);
+  public Object nvl2(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object condition = operands[0].eval(context);
 
     if (condition == null) {
-      return args[2].eval(context);
+      return operands[2].eval(context);
     }
 
-    return args[1].eval(context);
+    return operands[1].eval(context);
   }
 
   /**
@@ -1374,32 +1506,34 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "DECODE", minArgs = 4, maxArgs = Integer.MAX_VALUE,
       category = "i18n::Operator.Category.Conditional")
-  public Object decode(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object decode(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
 
     int index = -1;
-    for (int i = 1, len = args.length - 1; i < len; i += 2) {
-      Object search = args[i].eval(context);
+    for (int i = 1, len = operands.length - 1; i < len; i += 2) {
+      Object search = operands[i].eval(context);
       if (compareTo(value, search) == 0) {
         index = i + 1;
         break;
       }
     }
-    if (index < 0 && args.length % 2 == 0) {
-      index = args.length - 1;
+    if (index < 0 && operands.length % 2 == 0) {
+      index = operands.length - 1;
     }
     if (index < 0)
       return null;
 
-    return args[index].eval(context);
+    return operands[index].eval(context);
   }
 
   /** The function NULLIF */
   @ScalarFunction(name = "NULLIF", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Conditional")
-  public Object nullIf(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
-    Object compare = args[1].eval(context);
+  public Object nullIf(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    Object compare = operands[1].eval(context);
 
     if (compareTo(value, compare) == 0)
       return null;
@@ -1412,8 +1546,9 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "ZEROIFNULL", minArgs = 1, maxArgs = 1,
       category = "i18n::Operator.Category.Conditional")
-  public Object zeroIfNull(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object zeroIfNull(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
 
     if (value == null)
       return 0L;
@@ -1426,8 +1561,9 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "NULLIFZERO", minArgs = 1, maxArgs = 1,
       category = "i18n::Operator.Category.Conditional")
-  public Object nullIfZero(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object nullIfZero(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
 
     if (coerceToInteger(value) == 0L)
       return null;
@@ -1440,11 +1576,12 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "REPEAT", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.String")
-  public Object repeat(final IExpressionContext context, final IExpression... args) {
-    String value = coerceToString(args[0].eval(context));
+  public Object repeat(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    String value = coerceToString(operands[0].eval(context));
     if (value == null)
       return null;
-    Object number = args[1].eval(context);
+    Object number = operands[1].eval(context);
     if (number == null)
       return null;
     int count = coerceToInteger(number).intValue();
@@ -1462,19 +1599,20 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "REPLACE", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.String")
-  public Object replace(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object replace(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
     String string = coerceToString(v0);
     String search = coerceToString(v1);
 
-    if (args.length == 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length == 3) {
+      Object v2 = operands[2].eval(context);
       String replacement = coerceToString(v2);
       return string.replace(search, replacement);
     }
@@ -1488,9 +1626,10 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "INSTR", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.String")
-  public Object instr(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
-    Object v1 = args[1].eval(context);
+  public Object instr(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    Object v1 = operands[1].eval(context);
 
     if (v0 == null || v1 == null) {
       return null;
@@ -1501,8 +1640,8 @@ public class Function extends Operator {
 
     // If 3 operands
     int start = 0;
-    if (args.length == 3) {
-      start = coerceToInteger(args[2].eval(context)).intValue();
+    if (operands.length == 3) {
+      start = coerceToInteger(operands[2].eval(context)).intValue();
 
       if (start > 0)
         start -= 1;
@@ -1520,10 +1659,11 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "SUBSTRING", alias = {"SUBSTR"}, minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.String")
-  public Object substring(final IExpressionContext context, final IExpression... args) {
-    String string = coerceToString(args[0].eval(context));
+  public Object substring(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    String string = coerceToString(operands[0].eval(context));
     int length = string.length();
-    int start = coerceToInteger(args[1].eval(context)).intValue();
+    int start = coerceToInteger(operands[1].eval(context)).intValue();
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -1533,11 +1673,11 @@ public class Function extends Operator {
     }
 
     // Only 2 operands
-    if (args.length == 2) {
+    if (operands.length == 2) {
       return string.substring(start - 1);
     }
 
-    int end = start + coerceToInteger(args[2].eval(context)).intValue();
+    int end = start + coerceToInteger(operands[2].eval(context)).intValue();
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);
@@ -1552,15 +1692,16 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "REGEXP_LIKE", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.Comparison")
-  public Object regexp_like(final IExpressionContext context, final IExpression... args) {
+  public Object regexp_like(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
 
-    Object v0 = args[0].eval(context);
+    Object v0 = operands[0].eval(context);
     if (v0 == null) {
       return null;
     }
     String input = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
@@ -1570,8 +1711,8 @@ public class Function extends Operator {
       return Boolean.FALSE;
 
     int flags = Pattern.UNICODE_CASE;
-    if (args.length == 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length == 3) {
+      Object v2 = operands[2].eval(context);
       flags = parseRegexpFlags(v2.toString());
     }
 
@@ -1586,14 +1727,15 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "REGEXP_REPLACE", minArgs = 2, maxArgs = 6,
       category = "i18n::Operator.Category.String")
-  public Object regexp_replace(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object regexp_replace(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null) {
       return null;
     }
     String input = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
@@ -1605,8 +1747,8 @@ public class Function extends Operator {
 
     // Default empty string
     String replacement = "";
-    if (args.length >= 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length >= 3) {
+      Object v2 = operands[2].eval(context);
       if (v2 != null) {
         replacement = v2.toString();
       }
@@ -1614,8 +1756,8 @@ public class Function extends Operator {
 
     // Default position 1
     int position = 1;
-    if (args.length >= 4) {
-      Object v3 = args[3].eval(context);
+    if (operands.length >= 4) {
+      Object v3 = operands[3].eval(context);
       if (v3 != null) {
         position = coerceToInteger(v3).intValue();
       }
@@ -1623,16 +1765,16 @@ public class Function extends Operator {
 
     // Default occurrence 0
     int occurrence = 0;
-    if (args.length >= 5) {
-      Object v4 = args[4].eval(context);
+    if (operands.length >= 5) {
+      Object v4 = operands[4].eval(context);
       if (v4 != null) {
         occurrence = coerceToInteger(v4).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
-    if (args.length == 6) {
-      Object v5 = args[5].eval(context);
+    if (operands.length == 6) {
+      Object v5 = operands[5].eval(context);
       flags = parseRegexpFlags(v5.toString());
     }
 
@@ -1682,14 +1824,15 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "REGEXP_SUBSTR", minArgs = 2, maxArgs = 4,
       category = "i18n::Operator.Category.String")
-  public Object regexp_substr(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object regexp_substr(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null) {
       return null;
     }
     String input = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
@@ -1700,8 +1843,8 @@ public class Function extends Operator {
 
     // Default position 1
     int position = 1;
-    if (args.length >= 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length >= 3) {
+      Object v2 = operands[2].eval(context);
       if (v2 != null) {
         position = coerceToInteger(v2).intValue();
       }
@@ -1709,16 +1852,16 @@ public class Function extends Operator {
 
     // Default occurrence
     int occurrence = 0;
-    if (args.length >= 4) {
-      Object v3 = args[3].eval(context);
+    if (operands.length >= 4) {
+      Object v3 = operands[3].eval(context);
       if (v3 != null) {
         occurrence = coerceToInteger(v3).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
-    if (args.length == 5) {
-      Object v4 = args[5].eval(context);
+    if (operands.length == 5) {
+      Object v4 = operands[5].eval(context);
       flags = parseRegexpFlags(v4.toString());
     }
 
@@ -1743,14 +1886,15 @@ public class Function extends Operator {
 
   @ScalarFunction(name = "REGEXP_INSTR", minArgs = 2, maxArgs = 6,
       category = "i18n::Operator.Category.String")
-  public Object regexp_instr(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object regexp_instr(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null) {
       return null;
     }
     String input = v0.toString();
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
@@ -1762,8 +1906,8 @@ public class Function extends Operator {
 
     // Default position 1
     int position = 1;
-    if (args.length >= 3) {
-      Object v2 = args[2].eval(context);
+    if (operands.length >= 3) {
+      Object v2 = operands[2].eval(context);
       if (v2 != null) {
         position = coerceToInteger(v2).intValue();
       }
@@ -1771,8 +1915,8 @@ public class Function extends Operator {
 
     // Default occurrence
     int occurrence = 0;
-    if (args.length >= 4) {
-      Object v3 = args[3].eval(context);
+    if (operands.length >= 4) {
+      Object v3 = operands[3].eval(context);
       if (v3 != null) {
         occurrence = coerceToInteger(v3).intValue();
       }
@@ -1780,8 +1924,8 @@ public class Function extends Operator {
 
     // Return-option
     int returnOption = 0;
-    if (args.length >= 5) {
-      Object v4 = args[4].eval(context);
+    if (operands.length >= 5) {
+      Object v4 = operands[4].eval(context);
       if (v4 != null) {
         returnOption = coerceToInteger(v4).intValue();
       }
@@ -1789,8 +1933,8 @@ public class Function extends Operator {
 
     // Flags
     int flags = Pattern.UNICODE_CASE;
-    if (args.length == 6) {
-      Object v5 = args[5].eval(context);
+    if (operands.length == 6) {
+      Object v5 = operands[5].eval(context);
       flags = parseRegexpFlags(v5.toString());
     }
 
@@ -1813,30 +1957,125 @@ public class Function extends Operator {
     }
   }
 
+  /**
+   * The function returns TRUE if the first value starts with second value. Both values must be data
+   * type string or binary.
+   *
+   * @see {@link #endswith}
+   */
+  @ScalarFunction(name = "STARTSWITH", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison")
+  public Object startsWith(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
 
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    if (v0 instanceof byte[]) {
+      byte[] data = coerceToBinary(v0);
+      byte[] prefix = coerceToBinary(v1);
+      if (prefix.length > data.length) {
+        return Boolean.TRUE;
+      } else {
+        int end = prefix.length;
+        for (int i = 0; i < end; i++) {
+          if (data[i] != prefix[i]) {
+            return Boolean.FALSE;
+          }
+        }
+      }
+      return Boolean.TRUE;
+    }
+
+    return coerceToString(v0).startsWith(coerceToString(v1));
+  }
+
+  /**
+   * The function returns TRUE if the first value ends with second value. Both values must be data
+   * type of string or binary.
+   *
+   * @see {@link #startwith}
+   */
+  @ScalarFunction(name = "ENDSWITH", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison")
+  public Object endsWith(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    if (v0 instanceof byte[]) {
+      byte[] data = coerceToBinary(v0);
+      byte[] suffix = coerceToBinary(v1);
+      int startOffset = data.length - suffix.length;
+
+      if (startOffset < 0) {
+        return Boolean.FALSE;
+      } else {
+        int end = startOffset + suffix.length;
+        for (int i = startOffset; i < end; i++) {
+          if (data[i] != suffix[i]) {
+            return Boolean.FALSE;
+          }
+        }
+      }
+      return Boolean.TRUE;
+    }
+
+    return coerceToString(v0).endsWith(coerceToString(v1));
+  }
+
+
+  /** Contains function */
+  @ScalarFunction(name = "CONTAINS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison")
+  public Object contains(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    if (v0.toString().contains(v1.toString()))
+      return Boolean.TRUE;
+
+    return Boolean.FALSE;
+  }
 
   /**
    * Converts a string or numeric expression to a boolean value.
    */
   @ScalarFunction(name = "TO_BOOLEAN", category = "i18n::Operator.Category.Conversion")
-  public Object to_boolean(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object to_boolean(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    return convertTo(value, DataType.BOOLEAN);
+    return convertTo(value, Type.BOOLEAN);
   }
 
   /**
    * Converts a string or numeric expression to a boolean value.
    */
   @ScalarFunction(name = "TRY_TO_BOOLEAN", category = "i18n::Operator.Category.Conversion")
-  public Object try_to_boolean(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object try_to_boolean(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     try {
-      return convertTo(value, DataType.BOOLEAN);
+      return convertTo(value, Type.BOOLEAN);
     } catch (Exception e) {
       return null;
     }
@@ -1845,19 +2084,20 @@ public class Function extends Operator {
   /** Converts a numeric or date expression to a string value. */
   @ScalarFunction(name = "TO_CHAR", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion")
-  public Object to_char(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object to_char(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
     String pattern = null;
-    if (args.length > 1) {
-      Object v1 = args[1].eval(context);
+    if (operands.length > 1) {
+      Object v1 = operands[1].eval(context);
       if (v1 != null)
         pattern = coerceToString(v1);
     }
 
-    switch (DataType.fromJava(value)) {
+    switch (Type.fromJava(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
@@ -1873,60 +2113,60 @@ public class Function extends Operator {
       case NONE:
     }
 
-    throw createUnexpectedDataTypeException(this, DataType.fromJava(value));
+    throw createUnexpectedDataTypeException(this, Type.fromJava(value));
   }
 
   /** Converts a string expression to a number value. */
   @ScalarFunction(name = "TO_NUMBER", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion")
-  public Object to_number(final IExpressionContext context, final IExpression... args)
+  public Object to_number(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
-    Object v0 = args[0].eval(context);
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
 
     // No format
-    if (args.length == 1) {
+    if (operands.length == 1) {
       return NumberFormat.ofPattern(null).parse(coerceToString(v0));
     }
 
-    Object v1 = args[1].eval(context);
-    if (args.length == 2) {
+    Object v1 = operands[1].eval(context);
+    if (operands.length == 2) {
       return NumberFormat.ofPattern(coerceToString(v1)).parse(coerceToString(v0));
     }
 
     // Precision and scale
     int precision = coerceToInteger(v1).intValue();
-    Object v2 = args[2].eval(context);
+    Object v2 = operands[2].eval(context);
     int scale = coerceToInteger(v2).intValue();
     return NumberFormat.parse(coerceToString(v0), precision, scale);
   }
 
   @ScalarFunction(name = "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion")
-  public Object try_to_number(final IExpressionContext context, final IExpression... args)
+  public Object try_to_number(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
-    Object value = args[0].eval(context);
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
     try {
       // No format
-      if (args.length == 1) {
+      if (operands.length == 1) {
         return NumberFormat.ofPattern(null).parse(value.toString());
       }
 
       // With format
-      if (args.length == 2) {
-        Object v1 = args[1].eval(context);
+      if (operands.length == 2) {
+        Object v1 = operands[1].eval(context);
         return NumberFormat.ofPattern(coerceToString(v1)).parse(coerceToString(value));
       }
 
       // Precision and scale
-      if (args.length == 3) {
-        Object v1 = args[1].eval(context);
+      if (operands.length == 3) {
+        Object v1 = operands[1].eval(context);
         int precision = coerceToInteger(v1).intValue();
-        Object v2 = args[2].eval(context);
+        Object v2 = operands[2].eval(context);
         int scale = coerceToInteger(v2).intValue();
 
         return NumberFormat.parse(value.toString(), precision, scale);
@@ -1941,28 +2181,27 @@ public class Function extends Operator {
   /** Converts a string expression to a date value. */
   @ScalarFunction(name = "TO_DATE", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion")
-  public Object to_date(final IExpressionContext context, final IExpression... args)
+  public Object to_date(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
-    Object value = args[0].eval(context);
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    String pattern = null;
-    if (args.length > 1) {
-      Object v1 = args[1].eval(context);
-      if (v1 != null)
-        pattern = coerceToString(v1);
-    } else {
-      pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
-    }
-
-    switch (DataType.fromJava(value)) {
+    switch (Type.fromJava(value)) {
       case DATE:
         return value;
       case STRING:
+        String pattern = null;
+        if (operands.length > 1) {
+          Object v1 = operands[1].eval(context);
+          if (v1 != null)
+            pattern = coerceToString(v1);
+        } else {
+          pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+        }
         return DateTimeFormat.ofPattern(pattern).parse(value.toString());
       default:
-        throw createUnexpectedDataTypeException(this, DataType.fromJava(value));
+        throw createUnexpectedDataTypeException(this, Type.fromJava(value));
     }
   }
 
@@ -1972,24 +2211,25 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "TRY_TO_DATE", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion")
-  public Object try_to_date(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object try_to_date(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    String pattern = null;
-    if (args.length > 1) {
-      Object v1 = args[1].eval(context);
-      if (v1 != null)
-        pattern = v1.toString();
-    } else {
-      pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
-    }
-
-    switch (DataType.fromJava(value)) {
+    switch (Type.fromJava(value)) {
       case DATE:
         return value;
       case STRING:
+
+        String pattern = null;
+        if (operands.length > 1) {
+          Object v1 = operands[1].eval(context);
+          if (v1 != null)
+            pattern = v1.toString();
+        } else {
+          pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+        }
         try {
           DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
           return format.parse(coerceToString(value));
@@ -2009,19 +2249,20 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "TRUNCATE", alias = "TRUNC", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
-  public Object truncate(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object truncate(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    switch (DataType.fromJava(value)) {
+    switch (Type.fromJava(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
         BigDecimal number = coerceToBigNumber(value);
         int scale = 0;
-        if (args.length == 2) {
-          Object pattern = args[1].eval(context);
+        if (operands.length == 2) {
+          Object pattern = operands[1].eval(context);
           if (pattern == null)
             return null;
           scale = coerceToInteger(pattern).intValue();
@@ -2035,8 +2276,8 @@ public class Function extends Operator {
         Instant instant = coerceToDate(value);
         DatePart part = DatePart.DAY;
 
-        if (args.length == 2) {
-          Object pattern = args[1].eval(context);
+        if (operands.length == 2) {
+          Object pattern = operands[1].eval(context);
           if (pattern == null)
             return null;
           part = DatePart.of(pattern.toString());
@@ -2063,7 +2304,7 @@ public class Function extends Operator {
             return datetime.withMonth(month).withDayOfMonth(1).toInstant();
           }
           // First day of the week
-          case WEEK: {
+          case WEEKOFYEAR: {
             ZonedDateTime datetime =
                 ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
             DayOfWeek dow = DayOfWeek.of(((ExpressionContext) context).getFirstDayOfWeek());
@@ -2090,7 +2331,7 @@ public class Function extends Operator {
       case STRING:
       case BOOLEAN:
       default:
-        throw createUnexpectedDataTypeException(this, DataType.fromJava(value));
+        throw createUnexpectedDataTypeException(this, Type.fromJava(value));
     }
   }
 
@@ -2103,16 +2344,17 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "DATE", minArgs = 3, maxArgs = 3,
       category = "i18n::Operator.Category.Date")
-  public Object date(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object date(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
 
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
-    Object v2 = args[2].eval(context);
+    Object v2 = operands[2].eval(context);
     if (v2 == null)
       return null;
 
@@ -2151,12 +2393,13 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "DATE_PART", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object date_part(final IExpressionContext context, final IExpression... args) {
-    Object part = args[0].eval(context);
+  public Object date_part(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object part = operands[0].eval(context);
     if (part == null)
       return null;
 
-    Object value = args[1].eval(context);
+    Object value = operands[1].eval(context);
     if (value == null)
       return null;
 
@@ -2166,18 +2409,14 @@ public class Function extends Operator {
     return datePart.get(dt);
   }
 
-  @ScalarFunction(name = "EXTRACT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
-  public Object extract(final IExpressionContext context, final IExpression... args) {
-    return date_part(context, args);
-  }
 
   /**
    * Day of the month (number from 1-31).
    */
   @ScalarFunction(name = "DAY", alias = "DAYOFMONTH", category = "i18n::Operator.Category.Date")
-  public Object day(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object day(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2189,8 +2428,9 @@ public class Function extends Operator {
    * Returns the name of the weekday (in English).
    */
   @ScalarFunction(name = "DAYNAME", category = "i18n::Operator.Category.Date")
-  public Object dayname(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object dayname(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2203,8 +2443,9 @@ public class Function extends Operator {
    * Day of the week (Sunday=1 to Saturday=7).
    */
   @ScalarFunction(name = "DAYOFWEEK", category = "i18n::Operator.Category.Date")
-  public Object dayofweek(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object dayofweek(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2221,8 +2462,9 @@ public class Function extends Operator {
    * Day of the week (Monday=1 to Sunday=7).
    */
   @ScalarFunction(name = "DAYOFWEEK_ISO", category = "i18n::Operator.Category.Date")
-  public Object dayofweek_iso(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object dayofweek_iso(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2235,8 +2477,9 @@ public class Function extends Operator {
 
   /** Day of the year (number from 1-366). */
   @ScalarFunction(name = "DAYOFYEAR", category = "i18n::Operator.Category.Date")
-  public Object dayofyear(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object dayofyear(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2245,9 +2488,10 @@ public class Function extends Operator {
   }
 
   /** Week of the year (number from 1-54). */
-  @ScalarFunction(name = "WEEK", category = "i18n::Operator.Category.Date")
-  public Object week(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  @ScalarFunction(name = "WEEKOFYEAR", alias = "WEEK", category = "i18n::Operator.Category.Date")
+  public Object weekOfYear(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2257,8 +2501,9 @@ public class Function extends Operator {
 
   /** Week from the beginning of the month (0-5) */
   @ScalarFunction(name = "WEEKOFMONTH", category = "i18n::Operator.Category.Date")
-  public Object weekOfMonth(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object weekOfMonth(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2268,8 +2513,9 @@ public class Function extends Operator {
 
   /** Month of the year (number from 1-12). */
   @ScalarFunction(name = "MONTH", category = "i18n::Operator.Category.Date")
-  public Object month(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object month(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2279,8 +2525,9 @@ public class Function extends Operator {
 
   /** Returns the name of the month (in English). */
   @ScalarFunction(name = "MONTHNAME", category = "i18n::Operator.Category.Date")
-  public Object monthName(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object monthName(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2290,8 +2537,9 @@ public class Function extends Operator {
 
   /** Quarter of the year (number from 1-4). */
   @ScalarFunction(name = "QUARTER", category = "i18n::Operator.Category.Date")
-  public Object quarter(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object quarter(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2301,8 +2549,9 @@ public class Function extends Operator {
 
   /** The year of a date */
   @ScalarFunction(name = "YEAR", category = "i18n::Operator.Category.Date")
-  public Object year(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object year(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2312,8 +2561,9 @@ public class Function extends Operator {
 
   /** The hour (0-23). @See {@link #MINUTE}, {@link #SECOND} */
   @ScalarFunction(name = "HOUR", category = "i18n::Operator.Category.Date")
-  public Object hour(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object hour(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2323,8 +2573,9 @@ public class Function extends Operator {
 
   /** The minute (0-59). @See {@link #HOUR}, {@link #SECOND} */
   @ScalarFunction(name = "MINUTE", category = "i18n::Operator.Category.Date")
-  public Object minute(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object minute(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2334,8 +2585,9 @@ public class Function extends Operator {
 
   /** The second (0-59). @See {@link #HOUR}, {@link #MINUTE} */
   @ScalarFunction(name = "SECOND", category = "i18n::Operator.Category.Date")
-  public Object second(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object second(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
     LocalTime time = LocalTime.from(coerceToDate(value).atZone(context.getZone()));
@@ -2345,11 +2597,12 @@ public class Function extends Operator {
   /** Adds or subtracts a specified number of days to a date or timestamp */
   @ScalarFunction(name = "ADD_DAYS", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_days(final IExpressionContext context, final IExpression... args) {
-    Instant value = coerceToDate(args[0].eval(context));
+  public Object add_days(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Instant value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return value;
-    Object days = args[1].eval(context);
+    Object days = operands[1].eval(context);
     if (days == null)
       return null;
 
@@ -2361,11 +2614,12 @@ public class Function extends Operator {
   /** Adds or subtracts a specified number of weeks to a date or timestamp */
   @ScalarFunction(name = "ADD_WEEKS", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_weeks(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object add_weeks(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Object weeks = args[1].eval(context);
+    Object weeks = operands[1].eval(context);
     if (weeks == null)
       return null;
 
@@ -2377,11 +2631,12 @@ public class Function extends Operator {
   /** Adds or subtracts a specified number of months to a date or timestamp */
   @ScalarFunction(name = "ADD_MONTHS", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_months(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object add_months(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Object months = args[1].eval(context);
+    Object months = operands[1].eval(context);
     if (months == null)
       return null;
 
@@ -2393,11 +2648,12 @@ public class Function extends Operator {
   /** Adds or subtracts a specified number of months to a date or timestamp */
   @ScalarFunction(name = "ADD_YEARS", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_years(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object add_years(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Object years = args[1].eval(context);
+    Object years = operands[1].eval(context);
     if (years == null)
       return null;
 
@@ -2409,11 +2665,12 @@ public class Function extends Operator {
   /** Adds or subtracts a specified number of hours to a date or timestamp */
   @ScalarFunction(name = "ADD_HOURS", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_hours(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object add_hours(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    Object hours = args[1].eval(context);
+    Object hours = operands[1].eval(context);
     if (hours == null)
       return null;
 
@@ -2425,11 +2682,12 @@ public class Function extends Operator {
   /** Adds or subtracts a specified number of minutes to a date or timestamp */
   @ScalarFunction(name = "ADD_MINUTES", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_minutes(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object add_minutes(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    Object minutes = args[1].eval(context);
+    Object minutes = operands[1].eval(context);
     if (minutes == null)
       return null;
 
@@ -2443,11 +2701,12 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "ADD_SECONDS", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object add_seconds(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object add_seconds(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Object seconds = args[1].eval(context);
+    Object seconds = operands[1].eval(context);
     if (seconds == null)
       return null;
 
@@ -2461,11 +2720,12 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "DAYS_BETWEEN", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object days_between(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object days_between(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
@@ -2479,11 +2739,12 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "MONTHS_BETWEEN", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object months_between(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object months_between(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
@@ -2496,11 +2757,12 @@ public class Function extends Operator {
   /** Returns number of years between two date. */
   @ScalarFunction(name = "YEARS_BETWEEN", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object years_between(final IExpressionContext context, final IExpression... args) {
-    Object v0 = args[0].eval(context);
+  public Object years_between(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    Object v1 = args[1].eval(context);
+    Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
@@ -2512,11 +2774,12 @@ public class Function extends Operator {
   /** Return the number of hours between two timestamps */
   @ScalarFunction(name = "HOURS_BETWEEN", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object hours_between(final IExpressionContext context, final IExpression... args) {
-    Object value1 = args[0].eval(context);
+  public Object hours_between(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value1 = operands[0].eval(context);
     if (value1 == null)
       return null;
-    Object value2 = args[1].eval(context);
+    Object value2 = operands[1].eval(context);
     if (value2 == null)
       return null;
 
@@ -2528,11 +2791,12 @@ public class Function extends Operator {
   /** Return the number of minutes between two timestamps */
   @ScalarFunction(name = "MINUTES_BETWEEN", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object minutes_between(final IExpressionContext context, final IExpression... args) {
-    Object value1 = args[0].eval(context);
+  public Object minutes_between(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value1 = operands[0].eval(context);
     if (value1 == null)
       return null;
-    Object value2 = args[1].eval(context);
+    Object value2 = operands[1].eval(context);
     if (value2 == null)
       return null;
 
@@ -2544,11 +2808,12 @@ public class Function extends Operator {
   /** Return the number of seconds between two timestamps */
   @ScalarFunction(name = "SECONDS_BETWEEN", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object seconds_between(final IExpressionContext context, final IExpression... args) {
-    Object value1 = args[0].eval(context);
+  public Object seconds_between(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value1 = operands[0].eval(context);
     if (value1 == null)
       return null;
-    Object value2 = args[1].eval(context);
+    Object value2 = operands[1].eval(context);
     if (value2 == null)
       return null;
 
@@ -2559,8 +2824,9 @@ public class Function extends Operator {
 
   /** Returns the first day of the month. */
   @ScalarFunction(name = "FIRST_DAY", category = "i18n::Operator.Category.Date")
-  public Object first_day(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object first_day(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
@@ -2571,13 +2837,22 @@ public class Function extends Operator {
 
   /** Returns the last day of the month. */
   @ScalarFunction(name = "LAST_DAY", category = "i18n::Operator.Category.Date")
-  public Object last_day(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  // TODO: @ScalarFunction(name = "LAST_DAY", minArgs = 1, maxArgs = 2, category =
+  // "i18n::Operator.Category.Date")
+  public Object last_day(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .with(TemporalAdjusters.lastDayOfMonth());
+    TemporalAdjuster adjuster = TemporalAdjusters.lastDayOfMonth();
+    // if ( operands.length==2) {
+    // Object v1 = operands[1].eval(context);
+    //
+    // }
+
+    ZonedDateTime dt =
+        ZonedDateTime.ofInstant(coerceToDate(value), context.getZone()).with(adjuster);
     return dt.toInstant();
   }
 
@@ -2586,12 +2861,13 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "NEXT_DAY", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object next_day(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object next_day(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    Object dow = args[1].eval(context);
+    Object dow = operands[1].eval(context);
     if (dow == null)
       return null;
 
@@ -2607,12 +2883,13 @@ public class Function extends Operator {
    */
   @ScalarFunction(name = "PREVIOUS_DAY", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
-  public Object previous_day(final IExpressionContext context, final IExpression... args) {
-    Object value = args[0].eval(context);
+  public Object previous_day(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    Object dow = args[1].eval(context);
+    Object dow = operands[1].eval(context);
     if (dow == null)
       return null;
 
@@ -2622,31 +2899,6 @@ public class Function extends Operator {
 
     return dt.toInstant();
   }
-
-
-  private static ExpressionException createFormatPatternException(String s, int i) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Bad format {0} at position {1}", s, i));
-  }
-
-  private static ExpressionException createRegexpPatternException(String s) {
-    return new ExpressionException(BaseMessages.getString(PKG, "Bad regexp {0}", s));
-  }
-
-  private static ExpressionException createUnexpectedDataTypeException(Function function,
-      DataType type) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.UnexpectedDataType", function.getName(), type));
-  }
-
-  private static ExpressionException createUnexpectedDatePartException(Function function,
-      DatePart part) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.UnexpectedDatePart", function.getName(), part));
-  }
-
-  public Method getMethod() {
-    return method;
-  }
 }
+
 

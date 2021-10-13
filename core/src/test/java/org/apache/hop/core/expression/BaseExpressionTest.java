@@ -43,7 +43,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -102,7 +101,7 @@ public class BaseExpressionTest {
     IExpression expression = ExpressionParser.parse(s);
     Optimizer optimizer = new Optimizer();
     expression = optimizer.optimize(context, expression);
-    
+
     return expression.eval(context);
   }
 
@@ -119,7 +118,7 @@ public class BaseExpressionTest {
   }
 
   protected void evalEquals(String s, String expected) throws Exception {
-    Object value = eval(s);    
+    Object value = eval(s);
     assertEquals(expected, (String) value);
   }
 
@@ -179,21 +178,24 @@ public class BaseExpressionTest {
     IExpression expression = ExpressionParser.parse(original);
 
     StringWriter writer = new StringWriter();
-    expression.write(writer, 0, 0);
+    expression.write(writer);
     assertEquals(result, writer.toString());
   }
 
 
   @Test
   public void parser() throws Exception {
-   
-//BigDecimal v0 = BigDecimal.valueOf(0);
-//BigDecimal v1 = BigDecimal.valueOf(0.1);
-//BigDecimal v2 = BigDecimal.valueOf(123.11);
 
+    // BigDecimal v0 = BigDecimal.valueOf(0);
+    // BigDecimal v1 = BigDecimal.valueOf(0.1);
+    // BigDecimal v2 = BigDecimal.valueOf(123.11);
+    // evalEquals("Abs(10)", 10);
+    evalEquals("Add(10,-0.5)", 9.5);
     // Time zone offset
-    evalEquals("To_Date('2019-02-13T15:34:56 +8:00','YYYY-MM-DD\"T\"HH24:MI:SS TZH:TZM')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
-    
+
+    // evalEquals("To_Date('2019-02-13T15:34:56 +8:00','YYYY-MM-DD\"T\"HH24:MI:SS TZH:TZM')",
+    // LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
+
 
   }
 

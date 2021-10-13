@@ -136,7 +136,7 @@ import java.util.Locale;
  * </tr>
  * </table>
  */
- final class SimpleNumberFormat extends NumberFormat {
+final class SimpleNumberFormat extends NumberFormat {
 
   public enum SignMode {
     DEFAULT,
@@ -153,15 +153,15 @@ import java.util.Locale;
   }
 
   public enum CurrencyMode {
-    NONE, 
+    NONE,
     /** Dollars symbol */
-    DOLLARS, 
+    DOLLARS,
     /** Leading local currency symbol */
     LOCAL_LEADING,
     /** Trailing local currency symbol */
     TRAILING_LOCAL,
     /** Leading ISO currency code */
-    ISO_LEADING, 
+    ISO_LEADING,
     /** Trailing ISO currency code */
     TRAILING_ISO
   }
@@ -506,13 +506,13 @@ import java.util.Locale;
         String s = text.substring(start, end);
         return new BigDecimal(s);
       }
-      
+
       // Text-minimal number in scientific notation
-      if ("TME".equalsIgnoreCase(pattern)) {        
-        String s = text.substring(start, end);        
+      if ("TME".equalsIgnoreCase(pattern)) {
+        String s = text.substring(start, end);
         return new BigDecimal(s);
       }
-      
+
       // Parse roman numeral
       if ("RN".equalsIgnoreCase(pattern)) {
         return BigDecimal.valueOf(RomanNumeral.parse(text, start, end));
@@ -576,31 +576,31 @@ import java.util.Locale;
 
       String symbol;
       switch (this.currency) {
-        case LOCAL_LEADING: 
+        case LOCAL_LEADING:
           symbol = symbols.getCurrencySymbol();
           if (text.regionMatches(start, symbol, 0, symbol.length()))
             start += symbol.length();
           break;
-        case TRAILING_LOCAL: 
+        case TRAILING_LOCAL:
           symbol = symbols.getCurrencySymbol();
           if (text.regionMatches(end - symbol.length(), symbol, 0, symbol.length()))
             end -= symbol.length();
           break;
-        case ISO_LEADING: 
+        case ISO_LEADING:
           symbol = symbols.getCurrency().getCurrencyCode();
           if (text.regionMatches(start, symbol, 0, symbol.length()))
             start += symbol.length();
           break;
-        case TRAILING_ISO: 
+        case TRAILING_ISO:
           symbol = symbols.getCurrency().getCurrencyCode();
           if (text.regionMatches(end - symbol.length(), symbol, 0, symbol.length()))
             end -= symbol.length();
-          break;        
-        case DOLLARS: 
+          break;
+        case DOLLARS:
           char c = text.charAt(start);
           if (c == '$')
             start++;
-          break;        
+          break;
         default:
           break;
       }
@@ -621,7 +621,7 @@ import java.util.Locale;
       if (e == -1) {
         e = text.indexOf("e");
       }
-      
+
       char decimalSeparator = (this.localSymbols) ? symbols.getDecimalSeparator() : '.';
 
       int dot = text.indexOf(decimalSeparator);
@@ -764,9 +764,9 @@ import java.util.Locale;
     String unscaled = number.unscaledValue().abs().toString();
 
     int dot = unscaled.length();
-    //dot = dot - number.scale();
-    
-    dot = number.precision()- number.scale();
+    // dot = dot - number.scale();
+
+    dot = number.precision() - number.scale();
     int length = 0;
 
     StringBuilder output = new StringBuilder();
@@ -835,8 +835,7 @@ import java.util.Locale;
         if (c == '0') {
           if (j >= 0 && j < unscaled.length()) {
             output.append(unscaled.charAt(j));
-          }
-          else {
+          } else {
             output.append('0');
           }
         } else if (c == '9') {
@@ -864,14 +863,14 @@ import java.util.Locale;
         output.append(symbols.getCurrencySymbol());
         length += symbols.getCurrencySymbol().length();
         break;
-      case ISO_LEADING: 
+      case ISO_LEADING:
         output.insert(0, symbols.getCurrency().getCurrencyCode());
         length += symbols.getCurrency().getCurrencyCode().length();
-        break;      
+        break;
       case TRAILING_ISO:
         output.append(symbols.getCurrency().getCurrencyCode());
         length += symbols.getCurrency().getCurrencyCode().length();
-        break;      
+        break;
       case DOLLARS:
         output.insert(0, '$');
         length += 1;
@@ -980,10 +979,11 @@ import java.util.Locale;
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", error));
   }
-  
+
   protected final ParseException createUnparsableNumber(final String text, int index) {
-    return new ParseException(BaseMessages.getString(PKG, "Expression.UnparsableNumber", text, format), index);
+    return new ParseException(
+        BaseMessages.getString(PKG, "Expression.UnparsableNumber", text, format), index);
   }
-  
-  
+
+
 }

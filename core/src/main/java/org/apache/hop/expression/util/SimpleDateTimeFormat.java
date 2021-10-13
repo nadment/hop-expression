@@ -15,6 +15,7 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.DecimalFormat;
@@ -450,19 +451,22 @@ import java.util.Locale;
           continue;
         }
 
+       // Fractional seconds FF[0-9]
         case 'F':
-          // Fractional seconds FF("^(FF[0-9]?)"),777777777
           if (startsWithIgnoreCase(pattern, index, "FF")) {
             index += 2;
-            int x = 9;
+            int scale = 6;
             if (index < length) {
               c = pattern.charAt(index);
               if (Characters.isDigit(c)) {
-                x = c - '0';
+                scale = c - '0';
                 index++;
               }
             }
-            nanos = parseInt(text, position, x);
+            nanos = parseInt(text, position, scale);
+            if (scale < 9) {
+              nanos = (int) (nanos * FastMath.pow(10d,  9d-scale));
+            }
             continue;
           }
 
@@ -850,19 +854,19 @@ import java.util.Locale;
 
         case 'F':
           // Fractional seconds
-          if (startsWithIgnoreCase(pattern, index, "FF1", "FF2", "FF3", "FF4", "FF5", "FF6", "FF7",
-              "FF8", "FF9")) {
+          if (startsWithIgnoreCase(pattern, index, "FF0", "FF1", "FF3", "FF6", "FF9")) {
             int x = pattern.charAt(index + 2) - '0';
 
             int nanos = value.getNano();
 
-            int ff = (int) (nanos * Math.pow(10d, x - 9d));
-            appendZeroPadded(output, x, ff);
+            int scale = (int) (nanos * FastMath.pow(10d, x - 9d));
+            appendZeroPadded(output, x, scale);
             index += 3;
             continue;
           }
+          // FF is equivalent to FF6
           if (startsWithIgnoreCase(pattern, index, "FF")) {
-            appendZeroPadded(output, value.getNano(), 9);
+            appendZeroPadded(output, value.getNano(), 6);
             index += 2;
             continue;
           }
@@ -1119,7 +1123,7 @@ import java.util.Locale;
           if (startsWithIgnoreCase(pattern, index, "TZM")) {
             ZoneOffset offset = value.getOffset();
             int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
-            appendZeroPadded(output, Math.abs(minutes), "MM".length());
+            appendZeroPadded(output, FastMath.abs(minutes), "MM".length());
             index += 3;
             continue;
           }

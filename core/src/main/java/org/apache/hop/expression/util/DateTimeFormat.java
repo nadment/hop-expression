@@ -238,25 +238,25 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class DateTimeFormat extends BaseFormat {
 
   private static final Map<String, DateTimeFormat> cache = new ConcurrentHashMap<>();
-  
-  public static DateTimeFormat ofPattern(String pattern)  {
+
+  public static DateTimeFormat ofPattern(String pattern) {
     if (pattern == null) {
       pattern = "DD-MON-YY HH.MI.SS.FF PM";
     }
-    
-    return cache.computeIfAbsent(pattern, DateTimeFormat::create);  
+
+    return cache.computeIfAbsent(pattern, DateTimeFormat::create);
   }
 
   private static DateTimeFormat create(String pattern) {
-    if ( pattern.indexOf('|')>=0 ) {
-      List<DateTimeFormat> formats = new ArrayList<>(); 
-      for(String p: pattern.split("\\|")) {
-        DateTimeFormat format = new SimpleDateTimeFormat(p); 
-        formats.add(format);          
+    if (pattern.indexOf('|') >= 0) {
+      List<DateTimeFormat> formats = new ArrayList<>();
+      for (String p : pattern.split("\\|")) {
+        DateTimeFormat format = new SimpleDateTimeFormat(p);
+        formats.add(format);
       }
       return new CompositeDateTimeFormat(pattern, formats.toArray(new SimpleDateTimeFormat[0]));
-    } 
-    
+    }
+
     return new SimpleDateTimeFormat(pattern);
   }
 
@@ -269,5 +269,5 @@ public abstract class DateTimeFormat extends BaseFormat {
    * @param value the date-time value to format
    * @return the formatted timestamp
    */
-  public abstract String format(ZonedDateTime value); 
+  public abstract String format(ZonedDateTime value);
 }

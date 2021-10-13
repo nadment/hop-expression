@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package org.apache.hop.expression;
 
 
 import java.io.StringWriter;
-import java.util.Set;
 
 /**
  * An expression is a combination of one or more literal, resolvable identifiers, operators and
@@ -35,11 +34,25 @@ public interface IExpression {
    * @see #isA
    */
   public Kind getKind();
-    
-  public default boolean is(Set<Kind> category) {
-    return getKind().is(category);
+
+  public default boolean is(Kind kind) {
+    return getKind() == kind;
   }
-  
+
+  /** Check if the expression is a call to this operator or a alias of this operator */
+  public default boolean is(Operator operator) {
+    if (operator == null)
+      return false;
+    if (this instanceof OperatorCall) {
+      OperatorCall call = (OperatorCall) this;
+
+      if (operator.isAlias(call.getOperator()))
+        return true;
+    }
+
+    return false;
+  }
+
   /**
    * Estimate the cost to process the expression. Used when optimizing the query, to optimize the
    * expression with the lowest estimated cost.
@@ -56,10 +69,11 @@ public interface IExpression {
    * @return The result of evaluating the expression.
    */
   public Object eval(IExpressionContext context) throws ExpressionException;
-    
+
   /**
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.
    */
-  public void write(StringWriter writer, int leftPrec, int rightPrec);
+  // public void write(StringWriter writer, int leftPrec, int rightPrec);
+  public void write(StringWriter writer);
 }

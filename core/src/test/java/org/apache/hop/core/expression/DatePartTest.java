@@ -31,24 +31,21 @@ public class DatePartTest {
     assertEquals(2020, DatePart.YEAR.get(datetime));
     assertEquals(3, DatePart.QUARTER.get(datetime));
     assertEquals(8, DatePart.MONTH.get(datetime));
-    assertEquals(33, DatePart.WEEK.get(datetime));
+    assertEquals(33, DatePart.WEEKOFYEAR.get(datetime));
     assertEquals(15, DatePart.DAY.get(datetime));
     assertEquals(228, DatePart.DAYOFYEAR.get(datetime));
-    
-    
     assertEquals(23, DatePart.HOUR.get(datetime));
     assertEquals(45, DatePart.MINUTE.get(datetime));
     assertEquals(59, DatePart.SECOND.get(datetime));
     assertEquals(0, DatePart.MILLISECOND.get(datetime));
     assertEquals(0, DatePart.MICROSECOND.get(datetime));
     assertEquals(0, DatePart.NANOSECOND.get(datetime));
-    
     assertEquals(3, DatePart.MILLENNIUM.get(datetime));
     assertEquals(21, DatePart.CENTURY.get(datetime));
     assertEquals(202, DatePart.DECADE.get(datetime));
-    assertEquals(1597535159, DatePart.EPOCH.get(datetime));    
+    assertEquals(1597535159, DatePart.EPOCH.get(datetime));
 
-    // TODO: More tests 
+    // TODO: More tests
     assertEquals(7, DatePart.DAYOFWEEK.get(datetime));
     assertEquals(6, DatePart.DAYOFWEEKISO.get(datetime));
     assertEquals(2020, DatePart.YEAROFWEEK.get(datetime));

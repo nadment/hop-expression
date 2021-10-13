@@ -73,6 +73,10 @@
 								<unzip
 									src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
 									dest="${hop.home}/plugins/" />
+							
+								<!-- copy to native, should be scanned for annotations -->
+		    				<copy file="${hop.home}/plugins/transforms/expression/lib/hop-expression-core-${project.version}.jar" tofile="${hop.home}/lib/hop-expression-${project.version}.jar" />
+							
 							</target>
 						</configuration>
 					</execution>

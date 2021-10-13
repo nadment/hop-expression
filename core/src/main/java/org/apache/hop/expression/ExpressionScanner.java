@@ -18,12 +18,28 @@ import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** Parses an expression string to return the individual tokens. */
 public class ExpressionScanner {
 
   private static final Class<?> PKG = ExpressionScanner.class; // for i18n purposes
 
+  private static final Set<String> RESERVED_WORDS =
+      new TreeSet<>(Arrays.asList("AS", "AND", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
+          "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULL", "OR",
+          "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE"));
+  
+  public static Set<String> getReservedWords() {
+    return RESERVED_WORDS;
+  }
+
+  public static boolean isReservedWord(String name) {
+    return RESERVED_WORDS.contains(name.toUpperCase());
+  }
+  
   private String source;
 
   private int index = 0;
@@ -78,7 +94,7 @@ public class ExpressionScanner {
         }
 
         case '=':
-          return new Token(Id.EQUAL, index++);        
+          return new Token(Id.EQUAL, index++);
 
         case '+':
           return new Token(Id.PLUS, index++);
@@ -320,7 +336,7 @@ public class ExpressionScanner {
             index++;
           }
 
-          ExpressionRegistry registry = ExpressionRegistry.getInstance();
+          OperatorRegistry registry = OperatorRegistry.getInstance();
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 
@@ -329,11 +345,11 @@ public class ExpressionScanner {
           }
 
           // Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR
-          if (registry.isReservedWord(name)) {
+          if (isReservedWord(name)) {
             return new Token(Id.valueOf(name), start, index, name);
           }
 
-          if (DataType.exist(name)) {
+          if (Type.exist(name)) {
             return new Token(Id.DATATYPE, start, index, name);
           }
 

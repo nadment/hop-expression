@@ -41,8 +41,6 @@ import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.expression.ExpressionEditorDialog;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
-import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -224,22 +222,22 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     wTransformName.addModifyListener(lsMod);
     props.setLook(wTransformName);
 
-    final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
-    deco.setDescriptionText(BaseMessages.getString("System.TransformNameMissing.Msg"));
-    deco.setImage(FieldDecorationRegistry.getDefault()
-        .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).getImage());
-    deco.setShowOnlyOnFocus(true);
-    deco.hide();
-
-    wTransformName.addListener(SWT.Modify, event ->  {
-        if (wTransformName.getText().length() > 0) {
-          deco.hide();
-        } else {
-          deco.show();
-        }
-        baseTransformMeta.setChanged();
-        wOk.setEnabled(isValid());   
-    });
+//    final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
+//    deco.setDescriptionText(BaseMessages.getString("System.TransformNameMissing.Msg"));
+//    deco.setImage(FieldDecorationRegistry.getDefault()
+//        .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR).getImage());
+//    deco.setShowOnlyOnFocus(true);
+//    deco.hide();
+//
+//    wTransformName.addListener(SWT.Modify, event ->  {
+//        if (wTransformName.getText().length() > 0) {
+//          deco.hide();
+//        } else {
+//          deco.show();
+//        }
+//        baseTransformMeta.setChanged();
+//        wOk.setEnabled(isValid());   
+//    });
 
     return composite;
   }

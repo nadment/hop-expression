@@ -25,13 +25,13 @@ import java.time.temporal.WeekFields;
  * part of a date / datetime value
  */
 public enum DatePart {
-  /** The number of seconds since 1970-01-01 00:00:00.00 */
+  /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
   EPOCH,
 
-  /** First day of its millennium. */
+  /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd.*/
   MILLENNIUM,
 
-  /** First day of its century. */
+  /** The century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
   CENTURY,
 
   /** First day of its decade. The year divided by 10. */
@@ -65,10 +65,10 @@ public enum DatePart {
   DAYOFYEAR("DOY"),
 
   /** The number (1 - 54) of the week of the year */
-  WEEK("WEEKOFYEAR"),
+  WEEKOFYEAR("WEEK"),
 
   /** Week of the year (number from 1-53). */
-  WEEKISO("WEEKOFYEARISO"),
+  WEEKOFYEARISO("WEEKISO"),
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
@@ -81,16 +81,16 @@ public enum DatePart {
 
   /** The minute (0-59). */
   MINUTE("MI"),
-  
+
   /** The second (0-59). */
   SECOND("SS"),
-  
+
   /** The millisecond. */
   MILLISECOND("MS"),
-  
+
   /** The microsecond. */
   MICROSECOND("MCS"),
-  
+
   /** The nanosecond. */
   NANOSECOND("NS"),
 
@@ -98,7 +98,7 @@ public enum DatePart {
 
   /** The time zone offset's hour part. */
   TIMEZONE_HOUR,
-  /**  The time zone offset's minute part. */
+  /** The time zone offset's minute part. */
   TIMEZONE_MINUTE
 
   ;
@@ -179,9 +179,9 @@ public enum DatePart {
         return dow;
       case DAYOFWEEKISO:
         return dt.getDayOfWeek().getValue();
-      case WEEK:
+      case WEEKOFYEAR:
         return dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-      case WEEKISO:
+      case WEEKOFYEARISO:
         return dt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
       case WEEKOFMONTH:
         return dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
