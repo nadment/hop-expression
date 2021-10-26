@@ -36,12 +36,12 @@
 			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-expression-core</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-expression-plugins</artifactId>
 			<version>${project.version}</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<build>
@@ -74,8 +74,9 @@
 									src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
 									dest="${hop.home}/plugins/" />
 							
-								<!-- copy to native, should be scanned for annotations -->
-		    				<copy file="${hop.home}/plugins/transforms/expression/lib/hop-expression-core-${project.version}.jar" tofile="${hop.home}/lib/hop-expression-${project.version}.jar" />
+							
+								<!-- move to native libraries, should be scanned for annotations -->
+ 		    				<move file="${hop.home}/plugins/transforms/expression/hop-expression-core-${project.version}.jar" tofile="${hop.home}/lib/hop-expression-${project.version}.jar" /> 
 							
 							</target>
 						</configuration>
