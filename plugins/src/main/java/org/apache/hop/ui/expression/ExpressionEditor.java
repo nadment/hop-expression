@@ -78,6 +78,7 @@ public class ExpressionEditor extends SashForm {
     textEditor =
         new StyledText(parent, SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
+    textEditor.setFont(GuiResource.getInstance().getFontFixed());
     textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
 

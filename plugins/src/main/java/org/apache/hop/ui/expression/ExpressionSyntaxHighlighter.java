@@ -19,7 +19,6 @@ package org.apache.hop.ui.expression;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Token;
 import org.apache.hop.ui.core.gui.GuiResource;

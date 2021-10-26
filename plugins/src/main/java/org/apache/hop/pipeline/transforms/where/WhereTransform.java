@@ -31,7 +31,6 @@ import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.pipeline.transform.errorhandling.IStream;
 import java.util.List;
 
-/** @author Nicolas ADMENT */
 public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class;
@@ -66,7 +65,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
     // in the row structure that only need to be done once
     if (first) {
       if (log.isDebug()) {
-        logDebug(BaseMessages.getString(PKG, "ExpressionFilter.Log.StartedProcessing"));
+        logDebug(BaseMessages.getString(PKG, "Where.Log.StartedProcessing"));
       }
 
       first = false;
@@ -99,7 +98,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
           throw new HopTransformException(
               BaseMessages.getString(
                   PKG,
-                  "ExpressionFilter.Log.TargetTransformInvalid",
+                  "Where.Log.TargetTransformInvalid",
                   streams.get(0).getTransformName()));
         }
       } else {
@@ -113,7 +112,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
           throw new HopTransformException(
               BaseMessages.getString(
                   PKG,
-                  "ExpressionFilter.Log.TargetTransformInvalid",
+                  "Where.Log.TargetTransformInvalid",
                   streams.get(1).getTransformName()));
         }
       } else {
@@ -132,7 +131,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
           logRowlevel(
               BaseMessages.getString(
                   PKG,
-                  "ExpressionFilter.Log.FilterRow",
+                  "Where.Log.FilterRow",
                   data.falseRowSet.getDestinationTransformName(),
                   getInputRowMeta().getString(row)));
         }
@@ -145,7 +144,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
           logRowlevel(
               BaseMessages.getString(
                   PKG,
-                  "ExpressionFilter.Log.KeepRow",
+                  "Where.Log.KeepRow",
                   data.trueRowSet.getDestinationTransformName(),
                   getInputRowMeta().getString(row)));
         }
@@ -156,7 +155,7 @@ public class WhereTransform extends BaseTransform<WhereMeta, WhereData> {
     // log progress if it is time to to so
     if (checkFeedback(getLinesRead())) {
       if (log.isBasic()) {
-        logBasic(BaseMessages.getString(PKG, "ExpressionFilter.Log.LineNumber") + getLinesRead());
+        logBasic(BaseMessages.getString(PKG, "Where.Log.LineNumber") + getLinesRead());
       }
     }
 
