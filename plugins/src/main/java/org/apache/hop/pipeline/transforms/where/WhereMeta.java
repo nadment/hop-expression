@@ -59,10 +59,11 @@ import org.w3c.dom.Node;
     name = "i18n::Where.Name",
     description = "i18n::Where.Description",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
-    keywords = {"filter", "expression", "sql"})
+    documentationUrl = "/pipeline/transforms/where.html",
+    keywords = "i18n::Where.Keyword")
 @InjectionSupported(localizationPrefix = "Where.Injection.")
 public class WhereMeta extends BaseTransformMeta
-    implements ITransformMeta<WhereTransform, WhereData> {
+    implements ITransformMeta<Where, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class; // for i18n purposes
 
@@ -86,13 +87,13 @@ public class WhereMeta extends BaseTransformMeta
   }
   
   @Override
-  public WhereTransform createTransform(
+  public Where createTransform(
       TransformMeta transformMeta,
       WhereData data,
       int cnr,
       PipelineMeta pipelineMeta,
       Pipeline pipeline) {
-    return new WhereTransform(transformMeta, this, data, cnr, pipelineMeta, pipeline);
+    return new Where(transformMeta, this, data, cnr, pipelineMeta, pipeline);
   }
 
   @Override

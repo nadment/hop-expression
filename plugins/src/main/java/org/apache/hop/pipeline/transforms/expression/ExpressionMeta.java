@@ -48,7 +48,8 @@ import java.util.List;
     description = "i18n::Expression.Description",
     image = "expression.svg",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
-    keywords = {"script", "sql", "function"})
+    documentationUrl = "/pipeline/transforms/expresssion.html",
+    keywords = "i18n::Expression.Keyword")
 public class ExpressionMeta extends BaseTransformMeta
     implements ITransformMeta<ExpressionTransform, ExpressionData> {
 
