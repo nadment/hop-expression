@@ -22,8 +22,6 @@ import java.util.Objects;
 
 /**
  * Contains the properties of the fields to set with expression.
- *
- * @author Nicolas ADMENT
  */
 public class ExpressionField {
 

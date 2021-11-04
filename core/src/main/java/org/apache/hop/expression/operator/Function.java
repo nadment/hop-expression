@@ -150,7 +150,7 @@ public class Function extends Operator {
     }
   }
 
-  @ScalarFunction(name = "CURRENT_DATE", alias = {"NOW", "SYSDATE"}, deterministic = false,
+  @ScalarFunction(name = "CURRENT_DATE", alias = {"NOW"}, deterministic = false,
       minArgs = 0, maxArgs = 0, category = "i18n::Operator.Category.Date")
   public Object current_date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {

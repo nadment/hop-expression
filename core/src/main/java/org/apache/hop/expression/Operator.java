@@ -67,8 +67,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Operators have the precedence levels. An operator on higher levels is evaluated before an
  * operator on a lower level
- *
- * @author Nicolas ADMENT
  */
 public abstract class Operator implements Comparable<Operator> {
 
@@ -128,20 +126,10 @@ public abstract class Operator implements Comparable<Operator> {
   public static final Operator CONCAT = new Concat();
   public static final Operator EXTRACT = new Extract();
 
-  // -------------------------------------------------------------
-  // Hidden operator available as function but used by optimizer
-  // -------------------------------------------------------------
-
-  // public static final Operator STARTSWITH =
-  // new Operator(Kind.STARTSWITH, "STARTSWITH", 10, true, "i18n::Operator.Category.Comparison");
-  // public static final Operator ENDSWITH =
-  // new Operator(Kind.ENDSWITH, "ENDSWITH", 10, true, "i18n::Operator.Category.Comparison");
-  // public static final Operator CONTAINS =
-  // new Operator(Kind.CONTAINS, "CONTAINS", 10, true, "i18n::Operator.Category.Comparison");
-
   /** The name of the operator/function. Ex. "COS" or "TRIM" */
   private final String name;
 
+  /** The alias of the function. Ex. "TRUNCATE" alias "TRUNC"    */
   private final String alias;
 
   /**
@@ -165,8 +153,8 @@ public abstract class Operator implements Comparable<Operator> {
   /**
    * Creates an function operator.
    *
-   * @param name Name of function
-   * @param alias Alias of function
+   * @param name The name of function
+   * @param alias The alias of function
    */
   protected Operator(String name, String alias, boolean isDeterministic, String category) {
     // Some operator has syntax of function CAST, TRY_CAST, CONCAT, CONTAINS, EXTRACT, STARTSWITH,
@@ -246,7 +234,7 @@ public abstract class Operator implements Comparable<Operator> {
     return isDeterministic;
   }
   
-  protected URL getUrl(Kind kind) {
+  protected URL getDocumentationUrl(Kind kind) {
     return getClass().getResource("/docs/" + name.toLowerCase() + ".html");
   }
 

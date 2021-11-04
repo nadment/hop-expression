@@ -25,43 +25,44 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Content Adapter for StyledText widget
- *
- * @author Nicolas ADMENT
  */
 public class StyledTextContentAdapter implements IControlContentAdapter, IControlContentAdapter2 {
 
+  private final StyledText styledText;
+  
+  public StyledTextContentAdapter(StyledText styledText) {
+    this.styledText = styledText;
+}
+  
   @Override
   public String getControlContents(Control control) {
-    return ((StyledText) control).getText();
+    return styledText.getText();
   }
 
   @Override
-  public void setControlContents(Control control, String text, int cursorPosition) {
-    StyledText styledText = (StyledText) control;
+  public void setControlContents(Control control, String text, int cursorPosition) {    
     styledText.setText(text);
     styledText.setSelection(cursorPosition, cursorPosition);
   }
 
   @Override
   public void insertControlContents(Control control, String text, int cursorPosition) {
-    Point selection = ((StyledText) control).getSelection();
-    ((StyledText) control).insert(text);
+    Point selection = styledText.getSelection();
+    styledText.insert(text);
     // Insert will leave the cursor at the end of the inserted StyledText. If this
     // is not what we wanted, reset the selection.
     if (cursorPosition <= text.length()) {
-      ((StyledText) control)
-          .setSelection(selection.x + cursorPosition, selection.x + cursorPosition);
+      styledText.setSelection(selection.x + cursorPosition, selection.x + cursorPosition);
     }
   }
 
   @Override
   public int getCursorPosition(Control control) {
-    return ((StyledText) control).getCaretOffset();
+    return styledText.getCaretOffset();
   }
 
   @Override
-  public Rectangle getInsertionBounds(Control control) {
-    StyledText styledText = (StyledText) control;
+  public Rectangle getInsertionBounds(Control control) {   
     int caretOrigin = styledText.getCaretOffset();
     // We fudge the y pixels due to problems with getCaretLocation
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=52520
@@ -74,16 +75,16 @@ public class StyledTextContentAdapter implements IControlContentAdapter, IContro
 
   @Override
   public void setCursorPosition(Control control, int position) {
-    ((StyledText) control).setSelection(new Point(position, position));
+    styledText.setSelection(new Point(position, position));
   }
 
   @Override
   public Point getSelection(Control control) {
-    return ((StyledText) control).getSelection();
+    return styledText.getSelection();
   }
 
   @Override
   public void setSelection(Control control, Point range) {
-    ((StyledText) control).setSelection(range);
+    styledText.setSelection(range);
   }
 }

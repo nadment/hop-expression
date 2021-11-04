@@ -39,8 +39,6 @@ import java.util.List;
 
 /**
  * This transform create field value with expression.
- *
- * @author Nicolas ADMENT
  */
 @Transform(
     id = "Expression",

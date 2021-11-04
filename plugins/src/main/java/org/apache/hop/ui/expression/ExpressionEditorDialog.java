@@ -36,9 +36,6 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * This dialogs allows you to edit expression.
- *
- * @author Nicolas ADMENT
- * @since 25-02-2019
  */
 public class ExpressionEditorDialog extends Dialog {
   private static final Class<?> PKG = ExpressionEditorDialog.class;
@@ -82,17 +79,19 @@ public class ExpressionEditorDialog extends Dialog {
     wEditor.setVariables(variables);
     wEditor.setLayoutData(
         new FormDataBuilder()
-            .top()
+            .top(0, props.getMargin())
             .bottom(100, -50)
-            .left(0, LARGE_MARGIN)
-            .right(100, -LARGE_MARGIN)
+            .left(0, props.getMargin())
+            .right(100, -props.getMargin())
             .result());
 
     // The button bar
     Composite buttonBar = new Composite(shell, SWT.NONE);
     FormLayout buttonBarLayout = new FormLayout();
-    buttonBarLayout.marginHeight = LARGE_MARGIN;
-    buttonBarLayout.marginWidth = LARGE_MARGIN;
+    buttonBarLayout.marginTop = 0;
+    buttonBarLayout.marginBottom = props.getMargin();
+    buttonBarLayout.marginLeft = props.getMargin();
+    buttonBarLayout.marginRight = props.getMargin();
     buttonBar.setLayout(buttonBarLayout);
     buttonBar.setLayoutData(new FormDataBuilder().top(wEditor, 0).bottom().right().result());
     props.setLook(buttonBar);
@@ -105,12 +104,11 @@ public class ExpressionEditorDialog extends Dialog {
     Button btnOK = new Button(buttonBar, SWT.PUSH);
     btnOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
     btnOK.setLayoutData(
-        new FormDataBuilder().bottom().right(btnCancel, -ConstUi.SMALL_MARGIN).result());
+        new FormDataBuilder().bottom().right(btnCancel, -props.getMargin()).result());
     btnOK.addListener(SWT.Selection, event -> onOkPressed());
 
+    
     BaseTransformDialog.setSize(shell);
-
-    // TODO: Set the shell size, based upon previous time...
 
     shell.open();
     Display display = shell.getDisplay();

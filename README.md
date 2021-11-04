@@ -14,7 +14,7 @@ This plugin provide expression language and 2 transforms.
 
 #### System Requirements
 
-Hop 0.70 or above
+Hop 1.0 or above
 
 #### Manual Install
 

@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CURRENT_DATE, SYSDATE
+= CURRENT_DATE, NOW
 
 Returns the current date of the system in the context time zone (UTC by default).
 
@@ -23,7 +23,7 @@ Returns the current date of the system in the context time zone (UTC by default)
 CURRENT_DATE()
 ----
 ----
-SYSDATE()
+NOW()
 ----
 
 == Usage

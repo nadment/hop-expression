@@ -19,6 +19,7 @@ package org.apache.hop.ui.expression;
 import java.util.Objects;
 
 import org.apache.hop.expression.Operator;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 
 public class ExpressionProposal implements IContentProposal {
@@ -45,6 +46,9 @@ public class ExpressionProposal implements IContentProposal {
    *     should be no description.
    */
   public ExpressionProposal(Type type, String content, String label, Object data) {
+    Assert.isNotNull(type);
+    Assert.isNotNull(content);
+    Assert.isNotNull(label);
     this.type = type;
     this.content = Objects.requireNonNull(content);
     this.label = label;

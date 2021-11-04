@@ -12,14 +12,16 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.ui.core.widget;
+package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.ui.core.PropsUi;
-import org.apache.hop.ui.expression.ExpressionEditorDialog;
+import org.apache.hop.ui.core.widget.ControlSpaceKeyAdapter;
+import org.apache.hop.ui.core.widget.IGetCaretPosition;
+import org.apache.hop.ui.core.widget.IInsertText;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusListener;

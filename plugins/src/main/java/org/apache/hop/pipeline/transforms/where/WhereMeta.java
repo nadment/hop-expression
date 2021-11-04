@@ -50,8 +50,6 @@ import org.w3c.dom.Node;
 /**
  * This transform where filter rows with expression and keeps only rows where this expression is
  * true.
- *
- * @author Nicolas ADMENT
  */
 @Transform(
     id = "Where",

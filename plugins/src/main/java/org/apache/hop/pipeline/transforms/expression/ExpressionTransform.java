@@ -31,7 +31,6 @@ import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.Arrays;
 
-/** @author Nicolas ADMENT */
 public class ExpressionTransform extends BaseTransform<ExpressionMeta, ExpressionData> {
   private static final Class<?> PKG = ExpressionMeta.class;
 

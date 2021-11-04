@@ -126,7 +126,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     if (plugin.getImageFile() != null) {
       return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
-          plugin.getImageFile(), ConstUi.ICON_SIZE, ConstUi.ICON_SIZE);
+          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
     }
 
     return GuiResource.getInstance().getImageError();
@@ -186,7 +186,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     Label icon = new Label(composite, SWT.CENTER);
     icon.setImage(getImage());
-    icon.setLayoutData(new FormDataBuilder().top().right(100, 0).width(ConstUi.ICON_SIZE).result());
+    icon.setLayoutData(new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
     props.setLook(icon);
 
     Label label = new Label(composite, SWT.NONE);
@@ -197,7 +197,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     // Widget Transform name
     wTransformName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     wTransformName.setLayoutData(
-        new FormDataBuilder().top(label).left().right(icon, -ConstUi.ICON_SIZE).result());
+        new FormDataBuilder().top(label).left().right(icon, -props.getMargin()).result());
     wTransformName.addModifyListener(lsMod);
     props.setLook(wTransformName);
 

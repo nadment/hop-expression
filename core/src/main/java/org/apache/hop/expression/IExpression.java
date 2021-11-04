@@ -22,8 +22,6 @@ import java.io.StringWriter;
 /**
  * An expression is a combination of one or more literal, resolvable identifiers, operators and
  * functions that evaluate to a value.
- *
- * @author Nicolas ADMENT
  */
 public interface IExpression {
 

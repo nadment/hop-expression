@@ -56,7 +56,7 @@ public class ExpressionEditor extends SashForm {
   private ExpressionProposalProvider contentProposalProvider;
   private IVariables variables;
   private IRowMeta rowMeta;
-  private StyledText textEditor;
+  private StyledText styledText;
   private Tree tree;
   private TreeItem treeItemField;
   private TreeItem treeItemVariable;
@@ -75,21 +75,21 @@ public class ExpressionEditor extends SashForm {
   }
 
   protected void createEditor(final Composite parent) {
-    textEditor =
+    styledText =
         new StyledText(parent, SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
-    textEditor.setFont(GuiResource.getInstance().getFontFixed());
-    textEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-    textEditor.addLineStyleListener(new ExpressionSyntaxHighlighter());
+    styledText.setFont(GuiResource.getInstance().getFontFixed());
+    styledText.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
+    styledText.addLineStyleListener(new ExpressionSyntaxHighlighter());
 
     // txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
     // wEditor.getStyledText().setMargins(30, 5, 3, 5);
 
-    PropsUi.getInstance().setLook(textEditor, Props.WIDGET_STYLE_FIXED);
+    PropsUi.getInstance().setLook(styledText, Props.WIDGET_STYLE_FIXED);
     PropsUi.getInstance().setLook(this);
 
-    // See PDI-1284 in chinese window, Ctrl-SPACE is reserved by system for input
-    // chinese character. use Ctrl-ALT-SPACE instead.
+    // In Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
+    // Use Ctrl-ALT-SPACE instead.
     int modifierKeys = SWT.CTRL;
     if (System.getProperty("user.language").equals("zh")) {
       modifierKeys = SWT.CTRL | SWT.ALT;
@@ -98,23 +98,22 @@ public class ExpressionEditor extends SashForm {
 
     contentProposalProvider = new ExpressionProposalProvider();
 
-    ContentProposalAdapter contentProposalAdapter = new ContentProposalAdapter(textEditor,
-        new StyledTextContentAdapter(), contentProposalProvider, keyStroke, new char[] {'(', '$'});
-    contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
+    // "(" and "$" will also activate the content proposals
+    ContentProposalAdapter contentProposalAdapter =
+        new ContentProposalAdapter(styledText, new StyledTextContentAdapter(styledText),
+            contentProposalProvider, keyStroke, new char[] {'(', '$'});
+    contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+    contentProposalAdapter.setFilterStyle(ContentProposalAdapter.FILTER_NONE);
     contentProposalAdapter.setLabelProvider(new ExpressionLabelProvider());
-    contentProposalAdapter.setPropagateKeys(true);
+    contentProposalAdapter.setPropagateKeys(false);
     contentProposalAdapter.setAutoActivationDelay(10);
-    contentProposalAdapter.setPopupSize(new Point(300, 200));
+    contentProposalAdapter.setPopupSize(new Point(400, 200));
 
-    // Avoid Enter key to be inserted when selected content proposal
-    textEditor.addListener(SWT.KeyDown, event -> {
-      try {
-        KeyStroke k = KeyStroke.getInstance("Enter");
-        if (k.getNaturalKey() == event.keyCode && contentProposalAdapter.isProposalPopupOpen()) {
-          event.doit = false;
-        }
-      } catch (Exception e) {
-        // Ignore
+    // Avoid Enter key to be inserted when selected content proposal   
+    styledText.addListener(SWT.Traverse, event -> {
+      if (event.detail == SWT.TRAVERSE_RETURN && contentProposalAdapter.isProposalPopupOpen()) {
+        System.out.println(event);       
+        event.doit = false;
       }
     });
   }
@@ -222,11 +221,11 @@ public class ExpressionEditor extends SashForm {
   }
 
   public void setText(String text) {
-    textEditor.setText(text);
+    styledText.setText(text);
   }
 
   public String getText() {
-    return textEditor.getText();
+    return styledText.getText();
   }
 
   @Override
@@ -282,7 +281,8 @@ public class ExpressionEditor extends SashForm {
 
           // Escape field name matching reserved words or function name
           String name = valueMeta.getName();
-          if (ExpressionScanner.isReservedWord(name) || OperatorRegistry.getInstance().isFunctionName(name)) {
+          if (ExpressionScanner.isReservedWord(name)
+              || OperatorRegistry.getInstance().isFunctionName(name)) {
             name = '[' + name + ']';
           }
 

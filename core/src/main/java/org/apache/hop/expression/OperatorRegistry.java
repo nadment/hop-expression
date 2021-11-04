@@ -36,7 +36,7 @@ import java.util.TreeSet;
 
 public class OperatorRegistry {
 
-  private static final ILogChannel log = new LogChannel("ExpressionRegistry");
+  private static final ILogChannel log = new LogChannel("OperatorRegistry");
 
   private static final OperatorRegistry registry = new OperatorRegistry();
 
@@ -54,7 +54,7 @@ public class OperatorRegistry {
   /**
    * The operator registry instance
    */
-  public static OperatorRegistry getInstance() {
+  public static final OperatorRegistry getInstance() {
     return registry;
   }
 
@@ -90,7 +90,7 @@ public class OperatorRegistry {
   /**
    * Register functions
    */
-  protected void init() {
+  private void init() {
     try {
 
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
@@ -103,16 +103,17 @@ public class OperatorRegistry {
           try {
             instance = (Operator) clazz.newInstance();
           } catch (Exception e) {
-            // Ignnore
+            // Ignore
           }
-
 
           if ( functions.containsKey(annotation.name()) ) {
             log.logError("Function already registred " + annotation.name());
             continue;
           }
 
-         // log.logBasic("Register function " + annotation.name());
+          if ( log.isDebug() ) {
+             log.logDebug("Register function " + annotation.name());
+          }
           
           // Create function
           Function function = new Function(annotation.name(), null, annotation.deterministic(),
@@ -122,8 +123,9 @@ public class OperatorRegistry {
 
           // Create function alias
           for (String alias : annotation.alias()) {
-            // log.logBasic("Register alias " + alias + " to function " + annotation.name());
-
+            if ( log.isDebug() ) {
+              log.logDebug("Register alias " + alias + " to function " + annotation.name());
+            }
             function = new Function(annotation.name(), alias, annotation.deterministic(), instance,
                 method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
             operators.add(function);
@@ -133,11 +135,8 @@ public class OperatorRegistry {
           log.logError("Error registring function " + method, e);
         }
       }
-
-
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.logError("Error discovering annoted functions", e);
     }
   }
 
@@ -198,6 +197,4 @@ public class OperatorRegistry {
     }
     return methods;
   }
-
-
 }
