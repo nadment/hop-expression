@@ -1,0 +1,45 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= REGEXP_SUBSTR
+
+Returns the substring that matches a regular expression within a string. If no match is found, returns NULL.
+
+== Syntax
+----
+REGEXP_SUBSTR( <source> , <pattern> [ , <position> [ , <occurrence> [ , <parameters> ]]] )
+----
+
+
+== Arguments
+
+<source>:: The string to be searched for.
+<pattern>:: The regular expression pattern.
+<position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
+<occurrence>:: Specifies which occurrence of the pattern to match. This argument is also optional.
+<parameters>:: One or more string literals that indicate how the function matches the pattern.
+* c – Case-sensitive matching.
+* i – Case-insensitive matching.
+* m - Multi-line mode.
+Return type:: String
+
+== Usage
+
+* If no matches are found, returns the original subject.
+
+
+
+

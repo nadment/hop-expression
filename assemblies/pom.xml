@@ -28,20 +28,15 @@
 	<description></description>
 
 	<properties>
-		<license.licenseName>apache_v2</license.licenseName>		
+		<license.licenseName>apache_v2</license.licenseName>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.hop</groupId>
-			<artifactId>hop-expression-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>	
-		<dependency>
-			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-expression-plugins</artifactId>
 			<version>${project.version}</version>
-		</dependency>	
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -64,7 +59,7 @@
 						</goals>
 						<configuration>
 							<target>
-<!-- 								<echo									message="Installed the plugin in HOP installation in ${hop.home}." /> -->
+								<echo message="Installed the plugin in HOP installation in ${hop.home}."/>
 
 								<!-- remove previous installations -->
 								<delete dir="${hop.home}/plugins/transforms/expression" />
@@ -73,11 +68,7 @@
 								<unzip
 									src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
 									dest="${hop.home}/plugins/" />
-							
-							
-								<!-- move to native libraries, should be scanned for annotations -->
- 		    				<move file="${hop.home}/plugins/transforms/expression/hop-expression-core-${project.version}.jar" tofile="${hop.home}/lib/hop-expression-${project.version}.jar" /> 
-							
+
 							</target>
 						</configuration>
 					</execution>
