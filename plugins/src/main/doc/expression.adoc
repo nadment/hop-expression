@@ -56,13 +56,7 @@ String literals are always surrounded by single quotes (').
 'O' || CHR(13) || 'Reilly' <2>
 ----
 <1> The simplest method to escape single quotes in expression is to use two single quotes.
-<2> Use fucntion CHR to add special characters
-
-
-[Options below are removed to be more like SLQ], use chr(13) 
-
-- Support backslash escape sequences \t, \r, \n \b, \f, \\, \'#
-- Unicode character +\uNNNN+ or 32-bit Unicode character +\UNNNNNNNN+#<
+<2> Use function https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/chr.adoc[CHR] to add special characters.
 
 === Boolean
 
@@ -141,7 +135,6 @@ For example, YEAR is a reserved word and cannot be used whereas [YEAR] can be ac
 Expression supports most of the arithmetic, bitwise, logical and comparison operators.
 
 
-
 The operator precedence and associativity, highest to lowest.
 
 [cols="^1,<5,<5", options="header"]
@@ -149,7 +142,7 @@ The operator precedence and associativity, highest to lowest.
 |Associativity|Operator|Description
 |left|()|Parenthesis
 |left|fx(args...)|Function
-|right|::|Cast
+|right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[::]|Cast
 |right|+, -|Positive, Negative
 |right|~|Bitwise NOT
 |left|*, /, %|Multiplication, Division, Modulus
@@ -157,31 +150,167 @@ The operator precedence and associativity, highest to lowest.
 |left|^|Bitwise exclusive OR
 |left|\||Bitwise inclusive OR 
 |left|+, -|Addition, Subtraction
-|left| \|\||Concatenation
-|left|IN|Set membership
-|left|BETWEEN|Range containment
-|left|LIKE, ILIKE|Pattern matching
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Set membership
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE]|Pattern matching
 |left|=, >, <, >=, <=, <>, != |Comparison operators
-|left|IS|IS [NOT] NULL, IS [NOT] FALSE, IS [NOT] TRUE
-|right|NOT|Logical negation 
-|left|AND|Conjunction
-|left|OR|Inclusion 
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is.adoc[IS]|IS [NOT] NULL, IS [NOT] FALSE, IS [NOT] TRUE
+|right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[AND]|Conjunction
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Inclusion 
 |===
 
 NOTE: An operator on higher levels is evaluated before an operator on a lower level.
 
 == Function
 
-Expression support scalar function.
+Expression support scalar functions.
 
-* <<operator/abs.adoc,Abs>>
-* <<operator/acos.adoc,Acos>>
-* <<operator/acosh.adoc,Acosh>>
-* <<operator/ascii.adoc,Ascii>> 
-* <<operator/asin.adoc,Asin>>
-* <<operator/atan.adoc,Atan>>
-* <<operator/cbrt.adoc,Cbrt>>
-* <<operator/day.adoc,Day>>
-* <<operator/decode.adoc,Decode>>
- 
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/abs.adoc[ABS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/acos.adoc[ACOS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/acosh.adoc[ACOSH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add.adoc[ADD]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_days.adoc[ADD_DAYS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_hours.adoc[ADD_HOURS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_minutes.adoc[ADD_MINUTES]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_months.adoc[ADD_MONTHS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_seconds.adoc[ADD_SECONDS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_weeks.adoc[ADD_WEEKS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_years.adoc[ADD_YEARS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ascii.adoc[ASCII]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/asin.adoc[ASIN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/asinh.adoc[ASINH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atan.adoc[ATAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atan2.adoc[ATAN2]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atanh.adoc[ATANH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitand.adoc[BITAND]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitnot.adoc[BITNOT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitor.adoc[BITOR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitxor.adoc[BITXOR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[BOOLAND]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[BOOLNOT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[BOOLOR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolxor.adoc[BOOLXOR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/case.adoc[CASE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[CAST]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cbrt.adoc[CBRT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ceil.adoc[CEIL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/chr.adoc[CHR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/coalesce.adoc[COALESCE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[CONCAT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/contains.adoc[CONTAINS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cos.adoc[COS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cosh.adoc[COSH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cot.adoc[COT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_date.adoc[CURRENT_DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date.adoc[DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dateformat.adoc[DATEFORMAT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/day.adoc[DAY]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dayname.adoc[DAYNAME]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dayofweek.adoc[DAYOFWEEK]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dayofyear.adoc[DAYOFYEAR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/days_between.adoc[DAYS_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/decode.adoc[DECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/degrees.adoc[DEGREES]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/divide.adoc[DIVIDE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/endswith.adoc[ENDSWITH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal.adoc[EQUAL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal_null.adoc[EQUAL_NULL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/exp.adoc[EXP]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/extract.adoc[EXTRACT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/first_day.adoc[FIRST_DAY]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/floor.adoc[FLOOR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greater_than.adoc[GREATER_THAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greater_than_or_equal.adoc[GREATER_THAN_OR_EQUAL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greatest.adoc[GREATEST]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hour.adoc[HOUR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hours_between.adoc[HOURS_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/if.adoc[IF]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ifnull.adoc[IFNULL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/initcap.adoc[INITCAP]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/instr.adoc[INSTR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/last_day.adoc[LAST_DAY]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/least.adoc[LEAST]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/left.adoc[LEFT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/length.adoc[LENGTH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/less_than.adoc[LESS_THAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/less_than_or_equal.adoc[LESS_THAN_OR_EQUAL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ln.adoc[LN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/log.adoc[LOG]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/log10.adoc[LOG10]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/lower.adoc[LOWER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/lpad.adoc[LPAD]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ltrim.adoc[LTRIM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/md5.adoc[MD5]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/minute.adoc[MINUTE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/minutes_between.adoc[MINUTES_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/mod.adoc[MOD]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/modulus.adoc[MODULUS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/month.adoc[MONTH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/monthname.adoc[MONTHNAME]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/months_between.adoc[MONTHS_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/multiply.adoc[MULTIPLY]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/next_day.adoc[NEXT_DAY]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/not_equal.adoc[NOT_EQUAL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullif.adoc[NULLIF]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullifzero.adoc[NULLIFZERO]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/numberformat.adoc[NUMBERFORMAT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nvl2.adoc[NVL2]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/pi.adoc[PI]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/power.adoc[POWER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/previous_day.adoc[PREVIOUS_DAY]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/quarter.adoc[QUARTER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/radians.adoc[RADIANS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/random.adoc[RANDOM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_instr.adoc[REGEXP_INSTR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_like.adoc[REGEXP_LIKE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_replace.adoc[REGEXP_REPLACE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_substr.adoc[REGEXP_SUBSTR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/repeat.adoc[REPEAT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/replace.adoc[REPLACE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/reverse.adoc[REVERSE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/right.adoc[RIGHT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/round.adoc[ROUND]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/rpad.adoc[RPAD]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/rtrim.adoc[RTRIM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/second.adoc[SECOND]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/seconds_between.adoc[SECONDS_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sha1.adoc[SHA1]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sha256.adoc[SHA256]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sha384.adoc[SHA384]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sha512.adoc[SHA512]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sign.adoc[SIGN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sin.adoc[SIN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sinh.adoc[SINH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/soundex.adoc[SOUNDEX]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/space.adoc[SPACE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sqrt.adoc[SQRT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/startswith.adoc[STARTSWITH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringdecode.adoc[STRINGDECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringencode.adoc[STRINGENCODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/substring.adoc[SUBSTRING]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/subtract.adoc[SUBTRACT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tan.adoc[TAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tanh.adoc[TANH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/translate.adoc[TRANSLATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/trim.adoc[TRIM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/truncate.adoc[TRUNCATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_boolean.adoc[TRY_TO_BOOLEAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/unicode.adoc[UNICODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/upper.adoc[UPPER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urldecode.adoc[URLDECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urlencode.adoc[URLENCODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/weekofmonth.adoc[WEEKOFMONTH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/weekofyear.adoc[WEEKOFYEAR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/year.adoc[YEAR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/years_between.adoc[YEARS_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/zeroifnull.adoc[ZEROIFNULL]
+
+
+
 

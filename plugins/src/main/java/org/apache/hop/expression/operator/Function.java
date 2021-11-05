@@ -120,9 +120,6 @@ public class Function extends Operator {
       parameters[0] = context;
       parameters[1] = operands;
       return method.invoke((instance == null) ? this : instance, parameters);
-    } catch (InvocationTargetException e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionCallError",
-          this.getName(), e.getTargetException().getMessage()), e);
     } catch (Exception e) {
       throw new ExpressionException(
           BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.getMessage()),

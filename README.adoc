@@ -1,0 +1,71 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+# Hop Expression Plugin
+:url-sonarcloud: https://sonarcloud.io/dashboard?id=hop-expression
+
+image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=alert_status[Sonarcloud,link={url-sonarcloud}]
+
+## Overview
+
+This plugin provide expression language and 2 transforms.
+
+* Expression transformation calculate fields with the power of expression 
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression]
+
+* Where transformation filter rows with expression 
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/where.svg[Where]
+
+## Expression language
+
+An expression is a combination of one or more literals values, resolvable identifier, operators and functions that evaluate to a value.
+
+----
+/** 
+ * Multi line comment
+ */
+
+Upper(Left(LABEL,5)) || ' | ' || InitCap(Substr(LABEL,8,50)) || To_Char([YEAR]+1,'FM9999') || CASE when REGION_ID>0 then 'A' else 'B' end
+----
+
+* Supports 6 data types: Boolean, Integer, Number, BigNumber, String, Binary. 
+* Supports most of the arithmetic, bitwise, logical and comparison operators.
+* Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
+* Use of comments to facilitate reading.
+* Are not case-sensitive, excepted for identifier.
+* Optimized for performance, so the 24 * 60 expression is optimized in 1440.
+
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
+
+
+## How to install
+
+### System Requirements
+
+https://hop.apache.org[Apcahe Hop (Incubating)] 1.0 or above (Web Hop not supported).
+
+### Manual Install
+
+1. Place the “expression” folder in the hop\plugins\transforms directory
+2. Restart Hop
+
+### Support
+
+This plugin is provided “as is”, without any warranties, expressed or implied. This software is not covered by any Support Agreement.
+
+### License
+
+Licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License, Version 2.0].
