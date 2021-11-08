@@ -76,14 +76,16 @@ public class Function extends Operator {
 
   private static final Soundex SOUNDEX = new Soundex();
 
+  private final Object instance;
   private final Method method;
   private final int minArgs;
   private final int maxArgs;
 
-  public Function(String name, String alias, boolean isDeterministic, Method method, int min,
-      int max, String category) throws ExpressionException {
+  public Function(String name, String alias, boolean isDeterministic, Object instance,
+      Method method, int min, int max, String category) throws ExpressionException {
     super(name, alias, isDeterministic, category);
 
+    this.instance = instance;
     this.method = method;
     this.minArgs = min;
     this.maxArgs = max;
@@ -112,7 +114,7 @@ public class Function extends Operator {
   public final Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     try {
-      return method.invoke(null, context, operands);
+      return method.invoke(instance, context, operands);
     } catch (Exception e) {
       if ( e.getCause() instanceof ExpressionException ) {
         throw (ExpressionException) e.getCause();

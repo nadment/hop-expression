@@ -97,7 +97,16 @@ public class OperatorRegistry {
       for (Method method : methods) {
         try {
           ScalarFunction annotation = method.getAnnotation(ScalarFunction.class);
-//          Class<?> clazz = method.getDeclaringClass();
+          Class<?> clazz = method.getDeclaringClass();
+          Object instance = null;
+
+          // If method is not static, need an instance to be invoked.
+          // Operator combined with function is not static.
+          try {
+            instance = clazz.newInstance();
+          } catch (Exception e) {
+            // If class doesn't have constructor, method should be static 
+          }
 
           if ( functions.containsKey(annotation.name()) ) {
             log.logError("Function already registred " + annotation.name());
@@ -110,7 +119,7 @@ public class OperatorRegistry {
           
           // Create function
           Function function = new Function(annotation.name(), null, annotation.deterministic(),
-              method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+              instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
           operators.add(function);
           functions.put(function.getName(), function);
 
@@ -119,7 +128,7 @@ public class OperatorRegistry {
             if ( log.isDebug() ) {
               log.logDebug("Register alias " + alias + " to function " + annotation.name());
             }
-            function = new Function(annotation.name(), alias, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+            function = new Function(annotation.name(), alias, annotation.deterministic(), instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
             operators.add(function);
             functions.put(alias, function);
           }
