@@ -115,7 +115,6 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   @Override
   public Object resolve(String name) throws ExpressionException {
-
     
     if (rowMeta == null)
       throw new ExpressionException(BaseMessages.getString(PKG, "Expression.NoRowMeta", name));

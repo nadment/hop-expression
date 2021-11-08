@@ -766,16 +766,14 @@ public abstract class Operator implements Comparable<Operator> {
     return new ExpressionException(BaseMessages.getString(PKG, "Bad regexp {0}", s));
   }
 
-  protected static ExpressionException createUnexpectedDataTypeException(Operator operator,
-      Type type) {
+  protected static ExpressionException createUnexpectedDataTypeException(String name, Type type) {
     return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.UnexpectedDataType", operator.getName(), type));
+        BaseMessages.getString(PKG, "Expression.UnexpectedDataType", name, type));
   }
 
-  protected static ExpressionException createUnexpectedDatePartException(Operator operator,
-      DatePart part) {
+  protected static ExpressionException createUnexpectedDatePartException(String name, DatePart part) {
     return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.UnexpectedDatePart", operator.getName(), part));
+        BaseMessages.getString(PKG, "Expression.UnexpectedDatePart", name, part));
   }
   
 

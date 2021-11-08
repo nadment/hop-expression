@@ -14,12 +14,15 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= POWER
+= SQUARE
 
-This function computes a number raised to the specified power.
+This function calculates the square of a numeric expression.
 
 == Syntax
 ----
-POWER( <base> , <exponent> )
+SQUARE( <numeric> )
 ----
 
+== Usage
+
+Return:: Number

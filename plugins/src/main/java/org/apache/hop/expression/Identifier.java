@@ -17,7 +17,6 @@ package org.apache.hop.expression;
 import java.io.StringWriter;
 
 public class Identifier implements IExpression {
-
   private final String name;
 
   public Identifier(final String name) {
@@ -41,7 +40,7 @@ public class Identifier implements IExpression {
 
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-    return context.resolve(this.name);
+    return context.resolve(name);
   }
 
   @Override
@@ -51,10 +50,10 @@ public class Identifier implements IExpression {
         || Type.exist(name) || DatePart.exist(name)
         || OperatorRegistry.getInstance().isFunctionName(name)) {
       writer.append('[');
-      writer.append(this.name);
+      writer.append(name);
       writer.append(']');
     } else {
-      writer.append(this.name);
+      writer.append(name);
     }
   }
 

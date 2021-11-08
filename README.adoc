@@ -51,11 +51,37 @@ Upper(Left(LABEL,5)) || ' | ' || InitCap(Substr(LABEL,8,50)) || To_Char([YEAR]+1
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
 
 
+## Extends with plugins
+
+Use @ScalarFunction annotation to create custom function. 
+
+----
+public static class ExperimentalFunction {
+
+  /** 
+   * The function compute Levenshtein distance.
+   */
+  @ScalarFunction(name = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2,)
+  public Object levenshtein(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+    
+    return Long.valueOf(Utils.getDamerauLevenshteinDistance(coerceToString(v0), coerceToString(v1)));
+  }
+}
+----
+
 ## How to install
 
 ### System Requirements
 
-https://hop.apache.org[Apcahe Hop (Incubating)] 1.0 or above (Web Hop not supported).
+https://hop.apache.org[Apcahe Hop (Incubating)] 1.0 or above.
+Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
 

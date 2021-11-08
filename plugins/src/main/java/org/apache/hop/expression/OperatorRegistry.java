@@ -97,14 +97,7 @@ public class OperatorRegistry {
       for (Method method : methods) {
         try {
           ScalarFunction annotation = method.getAnnotation(ScalarFunction.class);
-          Class<?> clazz = method.getDeclaringClass();
-          Object instance = null;
-
-          try {
-            instance = (Operator) clazz.newInstance();
-          } catch (Exception e) {
-            // Ignore
-          }
+//          Class<?> clazz = method.getDeclaringClass();
 
           if ( functions.containsKey(annotation.name()) ) {
             log.logError("Function already registred " + annotation.name());
@@ -117,7 +110,7 @@ public class OperatorRegistry {
           
           // Create function
           Function function = new Function(annotation.name(), null, annotation.deterministic(),
-              instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+              method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
           operators.add(function);
           functions.put(function.getName(), function);
 
@@ -126,8 +119,7 @@ public class OperatorRegistry {
             if ( log.isDebug() ) {
               log.logDebug("Register alias " + alias + " to function " + annotation.name());
             }
-            function = new Function(annotation.name(), alias, annotation.deterministic(), instance,
-                method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+            function = new Function(annotation.name(), alias, annotation.deterministic(), method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
             operators.add(function);
             functions.put(alias, function);
           }

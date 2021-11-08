@@ -286,6 +286,7 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/soundex.adoc[SOUNDEX]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/space.adoc[SPACE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sqrt.adoc[SQRT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/square.adoc[SQUARE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/startswith.adoc[STARTSWITH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringdecode.adoc[STRINGDECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringencode.adoc[STRINGENCODE]

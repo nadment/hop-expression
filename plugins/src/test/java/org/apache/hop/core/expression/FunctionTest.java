@@ -680,9 +680,10 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Cbrt() throws Exception {
     evalEquals("Cbrt(0)", 0);
+    evalEquals("Cbrt(2)", 1.25992105);
     evalEquals("Cbrt(-343)", -7);
-    evalFails("Cbrt()");
     evalNull("Cbrt(NULL)");
+    evalFails("Cbrt()");
   }
 
   @Test
@@ -693,6 +694,14 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Sqrt(NULL)");
   }
 
+  @Test
+  public void Square() throws Exception {
+    evalEquals("Square(1)", 1);
+    evalEquals("Square(-5)",25);
+    evalFails("Square()");
+    evalNull("Square(NULL)");
+  }
+  
   @Test
   public void Trim() throws Exception {
     evalEquals("Trim('a')", "a");
