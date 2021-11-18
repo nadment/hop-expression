@@ -65,7 +65,7 @@ public class OptimizerTest {
 
   @Test
   public void simplifyInRule() throws Exception {
-    optimize("FIELD in ([FIELD], FIELD,1,2,1,null,FIELD,null)", "FIELD IN (1,2,NULL,FIELD)");
+    optimize("FIELD in (\"FIELD\", FIELD,1,2,1,null,FIELD,null)", "FIELD IN (1,2,NULL,FIELD)");
   }
 
   @Test
@@ -110,9 +110,9 @@ public class OptimizerTest {
     optimizeTrue("true or null");
     optimizeTrue("null or true");
     optimizeNull("null or null");
-    optimizeTrue("[FIELD] or true");
-    optimizeTrue("true or [FIELD]");
-    optimize("[FIELD] or [FIELD]", "FIELD");
+    optimizeTrue("\"FIELD\" or true");
+    optimizeTrue("true or FIELD");
+    optimize("FIELD or FIELD", "FIELD");
 
     optimizeTrue("true and true");
     optimizeFalse("true and false");
@@ -120,7 +120,7 @@ public class OptimizerTest {
     optimizeFalse("false and false");
     optimizeNull("true and null");
     optimizeNull("null and true");
-    optimize("[FIELD] and [FIELD]", "FIELD");
+    optimize("FIELD and FIELD", "FIELD");
   }
 
   @Test
@@ -138,10 +138,10 @@ public class OptimizerTest {
     optimize("-(10+2)", "-12");
     optimize("-(0)", "0");
 
-    optimize("not ( not [FIELD] is NULL )");
-    optimize("-(-[FIELD])");
-    optimize("false and true or [FIELD]");
-    optimize("false and [FIELD]");
+    optimize("not ( not \"FIELD\" is NULL )");
+    optimize("-(-\"FIELD\")");
+    optimize("false and true or \"FIELD\"");
+    optimize("false and \"FIELD\"");
 
     optimizeTrue("null is null");
     optimizeTrue("true is true");

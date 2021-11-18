@@ -31,10 +31,10 @@ import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.Arrays;
 
-public class ExpressionTransform extends BaseTransform<ExpressionMeta, ExpressionData> {
-  private static final Class<?> PKG = ExpressionMeta.class;
+public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, ExpressionTransformData> {
+  private static final Class<?> PKG = ExpressionTransformMeta.class;
 
-  public ExpressionTransform(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data,
+  public ExpressionTransform(TransformMeta transformMeta, ExpressionTransformMeta meta, ExpressionTransformData data,
       int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
@@ -120,7 +120,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
           IExpression expression = ExpressionParser.parse(source);
           data.expressions[index] = optimizer.optimize(context, expression);
         } catch (Exception ex) {
-          String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.SyntaxError",
+          String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.ParseExpressionError",
               field.getName(), field.getExpression(), ex.toString());
 
           logError( BaseMessages.getString( PKG, "ExpressionTransform.Log.UnexpectedeError" ) + " : " + ex.toString() );
@@ -160,7 +160,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         // FIXME: Don't work with Instant
         // outputRowValues[index] = valueMeta.convertData(valueMeta,value);
       } catch (Exception ex) {
-        String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateError",
+        String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateExpressionError",
             field.getName(), field.getExpression(), ex.toString());
         logError(message);       
         logError(Const.getStackTracker(ex));

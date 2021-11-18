@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import java.util.concurrent.CompletableFuture;
 
 public class WhereDialog extends BaseTransformDialog implements ITransformDialog {
 
@@ -126,13 +127,10 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
   }
 
   protected void setWidgetsContent(final WhereMeta meta) {
-    if (meta.getExpression() != null) {
-      this.wEditor.setText(meta.getExpression());
-    }
+    this.wEditor.setText(meta.getExpression());
   }
 
   protected void getWidgetsContent(final WhereMeta meta) {
-
     // save step name
     this.transformName = this.wTransformName.getText();
 
@@ -179,7 +177,8 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     Label icon = new Label(composite, SWT.CENTER);
     icon.setImage(getImage());
-    icon.setLayoutData(new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
+    icon.setLayoutData(
+        new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
     props.setLook(icon);
 
     Label label = new Label(composite, SWT.NONE);
@@ -214,26 +213,28 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     return composite;
   }
 
-
-  protected Control createDialogArea(final Composite parent) {
-
-    wEditor = new ExpressionEditor(parent, SWT.NONE, true);
-    wEditor.setVariables(this.getVariables());
-    wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-
-    // Search the fields in the background
-    new Thread(() -> {
+  // Search the fields in the background
+  protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
+      PipelineMeta pipelineMeta, String transformName) {
+    return CompletableFuture.supplyAsync(() -> {
       try {
         TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
         if (transformMeta != null) {
-          IRowMeta rowMeta =
-              pipelineMeta.getPrevTransformFields(this.getVariables(), transformMeta);
-          wEditor.setRowMeta(rowMeta);
+          return pipelineMeta.getPrevTransformFields(variables, transformMeta);
         }
       } catch (HopException e) {
-        logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), e);
+        // Ignore
       }
-    }).start();
+      return null;
+    });
+  }
+
+  protected Control createDialogArea(final Composite parent) {
+
+    CompletableFuture<IRowMeta> rowMetaProvider = getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
+
+    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), rowMetaProvider);
+    wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
 
     return parent;
   }

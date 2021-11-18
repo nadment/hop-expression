@@ -67,21 +67,21 @@ public class SimplifyLikeRule implements Rule {
         // Try contains before starts and ends
         if (contains.matcher(pattern).find()) {
           String search = pattern.replace("%", "");
-          return new OperatorCall(OperatorRegistry.getInstance().getFunction("CONTAINS"), v0,
+          return new OperatorCall(OperatorRegistry.getFunction("CONTAINS"), v0,
               Literal.of(search));
         }
 
         // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')
         if (startsWith.matcher(pattern).find()) {
           String search = pattern.replace("%", "");
-          return new OperatorCall(OperatorRegistry.getInstance().getFunction("STARTSWITH"), v0,
+          return new OperatorCall(OperatorRegistry.getFunction("STARTSWITH"), v0,
               Literal.of(search));
         }
 
         // Optimize the common case of FIELD LIKE '%foo' to ENDSWITH(FIELD,'foo')
         if (endsWith.matcher(pattern).find()) {
           String search = pattern.replace("%", "");
-          return new OperatorCall(OperatorRegistry.getInstance().getFunction("ENDSWITH"), v0,
+          return new OperatorCall(OperatorRegistry.getFunction("ENDSWITH"), v0,
               Literal.of(search));
         }
 

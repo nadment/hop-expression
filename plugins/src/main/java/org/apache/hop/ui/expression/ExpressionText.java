@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A Widget that combines a Text widget with a Variable button that will insert an Environment
@@ -160,12 +161,9 @@ public class ExpressionText extends Composite {
   }
 
   protected void openExpressionDialog(Shell shell) {
-    ExpressionEditorDialog dialog =
-        new ExpressionEditorDialog(shell, SWT.APPLICATION_MODAL | SWT.SHEET, isUseField);
-    dialog.setExpression(wText.getText());
-    dialog.setVariables(variables);
-    dialog.setRowMeta(rowMeta);
-    String expression = dialog.open();
+    ExpressionDialog dialog = new ExpressionDialog(shell);
+    CompletableFuture<IRowMeta> rowMeta = null;
+    String expression = dialog.open(wText.getText(), variables, rowMeta);
     if (expression != null) {
       wText.setText(expression);
     }

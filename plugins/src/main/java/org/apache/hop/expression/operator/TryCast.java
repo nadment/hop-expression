@@ -34,8 +34,7 @@ public class TryCast extends Operator {
    * Converts a Object of one data type into another data type if the cast succeeds; otherwise,
    * returns null.
    */
-  @ScalarFunction(name = "TRY_CAST", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(name = "TRY_CAST", minArgs = 2, maxArgs = 3, category = "i18n::Operator.Category.Conversion")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);

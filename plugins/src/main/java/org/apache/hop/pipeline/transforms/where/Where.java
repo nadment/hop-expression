@@ -78,7 +78,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       try {
         data.condition = ExpressionParser.parse(expression);
       } catch (ExpressionException e) {
-        throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getExpression()), e);
+        throw new HopTransformException(meta.getExpression(), e);
       }
 
       // clone the input row structure and place it in our data object

@@ -46,8 +46,7 @@ public class SimplifyExtractRule implements Rule {
         case WEEKOFYEAR:
         case DAYOFYEAR:
         case DAYOFWEEK:
-          OperatorRegistry registry = OperatorRegistry.getInstance();
-          Operator operator = registry.getFunction(part.name());
+          Operator operator = OperatorRegistry.getFunction(part.name());
           return new OperatorCall(operator, call.getOperand(1));
         default:
       }

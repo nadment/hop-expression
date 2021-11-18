@@ -36,7 +36,7 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.ColumnsResizer;
 import org.apache.hop.ui.core.widget.TableView;
-import org.apache.hop.ui.expression.ExpressionEditorDialog;
+import org.apache.hop.ui.expression.ExpressionDialog;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
@@ -54,19 +54,20 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class ExpressionDialog extends BaseTransformDialog implements ITransformDialog {
-  private static final Class<?> PKG = ExpressionMeta.class; 
+public class ExpressionTransformDialog extends BaseTransformDialog implements ITransformDialog {
+  private static final Class<?> PKG = ExpressionTransformMeta.class; 
 
-  private final ExpressionMeta input;
+  private final ExpressionTransformMeta input;
   private TableView wTableFields;
-  private IRowMeta rowMeta;
+  //private IRowMeta rowMeta;
   private ModifyListener lsMod;
 
-  public ExpressionDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
+  public ExpressionTransformDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
       String name) {
     super(parent, variables, (BaseTransformMeta) in, pipelineMeta, name);
-    input = (ExpressionMeta) in;
+    input = (ExpressionTransformMeta) in;
   }
 
   @Override
@@ -120,7 +121,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     return transformName;
   }
 
-  protected void setWidgetsContent(final ExpressionMeta meta) {
+  protected void setWidgetsContent(final ExpressionTransformMeta meta) {
     int i = 0;
     for (ExpressionField value : meta.getFields()) {
 
@@ -143,7 +144,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     this.wTransformName.setFocus();
   }
 
-  protected void getWidgetsContent(final ExpressionMeta meta) {
+  protected void getWidgetsContent(final ExpressionTransformMeta meta) {
 
     // Save step name
     this.transformName = this.wTransformName.getText();
@@ -263,12 +264,11 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
             wTableFields.getActiveTableItem().getText(wTableFields.getActiveTableColumn());
 
         if (!shell.isDisposed()) {
-          ExpressionEditorDialog dialog =
-              new ExpressionEditorDialog(shell, SWT.APPLICATION_MODAL | SWT.SHEET, true);
-          dialog.setExpression(expression);
-          dialog.setVariables(getVariables());
-          dialog.setRowMeta(rowMeta);
-          expression = dialog.open();
+
+          CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
+          
+          ExpressionDialog dialog = new ExpressionDialog(shell);
+          expression = dialog.open(expression, getVariables(), rowMeta);
           if (expression != null) {
             wTableFields.getActiveTableItem().setText(wTableFields.getActiveTableColumn(),
                 expression);
@@ -284,19 +284,38 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     wTableFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
 
     // Search the fields in the background
-    new Thread(() -> {
-      TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
-      if (transformMeta != null)
-        try {
-
-          rowMeta = pipelineMeta.getPrevTransformFields(getVariables(), transformMeta);
-        } catch (HopException e) {
-          logError(BaseMessages.getString(PKG, "ExpressionDialog.Log.UnableToFindInput"));
-        }
-    }).start();
+    
+    
+//    new Thread(() -> {
+//      TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
+//      if (transformMeta != null)
+//        try {
+//
+//          rowMeta = pipelineMeta.getPrevTransformFields(getVariables(), transformMeta);
+//        } catch (HopException e) {
+//          logError(BaseMessages.getString(PKG, "ExpressionDialog.Log.UnableToFindInput"));
+//        }
+//    }).start();
 
     return wTableFields;
   }
+  
+  // Search the fields in the background
+  protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
+      PipelineMeta pipelineMeta, String transformName) {
+    return CompletableFuture.supplyAsync(() -> {
+      try {
+        TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
+        if (transformMeta != null) {
+          return pipelineMeta.getPrevTransformFields(variables, transformMeta);
+        }
+      } catch (HopException e) {
+        // Ignore
+      }
+      return null;
+    });
+  }
+  
 
   public Image getImage() {
 

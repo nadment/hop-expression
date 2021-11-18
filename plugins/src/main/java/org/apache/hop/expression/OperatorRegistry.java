@@ -39,39 +39,39 @@ public class OperatorRegistry {
 
   private static final ILogChannel log = new LogChannel("OperatorRegistry");
 
-  private static final OperatorRegistry registry = new OperatorRegistry();
+  //private static final OperatorRegistry registry = new OperatorRegistry();
 
-  public boolean isFunctionName(String name) {
+///**
+//* The operator registry instance
+//*/
+//public static final OperatorRegistry getInstance() {
+// return registry;
+//}
+  
+  static  {
+    operators = new TreeSet<>(Arrays.asList(Operator.ADD,
+        Operator.SUBTRACT, Operator.MULTIPLY, Operator.DIVIDE, Operator.BITAND, Operator.BITOR,
+        Operator.BITNOT, Operator.BITXOR, Operator.CAST, Operator.MODULUS, Operator.EQUAL,
+        Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL, Operator.ILIKE, Operator.LESS_THAN,
+        Operator.LESS_THAN_OR_EQUAL, Operator.LESS_THAN_OR_GREATER_THAN, Operator.NOT_EQUAL,
+        Operator.BOOLAND, Operator.BETWEEN, Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS,
+        Operator.LIKE, Operator.BOOLNOT, Operator.BOOLOR, Operator.BOOLXOR));
+    functions = new HashMap<>(256);
+    OperatorRegistry registry = new OperatorRegistry();
+    registry.init();
+  }
+  
+  public static boolean isFunctionName(String name) {
     return getFunction(name) != null;
   }
 
-  /**
-   * Initialize the registry, keep private to keep this a singleton
-   */
-  private OperatorRegistry() {
-    init();
-  }
-
-  /**
-   * The operator registry instance
-   */
-  public static final OperatorRegistry getInstance() {
-    return registry;
-  }
-
   /** Set of functions or alias by name. */
-  private final HashMap<String, Function> functions = new HashMap<>(256);
+  private static final HashMap<String, Function> functions;
 
   /** Set of operators. */
-  private final Set<Operator> operators = new TreeSet<>(Arrays.asList(Operator.ADD,
-      Operator.SUBTRACT, Operator.MULTIPLY, Operator.DIVIDE, Operator.BITAND, Operator.BITOR,
-      Operator.BITNOT, Operator.BITXOR, Operator.CAST, Operator.MODULUS, Operator.EQUAL,
-      Operator.GREATER_THAN, Operator.GREATER_THAN_OR_EQUAL, Operator.ILIKE, Operator.LESS_THAN,
-      Operator.LESS_THAN_OR_EQUAL, Operator.LESS_THAN_OR_GREATER_THAN, Operator.NOT_EQUAL,
-      Operator.BOOLAND, Operator.BETWEEN, Operator.CASE, Operator.CONCAT, Operator.IN, Operator.IS,
-      Operator.LIKE, Operator.BOOLNOT, Operator.BOOLOR, Operator.BOOLXOR));
+  private static final Set<Operator> operators;
 
-  public Set<Operator> getOperators() {
+  public static Set<Operator> getOperators() {
     return operators;
   }
 
@@ -81,13 +81,24 @@ public class OperatorRegistry {
    * @param name
    * @return
    */
-  public Function getFunction(final String name) {
+  public static Function getFunction(final String name) {
     if (name == null)
       return null;
 
     return functions.get(name.toUpperCase());
   }
 
+  
+  public static String[] getFunctionNames() {
+    return functions.keySet().toArray(new String[0]);
+  }
+  
+  /**
+   * Initialize the registry, keep private to keep this a singleton
+   */
+  private OperatorRegistry() {
+  }
+  
   /**
    * Register functions
    */

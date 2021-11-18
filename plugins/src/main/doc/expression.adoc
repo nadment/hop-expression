@@ -30,12 +30,14 @@ Comments are sections of code text to aid readability.
 ----
 // Single line-comment <1>
 
+-- Single line-comment <1>
+
 /* 
  * Multi line	<2>
  * comment /* with nested block */
  */
 ----
-<1> A single line comment begins with double slash // and ends with a new line.
+<1> A single line comment begins with double slash // or double minus -- and ends with a new line.
 
 <2> A multi line comment begins with a slash asterick /* and ends with asterick slash and support nested block comment.
 
@@ -125,10 +127,14 @@ Timestamp '2020-05-18 23:48:59'
 
 == Identifier
 
-When a field name contains one or more space, the field name must be enclosed in square brackets.
+Identifiers are the names of fields and is case-sensitive. 
+
+When a field name contains one or more space, the field name must be enclosed in double quotes
+such as "Employee Name".
  
-You can use reserved words as identifiers enclosing them in a couple of square brackets. 
-For example, YEAR is a reserved word and cannot be used whereas [YEAR] can be accepted. 
+You cannot use reserved words as identifiers such as AND operator or function name. For example, YEAR cannot be used whereas "YEAR" can be accepted. 
+
+TIP: If you wish to include a double quote in an identifier, use another double quote to escape it.
 
 == Operator
 

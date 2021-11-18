@@ -32,7 +32,6 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   public ExpressionLabelProvider() {
     super();
-
     imageVariable = GuiResource.getInstance().getImage("ui/images/variable.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
   }
 
@@ -59,22 +58,6 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
       return this.imageVariable;
     }
 
-    if (element instanceof ExpressionProposal) {
-      ExpressionProposal proposal = (ExpressionProposal) element;
-
-      switch (proposal.getType()) {
-        case FUNCTION:
-        case FIELD:
-          element = proposal.getData();
-          break;
-        case VARIABLE:
-          return imageVariable;
-          //return GuiResource.getInstance().getImageVariable();
-        default:
-          break;
-      }
-    }
-
     if (element instanceof Function) {
       return GuiResource.getInstance().getImageFunction();
     }
@@ -93,10 +76,10 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
       return ((Operator) element).getName();
     }
 
-    if (element instanceof ExpressionProposal) {
-      ExpressionProposal proposal = (ExpressionProposal) element;
-      return proposal.getLabel();
+    if (element instanceof IValueMeta) {
+      return ((IValueMeta) element).getName();
     }
+    
     return String.valueOf(element);
   }
 

@@ -65,6 +65,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public static final String ATTRIBUTE_RANDOM = "RANDOM";
 
   private IRowMeta rowMeta;
+
   private Object[] row;
 
   private ZoneId zone;
@@ -108,6 +109,9 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     this.setAttribute(ATTRIBUTE_RANDOM, new SecureRandom(), ScriptContext.ENGINE_SCOPE);
   }
 
+  public IRowMeta getRowMeta() {
+    return rowMeta;
+  }
 
   public void setRow(Object[] row) {
     this.row = row;

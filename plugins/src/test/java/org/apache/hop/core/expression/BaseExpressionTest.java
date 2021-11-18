@@ -190,7 +190,7 @@ public class BaseExpressionTest {
     // BigDecimal v1 = BigDecimal.valueOf(0.1);
     // BigDecimal v2 = BigDecimal.valueOf(123.11);
     // evalEquals("Abs(10)", 10);
-    evalEquals("Add(10,-0.5)", 9.5);
+    // evalEquals("Add(10,-0.5)", 9.5);
     // Time zone offset
 
     // evalEquals("To_Date('2019-02-13T15:34:56 +8:00','YYYY-MM-DD\"T\"HH24:MI:SS TZH:TZM')",

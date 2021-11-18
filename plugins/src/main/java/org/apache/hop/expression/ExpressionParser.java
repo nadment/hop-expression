@@ -42,14 +42,26 @@ public class ExpressionParser {
       IExpression expression = parser.parse();
       return expression;
     } catch (ParseException e) {
-      String message =
-          BaseMessages.getString(PKG, "Expression.SyntaxError", e.getErrorOffset(), e.getMessage());
-      throw new ExpressionException(message, e);
+      throw createExpressionException(source, e.getErrorOffset(), e);
     } catch (ExpressionException | IllegalArgumentException e) {
-      String message = BaseMessages.getString(PKG, "Expression.SyntaxError", parser.getPosition(),
-          e.getMessage());
-      throw new ExpressionException(message, e);
+      throw createExpressionException(source, parser.getPosition(), e);
     }
+  }
+
+  protected static ExpressionException createExpressionException(String source, int offset,
+      Exception e) {
+    int line = 1;
+    int column = 1;
+    for (int index = 0; index < source.length(); index++) {
+      char c = source.charAt(index);
+      if (c == '\n' || c == '\r') {
+        line++;
+        column = 1;
+      }
+      else column++;
+    }
+    String message = BaseMessages.getString(PKG, "Expression.SyntaxError", line, column, e.getMessage());
+    return new ExpressionException(message, e);
   }
 
   protected ExpressionParser(String source) {
@@ -530,10 +542,10 @@ public class ExpressionParser {
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
           break;
         case 26:
-          if ( token.text().indexOf('.')>0 )
+          if (token.text().indexOf('.') > 0)
             pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
-          else 
-            pattern = "YYYY-MM-DD HH24:MI:SS TZH:TZM";            
+          else
+            pattern = "YYYY-MM-DD HH24:MI:SS TZH:TZM";
           break;
         case 23:
           pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
@@ -541,7 +553,7 @@ public class ExpressionParser {
         case 20:
           pattern = "YYYY-MM-DD HH24:MI:SS";
           break;
-          
+
         default:
           pattern = "YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS";
       }
@@ -633,7 +645,7 @@ public class ExpressionParser {
   /** Function */
   private IExpression parseFunction(Token token) throws ParseException {
 
-    Function function = OperatorRegistry.getInstance().getFunction(token.text());
+    Function function = OperatorRegistry.getFunction(token.text());
     List<IExpression> operands = new ArrayList<>();
 
     if (is(Id.LPARENTHESIS))

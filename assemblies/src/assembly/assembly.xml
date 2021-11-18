@@ -41,16 +41,22 @@
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
-			<unpack>false</unpack> <!-- unpack , then repack the jars -->
-			<useTransitiveDependencies>false</useTransitiveDependencies>
+			<useProjectArtifact>false</useProjectArtifact>
+			<includes>
+				<include>org.apache.hop:hop-expression-plugins:jar</include>
+			</includes>
 		</dependencySet>
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>lib</outputDirectory>
-			<includes>
+			<includes>			
+				<include>org.eclipse.platform:org.eclipse.osgi:jar</include>
+			    <include>org.eclipse.platform:org.eclipse.core.jobs:jar</include>
+			    <include>org.eclipse.platform:org.eclipse.core.runtime:jar</include>
+			    <include>org.eclipse.platform:org.eclipse.text:jar</include>
 				<include>org.eclipse.platform:org.eclipse.jface:jar</include>
+				<include>org.eclipse.platform:org.eclipse.jface.text:jar</include>
 			</includes>
 		</dependencySet>
-
 	</dependencySets>
 </assembly>

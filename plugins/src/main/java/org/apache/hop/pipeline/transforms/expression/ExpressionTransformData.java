@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
-public class ExpressionData extends BaseTransformData implements ITransformData {
+public class ExpressionTransformData extends BaseTransformData implements ITransformData {
 
   protected IRowMeta outputRowMeta;
 
@@ -30,7 +30,7 @@ public class ExpressionData extends BaseTransformData implements ITransformData 
 
   protected ExpressionContext expressionContext;
 
-  public ExpressionData() {
+  public ExpressionTransformData() {
     super();
   }
 }

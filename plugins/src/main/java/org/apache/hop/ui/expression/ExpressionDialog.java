@@ -16,7 +16,6 @@
  */
 package org.apache.hop.ui.expression;
 
-import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
@@ -33,33 +32,27 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This dialogs allows you to edit expression.
  */
-public class ExpressionEditorDialog extends Dialog {
-  private static final Class<?> PKG = ExpressionEditorDialog.class;
+public class ExpressionDialog extends Dialog {
+  private static final Class<?> PKG = ExpressionDialog.class;
 
   public static final int LARGE_MARGIN = 15;
 
-  private PropsUi props;
   private Shell shell;
-
-  private IVariables variables;
-  private IRowMeta rowMeta;
   private ExpressionEditor wEditor;
   private String expression;
-  private boolean isUseField;
 
-  public ExpressionEditorDialog(Shell parent, int style, boolean isUseField) {
-    super(parent, style);
-
-    this.isUseField = isUseField;
-    this.props = PropsUi.getInstance();
+  public ExpressionDialog(Shell parent) {
+    super(parent, SWT.APPLICATION_MODAL | SWT.SHEET);
   }
-
-  public String open() {
-
+ 
+  public String open(String expression, IVariables variables, CompletableFuture<IRowMeta> rowMeta) {  
+    PropsUi props = PropsUi.getInstance();
+    
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     props.setLook(shell);
     shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
@@ -73,10 +66,8 @@ public class ExpressionEditorDialog extends Dialog {
     shell.setLayout(new FormLayout());
 
     // The expression editor
-    wEditor = new ExpressionEditor(shell, SWT.NONE, isUseField);
-    wEditor.setText(Const.NVL(expression, ""));
-    wEditor.setRowMeta(rowMeta);
-    wEditor.setVariables(variables);
+    wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, rowMeta);
+    wEditor.setText(expression);
     wEditor.setLayoutData(
         new FormDataBuilder()
             .top(0, props.getMargin())
@@ -118,13 +109,12 @@ public class ExpressionEditorDialog extends Dialog {
       }
     }
 
-    return expression;
+    return this.expression;
   }
 
   public void dispose() {
     WindowProperty winprop = new WindowProperty(shell);
-
-    props.setScreen(winprop);
+    PropsUi.getInstance().setScreen(winprop);
     shell.dispose();
   }
 
@@ -142,29 +132,5 @@ public class ExpressionEditorDialog extends Dialog {
 
     // Close the SWT dialog window
     dispose();
-  }
-
-  public String getExpression() {
-    return expression;
-  }
-
-  public void setExpression(String expression) {
-    this.expression = expression;
-  }
-
-  public IRowMeta getRowMeta() {
-    return rowMeta;
-  }
-
-  public void setRowMeta(IRowMeta rowMeta) {
-    this.rowMeta = rowMeta;
-  }
-
-  public IVariables getVariables() {
-    return variables;
-  }
-
-  public void setVariables(IVariables variables) {
-    this.variables = variables;
   }
 }

@@ -18,7 +18,7 @@
 	<parent>
 		<groupId>org.apache.hop</groupId>
 		<artifactId>hop-expression</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>hop-expression-plugins</artifactId>
@@ -28,10 +28,15 @@
 
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
+		<maven.compiler.source>11</maven.compiler.source>
 		<!-- Third-party dependencies -->
 		<commons-lang.version>2.6</commons-lang.version>
-		<commons-vfs2.version>2.2</commons-vfs2.version>
-		<commons-math3.version>3.6.1</commons-math3.version>		
+		<commons-vfs2.version>2.9.0</commons-vfs2.version>
+		<commons-math3.version>3.6.1</commons-math3.version>
+		<org.eclipse.core.runtime>3.23.0</org.eclipse.core.runtime>
+		<org.eclipse.text.version>3.12.0</org.eclipse.text.version>
+		<org.eclipse.jface.version>3.23.0</org.eclipse.jface.version>
+		<org.eclipse.jface.text.version>3.18.100</org.eclipse.jface.text.version>
 	</properties>
 
 	<dependencies>
@@ -75,16 +80,46 @@
 			<version>${commons-vfs2.version}</version>
 		</dependency>
 
-<!-- Test dependencies -->
-    <dependency>
-      <groupId>org.apache.hop</groupId>
-      <artifactId>hop-core</artifactId>
-      <version>${hop.version}</version>
-      <classifier>tests</classifier>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>		
-    
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.17.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>${org.eclipse.core.runtime}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.jface</artifactId>
+			<version>${org.eclipse.jface.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.jface.text</artifactId>
+			<version>${org.eclipse.jface.text.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.text</artifactId>
+			<version>${org.eclipse.text.version}</version>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<dependency>
+			<groupId>org.apache.hop</groupId>
+			<artifactId>hop-core</artifactId>
+			<version>${hop.version}</version>
+			<classifier>tests</classifier>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -93,8 +128,8 @@
 		</dependency>
 
 	</dependencies>
-	
-		<build>
+
+	<build>
 		<plugins>
 
 			<plugin>

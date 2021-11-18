@@ -48,19 +48,19 @@ import java.util.List;
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     documentationUrl = "/pipeline/transforms/expresssion.html",
     keywords = "i18n::Expression.Keyword")
-public class ExpressionMeta extends BaseTransformMeta
-    implements ITransformMeta<ExpressionTransform, ExpressionData> {
+public class ExpressionTransformMeta extends BaseTransformMeta
+    implements ITransformMeta<ExpressionTransform, ExpressionTransformData> {
 
-  private static final Class<?> PKG = ExpressionMeta.class;
+  private static final Class<?> PKG = ExpressionTransformMeta.class;
  
   @HopMetadataProperty(groupKey = "fields", key = "field", injectionGroupDescription = "ExpressionMeta.Injection.Fields", injectionKeyDescription = "ExpressionMeta.Injection.Field")
   private List<ExpressionField> fields;
 
-  public ExpressionMeta() {
+  public ExpressionTransformMeta() {
     super();
   }
   
-  public ExpressionMeta(ExpressionMeta other) {
+  public ExpressionTransformMeta(ExpressionTransformMeta other) {
     super();
     
     this.fields = new ArrayList<>();
@@ -72,7 +72,7 @@ public class ExpressionMeta extends BaseTransformMeta
   @Override
   public ExpressionTransform createTransform(
       TransformMeta transformMeta,
-      ExpressionData data,
+      ExpressionTransformData data,
       int cnr,
       PipelineMeta tr,
       Pipeline pipeline) {
@@ -80,8 +80,8 @@ public class ExpressionMeta extends BaseTransformMeta
   }
 
   @Override
-  public ExpressionData getTransformData() {
-    return new ExpressionData();
+  public ExpressionTransformData getTransformData() {
+    return new ExpressionTransformData();
   }
 
   @Override
@@ -91,7 +91,7 @@ public class ExpressionMeta extends BaseTransformMeta
 
   @Override
   public Object clone() {
-    return new ExpressionMeta(this);
+    return new ExpressionTransformMeta(this);
   }
 
   @Override

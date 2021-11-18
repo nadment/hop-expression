@@ -15,7 +15,6 @@
 package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.Const;
-import org.apache.hop.core.Props;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
@@ -26,19 +25,26 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.gui.GuiResource;
-import org.eclipse.jface.bindings.keys.KeyStroke;
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocumentPartitioner;
+import org.eclipse.jface.text.ITextOperationTarget;
+import org.eclipse.jface.text.rules.FastPartitioner;
+import org.eclipse.jface.text.source.CompositeRuler;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.LineNumberRulerColumn;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import java.util.ArrayList;
@@ -48,80 +54,115 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 
-public class ExpressionEditor extends SashForm {
+public class ExpressionEditor extends Composite {
   private static final Class<?> PKG = ExpressionEditor.class;
 
   private ExpressionLabelProvider labelProvider;
-  private ExpressionProposalProvider contentProposalProvider;
   private IVariables variables;
-  private IRowMeta rowMeta;
-  private StyledText styledText;
+  private CompletableFuture<IRowMeta> rowMetaProvider;
+  private SourceViewer sourceViewer;
+  private SashForm sashForm;
   private Tree tree;
   private TreeItem treeItemField;
   private TreeItem treeItemVariable;
   private boolean isUseField;
 
-  public ExpressionEditor(Composite parent, int style, boolean isUseField) {
-    super(parent, style + SWT.HORIZONTAL);
 
-    this.isUseField = isUseField;
+  public ExpressionEditor(Composite parent, int style, IVariables variables,
+      CompletableFuture<IRowMeta> rowMetaProvider) {
+    super(parent, style);
+    this.isUseField = true;
+    this.variables = variables;
+    this.rowMetaProvider = rowMetaProvider;
     this.labelProvider = new ExpressionLabelProvider();
 
-    this.createTree(this);
-    this.createEditor(this);
+    this.setLayout(new FormLayout());
+    this.sashForm = new SashForm(this, SWT.HORIZONTAL);
+    this.sashForm.setLayoutData(new FormDataBuilder().fullSize().result());
+    this.createTree(sashForm);
+    this.createEditor(sashForm);
 
-    this.setWeights(new int[] {25, 75});
+    // When IRowMeta is ready
+    rowMetaProvider.thenAccept(rowMeta -> initFields(rowMeta));
+
+    sashForm.setWeights(new int[] {25, 75});
   }
 
   protected void createEditor(final Composite parent) {
-    styledText =
-        new StyledText(parent, SWT.MULTI | SWT.LEFT | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 
-    styledText.setFont(GuiResource.getInstance().getFontFixed());
-    styledText.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-    styledText.addLineStyleListener(new ExpressionSyntaxHighlighter());
-
-    // txtEditor.addLineStyleListener(new LineNumber(txtEditor.getStyledText()));
-    // wEditor.getStyledText().setMargins(30, 5, 3, 5);
-
-    PropsUi.getInstance().setLook(styledText, Props.WIDGET_STYLE_FIXED);
     PropsUi.getInstance().setLook(this);
+
+    int VERTICAL_RULER_WIDTH = 24;
+    CompositeRuler ruler = new CompositeRuler(VERTICAL_RULER_WIDTH);
+    ruler.addDecorator(0, new LineNumberRulerColumn());
+    sourceViewer = new SourceViewer(parent, ruler, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+    sourceViewer.getTextWidget().setFont(GuiResource.getInstance().getFontFixed());
+    sourceViewer.getTextWidget()
+        .setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
 
     // In Chinese window, Ctrl-SPACE is reserved by system for input Chinese character.
     // Use Ctrl-ALT-SPACE instead.
-    int modifierKeys = SWT.CTRL;
-    if (System.getProperty("user.language").equals("zh")) {
-      modifierKeys = SWT.CTRL | SWT.ALT;
-    }
-    KeyStroke keyStroke = KeyStroke.getInstance(modifierKeys, SWT.SPACE);
+    final int modifierKeys =
+        (System.getProperty("user.language").equals("zh")) ? SWT.CTRL | SWT.ALT : SWT.CTRL;
 
-    contentProposalProvider = new ExpressionProposalProvider();
-
-    // "(" and "$" will also activate the content proposals
-    ContentProposalAdapter contentProposalAdapter =
-        new ContentProposalAdapter(styledText, new StyledTextContentAdapter(styledText),
-            contentProposalProvider, keyStroke, new char[] {'(', '$'});
-    contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-    contentProposalAdapter.setFilterStyle(ContentProposalAdapter.FILTER_NONE);
-    contentProposalAdapter.setLabelProvider(new ExpressionLabelProvider());
-    contentProposalAdapter.setPropagateKeys(false);
-    contentProposalAdapter.setAutoActivationDelay(10);
-    contentProposalAdapter.setPopupSize(new Point(400, 200));
-
-    // Avoid Enter key to be inserted when selected content proposal   
-    styledText.addListener(SWT.Traverse, event -> {
-      if (event.detail == SWT.TRAVERSE_RETURN && contentProposalAdapter.isProposalPopupOpen()) {
-        System.out.println(event);       
+    sourceViewer.getTextWidget().addListener(SWT.KeyDown, event -> {
+      if (event.keyCode == SWT.SPACE && (event.stateMask & SWT.MODIFIER_MASK) == modifierKeys) {
+        sourceViewer.doOperation(ISourceViewer.CONTENTASSIST_PROPOSALS);
+      } else if (event.keyCode == SWT.F1) {
+        // TODO: Help
         event.doit = false;
       }
     });
+
+    Menu menu = new Menu(getShell(), SWT.POP_UP);
+    MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
+    undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Undo"));
+    undoItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.UNDO));
+    MenuItem redoItem = new MenuItem(menu, SWT.PUSH);
+    redoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Redo"));
+    redoItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.REDO));
+    new MenuItem(menu, SWT.SEPARATOR);
+    MenuItem cutItem = new MenuItem(menu, SWT.PUSH);
+    cutItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Cut"));
+    cutItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.CUT));
+    MenuItem copyItem = new MenuItem(menu, SWT.PUSH);
+    copyItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Copy"));
+    copyItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.COPY));
+    MenuItem pasteItem = new MenuItem(menu, SWT.PUSH);
+    pasteItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Paste"));
+    pasteItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.PASTE));
+    new MenuItem(menu, SWT.SEPARATOR);
+    MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
+    selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.SelectAll"));
+    selectAllItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.SELECT_ALL));
+
+    sourceViewer.getTextWidget().setMenu(menu);    
+    sourceViewer.getTextWidget().addListener(SWT.MenuDetect, event -> {
+      undoItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.UNDO));
+      redoItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.REDO));
+      cutItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.CUT));
+      copyItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.COPY));
+      pasteItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.PASTE));
+    });
+        
+    
+    Document doc = new Document("");
+    ExpressionEditorConfiguration configuration =
+        new ExpressionEditorConfiguration(variables, rowMetaProvider);
+    IDocumentPartitioner partitioner = new FastPartitioner(new ExpressionPartitionScanner(),
+        configuration.getConfiguredContentTypes(sourceViewer));
+    partitioner.connect(doc);
+    doc.setDocumentPartitioner(partitioner);
+    sourceViewer.setDocument(doc);
+    sourceViewer.configure(configuration);
   }
 
   protected void createTree(final Composite parent) {
 
     // Tree
-    tree = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+    tree = new Tree(parent, SWT.H_SCROLL | SWT.V_SCROLL);
     tree.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     PropsUi.getInstance().setLook(tree);
 
@@ -149,12 +190,12 @@ public class ExpressionEditor extends SashForm {
     if (isUseField) {
       treeItemField = new TreeItem(tree, SWT.NULL);
       treeItemField.setImage(GuiResource.getInstance().getImageFolder());
-      treeItemField.setText(BaseMessages.getString(PKG, "Expression.Fields.Label"));
+      treeItemField.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Fields.Label"));
     }
 
     TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
     treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
-    treeItemOperator.setText(BaseMessages.getString(PKG, "Expression.Operators.Label"));
+    treeItemOperator.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Operators.Label"));
 
 
     Set<String> categories = new TreeSet<>();
@@ -162,7 +203,7 @@ public class ExpressionEditor extends SashForm {
     HashMap<String, String> mapDisplay = new HashMap<>();
 
     // Inventory operator without alias first and category
-    for (Operator o : OperatorRegistry.getInstance().getOperators()) {
+    for (Operator o : OperatorRegistry.getOperators()) {
 
       if (!categories.contains(o.getCategory())) {
         categories.add(o.getCategory());
@@ -175,7 +216,7 @@ public class ExpressionEditor extends SashForm {
     }
 
     // Alias operator
-    for (Operator o : OperatorRegistry.getInstance().getOperators()) {
+    for (Operator o : OperatorRegistry.getOperators()) {
       if (o.getAlias() != null) {
         if (mapDisplay.containsKey(o.getName())) {
           String str = mapDisplay.get(o.getName());
@@ -213,36 +254,10 @@ public class ExpressionEditor extends SashForm {
 
     treeItemVariable = new TreeItem(tree, SWT.NULL);
     treeItemVariable.setImage(GuiResource.getInstance().getImageFolder());
-    treeItemVariable.setText(BaseMessages.getString(PKG, "Expression.Variables.Label"));
-
-    // Tooltip for syntax and help
-    HtmlToolTip toolTip = new HtmlToolTip(tree, labelProvider);
-    toolTip.activate();
-  }
-
-  public void setText(String text) {
-    styledText.setText(text);
-  }
-
-  public String getText() {
-    return styledText.getText();
-  }
-
-  @Override
-  public void dispose() {
-    this.labelProvider.dispose();
-    super.dispose();
-  }
-
-  public IVariables getVariables() {
-    return variables;
-  }
-
-  public void setVariables(IVariables variables) {
-    this.variables = variables;
+    treeItemVariable.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Variables.Label"));
 
     if (variables != null) {
-      this.contentProposalProvider.setVariables(variables);
+      // this.contentProposalProvider.setVariables(variables);
 
       String[] names = this.variables.getVariableNames();
       Arrays.sort(names);
@@ -260,19 +275,32 @@ public class ExpressionEditor extends SashForm {
         item.setData(data);
       }
     }
+
+
+    // Tooltip for syntax and help
+    HtmlToolTip toolTip = new HtmlToolTip(tree, labelProvider);
+    toolTip.activate();
   }
 
-  public IRowMeta getRowMeta() {
-    return rowMeta;
+  public void setText(String expression) {
+    if (expression == null)
+      return;
+
+    sourceViewer.getDocument().set(expression);
   }
 
-  public void setRowMeta(final IRowMeta rowMeta) {
-    this.rowMeta = rowMeta;
+  public String getText() {
+    return sourceViewer.getDocument().get();
+  }
 
+  @Override
+  public void dispose() {
+    this.labelProvider.dispose();
+    super.dispose();
+  }
+
+  protected void initFields(final IRowMeta rowMeta) {
     if (rowMeta != null && isUseField) {
-
-      this.contentProposalProvider.setRowMeta(rowMeta);
-
       Display.getDefault().asyncExec(() -> {
         treeItemField.removeAll();
 
@@ -281,8 +309,7 @@ public class ExpressionEditor extends SashForm {
 
           // Escape field name matching reserved words or function name
           String name = valueMeta.getName();
-          if (ExpressionScanner.isReservedWord(name)
-              || OperatorRegistry.getInstance().isFunctionName(name)) {
+          if (ExpressionScanner.isReservedWord(name) || OperatorRegistry.isFunctionName(name)) {
             name = '[' + name + ']';
           }
 

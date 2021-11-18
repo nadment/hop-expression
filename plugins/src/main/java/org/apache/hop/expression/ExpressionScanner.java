@@ -31,7 +31,7 @@ public class ExpressionScanner {
       new TreeSet<>(Arrays.asList("AS", "AND", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
           "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "SYMMETRY",
           "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE"));
-  
+    
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
@@ -99,9 +99,26 @@ public class ExpressionScanner {
         case '+':
           return new Token(Id.PLUS, index++);
 
-        case '-':
+        case '-': {
+          // Single line comment --
+          if (index+1 < source.length()) {
+            if (source.charAt(index+1) == '-') {
+              int start = index;
+              index++;
+              while (index < source.length()) {
+                c = source.charAt(index);
+                if (c == '\r' || c == '\n')
+                  break;
+                index++;
+              }
+              return new Token(Id.COMMENT, start, index, source.substring(start, index));
+            }
+          }
+          
+          // Minus sign
           return new Token(Id.MINUS, index++);
-
+        }
+        
         case '*':
           return new Token(Id.MULTIPLY, index++);
 
@@ -239,12 +256,12 @@ public class ExpressionScanner {
           return new Token(Id.BITWISE_OR, start);
         }
 
-        // Escape field name matching reserved words or with white space
-        case '[': {
+        // Quoted identifier matching reserved words or with white space
+        case '"': {
           int start = index++;
           while (index < source.length()) {
             c = source.charAt(index++);
-            if (c == ']') {
+            if (c == '"') {
               String value = source.substring(start + 1, index - 1).toUpperCase();
               return new Token(Id.IDENTIFIER, start, index, value);
             }
@@ -319,7 +336,7 @@ public class ExpressionScanner {
         }
 
         default:
-          if (Characters.isSpace(c)) {
+          if (Characters.isSpace(c) || c=='\n' || c=='\r' ) {
             ++index;
             continue;
           }
@@ -330,17 +347,17 @@ public class ExpressionScanner {
           int start = index++;
           while (index < source.length()) {
             c = source.charAt(index);
-            if (Characters.isSpace(c) || "()/*%,^&><=~+-.!|$:[]".indexOf(c) >= 0)
+            if (Characters.isSpace(c) || "()/*%,^&><=~+-.!|$:[]\n\r".indexOf(c) >= 0)
               break;
 
             index++;
           }
 
-          OperatorRegistry registry = OperatorRegistry.getInstance();
+          
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 
-          if (c == '(' && registry.isFunctionName(name)) {
+          if (c == '(' && OperatorRegistry.isFunctionName(name)) {
             return new Token(Id.FUNCTION, start, index, name);
           }
 

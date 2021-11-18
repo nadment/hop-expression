@@ -48,10 +48,10 @@ public class Identifier implements IExpression {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name)
         || Type.exist(name) || DatePart.exist(name)
-        || OperatorRegistry.getInstance().isFunctionName(name)) {
-      writer.append('[');
+        || OperatorRegistry.isFunctionName(name)) {
+      writer.append('\"');
       writer.append(name);
-      writer.append(']');
+      writer.append('\"');
     } else {
       writer.append(name);
     }

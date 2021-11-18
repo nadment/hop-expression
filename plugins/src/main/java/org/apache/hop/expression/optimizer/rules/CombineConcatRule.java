@@ -39,7 +39,7 @@ public class CombineConcatRule implements Rule {
         }
       }
 
-      return call.clone(operands);
+      return new OperatorCall(Operator.CONCAT, operands);      
     }
 
     return call;
