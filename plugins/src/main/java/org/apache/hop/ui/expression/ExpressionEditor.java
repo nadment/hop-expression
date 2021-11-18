@@ -84,18 +84,17 @@ public class ExpressionEditor extends Composite {
     this.createTree(sashForm);
     this.createEditor(sashForm);
 
-    // When IRowMeta is ready
-    rowMetaProvider.thenAccept(rowMeta -> initFields(rowMeta));
-
-    sashForm.setWeights(new int[] {25, 75});
+    // When IRowMeta is ready   
+    rowMetaProvider.thenAccept(this::initFields);
+    
+    sashForm.setWeights(25, 75);    
   }
 
   protected void createEditor(final Composite parent) {
 
     PropsUi.getInstance().setLook(this);
-
-    int VERTICAL_RULER_WIDTH = 24;
-    CompositeRuler ruler = new CompositeRuler(VERTICAL_RULER_WIDTH);
+    
+    CompositeRuler ruler = new CompositeRuler(24);
     ruler.addDecorator(0, new LineNumberRulerColumn());
     sourceViewer = new SourceViewer(parent, ruler, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
     sourceViewer.getTextWidget().setFont(GuiResource.getInstance().getFontFixed());
@@ -257,8 +256,6 @@ public class ExpressionEditor extends Composite {
     treeItemVariable.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Variables.Label"));
 
     if (variables != null) {
-      // this.contentProposalProvider.setVariables(variables);
-
       String[] names = this.variables.getVariableNames();
       Arrays.sort(names);
 

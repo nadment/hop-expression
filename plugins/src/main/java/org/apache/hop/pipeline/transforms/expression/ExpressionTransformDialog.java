@@ -61,7 +61,6 @@ public class ExpressionTransformDialog extends BaseTransformDialog implements IT
 
   private final ExpressionTransformMeta input;
   private TableView wTableFields;
-  //private IRowMeta rowMeta;
   private ModifyListener lsMod;
 
   public ExpressionTransformDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
@@ -282,20 +281,6 @@ public class ExpressionTransformDialog extends BaseTransformDialog implements IT
             columns, this.input.getFields().size(), lsMod, props);
     wTableFields.setLayoutData(new FormDataBuilder().top().bottom().left().right().result());
     wTableFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 46, 10, 10, 10));
-
-    // Search the fields in the background
-    
-    
-//    new Thread(() -> {
-//      TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
-//      if (transformMeta != null)
-//        try {
-//
-//          rowMeta = pipelineMeta.getPrevTransformFields(getVariables(), transformMeta);
-//        } catch (HopException e) {
-//          logError(BaseMessages.getString(PKG, "ExpressionDialog.Log.UnableToFindInput"));
-//        }
-//    }).start();
 
     return wTableFields;
   }

@@ -38,16 +38,7 @@ import java.util.TreeSet;
 public class OperatorRegistry {
 
   private static final ILogChannel log = new LogChannel("OperatorRegistry");
-
-  //private static final OperatorRegistry registry = new OperatorRegistry();
-
-///**
-//* The operator registry instance
-//*/
-//public static final OperatorRegistry getInstance() {
-// return registry;
-//}
-  
+ 
   static  {
     operators = new TreeSet<>(Arrays.asList(Operator.ADD,
         Operator.SUBTRACT, Operator.MULTIPLY, Operator.DIVIDE, Operator.BITAND, Operator.BITOR,
