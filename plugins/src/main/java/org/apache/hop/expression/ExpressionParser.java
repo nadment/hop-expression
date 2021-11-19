@@ -52,7 +52,7 @@ public class ExpressionParser {
       Exception e) {
     int line = 1;
     int column = 1;
-    for (int index = 0; index <= offset; index++) {
+    for (int index = 0; index < source.length(); index++) {
       char c = source.charAt(index);
       if (c == '\n' || c == '\r') {
         line++;

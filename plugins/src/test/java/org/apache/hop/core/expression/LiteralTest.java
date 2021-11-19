@@ -45,9 +45,9 @@ public class LiteralTest extends BaseExpressionTest {
 
     // Single quote with two adjacent single quotes
     evalEquals("'te''st'", "te'st");
-    // evalEquals("'te\"st'", "te\"st");
+    evalEquals("'te''''st'", "te''st");
 
-    writeEquals("'Test string'");
+    writeEquals("'Test ''Bla'' string'");
   }
 
 
@@ -62,7 +62,11 @@ public class LiteralTest extends BaseExpressionTest {
     assertEquals("FALSE", Operator.coerceToString(Literal.FALSE));
 
     evalTrue("True");
-    evalFalse("FaLsE");
+    evalTrue("True");
+    evalTrue("'On'::Boolean");
+    evalTrue("'Yes'::Boolean");
+    evalFalse("'Off'::Boolean");
+    evalFalse("'No'::Boolean");
     evalNull("NULL");
   }
 

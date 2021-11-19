@@ -93,7 +93,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
 
       int end = offset;
-      while (end < document.getLength() ) {
+      while (end < document.getLength()) {
         ch = document.getChar(end);
 
         if (Character.isJavaIdentifierPart(ch) || ch == '.') {
@@ -107,7 +107,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         if (ch == '\"') {
           end++;
           // If use another double quote to escape it
-          if (end < document.getLength()  && document.getChar(end) != '\"') 
+          if (end < document.getLength() && document.getChar(end) != '\"')
             break;
         }
 
@@ -116,7 +116,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           end = offset;
           break;
         }
-        
+
         end++;
       }
 
@@ -125,7 +125,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
       String prefix = document.get(start, offset - start);
 
-      //System.out.println("Prefix=" + prefix + " quoted=" + quoted + " replace=" + document.get(start, end - start));
+      // System.out.println("Prefix=" + prefix + " quoted=" + quoted + " replace=" +
+      // document.get(start, end - start));
 
       List<ICompletionProposal> proposals = new LinkedList<>();
       if (prefix.length() > 0) {
@@ -215,36 +216,44 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   }
 
   protected void computeIdentifierProposals(List<ICompletionProposal> proposals, String prefix,
-      int start, int end, boolean quoted) throws InterruptedException, ExecutionException {
+      int start, int end, boolean quoted) {
     // Value meta
-    if (prefix.charAt(0) == '\"')
-      prefix = prefix.substring(1);
-    for (IValueMeta valueMeta : rowMeta.get().getValueMetaList()) {
-      String name = valueMeta.getName();
-      if (name.length() >= prefix.length()
-          && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
-        String content = name;
-        // If identifier name contains space, is a reserved word or a function name must be
-        // quoted
-        if (quoted || name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name)
-            || Type.exist(name) || DatePart.exist(name) || OperatorRegistry.isFunctionName(name)) {
-          content = '\"' + name + '\"';
+    try {
+      if (prefix.charAt(0) == '\"')
+        prefix = prefix.substring(1);
+      for (IValueMeta valueMeta : rowMeta.get().getValueMetaList()) {
+        String name = valueMeta.getName();
+        if (name.length() >= prefix.length()
+            && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
+
+          String content = name;
+          // If identifier name contains space, is a reserved word or a function name must be
+          // quoted
+          if (quoted || name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name)
+              || Type.exist(name) || DatePart.exist(name)
+              || OperatorRegistry.isFunctionName(name)) {
+            content = '\"' + name + '\"';
+          }
+
+          Image image = GuiResource.getInstance().getImage(valueMeta);
+          StringBuilder description = new StringBuilder();
+          description.append("Type: ");
+          description.append(valueMeta.getTypeDesc());
+          description.append("<br>Step origin: ");
+          description.append(valueMeta.getOrigin());
+          description.append("<br>Comment: ");
+          description.append(StringUtils.defaultString(valueMeta.getComments()));
+
+          CompletionProposal proposal = new CompletionProposal(content, start, end - start,
+              content.length(), image, name, null, description.toString());
+          proposals.add(proposal);
         }
-
-        Image image = GuiResource.getInstance().getImage(valueMeta);
-        StringBuilder description = new StringBuilder();
-        description.append("Type: ");
-        description.append(valueMeta.getTypeDesc());
-        description.append("<br>Step origin: ");
-        description.append(valueMeta.getOrigin());
-        description.append("<br>Comment: ");
-        description.append(StringUtils.defaultString(valueMeta.getComments()));
-
-        CompletionProposal proposal = new CompletionProposal(content, start, end - start,
-            content.length(), image, name, null, description.toString());
-        proposals.add(proposal);
       }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    } catch (ExecutionException e) {
+      // Ignore
     }
   }
 

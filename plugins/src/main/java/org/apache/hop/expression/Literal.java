@@ -132,7 +132,14 @@ public class Literal implements IExpression {
       writer.append("NULL");
     } else if (value instanceof String) {
       writer.append('\'');
-      writer.append((String) value);
+      String str = (String) value;
+      for (int i = 0; i < str.length(); i++) {
+        char ch = str.charAt(i);
+        writer.append(ch);
+        if (ch == '\'') {
+          writer.append(ch);
+        }
+      }
       writer.append('\'');
     } else if (value instanceof Instant) {
       Instant instant = (Instant) value;
