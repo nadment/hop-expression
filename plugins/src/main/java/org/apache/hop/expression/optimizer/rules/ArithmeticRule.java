@@ -20,8 +20,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 
 public class ArithmeticRule implements Rule {
@@ -29,31 +29,31 @@ public class ArithmeticRule implements Rule {
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
     // Eliminate double NEGATIVE
-    if (call.is(Operator.NEGATIVE)) {
+    if (call.is(OperatorRegistry.NEGATIVE)) {
       IExpression operand = call.getOperand(0);
-      if (operand.is(Operator.NEGATIVE)) {
+      if (operand.is(OperatorRegistry.NEGATIVE)) {
         return ((OperatorCall) operand).getOperand(0);
       }
-    } else if (call.is(Operator.ADD)) {
+    } else if (call.is(OperatorRegistry.ADD)) {
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);
-      if (left.is(Kind.LITERAL) && right.is(Operator.ADD)) {
+      if (left.is(Kind.LITERAL) && right.is(OperatorRegistry.ADD)) {
         OperatorCall child = (OperatorCall) right;
         if (child.getOperand(0).is(Kind.LITERAL)) {
-          IExpression operation = new OperatorCall(Operator.ADD, left, child.getOperand(0));
+          IExpression operation = new OperatorCall(OperatorRegistry.ADD, left, child.getOperand(0));
           Literal literal = Literal.of(operation.eval(context));
-          return new OperatorCall(Operator.ADD, literal, child.getOperand(1));
+          return new OperatorCall(OperatorRegistry.ADD, literal, child.getOperand(1));
         }
       }
-    } else if (call.is(Operator.MULTIPLY)) {
+    } else if (call.is(OperatorRegistry.MULTIPLY)) {
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);
-      if (left.is(Kind.LITERAL) && right.is(Operator.MULTIPLY)) {
+      if (left.is(Kind.LITERAL) && right.is(OperatorRegistry.MULTIPLY)) {
         OperatorCall child = (OperatorCall) right;
         if (child.getOperand(0).is(Kind.LITERAL)) {
-          IExpression operation = new OperatorCall(Operator.MULTIPLY, left, child.getOperand(0));
+          IExpression operation = new OperatorCall(OperatorRegistry.MULTIPLY, left, child.getOperand(0));
           Literal literal = Literal.of(operation.eval(context));
-          return new OperatorCall(Operator.MULTIPLY, literal, child.getOperand(1));
+          return new OperatorCall(OperatorRegistry.MULTIPLY, literal, child.getOperand(1));
         }
       }
     }

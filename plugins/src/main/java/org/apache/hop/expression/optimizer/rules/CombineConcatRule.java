@@ -18,8 +18,8 @@ package org.apache.hop.expression.optimizer.rules;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,18 +28,18 @@ public class CombineConcatRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
-    if (call.is(Operator.CONCAT)) {
+    if (call.is(OperatorRegistry.CONCAT)) {
       ArrayList<IExpression> operands = new ArrayList<>();
 
       for (IExpression expression : call.getOperands()) {
-        if (expression.is(Operator.CONCAT)) {
+        if (expression.is(OperatorRegistry.CONCAT)) {
           operands.addAll(Arrays.asList(((OperatorCall) expression).getOperands()));
         } else {
           operands.add(expression);
         }
       }
 
-      return new OperatorCall(Operator.CONCAT, operands);      
+      return new OperatorCall(OperatorRegistry.CONCAT, operands);      
     }
 
     return call;

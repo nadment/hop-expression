@@ -23,6 +23,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 
 /**
@@ -37,36 +38,36 @@ public class SimplifyBooleanRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
-    if ( call.is(Operator.BOOLNOT)) {
+    if ( call.is(OperatorRegistry.BOOLNOT)) {
 
       IExpression operand = call.getOperand(0);;
 
       // NOT(l > r) => l <= r
-      if ( operand.is(Operator.GREATER_THAN)) {
-        return new OperatorCall(Operator.LESS_THAN_OR_EQUAL,
+      if ( operand.is(OperatorRegistry.GREATER_THAN)) {
+        return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL,
             ((OperatorCall) operand).getOperands());
         // return new LessThanOrEqual(((OperatorCall) operand).getOperands());
       }
       // NOT(l >= r) => l < r
-      else if (operand.is(Operator.GREATER_THAN_OR_EQUAL)) {
-        return new OperatorCall(Operator.LESS_THAN, ((OperatorCall) operand).getOperands());
+      else if (operand.is(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {
+        return new OperatorCall(OperatorRegistry.LESS_THAN, ((OperatorCall) operand).getOperands());
       }
       // NOT(l < r) => l >= r
-      else if (operand.is(Operator.LESS_THAN)) {
-        return new OperatorCall(Operator.GREATER_THAN_OR_EQUAL,
+      else if (operand.is(OperatorRegistry.LESS_THAN)) {
+        return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL,
             ((OperatorCall) operand).getOperands());
       }
       // NOT(l <= r) => l > r
-      else if (operand.is(Operator.LESS_THAN_OR_EQUAL)) {
-        return new OperatorCall(Operator.GREATER_THAN, ((OperatorCall) operand).getOperands());
+      else if (operand.is(OperatorRegistry.LESS_THAN_OR_EQUAL)) {
+        return new OperatorCall(OperatorRegistry.GREATER_THAN, ((OperatorCall) operand).getOperands());
       }
       // NOT(NOT(e)) => e
-      if (operand.is(Operator.BOOLNOT)) {
+      if (operand.is(OperatorRegistry.BOOLNOT)) {
         return ((OperatorCall) operand).getOperand(0);
       }
     }
 
-    else if (call.is(Operator.BOOLOR)) {
+    else if (call.is(OperatorRegistry.BOOLOR)) {
 
       if (call.getOperand(0).is(Kind.LITERAL)) {
         Boolean value = Operator.coerceToBoolean(call.getOperand(0).eval(context));
@@ -95,7 +96,7 @@ public class SimplifyBooleanRule implements Rule {
       }
     }
 
-    else if (call.is(Operator.BOOLAND)) {
+    else if (call.is(OperatorRegistry.BOOLAND)) {
 
       if (call.getOperand(0).is(Kind.LITERAL)) {
         Boolean value = Operator.coerceToBoolean(call.getOperand(0).eval(context));

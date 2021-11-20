@@ -31,7 +31,7 @@ public class SimplifyExtractRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
-    if (call.is(Operator.EXTRACT) && call.getOperandCount() == 2) {
+    if (call.is(OperatorRegistry.EXTRACT) && call.getOperandCount() == 2) {
 
       DatePart part = (DatePart) call.getOperand(0).eval(context);
 

@@ -49,6 +49,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
   private CompletableFuture<IRowMeta> rowMeta;
   private IVariables variables;
+  private String message;
 
   public ExpressionCompletionProcessor(IVariables variables) {
     this(variables, null);
@@ -125,9 +126,6 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
       String prefix = document.get(start, offset - start);
 
-      // System.out.println("Prefix=" + prefix + " quoted=" + quoted + " replace=" +
-      // document.get(start, end - start));
-
       List<ICompletionProposal> proposals = new LinkedList<>();
       if (prefix.length() > 0) {
         if (prefix.charAt(0) == '$') {
@@ -136,12 +134,11 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           if (document.getChar(end - 1) != '}') {
             end = offset;
           }
-          if (prefix.startsWith("${"))
+          if (prefix.startsWith("${")) {
             prefix = prefix.substring(2);
-          else
+          } else {
             prefix = prefix.substring(1);
-
-          System.out.println("Prefix var=" + prefix);
+          }
 
           computeVariableProposals(proposals, prefix, start, end);
         } else {
@@ -153,7 +150,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       }
       return proposals.toArray(new ICompletionProposal[0]);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      message = e.getMessage();
     }
     return null;
   }
@@ -279,7 +276,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
   @Override
   public String getErrorMessage() {
-    return null;
+    return message;
   }
 
 }

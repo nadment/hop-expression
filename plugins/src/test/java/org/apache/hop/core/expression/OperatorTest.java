@@ -29,9 +29,17 @@ public class OperatorTest extends BaseExpressionTest {
     evalTrue(" /* Test block comment */  true ");
     evalTrue(" true /* Test block comment */");
     evalTrue("/*\n * Comment on multi line\n *\n */ True");
-    evalTrue(
-        "/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
+    evalTrue("/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
 
+    // Single line comment
+    evalTrue("// Single line comment\nTrue");
+    evalTrue("-- Single line comment\nTrue");
+    
+    // Multi line comment
+    evalTrue("/* Line 1\n * Line 2 */ True");
+
+    // Empty
+    evalFails("-- Single line comment\n");    
     evalFails(" /");
     evalFails("/*   True");
     evalFails("/   True");

@@ -106,14 +106,14 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     assistant.enableColoredLabels(true);
 
     assistant.setContextSelectorBackground(GuiResource.getInstance().getColor(8, 154, 0));
-    assistant.setContextInformationPopupOrientation(ContentAssistant.CONTEXT_INFO_ABOVE);
+    assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
     // assistant.setContextInformationPopupBackground(GuiResource.getInstance().getColor(8, 154,
     // 0));
     assistant.setStatusLineVisible(true);
     assistant.setStatusMessage("Press 'Ctrl+Space' to show variables");
     return assistant;
   }
-
+  @Override
   public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
     return new IInformationControlCreator() {
       public IInformationControl createInformationControl(Shell parent) {
@@ -240,6 +240,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     return scanner;
   }
 
+  @Override
   public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer,
       String contentType) {
     return new DoubleClickStrategy();

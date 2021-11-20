@@ -18,37 +18,6 @@ package org.apache.hop.expression;
 import org.apache.commons.io.IOUtils;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
-import org.apache.hop.expression.operator.Add;
-import org.apache.hop.expression.operator.Between;
-import org.apache.hop.expression.operator.BitAnd;
-import org.apache.hop.expression.operator.BitNot;
-import org.apache.hop.expression.operator.BitOr;
-import org.apache.hop.expression.operator.BitXor;
-import org.apache.hop.expression.operator.BoolAnd;
-import org.apache.hop.expression.operator.BoolNot;
-import org.apache.hop.expression.operator.BoolOr;
-import org.apache.hop.expression.operator.BoolXor;
-import org.apache.hop.expression.operator.Case;
-import org.apache.hop.expression.operator.Cast;
-import org.apache.hop.expression.operator.Concat;
-import org.apache.hop.expression.operator.Divide;
-import org.apache.hop.expression.operator.Equal;
-import org.apache.hop.expression.operator.Extract;
-import org.apache.hop.expression.operator.GreaterThan;
-import org.apache.hop.expression.operator.GreaterThanOrEqual;
-import org.apache.hop.expression.operator.ILike;
-import org.apache.hop.expression.operator.In;
-import org.apache.hop.expression.operator.Is;
-import org.apache.hop.expression.operator.LessThan;
-import org.apache.hop.expression.operator.LessThanOrEqual;
-import org.apache.hop.expression.operator.LessThanOrGreaterThan;
-import org.apache.hop.expression.operator.Like;
-import org.apache.hop.expression.operator.Mod;
-import org.apache.hop.expression.operator.Multiply;
-import org.apache.hop.expression.operator.Negative;
-import org.apache.hop.expression.operator.NotEqual;
-import org.apache.hop.expression.operator.Subtract;
-import org.apache.hop.expression.operator.TryCast;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
@@ -74,63 +43,11 @@ public abstract class Operator implements Comparable<Operator> {
 
   private static final ConcurrentHashMap<String, String> docs = new ConcurrentHashMap<>();
   
-  // -------------------------------------------------------------
-  // BITWISE OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator BITAND = new BitAnd();
-  public static final Operator BITOR = new BitOr();
-  public static final Operator BITNOT = new BitNot();
-  public static final Operator BITXOR = new BitXor();
-
-  // -------------------------------------------------------------
-  // LOGICAL OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator BOOLNOT = new BoolNot();
-  public static final Operator BOOLOR = new BoolOr();
-  public static final Operator BOOLAND = new BoolAnd();
-  public static final Operator BOOLXOR = new BoolXor();
-
-  // -------------------------------------------------------------
-  // COMPARISON OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator IS = new Is();
-  public static final Operator IN = new In();
-  public static final Operator LIKE = new Like();
-  public static final Operator ILIKE = new ILike();
-  public static final Operator BETWEEN = new Between();
-  public static final Operator EQUAL = new Equal();
-  public static final Operator NOT_EQUAL = new NotEqual();
-  public static final Operator LESS_THAN_OR_GREATER_THAN = new LessThanOrGreaterThan();
-  public static final Operator LESS_THAN = new LessThan();
-  public static final Operator LESS_THAN_OR_EQUAL = new LessThanOrEqual();
-  public static final Operator GREATER_THAN = new GreaterThan();
-  public static final Operator GREATER_THAN_OR_EQUAL = new GreaterThanOrEqual();
-
-  // -------------------------------------------------------------
-  // ARITHMETIC OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator NEGATIVE = new Negative();
-  public static final Operator MULTIPLY = new Multiply();
-  public static final Operator DIVIDE = new Divide();
-  public static final Operator MODULUS = new Mod();
-  public static final Operator ADD = new Add();
-  public static final Operator SUBTRACT = new Subtract();
-
-  // -------------------------------------------------------------
-  // SPECIAL OPERATORS
-  // -------------------------------------------------------------
-
-  public static final Operator CAST = new Cast();
-  public static final Operator TRY_CAST = new TryCast();
-  public static final Operator CASE = new Case();
-  public static final Operator CONCAT = new Concat();
-  public static final Operator EXTRACT = new Extract();
-
   /** The name of the operator/function. Ex. "COS" or "TRIM" */
-  private final String name;
+  protected final String name;
 
   /** The alias of the function. Ex. "TRUNCATE" alias "TRUNC"    */
-  private final String alias;
+  protected final String alias;
 
   /**
    * The precedence with which this operator binds to the expression to the left. This is less than
@@ -234,7 +151,7 @@ public abstract class Operator implements Comparable<Operator> {
     return isDeterministic;
   }
   
-  protected URL getDocumentationUrl(Kind kind) {
+  protected URL getDocumentationUrl() {
     return getClass().getResource("/docs/" + name.toLowerCase() + ".html");
   }
 
@@ -445,7 +362,7 @@ public abstract class Operator implements Comparable<Operator> {
       return null;
     }
     if (value instanceof Boolean) {
-      return (Boolean) value;
+      return (boolean) value;
     }
     if (value instanceof Number) {
       return ((Number) value).doubleValue() != 0;
@@ -465,7 +382,6 @@ public abstract class Operator implements Comparable<Operator> {
           if (str.equalsIgnoreCase("on")) {
             return true;
           }
-
           if (str.equalsIgnoreCase("no")) {
             return false;
           }
@@ -491,7 +407,6 @@ public abstract class Operator implements Comparable<Operator> {
         default:
           break;
       }
-
     }
     throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidBoolean", value));
   }
@@ -573,7 +488,7 @@ public abstract class Operator implements Comparable<Operator> {
     }
 
     if (value instanceof Boolean) {
-      return ((Boolean) value) ? 1L : 0L;
+      return ((boolean) value) ? 1L : 0L;
     }
 
     if (value instanceof byte[]) {
@@ -612,7 +527,7 @@ public abstract class Operator implements Comparable<Operator> {
       }
     }
     // if (value instanceof Boolean) {
-    // return ((Boolean) value) ? 1D:0D;
+    // return ((boolean) value) ? 1D:0D;
     // }
 
     if (value instanceof byte[]) {
@@ -654,7 +569,7 @@ public abstract class Operator implements Comparable<Operator> {
       }
     }
     // if (value instanceof Boolean) {
-    // return ((Boolean) value) ? BigDecimal.ONE:BigDecimal.ZERO;
+    // return ((boolean) value) ? BigDecimal.ONE:BigDecimal.ZERO;
     // }
 
     throw errorUnsupportedConversion(value, Type.BIGNUMBER);

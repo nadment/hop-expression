@@ -19,8 +19,8 @@ package org.apache.hop.expression.optimizer.rules;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class SimplifyInRule implements Rule {
   public IExpression apply(IExpressionContext context, OperatorCall call) {
-    if (call.is(Operator.IN)) {
+    if (call.is(OperatorRegistry.IN)) {
 
       List<IExpression> list = new ArrayList<>();
 

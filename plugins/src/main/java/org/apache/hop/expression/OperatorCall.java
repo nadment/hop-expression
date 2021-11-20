@@ -90,15 +90,6 @@ public class OperatorCall implements IExpression {
    */
   public OperatorCall clone(IExpression... operands) {
     return new OperatorCall(operator, operands);
-    // try {
-    // @SuppressWarnings("unchecked")
-    // Constructor<OperatorCall> constructor =
-    // (Constructor<OperatorCall>) this.getClass().getConstructor(IExpression[].class);
-    // return constructor.newInstance((Object) operands);
-    // } catch (NoSuchMethodException | SecurityException | InstantiationException
-    // | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-    // throw new ExpressionException("Error clone",e);
-    // }
   }
 
   /**

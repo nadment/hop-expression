@@ -39,8 +39,7 @@ public class ExpressionParser {
   public static IExpression parse(String source) throws ExpressionException {
     ExpressionParser parser = new ExpressionParser(source);
     try {
-      IExpression expression = parser.parse();
-      return expression;
+      return parser.parse();
     } catch (ParseException e) {
       throw createExpressionException(source, e.getErrorOffset(), e);
     } catch (ExpressionException | IllegalArgumentException e) {
@@ -52,7 +51,7 @@ public class ExpressionParser {
       Exception e) {
     int line = 1;
     int column = 1;
-    for (int index = 0; index < source.length(); index++) {
+    for (int index = 0; index < offset; index++) {
       char c = source.charAt(index);
       if (c == '\n' || c == '\r') {
         line++;
@@ -90,27 +89,21 @@ public class ExpressionParser {
   }
 
   protected boolean next(Id id) {
-    if (hasNext()) {
-      if (tokens.get(index).is(id)) {
+    if (hasNext() && tokens.get(index).is(id)) {
         index++;
-        return true;
-      }
+        return true;      
     }
     return false;
   }
 
   protected boolean is(Id id) {
-    if (hasNext()) {
-      if (tokens.get(index).is(id)) {
-        return true;
-      }
+    if (hasNext() ) {
+        return tokens.get(index).is(id);      
     }
     return false;
   }
 
   private IExpression parse() throws ParseException {
-    // System.out.println("Parse: " + source);
-
     if (StringUtils.isEmpty(source))
       return Literal.NULL;
 
@@ -143,7 +136,7 @@ public class ExpressionParser {
   private IExpression parseLogicalOr() throws ParseException {
     IExpression expression = this.parseLogicalAnd();
     while (next(Id.OR)) {
-      expression = new OperatorCall(Operator.BOOLOR, expression, parseLogicalAnd());
+      expression = new OperatorCall(OperatorRegistry.BOOLOR, expression, parseLogicalAnd());
     }
 
     return expression;
@@ -160,7 +153,7 @@ public class ExpressionParser {
   private IExpression parseLogicalAnd() throws ParseException {
     IExpression expression = this.parseLogicalNot();
     while (next(Id.AND)) {
-      expression = new OperatorCall(Operator.BOOLAND, expression, parseLogicalNot());
+      expression = new OperatorCall(OperatorRegistry.BOOLAND, expression, parseLogicalNot());
     }
 
     return expression;
@@ -175,7 +168,7 @@ public class ExpressionParser {
   private IExpression parseLogicalNot() throws ParseException {
 
     if (next(Id.NOT)) {
-      return new OperatorCall(Operator.BOOLNOT, parseLogicalNot());
+      return new OperatorCall(OperatorRegistry.BOOLNOT, parseLogicalNot());
     }
 
     return this.parseIs();
@@ -194,9 +187,9 @@ public class ExpressionParser {
       if (next(Id.NOT)) {
         not = true;
       }
-      IExpression result = new OperatorCall(Operator.IS, expression, parseLiteralBasic());
+      IExpression result = new OperatorCall(OperatorRegistry.IS, expression, parseLiteralBasic());
       if (not)
-        return new OperatorCall(Operator.BOOLNOT, result);
+        return new OperatorCall(OperatorRegistry.BOOLNOT, result);
       return result;
     }
     return expression;
@@ -222,19 +215,19 @@ public class ExpressionParser {
 
       if (next(Id.ESCAPE)) {
         IExpression escape = this.parseCast();
-        expression = new OperatorCall(Operator.LIKE, expression, pattern, escape);
+        expression = new OperatorCall(OperatorRegistry.LIKE, expression, pattern, escape);
       } else
-        expression = new OperatorCall(Operator.LIKE, expression, pattern);
+        expression = new OperatorCall(OperatorRegistry.LIKE, expression, pattern);
     } else if (next(Id.ILIKE)) {
       IExpression pattern = this.parseAdditive();
 
       if (next(Id.ESCAPE)) {
         IExpression escape = this.parseAdditive();
-        expression = new OperatorCall(Operator.ILIKE, expression, pattern, escape);
+        expression = new OperatorCall(OperatorRegistry.ILIKE, expression, pattern, escape);
       } else
-        expression = new OperatorCall(Operator.ILIKE, expression, pattern);
+        expression = new OperatorCall(OperatorRegistry.ILIKE, expression, pattern);
     } else if (next(Id.IN)) {
-      expression = new OperatorCall(Operator.IN, expression, this.parseList());
+      expression = new OperatorCall(OperatorRegistry.IN, expression, this.parseList());
     } else if (next(Id.BETWEEN)) {
       IExpression begin = this.parseAdditive();
       if (!next(Id.AND)) {
@@ -244,11 +237,11 @@ public class ExpressionParser {
       }
       IExpression end = this.parseAdditive();
 
-      expression = new OperatorCall(Operator.BETWEEN, expression, begin, end);
+      expression = new OperatorCall(OperatorRegistry.BETWEEN, expression, begin, end);
     }
 
     if (not) {
-      return new OperatorCall(Operator.BOOLNOT, expression);
+      return new OperatorCall(OperatorRegistry.BOOLNOT, expression);
     }
 
     return expression;
@@ -264,11 +257,11 @@ public class ExpressionParser {
 
     while (hasNext()) {
       if (next(Id.MULTIPLY)) {
-        expression = new OperatorCall(Operator.MULTIPLY, expression, this.parseBitwiseNot());
+        expression = new OperatorCall(OperatorRegistry.MULTIPLY, expression, this.parseBitwiseNot());
       } else if (next(Id.DIVIDE)) {
-        expression = new OperatorCall(Operator.DIVIDE, expression, this.parseBitwiseNot());
+        expression = new OperatorCall(OperatorRegistry.DIVIDE, expression, this.parseBitwiseNot());
       } else if (next(Id.MODULUS)) {
-        expression = new OperatorCall(Operator.MODULUS, expression, this.parseBitwiseNot());
+        expression = new OperatorCall(OperatorRegistry.MODULUS, expression, this.parseBitwiseNot());
       } else
         break;
     }
@@ -279,7 +272,7 @@ public class ExpressionParser {
   /** ( UnaryExpression)* */
   private IExpression parseBitwiseNot() throws ParseException {
     if (next(Id.BITWISE_NOT)) {
-      return new OperatorCall(Operator.BITNOT, this.parseUnary());
+      return new OperatorCall(OperatorRegistry.BITNOT, this.parseUnary());
     }
     return this.parseUnary();
   }
@@ -288,7 +281,7 @@ public class ExpressionParser {
   private IExpression parseBitwiseAnd() throws ParseException {
     IExpression expression = this.parseFactor();
     if (next(Id.BITWISE_AND)) {
-      return new OperatorCall(Operator.BITAND, expression, this.parseFactor());
+      return new OperatorCall(OperatorRegistry.BITAND, expression, this.parseFactor());
     }
     return expression;
   }
@@ -297,7 +290,7 @@ public class ExpressionParser {
   private IExpression parseBitwiseOr() throws ParseException {
     IExpression expression = this.parseBitwiseXor();
     if (next(Id.BITWISE_OR)) {
-      return new OperatorCall(Operator.BITOR, expression, this.parseBitwiseXor());
+      return new OperatorCall(OperatorRegistry.BITOR, expression, this.parseBitwiseXor());
     }
     return expression;
   }
@@ -306,7 +299,7 @@ public class ExpressionParser {
   private IExpression parseBitwiseXor() throws ParseException {
     IExpression expression = this.parseBitwiseAnd();
     if (next(Id.BITWISE_XOR)) {
-      return new OperatorCall(Operator.BITXOR, expression, this.parseBitwiseAnd());
+      return new OperatorCall(OperatorRegistry.BITXOR, expression, this.parseBitwiseAnd());
     }
     return expression;
   }
@@ -315,7 +308,7 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ParseException {
 
     if (next(Id.MINUS)) {
-      return new OperatorCall(Operator.NEGATIVE, this.parseCast());
+      return new OperatorCall(OperatorRegistry.NEGATIVE, this.parseCast());
     }
     if (next(Id.PLUS)) {
       // Ignore
@@ -406,26 +399,26 @@ public class ExpressionParser {
     IExpression expression = this.parseRelational();
 
     if (next(Id.EQUAL)) {
-      return new OperatorCall(Operator.EQUAL, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.EQUAL, expression, this.parseRelational());
     }
     if (next(Id.NOT_EQUAL)) {
-      return new OperatorCall(Operator.NOT_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.NOT_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_GREATER_THAN)) {
-      return new OperatorCall(Operator.LESS_THAN_OR_GREATER_THAN, expression,
+      return new OperatorCall(OperatorRegistry.LESS_THAN_OR_GREATER_THAN, expression,
           this.parseRelational());
     }
     if (next(Id.GREATER_THAN)) {
-      return new OperatorCall(Operator.GREATER_THAN, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.GREATER_THAN, expression, this.parseRelational());
     }
     if (next(Id.GREATER_THAN_OR_EQUAL)) {
-      return new OperatorCall(Operator.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN)) {
-      return new OperatorCall(Operator.LESS_THAN, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.LESS_THAN, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_EQUAL)) {
-      return new OperatorCall(Operator.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
     }
 
     return expression;
@@ -436,11 +429,11 @@ public class ExpressionParser {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
       if (next(Id.PLUS)) {
-        expression = new OperatorCall(Operator.ADD, expression, this.parseBitwiseOr());
+        expression = new OperatorCall(OperatorRegistry.ADD, expression, this.parseBitwiseOr());
       } else if (next(Id.MINUS)) {
-        expression = new OperatorCall(Operator.SUBTRACT, expression, this.parseBitwiseOr());
+        expression = new OperatorCall(OperatorRegistry.SUBTRACT, expression, this.parseBitwiseOr());
       } else if (next(Id.CONCAT)) {
-        expression = new OperatorCall(Operator.CONCAT, expression, this.parseBitwiseOr());
+        expression = new OperatorCall(OperatorRegistry.CONCAT, expression, this.parseBitwiseOr());
       } else
         break;
     }
@@ -625,7 +618,7 @@ public class ExpressionParser {
           this.getPosition());
     }
 
-    return new OperatorCall(Operator.CASE, valueExpression, new ExpressionList(whenList),
+    return new OperatorCall(OperatorRegistry.CASE, valueExpression, new ExpressionList(whenList),
         new ExpressionList(thenList), elseExpression);
   }
 
@@ -637,7 +630,7 @@ public class ExpressionParser {
     IExpression expression = this.parseTerm();
     if (next(Id.CAST)) {
       Type type = parseType();
-      return new OperatorCall(Operator.CAST, expression, new Literal(type));
+      return new OperatorCall(OperatorRegistry.CAST, expression, new Literal(type));
     }
     return expression;
   }

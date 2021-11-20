@@ -24,6 +24,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ScalarFunction;
 
 public class ExperimentalFunction {
+
+  private ExperimentalFunction() {
+  }
+
   /** The function compute Levenshtein distance. */
   @ScalarFunction(name = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2)
   public static Object levenshtein(final IExpressionContext context, final IExpression[] operands)

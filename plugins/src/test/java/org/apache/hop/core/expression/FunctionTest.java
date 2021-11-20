@@ -117,7 +117,7 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void CurrentDate() throws Exception {
     Instant current_date =
-        (Instant) this.getContext().getAttribute(ExpressionContext.ATTRIBUTE_CURRENT_DATE);
+        (Instant) this.getContext().getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
     // evalEquals("Today()",now);
     // evalEquals("SysDate()",now);
     evalEquals("Current_Date()", current_date);
@@ -307,6 +307,18 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("Months_Between(Date '2007-11-09')");
   }
 
+  @Test
+  public void Days_Between() throws Exception {
+    evalEquals("Days_Between(Date '2021-01-01',Date '2021-01-01')", 0.0);
+    evalEquals("Days_Between(Date '2021-11-09',Date '2020-12-28')", -316);
+    evalEquals("Days_Between(Date '2007-11-09',Date '2007-12-09')", 30.0);
+
+    evalNull("Days_Between(Date '2007-11-09',NULL)");
+    evalNull("Days_Between(NULL, Date '2007-11-09')");
+    evalNull("Days_Between(NULL, NULL)");
+    evalFails("Days_Between(Date '2007-11-09')");
+  }
+  
   @Test
   public void Hours_Between() throws Exception {
     evalEquals("Hours_Between(Timestamp '2019-01-01 15:00:59',Timestamp '2019-01-01 15:28:59')", 0);
@@ -508,6 +520,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Abs(-1)", 1);
     evalEquals("Abs(-1::INTEGER)", 1);
     evalEquals("Abs(-1.12345679)", 1.12345679);
+    evalEquals("Abs(-1.1234567912345679123456791234567912345679)", 1.123456791234567912345679123456791234567912345679);
     evalNull("Abs(NULL)");
     evalFails("Abs()");
 

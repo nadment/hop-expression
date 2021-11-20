@@ -184,7 +184,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
     // indicate that processRow() should be called again
     return true;
   }
-
+  
   public Object convertValue(IValueMeta meta, Object value) throws HopValueException {
 
     if (value == null)
@@ -199,7 +199,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
       case IValueMeta.TYPE_INTEGER:
         return Operator.coerceToInteger(value);
       case IValueMeta.TYPE_DATE:
-        return java.util.Date.from(Operator.coerceToDate(value));
+       return java.util.Date.from(Operator.coerceToDate(value));
       case IValueMeta.TYPE_TIMESTAMP:
         return java.sql.Timestamp.from(Operator.coerceToDate(value));
       case IValueMeta.TYPE_BIGNUMBER:

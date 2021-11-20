@@ -47,6 +47,9 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("'te''st'", "te'st");
     evalEquals("'te''''st'", "te''st");
 
+    // Empty string
+    evalEquals("''", "");
+
     writeEquals("'Test ''Bla'' string'");
   }
 
@@ -183,7 +186,7 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("Timestamp '2021-12-01 12:01:01.123456789'",
         LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456789));
     evalEquals("Timestamp '2021-12-01 12:01:01.123456'",
-        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456000));    
+        LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123456000));
     evalEquals("Timestamp '2021-12-01 12:01:01.123'",
         LocalDateTime.of(2021, 12, 1, 12, 01, 01, 123000000));
     evalEquals("Timestamp '2021-12-01 12:01:01'",

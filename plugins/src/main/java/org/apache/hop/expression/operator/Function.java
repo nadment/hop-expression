@@ -57,6 +57,7 @@ import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -90,7 +91,30 @@ public class Function extends Operator {
     this.minArgs = min;
     this.maxArgs = max;
   }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (o == this) {
+      return true;
+    }
+    if (this.getClass() != o.getClass()) {
+      return false;
+    }
+    Function fx = (Function) o;
+    if (name.equals(fx.name)) {
+      return true;
+    }
+    return false;
+  }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(name,alias);
+  }
+  
   /**
    * Check if the number of arguments is correct.
    *
@@ -140,14 +164,23 @@ public class Function extends Operator {
     writer.append(')');
   }
 
-  @ScalarFunction(name = "CURRENT_DATE", alias = {"NOW"}, deterministic = false, minArgs = 0,
+  @ScalarFunction(name = "NOW", alias = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
       maxArgs = 0, category = "i18n::Operator.Category.Date")
-  public static Object current_date(final IExpressionContext context, final IExpression[] operands)
+  // The NOW function return the exact date and time
+  public static Object now(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-
-    return context.getAttribute(ExpressionContext.ATTRIBUTE_CURRENT_DATE);
+    return context.getAttribute(ExpressionContext.ATTRIBUTE_NOW);
   }
 
+  @ScalarFunction(name = "TODAY", alias = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date")
+  // The TODAY function return the date value only
+  public static Object today(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return context.getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
+  }
+  
+  
   // -------------------------------------------------------------
   // CRYPTOGRAPHIC
   // -------------------------------------------------------------

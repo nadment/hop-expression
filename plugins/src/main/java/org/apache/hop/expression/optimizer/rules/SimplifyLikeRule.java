@@ -39,7 +39,7 @@ public class SimplifyLikeRule implements Rule {
 
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
-    if ( call.is(Operator.LIKE)) {
+    if ( call.is(OperatorRegistry.LIKE)) {
 
       // Optimize NULL LIKE FIELD to NULL
       IExpression v0 = call.getOperand(0);
@@ -88,7 +88,7 @@ public class SimplifyLikeRule implements Rule {
         // Optimize FIELD LIKE 'Hello' to FIELD='Hello'
         if (equalTo.matcher(pattern).find()) {
           String search = pattern.replace("%", "");
-          return new OperatorCall(Operator.EQUAL, v0, Literal.of(search));
+          return new OperatorCall(OperatorRegistry.EQUAL, v0, Literal.of(search));
         }
       }
     }

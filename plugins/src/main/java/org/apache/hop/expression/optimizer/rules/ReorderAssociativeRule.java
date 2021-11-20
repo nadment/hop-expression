@@ -20,6 +20,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
+import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,7 +29,7 @@ import java.util.Set;
 public class ReorderAssociativeRule implements Rule {
 
   static final Set<Operator> ASSOCIATIVE = new HashSet<>(
-      Arrays.asList(Operator.ADD, Operator.BOOLAND, Operator.BOOLOR, Operator.MULTIPLY));
+      Arrays.asList(OperatorRegistry.ADD, OperatorRegistry.BOOLAND, OperatorRegistry.BOOLOR, OperatorRegistry.MULTIPLY));
 
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {

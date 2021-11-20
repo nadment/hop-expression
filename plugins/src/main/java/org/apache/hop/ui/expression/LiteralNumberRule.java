@@ -25,7 +25,7 @@ public class LiteralNumberRule implements IRule {
   private final IToken token;
 
   public LiteralNumberRule(IToken token) {
-    this.token = Objects.requireNonNull(token);;
+    this.token = Objects.requireNonNull(token);
   }
 
   @Override

@@ -16,14 +16,11 @@
  */
 package org.apache.hop.expression;
 
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.text.Collator;
 import java.util.Locale;
 
-public class Collation implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+public class Collation {
 
   private final String name;
   private final Charset charset;
@@ -32,7 +29,7 @@ public class Collation implements Serializable {
   public Collation(Locale locale, Charset charset) {
     this.locale = locale;
     this.charset = charset;
-    this.name = charset.name().toUpperCase(Locale.ROOT) + "$" + String.valueOf(locale);
+    this.name = charset.name().toUpperCase(Locale.ROOT) + "$" + locale;
   }
 
   @Override

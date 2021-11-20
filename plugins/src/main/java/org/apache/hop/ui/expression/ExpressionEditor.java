@@ -66,14 +66,10 @@ public class ExpressionEditor extends Composite {
   private SashForm sashForm;
   private Tree tree;
   private TreeItem treeItemField;
-  private TreeItem treeItemVariable;
-  private boolean isUseField;
-
 
   public ExpressionEditor(Composite parent, int style, IVariables variables,
       CompletableFuture<IRowMeta> rowMetaProvider) {
     super(parent, style);
-    this.isUseField = true;
     this.variables = variables;
     this.rowMetaProvider = rowMetaProvider;
     this.labelProvider = new ExpressionLabelProvider();
@@ -186,7 +182,7 @@ public class ExpressionEditor extends Composite {
       }
     });
 
-    if (isUseField) {
+    if (this.rowMetaProvider!=null) {
       treeItemField = new TreeItem(tree, SWT.NULL);
       treeItemField.setImage(GuiResource.getInstance().getImageFolder());
       treeItemField.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Fields.Label"));
@@ -251,7 +247,7 @@ public class ExpressionEditor extends Composite {
       item.setData(operator);
     }
 
-    treeItemVariable = new TreeItem(tree, SWT.NULL);
+    TreeItem treeItemVariable = new TreeItem(tree, SWT.NULL);
     treeItemVariable.setImage(GuiResource.getInstance().getImageFolder());
     treeItemVariable.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Variables.Label"));
 
@@ -259,7 +255,7 @@ public class ExpressionEditor extends Composite {
       String[] names = this.variables.getVariableNames();
       Arrays.sort(names);
 
-      this.treeItemVariable.removeAll();
+      treeItemVariable.removeAll();
       for (String name : names) {
         boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(name);
 
@@ -297,7 +293,7 @@ public class ExpressionEditor extends Composite {
   }
 
   protected void initFields(final IRowMeta rowMeta) {
-    if (rowMeta != null && isUseField) {
+    if (rowMeta != null) {
       Display.getDefault().asyncExec(() -> {
         treeItemField.removeAll();
 

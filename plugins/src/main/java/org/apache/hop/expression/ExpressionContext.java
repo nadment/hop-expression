@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -61,7 +62,8 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
    */
   public static final String NLS_FIRST_DAY_OF_WEEK = "WEEK_START";
 
-  public static final String ATTRIBUTE_CURRENT_DATE = "DATE";
+  public static final String ATTRIBUTE_TODAY = "TODAY";
+  public static final String ATTRIBUTE_NOW = "NOW";
   public static final String ATTRIBUTE_RANDOM = "RANDOM";
 
   private IRowMeta rowMeta;
@@ -105,7 +107,8 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     }
 
     // Initialize
-    this.setAttribute(ATTRIBUTE_CURRENT_DATE, Instant.now(), ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(ATTRIBUTE_NOW, Instant.now(), ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(ATTRIBUTE_TODAY, Instant.now().truncatedTo(ChronoUnit.DAYS), ScriptContext.ENGINE_SCOPE);
     this.setAttribute(ATTRIBUTE_RANDOM, new SecureRandom(), ScriptContext.ENGINE_SCOPE);
   }
 
@@ -119,7 +122,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   @Override
   public Object resolve(String name) throws ExpressionException {
-    
+
     if (rowMeta == null)
       throw new ExpressionException(BaseMessages.getString(PKG, "Expression.NoRowMeta", name));
 
@@ -149,14 +152,15 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
           return rowMeta.getBigNumber(row, index);
         case IValueMeta.TYPE_BINARY:
           return rowMeta.getBinary(row, index);
+        default:
+          throw new ExpressionException(BaseMessages.getString(PKG,
+              "Expression.ValueMetaTypeNotSupported", name, valueMeta.getType()));
       }
     } catch (HopValueException e) {
       throw new ExpressionException("Error resolve field value " + name + ":" + e.toString());
     }
-
-    return null;
   }
-
+  
   public Locale getLocale() {
     return Locale.getDefault();
   }
