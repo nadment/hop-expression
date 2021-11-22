@@ -1375,7 +1375,8 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Translate() throws Exception {
     evalEquals("Translate('Hello, world!','eo','EO')", "HEllO, wOrld!");
-    //evalEquals("Translate('Hello, world!','eo', 'e')", "Hell, wrld!");
+    evalEquals("Translate('Hello, wOrld!','eol', 'E')", "HE, wOrd!");
+    evalEquals("Translate('Hello, world!','oel,! ', '')", "Hwrd");
     evalNull("Translate(NULL,'eo','EO')");
     evalNull("Translate('Hello, world!',NULL,'EO')");
     evalNull("Translate('Hello, world!','EO',NULL)");

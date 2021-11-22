@@ -698,13 +698,11 @@ public class Function extends Operator {
     if (v2 == null)
       return null;
 
-
     String string = coerceToString(v0);
     String findChars = coerceToString(v1);
     String replaceChars = coerceToString(v2);
 
-    // if it stays null, then no replacements have been made
-    StringBuilder buffer = null;
+    StringBuilder buffer = new StringBuilder(string.length());
     // if shorter than findChars, then characters are removed
     // (if null, we don't access replaceChars at all)
     if (replaceChars == null)
@@ -715,21 +713,16 @@ public class Function extends Operator {
       char ch = string.charAt(i);
       int index = findChars.indexOf(ch);
       if (index >= 0) {
-        if (buffer == null) {
-          buffer = new StringBuilder(size);
-          if (i > 0) {
-            buffer.append(string, 0, i);
-          }
-        }
         if (index < replaceSize) {
-          ch = replaceChars.charAt(index);
+          buffer.append(replaceChars.charAt(index));
         }
+       
       }
-      if (buffer != null) {
+      else {
         buffer.append(ch);
       }
     }
-    return buffer == null ? string : buffer.toString();
+    return buffer.toString();
   }
 
   /**
