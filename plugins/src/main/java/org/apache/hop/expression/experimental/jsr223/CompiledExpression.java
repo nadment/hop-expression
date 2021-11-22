@@ -14,48 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.experimental.jsr223;
 
-import java.io.StringWriter;
+import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.IExpression;
+import javax.script.CompiledScript;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
-public class JsonObjectAccess implements IExpression {
+public class CompiledExpression extends CompiledScript {
 
-  private final String name;
+  private final ExpressionEngine engine;
+  private final IExpression expression;
 
-  public JsonObjectAccess(final String name) {
-    super();
-
-    this.name = name;
+  public CompiledExpression(ExpressionEngine engine, IExpression expression) {
+    this.engine = engine;
+    this.expression = expression;
   }
 
   @Override
-  public Kind getKind() {
-    return Kind.JSON;
-  }
-
-  public String getName() {
-    return name;
+  public Object eval(ScriptContext context) throws ScriptException {
+    return expression.eval((ExpressionContext) context);
   }
 
   @Override
-  public int getCost() {
-    return 1;
-  }
-
-  @Override
-  public Object eval(IExpressionContext context) throws ExpressionException {
-    return null;
-  }
-
-  @Override
-  public void write(StringWriter writer) {
-    writer.append('{');
-    writer.append(this.name);
-    writer.append('}');
-  }
-
-  @Override
-  public String toString() {
-    return this.name;
+  public ScriptEngine getEngine() {
+    return engine;
   }
 }

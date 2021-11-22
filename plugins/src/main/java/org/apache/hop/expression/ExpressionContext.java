@@ -20,6 +20,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -107,6 +108,8 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     }
 
     // Initialize
+    
+   // Clock clock = Clock.withZone(UTC_ZONE);
     this.setAttribute(ATTRIBUTE_NOW, Instant.now(), ScriptContext.ENGINE_SCOPE);
     this.setAttribute(ATTRIBUTE_TODAY, Instant.now().truncatedTo(ChronoUnit.DAYS), ScriptContext.ENGINE_SCOPE);
     this.setAttribute(ATTRIBUTE_RANDOM, new SecureRandom(), ScriptContext.ENGINE_SCOPE);

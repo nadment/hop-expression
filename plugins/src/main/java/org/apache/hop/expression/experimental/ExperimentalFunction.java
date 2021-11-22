@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.operator;
+package org.apache.hop.expression.experimental;
 
 import static org.apache.hop.expression.Operator.coerceToString;
 import org.apache.commons.lang.StringUtils;

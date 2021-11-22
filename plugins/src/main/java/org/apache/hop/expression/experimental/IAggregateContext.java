@@ -14,18 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.experimental;
 
-public interface IAggregateFunction {
-  public void initialize(IAggregateContext context);
-
-  // Removes an input value from the current group.
-  public void delete(IAggregateContext context, Object value);
-
-  // Merges two aggregation contexts
-  public void merge(IAggregateContext context, IAggregateContext other);
-
-  public boolean iterate(IAggregateContext context, Object value);
-
-  public Object terminate(IAggregateContext context);
+public interface IAggregateContext {
 }

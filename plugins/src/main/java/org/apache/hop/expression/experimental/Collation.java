@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.experimental;
 
 import java.nio.charset.Charset;
 import java.text.Collator;
