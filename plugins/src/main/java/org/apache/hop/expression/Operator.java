@@ -70,12 +70,12 @@ public abstract class Operator implements Comparable<Operator> {
   /**
    * Creates an function operator.
    *
+   * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
+   * 
    * @param name The name of function
    * @param alias The alias of function
    */
-  protected Operator(String name, String alias, boolean isDeterministic, String category) {
-    // Some operator has syntax of function CAST, TRY_CAST, CONCAT, CONTAINS, EXTRACT, STARTSWITH,
-    // ENDSWITH
+  protected Operator(String name, String alias, boolean isDeterministic, String category) {    
     this.name = name;
     this.alias = alias;
     this.leftPrecedence = 11;
@@ -203,13 +203,13 @@ public abstract class Operator implements Comparable<Operator> {
 
   @Override
   public int compareTo(Operator o) {
-
-    // Compare kind if same type
-    if (this.getClass().equals(o.getClass()))
-      return this.name.compareTo(o.name);
-
-    // Operator first and function last
-    return (o instanceof Operator) ? 1 : 0;
+    // Compare with name
+    int compare =  this.name.compareTo(o.name);
+    if ( compare!=0 )
+      return compare;
+    
+    // Primary operator first and alias last
+    return this.alias==null ? 1:0; 
   }
 
   private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
@@ -449,7 +449,7 @@ public abstract class Operator implements Comparable<Operator> {
       return (String) value;
     }
     if (value instanceof Boolean) {
-      return ((Boolean) value) ? "TRUE" : "FALSE";
+      return ((boolean) value) ? "TRUE" : "FALSE";
     }
     if (value instanceof BigDecimal) {
       final String s = ((BigDecimal) value).toString();

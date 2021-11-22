@@ -15,9 +15,12 @@
 package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.Const;
+import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.pipeline.PipelineMeta;
+import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.widget.ControlSpaceKeyAdapter;
 import org.apache.hop.ui.core.widget.IGetCaretPosition;
@@ -140,12 +143,7 @@ public class ExpressionText extends Composite {
     final ToolItem toolItem = new ToolItem(wToolBar, SWT.NONE);
     toolItem.setImage(image);
     toolItem.setToolTipText("Browse");
-    toolItem.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-        openExpressionDialog(composite.getShell());
-      }
-    });
+    toolItem.addListener(SWT.Selection, e -> openExpressionDialog());
 
     wToolBar.setLayoutData(
         new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.HORIZONTAL_ALIGN_CENTER));
@@ -160,10 +158,12 @@ public class ExpressionText extends Composite {
     this.setToolTipText(toolTipText);
   }
 
-  protected void openExpressionDialog(Shell shell) {
-    ExpressionDialog dialog = new ExpressionDialog(shell);
-    CompletableFuture<IRowMeta> rowMeta = null;
-    String expression = dialog.open(wText.getText(), variables, rowMeta);
+  
+  protected void openExpressionDialog() {
+    ExpressionDialog dialog = new ExpressionDialog(this.getShell());
+    CompletableFuture<IRowMeta> rowMetaProvider = new CompletableFuture<>(); 
+    rowMetaProvider.complete(rowMeta);
+    String expression = dialog.open(wText.getText(), variables, rowMetaProvider);
     if (expression != null) {
       wText.setText(expression);
     }

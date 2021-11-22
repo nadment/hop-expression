@@ -647,7 +647,7 @@ final class SimpleNumberFormat extends NumberFormat {
         } else if (p == 'G') {
           if (c == symbols.getGroupingSeparator())
             continue;
-          else if (this.exactMode == false && c == ',')
+          else if (!this.exactMode && c == ',')
             continue;
         }
 

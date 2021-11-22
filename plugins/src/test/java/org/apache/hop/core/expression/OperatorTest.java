@@ -619,6 +619,7 @@ public class OperatorTest extends BaseExpressionTest {
     evalEquals("4*10", 40D);
     evalEquals("-4*-1", 4D);
     evalEquals("2*-2", -4D);
+    evalEquals("1.23456::BigNumber*-2.987654", -3.68843812224);
     evalNull("null*1");
     evalNull("1*null");
   }
@@ -801,6 +802,9 @@ public class OperatorTest extends BaseExpressionTest {
     // NULL does not match NULL
     evalNull("NULL like NULL");
 
+    
+    evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
+    
     writeEquals("FIELD1 LIKE 'ADD%'");
     writeEquals("FIELD1 LIKE '%ADD!_%' ESCAPE '!'");
   }

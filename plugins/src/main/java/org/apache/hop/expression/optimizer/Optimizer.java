@@ -72,7 +72,7 @@ public class Optimizer {
 
   protected IExpression optimizeCall(IExpressionContext context, OperatorCall call) {
 
-    IExpression operands[] = new IExpression[call.getOperandCount()];
+    IExpression[] operands = new IExpression[call.getOperandCount()];
 
     for (int i = 0; i < call.getOperandCount(); i++) {
       IExpression operand = optimize(context, call.getOperand(i));

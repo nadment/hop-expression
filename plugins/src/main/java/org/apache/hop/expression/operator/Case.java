@@ -28,7 +28,7 @@ import java.io.StringWriter;
 public class Case extends Operator {
 
   public Case() {
-    super("CASE_WHEN", "CASE", 120, true, "i18n::Operator.Category.Conditional");
+    super("CASE", 120, true, "i18n::Operator.Category.Conditional");
   }
 
   @Override

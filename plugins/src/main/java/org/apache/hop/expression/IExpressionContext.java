@@ -17,7 +17,6 @@
 package org.apache.hop.expression;
 
 import java.time.ZoneId;
-import java.util.Locale;
 
 public interface IExpressionContext {
 
@@ -30,8 +29,6 @@ public interface IExpressionContext {
    * @throws ExpressionException if an error occurs.
    */
   public Object resolve(String name) throws ExpressionException;
-
-  public Locale getLocale();
 
   public ZoneId getZone();
 

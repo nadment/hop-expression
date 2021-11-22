@@ -69,7 +69,6 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   private IRowMeta rowMeta;
 
   private Object[] row;
-
   private ZoneId zone;
   private Locale locale;
   private int twoDigitCenturyStart = 1970;
@@ -84,8 +83,9 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     super();
 
     this.locale = Locale.getDefault();
-    this.zone = UTC_ZONE;
+    this.zone = ZoneId.systemDefault();
 
+    
     this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"),
         ScriptContext.ENGINE_SCOPE);
     this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"),
@@ -161,14 +161,6 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     }
   }
   
-  public Locale getLocale() {
-    return Locale.getDefault();
-  }
-
-  // public void setLocale(Locale locale) {
-  // this.locale = locale;
-  // }
-
   public ZoneId getZone() {
     return zone;
   }

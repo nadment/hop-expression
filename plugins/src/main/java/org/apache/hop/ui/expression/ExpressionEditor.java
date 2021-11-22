@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public class ExpressionEditor extends Composite {
   private static final Class<?> PKG = ExpressionEditor.class;

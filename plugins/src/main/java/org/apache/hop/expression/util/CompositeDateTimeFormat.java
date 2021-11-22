@@ -44,7 +44,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
       try {
         return format.parse(text);
       } catch (Exception e) {
-        continue;
+        // Ignore, try an other format
       }
     }
 

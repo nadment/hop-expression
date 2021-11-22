@@ -59,7 +59,7 @@ public class LiteralNumberRule implements IRule {
       } while (Characters.isDigit((char) c));
 
       if (c == '.') {
-        c = scanner.read();
+        scanner.read();
         // Decimal part
         do {
           c = scanner.read();

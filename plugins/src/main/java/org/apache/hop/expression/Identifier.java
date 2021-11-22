@@ -15,13 +15,14 @@
 package org.apache.hop.expression;
 
 import java.io.StringWriter;
+import java.util.Objects;
 
 public class Identifier implements IExpression {
   private final String name;
 
   public Identifier(final String name) {
     super();
-    this.name = name;
+    this.name = Objects.requireNonNull(name, "name");
   }
 
   @Override

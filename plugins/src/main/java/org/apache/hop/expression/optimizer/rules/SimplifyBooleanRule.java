@@ -40,7 +40,7 @@ public class SimplifyBooleanRule implements Rule {
 
     if ( call.is(OperatorRegistry.BOOLNOT)) {
 
-      IExpression operand = call.getOperand(0);;
+      IExpression operand = call.getOperand(0);
 
       // NOT(l > r) => l <= r
       if ( operand.is(OperatorRegistry.GREATER_THAN)) {

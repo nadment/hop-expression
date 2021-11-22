@@ -248,7 +248,7 @@ public class WhereMeta extends BaseTransformMeta
   public void searchInfoAndTargetTransforms(List<TransformMeta> transforms) {
     for (IStream stream : getTransformIOMeta().getTargetStreams()) {
       stream.setTransformMeta(
-          TransformMeta.findTransform(transforms, (String) stream.getSubject()));
+          TransformMeta.findTransform(transforms, stream.getSubject()));
     }
   }
 

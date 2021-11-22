@@ -104,10 +104,7 @@ public class Function extends Operator {
       return false;
     }
     Function fx = (Function) o;
-    if (name.equals(fx.name)) {
-      return true;
-    }
-    return false;
+    return name.equals(fx.name) && ( alias!=null && alias.equals(fx.alias));
   }
 
   @Override
@@ -2577,7 +2574,7 @@ public class Function extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
+    
     LocalTime time = LocalTime.from(coerceToDate(value).atZone(context.getZone()));
     return Long.valueOf(time.getHour());
   }

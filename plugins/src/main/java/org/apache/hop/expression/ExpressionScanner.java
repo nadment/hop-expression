@@ -28,7 +28,7 @@ public class ExpressionScanner {
   private static final Class<?> PKG = ExpressionScanner.class; // for i18n purposes
 
   private static final Set<String> RESERVED_WORDS =
-      new TreeSet<>(Arrays.asList("AS", "AND", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
+      new TreeSet<>(Arrays.asList("AND", "AS",  "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
           "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "SYMMETRY",
           "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE"));
     
