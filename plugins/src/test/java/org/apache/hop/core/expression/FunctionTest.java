@@ -1388,8 +1388,8 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
     evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
     evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
-    // evalEquals("Extract(YEAROFWEEK from Date '2017-01-01')", 2016);
-    // evalEquals("Extract(YEAROFWEEKISO from Date '2017-01-01')", 2017);
+    //evalEquals("Extract(YEAROFWEEK from Date '2017-01-01')", 2016);
+    evalEquals("Extract(YEAROFWEEKISO from Date '2017-01-01')", 2017);
     evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
     evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
     evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
@@ -1405,8 +1405,11 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
     evalEquals("Extract(Millisecond from Timestamp '2020-05-25 00:00:01.123456')", 123);
     evalEquals("Extract(Microsecond from Timestamp '2020-05-25 00:00:01.123456')", 123456);
-    evalEquals("Extract(Nanosecond from Timestamp '2020-05-25 00:00:01.123456')", 123456000);
-
+    evalEquals("Extract(Nanosecond from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
+    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
+    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
+    evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
+    
     evalNull("Extract(SECOND from NULL)");
 
     evalFails("Extract(NULL from Date '2021-01-01')");

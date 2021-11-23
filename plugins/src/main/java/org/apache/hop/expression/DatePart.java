@@ -14,12 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import java.time.DayOfWeek;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.IsoFields;
-import java.time.temporal.WeekFields;
-
 /**
  * A date part can be used with expression functions such as extract(). It describes a
  * part of a date / datetime value
@@ -152,74 +146,5 @@ public enum DatePart {
       }
     }
     return false;
-  }
-
-  private static int millennium(int year) {
-    return year > 0 ? (year + 999) / 1000 : year / 1000;
-  }
-
-  private static int century(int year) {
-    return year > 0 ? (year + 99) / 100 : year / 100;
-  }
-
-  private static int decade(int year) {
-    return year >= 0 ? year / 10 : (year - 9) / 10;
-  }
-
-  public long get(ZonedDateTime dt) {
-    switch (this) {
-      case DAY:
-        return dt.getDayOfMonth();
-      case DAYOFYEAR:
-        return dt.getDayOfYear();
-      case DAYOFWEEK:
-        int dow = dt.getDayOfWeek().getValue() + 1;
-        if (dow == 8)
-          dow = 1;
-        return dow;
-      case DAYOFWEEKISO:
-        return dt.getDayOfWeek().getValue();
-      case WEEKOFYEAR:
-        return dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-      case WEEKOFYEARISO:
-        return dt.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-      case WEEKOFMONTH:
-        return dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
-      case MONTH:
-        return dt.getMonthValue();
-      case QUARTER:
-        return dt.get(IsoFields.QUARTER_OF_YEAR);
-      case YEAR:
-        return dt.getYear();
-      case YEAROFWEEK:
-        return dt.get(WeekFields.of(DayOfWeek.SUNDAY, 1).weekBasedYear());
-      case YEAROFWEEKISO:
-        // TODO: Verify DAYOFWEEKISO
-        return dt.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekBasedYear());
-      case DECADE:
-        return decade(dt.getYear());
-      case CENTURY:
-        return century(dt.getYear());
-      case MILLENNIUM:
-        return millennium(dt.getYear());
-      case HOUR:
-        return dt.getHour();
-      case MINUTE:
-        return dt.getMinute();
-      case SECOND:
-        return dt.getSecond();
-      case MILLISECOND:
-        return dt.get(ChronoField.MILLI_OF_SECOND);
-      case MICROSECOND:
-        return dt.get(ChronoField.MICRO_OF_SECOND);
-      case NANOSECOND:
-        return dt.getNano();
-      case EPOCH:
-        return dt.toEpochSecond();
-      case TIMEZONE_HOUR:
-      case TIMEZONE_MINUTE:
-      default:
-        throw new ExpressionException("Invalid date part: " + this);
-    }
   }
 }

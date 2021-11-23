@@ -183,7 +183,7 @@ public class BaseExpressionTest {
 
   @Test
   public void parser() throws Exception {
-    evalEquals("To_Char(Date '2019-07-23','AD')", "AD");
+   // evalEquals("To_Char(Date '2019-07-23','AD')", "AD");
     // BigDecimal v0 = BigDecimal.valueOf(0);
     // BigDecimal v1 = BigDecimal.valueOf(0.1);
     // BigDecimal v2 = BigDecimal.valueOf(123.11);

@@ -44,6 +44,8 @@ EXTRACT( <part> FROM <date_or_timestamp> )
 |MONTH|MM|The month (1-12)
 |QUARTER|Q|The quarter of the year (1-4)
 |SECOND|SS|The second (and fractional seconds)
+|TIMEZONE_HOUR||The hour of the time zone offset
+|TIMEZONE_MINUTE||The minute of the time zone offset
 |WEEKOFYEAR|WEEK|The number of the week of the year (0-53). Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
 |WEEKOFYEARISO|WEEKISO|The number of the week of the year as defined in the ISO 8601 standard (1-53). The first ISOWEEK of each ISO year begins on the Monday before the first Thursday of the Gregorian calendar year.
 |YEAR|YY|The year

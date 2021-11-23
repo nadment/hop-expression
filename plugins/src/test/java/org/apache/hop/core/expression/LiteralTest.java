@@ -21,7 +21,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.junit.Test;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

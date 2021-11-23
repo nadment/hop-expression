@@ -21,8 +21,4 @@ public enum Kind {
   IDENTIFIER, 
   OPERATOR,
   JSON;
-//
-//  public final boolean is(Collection<Kind> category) {
-//    return category.contains(this);
-//  }
 }
