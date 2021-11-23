@@ -24,6 +24,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 public class LiteralTest extends BaseExpressionTest {
 
@@ -147,10 +152,11 @@ public class LiteralTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Date() throws Exception {
-    Instant instant = Instant.ofEpochMilli(0);
-    assertEquals(instant, Literal.of(instant).eval(null));
-    assertEquals(Literal.of(instant), Literal.of(instant));
+  public void Date() throws Exception {   
+    ZonedDateTime datetime = ZonedDateTime.of(LocalDate.of(2021, 2, 25), LocalTime.of(2, 59, 00), ZoneId.systemDefault());
+    
+    assertEquals(datetime, Literal.of(datetime).eval(null));
+    assertEquals(Literal.of(datetime), Literal.of(datetime));
 
     evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
     evalEquals("Date '21-02-25'", LocalDate.of(21, 2, 25));
@@ -176,9 +182,9 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("Timestamp '2021-01-01 15:28:59'", LocalDateTime.of(2021, 1, 1, 15, 28, 59));
 
     // Time zone offset
-    evalEquals("Timestamp '2021-01-01 15:28:59 +2:00'", LocalDateTime.of(2021, 1, 1, 13, 28, 59));
-    evalEquals("Timestamp '2021-01-01 15:28:59 +02:00'", LocalDateTime.of(2021, 1, 1, 13, 28, 59));
-    evalEquals("Timestamp '2021-01-01 15:28:59 -02:00'", LocalDateTime.of(2021, 1, 1, 17, 28, 59));
+    evalEquals("Timestamp '2021-01-01 15:28:59 +2:00'", OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0,  ZoneOffset.ofHoursMinutes(2, 0)));
+    evalEquals("Timestamp '2021-01-01 15:28:59 +02:00'", OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0,  ZoneOffset.ofHoursMinutes(2, 0)));
+    evalEquals("Timestamp '2021-01-01 15:28:59 -02:00'", OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0,  ZoneOffset.ofHoursMinutes(-2, 0)));
 
     // TIMESTAMP '2004-02-19 8:00:00 US/Pacific');
 

@@ -19,16 +19,15 @@ package org.apache.hop.expression.util;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.ParseException;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 
 public class CompositeDateTimeFormat extends DateTimeFormat {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private final String pattern;
-  private final SimpleDateTimeFormat[] formats;
+  private final ZonedDateTimeFormat[] formats;
 
-  public CompositeDateTimeFormat(String pattern, SimpleDateTimeFormat[] formats) {
+  public CompositeDateTimeFormat(String pattern, ZonedDateTimeFormat[] formats) {
     this.pattern = pattern;
     this.formats = formats;
   }
@@ -39,7 +38,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
   }
 
   @Override
-  public Instant parse(String text) throws ParseException {
+  public ZonedDateTime parse(String text) throws ParseException {
     for (DateTimeFormat format : formats) {
       try {
         return format.parse(text);

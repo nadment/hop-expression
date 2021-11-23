@@ -22,7 +22,7 @@ import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -499,9 +499,9 @@ public class ExpressionParser {
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
     try {
-      DateTimeFormat format = DateTimeFormat.ofPattern("YYYY-MM-DD");
-      Instant instant = format.parse(token.text());
-      return new Literal(instant);
+      DateTimeFormat format = DateTimeFormat.of("YYYY-MM-DD");
+      ZonedDateTime datetime = format.parse(token.text());
+      return new Literal(datetime);
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidDate", token.text()),
           token.start());
@@ -512,9 +512,9 @@ public class ExpressionParser {
   private Literal parseLiteralTime(Token token) throws ParseException {
     try {
       DateTimeFormat format =
-          DateTimeFormat.ofPattern("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
-      Instant instant = format.parse(token.text());
-      return new Literal(instant);
+          DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
+      ZonedDateTime datetime = format.parse(token.text());
+      return new Literal(datetime);
     } catch (Exception e) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTime", token.text()),
           token.start());
@@ -551,9 +551,9 @@ public class ExpressionParser {
           pattern = "YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS";
       }
 
-      DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
-      Instant instant = format.parse(token.text());
-      return new Literal(instant);
+      DateTimeFormat format = DateTimeFormat.of(pattern);
+      ZonedDateTime datetime = format.parse(token.text());
+      return new Literal(datetime);
     } catch (Exception e) {
       throw new ParseException(
           BaseMessages.getString(PKG, "Expression.InvalidTimestamp", token.text()), token.start());

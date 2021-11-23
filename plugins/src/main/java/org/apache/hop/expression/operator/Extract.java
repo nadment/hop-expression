@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class Extract extends Operator {
 
   public Extract() {
-    super("EXTRACT", "EXTRACT", 10, true, "i18n::Operator.Category.Date");
+    super("EXTRACT", null, 10, true, "i18n::Operator.Category.Date");
   }
 
   @ScalarFunction(name = "EXTRACT", minArgs = 2, maxArgs = 2,
@@ -49,10 +49,9 @@ public class Extract extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
+    ZonedDateTime datetime = coerceToDate(value);
     DatePart datePart = DatePart.of(part.toString());
-
-    return datePart.get(dt);
+    return datePart.get(datetime);
   }
 
   @ScalarFunction(name = "DATE_PART", minArgs = 2, maxArgs = 2,

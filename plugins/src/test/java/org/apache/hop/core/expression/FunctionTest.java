@@ -17,10 +17,12 @@ package org.apache.hop.core.expression;
 import org.apache.hop.expression.ExpressionContext;
 import org.junit.Test;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Random;
 
@@ -116,11 +118,10 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void CurrentDate() throws Exception {
-    Instant current_date =
-        (Instant) this.getContext().getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
+    ZonedDateTime today = (ZonedDateTime) this.getContext().getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
     // evalEquals("Today()",now);
     // evalEquals("SysDate()",now);
-    evalEquals("Current_Date()", current_date);
+    evalEquals("today()", today);
     evalFails("Current_Date(123)");
   }
 
@@ -1171,22 +1172,21 @@ public class FunctionTest extends BaseExpressionTest {
     // evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456789','yyyy-mm-dd hh:mi:ss.FF')",
     // "2020-12-03 01:02:03.123456789");
 
-
-    evalEquals("To_Char(Date '2019-07-23','TZR')", "UTC"); // Time Zone Region
-    evalEquals("To_Char(Date '2019-07-23','TZH')", "+00"); // Time Zone Hour
-    evalEquals("To_Char(Date '2019-07-23','TZM')", "00"); // Time Zone Minute
-    evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00"); // Time Zone Hour
-
-    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56"); // Time
-    evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','HH12:MI:SS AM')", "03:34:56 AM"); // Time
-                                                                                           // 12
-                                                                                           // hours
-    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH12:MI:SS AM')", "03:34:56 PM"); // Time
-                                                                                           // 12
-                                                                                           // hours
-    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56"); // Time 24
-                                                                                     // hours
-
+    // Time Zone Region
+    evalEquals("To_Char(Date '2019-07-23','TZR')", "Z");
+    // Time Zone Hour
+    evalEquals("To_Char(Date '2019-07-23','TZH')", "+00");
+    // Time Zone Minute
+    evalEquals("To_Char(Date '2019-07-23','TZM')", "00");
+    // Time Zone Hour:Minute
+    evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");
+    // Time
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56");
+    // Time 12 hours
+    evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','HH12:MI:SS AM')", "03:34:56 AM");
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH12:MI:SS AM')", "03:34:56 PM");
+    // Time 24 hours
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56");
 
     // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
     // evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
@@ -1195,11 +1195,13 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','J')", "2458688");
     evalEquals("To_Char(Date '0001-01-01','J')", "1721426");
 
-    evalEquals("To_Char(Date '2019-07-23',':;.,=-/(FMMONTH)')", ":;.,=-/(JULY)"); // Special char
+    // Special char
+    evalEquals("To_Char(Date '2019-07-23',':;.,=-/(FMMONTH)')", ":;.,=-/(JULY)");
 
-    evalFails("To_Char(Date '2019-07-23','*')"); // Special char
-    evalFails("To_Char(Date '2019-07-23','£')"); // Special char
-    evalFails("To_Char(Date '2019-07-23','{}[]')"); // Special char
+    // Special char
+    evalFails("To_Char(Date '2019-07-23','*')");
+    evalFails("To_Char(Date '2019-07-23','£')");
+    evalFails("To_Char(Date '2019-07-23','{}[]')");
   }
 
   @Test
@@ -1237,12 +1239,9 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
 
     // Time zone offset
-    evalEquals("To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
-        LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
-    evalEquals("To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
-        LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
-    evalEquals("To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
-        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56));
+    evalEquals("To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')", OffsetDateTime.of(2019, 2, 13, 15, 34, 56,0,ZoneOffset.ofHours(8)));
+    evalEquals("To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')", OffsetDateTime.of(2019, 2, 13, 15, 34, 56,0,ZoneOffset.ofHours(8)));
+    evalEquals("To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')", OffsetDateTime.of(2019, 2, 13, 15, 34, 56,0,ZoneOffset.ofHours(-4)));
 
 
     // Trailing space
@@ -1296,7 +1295,6 @@ public class FunctionTest extends BaseExpressionTest {
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
-
     
 
     // Is interpreted as 12 May 2003, 00:00:10.123
@@ -1414,7 +1412,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("Extract(NULL from Date '2021-01-01')");
     evalFails("Extract(BIDON from NULL)");
 
-    // FIXME:  writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
+ // FIXME:  writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
   }
 
   @Test

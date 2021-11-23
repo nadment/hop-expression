@@ -17,8 +17,6 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 /**
@@ -68,7 +66,7 @@ public class Literal implements IExpression {
       return new Literal(number);
     }
 
-    if (value instanceof String || value instanceof Instant) {
+    if (value instanceof String || value instanceof ZonedDateTime) {
       return new Literal(value);
     }
 
@@ -141,16 +139,14 @@ public class Literal implements IExpression {
         }
       }
       writer.append('\'');
-    } else if (value instanceof Instant) {
-      Instant instant = (Instant) value;
-      if (instant.getNano() > 0) {
+    } else if (value instanceof ZonedDateTime) {
+      ZonedDateTime datetime = (ZonedDateTime) value;
+      if (datetime.getNano() > 0) {
         writer.append("TIMESTAMP '");
-        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
-        writer.append(DateTimeFormat.ofPattern("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
+        writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
       } else {
         writer.append("DATE '");
-        ZonedDateTime datetime = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
-        writer.append(DateTimeFormat.ofPattern("YYYY-MM-DD").format(datetime));
+        writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
       }
       writer.append('\'');
     } else {

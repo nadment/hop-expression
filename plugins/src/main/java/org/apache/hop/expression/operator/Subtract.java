@@ -23,7 +23,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 /** Arithmetic subtraction operator '<code>-</code>'. */
@@ -47,7 +47,7 @@ public class Subtract extends Operator {
     if (right == null)
       return null;
 
-    if (left instanceof Instant) {
+    if (left instanceof ZonedDateTime) {
       // If number, subtract fraction of day
       if (right instanceof Number) {
         long seconds = (long) (coerceToNumber(right) * SECONDS_BY_DAY);
@@ -55,7 +55,7 @@ public class Subtract extends Operator {
       }
 
       // If right operand is date, return difference in fraction of day
-      if (right instanceof Instant) {
+      if (right instanceof ZonedDateTime) {
         return coerceToDate(right).until(coerceToDate(left), ChronoUnit.SECONDS) / SECONDS_BY_DAY;
       }
     }

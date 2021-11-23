@@ -22,10 +22,10 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,7 +47,7 @@ import java.util.Locale;
  * <th>
  * <td>Input</td>
  * <td>Output</td>
- * <td>Closest {@link SimpleDateTimeFormat} Equivalent</td></th>
+ * <td>Closest {@link ZonedDateTimeFormat} Equivalent</td></th>
  * <tr>
  * <td>- / , . ; : "text"</td>
  * <td>Reproduced verbatim.</td>
@@ -250,7 +250,7 @@ import java.util.Locale;
  * </tr>
  * </table>
  */
-/* package */ class SimpleDateTimeFormat extends DateTimeFormat {
+/* package */ class ZonedDateTimeFormat extends DateTimeFormat {
 
   // TODO: Specifies the “century start” year for 2-digit years. This parameter prevents
   // ambiguous dates when importing or converting data with the YY date format
@@ -281,11 +281,11 @@ import java.util.Locale;
 
   private final String pattern;
 
-  public SimpleDateTimeFormat(String pattern) {
+  public ZonedDateTimeFormat(String pattern) {
     this.pattern = pattern;
   }
 
-  public Instant parse(String text) throws ParseException {
+  public ZonedDateTime parse(String text) throws ParseException {
 
     ParsePosition position = new ParsePosition(0);
 
@@ -451,7 +451,7 @@ import java.util.Locale;
           continue;
         }
 
-       // Fractional seconds FF[0-9]
+        // Fractional seconds FF[0-9]
         case 'F':
           if (startsWithIgnoreCase(pattern, index, "FF")) {
             index += 2;
@@ -465,7 +465,7 @@ import java.util.Locale;
             }
             nanos = parseInt(text, position, scale);
             if (scale < 9) {
-              nanos = (int) (nanos * FastMath.pow(10d,  9d-scale));
+              nanos = (int) (nanos * FastMath.pow(10d, 9d - scale));
             }
             continue;
           }
@@ -671,13 +671,15 @@ import java.util.Locale;
       }
     }
     LocalTime time = LocalTime.of(hour, minute, second, nanos);
-    LocalDateTime datetime = LocalDateTime.of(date, time);
+    LocalDateTime localDatetime = LocalDateTime.of(date, time);
+    ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
+    OffsetDateTime datetime = OffsetDateTime.of(localDatetime, zoneOffset);
 
-    if (timeZoneHour != 00 || timeZoneMinute != 00) {
-      return datetime.toInstant(ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute));
-    }
+    // TODO: parse zonedID
+    //ZoneOffset.UTC;
+    
+    return datetime.toZonedDateTime();
 
-    return datetime.toInstant(ZoneOffset.UTC);
   }
 
   /**
@@ -1306,7 +1308,7 @@ import java.util.Locale;
     if (getClass() != obj.getClass()) {
       return false;
     }
-    SimpleDateTimeFormat other = (SimpleDateTimeFormat) obj;
+    ZonedDateTimeFormat other = (ZonedDateTimeFormat) obj;
     return pattern.equals(other.pattern);
   }
 

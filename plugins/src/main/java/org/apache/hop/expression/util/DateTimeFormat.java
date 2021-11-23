@@ -15,7 +15,6 @@
 package org.apache.hop.expression.util;
 
 import java.text.ParseException;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <th>
  * <td>Input</td>
  * <td>Output</td>
- * <td>Closest {@link SimpleDateTimeFormat} Equivalent</td></th>
+ * <td>Closest {@link ZonedDateTimeFormat} Equivalent</td></th>
  * <tr>
  * <td>- / , . ; : "text"</td>
  * <td>Reproduced verbatim.</td>
@@ -239,7 +238,7 @@ public abstract class DateTimeFormat extends BaseFormat {
 
   private static final Map<String, DateTimeFormat> cache = new ConcurrentHashMap<>();
 
-  public static DateTimeFormat ofPattern(String pattern) {
+  public static DateTimeFormat of(String pattern) {
     if (pattern == null) {
       pattern = "DD-MON-YY HH.MI.SS.FF PM";
     }
@@ -251,16 +250,16 @@ public abstract class DateTimeFormat extends BaseFormat {
     if (pattern.indexOf('|') >= 0) {
       List<DateTimeFormat> formats = new ArrayList<>();
       for (String p : pattern.split("\\|")) {
-        DateTimeFormat format = new SimpleDateTimeFormat(p);
+        DateTimeFormat format = new ZonedDateTimeFormat(p);
         formats.add(format);
       }
-      return new CompositeDateTimeFormat(pattern, formats.toArray(new SimpleDateTimeFormat[0]));
+      return new CompositeDateTimeFormat(pattern, formats.toArray(new ZonedDateTimeFormat[0]));
     }
 
-    return new SimpleDateTimeFormat(pattern);
+    return new ZonedDateTimeFormat(pattern);
   }
 
-  public abstract Instant parse(String text) throws ParseException;
+  public abstract ZonedDateTime parse(String text) throws ParseException;
 
   /**
    * <p>

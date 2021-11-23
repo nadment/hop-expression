@@ -42,11 +42,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -91,7 +90,7 @@ public class Function extends Operator {
     this.minArgs = min;
     this.maxArgs = max;
   }
-  
+
   @Override
   public boolean equals(Object o) {
     if (o == null) {
@@ -104,14 +103,14 @@ public class Function extends Operator {
       return false;
     }
     Function fx = (Function) o;
-    return name.equals(fx.name) && ( alias!=null && alias.equals(fx.alias));
+    return name.equals(fx.name) && (alias != null && alias.equals(fx.alias));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name,alias);
+    return Objects.hash(name, alias);
   }
-  
+
   /**
    * Check if the number of arguments is correct.
    *
@@ -132,12 +131,12 @@ public class Function extends Operator {
   }
 
   @Override
-  public final Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     try {
       return method.invoke(instance, context, operands);
     } catch (Exception e) {
-      if ( e.getCause() instanceof ExpressionException ) {
+      if (e.getCause() instanceof ExpressionException) {
         throw (ExpressionException) e.getCause();
       }
       throw new ExpressionException(
@@ -176,8 +175,8 @@ public class Function extends Operator {
       throws ExpressionException {
     return context.getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
   }
-  
-  
+
+
   // -------------------------------------------------------------
   // CRYPTOGRAPHIC
   // -------------------------------------------------------------
@@ -716,9 +715,7 @@ public class Function extends Operator {
         if (index < replaceSize) {
           buffer.append(replaceChars.charAt(index));
         }
-       
-      }
-      else {
+      } else {
         buffer.append(ch);
       }
     }
@@ -2126,8 +2123,8 @@ public class Function extends Operator {
       case BIGNUMBER:
         return NumberFormat.ofPattern(pattern).format(coerceToBigNumber(value));
       case DATE:
-        ZonedDateTime datetime = coerceToDate(value).atZone(context.getZone());
-        return DateTimeFormat.ofPattern(pattern).format(datetime);
+        ZonedDateTime datetime = coerceToDate(value);
+        return DateTimeFormat.of(pattern).format(datetime);
       case STRING:
         return value;
 
@@ -2222,7 +2219,7 @@ public class Function extends Operator {
         } else {
           pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
-        return DateTimeFormat.ofPattern(pattern).parse(value.toString());
+        return DateTimeFormat.of(pattern).parse(value.toString());
       default:
         throw createUnexpectedDataTypeException("TO_DATE", Type.fromJava(value));
     }
@@ -2254,7 +2251,7 @@ public class Function extends Operator {
           pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
         try {
-          DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
+          DateTimeFormat format = DateTimeFormat.of(pattern);
           return format.parse(coerceToString(value));
         } catch (ParseException | RuntimeException e) {
           // Ignore
@@ -2298,7 +2295,7 @@ public class Function extends Operator {
         return number.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
 
       case DATE:
-        Instant instant = coerceToDate(value);
+        ZonedDateTime datetime = coerceToDate(value);
         DatePart part = DatePart.DAY;
 
         if (operands.length == 2) {
@@ -2311,45 +2308,37 @@ public class Function extends Operator {
         switch (part) {
           // First day of the year
           case YEAR: {
-            ZonedDateTime datetime =
-                ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
-            return datetime.withDayOfYear(1).toInstant();
+            return datetime.withDayOfYear(1);
           }
           // First day of the month
           case MONTH: {
-            ZonedDateTime datetime =
-                ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
-            return datetime.withDayOfMonth(1).toInstant();
+            return datetime.withDayOfMonth(1);
           }
           // First day of the quarter
           case QUARTER: {
-            ZonedDateTime datetime =
-                ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
             int month = (datetime.getMonthValue() / 3) * 3 + 1;
-            return datetime.withMonth(month).withDayOfMonth(1).toInstant();
+            return datetime.withMonth(month).withDayOfMonth(1);
           }
           // First day of the week
           case WEEKOFYEAR: {
-            ZonedDateTime datetime =
-                ZonedDateTime.ofInstant(instant.truncatedTo(ChronoUnit.DAYS), context.getZone());
             DayOfWeek dow = DayOfWeek.of(((ExpressionContext) context).getFirstDayOfWeek());
-            return datetime.with(TemporalAdjusters.previousOrSame(dow)).toInstant();
+            return datetime.with(TemporalAdjusters.previousOrSame(dow));
           }
 
           case DAY:
-            return instant.truncatedTo(ChronoUnit.DAYS);
+            return datetime.truncatedTo(ChronoUnit.DAYS);
           case HOUR:
-            return instant.truncatedTo(ChronoUnit.HOURS);
+            return datetime.truncatedTo(ChronoUnit.HOURS);
           case MINUTE:
-            return instant.truncatedTo(ChronoUnit.MINUTES);
+            return datetime.truncatedTo(ChronoUnit.MINUTES);
           case SECOND:
-            return instant.truncatedTo(ChronoUnit.SECONDS);
+            return datetime.truncatedTo(ChronoUnit.SECONDS);
           case MILLISECOND:
-            return instant.truncatedTo(ChronoUnit.MILLIS);
+            return datetime.truncatedTo(ChronoUnit.MILLIS);
           case MICROSECOND:
-            return instant.truncatedTo(ChronoUnit.MICROS);
+            return datetime.truncatedTo(ChronoUnit.MICROS);
           case NANOSECOND:
-            return instant.truncatedTo(ChronoUnit.NANOS);
+            return datetime.truncatedTo(ChronoUnit.NANOS);
           default:
             throw createUnexpectedDatePartException("TRUNCATE", part);
         }
@@ -2402,13 +2391,16 @@ public class Function extends Operator {
       day = 1;
     }
 
-    LocalDate date = LocalDate.of(year, month, day);
+    
+    LocalDate localDate = LocalDate.of(year, month, day);
     if (monthsToAdd != 0)
-      date = date.plusMonths(monthsToAdd);
+      localDate = localDate.plusMonths(monthsToAdd);
     if (daysToAdd != 0)
-      date = date.plusDays(daysToAdd);
+      localDate = localDate.plusDays(daysToAdd);
 
-    return date.atStartOfDay(ZoneOffset.UTC).toInstant();
+    OffsetDateTime datetime = OffsetDateTime.of(localDate, LocalTime.of(0, 0, 0), ZoneOffset.ofHours(0));
+    
+    return datetime.toZonedDateTime();
   }
 
   /**
@@ -2421,8 +2413,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
-    return Long.valueOf(dt.getDayOfMonth());
+    return Long.valueOf(coerceToDate(value).getDayOfMonth());
   }
 
   /**
@@ -2435,8 +2426,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    DayOfWeek weekday =
-        ZonedDateTime.ofInstant(coerceToDate(value), context.getZone()).getDayOfWeek();
+    DayOfWeek weekday = coerceToDate(value).getDayOfWeek();
     return weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
 
@@ -2450,7 +2440,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    DayOfWeek dow = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone()).getDayOfWeek();
+    DayOfWeek dow = coerceToDate(value).getDayOfWeek();
 
     int result = dow.getValue() + 1;
     if (result == 8)
@@ -2469,11 +2459,8 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    DayOfWeek dow = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone()).getDayOfWeek();
+    DayOfWeek dow = coerceToDate(value).getDayOfWeek();
     return Long.valueOf(dow.getValue());
-
-    // ZonedDateTime dt = ZonedDateTime.ofInstant(value.toDate(), context.getZone());
-    // return Object.of(DatePart.DAYOFWEEKISO.get(dt));
   }
 
   /** Day of the year (number from 1-366). */
@@ -2484,8 +2471,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
-    return Long.valueOf(dt.getDayOfYear());
+    return Long.valueOf(coerceToDate(value).getDayOfYear());
   }
 
   /** Week of the year (number from 1-54). */
@@ -2496,7 +2482,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
+    ZonedDateTime dt = coerceToDate(value);
     return Long.valueOf(dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
   }
 
@@ -2508,7 +2494,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
+    ZonedDateTime dt = coerceToDate(value);
     return Long.valueOf(dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
   }
 
@@ -2520,7 +2506,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
+    ZonedDateTime dt = coerceToDate(value);
     return Long.valueOf(dt.getMonthValue());
   }
 
@@ -2532,7 +2518,8 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    Month month = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone()).getMonth();
+    ZonedDateTime dt = coerceToDate(value);
+    Month month = dt.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
 
@@ -2544,7 +2531,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
+    ZonedDateTime dt = coerceToDate(value);
     return Long.valueOf(dt.get(IsoFields.QUARTER_OF_YEAR));
   }
 
@@ -2556,8 +2543,8 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone());
-    return Long.valueOf(dt.getYear());
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.getYear());
   }
 
   /** The hour (0-23). @See {@link #MINUTE}, {@link #SECOND} */
@@ -2567,9 +2554,9 @@ public class Function extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    
-    LocalTime time = LocalTime.from(coerceToDate(value).atZone(context.getZone()));
-    return Long.valueOf(time.getHour());
+
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.getHour());
   }
 
   /** The minute (0-59). @See {@link #HOUR}, {@link #SECOND} */
@@ -2580,8 +2567,8 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    LocalTime time = LocalTime.from(coerceToDate(value).atZone(context.getZone()));
-    return Long.valueOf(time.getMinute());
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.getMinute());
   }
 
   /** The second (0-59). @See {@link #HOUR}, {@link #MINUTE} */
@@ -2591,8 +2578,9 @@ public class Function extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    LocalTime time = LocalTime.from(coerceToDate(value).atZone(context.getZone()));
-    return Long.valueOf(time.getSecond());
+
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.getSecond());
   }
 
   /** Adds or subtracts a specified number of days to a date or timestamp */
@@ -2600,16 +2588,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_days(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Instant value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object days = operands[1].eval(context);
     if (days == null)
       return null;
 
-    ZonedDateTime dt =
-        ZonedDateTime.ofInstant(value, context.getZone()).plusDays(coerceToInteger(days));
-    return dt.toInstant();
+    return value.plusDays(coerceToInteger(days));
   }
 
   /** Adds or subtracts a specified number of weeks to a date or timestamp */
@@ -2617,16 +2603,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_weeks(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object weeks = operands[1].eval(context);
     if (weeks == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .plusWeeks(coerceToInteger(weeks));
-    return dt.toInstant();
+    return value.plusWeeks(coerceToInteger(weeks));
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
@@ -2634,16 +2618,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_months(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object months = operands[1].eval(context);
     if (months == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .plusMonths(coerceToInteger(months));
-    return dt.toInstant();
+    return value.plusMonths(coerceToInteger(months));
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
@@ -2651,16 +2633,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_years(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object years = operands[1].eval(context);
     if (years == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .plusYears(coerceToInteger(years));
-    return dt.toInstant();
+    return value.plusYears(coerceToInteger(years));
   }
 
   /** Adds or subtracts a specified number of hours to a date or timestamp */
@@ -2668,16 +2648,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_hours(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object hours = operands[1].eval(context);
     if (hours == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .plusHours(coerceToInteger(hours));
-    return dt.toInstant();
+    return value.plusHours(coerceToInteger(hours));
   }
 
   /** Adds or subtracts a specified number of minutes to a date or timestamp */
@@ -2685,16 +2663,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_minutes(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object minutes = operands[1].eval(context);
     if (minutes == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .plusMinutes(coerceToInteger(minutes));
-    return dt.toInstant();
+    return value.plusMinutes(coerceToInteger(minutes));
   }
 
   /**
@@ -2704,16 +2680,14 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object add_seconds(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
+    ZonedDateTime value = coerceToDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object seconds = operands[1].eval(context);
     if (seconds == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .plusSeconds(coerceToInteger(seconds));
-    return dt.toInstant();
+    return value.plusSeconds(coerceToInteger(seconds));
   }
 
   /**
@@ -2730,9 +2704,9 @@ public class Function extends Operator {
     if (v1 == null)
       return null;
 
-    LocalDate startDate = coerceToDate(v0).atZone(context.getZone()).toLocalDate();
-    LocalDate endDate = coerceToDate(v1).atZone(context.getZone()).toLocalDate();
-    return startDate.until(endDate, ChronoUnit.DAYS);
+    ZonedDateTime startDateTime = coerceToDate(v0);
+    ZonedDateTime endDateTime = coerceToDate(v1);
+    return startDateTime.until(endDateTime, ChronoUnit.DAYS);
   }
 
   /**
@@ -2749,9 +2723,9 @@ public class Function extends Operator {
     if (v1 == null)
       return null;
 
-    LocalDate startDate = coerceToDate(v0).atZone(context.getZone()).toLocalDate();
-    LocalDate endDate = coerceToDate(v1).atZone(context.getZone()).toLocalDate();
-    long days = startDate.until(endDate, ChronoUnit.DAYS);
+    ZonedDateTime startDateTime = coerceToDate(v0);
+    ZonedDateTime endDateTime = coerceToDate(v1);
+    long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
     return days / 31d;
   }
 
@@ -2767,9 +2741,9 @@ public class Function extends Operator {
     if (v1 == null)
       return null;
 
-    LocalDate startDate = coerceToDate(v0).atZone(context.getZone()).toLocalDate();
-    LocalDate endDate = coerceToDate(v1).atZone(context.getZone()).toLocalDate();
-    return startDate.until(endDate, ChronoUnit.YEARS);
+    ZonedDateTime startDateTime = coerceToDate(v0);
+    ZonedDateTime endDateTime = coerceToDate(v1);
+    return startDateTime.until(endDateTime, ChronoUnit.YEARS);
   }
 
   /** Return the number of hours between two timestamps */
@@ -2777,15 +2751,15 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object hours_between(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value1 = operands[0].eval(context);
-    if (value1 == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
-    Object value2 = operands[1].eval(context);
-    if (value2 == null)
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
       return null;
 
-    LocalDateTime startDateTime = coerceToDate(value1).atZone(context.getZone()).toLocalDateTime();
-    LocalDateTime endDateTime = coerceToDate(value2).atZone(context.getZone()).toLocalDateTime();
+    ZonedDateTime startDateTime = coerceToDate(v0);
+    ZonedDateTime endDateTime = coerceToDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.HOURS);
   }
 
@@ -2794,15 +2768,15 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object minutes_between(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
-    Object value1 = operands[0].eval(context);
-    if (value1 == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
-    Object value2 = operands[1].eval(context);
-    if (value2 == null)
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
       return null;
 
-    LocalDateTime startDateTime = coerceToDate(value1).atZone(context.getZone()).toLocalDateTime();
-    LocalDateTime endDateTime = coerceToDate(value2).atZone(context.getZone()).toLocalDateTime();
+    ZonedDateTime startDateTime = coerceToDate(v0);
+    ZonedDateTime endDateTime = coerceToDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.MINUTES);
   }
 
@@ -2811,15 +2785,15 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.Date")
   public static Object seconds_between(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
-    Object value1 = operands[0].eval(context);
-    if (value1 == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
-    Object value2 = operands[1].eval(context);
-    if (value2 == null)
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
       return null;
 
-    LocalDateTime startDateTime = coerceToDate(value1).atZone(context.getZone()).toLocalDateTime();
-    LocalDateTime endDateTime = coerceToDate(value2).atZone(context.getZone()).toLocalDateTime();
+    ZonedDateTime startDateTime = coerceToDate(v0);
+    ZonedDateTime endDateTime = coerceToDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.SECONDS);
   }
 
@@ -2831,9 +2805,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .with(TemporalAdjusters.firstDayOfMonth());
-    return dt.toInstant();
+    return coerceToDate(value).with(TemporalAdjusters.firstDayOfMonth());
   }
 
   /** Returns the last day of the month. */
@@ -2852,9 +2824,7 @@ public class Function extends Operator {
     //
     // }
 
-    ZonedDateTime dt =
-        ZonedDateTime.ofInstant(coerceToDate(value), context.getZone()).with(adjuster);
-    return dt.toInstant();
+    return coerceToDate(value).with(adjuster);
   }
 
   /**
@@ -2867,16 +2837,13 @@ public class Function extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
     Object dow = operands[1].eval(context);
     if (dow == null)
       return null;
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .with(TemporalAdjusters.next(dayofweek));
 
-    return dt.toInstant();
+    return coerceToDate(value).with(TemporalAdjusters.next(dayofweek));
   }
 
   /**
@@ -2895,10 +2862,8 @@ public class Function extends Operator {
       return null;
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
-    ZonedDateTime dt = ZonedDateTime.ofInstant(coerceToDate(value), context.getZone())
-        .with(TemporalAdjusters.previous(dayofweek));
 
-    return dt.toInstant();
+    return coerceToDate(value).with(TemporalAdjusters.previous(dayofweek));
   }
 }
 

@@ -17,7 +17,7 @@
 package org.apache.hop.expression;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 /**
  * Enumeration of the data type which can be used to construct a expression.
@@ -49,7 +49,7 @@ public enum Type {
   BIGNUMBER(BigDecimal.class),
 
   /** Date-time value with nanosecond precision */
-  DATE(Instant.class),
+  DATE(ZonedDateTime.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(byte[].class);
@@ -86,7 +86,7 @@ public enum Type {
       return NUMBER;
     if (object instanceof Long)
       return INTEGER;
-    if (object instanceof Instant)
+    if (object instanceof ZonedDateTime)
       return DATE;
     if (object instanceof byte[])
       return BINARY;

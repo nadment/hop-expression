@@ -29,7 +29,11 @@ import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Date;
 
 public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, ExpressionTransformData> {
   private static final Class<?> PKG = ExpressionTransformMeta.class;
@@ -199,9 +203,11 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
       case IValueMeta.TYPE_INTEGER:
         return Operator.coerceToInteger(value);
       case IValueMeta.TYPE_DATE:
-       return java.util.Date.from(Operator.coerceToDate(value));
+        ZonedDateTime date = Operator.coerceToDate(value);
+        return Date.from(date.toInstant());
       case IValueMeta.TYPE_TIMESTAMP:
-        return java.sql.Timestamp.from(Operator.coerceToDate(value));
+        ZonedDateTime timestamp = Operator.coerceToDate(value);
+        return java.sql.Timestamp.from(timestamp.toInstant());
       case IValueMeta.TYPE_BIGNUMBER:
         return Operator.coerceToBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:

@@ -69,7 +69,7 @@ public class LiteralNumberRule implements IRule {
       if (c == 'E') {
         c = scanner.read();
         if (c == '+' || c == '-') {
-          c = scanner.read();
+           scanner.read();
         }
         else scanner.unread();
 

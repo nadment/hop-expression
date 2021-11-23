@@ -27,8 +27,6 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -236,7 +234,7 @@ public abstract class Operator implements Comparable<Operator> {
     if (left instanceof byte[] || right instanceof byte[]) {
       return compare(coerceToBinary(left), coerceToBinary(right));
     }
-    if (left instanceof Instant || right instanceof Instant) {
+    if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
       return coerceToDate(left).compareTo(coerceToDate(right));
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
@@ -294,9 +292,9 @@ public abstract class Operator implements Comparable<Operator> {
       case BIGNUMBER:
         return coerceToBigNumber(value);
       case STRING:
-        if (value instanceof Instant) {
-          ZonedDateTime dt = ZonedDateTime.ofInstant((Instant) value, ZoneId.of("UTC"));
-          DateTimeFormat format = DateTimeFormat.ofPattern("YYYY-MM-DD");
+        if (value instanceof ZonedDateTime) {          
+          ZonedDateTime dt = coerceToDate(value);
+          DateTimeFormat format = DateTimeFormat.of("YYYY-MM-DD");
           return format.format(dt);
         }
         return coerceToString(value);
@@ -329,16 +327,16 @@ public abstract class Operator implements Comparable<Operator> {
       case STRING:
         if (value instanceof Number) {
           return NumberFormat.ofPattern(pattern).format(coerceToBigNumber(value));
-        } else if (value instanceof Instant) {
-          ZonedDateTime dt = ZonedDateTime.ofInstant((Instant) value, ZoneId.of("UTC"));
-          DateTimeFormat formatter = DateTimeFormat.ofPattern(pattern);
+        } else if (value instanceof ZonedDateTime) {
+          ZonedDateTime dt = coerceToDate(value);
+          DateTimeFormat formatter = DateTimeFormat.of(pattern);
           return formatter.format(dt);
         }
         return coerceToString(value);
       case DATE:
         if (sourceType == Type.STRING) {
           try {
-            DateTimeFormat format = DateTimeFormat.ofPattern(pattern);
+            DateTimeFormat format = DateTimeFormat.of(pattern);
             return format.parse((String) value);
           } catch (RuntimeException | ParseException e) {
             throw new ExpressionException(
@@ -575,12 +573,12 @@ public abstract class Operator implements Comparable<Operator> {
     throw errorUnsupportedConversion(value, Type.BIGNUMBER);
   }
 
-  public static Instant coerceToDate(Object value) {
+  public static ZonedDateTime coerceToDate(Object value) {
     if (value == null) {
       return null;
     }
-    if (value instanceof Instant) {
-      return (Instant) value;
+    if (value instanceof ZonedDateTime) {
+      return (ZonedDateTime) value;
     }
 
     throw errorUnsupportedConversion(value, Type.DATE);

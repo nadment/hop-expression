@@ -87,6 +87,11 @@ public class OperatorRegistry {
   public static final Operator BOOLXOR = new BoolXor();
 
   // -------------------------------------------------------------
+  // CONDITIONAL OPERATORS
+  // -------------------------------------------------------------
+  public static final Operator CASE = new Case();
+  
+  // -------------------------------------------------------------
   // COMPARISON OPERATORS
   // -------------------------------------------------------------
   public static final Operator IS = new Is();
@@ -117,7 +122,6 @@ public class OperatorRegistry {
   // -------------------------------------------------------------
   public static final Operator CAST = new Cast();
   public static final Operator TRY_CAST = new TryCast();
-  public static final Operator CASE = new Case();
   public static final Operator CONCAT = new Concat();
   public static final Operator EXTRACT = new Extract();
 
@@ -128,7 +132,7 @@ public class OperatorRegistry {
         IN, IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR));
    
     functions = new HashMap<>(256);
-    
+
     init();
   }
 
@@ -175,6 +179,9 @@ public class OperatorRegistry {
    */
   private static void init() {
     try {
+      
+     // functions.put(CAST.getName(), CAST);
+      
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
       for (Method method : methods) {
         try {

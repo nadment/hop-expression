@@ -39,11 +39,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class BaseExpressionTest {
@@ -118,13 +118,11 @@ public class BaseExpressionTest {
   }
 
   protected void evalEquals(String s, String expected) throws Exception {
-    Object value = eval(s);
-    assertEquals(expected, (String) value);
+    assertEquals(expected, (String) eval(s));
   }
 
-  protected void evalEquals(String s, Long expected) throws Exception {
-    Object value = eval(s);
-    assertEquals(expected, (Long) value);
+  protected void evalEquals(String s, Long expected) throws Exception {    
+    assertEquals(expected, (Long)  eval(s));
   }
 
   protected void evalEquals(String s, double expected) throws Exception {
@@ -133,26 +131,26 @@ public class BaseExpressionTest {
   }
 
   protected void evalEquals(String s, BigDecimal expected) throws Exception {
-    Object value = eval(s);
-    assertEquals(expected, (BigDecimal) value);
-  }
-
-  protected void evalEquals(String s, Instant expected) throws Exception {
-    assertEquals(expected, eval(s));
-  }
-
-  protected void evalEquals(String s, LocalTime expected) throws Exception {
-    assertEquals(Instant.from(expected), eval(s));
+    assertEquals(expected, (BigDecimal) eval(s));
   }
 
   protected void evalEquals(String s, LocalDate expected) throws Exception {
-    assertEquals(expected.atStartOfDay(ZoneId.of("UTC")).toInstant(), eval(s));
+    assertEquals(expected.atStartOfDay().atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(),eval(s));
   }
 
-  protected void evalEquals(String s, LocalDateTime expected) throws Exception {
-    assertEquals(expected.atZone(ZoneId.of("UTC")).toInstant(), eval(s));
+  protected void evalEquals(String s, LocalDateTime expected) throws Exception {    
+    
+    assertEquals(expected.atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(), eval(s));
   }
-
+  
+  protected void evalEquals(String s, OffsetDateTime expected) throws Exception {
+    assertEquals(expected.toZonedDateTime(), eval(s));
+  }
+  
+  protected void evalEquals(String s, ZonedDateTime expected) throws Exception {
+    assertEquals(expected, eval(s));
+  }
+  
   protected void evalFails(final String s) {
     // Assert.assertThrows(ExpressionException.class, () -> {
     // eval(s);
@@ -185,7 +183,7 @@ public class BaseExpressionTest {
 
   @Test
   public void parser() throws Exception {
-
+    evalEquals("To_Char(Date '2019-07-23','AD')", "AD");
     // BigDecimal v0 = BigDecimal.valueOf(0);
     // BigDecimal v1 = BigDecimal.valueOf(0.1);
     // BigDecimal v2 = BigDecimal.valueOf(123.11);

@@ -588,7 +588,7 @@ public class OperatorTest extends BaseExpressionTest {
     // Bad data type
     evalFails("Cast(123 as Nill)");
 
-    // FIXME:  writeEquals("CAST(NULL AS BINARY)", "CAST(NULL AS BINARY)");
+    // writeEquals("CAST(NULL AS BINARY)", "CAST(NULL AS BINARY)");
     // FIXME: writeEquals("CAST('1234' AS NUMBER)", "CAST('1234' AS NUMBER)");
     // FIXME:  writeEquals("CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
     // FIXME: writeEquals("'1234'::NUMBER", "CAST('1234' AS NUMBER)");

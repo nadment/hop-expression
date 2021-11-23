@@ -23,7 +23,7 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 /**
  * Arithmetic addition operator '<code>+</code>'.
@@ -47,7 +47,7 @@ public class Add extends Operator {
     Object right = operands[1].eval(context);
     if (right == null)
       return null;
-    if (left instanceof Instant) {
+    if (left instanceof ZonedDateTime) {
       // Computes fraction of day
       long seconds = (long) (coerceToNumber(right) * SECONDS_BY_DAY);
       return coerceToDate(left).plusSeconds(seconds);
