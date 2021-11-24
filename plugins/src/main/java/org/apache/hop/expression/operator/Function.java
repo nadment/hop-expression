@@ -165,7 +165,7 @@ public class Function extends Operator {
   // The NOW function return the exact date and time
   public static Object now(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return context.getAttribute(ExpressionContext.ATTRIBUTE_NOW);
+    return context.getAttribute(ExpressionContext.CACHED_NOW);
   }
 
   @ScalarFunction(name = "TODAY", alias = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
@@ -173,7 +173,7 @@ public class Function extends Operator {
   // The TODAY function return the date value only
   public static Object today(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return context.getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
+    return context.getAttribute(ExpressionContext.CACHED_TODAY);
   }
 
 
@@ -375,7 +375,7 @@ public class Function extends Operator {
   public static Object random(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
-    Random random = (Random) context.getAttribute(ExpressionContext.ATTRIBUTE_RANDOM);
+    Random random = (Random) context.getAttribute(ExpressionContext.CACHED_RANDOM);
 
     if (operands.length == 1) {
       Object value = operands[0].eval(context);

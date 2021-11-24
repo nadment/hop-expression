@@ -34,7 +34,6 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import java.io.StringWriter;
@@ -45,19 +44,15 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.function.Consumer;
+import javax.script.ScriptContext;
 
 public class BaseExpressionTest {
+    
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
-  private ExpressionContext context;
-
-  public ExpressionContext getContext() {
-    return context;
-  }
-
-  @Before
-  public void setupOnce() throws Exception {
+  protected ExpressionContext createExpressionContext() throws Exception {
 
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
@@ -92,110 +87,125 @@ public class BaseExpressionTest {
     row[11] = "UNDERSCORE";
     row[12] = "lower";
 
-    context = new ExpressionContext(variables, rowMeta);
+    ExpressionContext context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
+   
+    return context;
+  }
+  protected Object eval(String source)  throws Exception {
+    return eval(source, createExpressionContext(), null);
   }
 
-  protected Object eval(String s) throws Exception {
+  protected Object eval(String source, ExpressionContext context)  throws Exception {
+    return eval(source, context, null);
+  }
+  
+  protected Object eval(String source, ExpressionContext context, Consumer<ExpressionContext> consumer) throws Exception {
 
-    IExpression expression = ExpressionParser.parse(s);
+    IExpression expression = ExpressionParser.parse(source);
     Optimizer optimizer = new Optimizer();
+
+    // Create default context
+    if ( context==null) context = createExpressionContext();
+    
+    // Optimize in context
     expression = optimizer.optimize(context, expression);
 
+    // Apply context customization
+    if ( consumer!=null) consumer.accept(context);
+    
     return expression.eval(context);
   }
 
-  protected void evalNull(String s) throws Exception {
-    assertNull(eval(s));
+  protected void evalNull(String source) throws Exception {
+    assertNull(eval(source));
   }
 
-  protected void evalTrue(String s) throws Exception {
-    assertEquals(Boolean.TRUE, eval(s));
+  protected void evalTrue(String source) throws Exception {
+    assertEquals(Boolean.TRUE, eval(source));
   }
 
-  protected void evalFalse(String s) throws Exception {
-    assertEquals(Boolean.FALSE, eval(s));
+  protected void evalFalse(String source) throws Exception {
+    assertEquals(Boolean.FALSE, eval(source));
   }
 
-  protected void evalEquals(String s, String expected) throws Exception {
-    assertEquals(expected, (String) eval(s));
+  protected void evalEquals(String source, String expected) throws Exception {
+    assertEquals(expected, (String) eval(source));
   }
 
-  protected void evalEquals(String s, Long expected) throws Exception {    
-    assertEquals(expected, (Long)  eval(s));
+  protected void evalEquals(String source, String expected, ExpressionContext context) throws Exception {
+    assertEquals(expected, (String) eval(source, context, null));
+  }
+  
+  protected void evalEquals(String source, String expected, Consumer<ExpressionContext> consumer) throws Exception {
+    assertEquals(expected, (String) eval(source, null, consumer));
+  }
+  
+  protected void evalEquals(String source, Long expected) throws Exception {    
+    assertEquals(expected, (Long)  eval(source));
   }
 
-  protected void evalEquals(String s, double expected) throws Exception {
-    Object value = eval(s);
+  protected void evalEquals(String source, double expected) throws Exception {
+    Object value = eval(source);
     assertEquals(expected, Operator.coerceToNumber(value), 0.000001);
   }
 
-  protected void evalEquals(String s, BigDecimal expected) throws Exception {
-    assertEquals(expected, (BigDecimal) eval(s));
+  protected void evalEquals(String source, BigDecimal expected) throws Exception {
+    assertEquals(expected, (BigDecimal) eval(source));
   }
 
-  protected void evalEquals(String s, LocalDate expected) throws Exception {
-    assertEquals(expected.atStartOfDay().atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(),eval(s));
+  protected void evalEquals(String source, LocalDate expected) throws Exception {
+    assertEquals(expected.atStartOfDay().atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(),eval(source));
   }
 
-  protected void evalEquals(String s, LocalDateTime expected) throws Exception {    
-    
-    assertEquals(expected.atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(), eval(s));
+  protected void evalEquals(String source, LocalDateTime expected) throws Exception {    
+    assertEquals(expected.atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(), eval(source));
   }
   
-  protected void evalEquals(String s, OffsetDateTime expected) throws Exception {
-    assertEquals(expected.toZonedDateTime(), eval(s));
+  protected void evalEquals(String source, OffsetDateTime expected) throws Exception {
+    assertEquals(expected.toZonedDateTime(), eval(source));
   }
   
-  protected void evalEquals(String s, ZonedDateTime expected) throws Exception {
-    assertEquals(expected, eval(s));
+  protected void evalEquals(String source, ZonedDateTime expected) throws Exception {
+    assertEquals(expected, eval(source));
   }
-  
-  protected void evalFails(final String s) {
-    // Assert.assertThrows(ExpressionException.class, () -> {
-    // eval(s);
-    // });
+  protected void evalEquals(String source, ZonedDateTime expected, ExpressionContext context) throws Exception {
+    assertEquals(expected, eval(source, context, null));
+  }
 
+  protected void evalEquals(String source, ZonedDateTime expected, Consumer<ExpressionContext> consumer) throws Exception {
+    assertEquals(expected, eval(source, null, consumer));
+  }
+
+  
+  protected void evalFails(final String source) {
     try {
-      eval(s);
-      Assert.fail(s + " Syntax or result should be invalid\n");
+      eval(source);
+      Assert.fail(source + " Syntax or result should be invalid\n");
     } catch (ExpressionException ex) {
       // Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
       // System.out.println(s+" > "+ex.toString());
     } catch (Exception ex) {
-      Assert.fail(s + " Uncatched exception " + ex.getClass());
+      Assert.fail(source + " Uncatched exception " + ex.getClass());
     }
   }
 
-  protected void writeEquals(String original) throws Exception {
-    writeEquals(original, original);
+  protected void writeEquals(String source) throws Exception {
+    writeEquals(source, source);
   }
 
-  protected void writeEquals(String original, String result) throws Exception {
-
-    IExpression expression = ExpressionParser.parse(original);
+  protected void writeEquals(String source, String result) throws Exception {
+    IExpression expression = ExpressionParser.parse(source);
 
     StringWriter writer = new StringWriter();
     expression.write(writer);
     assertEquals(result, writer.toString());
   }
 
-
   @Test
   public void parser() throws Exception {
-   // evalEquals("To_Char(Date '2019-07-23','AD')", "AD");
-    // BigDecimal v0 = BigDecimal.valueOf(0);
-    // BigDecimal v1 = BigDecimal.valueOf(0.1);
-    // BigDecimal v2 = BigDecimal.valueOf(123.11);
-    // evalEquals("Abs(10)", 10);
-    // evalEquals("Add(10,-0.5)", 9.5);
-    // Time zone offset
-
-    // evalEquals("To_Date('2019-02-13T15:34:56 +8:00','YYYY-MM-DD\"T\"HH24:MI:SS TZH:TZM')",
-    // LocalDateTime.of(2019, Month.FEBRUARY, 13, 7, 34, 56));
-
-
+   ExpressionContext context = createExpressionContext();
+   context.setAttribute("TEST","", ScriptContext.ENGINE_SCOPE);
+   evalEquals("To_Char(Date '2019-07-23','AD')", "AD", context);
   }
-
-
 }

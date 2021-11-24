@@ -53,7 +53,7 @@ public class Extract extends Operator {
     if (value == null)
       return null;
 
-    return extract(coerceToDate(value), DatePart.of(part.toString()));
+    return extract(coerceToDate(value), DatePart.of(coerceToString(part)));
   }
 
   protected long extract(ZonedDateTime datetime, DatePart part) {

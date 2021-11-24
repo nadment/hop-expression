@@ -117,14 +117,25 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
   @Test
-  public void CurrentDate() throws Exception {
-    ZonedDateTime today = (ZonedDateTime) this.getContext().getAttribute(ExpressionContext.ATTRIBUTE_TODAY);
-    // evalEquals("Today()",now);
-    // evalEquals("SysDate()",now);
-    evalEquals("today()", today);
-    evalFails("Current_Date(123)");
+  public void Today() throws Exception {
+    ExpressionContext context = createExpressionContext();
+    ZonedDateTime today = (ZonedDateTime) context.getAttribute(ExpressionContext.CACHED_TODAY);
+    evalEquals("Today()", today, context);
+    evalEquals("Current_Date()", today, context);
+    
+    evalFails("Today(Null)");
   }
 
+  @Test
+  public void Now() throws Exception {
+    ExpressionContext context = createExpressionContext();
+    ZonedDateTime today = (ZonedDateTime) context.getAttribute(ExpressionContext.CACHED_NOW);
+    evalEquals("Now()", today, context);
+    evalEquals("Current_Timestamp()", today, context);
+    
+    evalFails("Now(Null)");
+  }
+  
   @Test
   public void Date() throws Exception {
     evalEquals("Date(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
@@ -192,7 +203,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("Upper()");
 
     // Alias
-    // evalEquals("UCase('test')", "TEST");
+    evalEquals("UCase('test')", "TEST");
   }
 
   @Test

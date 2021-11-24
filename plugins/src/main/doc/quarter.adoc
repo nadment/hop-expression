@@ -25,5 +25,5 @@ QUARTER( <date> )
 
 == Usage
 
-* Returns an integer between 1 and 4.
+* Returns an integer between 1 and 4, where the January-March quarter is 1.
 * Equivalent to xref:extract.adoc[EXTRACT](QUARTER FROM <date>). 

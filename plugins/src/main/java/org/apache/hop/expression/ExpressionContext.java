@@ -20,24 +20,16 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
-import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
-import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
 
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
-  /** The UTC time zone. */
-  protected static final ZoneId UTC_ZONE = ZoneId.of("UTC");
 
   /**
    * This parameter prevents ambiguous dates when importing or converting data with the YY date
@@ -63,15 +55,13 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
    */
   public static final String NLS_FIRST_DAY_OF_WEEK = "WEEK_START";
 
-  public static final String ATTRIBUTE_TODAY = "TODAY";
-  public static final String ATTRIBUTE_NOW = "NOW";
-  public static final String ATTRIBUTE_RANDOM = "RANDOM";
+  public static final String CACHED_TODAY = "__TODAY";
+  public static final String CACHED_NOW = "__NOW";
+  public static final String CACHED_RANDOM = "__RANDOM";
 
   private IRowMeta rowMeta;
-
   private Object[] row;
-  private ZoneId zone;
-  private Locale locale;
+
   private int twoDigitCenturyStart = 1970;
 
   public ExpressionContext(IVariables variables, IRowMeta rowMeta) {
@@ -83,20 +73,16 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public ExpressionContext(IVariables variables) {
     super();
 
-    this.locale = Locale.getDefault();
-    this.zone = ZoneId.systemDefault();
-
-    
     this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"),
-        ScriptContext.ENGINE_SCOPE);
+        ENGINE_SCOPE);
     this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"),
-        ScriptContext.ENGINE_SCOPE);
+        ENGINE_SCOPE);
     this.setAttribute(TWO_DIGIT_CENTURY_START,
-        variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ScriptContext.ENGINE_SCOPE);
+        variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
 
 
-    final Calendar calendar = Calendar.getInstance(locale);
-    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
+//    final Calendar calendar = Calendar.getInstance(locale);
+//    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
 
 
     try {
@@ -108,9 +94,14 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     }
 
     // Initialize
-    this.setAttribute(ATTRIBUTE_NOW, ZonedDateTime.now(), ScriptContext.ENGINE_SCOPE);
-    this.setAttribute(ATTRIBUTE_TODAY, ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS), ScriptContext.ENGINE_SCOPE);
-    this.setAttribute(ATTRIBUTE_RANDOM, new SecureRandom(), ScriptContext.ENGINE_SCOPE);
+    this.setAttribute(CACHED_NOW, ZonedDateTime.now(), ENGINE_SCOPE);
+    this.setAttribute(CACHED_TODAY, ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS),
+        ENGINE_SCOPE);
+    this.setAttribute(CACHED_RANDOM, new SecureRandom(), ENGINE_SCOPE);
+  }
+
+  public void setAttribute(String name, Object value) {
+    this.setAttribute(name, value, ENGINE_SCOPE);
   }
 
   public IRowMeta getRowMeta() {
@@ -142,7 +133,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
           Date date = rowMeta.getDate(row, index);
           if (date == null)
             return null;
-          
+
           return OffsetDateTime.from(date.toInstant()).toZonedDateTime();
         case IValueMeta.TYPE_STRING:
           return rowMeta.getString(row, index);
@@ -161,10 +152,6 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     } catch (HopValueException e) {
       throw new ExpressionException("Error resolve field value " + name + ":" + e.toString());
     }
-  }
-  
-  public ZoneId getZone() {
-    return zone;
   }
 
   public int getTwoDigitCenturyStart() {

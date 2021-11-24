@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression;
 
-import java.time.ZoneId;
-
 public interface IExpressionContext {
 
   /**
@@ -30,10 +28,8 @@ public interface IExpressionContext {
    */
   public Object resolve(String name) throws ExpressionException;
 
-  public ZoneId getZone();
-
   /**
-   * Gets the value of an attribute in a given scope.
+   * Gets the value of an attribute.
    *
    * @param name The name of the attribute to retrieve.
    * @return The value of the attribute. Returns <code>null</code> is the name
@@ -43,4 +39,16 @@ public interface IExpressionContext {
    * @throws NullPointerException if the name is null.
    */
   public Object getAttribute(String name);
+  
+  /**
+   * Sets the value of an attribute.
+   *
+   * @param name The name of the attribute to set
+   * @param value The value of the attribute
+   *
+   * @throws IllegalArgumentException
+   *         if the name is empty or if the scope is invalid.
+   * @throws NullPointerException if the name is null.
+   */
+  public void setAttribute(String name, Object value);
 }
