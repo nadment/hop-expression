@@ -37,7 +37,8 @@ Comments are sections of code text to aid readability.
  * comment /* with nested block */
  */
 ----
-<1> A single line comment begins with double slash // or double minus -- and ends with a new line.
+
+<1> A single line comment begins with two consecutive slash // or hyphen -- characters and ends with a new line.
 
 <2> A multi line comment begins with a slash asterick /* and ends with asterick slash and support nested block comment.
 
@@ -85,6 +86,7 @@ Literals can be either positive numbers or negative numbers and contain decimals
 +0.5
 -24.7
 0.5E-2
+1e10
 ----
 
 NOTE: The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
@@ -308,7 +310,10 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/translate.adoc[TRANSLATE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/trim.adoc[TRIM]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/truncate.adoc[TRUNCATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_cast.adoc[TRY_CAST]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_boolean.adoc[TRY_TO_BOOLEAN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_date.adoc[TRY_TO_DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_number.adoc[TRY_TO_NUMBER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/unicode.adoc[UNICODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/upper.adoc[UPPER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urldecode.adoc[URLDECODE]

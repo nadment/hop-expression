@@ -66,64 +66,50 @@ public abstract class Operator implements Comparable<Operator> {
   private final String description;
 
   /**
-   * Creates an function operator.
+   * Create a new operator for use in expressions.
    *
-   * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
-   * 
-   * @param name The name of function
-   * @param alias The alias of function
+   * @param name The name of operator
+   * @param alias The symbol of the operator or alias of function
+   * @param precedence The precedence value of the operator
+   * @param isLeftAssociative Set to true if the operator is left associative, false if it is right associative
+   * @param isDeterministic Set to true if the operator always returns the same result for the same parameters
+   * @param category The category to group operator
    */
-  protected Operator(String name, String alias, boolean isDeterministic, String category) {    
-    this.name = name;
-    this.alias = alias;
-    this.leftPrecedence = 11;
-    this.rightPrecedence = 10;
-    this.isDeterministic = isDeterministic;
-    this.category = TranslateUtil.translate(category, Operator.class);
-    this.description = findDescription(name);
-  }
-
-  /**
-   * Creates an operator specifying precedence and associativity.
-   *
-   * @param kind Kind of operator
-   * @param name Name of operator
-   * @param precedence precedence
-   * @param leftAssociativity left associativity
-   */
-  protected Operator(String name, int precedence, boolean leftAssociativity,
-      String category) {
-    this(name, name,  precedence, leftAssociativity, category);    
-  }
-
-  protected Operator(String name, String alias, int precedence, boolean leftAssociativity,
+  protected Operator(String name, String alias, int precedence, boolean isLeftAssociative, boolean isDeterministic,
       String category) {
     this.name = name;
     this.alias = alias;
-    this.leftPrecedence = leftPrec(precedence, leftAssociativity);
-    this.rightPrecedence = rightPrec(precedence, leftAssociativity);
+    this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
+    this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
     this.isDeterministic = true;
     this.category = TranslateUtil.translate(category, Operator.class);
     this.description = findDescription(name);
   }
   
-  protected static int leftPrec(int precedence, boolean leftAssociativity) {
+  protected Operator(String name, int precedence, boolean isLeftAssociative, boolean isDeterministic,
+      String category) {
+    this(name, name,  precedence, isLeftAssociative, isDeterministic, category);    
+  }
+  
+  protected static int leftPrecedence(int precedence, boolean isLeftAssociative) {
     assert (precedence % 2) == 0;
-    if (leftAssociativity) {
+    if (isLeftAssociative) {
       ++precedence;
     }
     return precedence;
   }
 
-  protected static int rightPrec(int precedence, boolean leftAssociativity) {
+  protected static int rightPrecedence(int precedence, boolean isLeftAssociative) {
     assert (precedence % 2) == 0;
-    if (!leftAssociativity) {
+    if (!isLeftAssociative) {
       ++precedence;
     }
     return precedence;
   }
 
-  /** The unique name of the operator/function */
+  /** 
+   * The unique name of the operator
+   */
   public String getName() {
     return name;
   }

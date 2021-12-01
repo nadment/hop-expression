@@ -14,8 +14,6 @@
  */
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertEquals;
-import org.apache.hop.expression.Identifier;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,43 +46,7 @@ public class OperatorTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Identifier() throws Exception {
-
-    Identifier identifier = new Identifier("NAME");
-    assertEquals("NAME", identifier.getName());
-    assertEquals(new Identifier("NAME"), identifier);
-    assertEquals(new Identifier("NAME").hashCode(), identifier.hashCode());
-
-    evalEquals("Age%2", 0);
-    evalEquals(" \t\n\"Age\"%2", 0);
-    evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
-    evalEquals("\"IDENTIFIER_UNDERSCORE\"", "UNDERSCORE");
-    evalEquals("\"IDENTIFIER lower\"", "lower");
-
-    evalFails("\"");
-    evalFails(" \" ");    
-    evalFails(" \"");
-    evalFails("\"\"");
-
-    writeEquals("IDENTIFIER");
-    // Reserved word
-    writeEquals("\"CASE\"");
-    writeEquals("\"LIKE\"");
-    // Data type name
-    writeEquals("\"NUMBER\"");
-    // Date part name
-    writeEquals("\"CENTURY\"");
-    // Function name
-    writeEquals("\"YEAR\"");
-    writeEquals("\"UPPER\"");
-    // Contains space
-    writeEquals("\"IDENTIFIER SPACE\"+1");
-  }
-
-
-  @Test
   public void CoercionBoolean() throws Exception {
-
     // Coercion Number to Boolean
     evalTrue("true = 1");
     evalTrue("false = 0");
@@ -106,11 +68,6 @@ public class OperatorTest extends BaseExpressionTest {
     evalTrue("'OFF'=false");
     evalTrue("'F'=false");
     evalTrue("'FALSE'=false");
-  }
-
-  @Test
-  public void ReservedWord() throws Exception {
-    evalEquals("Upper(\"FROM\")", "PARIS");
   }
 
   @Test
@@ -588,12 +545,86 @@ public class OperatorTest extends BaseExpressionTest {
     // Bad data type
     evalFails("Cast(123 as Nill)");
 
-    // writeEquals("CAST(NULL AS BINARY)", "CAST(NULL AS BINARY)");
-    // FIXME: writeEquals("CAST('1234' AS NUMBER)", "CAST('1234' AS NUMBER)");
-    // FIXME:  writeEquals("CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
-    // FIXME: writeEquals("'1234'::NUMBER", "CAST('1234' AS NUMBER)");
+    writeEquals("CAST(NULL AS BINARY)", "CAST(NULL AS BINARY)");
+    writeEquals("CAST('1234' AS NUMBER)", "CAST('1234' AS NUMBER)");
+    writeEquals("CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
+    writeEquals("'1234'::NUMBER", "CAST('1234' AS NUMBER)");
+  }
+  
+  @Test
+  public void Try_Cast() throws Exception {
+
+    // String to Boolean
+    evalTrue("TRY_CAST('Yes' as Boolean)");
+    evalFalse("TRY_CAST('False' as Boolean)");
+    evalNull("TRY_CAST('Fake' as Boolean)");
+
+    // Number to Boolean
+    evalTrue("TRY_CAST(1 as Boolean)");
+    evalTrue("TRY_CAST(-12.1 as Boolean)");
+    evalNull("TRY_CAST('test' as Boolean)");
+
+    // Date to String
+    evalEquals("TRY_CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
+    evalNull("TRY_CAST('2019-99-25' AS Date)");
+    evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
+
+
+    evalNull("TRY_CAST(NULL AS Date)");
+
+    // Bad syntax
+    evalFails("TRY_CAST('2020-01-021' AS NULL)");
+    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
+    evalFails("TRY_CAST('bad' AS)");
+    evalFails("TRY_CAST(1234 AS STRING FORMAT )");
+    evalFails("TRY_CAST(Date '2019-02-25' AS String FORMAT )");
+
+    // Bad data type
+    evalFails("Try_Cast(123 as Nill)");
+
+    writeEquals("TRY_CAST(NULL AS BINARY)");
+    writeEquals("TRY_CAST('1234' AS NUMBER)");
+    writeEquals("TRY_CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
   }
 
+  @Test
+  public void Extract() throws Exception {
+    evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
+    evalEquals("Extract(CENTURY from Timestamp '2000-12-25 23:48:59')", 20);
+    evalEquals("Extract(CENTURY from Timestamp '2020-05-25 23:48:59')", 21);
+    evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
+    evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
+    evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
+    //evalEquals("Extract(YEAROFWEEK from Date '2017-01-01')", 2016);
+    evalEquals("Extract(YEAROFWEEKISO from Date '2017-01-01')", 2017);
+    evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
+    evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
+    evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
+    evalEquals("Extract(WEEKISO from Date '2010-01-03')", 53);
+    evalEquals("Extract(WEEKISO from Date '2010-01-04')", 1);
+    evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
+    evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
+    evalEquals("Extract(DD from Timestamp '2020-05-25 23:48:59')", 25);
+    evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
+    evalEquals("Extract(DAYOFWEEKISO from Date '2003-12-28')", 7);
+    evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
+    evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
+    evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
+    evalEquals("Extract(Millisecond from Timestamp '2020-05-25 00:00:01.123456')", 123);
+    evalEquals("Extract(Microsecond from Timestamp '2020-05-25 00:00:01.123456')", 123456);
+    evalEquals("Extract(Nanosecond from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
+    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
+    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
+    evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
+    
+    evalNull("Extract(SECOND from NULL)");
+
+    evalFails("Extract(NULL from Date '2021-01-01')");
+    evalFails("Extract(BIDON from NULL)");
+
+    writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
+  }
+  
   @Test
   public void Positive() throws Exception {
     evalEquals("+(40)", 40);
@@ -786,8 +817,6 @@ public class OperatorTest extends BaseExpressionTest {
     evalTrue("'give me 30% discount' like '%30!%%' escape '!'");
     evalTrue("'ADD_MONTHS' like '%ADD!_%' escape '!'");
 
-    // TODO: evalTrue("'Amigo' like '[A-C]%'");
-
     // Optimizable
     evalTrue("'ABCDEFG' like 'ABCDEFG'");
     evalTrue("'ABCDEFG' like 'ABCDE%'");
@@ -823,7 +852,6 @@ public class OperatorTest extends BaseExpressionTest {
 
   @Test
   public void CaseWhen() throws Exception {
-
     // implicit ELSE NULL case
     evalNull("case when Age=10 then 10 end");
     evalEquals("case when Age=40 then 10 end", 10L);
@@ -835,9 +863,7 @@ public class OperatorTest extends BaseExpressionTest {
 
     // Search CASE WHEN
     evalEquals("case when Age=10+20 then 1*5 when Age=20+20 then 2*5 else 50 end", 10L);
-
-    
-    
+        
     // Simple CASE
     evalEquals("case Age when 10 then 10 when 40 then 40 else 50 end", 40L);
     evalEquals("case Age when 10 then 10 when 20 then 20 else -1 end", -1L);
@@ -852,7 +878,6 @@ public class OperatorTest extends BaseExpressionTest {
     writeEquals("CASE WHEN AGE=40 THEN TRUE ELSE FALSE END");
     writeEquals("CASE AGE WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
   }
-
 }
 
 

@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class Equal extends Operator {
 
   public Equal() {
-    super("EQUAL", "=", 130, true, "i18n::Operator.Category.Comparison");
+    super("EQUAL", "=", 130, true, true, "i18n::Operator.Category.Comparison");
   }
 
   @Override

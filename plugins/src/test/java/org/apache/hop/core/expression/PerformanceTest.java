@@ -32,7 +32,7 @@ import org.junit.Test;
 import java.text.ParseException;
 import java.util.Date;
 
-public class ExpressionPerformance {
+public class PerformanceTest {
 
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();

@@ -27,7 +27,7 @@ import java.io.StringWriter;
 public class BitNot extends Operator {
 
   public BitNot() {
-    super("BITNOT", "~", 40, true, "i18n::Operator.Category.Bitwise");
+    super("BITNOT", "~", 40, true, true, "i18n::Operator.Category.Bitwise");
   }
 
   @ScalarFunction(name = "BITNOT", category = "i18n::Operator.Category.Bitwise")

@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 public class Mod extends Operator {
 
   public Mod() {
-    super("MOD", "%", 50, true, "i18n::Operator.Category.Mathematical");
+    super("MOD", "%", 50, true, true, "i18n::Operator.Category.Mathematical");
   }
 
   @ScalarFunction(name = "MOD", minArgs = 2, maxArgs = 2,

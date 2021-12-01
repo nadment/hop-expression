@@ -37,7 +37,7 @@ import java.io.StringWriter;
 public class Is extends Operator {
 
   public Is() {
-    super("IS", 140, true, "i18n::Operator.Category.Comparison");
+    super("IS", 140, true, true, "i18n::Operator.Category.Comparison");
   }
 
 

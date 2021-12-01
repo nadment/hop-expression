@@ -81,9 +81,17 @@ public class Function extends Operator {
   private final int minArgs;
   private final int maxArgs;
 
+  /**
+   * Creates an function operator.
+   *
+   * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
+   * 
+   * @param name The name of function
+   * @param alias The alias of function
+   */
   public Function(String name, String alias, boolean isDeterministic, Object instance,
       Method method, int min, int max, String category) throws ExpressionException {
-    super(name, alias, isDeterministic, category);
+    super(name, alias, 10, true, isDeterministic, category);
 
     this.instance = instance;
     this.method = method;
@@ -160,22 +168,25 @@ public class Function extends Operator {
     writer.append(')');
   }
 
+  /** 
+   * The NOW function return the current date and time
+   */
   @ScalarFunction(name = "NOW", alias = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
       maxArgs = 0, category = "i18n::Operator.Category.Date")
-  // The NOW function return the exact date and time
   public static Object now(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return context.getAttribute(ExpressionContext.CACHED_NOW);
   }
 
+  /** 
+   * The TODAY function return the current date at time 00:00
+   */
   @ScalarFunction(name = "TODAY", alias = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
       maxArgs = 0, category = "i18n::Operator.Category.Date")
-  // The TODAY function return the date value only
   public static Object today(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return context.getAttribute(ExpressionContext.CACHED_TODAY);
   }
-
 
   // -------------------------------------------------------------
   // CRYPTOGRAPHIC
@@ -1674,7 +1685,7 @@ public class Function extends Operator {
   }
 
   /**
-   * Returns the portion of the string from string, startingfrom the character/byte specified by
+   * Returns the portion of the string from string, starting from the character/byte specified by
    * start, with optionally limited length.
    */
   @ScalarFunction(name = "SUBSTRING", alias = {"SUBSTR"}, minArgs = 2, maxArgs = 3,

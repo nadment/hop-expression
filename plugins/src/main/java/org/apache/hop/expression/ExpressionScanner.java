@@ -357,8 +357,14 @@ public class ExpressionScanner {
           String identifier = source.substring(start, index);
           String name = identifier.toUpperCase();
 
-          if (c == '(' && OperatorRegistry.isFunctionName(name)) {
-            return new Token(Id.FUNCTION, start, index, name);
+          if (c == '(' ) {
+            // Special operator with name
+            if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name) ) {
+              return new Token(Id.valueOf(name), start, index, name);
+            }
+            if ( OperatorRegistry.isFunctionName(name)) {          
+              return new Token(Id.FUNCTION, start, index, name);
+            }
           }
 
           // Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR

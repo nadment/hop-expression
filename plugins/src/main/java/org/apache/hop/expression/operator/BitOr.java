@@ -27,7 +27,7 @@ import java.io.StringWriter;
 public class BitOr extends Operator {
 
   public BitOr() {
-    super("BITOR", "|", 90, true, "i18n::Operator.Category.Bitwise");
+    super("BITOR", "|", 90, true, true, "i18n::Operator.Category.Bitwise");
   }
 
   @ScalarFunction(name = "BITOR", minArgs = 2, maxArgs = 2,

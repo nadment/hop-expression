@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class GreaterThanOrEqual extends Operator {
 
   public GreaterThanOrEqual() {
-    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, "i18n::Operator.Category.Comparison");
+    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, true, "i18n::Operator.Category.Comparison");
   }
 
   @Override

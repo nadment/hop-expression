@@ -23,11 +23,13 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
-/** String concatenation operator '<code>||</code>' */
+/** 
+ * String concatenation operator '<code>||</code>'
+ */
 public class Concat extends Operator {
 
   public Concat() {
-    super("CONCAT", "||", 110, true, "i18n::Operator.Category.String");
+    super("CONCAT", "||", 110, true, true, "i18n::Operator.Category.String");
   }
 
   @ScalarFunction(name = "CONCAT", minArgs = 2, maxArgs = Integer.MAX_VALUE,

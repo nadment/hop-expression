@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class Between extends Operator {
 
   public Between() {
-    super("BETWEEN", 120, true, "i18n::Operator.Category.Comparison");
+    super("BETWEEN", 120, true, true,"i18n::Operator.Category.Comparison");
   }
 
   @Override

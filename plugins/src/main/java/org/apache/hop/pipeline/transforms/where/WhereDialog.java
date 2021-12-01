@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public class WhereDialog extends BaseTransformDialog implements ITransformDialog {
 

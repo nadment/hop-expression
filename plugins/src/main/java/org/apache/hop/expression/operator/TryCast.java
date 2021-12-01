@@ -27,7 +27,7 @@ import java.io.StringWriter;
 public class TryCast extends Operator {
 
   public TryCast() {
-    super("TRY_CAST", 10, true, "i18n::Operator.Category.Conversion");
+    super("TRY_CAST", 10, true, true, "i18n::Operator.Category.Conversion");
   }
 
   /**
@@ -37,11 +37,13 @@ public class TryCast extends Operator {
   @ScalarFunction(name = "TRY_CAST", minArgs = 2, maxArgs = 3, category = "i18n::Operator.Category.Conversion")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
+    
     Object value = operands[0].eval(context);
     if (value == null) {
       return null;
     }
-    try {
+    
+    try {     
       Type type = (Type) operands[1].eval(context);
 
       if (operands.length == 3) {
@@ -54,7 +56,7 @@ public class TryCast extends Operator {
       return null;
     }
   }
-
+  
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
     writer.append("TRY_CAST(");

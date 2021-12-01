@@ -917,8 +917,9 @@ public class FunctionTest extends BaseExpressionTest {
     Locale.setDefault(new Locale("en", "US"));
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
     Locale.setDefault(new Locale("fr", "BE"));
-    //evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
-    //evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
+    // Fail with sonar build
+//    evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
+//    evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
 
     // Format with Currency dollar
     Locale.setDefault(new Locale("en", "US"));
@@ -1323,42 +1324,6 @@ public class FunctionTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Try_Cast() throws Exception {
-
-    // String to Boolean
-    evalTrue("TRY_CAST('Yes' as Boolean)");
-    evalFalse("TRY_CAST('False' as Boolean)");
-    evalNull("TRY_CAST('Fake' as Boolean)");
-
-    // Number to Boolean
-    evalTrue("TRY_CAST(1 as Boolean)");
-    evalTrue("TRY_CAST(-12.1 as Boolean)");
-    evalNull("TRY_CAST('test' as Boolean)");
-
-    // Date to String
-    evalEquals("TRY_CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
-    evalNull("TRY_CAST('2019-99-25' AS Date)");
-    evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
-
-
-    evalNull("TRY_CAST(NULL AS Date)");
-
-    // Bad syntax
-    evalFails("TRY_CAST('2020-01-021' AS NULL)");
-    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
-    evalFails("TRY_CAST('bad' AS)");
-    evalFails("TRY_CAST(1234 AS STRING FORMAT )");
-    evalFails("TRY_CAST(Date '2019-02-25' AS String FORMAT )");
-
-    // Bad data type
-    evalFails("Try_Cast(123 as Nill)");
-
-    // FIXME: writeEquals("TRY_CAST(NULL AS BINARY)");
-    // FIXME: writeEquals("TRY_CAST('1234' AS NUMBER)");
-    // FIXME: writeEquals("TRY_CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
-  }
-
-  @Test
   public void Reverse() throws Exception {
     evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH");
     evalNull("Reverse(NULL)");
@@ -1389,44 +1354,6 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Translate(NULL,'eo','EO')");
     evalNull("Translate('Hello, world!',NULL,'EO')");
     evalNull("Translate('Hello, world!','EO',NULL)");
-  }
-
-  @Test
-  public void Extract() throws Exception {
-    evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
-    evalEquals("Extract(CENTURY from Timestamp '2000-12-25 23:48:59')", 20);
-    evalEquals("Extract(CENTURY from Timestamp '2020-05-25 23:48:59')", 21);
-    evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
-    evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
-    evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
-    //evalEquals("Extract(YEAROFWEEK from Date '2017-01-01')", 2016);
-    evalEquals("Extract(YEAROFWEEKISO from Date '2017-01-01')", 2017);
-    evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
-    evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
-    evalEquals("Extract(WEEKISO from Date '2010-01-03')", 53);
-    evalEquals("Extract(WEEKISO from Date '2010-01-04')", 1);
-    evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
-    evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
-    evalEquals("Extract(DD from Timestamp '2020-05-25 23:48:59')", 25);
-    evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(DAYOFWEEKISO from Date '2003-12-28')", 7);
-    evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
-    evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
-    evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
-    evalEquals("Extract(Millisecond from Timestamp '2020-05-25 00:00:01.123456')", 123);
-    evalEquals("Extract(Microsecond from Timestamp '2020-05-25 00:00:01.123456')", 123456);
-    evalEquals("Extract(Nanosecond from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
-    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
-    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
-    evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
-    
-    evalNull("Extract(SECOND from NULL)");
-
-    evalFails("Extract(NULL from Date '2021-01-01')");
-    evalFails("Extract(BIDON from NULL)");
-
- // FIXME:  writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
   }
 
   @Test

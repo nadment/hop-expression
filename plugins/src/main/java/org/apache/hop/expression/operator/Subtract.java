@@ -32,7 +32,7 @@ public class Subtract extends Operator {
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   public Subtract() {
-    super("SUBTRACT", "-", 100, true, "i18n::Operator.Category.Mathematical");
+    super("SUBTRACT", "-", 100, true, true, "i18n::Operator.Category.Mathematical");
   }
 
   @ScalarFunction(name = "SUBTRACT", minArgs = 2, maxArgs = 2,

@@ -29,7 +29,7 @@ import java.math.MathContext;
 public class Divide extends Operator {
 
   public Divide() {
-    super("DIVIDE", "/", 50, true, "i18n::Operator.Category.Mathematical");
+    super("DIVIDE", "/", 50, true, true, "i18n::Operator.Category.Mathematical");
   }
 
   @ScalarFunction(name = "DIVIDE", minArgs = 2, maxArgs = 2,

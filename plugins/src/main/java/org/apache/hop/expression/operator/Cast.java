@@ -32,7 +32,7 @@ import java.io.StringWriter;
 public class Cast extends Operator {
 
   public Cast() {
-    super("CAST", "::", 10, true, "i18n::Operator.Category.Conversion");
+    super("CAST", "::", 10, true, true, "i18n::Operator.Category.Conversion");
   }
 
   @ScalarFunction(name = "CAST", minArgs = 2, maxArgs = 3,

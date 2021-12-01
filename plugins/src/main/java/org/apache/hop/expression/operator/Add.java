@@ -33,7 +33,7 @@ public class Add extends Operator {
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   public Add() {
-    super( "ADD", "+", 100, true, "i18n::Operator.Category.Mathematical");
+    super( "ADD", "+", 100, true, true, "i18n::Operator.Category.Mathematical");
   }
 
   @ScalarFunction(name = "ADD", minArgs = 2, maxArgs = 2,

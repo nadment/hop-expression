@@ -15,7 +15,9 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -44,6 +46,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Locale;
 import java.util.function.Consumer;
 import javax.script.ScriptContext;
 
@@ -176,7 +179,6 @@ public class BaseExpressionTest {
   protected void evalEquals(String source, ZonedDateTime expected, Consumer<ExpressionContext> consumer) throws Exception {
     assertEquals(expected, eval(source, null, consumer));
   }
-
   
   protected void evalFails(final String source) {
     try {
@@ -189,7 +191,7 @@ public class BaseExpressionTest {
       Assert.fail(source + " Uncatched exception " + ex.getClass());
     }
   }
-
+  
   protected void writeEquals(String source) throws Exception {
     writeEquals(source, source);
   }
@@ -204,8 +206,15 @@ public class BaseExpressionTest {
 
   @Test
   public void parser() throws Exception {
-   ExpressionContext context = createExpressionContext();
-   context.setAttribute("TEST","", ScriptContext.ENGINE_SCOPE);
-   evalEquals("To_Char(Date '2019-07-23','AD')", "AD", context);
+//   ExpressionContext context = createExpressionContext();
+//   context.setAttribute("TEST","");
+//   evalEquals("To_Char(Date '2019-07-23','AD')", "AD", context);
+//   
+//   // Format with Thousand Group Markers
+//   Locale.setDefault(new Locale("en", "US"));
+//   evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
+//   Locale.setDefault(new Locale("fr", "BE"));
+//   evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
+//   evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
   }
 }

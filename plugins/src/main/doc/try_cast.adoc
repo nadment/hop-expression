@@ -14,18 +14,15 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CAST, ::
+= TRY_CAST
 
-Converts a value of one data type into another data type:
+Converts a value of one data type into another data type, and if the cast is not possible, an NULL value is returned.
 
-The :: operator provides alternative syntax.
+
 
 == Syntax
 ----
-CAST( <value> AS <dataType> [ FORMAT <format> ] )
-----
-----
-<value>::<dataType>
+TRY_CAST( <value> AS <dataType> [ FORMAT <format> ] )
 ----
 
 == Usage
@@ -47,21 +44,14 @@ CAST( <value> AS <dataType> [ FORMAT <format> ] )
 * When converting a number to a number of another type, the value is checked for overflow. 
 * When converting a string to binary, it is hex encoded (every byte two characters).
 
-=== Format
-
-If the cast is not possible, an error is raised.
-
 == Example
 
 ----
-CAST('yes' AS BOOLEAN)
-CAST('-1234.56' AS INTEGER FORMAT '###0')
-'-1234.56'::INTEGER
-CAST('-1234.56' AS NUMBER FORMAT '###0.00')
-CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss')
-CAST(Date(2020,5,24) AS STRING FORMAT 'yyyy-q')
+TRY_CAST('yes' AS BOOLEAN)
+TRY_CAST('-1234.56' AS INTEGER FORMAT '###0')
+TRY_CAST('-1234.56' AS NUMBER FORMAT '###0.00')
+TRY_CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss')
+TRY_CAST(Date(2020,5,24) AS STRING FORMAT 'yyyy-q')
 ----
-
-
 
 See also xref:to_boolean.adoc[TO_BOOLEAN], xref:to_char.adoc[TO_CHAR]

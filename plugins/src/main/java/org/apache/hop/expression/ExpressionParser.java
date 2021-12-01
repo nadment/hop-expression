@@ -56,10 +56,11 @@ public class ExpressionParser {
       if (c == '\n' || c == '\r') {
         line++;
         column = 1;
-      }
-      else column++;
+      } else
+        column++;
     }
-    String message = BaseMessages.getString(PKG, "Expression.SyntaxError", line, column, e.getMessage());
+    String message =
+        BaseMessages.getString(PKG, "Expression.SyntaxError", line, column, e.getMessage());
     return new ExpressionException(message, e);
   }
 
@@ -90,15 +91,15 @@ public class ExpressionParser {
 
   protected boolean next(Id id) {
     if (hasNext() && tokens.get(index).is(id)) {
-        index++;
-        return true;      
+      index++;
+      return true;
     }
     return false;
   }
 
   protected boolean is(Id id) {
-    if (hasNext() ) {
-        return tokens.get(index).is(id);      
+    if (hasNext()) {
+      return tokens.get(index).is(id);
     }
     return false;
   }
@@ -214,7 +215,7 @@ public class ExpressionParser {
       IExpression pattern = this.parseAdditive();
 
       if (next(Id.ESCAPE)) {
-        IExpression escape = this.parseCast();
+        IExpression escape = this.parseCastOperator();
         expression = new OperatorCall(OperatorRegistry.LIKE, expression, pattern, escape);
       } else
         expression = new OperatorCall(OperatorRegistry.LIKE, expression, pattern);
@@ -257,7 +258,8 @@ public class ExpressionParser {
 
     while (hasNext()) {
       if (next(Id.MULTIPLY)) {
-        expression = new OperatorCall(OperatorRegistry.MULTIPLY, expression, this.parseBitwiseNot());
+        expression =
+            new OperatorCall(OperatorRegistry.MULTIPLY, expression, this.parseBitwiseNot());
       } else if (next(Id.DIVIDE)) {
         expression = new OperatorCall(OperatorRegistry.DIVIDE, expression, this.parseBitwiseNot());
       } else if (next(Id.MODULUS)) {
@@ -308,13 +310,13 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ParseException {
 
     if (next(Id.MINUS)) {
-      return new OperatorCall(OperatorRegistry.NEGATIVE, this.parseCast());
+      return new OperatorCall(OperatorRegistry.NEGATIVE, this.parseCastOperator());
     }
     if (next(Id.PLUS)) {
       // Ignore
     }
 
-    return this.parseCast();
+    return this.parseCastOperator();
   }
 
   /** Literal TRUE | FALSE | NULL */
@@ -373,8 +375,12 @@ public class ExpressionParser {
         case TIMESTAMP:
           return parseLiteralTimestamp(next());
         case CASE:
-          // FIXME: Case is not at the good place
           return parseCaseWhen();
+        case CAST:
+        case TRY_CAST:
+          return parseCastFunction(token);
+        case EXTRACT:
+          return parseExtractFunction(token);
         case FUNCTION:
           return parseFunction(token);
         case LPARENTHESIS:
@@ -412,13 +418,15 @@ public class ExpressionParser {
       return new OperatorCall(OperatorRegistry.GREATER_THAN, expression, this.parseRelational());
     }
     if (next(Id.GREATER_THAN_OR_EQUAL)) {
-      return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL, expression,
+          this.parseRelational());
     }
     if (next(Id.LESS_THAN)) {
       return new OperatorCall(OperatorRegistry.LESS_THAN, expression, this.parseRelational());
     }
     if (next(Id.LESS_THAN_OR_EQUAL)) {
-      return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
+      return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL, expression,
+          this.parseRelational());
     }
 
     return expression;
@@ -511,8 +519,7 @@ public class ExpressionParser {
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
     try {
-      DateTimeFormat format =
-          DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
+      DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
       ZonedDateTime datetime = format.parse(token.text());
       return new Literal(datetime);
     } catch (Exception e) {
@@ -568,7 +575,7 @@ public class ExpressionParser {
     if (next(Id.LPARENTHESIS)) {
 
       do {
-        list.add(parseCast());
+        list.add(parseCastOperator());
 
         if (is(Id.COMMA)) {
           next();
@@ -623,16 +630,103 @@ public class ExpressionParser {
   }
 
   /**
+   * Cast operator [TRY_]CAST(value AS type [FORMAT pattern])
+   *
+   */
+  private IExpression parseCastFunction(Token token) throws ParseException {
+    Operator operator =
+        ("CAST".equals(token.text())) ? OperatorRegistry.CAST : OperatorRegistry.TRY_CAST;
+
+    List<IExpression> operands = new ArrayList<>();
+
+    if (is(Id.LPARENTHESIS))
+      token = next();
+    else {
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
+          token.start());
+    }
+
+    operands.add(this.parseLogicalOr());
+
+    if (!next(Id.AS)) {
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
+          token.start());
+    }
+
+    Type type = parseType();
+    operands.add(new Literal(type));
+
+    if (is(Id.FORMAT)) {
+      next();
+      token = next();
+      if (token.is(Token.Id.LITERAL_STRING))
+        operands.add(this.parseLiteralText(token));
+      else
+        throw new ParseException(
+            BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"), token.start());
+    }
+
+    if (is(Id.RPARENTHESIS)) {
+      next();
+    } else {
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
+          token.start());
+    }
+
+    return new OperatorCall(operator, operands);
+  }
+
+
+  /**
    * Cast operator ::
    *
    */
-  private IExpression parseCast() throws ParseException {
+  private IExpression parseCastOperator() throws ParseException {
     IExpression expression = this.parseTerm();
     if (next(Id.CAST)) {
       Type type = parseType();
       return new OperatorCall(OperatorRegistry.CAST, expression, new Literal(type));
     }
     return expression;
+  }
+
+  private IExpression parseExtractFunction(Token token) throws ParseException {
+
+    if (is(Id.LPARENTHESIS))
+      token = next();
+    else {
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
+          token.start());
+    }
+
+    List<IExpression> operands = new ArrayList<>();
+    DatePart part = DatePart.of(next().text());
+    operands.add(new Literal(part));
+
+    if (!next(Id.FROM)) {
+      throw new ParseException(
+          BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
+          this.getPosition());
+    }
+
+    operands.add(this.parseLogicalOr());
+
+    // if (next(Id.AT)) {
+    // if (next(Id.TIME)) {
+    // if (next(Id.ZONE)) {
+    // operands.add(this.parseLogicalOr());
+    // }
+    // }
+    // }
+
+    if (is(Id.RPARENTHESIS)) {
+      next();
+    } else {
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
+          token.start());
+    }
+
+    return new OperatorCall(OperatorRegistry.EXTRACT, operands);
   }
 
   /** Function */
@@ -648,68 +742,18 @@ public class ExpressionParser {
           token.start());
     }
 
-    /** Cast(expression AS dataType FORMAT pattern) */
-    if ("CAST".equals(function.getName()) || "TRY_CAST".equals(function.getName())) {
-
-      operands.add(this.parseLogicalOr());
-
-      if (!next(Id.AS)) {
-        throw new ParseException(
-            BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"), token.start());
-      }
-
-      Type type = parseType();
-      operands.add(new Literal(type));
-
-      if (is(Id.FORMAT)) {
-        next();
-        token = next();
-        if (token.is(Token.Id.LITERAL_STRING))
-          operands.add(this.parseLiteralText(token));
-        else
-          throw new ParseException(
-              BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"), token.start());
-      }
+    // No param function
+    if (is(Id.RPARENTHESIS)) {
+      next();
+      function.checkNumberOfArguments(operands);
+      return new OperatorCall(function, operands);
     }
 
-    /** Extract(datePart FROM expression) */
-    else if ("EXTRACT".equals(function.getName())) {
+    operands.add(this.parseLogicalOr());
 
-      DatePart part = DatePart.of(next().text());
-      operands.add(new Literal(part));
-
-      if (!next(Id.FROM)) {
-        throw new ParseException(
-            BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
-            this.getPosition());
-      }
-
+    while (is(Id.COMMA)) {
+      token = next();
       operands.add(this.parseLogicalOr());
-
-      // if (next(Id.AT)) {
-      // if (next(Id.TIME)) {
-      // if (next(Id.ZONE)) {
-      // operands.add(this.parseLogicalOr());
-      // }
-      // }
-      // }
-
-
-    } else {
-
-      // No param function
-      if (is(Id.RPARENTHESIS)) {
-        next();
-        function.checkNumberOfArguments(operands);
-        return new OperatorCall(function, operands);
-      }
-
-      operands.add(this.parseLogicalOr());
-
-      while (is(Id.COMMA)) {
-        token = next();
-        operands.add(this.parseLogicalOr());
-      }
     }
 
     if (is(Id.RPARENTHESIS)) {

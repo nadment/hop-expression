@@ -27,7 +27,7 @@ import java.io.StringWriter;
 public class BitXor extends Operator {
 
   public BitXor() {
-    super("BITXOR", "^", 80, true, "i18n::Operator.Category.Bitwise");
+    super("BITXOR", "^", 80, true, true, "i18n::Operator.Category.Bitwise");
   }
 
   @ScalarFunction(name = "BITXOR", minArgs = 2, maxArgs = 2,

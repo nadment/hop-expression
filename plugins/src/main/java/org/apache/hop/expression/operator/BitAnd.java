@@ -28,7 +28,7 @@ import java.io.StringWriter;
 public class BitAnd extends Operator {
 
   public BitAnd() {
-    super("BITAND","&", 70, true, "i18n::Operator.Category.Bitwise");
+    super("BITAND","&", 70, true, true, "i18n::Operator.Category.Bitwise");
   }
 
   @ScalarFunction(name = "BITAND", minArgs = 2, maxArgs = 2,

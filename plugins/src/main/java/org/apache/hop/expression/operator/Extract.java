@@ -37,7 +37,7 @@ import java.time.temporal.WeekFields;
 public class Extract extends Operator {
 
   public Extract() {
-    super("EXTRACT", null, 10, true, "i18n::Operator.Category.Date");
+    super("EXTRACT", null, 10, true, true, "i18n::Operator.Category.Date");
   }
 
   @ScalarFunction(name = "EXTRACT", minArgs = 2, maxArgs = 2,

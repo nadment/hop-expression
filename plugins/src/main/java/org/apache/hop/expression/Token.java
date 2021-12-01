@@ -20,11 +20,6 @@ public class Token {
 
   /** Enumerates the possible types of {@link Token}. */
   public enum Id {
-
-
-    /** Variable "${var}" if scanner is used without variable environment substitution. */
-    VARIABLE,
-
     /** The bitwise AND operator "&". */
     BITWISE_AND("&"),
 
@@ -44,12 +39,19 @@ public class Token {
      * Concat operator <code>||<code>
      */
     CONCAT("||"),
-
-    CAST, AS,
+    
+    /** CAST(value AS type) */
+    CAST,
+    
+    /** CAST(value AS type) */
+    AS,
+    
     /** The AT TIME ZONE */
     AT,
-    /** CAST(numeric AS datatype FORMAT '9999') */
+    
+    /** CAST(value AS type FORMAT '9999') */
     FORMAT,
+    
     /**
      * Cast operator <code>::<code>
      */
@@ -88,6 +90,9 @@ public class Token {
     /** The "TIMESTAMP" word for literal timesamp. */
     TIMESTAMP,
 
+    /** TRY_CAST(value AS type) */
+    TRY_CAST,
+    
     /** The AT TIME ZONE */
     ZONE,
 
@@ -97,6 +102,7 @@ public class Token {
     /** Function */
     FUNCTION,
 
+    /** Extract(part FROM date_time) */
     FROM,
 
     /** The arithmetic division operator, "/". */
@@ -105,7 +111,7 @@ public class Token {
     /** The arithmetic multiplication operator, "*". */
     MULTIPLY("*"),
 
-    /** ESCAPE word for like operator */
+    /** ESCAPE word for LIKE operator */
     ESCAPE,
 
     // /**
@@ -193,9 +199,19 @@ public class Token {
     /** The literal value "FALSE". */
     FALSE,
 
-    ELSE, THEN, END, WHEN,
-
-    HOUR, MINUTE, SECOND, DATATYPE, DATEPART;
+    ELSE, 
+    THEN, 
+    END, 
+    WHEN,
+    
+    /** Extract(part FROM date_time) operator */
+    EXTRACT,
+    
+    /** Data type element NUMBER, BOOLEAN,... */
+    DATATYPE,
+    
+    /** Date part element DAY, MONTH,... */
+    DATEPART;
 
     private final String source;
 

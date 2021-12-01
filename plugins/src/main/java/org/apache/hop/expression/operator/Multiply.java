@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 public class Multiply extends Operator {
 
   public Multiply() {
-    super("MULTIPLY", "*", 50, true, "i18n::Operator.Category.Mathematical");
+    super("MULTIPLY", "*", 50, true, true, "i18n::Operator.Category.Mathematical");
   }
 
   @ScalarFunction(name = "MULTIPLY", minArgs = 2, maxArgs = 2,
