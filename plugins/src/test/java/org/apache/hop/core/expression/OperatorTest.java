@@ -95,6 +95,7 @@ public class OperatorTest extends BaseExpressionTest {
     evalFails("1 in (1,2,3");
     evalFails("1 in (1,,3)");
     evalFails("1 in (1,2,)");
+    evalFails("0xABCDEFg");
     evalFails("Date '2020-20-28'");
   }
 
@@ -145,13 +146,15 @@ public class OperatorTest extends BaseExpressionTest {
     evalTrue("2.000 = 2.00");
     evalTrue("-1.4e-10 = -1.4e-10");
 
-    // Integer and Binary
-    evalTrue("15 = 0xF");
+    // Integer
     evalTrue("'0.0' = 0");
     evalTrue("0.0 = '0.000'");
     evalTrue("15.0 = '15'");
     evalTrue("'.01' = 0.01");
 
+    // Binary
+    evalTrue("0b11110000 = 0xF0");
+    
     // Boolean
     evalTrue("true = true");
     evalTrue("false = false");
@@ -187,7 +190,7 @@ public class OperatorTest extends BaseExpressionTest {
     evalFalse("Age <> 40");
 
     evalTrue("1 <> 2");
-    evalTrue("10 <> 0x10");
+    //evalTrue("10 <> 0x10");
     evalFalse("1 <> '1'");
 
     evalTrue("true <> false");
@@ -845,6 +848,10 @@ public class OperatorTest extends BaseExpressionTest {
     evalTrue("NAME='TES'||NULLIS||'T'");
     evalEquals("'TEST'||null", "TEST");
     evalEquals("null||'TEST'", "TEST");
+    
+    // Binary
+    // TODO: evalEquals("0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    
     evalNull("null||null");
 
     writeEquals("FIELD1||'TEST'");

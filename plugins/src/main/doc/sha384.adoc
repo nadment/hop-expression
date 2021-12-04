@@ -20,7 +20,7 @@ The function calculate the SHA-384 hash of a data value.
 
 == Syntax
 ----
-SHA384( <string> )
+SHA384( <string_or_binary> )
 ----
 
 <string>:: A string expression, the message to be hashed.

@@ -14,25 +14,38 @@
  */
 package org.apache.hop.expression.operator;
 
+import static org.apache.hop.expression.Operator.coerceToBigNumber;
+import static org.apache.hop.expression.Operator.coerceToBinary;
+import static org.apache.hop.expression.Operator.coerceToBoolean;
+import static org.apache.hop.expression.Operator.coerceToDate;
+import static org.apache.hop.expression.Operator.coerceToInteger;
+import static org.apache.hop.expression.Operator.coerceToNumber;
+import static org.apache.hop.expression.Operator.coerceToString;
+import static org.apache.hop.expression.Operator.compareTo;
+import static org.apache.hop.expression.Operator.convertTo;
+import static org.apache.hop.expression.Operator.errorArgumentOutOfRange;
+import static org.apache.hop.expression.Operator.errorFormatPattern;
+import static org.apache.hop.expression.Operator.errorRegexpPattern;
+import static org.apache.hop.expression.Operator.errorUnexpectedDataType;
+import static org.apache.hop.expression.Operator.errorUnexpectedDatePart;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
-import org.apache.hop.expression.Type;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
-import java.io.StringWriter;
-import java.lang.reflect.Method;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
@@ -54,18 +67,14 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-/** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
-
-public class Function extends Operator {
+public class Functions  {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
@@ -76,99 +85,9 @@ public class Function extends Operator {
 
   private static final Soundex SOUNDEX = new Soundex();
 
-  private final Object instance;
-  private final Method method;
-  private final int minArgs;
-  private final int maxArgs;
 
+ 
   /**
-   * Creates an function operator.
-   *
-   * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
-   * 
-   * @param name The name of function
-   * @param alias The alias of function
-   */
-  public Function(String name, String alias, boolean isDeterministic, Object instance,
-      Method method, int min, int max, String category) throws ExpressionException {
-    super(name, alias, 10, true, isDeterministic, category);
-
-    this.instance = instance;
-    this.method = method;
-    this.minArgs = min;
-    this.maxArgs = max;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (o == this) {
-      return true;
-    }
-    if (this.getClass() != o.getClass()) {
-      return false;
-    }
-    Function fx = (Function) o;
-    return name.equals(fx.name) && (alias != null && alias.equals(fx.alias));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, alias);
-  }
-
-  /**
-   * Check if the number of arguments is correct.
-   *
-   * @param len the number of arguments set
-   * @throws error if not enough or too many arguments
-   */
-  public void checkNumberOfArguments(List<IExpression> operands) throws ExpressionException {
-
-    if (operands.size() < minArgs) {
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getName()));
-    }
-
-    if (operands.size() > maxArgs) {
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.TooManyNumberOfArguments", this.getName()));
-    }
-  }
-
-  @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    try {
-      return method.invoke(instance, context, operands);
-    } catch (Exception e) {
-      if (e.getCause() instanceof ExpressionException) {
-        throw (ExpressionException) e.getCause();
-      }
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.getMessage()),
-          e);
-    }
-  }
-
-  @Override
-  public void write(StringWriter writer, IExpression[] operands) {
-    writer.append(this.getName());
-    writer.append('(');
-    boolean first = true;
-    for (IExpression operand : operands) {
-      if (!first)
-        writer.append(',');
-      else
-        first = false;
-      operand.write(writer);
-    }
-    writer.append(')');
-  }
-
-  /** 
    * The NOW function return the current date and time
    */
   @ScalarFunction(name = "NOW", alias = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
@@ -178,7 +97,7 @@ public class Function extends Operator {
     return context.getAttribute(ExpressionContext.CACHED_NOW);
   }
 
-  /** 
+  /**
    * The TODAY function return the current date at time 00:00
    */
   @ScalarFunction(name = "TODAY", alias = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
@@ -405,168 +324,7 @@ public class Function extends Operator {
     return UUID.randomUUID().toString();
   }
 
-  /**
-   * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
-   */
-  @ScalarFunction(name = "ACOS", category = "i18n::Operator.Category.Trigonometry")
-  public static Object acos(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    Double d = coerceToNumber(value);
-    if (d < -1.0 || d > 1.0) {
-      throw errorArgumentOutOfRange(value);
-    }
-    return FastMath.acos(d);
-  }
-
-  @ScalarFunction(name = "ACOSH", category = "i18n::Operator.Category.Trigonometry")
-  public static Object acosh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.acosh(coerceToNumber(value));
-  }
-
-  @ScalarFunction(name = "ASINH", category = "i18n::Operator.Category.Trigonometry")
-  public static Object asinh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    return FastMath.asinh(coerceToNumber(value));
-  }
-
-  @ScalarFunction(name = "ATAN", category = "i18n::Operator.Category.Trigonometry")
-  public static Object atan(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    return FastMath.atan(coerceToNumber(value));
-  }
-
-  @ScalarFunction(name = "ATANH", category = "i18n::Operator.Category.Trigonometry")
-  public static Object atanh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    return FastMath.atanh(coerceToNumber(value));
-  }
-
-  @ScalarFunction(name = "ATAN2", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Trigonometry")
-  public static Object atan2(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-    Object v1 = operands[1].eval(context);
-    if (v1 == null)
-      return null;
-
-    return FastMath.atan2(coerceToNumber(v0), coerceToNumber(v1));
-  }
-
-  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  @ScalarFunction(name = "COS", category = "i18n::Operator.Category.Trigonometry")
-  public static Object cos(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.cos(coerceToNumber(value));
-  }
-
-  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  @ScalarFunction(name = "COSH", category = "i18n::Operator.Category.Trigonometry")
-  public static Object cosh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.cosh(coerceToNumber(value));
-  }
-
-  /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
-  @ScalarFunction(name = "COT", category = "i18n::Operator.Category.Trigonometry")
-  public static Object cot(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    double number = coerceToNumber(value);
-    if (number == 0)
-      throw errorArgumentOutOfRange(value);
-
-    return FastMath.cos(number) / FastMath.sin(number);
-  }
-
-  @ScalarFunction(name = "ASIN", category = "i18n::Operator.Category.Trigonometry")
-  public static Object asin(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.asin(coerceToNumber(value));
-  }
-
-  /**
-   * Calculates the trigonometric sine of the angle in radians.
-   */
-  @ScalarFunction(name = "SIN", category = "i18n::Operator.Category.Trigonometry")
-  public static Object sin(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return value;
-
-    return FastMath.sin(coerceToNumber(value));
-  }
-
-  /**
-   * Calculates the hyperbolic sine of its argument.
-   */
-  @ScalarFunction(name = "SINH", category = "i18n::Operator.Category.Trigonometry")
-  public static Object sinh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.sinh(coerceToNumber(value));
-  }
-
-  /**
-   * Calculates the tangent of its argument, the argument should be expressed in radians.
-   */
-  @ScalarFunction(name = "TAN", category = "i18n::Operator.Category.Trigonometry")
-  public static Object tan(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.tan(coerceToNumber(value));
-  }
-
-  /**
-   * Calculates the hyperbolic tangent of its argument.
-   */
-  @ScalarFunction(name = "TANH", category = "i18n::Operator.Category.Trigonometry")
-  public static Object tanh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.tanh(coerceToNumber(value));
-  }
-
+ 
   /**
    * Returns the natural logarithm of a numeric value.
    */
@@ -781,7 +539,11 @@ public class Function extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    int length = Math.max(0, coerceToInteger(value).intValue());
+    
+    int length = coerceToInteger(value).intValue();
+    if ( length<0) 
+      return null;
+    
     char[] chars = new char[length];
     for (int i = length - 1; i >= 0; i--) {
       chars[i] = ' ';
@@ -1017,6 +779,11 @@ public class Function extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
+    
+    if ( value instanceof byte[]) {
+      return ((byte[]) value).length;
+    }
+    
     return Long.valueOf(coerceToString(value).length());
   }
 
@@ -1159,7 +926,7 @@ public class Function extends Operator {
   }
 
   /**
-   * The function extracts a number of characters from a string (starting from left).
+   * The function extracts a number of characters from a string starting from left.
    * 
    * @See {@link #right}
    */
@@ -1170,19 +937,29 @@ public class Function extends Operator {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String s = v0.toString();
 
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int count = coerceToInteger(v1).intValue();
-
-    if (count < 0) {
-      count = 0;
-    } else if (count > s.length()) {
-      count = s.length();
+    int length = coerceToInteger(v1).intValue();
+    if (length < 0) {
+      length = 0;
     }
-    return s.substring(0, count);
+
+    if (v0 instanceof byte[]) {
+      byte[] bytes = (byte[]) v0;
+      if (bytes.length <= length)
+        return bytes;
+      byte[] result = new byte[length];
+      System.arraycopy(bytes, 0, result, 0, length);
+      return result;
+    }
+
+    String str = coerceToString(v0);
+    if (str.length() <= length) {
+      return str;
+    }
+    return str.substring(0, length);
   }
 
   /**
@@ -1197,20 +974,29 @@ public class Function extends Operator {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String s = v0.toString();
 
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int count = coerceToInteger(v1).intValue();
-
-
-    if (count < 0) {
-      count = 0;
-    } else if (count > s.length()) {
-      count = s.length();
+    int length = coerceToInteger(v1).intValue();
+    if (length < 0) {
+      length = 0;
     }
-    return s.substring(s.length() - count);
+
+    if (v0 instanceof byte[]) {
+      byte[] bytes = (byte[]) v0;
+      if (bytes.length <= length)
+        return bytes;
+      byte[] result = new byte[length];
+      System.arraycopy(bytes, bytes.length - length, result, 0, length);
+      return result;
+    }
+
+    String str = v0.toString();
+    if (str.length() <= length) {
+      return str;
+    }
+    return str.substring(str.length() - length);
   }
 
   /**
@@ -1291,7 +1077,7 @@ public class Function extends Operator {
       char c = s.charAt(i);
       if (c == '\\') {
         if (i + 1 >= s.length()) {
-          throw createFormatPatternException(s, i);
+          throw errorFormatPattern(s, i);
         }
         c = s.charAt(++i);
         switch (c) {
@@ -1333,7 +1119,7 @@ public class Function extends Operator {
             try {
               c = (char) (Integer.parseInt(s.substring(i + 1, i + 5), 16));
             } catch (NumberFormatException e) {
-              throw createFormatPatternException(s, i);
+              throw errorFormatPattern(s, i);
             }
             i += 4;
             builder.append(c);
@@ -1351,7 +1137,7 @@ public class Function extends Operator {
             // builder.append(c);
             // }
 
-            throw createFormatPatternException(s, i);
+            throw errorFormatPattern(s, i);
         }
       } else {
         builder.append(c);
@@ -1609,14 +1395,28 @@ public class Function extends Operator {
       category = "i18n::Operator.Category.String")
   public static Object repeat(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    String value = coerceToString(operands[0].eval(context));
-    if (value == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
-    Object number = operands[1].eval(context);
-    if (number == null)
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
       return null;
-    int count = coerceToInteger(number).intValue();
+    int count = coerceToInteger(v1).intValue();
 
+    if (v0 instanceof byte[]) {
+      byte[] bytes = (byte[]) v0;
+      try {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        for (int i = 0; i < count; i++) {
+          buffer.write(bytes);
+        }
+        return buffer.toByteArray();
+      } catch (IOException e) {
+        return null;
+      }
+    }
+
+    String value = coerceToString(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);
@@ -1624,6 +1424,61 @@ public class Function extends Operator {
     return builder.toString();
   }
 
+  /**
+   * Replaces a substring of the specified length, starting at the specified position, with a new string or binary value.  
+   */
+  @ScalarFunction(name = "INSERT", minArgs = 4, maxArgs = 4,
+      category = "i18n::Operator.Category.String")
+  public static Object insert(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+    Object v2 = operands[2].eval(context);
+    if (v2 == null)
+      return null;
+    Object v3 = operands[3].eval(context);
+    if (v3 == null)
+      return null;
+    
+    int position = coerceToInteger(v1).intValue();
+    int length = coerceToInteger(v2).intValue();   
+    
+    if ( v0 instanceof byte[]) {
+      byte[] bytes = (byte[]) v0;     
+      int start  = Math.min(Math.max( 0, position - 1), bytes.length );
+      length = Math.min(length, bytes.length );
+      if(length < 0) 
+        throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);      
+      
+      try {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        buffer.write(bytes,0,start);
+        buffer.write(coerceToBinary(v3));
+        buffer.write(bytes, start+length, bytes.length-start-length);
+        return buffer.toByteArray();
+      } catch (IOException e) {
+        throw ExpressionException.create("Expression.InternalError", e);
+      }
+    } 
+        
+    String str = coerceToString(v0);    
+    int start  = Math.min(Math.max( 0, position - 1), str.length() );
+     
+    length = Math.min(length, str.length() );
+    if(length < 0) 
+      throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);
+    
+    StringBuilder builder = new StringBuilder();
+    builder.append(str.substring(0,start));
+    builder.append(coerceToString(v3));
+    builder.append(str.substring(start+length));
+    return builder.toString();
+  }
+  
   /**
    * Removes all occurrences of a specified substring, and optionally replaces them with another
    * string.
@@ -1751,7 +1606,7 @@ public class Function extends Operator {
       Pattern pattern = Pattern.compile(regexp, flags);
       return pattern.matcher(input).find();
     } catch (PatternSyntaxException e) {
-      throw createRegexpPatternException(regexp);
+      throw errorRegexpPattern(regexp);
     }
   }
 
@@ -1845,7 +1700,7 @@ public class Function extends Operator {
         return buffer.toString();
       }
     } catch (PatternSyntaxException e) {
-      throw createRegexpPatternException(regexp);
+      throw errorRegexpPattern(regexp);
     } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
       // TODO: i18n
       throw new ExpressionException(
@@ -1910,7 +1765,7 @@ public class Function extends Operator {
 
       return null;
     } catch (PatternSyntaxException e) {
-      throw createRegexpPatternException(regexp);
+      throw errorRegexpPattern(regexp);
     }
   }
 
@@ -1984,7 +1839,7 @@ public class Function extends Operator {
 
       return 0L;
     } catch (PatternSyntaxException e) {
-      throw createRegexpPatternException(regexp);
+      throw errorRegexpPattern(regexp);
     }
   }
 
@@ -2093,7 +1948,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    return convertTo(value, Type.BOOLEAN);
+    return convertTo(value, DataType.BOOLEAN);
   }
 
   /**
@@ -2106,7 +1961,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
     try {
-      return convertTo(value, Type.BOOLEAN);
+      return convertTo(value, DataType.BOOLEAN);
     } catch (Exception e) {
       return null;
     }
@@ -2128,7 +1983,7 @@ public class Function extends Operator {
         pattern = coerceToString(v1);
     }
 
-    switch (Type.fromJava(value)) {
+    switch (DataType.fromJava(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
@@ -2138,13 +1993,9 @@ public class Function extends Operator {
         return DateTimeFormat.of(pattern).format(datetime);
       case STRING:
         return value;
-
-      case BINARY:
-      case BOOLEAN:
-      case NONE:
+      default:
+        throw errorUnexpectedDataType("TO_CHAR", DataType.fromJava(value));
     }
-
-    throw createUnexpectedDataTypeException("TO_CHAR", Type.fromJava(value));
   }
 
   /** Converts a string expression to a number value. */
@@ -2218,7 +2069,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    switch (Type.fromJava(value)) {
+    switch (DataType.fromJava(value)) {
       case DATE:
         return value;
       case STRING:
@@ -2232,7 +2083,7 @@ public class Function extends Operator {
         }
         return DateTimeFormat.of(pattern).parse(value.toString());
       default:
-        throw createUnexpectedDataTypeException("TO_DATE", Type.fromJava(value));
+        throw errorUnexpectedDataType("TO_DATE", DataType.fromJava(value));
     }
   }
 
@@ -2248,7 +2099,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    switch (Type.fromJava(value)) {
+    switch (DataType.fromJava(value)) {
       case DATE:
         return value;
       case STRING:
@@ -2286,7 +2137,7 @@ public class Function extends Operator {
     if (value == null)
       return null;
 
-    Type type = Type.fromJava(value);
+    DataType type = DataType.fromJava(value);
 
     switch (type) {
       case INTEGER:
@@ -2351,12 +2202,12 @@ public class Function extends Operator {
           case NANOSECOND:
             return datetime.truncatedTo(ChronoUnit.NANOS);
           default:
-            throw createUnexpectedDatePartException("TRUNCATE", part);
+            throw errorUnexpectedDatePart("TRUNCATE", part);
         }
       case STRING:
       case BOOLEAN:
       default:
-        throw createUnexpectedDataTypeException("TRUNCATE", type);
+        throw errorUnexpectedDataType("TRUNCATE", type);
     }
   }
 
@@ -2402,15 +2253,16 @@ public class Function extends Operator {
       day = 1;
     }
 
-    
+
     LocalDate localDate = LocalDate.of(year, month, day);
     if (monthsToAdd != 0)
       localDate = localDate.plusMonths(monthsToAdd);
     if (daysToAdd != 0)
       localDate = localDate.plusDays(daysToAdd);
 
-    OffsetDateTime datetime = OffsetDateTime.of(localDate, LocalTime.of(0, 0, 0), ZoneOffset.ofHours(0));
-    
+    OffsetDateTime datetime =
+        OffsetDateTime.of(localDate, LocalTime.of(0, 0, 0), ZoneOffset.ofHours(0));
+
     return datetime.toZonedDateTime();
   }
 
@@ -2875,6 +2727,168 @@ public class Function extends Operator {
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
 
     return coerceToDate(value).with(TemporalAdjusters.previous(dayofweek));
+  }
+  
+  /**
+   * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
+   */
+  @ScalarFunction(name = "ACOS", category = "i18n::Operator.Category.Trigonometry")
+  public static Object acos(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    Double d = coerceToNumber(value);
+    if (d < -1.0 || d > 1.0) {
+      throw errorArgumentOutOfRange(value);
+    }
+    return FastMath.acos(d);
+  }
+
+  @ScalarFunction(name = "ACOSH", category = "i18n::Operator.Category.Trigonometry")
+  public static Object acosh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.acosh(coerceToNumber(value));
+  }
+
+  @ScalarFunction(name = "ASINH", category = "i18n::Operator.Category.Trigonometry")
+  public static Object asinh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    return FastMath.asinh(coerceToNumber(value));
+  }
+
+  @ScalarFunction(name = "ATAN", category = "i18n::Operator.Category.Trigonometry")
+  public static Object atan(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    return FastMath.atan(coerceToNumber(value));
+  }
+
+  @ScalarFunction(name = "ATANH", category = "i18n::Operator.Category.Trigonometry")
+  public static Object atanh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    return FastMath.atanh(coerceToNumber(value));
+  }
+
+  @ScalarFunction(name = "ATAN2", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Trigonometry")
+  public static Object atan2(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    return FastMath.atan2(coerceToNumber(v0), coerceToNumber(v1));
+  }
+
+  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
+  @ScalarFunction(name = "COS", category = "i18n::Operator.Category.Trigonometry")
+  public static Object cos(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.cos(coerceToNumber(value));
+  }
+
+  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
+  @ScalarFunction(name = "COSH", category = "i18n::Operator.Category.Trigonometry")
+  public static Object cosh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.cosh(coerceToNumber(value));
+  }
+
+  /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
+  @ScalarFunction(name = "COT", category = "i18n::Operator.Category.Trigonometry")
+  public static Object cot(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    double number = coerceToNumber(value);
+    if (number == 0)
+      throw errorArgumentOutOfRange(value);
+
+    return FastMath.cos(number) / FastMath.sin(number);
+  }
+
+  @ScalarFunction(name = "ASIN", category = "i18n::Operator.Category.Trigonometry")
+  public static Object asin(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.asin(coerceToNumber(value));
+  }
+
+  /**
+   * Calculates the trigonometric sine of the angle in radians.
+   */
+  @ScalarFunction(name = "SIN", category = "i18n::Operator.Category.Trigonometry")
+  public static Object sin(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return value;
+
+    return FastMath.sin(coerceToNumber(value));
+  }
+
+  /**
+   * Calculates the hyperbolic sine of its argument.
+   */
+  @ScalarFunction(name = "SINH", category = "i18n::Operator.Category.Trigonometry")
+  public static Object sinh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.sinh(coerceToNumber(value));
+  }
+
+  /**
+   * Calculates the tangent of its argument, the argument should be expressed in radians.
+   */
+  @ScalarFunction(name = "TAN", category = "i18n::Operator.Category.Trigonometry")
+  public static Object tan(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.tan(coerceToNumber(value));
+  }
+
+  /**
+   * Calculates the hyperbolic tangent of its argument.
+   */
+  @ScalarFunction(name = "TANH", category = "i18n::Operator.Category.Trigonometry")
+  public static Object tanh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.tanh(coerceToNumber(value));
   }
 }
 

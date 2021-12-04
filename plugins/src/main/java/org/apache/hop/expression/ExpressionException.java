@@ -16,10 +16,18 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.i18n.BaseMessages;
+
 public class ExpressionException extends RuntimeException {
+ 
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private static final long serialVersionUID = 8634955627375465878L;
 
+  public static ExpressionException create(String message, Object... values) {  
+    return new ExpressionException(BaseMessages.getString(PKG, message, values));
+  }  
+  
   /**
    * Construct a new expression exception.
    * 

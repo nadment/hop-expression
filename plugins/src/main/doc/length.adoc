@@ -16,11 +16,11 @@ under the License.
 ////
 = LENGTH
 
-Returns the number of characters of the specified string.
+Returns the number of characters of the specified string or the length of binary in bytes.
 
 == Syntax
 ----
-LENGTH( <string> )
+LENGTH( <string_or_binary> )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ The function calculate the SHA-512 hash of a data value.
 
 == Syntax
 ----
-SHA512( <string> )
+SHA512( <string_or_binary> )
 ----
 
 <string>:: A string expression, the message to be hashed.

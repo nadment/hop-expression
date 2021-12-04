@@ -16,7 +16,7 @@ under the License.
 ////
 = TAN
 
-This function calculates the tangent of its argument.
+This function calculates the tangent.
 
 == Syntax
 ----
@@ -28,5 +28,3 @@ Returns:: Number
 == Usage
 
 * The argument should be expressed in radians.
-
-

@@ -20,13 +20,11 @@ The function calculate the MD5 hash of a value. The hash will be returned as a 4
 
 == Syntax
 ----
-MD5( <string> )
+MD5( <string_or_binary> )
 ----
 
 == Usage
 
-
-
 Returns::
 
-Number
+String

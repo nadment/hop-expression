@@ -18,9 +18,9 @@ package org.apache.hop.ui.expression;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.Type;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -187,7 +187,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     for (DatePart datapart : DatePart.values()) {
       rule.addWord(datapart.name(), extra);
     }
-    for (Type type : Type.values()) {
+    for (DataType type : DataType.values()) {
       rule.addWord(type.name(), extra);
     }
 

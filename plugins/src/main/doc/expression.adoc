@@ -236,6 +236,7 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/if.adoc[IF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ifnull.adoc[IFNULL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/initcap.adoc[INITCAP]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/insert.adoc[INSERT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/instr.adoc[INSTR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/last_day.adoc[LAST_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/least.adoc[LEAST]

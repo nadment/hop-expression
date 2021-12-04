@@ -16,12 +16,12 @@ under the License.
 ////
 = ATAN
 
-This function calculates the inverse tangent (arc tangent) of a number.
+This function calculates the inverse tangent (arc tangent).
 
 
 == Syntax
 ----
-ATAN( <number> )
+ATAN( <numeric> )
 ----
 
 == Usage

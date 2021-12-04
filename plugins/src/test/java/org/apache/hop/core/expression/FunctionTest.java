@@ -513,7 +513,11 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Substring('TEST FROM',6,2)", "FR");
     evalEquals("Substring('TEST FROM',1,4)", "TEST");
     evalEquals("Substring('TEST FROM',-4)", "FROM");
+    evalEquals("Substring('ABCDEFG',1,1)", "A");
 
+    // Compatibility mode
+    evalEquals("Substring('ABCDEFG',0,1)", "A");
+    
     // Alias
     evalEquals("Substr('TEST',5)", "");
   }
@@ -521,6 +525,8 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Space() throws Exception {
     evalEquals("Space(4)", "    ");
+    evalEquals("Space(0)", "");
+    evalNull("Space(-3)");
     evalNull("Space(NULL)");
     evalFails("Space()");
   }
@@ -559,7 +565,8 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Asin() throws Exception {
-    evalEquals("Asin(0.5)", 0.5235987755982989);
+    evalEquals("Asin(0)", 0);
+    evalEquals("Asin(sin(0.5))", 0.5);
     evalNull("Asin(NULL)");
     evalFails("Asin()");
   }
@@ -574,13 +581,15 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Atan() throws Exception {
     evalEquals("Atan(0.5)", 0.46364760900008061);
+    evalEquals("Atan(Tan(0.5))", 0.5);
     evalNull("Atan(NULL)");
     evalFails("Atan()");
   }
 
   @Test
   public void Atan2() throws Exception {
-    evalEquals("Atan2(1,0)", 1.5707963267948966);
+    evalEquals("Atan2(0,3)", 0);
+    evalEquals("Atan2(0,-3)", Math.PI);
     evalNull("Atan2(NULL,0)");
     evalNull("Atan2(1,NULL)");
     evalFails("Atan2()");
@@ -597,7 +606,7 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Cos() throws Exception {
     evalEquals("Cos(1)", 0.5403023058681398);
-    evalEquals("Cos(84.4)", -0.9118608758306834);
+    evalEquals("Cos(Pi())", -1);
     evalEquals("Cos(0)", 1.0);
     evalNull("Cos(NULL)");
     evalFails("Cos()");
@@ -635,6 +644,7 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Cot() throws Exception {
     evalEquals("Cot(1)", 0.6420926159343306);
+    //evalEquals("Cot(0)", Double.POSITIVE_INFINITY);
     evalNull("Cot(NULL)");
     evalFails("Cot(0)");
     evalFails("Cot()");
@@ -713,7 +723,7 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Sqrt() throws Exception {
-    evalEquals("Sqrt(10)", 3.1622776601683795);
+    evalEquals("Sqrt(9)", 3);
     evalFails("Sqrt(-5)");
     evalFails("Sqrt()");
     evalNull("Sqrt(NULL)");
@@ -763,6 +773,8 @@ public class FunctionTest extends BaseExpressionTest {
   public void Greatest() throws Exception {
     evalEquals("Greatest(5,2,null,9,4)", 9);
     evalEquals("Greatest('B','A','C')", "C");
+    evalEquals("Greatest(0x12,0x1F,0x0A)",  new byte[]{0x1F});
+   
     evalEquals("Greatest(Date '2020-01-01',Date '2021-12-06',Date '1990-12-08')",
         LocalDate.of(2021, 12, 6));
     evalTrue("Greatest(false,true,false)");
@@ -772,6 +784,8 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Least() throws Exception {
     evalEquals("Least(5,2,null,9,4)", 2);
+    evalEquals("Least('B','A','C')", "A");
+    evalEquals("Least(0x12,0x1F,0x0A)",  new byte[]{0x0A});
     evalEquals("Least(Date '2020-01-01',Date '2021-12-06',Date '1990-12-08')",
         LocalDate.of(1990, 12, 8));
     evalFalse("Least(false,true,false)");
@@ -780,7 +794,13 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Length() throws Exception {
+    // String
     evalEquals("Length('TEST')", 4);
+
+    // Binary
+    evalEquals("Length(0xF0FA)", 2);
+    evalEquals("Length(0x0F0FA)", 3);
+    
     evalNull("Length(null)");
     evalFails("Length()");
   }
@@ -791,9 +811,23 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Left('',1)", "");
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
+    evalEquals("Left(0x1234567890, 2)", new byte[]{0x12, 0x34});
     evalNull("Left(NULL,4)");
     evalNull("Left('TEST',NULL)");
     evalFails("Left()");
+  }
+
+  @Test
+  public void Insert() throws Exception {
+    evalEquals("Insert('abcd', 2, 1, 'qw')", "aqwcd");
+    evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");    
+    evalEquals("Insert(0x1234, 2, 0, 0x56)", new byte[]{0x12, 0x56, 0x34});
+    evalEquals("Insert(0x1234, 0, 0, 0x56)", new byte[]{0x56, 0x12, 0x34});
+    evalNull("Insert(NULL, 2, 1, 'qw')");
+    evalNull("Insert('abcd', NULL, 1, 'qw')");
+    evalNull("Insert('abcd', 2, NULL, 'qw')");
+    evalNull("Insert('abcd', 2, 1, NULL)");
+    evalFails("Insert()");
   }
 
   @Test
@@ -802,6 +836,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Right('',1)", "");
     evalEquals("Right('TEST',10)", "TEST");
     evalEquals("Right('TEST',-1)", "");
+    evalEquals("Right(0x1234567890, 2)", new byte[]{0x78, (byte) 0x90});
     evalNull("Right(NULL,4)");
     evalNull("Right('TEST',NULL)");
     evalFails("Right()");
@@ -811,6 +846,7 @@ public class FunctionTest extends BaseExpressionTest {
   public void Repeat() throws Exception {
     evalEquals("Repeat('ABCD',3)", "ABCDABCDABCD");
     evalEquals("Repeat('ABCDEFCD',0)", "");
+    evalEquals("Repeat(0x1234,3)", new byte[]{0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
     evalNull("Repeat(NULL,2)");
     evalNull("Repeat('ABCD',NULL)");
     evalFails("Repeat()");
@@ -1332,6 +1368,7 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Soundex() throws Exception {
+    evalEquals("Soundex('Wikipedia')", "W213");
     evalEquals("Soundex('I LOVE ROCKS.')", "I416");
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
     evalNull("Soundex(NULL)");
@@ -1522,11 +1559,16 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Concat() throws Exception {
+    // String
     evalEquals("'tes'||'t'", "test");
     evalEquals("Concat('tes','t')", "test");
     evalEquals("Concat('a','b','c')", "abc");
     evalEquals("Concat(NULL,'a')", "a");
     evalEquals("Concat('a',NULL)", "a");
+    
+    // Binary
+    // TODO: evalEquals("Concat(0x1F,0x2A3B)", new byte[]{0x1F, 0x2A, 0x3B});
+    
     evalNull("Concat(NULL,NULL)");
   }
 
@@ -1643,7 +1685,7 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Ln() throws Exception {
     evalEquals("Ln(1)", 0);
-    evalEquals("Exp(Ln(2))", 2);
+    evalEquals("Exp(Ln(2.4))", 2.4);
     evalEquals("Ln(10)", 2.302585092994046);
     evalNull("Ln(null)");
     evalFails("Ln(0)");
@@ -1652,7 +1694,7 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Log() throws Exception {
-    evalEquals("Log(10,100)", 2);
+    evalEquals("Log(10,100)", 2); 
     evalNull("Log(10,null)");
     evalNull("Log(null,1)");
     evalFails("Log(10,0)");
@@ -1663,7 +1705,7 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Log10() throws Exception {
-    evalEquals("Log10(84.4)", 1.926342446625655);
+    evalEquals("Log10(10)", 1);
     evalNull("Log10(null)");
     evalFails("Log10(-1)");
     evalFails("Log10()");
@@ -1673,6 +1715,7 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void Degrees() throws Exception {
     evalEquals("Degrees(Pi())", 180);
+    evalEquals("Degrees(Radians(50))", 50);
     evalNull("Degrees(null)");
     evalFails("Degrees()");
     evalFails("Degrees(1,2)");
@@ -1680,7 +1723,7 @@ public class FunctionTest extends BaseExpressionTest {
 
   @Test
   public void Radians() throws Exception {
-    evalEquals("Radians(180)", 3.141592653589793);
+    evalEquals("Radians(180)", Math.PI);
     evalNull("Radians(null)");
     evalFails("Radians()");
     evalFails("Radians(1,2)");
@@ -1689,13 +1732,16 @@ public class FunctionTest extends BaseExpressionTest {
   @Test
   public void MD5() throws Exception {
     evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b");
+    evalEquals("MD5(0x123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF)", "99c415050a2cddbeb525670345ff0aee");
     evalNull("MD5(null)");
+    evalFails("MD5()");
   }
 
   @Test
   public void SHA1() throws Exception {
     evalEquals("SHA1('Test')", "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa");
     evalNull("SHA1(null)");
+    evalFails("SHA1()");
   }
 
   @Test
@@ -1703,6 +1749,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("SHA256('Test')",
         "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25");
     evalNull("SHA256(null)");
+    evalFails("SHA256()");
   }
 
   @Test
@@ -1710,6 +1757,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("SHA384('Test')",
         "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3");
     evalNull("SHA384(null)");
+    evalFails("SHA384()");
   }
 
   @Test

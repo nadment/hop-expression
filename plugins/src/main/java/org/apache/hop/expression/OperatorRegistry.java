@@ -34,7 +34,6 @@ import org.apache.hop.expression.operator.Concat;
 import org.apache.hop.expression.operator.Divide;
 import org.apache.hop.expression.operator.Equal;
 import org.apache.hop.expression.operator.Extract;
-import org.apache.hop.expression.operator.Function;
 import org.apache.hop.expression.operator.GreaterThan;
 import org.apache.hop.expression.operator.GreaterThanOrEqual;
 import org.apache.hop.expression.operator.ILike;

@@ -20,10 +20,10 @@ Reverses the order of characters in a string.
 
 == Syntax
 ----
-REVERSE( <string> )
+REVERSE( <string_or_binary> )
 ----
 
-Returns:: String
+Returns:: String or binary
 
 == Usage
 

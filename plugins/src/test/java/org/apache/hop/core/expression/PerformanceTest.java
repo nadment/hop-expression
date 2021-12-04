@@ -59,7 +59,7 @@ public class PerformanceTest {
     ExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
     context.setRow(row);
 
-    long cycle = 10000000;
+    long cycle = 1000000;
     long startTime = System.currentTimeMillis();
     for (long i = cycle; i > 0; i--) {
       @SuppressWarnings("unused")

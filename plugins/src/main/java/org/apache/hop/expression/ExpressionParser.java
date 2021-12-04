@@ -16,7 +16,6 @@ package org.apache.hop.expression;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.operator.Function;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
@@ -468,15 +467,15 @@ public class ExpressionParser {
       bytes[i] = (byte) Integer.parseInt(s.substring(start, start + 2), 16);
     }
 
-    if (bytes.length <= 8) {
-      // Value as integer if less than or equals 8 bytes
-      long result = 0;
-      for (int i = 0; i < bytes.length; i++) {
-        result = result << 8;
-        result = result | (bytes[i] & 0xFF);
-      }
-      return new Literal(result);
-    }
+//    if (bytes.length <= 8) {
+//      // Value as integer if less than or equals 8 bytes
+//      long result = 0;
+//      for (int i = 0; i < bytes.length; i++) {
+//        result = result << 8;
+//        result = result | (bytes[i] & 0xFF);
+//      }
+//      return new Literal(result);
+//    }
 
     return new Literal(bytes);
   }
@@ -493,10 +492,10 @@ public class ExpressionParser {
       }
     }
 
-    if (bitset.length() <= 32) {
-      // Value as integer if less than or equals 32 bits
-      return new Literal(bitset.toLongArray()[0]);
-    }
+//    if (bitset.length() <= 32) {
+//      // Value as integer if less than or equals 32 bits
+//      return new Literal(bitset.toLongArray()[0]);
+//    }
 
     return new Literal(bitset.toByteArray());
   }
@@ -653,7 +652,7 @@ public class ExpressionParser {
           token.start());
     }
 
-    Type type = parseType();
+    DataType type = parseDataType();
     operands.add(new Literal(type));
 
     if (is(Id.FORMAT)) {
@@ -684,7 +683,7 @@ public class ExpressionParser {
   private IExpression parseCastOperator() throws ParseException {
     IExpression expression = this.parseTerm();
     if (next(Id.CAST)) {
-      Type type = parseType();
+      DataType type = parseDataType();
       return new OperatorCall(OperatorRegistry.CAST, expression, new Literal(type));
     }
     return expression;
@@ -768,7 +767,7 @@ public class ExpressionParser {
     return new OperatorCall(function, operands);
   }
 
-  private Type parseType() throws ParseException {
+  private DataType parseDataType() throws ParseException {
     Token token = next();
     if (token == null) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingDataType"),
@@ -776,7 +775,7 @@ public class ExpressionParser {
     }
 
     try {
-      return Type.of(token.text());
+      return DataType.of(token.text());
     } catch (RuntimeException e) {
       throw new ParseException(
           BaseMessages.getString(PKG, "Expression.InvalidDataType", token.text()), token.start());

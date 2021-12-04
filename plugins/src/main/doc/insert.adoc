@@ -14,17 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SPACE
+= INSERT
 
-Returns a string consisting of a the specified number of blank spaces.
+Replaces a substring of the specified length, starting at the specified position, with a new string or binary value.
 
 == Syntax
 ----
-SPACE( <length> )
+INSERT( <source_string_or_binary>, <position>, <length>, <replacement_string_or_binary> )
 ----
 
-Returns:: String
-
-== Usage
-
-* Return NULL if the argument is negative
+Returns:: String or binary

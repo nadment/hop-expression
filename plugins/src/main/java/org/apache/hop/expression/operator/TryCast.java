@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
-import org.apache.hop.expression.Type;
 import java.io.StringWriter;
 
 public class TryCast extends Operator {
@@ -44,7 +44,7 @@ public class TryCast extends Operator {
     }
     
     try {     
-      Type type = (Type) operands[1].eval(context);
+      DataType type = (DataType) operands[1].eval(context);
 
       if (operands.length == 3) {
         Object format = operands[2].eval(context);

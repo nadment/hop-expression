@@ -20,5 +20,5 @@ This function calculates the trigonometric cosine of the specified angle in radi
 
 == Syntax
 ----
-COS( <number> )
+COS( <numeric> )
 ----

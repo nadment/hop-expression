@@ -16,11 +16,11 @@ under the License.
 ////
 = RIGHT
 
-Extracts a number of characters from a string (starting from right).
+Extracts a number of characters from a string or bytes from binary (starting from right).
 		
 == Syntax
 ----
-RIGHT( <string> [, <length> ] )
+RIGHT( <string_or_binary> [, <length> ] )
 ----
 
 See also xref:left.adoc[LEFT]

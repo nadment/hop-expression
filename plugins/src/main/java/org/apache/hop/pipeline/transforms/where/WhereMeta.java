@@ -16,10 +16,6 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.ICheckResult;
@@ -46,6 +42,9 @@ import org.apache.hop.pipeline.transform.errorhandling.IStream.StreamType;
 import org.apache.hop.pipeline.transform.errorhandling.Stream;
 import org.apache.hop.pipeline.transform.errorhandling.StreamIcon;
 import org.w3c.dom.Node;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This transform where filter rows with expression and keeps only rows where this expression is

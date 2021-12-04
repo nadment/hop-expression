@@ -16,11 +16,11 @@ under the License.
 ////
 = TANH
 
-This function calculates the hyperbolic tangent of its argument.
+This function calculates the hyperbolic tangent.
 
 == Syntax
 ----
-TANH(<numeric>)
+TANH( <numeric> )
 ----
 
 Returns:: Number

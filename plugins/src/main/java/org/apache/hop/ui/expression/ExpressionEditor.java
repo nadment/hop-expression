@@ -176,7 +176,7 @@ public class ExpressionEditor extends Composite {
       }
 
       @Override
-      public void dragSetData(DragSourceEvent event) {
+      public void dragSetData(DragSourceEvent event) {        
         // Set the data to be the first selected item's text
         event.data = labelProvider.getText(tree.getSelection()[0].getData());
       }

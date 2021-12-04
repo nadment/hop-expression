@@ -16,9 +16,9 @@ under the License.
 ////
 = ASINH
 
-This function calculates the inverse (arc) hyperbolic sine of its argument.
+This function calculates the inverse (arc) hyperbolic sine.
 
 == Syntax
 ----
-ASINH( <number> )
+ASINH( <numeric> )
 ----

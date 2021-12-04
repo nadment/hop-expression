@@ -372,7 +372,7 @@ public class ExpressionScanner {
             return new Token(Id.valueOf(name), start, index, name);
           }
 
-          if (Type.exist(name)) {
+          if (DataType.exist(name)) {
             return new Token(Id.DATATYPE, start, index, name);
           }
 

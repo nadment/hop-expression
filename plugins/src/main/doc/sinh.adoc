@@ -16,7 +16,7 @@ under the License.
 ////
 = SINH
 
-This function calculates the hyperbolic sine of its argument.
+This function calculates the hyperbolic sine.
 
 == Syntax
 ----

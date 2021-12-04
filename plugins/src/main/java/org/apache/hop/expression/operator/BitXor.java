@@ -23,7 +23,9 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
-/** Bitwise XOR operator "^". */
+/** 
+ * Bitwise XOR operator "^".
+ */
 public class BitXor extends Operator {
 
   public BitXor() {
@@ -45,12 +47,10 @@ public class BitXor extends Operator {
     return coerceToInteger(left) ^ coerceToInteger(right);
   }
 
-
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
     operands[0].write(writer);
     writer.append('^');
     operands[1].write(writer);
   }
-
 }

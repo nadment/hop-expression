@@ -66,7 +66,17 @@ public class Literal implements IExpression {
       return new Literal(number);
     }
 
-    if (value instanceof String || value instanceof ZonedDateTime) {
+    if (value instanceof Integer) {
+      Integer number = (Integer) value;
+      if (number == 0)
+        return ZERO;
+      if (number == 1)
+        return ONE;
+      return new Literal(number.longValue());
+    }
+    
+    
+    if (value instanceof String || value instanceof ZonedDateTime || value instanceof byte[]) {
       return new Literal(value);
     }
 
@@ -139,6 +149,12 @@ public class Literal implements IExpression {
         }
       }
       writer.append('\'');
+    } else if (value instanceof byte[]) {
+      writer.append("0x");
+      for (byte b : (byte[]) value) {
+        writer.append(byteToHex((b >> 4) & 0xF));
+        writer.append(byteToHex(b & 0xF));
+      }
     } else if (value instanceof ZonedDateTime) {
       ZonedDateTime datetime = (ZonedDateTime) value;
       if (datetime.getNano() > 0) {
@@ -152,5 +168,12 @@ public class Literal implements IExpression {
     } else {
       writer.append(Operator.coerceToString(value));
     }
+  }
+
+  private static char byteToHex(int digit) {
+    if (digit < 10) {
+      return (char) ('0' + digit);
+    }
+    return (char) ('A' - 10 + digit);
   }
 }

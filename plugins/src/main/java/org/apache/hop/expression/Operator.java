@@ -20,7 +20,6 @@ import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.i18n.BaseMessages;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -263,9 +262,9 @@ public abstract class Operator implements Comparable<Operator> {
    * @param type the data type of the returned value
    * @return the converted value
    */
-  public static Object convertTo(Object value, final Type type) {
+  public static Object convertTo(Object value, final DataType type) {
 
-    if (Type.fromJava(value) == type)
+    if (DataType.fromJava(value) == type)
       return value;
 
     switch (type) {
@@ -295,9 +294,9 @@ public abstract class Operator implements Comparable<Operator> {
     }
   }
 
-  public static Object convertTo(Object value, final Type type, String pattern) {
+  public static Object convertTo(Object value, final DataType type, String pattern) {
 
-    Type sourceType = Type.fromJava(value);
+    DataType sourceType = DataType.fromJava(value);
     if (sourceType == type)
       return value;
 
@@ -320,13 +319,12 @@ public abstract class Operator implements Comparable<Operator> {
         }
         return coerceToString(value);
       case DATE:
-        if (sourceType == Type.STRING) {
+        if (sourceType == DataType.STRING) {
           try {
             DateTimeFormat format = DateTimeFormat.of(pattern);
             return format.parse((String) value);
           } catch (RuntimeException | ParseException e) {
-            throw new ExpressionException(
-                BaseMessages.getString(PKG, "Expression.InvalidDate", value));
+            throw ExpressionException.create("Expression.InvalidDate", value);
           }
         }
 
@@ -392,7 +390,7 @@ public abstract class Operator implements Comparable<Operator> {
           break;
       }
     }
-    throw new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidBoolean", value));
+    throw ExpressionException.create("Expression.InvalidBoolean", value);
   }
 
   public static byte[] coerceToBinary(Object value) {
@@ -422,7 +420,7 @@ public abstract class Operator implements Comparable<Operator> {
       return buffer;
     }
 
-    throw errorUnsupportedConversion(value, Type.BINARY);
+    throw errorUnsupportedConversion(value, DataType.BINARY);
   }
 
   public static String coerceToString(Object value) {
@@ -467,7 +465,7 @@ public abstract class Operator implements Comparable<Operator> {
         BigDecimal number = NumberFormat.parse((String) value, 38, 0);
         return number.longValue();
       } catch (ParseException | NumberFormatException e) {
-        throw errorInvalidNumber(value);
+        throw ExpressionException.create("Expression.InvalidNumber", value);
       }
     }
 
@@ -490,7 +488,7 @@ public abstract class Operator implements Comparable<Operator> {
       return result;
     }
 
-    throw errorUnsupportedConversion(value, Type.INTEGER);
+    throw errorUnsupportedConversion(value, DataType.INTEGER);
   }
 
   public static Double coerceToNumber(Object value) {
@@ -507,7 +505,7 @@ public abstract class Operator implements Comparable<Operator> {
       try {
         return Double.parseDouble((String) value);
       } catch (NumberFormatException e) {
-        throw errorInvalidNumber(value);
+        throw ExpressionException.create("Expression.InvalidNumber", value);
       }
     }
     // if (value instanceof Boolean) {
@@ -529,7 +527,7 @@ public abstract class Operator implements Comparable<Operator> {
       return Double.valueOf(result);
     }
 
-    throw errorUnsupportedConversion(value, Type.NUMBER);
+    throw errorUnsupportedConversion(value, DataType.NUMBER);
   }
 
   public static BigDecimal coerceToBigNumber(Object value) {
@@ -549,14 +547,14 @@ public abstract class Operator implements Comparable<Operator> {
       try {
         return new BigDecimal(((String) value).trim());
       } catch (NumberFormatException e) {
-        throw errorInvalidNumber(value);
+        throw ExpressionException.create("Expression.InvalidNumber", value);
       }
     }
     // if (value instanceof Boolean) {
     // return ((boolean) value) ? BigDecimal.ONE:BigDecimal.ZERO;
     // }
 
-    throw errorUnsupportedConversion(value, Type.BIGNUMBER);
+    throw errorUnsupportedConversion(value, DataType.BIGNUMBER);
   }
 
   public static ZonedDateTime coerceToDate(Object value) {
@@ -567,7 +565,7 @@ public abstract class Operator implements Comparable<Operator> {
       return (ZonedDateTime) value;
     }
 
-    throw errorUnsupportedConversion(value, Type.DATE);
+    throw errorUnsupportedConversion(value, DataType.DATE);
   }
 
   /** Translates a LIKE pattern to Java regex pattern, with optional escape string. */
@@ -576,7 +574,7 @@ public abstract class Operator implements Comparable<Operator> {
     if (escapeStr != null) {
 
       if (escapeStr.length() != 1) {
-        throw errorInvalidEscapeCharacter(escapeStr.toString());
+        throw ExpressionException.create("Expression.InvalidEscapeCharacter", escapeStr.toString());
       }
 
       escapeChar = escapeStr.charAt(0);
@@ -599,7 +597,7 @@ public abstract class Operator implements Comparable<Operator> {
 
       if (c == escapeChar) {
         if (i == (sqlPattern.length() - 1)) {
-          throw errorInvalidEscapeSequence(sqlPattern, i);
+          throw ExpressionException.create("Expression.InvalidEscape", sqlPattern, i);
         }
         char nextChar = sqlPattern.charAt(i + 1);
         if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
@@ -609,7 +607,7 @@ public abstract class Operator implements Comparable<Operator> {
           javaPattern.append(nextChar);
           i++;
         } else {
-          throw errorInvalidEscapeSequence(sqlPattern, i);
+          throw ExpressionException.create("Expression.InvalidEscape", sqlPattern, i);
         }
       } else if (c == '_') {
         javaPattern.append('.');
@@ -622,60 +620,38 @@ public abstract class Operator implements Comparable<Operator> {
     return javaPattern.toString();
   }
 
-  protected static final ExpressionException errorArgumentOutOfRange(Object arg) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.ArgumentOutOfRange", arg));
+  public static final ExpressionException errorArgumentOutOfRange(Object arg) {
+    return ExpressionException.create("Expression.ArgumentOutOfRange", arg);
   }
 
-  protected static final ExpressionException errorInternal(final String error) {
-    return new ExpressionException(BaseMessages.getString(PKG, "Expression.InternalError", error));
+  public static final ExpressionException errorOverflow(String message) {
+    return ExpressionException.create("Expression.Overflow", message);
   }
 
-  protected static ExpressionException errorInvalidEscapeCharacter(String s) {
-    return new ExpressionException("Invalid escape character '" + s + "'");
+  public static final ExpressionException errorDivisionByZero() {
+    return ExpressionException.create("Expression.DivisionByZero");
   }
 
-  protected static ExpressionException errorInvalidEscapeSequence(String s, int i) {
-    return new ExpressionException("Invalid escape sequence '" + s + "', " + i);
+  public static final ExpressionException errorUnsupportedConversion(Object value, DataType type) {
+    return ExpressionException.create("Expression.UnsupportedConversion", value, DataType.fromJava(value), type);
   }
 
-  protected static final ExpressionException errorInvalidNumber(Object value) {
-    return new ExpressionException(BaseMessages.getString(PKG, "Expression.InvalidNumber", value));
+  public static ExpressionException errorFormatPattern(String s, int i) {
+    return ExpressionException.create("Bad format {0} at position {1}", s, i);
   }
 
-  protected static final ExpressionException errorOverflow(String message) {
-    return new ExpressionException(BaseMessages.getString(PKG, "Expression.Overflow", message));
+  public static ExpressionException errorRegexpPattern(String s) {
+    return ExpressionException.create("Bad regexp {0}", s);
   }
 
-  protected static final ExpressionException errorDivisionByZero() {
-    return new ExpressionException(BaseMessages.getString(PKG, "Expression.DivisionByZero"));
+  public static ExpressionException errorUnexpectedDataType(String name, DataType type) {
+    return ExpressionException.create("Expression.UnexpectedDataType", name, type);
   }
 
-  protected static final ExpressionException errorUnsupportedConversion(Object value, Type type) {
-    return new ExpressionException(BaseMessages.getString(PKG, "Expression.UnsupportedConversion",
-        value, Type.fromJava(value), type));
-  }
-
-  protected static ExpressionException createFormatPatternException(String s, int i) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Bad format {0} at position {1}", s, i));
-  }
-
-  protected static ExpressionException createRegexpPatternException(String s) {
-    return new ExpressionException(BaseMessages.getString(PKG, "Bad regexp {0}", s));
-  }
-
-  protected static ExpressionException createUnexpectedDataTypeException(String name, Type type) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.UnexpectedDataType", name, type));
-  }
-
-  protected static ExpressionException createUnexpectedDatePartException(String name, DatePart part) {
-    return new ExpressionException(
-        BaseMessages.getString(PKG, "Expression.UnexpectedDatePart", name, part));
+  public static ExpressionException errorUnexpectedDatePart(String name, DatePart part) {
+    return ExpressionException.create("Expression.UnexpectedDatePart", name, part);
   }
   
-
   public static String getHtml(String name) {
     String doc = docs.get(name);
     if (doc != null) {

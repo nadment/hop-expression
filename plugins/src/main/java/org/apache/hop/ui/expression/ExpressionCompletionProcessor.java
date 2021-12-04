@@ -23,11 +23,11 @@ import org.apache.hop.core.config.DescribedVariable;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionScanner;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.Type;
-import org.apache.hop.expression.operator.Function;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -228,7 +228,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           // If identifier name contains space, is a reserved word or a function name must be
           // quoted
           if (quoted || name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name)
-              || Type.exist(name) || DatePart.exist(name)
+              || DataType.exist(name) || DatePart.exist(name)
               || OperatorRegistry.isFunctionName(name)) {
             content = '\"' + name + '\"';
           }

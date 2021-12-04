@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
  * If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
-public enum Type {
+public enum DataType {
   /** A unknown type */
   NONE(Void.class),
 
@@ -56,7 +56,7 @@ public enum Type {
 
   private final Class<?> javaClass;
 
-  private Type(Class<?> javaClass) {
+  private DataType(Class<?> javaClass) {
     this.javaClass = javaClass;
   }
 
@@ -64,16 +64,16 @@ public enum Type {
     return javaClass;
   }
 
-  public static Type of(final String name) {
-    for (Type type : Type.values()) {
+  public static DataType of(final String name) {
+    for (DataType type : DataType.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
     }
-    throw new IllegalArgumentException("Invalid type: " + name);
+    throw new IllegalArgumentException("Invalid data type: " + name);
   }
 
-  public static Type fromJava(final Object object) {
+  public static DataType fromJava(final Object object) {
     if (object == null)
       return NONE;
     if (object instanceof Boolean)
@@ -91,10 +91,8 @@ public enum Type {
     if (object instanceof byte[])
       return BINARY;
 
-    throw new IllegalArgumentException("Unknown type for: " + object);
+    throw new IllegalArgumentException("Unknown data type for: " + object);
   }
-
-
 
   /**
    * Check if type exist.
@@ -103,7 +101,7 @@ public enum Type {
    * @return
    */
   public static boolean exist(final String name) {
-    for (Type type : Type.values()) {
+    for (DataType type : DataType.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return true;
       }

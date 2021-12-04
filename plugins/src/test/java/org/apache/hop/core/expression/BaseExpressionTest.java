@@ -15,9 +15,8 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -46,9 +45,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.Locale;
 import java.util.function.Consumer;
-import javax.script.ScriptContext;
 
 public class BaseExpressionTest {
     
@@ -132,6 +129,10 @@ public class BaseExpressionTest {
     assertEquals(Boolean.FALSE, eval(source));
   }
 
+  protected void evalEquals(String source, byte[] expected) throws Exception {
+    assertArrayEquals(expected, (byte[]) eval(source));
+  }
+  
   protected void evalEquals(String source, String expected) throws Exception {
     assertEquals(expected, (String) eval(source));
   }
@@ -184,9 +185,8 @@ public class BaseExpressionTest {
     try {
       eval(source);
       Assert.fail(source + " Syntax or result should be invalid\n");
-    } catch (ExpressionException ex) {
-      // Assert.assertT.assertThrows(s+" Syntax or result should be invalid: "+ex.getMessage(), ex);
-      // System.out.println(s+" > "+ex.toString());
+    } catch (ExpressionException ex) {      
+      //System.out.println(source+" > "+ex.toString());
     } catch (Exception ex) {
       Assert.fail(source + " Uncatched exception " + ex.getClass());
     }
@@ -208,13 +208,6 @@ public class BaseExpressionTest {
   public void parser() throws Exception {
 //   ExpressionContext context = createExpressionContext();
 //   context.setAttribute("TEST","");
-//   evalEquals("To_Char(Date '2019-07-23','AD')", "AD", context);
-//   
-//   // Format with Thousand Group Markers
-//   Locale.setDefault(new Locale("en", "US"));
-//   evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
-//   Locale.setDefault(new Locale("fr", "BE"));
-//   evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
-//   evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
+
   }
 }

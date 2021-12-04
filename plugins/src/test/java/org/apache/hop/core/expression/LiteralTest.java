@@ -75,6 +75,8 @@ public class LiteralTest extends BaseExpressionTest {
     evalFalse("'Off'::Boolean");
     evalFalse("'No'::Boolean");
     evalNull("NULL");
+    
+    writeEquals("TRUE", "TRUE");
   }
 
   @Test
@@ -84,6 +86,7 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("0xff", 255L);
     evalEquals("0xfE", 254L);
     evalEquals("0x0F", 15L);
+    evalEquals("0x1234567812345678", new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
     evalFails("0X0F");
     evalFails("0X0FG");
 
@@ -96,6 +99,8 @@ public class LiteralTest extends BaseExpressionTest {
         6.1489146933895936E18);
     evalFails("0B010101");
     evalFails("0B010501");
+
+    writeEquals("0x12AF", "0x12AF");
   }
 
 
@@ -109,6 +114,8 @@ public class LiteralTest extends BaseExpressionTest {
     // Integer
     evalEquals("-9223372036854775818", Long.MIN_VALUE);
     evalEquals("9223372036854775807", Long.MAX_VALUE);
+
+    writeEquals("123456", "123456");
   }
 
   @Test
@@ -151,9 +158,10 @@ public class LiteralTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Date() throws Exception {   
-    ZonedDateTime datetime = ZonedDateTime.of(LocalDate.of(2021, 2, 25), LocalTime.of(2, 59, 00), ZoneId.systemDefault());
-    
+  public void Date() throws Exception {
+    ZonedDateTime datetime = ZonedDateTime.of(LocalDate.of(2021, 2, 25), LocalTime.of(2, 59, 00),
+        ZoneId.systemDefault());
+
     assertEquals(datetime, Literal.of(datetime).eval(null));
     assertEquals(Literal.of(datetime), Literal.of(datetime));
 
@@ -181,9 +189,12 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("Timestamp '2021-01-01 15:28:59'", LocalDateTime.of(2021, 1, 1, 15, 28, 59));
 
     // Time zone offset
-    evalEquals("Timestamp '2021-01-01 15:28:59 +2:00'", OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0,  ZoneOffset.ofHoursMinutes(2, 0)));
-    evalEquals("Timestamp '2021-01-01 15:28:59 +02:00'", OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0,  ZoneOffset.ofHoursMinutes(2, 0)));
-    evalEquals("Timestamp '2021-01-01 15:28:59 -02:00'", OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0,  ZoneOffset.ofHoursMinutes(-2, 0)));
+    evalEquals("Timestamp '2021-01-01 15:28:59 +2:00'",
+        OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
+    evalEquals("Timestamp '2021-01-01 15:28:59 +02:00'",
+        OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
+    evalEquals("Timestamp '2021-01-01 15:28:59 -02:00'",
+        OffsetDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(-2, 0)));
 
     // TIMESTAMP '2004-02-19 8:00:00 US/Pacific');
 
