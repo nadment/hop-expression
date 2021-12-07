@@ -29,28 +29,28 @@ public class ArithmeticRule implements Rule {
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
     // Eliminate double NEGATIVE
-    if (call.is(OperatorRegistry.NEGATIVE)) {
+    if (call.isOperator(OperatorRegistry.NEGATIVE)) {
       IExpression operand = call.getOperand(0);
-      if (operand.is(OperatorRegistry.NEGATIVE)) {
+      if (operand.isOperator(OperatorRegistry.NEGATIVE)) {
         return ((OperatorCall) operand).getOperand(0);
       }
-    } else if (call.is(OperatorRegistry.ADD)) {
+    } else if (call.isOperator(OperatorRegistry.ADD)) {
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);
-      if (left.is(Kind.LITERAL) && right.is(OperatorRegistry.ADD)) {
+      if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.ADD)) {
         OperatorCall child = (OperatorCall) right;
-        if (child.getOperand(0).is(Kind.LITERAL)) {
+        if (child.getOperand(0).isKind(Kind.LITERAL)) {
           IExpression operation = new OperatorCall(OperatorRegistry.ADD, left, child.getOperand(0));
           Literal literal = Literal.of(operation.eval(context));
           return new OperatorCall(OperatorRegistry.ADD, literal, child.getOperand(1));
         }
       }
-    } else if (call.is(OperatorRegistry.MULTIPLY)) {
+    } else if (call.isOperator(OperatorRegistry.MULTIPLY)) {
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);
-      if (left.is(Kind.LITERAL) && right.is(OperatorRegistry.MULTIPLY)) {
+      if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.MULTIPLY)) {
         OperatorCall child = (OperatorCall) right;
-        if (child.getOperand(0).is(Kind.LITERAL)) {
+        if (child.getOperand(0).isKind(Kind.LITERAL)) {
           IExpression operation = new OperatorCall(OperatorRegistry.MULTIPLY, left, child.getOperand(0));
           Literal literal = Literal.of(operation.eval(context));
           return new OperatorCall(OperatorRegistry.MULTIPLY, literal, child.getOperand(1));

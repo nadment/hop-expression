@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class SimplifyInRule implements Rule {
   public IExpression apply(IExpressionContext context, OperatorCall call) {
-    if (call.is(OperatorRegistry.IN)) {
+    if (call.isOperator(OperatorRegistry.IN)) {
 
       List<IExpression> list = new ArrayList<>();
 

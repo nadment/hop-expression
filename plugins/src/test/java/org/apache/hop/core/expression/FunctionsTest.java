@@ -26,7 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Random;
 
-public class FunctionTest extends BaseExpressionTest {
+public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Coalesce() throws Exception {
@@ -1495,7 +1495,9 @@ public class FunctionTest extends BaseExpressionTest {
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234");
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
     evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
+    //evalEquals("Regexp_Replace('AAA   BBB     CCC', '[:space:]+', Chr(32))", "AAA BBB CCC");
 
+    
     evalEquals(
         "Regexp_Replace('This line    contains    more      than one   spacing      between      words', '( ){2,}', ' ')",
         "This line contains more than one spacing between words");
@@ -1656,6 +1658,9 @@ public class FunctionTest extends BaseExpressionTest {
     evalFails("Ceil()");
     evalFails("Ceil(1,2,3)");
     evalFails("Ceil('x')");
+    
+    // Alias
+    evalEquals("Ceiling(1)", 1);
   }
 
   @Test
@@ -1679,7 +1684,7 @@ public class FunctionTest extends BaseExpressionTest {
     evalNull("Round(null)");
     evalFails("Round()");
     evalFails("Round(1,2,3)");
-    evalFails("Round('x')"); // Invalid number
+    evalFails("Round('x')");
   }
 
   @Test

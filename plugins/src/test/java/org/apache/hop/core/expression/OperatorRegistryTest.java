@@ -16,15 +16,20 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.DatePart;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import org.apache.hop.expression.OperatorRegistry;
 import org.junit.Test;
 
-public class DatePartTest {
+public class OperatorRegistryTest {
   @Test
   public void test() throws Exception {
-    assertTrue(DatePart.exist("MONTH"));
-    assertEquals(DatePart.of("HOUR"), DatePart.HOUR);
+    assertNotNull(OperatorRegistry.getOperators());
+    assertNotNull(OperatorRegistry.getFunctionNames());
+    assertNull(OperatorRegistry.getFunction(null));
+    assertEquals(OperatorRegistry.getFunction("CEIL").getName(), OperatorRegistry.getFunction("CEILING").getName());
+    assertNotEquals(OperatorRegistry.getFunction("CEIL").getAlias(), OperatorRegistry.getFunction("CEILING").getAlias());
   }
 }
 

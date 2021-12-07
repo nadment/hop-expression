@@ -39,7 +39,7 @@ public class SimplifyLikeRule implements Rule {
 
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
-    if ( call.is(OperatorRegistry.LIKE)) {
+    if ( call.isOperator(OperatorRegistry.LIKE)) {
 
       // Optimize NULL LIKE FIELD to NULL
       IExpression v0 = call.getOperand(0);

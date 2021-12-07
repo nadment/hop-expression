@@ -138,7 +138,7 @@ public abstract class NumberFormat extends BaseFormat {
 
   private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
-  public static NumberFormat ofPattern(String pattern) {
+  public static NumberFormat of(String pattern) {
     if (pattern == null)
       pattern = "TM";
 

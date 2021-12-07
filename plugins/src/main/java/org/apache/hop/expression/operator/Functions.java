@@ -1987,7 +1987,7 @@ public class Functions  {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
-        return NumberFormat.ofPattern(pattern).format(coerceToBigNumber(value));
+        return NumberFormat.of(pattern).format(coerceToBigNumber(value));
       case DATE:
         ZonedDateTime datetime = coerceToDate(value);
         return DateTimeFormat.of(pattern).format(datetime);
@@ -2009,12 +2009,12 @@ public class Functions  {
 
     // No format
     if (operands.length == 1) {
-      return NumberFormat.ofPattern(null).parse(coerceToString(v0));
+      return NumberFormat.of(null).parse(coerceToString(v0));
     }
 
     Object v1 = operands[1].eval(context);
     if (operands.length == 2) {
-      return NumberFormat.ofPattern(coerceToString(v1)).parse(coerceToString(v0));
+      return NumberFormat.of(coerceToString(v1)).parse(coerceToString(v0));
     }
 
     // Precision and scale
@@ -2035,13 +2035,13 @@ public class Functions  {
     try {
       // No format
       if (operands.length == 1) {
-        return NumberFormat.ofPattern(null).parse(value.toString());
+        return NumberFormat.of(null).parse(value.toString());
       }
 
       // With format
       if (operands.length == 2) {
         Object v1 = operands[1].eval(context);
-        return NumberFormat.ofPattern(coerceToString(v1)).parse(coerceToString(value));
+        return NumberFormat.of(coerceToString(v1)).parse(coerceToString(value));
       }
 
       // Precision and scale

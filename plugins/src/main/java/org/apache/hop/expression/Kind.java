@@ -14,7 +14,9 @@
  */
 package org.apache.hop.expression;
 
-/** Enumerates the possible types of {@link IExpression}. */
+/** 
+ * Enumerates the possible types of {@link IExpression}.
+ */
 public enum Kind {
   LITERAL,
   LIST,

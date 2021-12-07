@@ -134,7 +134,7 @@ public abstract class Operator implements Comparable<Operator> {
     return isDeterministic;
   }
   
-  protected URL getDocumentationUrl() {
+  public URL getDocumentationUrl() {
     return getClass().getResource("/docs/" + name.toLowerCase() + ".html");
   }
 
@@ -263,134 +263,232 @@ public abstract class Operator implements Comparable<Operator> {
    * @return the converted value
    */
   public static Object convertTo(Object value, final DataType type) {
-
-    if (DataType.fromJava(value) == type)
-      return value;
-
-    switch (type) {
-      case BOOLEAN:
-        return coerceToBoolean(value);
-      case INTEGER:
-        return coerceToInteger(value);
-      case NUMBER:
-        return coerceToNumber(value);
-      case BIGNUMBER:
-        return coerceToBigNumber(value);
-      case STRING:
-        if (value instanceof ZonedDateTime) {          
-          ZonedDateTime dt = coerceToDate(value);
-          DateTimeFormat format = DateTimeFormat.of("YYYY-MM-DD");
-          return format.format(dt);
-        }
-        return coerceToString(value);
-      case DATE:
-        return coerceToDate(value);
-      case BINARY:
-        return coerceToBinary(value);
-      case NONE:
-        return null;
-      default:
-        throw errorUnsupportedConversion(value, type);
-    }
+    return convertTo(value, type, null);
   }
 
   public static Object convertTo(Object value, final DataType type, String pattern) {
+    if (value == null) {
+      return null;
+    }    
 
-    DataType sourceType = DataType.fromJava(value);
-    if (sourceType == type)
+    if ( type.isInstance(value) )
       return value;
-
+    
     switch (type) {
       case BOOLEAN:
-        return coerceToBoolean(value);
-      case INTEGER:
-        return coerceToInteger(value);
-      case NUMBER:
-        return coerceToNumber(value);
-      case BIGNUMBER:
-        return coerceToBigNumber(value);
-      case STRING:
         if (value instanceof Number) {
-          return NumberFormat.ofPattern(pattern).format(coerceToBigNumber(value));
-        } else if (value instanceof ZonedDateTime) {
-          ZonedDateTime dt = coerceToDate(value);
-          DateTimeFormat formatter = DateTimeFormat.of(pattern);
-          return formatter.format(dt);
+          return ((Number) value).intValue() != 0;
+        }
+        if (value instanceof String) {
+          return convertStringToBoolean( (String) value);         
+        }
+        break;
+      case INTEGER:
+        if (value instanceof Number) {
+          return ((Number) value).longValue();
+        }
+        if (value instanceof Boolean) {
+          return ((boolean) value) ? 1L:0L;
+        }
+        if (value instanceof String) {
+          return convertStringToInteger((String) value);
+        }
+        if (value instanceof byte[]) {
+          return convertBinaryToInteger((byte[]) value);
+        }
+        break;
+      case NUMBER:
+        if (value instanceof Boolean) {
+          return ((boolean) value) ? 1D:0D;
+        }
+        if (value instanceof Number) {
+          return Double.valueOf(((Number) value).doubleValue());
+        }
+        if (value instanceof String) {
+          return convertStringToNumber((String) value);
+        }
+        if (value instanceof byte[]) {
+          return convertBinaryToNumber((byte[]) value);
+        }
+        break;
+      case BIGNUMBER:
+        if (value instanceof Boolean) {
+          return ((boolean) value) ? BigDecimal.ONE:BigDecimal.ZERO;
+        }
+        if (value instanceof Long) {
+          long v = (long) value;
+          if (v==0L)
+            return BigDecimal.ZERO;
+          if (v==1L)
+            return BigDecimal.ONE;      
+          return BigDecimal.valueOf(v);
+        }
+        if (value instanceof Double) {
+          double v = (double) value;
+          if (v==0D)
+            return BigDecimal.ZERO;
+          if (v==1D)
+            return BigDecimal.ONE;      
+          return BigDecimal.valueOf(v);
+        }
+        if (value instanceof String) {
+          return convertStringToBigNumber((String) value);
+        }
+        break;
+      case STRING:
+        if (value instanceof Boolean) {
+          return ((boolean) value) ? "TRUE" : "FALSE";
+        }
+        if (value instanceof Number) {
+          return NumberFormat.of(pattern).format(coerceToBigNumber(value));
+        } 
+        if (value instanceof ZonedDateTime) {          
+          if ( pattern==null) pattern="YYYY-MM-DD";
+          return DateTimeFormat.of(pattern).format((ZonedDateTime) value);
         }
         return coerceToString(value);
       case DATE:
-        if (sourceType == DataType.STRING) {
+        if (value instanceof String) {
           try {
-            DateTimeFormat format = DateTimeFormat.of(pattern);
-            return format.parse((String) value);
+            return DateTimeFormat.of(pattern).parse((String) value);
           } catch (RuntimeException | ParseException e) {
             throw ExpressionException.create("Expression.InvalidDate", value);
           }
         }
-
-        return coerceToDate(value);
+        break;
       case BINARY:
-        return coerceToBinary(value);
+        if (value instanceof String) {
+          return ((String) value).getBytes(StandardCharsets.UTF_8);
+        }
+        if (value instanceof Long) {
+          return convertIntegerToBinary((Long) value);
+        }
+        break;
       case NONE:
         return null;
-      default:
-        throw errorUnsupportedConversion(value, type);
+      default:    
+    }
+    throw errorUnsupportedConversion(value, type);
+  }
+
+  private static Long convertStringToInteger(String str) throws ExpressionException {
+    try {
+      BigDecimal number = NumberFormat.parse(str, 38, 0);
+      return number.longValue();
+    } catch (ParseException | NumberFormatException e) {
+      throw ExpressionException.create("Expression.InvalidNumber", str);
     }
   }
 
+  private static Double convertStringToNumber(String str) throws ExpressionException {
+    try {
+      return Double.parseDouble(str);
+    } catch (NumberFormatException e) {
+      throw ExpressionException.create("Expression.InvalidNumber", str);
+    }
+  }
+
+  private static BigDecimal convertStringToBigNumber(String str) throws ExpressionException {
+    try {
+      return new BigDecimal(str);
+    } catch (NumberFormatException e) {
+      throw ExpressionException.create("Expression.InvalidNumber", str);
+    }
+  }
+
+  private static byte[] convertIntegerToBinary(Long number) throws ExpressionException {
+    byte[] buffer = new byte[8];
+    int v = (int) (number >> 32);
+
+    buffer[0] = (byte) v;
+    buffer[1] = (byte) (v >> 8);
+    buffer[2] = (byte) (v >> 16);
+    buffer[3] = (byte) (v >> 24);
+    buffer[4] = (byte) (number >> 32);
+    buffer[5] = (byte) (number >> 40);
+    buffer[6] = (byte) (number >> 48);
+    buffer[7] = (byte) (number >> 56);
+
+    return buffer;
+  }
+  
+  private static Long convertBinaryToInteger(byte[] bytes) throws ExpressionException {   
+    if (bytes.length > 8)
+      throw new ExpressionException("Binary too big to fit in integer");
+    long result = 0;
+    for (int i = 0; i < bytes.length; i++) {
+      result = result << 8;
+      result = result | (bytes[i] & 0xFF);
+    }
+    return result;
+  }
+
+  private static Double convertBinaryToNumber(byte[] bytes) throws ExpressionException {   
+    if (bytes.length > 8)
+      throw new ExpressionException("Binary too big to fit in number");
+    long result = 0;
+    for (int i = 0; i < bytes.length; i++) {
+      result = result << 8;
+      result = result | (bytes[i] & 0xFF);
+    }
+
+    return Double.valueOf(result);
+  }
+  
+  private static boolean convertStringToBoolean(String str) {
+    switch (str.length()) {
+      case 1:
+        if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
+          return true;
+        }
+        if (str.equals("0") || str.equalsIgnoreCase("f") || str.equalsIgnoreCase("n")) {
+          return false;
+        }
+        break;
+      case 2:
+        if (str.equalsIgnoreCase("on")) {
+          return true;
+        }
+        if (str.equalsIgnoreCase("no")) {
+          return false;
+        }
+        break;
+      case 3:
+        if (str.equalsIgnoreCase("yes")) {
+          return true;
+        }
+        if (str.equalsIgnoreCase("off")) {
+          return false;
+        }
+        break;
+      case 4:
+        if (str.equalsIgnoreCase("true")) {
+          return true;
+        }
+        break;
+      case 5:
+        if (str.equalsIgnoreCase("false")) {
+          return false;
+        }
+        break;
+      default:
+        break;
+    }
+    throw errorUnsupportedConversion(str, DataType.BOOLEAN);
+  }
 
   public static Boolean coerceToBoolean(Object value) {
     if (value == null) {
       return null;
     }
     if (value instanceof Boolean) {
-      return (boolean) value;
+      return (Boolean) value;
     }
     if (value instanceof Number) {
-      return ((Number) value).doubleValue() != 0;
+      return ((Number) value).intValue() != 0;
     }
-    if (value instanceof String) {
-      String str = (String) value;
-      switch (str.length()) {
-        case 1:
-          if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
-            return true;
-          }
-          if (str.equals("0") || str.equalsIgnoreCase("f") || str.equalsIgnoreCase("n")) {
-            return false;
-          }
-          break;
-        case 2:
-          if (str.equalsIgnoreCase("on")) {
-            return true;
-          }
-          if (str.equalsIgnoreCase("no")) {
-            return false;
-          }
-          break;
-        case 3:
-          if (str.equalsIgnoreCase("yes")) {
-            return true;
-          }
-          if (str.equalsIgnoreCase("off")) {
-            return false;
-          }
-          break;
-        case 4:
-          if (str.equalsIgnoreCase("true")) {
-            return true;
-          }
-          break;
-        case 5:
-          if (str.equalsIgnoreCase("false")) {
-            return false;
-          }
-          break;
-        default:
-          break;
-      }
-    }
-    throw ExpressionException.create("Expression.InvalidBoolean", value);
+
+    throw errorUnsupportedConversion(value, DataType.BOOLEAN);
   }
 
   public static byte[] coerceToBinary(Object value) {
@@ -403,22 +501,6 @@ public abstract class Operator implements Comparable<Operator> {
     if (value instanceof String) {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
-    if (value instanceof Long) {
-      Long number = (Long) value;
-      byte[] buffer = new byte[8];
-      int v = (int) (number >> 32);
-
-      buffer[0] = (byte) v;
-      buffer[1] = (byte) (v >> 8);
-      buffer[2] = (byte) (v >> 16);
-      buffer[3] = (byte) (v >> 24);
-      buffer[4] = (byte) (number >> 32);
-      buffer[5] = (byte) (number >> 40);
-      buffer[6] = (byte) (number >> 48);
-      buffer[7] = (byte) (number >> 56);
-
-      return buffer;
-    }
 
     throw errorUnsupportedConversion(value, DataType.BINARY);
   }
@@ -430,21 +512,11 @@ public abstract class Operator implements Comparable<Operator> {
     if (value instanceof String) {
       return (String) value;
     }
-    if (value instanceof Boolean) {
-      return ((boolean) value) ? "TRUE" : "FALSE";
-    }
     if (value instanceof BigDecimal) {
-      final String s = ((BigDecimal) value).toString();
-
-      if (s.startsWith("0.")) {
-        // we want ".1" not "0.1"
-        return s.substring(1);
-      } else if (s.startsWith("-0.")) {
-        // we want "-.1" not "-0.1"
-        return "-" + s.substring(2);
-      } else {
-        return s;
-      }
+      return NumberFormat.of("TM").format((BigDecimal) value);
+    }
+    if (value instanceof byte[]) {
+      return new String((byte[]) value, StandardCharsets.UTF_8);
     }
 
     return String.valueOf(value);
@@ -461,31 +533,13 @@ public abstract class Operator implements Comparable<Operator> {
       return ((Number) value).longValue();
     }
     if (value instanceof String) {
-      try {
-        BigDecimal number = NumberFormat.parse((String) value, 38, 0);
-        return number.longValue();
-      } catch (ParseException | NumberFormatException e) {
-        throw ExpressionException.create("Expression.InvalidNumber", value);
-      }
+      return convertStringToInteger((String) value);
     }
-
     if (value instanceof Boolean) {
       return ((boolean) value) ? 1L : 0L;
     }
-
     if (value instanceof byte[]) {
-      byte[] b = (byte[]) value;
-      if (b.length > 8)
-        throw new ExpressionException("Binary too big to fit in integer");
-
-      long result = 0;
-
-      for (int i = 0; i < b.length; i++) {
-        result = result << 8;
-        result = result | (b[i] & 0xFF);
-      }
-
-      return result;
+      return convertBinaryToInteger((byte[]) value);
     }
 
     throw errorUnsupportedConversion(value, DataType.INTEGER);
@@ -502,29 +556,10 @@ public abstract class Operator implements Comparable<Operator> {
       return Double.valueOf(((Number) value).doubleValue());
     }
     if (value instanceof String) {
-      try {
-        return Double.parseDouble((String) value);
-      } catch (NumberFormatException e) {
-        throw ExpressionException.create("Expression.InvalidNumber", value);
-      }
+      return convertStringToNumber((String) value);
     }
-    // if (value instanceof Boolean) {
-    // return ((boolean) value) ? 1D:0D;
-    // }
-
     if (value instanceof byte[]) {
-      byte[] b = (byte[]) value;
-      if (b.length > 8)
-        throw new ExpressionException("Binary too big to fit in number");
-
-      long result = 0;
-
-      for (int i = 0; i < b.length; i++) {
-        result = result << 8;
-        result = result | (b[i] & 0xFF);
-      }
-
-      return Double.valueOf(result);
+      return convertBinaryToNumber((byte[]) value);
     }
 
     throw errorUnsupportedConversion(value, DataType.NUMBER);
@@ -538,22 +573,24 @@ public abstract class Operator implements Comparable<Operator> {
       return (BigDecimal) value;
     }
     if (value instanceof Long) {
-      return BigDecimal.valueOf((Long) value);
+      long v = (long) value;
+      if (v==0L)
+        return BigDecimal.ZERO;
+      if (v==1L)
+        return BigDecimal.ONE;      
+      return BigDecimal.valueOf(v);
     }
     if (value instanceof Double) {
-      return BigDecimal.valueOf((Double) value);
+      double v = (double) value;
+      if (v==0D)
+        return BigDecimal.ZERO;
+      if (v==1D)
+        return BigDecimal.ONE;      
+      return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
-      try {
-        return new BigDecimal(((String) value).trim());
-      } catch (NumberFormatException e) {
-        throw ExpressionException.create("Expression.InvalidNumber", value);
-      }
+      return convertStringToBigNumber((String) value);
     }
-    // if (value instanceof Boolean) {
-    // return ((boolean) value) ? BigDecimal.ONE:BigDecimal.ZERO;
-    // }
-
     throw errorUnsupportedConversion(value, DataType.BIGNUMBER);
   }
 
@@ -564,7 +601,6 @@ public abstract class Operator implements Comparable<Operator> {
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-
     throw errorUnsupportedConversion(value, DataType.DATE);
   }
 
@@ -635,7 +671,7 @@ public abstract class Operator implements Comparable<Operator> {
   public static final ExpressionException errorUnsupportedConversion(Object value, DataType type) {
     return ExpressionException.create("Expression.UnsupportedConversion", value, DataType.fromJava(value), type);
   }
-
+  
   public static ExpressionException errorFormatPattern(String s, int i) {
     return ExpressionException.create("Bad format {0} at position {1}", s, i);
   }
@@ -643,7 +679,7 @@ public abstract class Operator implements Comparable<Operator> {
   public static ExpressionException errorRegexpPattern(String s) {
     return ExpressionException.create("Bad regexp {0}", s);
   }
-
+  
   public static ExpressionException errorUnexpectedDataType(String name, DataType type) {
     return ExpressionException.create("Expression.UnexpectedDataType", name, type);
   }

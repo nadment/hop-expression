@@ -38,50 +38,50 @@ public class SimplifyBooleanRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
-    if ( call.is(OperatorRegistry.BOOLNOT)) {
+    if ( call.isOperator(OperatorRegistry.BOOLNOT)) {
 
       IExpression operand = call.getOperand(0);
 
       // NOT(l > r) => l <= r
-      if ( operand.is(OperatorRegistry.GREATER_THAN)) {
+      if ( operand.isOperator(OperatorRegistry.GREATER_THAN)) {
         return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL,
             ((OperatorCall) operand).getOperands());
         // return new LessThanOrEqual(((OperatorCall) operand).getOperands());
       }
       // NOT(l >= r) => l < r
-      else if (operand.is(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {
+      else if (operand.isOperator(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {
         return new OperatorCall(OperatorRegistry.LESS_THAN, ((OperatorCall) operand).getOperands());
       }
       // NOT(l < r) => l >= r
-      else if (operand.is(OperatorRegistry.LESS_THAN)) {
+      else if (operand.isOperator(OperatorRegistry.LESS_THAN)) {
         return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL,
             ((OperatorCall) operand).getOperands());
       }
       // NOT(l <= r) => l > r
-      else if (operand.is(OperatorRegistry.LESS_THAN_OR_EQUAL)) {
+      else if (operand.isOperator(OperatorRegistry.LESS_THAN_OR_EQUAL)) {
         return new OperatorCall(OperatorRegistry.GREATER_THAN, ((OperatorCall) operand).getOperands());
       }
       // NOT(NOT(e)) => e
-      if (operand.is(OperatorRegistry.BOOLNOT)) {
+      if (operand.isOperator(OperatorRegistry.BOOLNOT)) {
         return ((OperatorCall) operand).getOperand(0);
       }
     }
 
-    else if (call.is(OperatorRegistry.BOOLOR)) {
+    else if (call.isOperator(OperatorRegistry.BOOLOR)) {
 
-      if (call.getOperand(0).is(Kind.LITERAL)) {
+      if (call.getOperand(0).isKind(Kind.LITERAL)) {
         Boolean value = Operator.coerceToBoolean(call.getOperand(0).eval(context));
         if (value == Boolean.TRUE)
           return Literal.TRUE;
       }
 
-      if (call.getOperand(1).is(Kind.LITERAL)) {
+      if (call.getOperand(1).isKind(Kind.LITERAL)) {
         Boolean value = Operator.coerceToBoolean(call.getOperand(1).eval(context));
         if (value == Boolean.TRUE)
           return Literal.TRUE;
       }
 
-      if (call.getOperand(0).is(Kind.LITERAL) && call.getOperand(1).is(Kind.LITERAL)) {
+      if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
         Boolean left = Operator.coerceToBoolean(call.getOperand(0).eval(context));
         Boolean right = Operator.coerceToBoolean(call.getOperand(1).eval(context));
         if (left == Boolean.FALSE || right == Boolean.FALSE)
@@ -96,21 +96,21 @@ public class SimplifyBooleanRule implements Rule {
       }
     }
 
-    else if (call.is(OperatorRegistry.BOOLAND)) {
+    else if (call.isOperator(OperatorRegistry.BOOLAND)) {
 
-      if (call.getOperand(0).is(Kind.LITERAL)) {
+      if (call.getOperand(0).isKind(Kind.LITERAL)) {
         Boolean value = Operator.coerceToBoolean(call.getOperand(0).eval(context));
         if (value == null)
           return Literal.NULL;
       }
 
-      if (call.getOperand(1).is(Kind.LITERAL)) {
+      if (call.getOperand(1).isKind(Kind.LITERAL)) {
         Boolean value = Operator.coerceToBoolean(call.getOperand(1).eval(context));
         if (value == null)
           return Literal.NULL;
       }
 
-      if (call.getOperand(0).is(Kind.LITERAL) && call.getOperand(1).is(Kind.LITERAL)) {
+      if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
         Boolean value0 = Operator.coerceToBoolean(call.getOperand(0).eval(context));
         Boolean value1 = Operator.coerceToBoolean(call.getOperand(1).eval(context));
         if (value0 == Boolean.FALSE || value1 == Boolean.FALSE)

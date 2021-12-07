@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
  * Expression representing a literal value.
  */
 public class Literal implements IExpression {
-
   public static final Literal NULL = new Literal(null);
   public static final Literal TRUE = new Literal(Boolean.TRUE);
   public static final Literal FALSE = new Literal(Boolean.FALSE);
@@ -74,13 +73,12 @@ public class Literal implements IExpression {
         return ONE;
       return new Literal(number.longValue());
     }
-    
-    
+
     if (value instanceof String || value instanceof ZonedDateTime || value instanceof byte[]) {
       return new Literal(value);
     }
 
-    throw new IllegalArgumentException("Invalid literal: " + value);
+    throw ExpressionException.create("Expression.InvalidLiteral", value);
   }
 
   private Object value;
@@ -149,7 +147,11 @@ public class Literal implements IExpression {
         }
       }
       writer.append('\'');
-    } else if (value instanceof byte[]) {
+    } 
+    else if (value instanceof Boolean) {
+      writer.append(((boolean) value) ? "TRUE" : "FALSE");
+    }    
+    else if (value instanceof byte[]) {
       writer.append("0x");
       for (byte b : (byte[]) value) {
         writer.append(byteToHex((b >> 4) & 0xF));

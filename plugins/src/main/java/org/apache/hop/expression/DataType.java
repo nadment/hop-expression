@@ -64,6 +64,10 @@ public enum DataType {
     return javaClass;
   }
 
+  public boolean isInstance(Object value) {
+    return javaClass.isInstance(value);
+  }
+  
   public static DataType of(final String name) {
     for (DataType type : DataType.values()) {
       if (type.name().equalsIgnoreCase(name)) {

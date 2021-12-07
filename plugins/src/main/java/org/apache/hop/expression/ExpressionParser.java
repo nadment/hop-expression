@@ -449,7 +449,7 @@ public class ExpressionParser {
   }
 
   private Literal parseLiteralNumber(Token token) throws ParseException {
-    BigDecimal number = NumberFormat.ofPattern("TM").parse(token.text());
+    BigDecimal number = NumberFormat.of("TM").parse(token.text());
     return Literal.of(number);
   }
 

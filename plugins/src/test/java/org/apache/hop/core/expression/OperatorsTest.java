@@ -19,123 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class OperatorTest extends BaseExpressionTest {
-
-  @Test
-  public void Comment() throws Exception {
-    evalTrue(" // Test line comment \n  true ");
-    evalTrue(" /* Test block comment */  true ");
-    evalTrue(" true /* Test block comment */");
-    evalTrue("/*\n * Comment on multi line\n *\n */ True");
-    evalTrue("/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
-
-    // Single line comment
-    evalTrue("// Single line comment\nTrue");
-    evalTrue("-- Single line comment\nTrue");
-    
-    // Multi line comment
-    evalTrue("/* Line 1\n * Line 2 */ True");
-
-    // Empty
-    evalFails("-- Single line comment\n");    
-    evalFails(" /");
-    evalFails("/*   True");
-    evalFails("/   True");
-    evalFails("/*   True*");
-    evalFails("/* /* nested block comment */    True");
-  }
-
-  @Test
-  public void CoercionBoolean() throws Exception {
-    // Coercion Number to Boolean
-    evalTrue("true = 1");
-    evalTrue("false = 0");
-
-    // Coercion String to Boolean
-    evalTrue("'1'=true");
-    evalTrue("'On'=true");
-    evalTrue("'Y'=true");
-    evalTrue("true = 'Y'");
-    evalTrue("'Yes'=true");
-    evalTrue("true = 'Yes'");
-    evalTrue("'T'=true");
-    evalTrue("'TRUE'=true");
-    evalTrue("true = 'True'");
-
-    evalTrue("'0'=false");
-    evalTrue("'N'=false");
-    evalTrue("'NO'=false");
-    evalTrue("'OFF'=false");
-    evalTrue("'F'=false");
-    evalTrue("'FALSE'=false");
-  }
-
-  @Test
-  public void SyntaxError() throws Exception {
-    evalFails("'T'||'T");
-    evalFails("\"T\"||\"T");
-    evalFails("9!7");
-    evalFails("9+(");
-    evalFails("9+*(");
-    evalFails("Year(");
-    evalFails("Year)");
-    evalFails("Year()");
-    evalFails("Year(()");
-    evalFails("Year())");
-    evalFails("Year(1,2)");
-    evalFails("TRUE AND");
-    evalFails("5 BETWEEN 4 AND");
-    evalFails("5 BETWEEN 4 OR");
-    evalFails("case when 1=1 then 1 else 0");
-    evalFails("case when 1=1 then 1 else  end ");
-    evalFails("case 1 when 1  else 0 end");
-    evalFails("Cast(3 as NILL)");
-    evalFails("1 in ()    ");
-    evalFails("1 in (,2,3)");
-    evalFails("1 in (1,2,3");
-    evalFails("1 in (1,,3)");
-    evalFails("1 in (1,2,)");
-    evalFails("0xABCDEFg");
-    evalFails("Date '2020-20-28'");
-  }
-
-  @Test
-  public void precedenceAndAssociativity() throws Exception {
-
-    // Arithmetic
-    evalEquals("3*5/2", ((3 * 5) / 2d));
-    evalEquals("9/3*3", (9 / 3) * 3);
-    evalEquals("1 + 2 * 3 * 4 + 5", ((1 + ((2 * 3) * 4)) + 5));
-    evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
-    evalEquals("10*2+1", 21);
-    evalEquals("1+10*2", 21);
-    evalEquals("10*(2+1)", 30);
-    evalEquals("30/(5+5)", 3);
-    evalEquals("42%(3+2)", 2);
-    evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
-    evalEquals("Age-(10+3*10+50-2*25)", 0);
-
-    evalEquals("2*'1.23'", 2.46);
-    // integer
-
-    // NOT has higher precedence than AND, which has higher precedence than OR
-    evalTrue("NOT false AND NOT false");
-    evalTrue("NOT 5 = 5 OR NOT 'Test' = 'X' AND NOT 5 = 4");
-
-    // Equals (=) has higher precedence than NOT "NOT (1=1)"
-    evalTrue("NOT 2 = 1");
-
-    // IS NULL has higher precedence than NOT
-    evalFalse("NOT \"NULLIS\" IS NULL");
-
-    // IS NULL has lower precedence than comparison (1 = 1) IS NULL
-    evalFalse("1 = 1 is null");
-    evalTrue(" 3 > 5 IS FALSE");
-
-    // BETWEEN, IN, LIKE have higher precedence than comparison
-    // evalTrue("6 = 6 between 4 = 4 and 5 = 5");
-  }
-
+public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void EqualTo() throws Exception {
@@ -332,10 +216,13 @@ public class OperatorTest extends BaseExpressionTest {
     evalTrue("SEX in ('?','F','RM')");
     evalTrue("SEX not in ('?','-','!')");
     evalTrue("2 in (1,2,3)");
+    
     evalTrue("2.5 IN (1,2.5,3)");
     evalTrue("'2' in (null,1,2,3)");
     evalTrue("Date '2019-01-01' in (Date '2019-04-01',Date '2019-01-01',Date '2019-03-06')");
+    evalTrue("0x0123456789 in (0x9876,0x0123456789,0x3698)");
     evalFalse("2 in (1,2.5,3)");
+
     evalTrue("2 in (null,1,2,3)");
     evalFalse("2 in (null,null,null)");
     evalFalse("1 not in (null,1)");

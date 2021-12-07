@@ -37,7 +37,7 @@ public class Function extends Operator {
    * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
    * 
    * @param name The name of function
-   * @param alias The alias of function
+   * @param alias The alias of function or null if none
    */
   public Function(String name, String alias, boolean isDeterministic, Object instance,
       Method method, int min, int max, String category) throws ExpressionException {
@@ -78,13 +78,11 @@ public class Function extends Operator {
   public void checkNumberOfArguments(List<IExpression> operands) throws ExpressionException {
 
     if (operands.size() < minArgs) {
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getName()));
+      throw ExpressionException.create("Expression.NotEnoughArguments", this.getName());
     }
 
     if (operands.size() > maxArgs) {
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.TooManyNumberOfArguments", this.getName()));
+      throw ExpressionException.create("Expression.TooManyNumberOfArguments", this.getName());
     }
   }
 

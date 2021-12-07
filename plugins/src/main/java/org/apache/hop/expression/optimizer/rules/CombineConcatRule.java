@@ -28,11 +28,11 @@ public class CombineConcatRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
 
-    if (call.is(OperatorRegistry.CONCAT)) {
+    if (call.isOperator(OperatorRegistry.CONCAT)) {
       ArrayList<IExpression> operands = new ArrayList<>();
 
       for (IExpression expression : call.getOperands()) {
-        if (expression.is(OperatorRegistry.CONCAT)) {
+        if (expression.isOperator(OperatorRegistry.CONCAT)) {
           operands.addAll(Arrays.asList(((OperatorCall) expression).getOperands()));
         } else {
           operands.add(expression);

@@ -16,6 +16,7 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertArrayEquals;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
@@ -186,7 +187,7 @@ public class BaseExpressionTest {
       eval(source);
       Assert.fail(source + " Syntax or result should be invalid\n");
     } catch (ExpressionException ex) {      
-      //System.out.println(source+" > "+ex.toString());
+      System.out.println(source+" > "+ex.toString());
     } catch (Exception ex) {
       Assert.fail(source + " Uncatched exception " + ex.getClass());
     }
@@ -208,6 +209,8 @@ public class BaseExpressionTest {
   public void parser() throws Exception {
 //   ExpressionContext context = createExpressionContext();
 //   context.setAttribute("TEST","");
+    
+    assertThrows(ExpressionException.class, () -> Operator.coerceToBinary(3L));
 
   }
 }

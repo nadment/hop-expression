@@ -693,7 +693,16 @@ final class SimpleNumberFormat extends NumberFormat {
     // Text-minimal number
     if (pattern == null || pattern.equals("TM")) {
       String s = number.toPlainString();
-      return s.startsWith("0.") ? s.substring(1) : s;
+
+      if (s.startsWith("0.")) {
+        // we want ".1" not "0.1"
+        return s.substring(1);
+      } else if (s.startsWith("-0.")) {
+        // we want "-.1" not "-0.1"
+        return "-" + s.substring(2);
+      }
+
+      return s;
     }
 
     // Text-minimal number in scientific notation

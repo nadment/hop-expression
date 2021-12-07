@@ -40,11 +40,11 @@ public class DeterministicRule implements Rule {
 
       if (operand instanceof ExpressionList) {
         for (IExpression expression : (ExpressionList) operand) {
-          if (!expression.is(Kind.LITERAL)) {
+          if (!expression.isKind(Kind.LITERAL)) {
             return call;
           }
         }
-      } else if (!operand.is(Kind.LITERAL)) {
+      } else if (!operand.isKind(Kind.LITERAL)) {
         return call;
       }
     }

@@ -325,6 +325,13 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/years_between.adoc[YEARS_BETWEEN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/zeroifnull.adoc[ZEROIFNULL]
 
+== Coercion rules
 
+Expression supports both implicit and explicit conversion between data types. Explicit conversion is supported by using the CAST function.
+
+* Numeric types can be coerced to a wider numeric type. For example, an INTEGER expression can be coerced to a NUMBER, which can be coerced to a BIGNUMBER.
+* A STRING containing a number can be coerced to a numeric type.
+* A STRING containing a boolean value can be coerced to a BOOLEAN. Valid boolean values are true, false, yes, no, on, off. Comparison is case-insensitive.
+* A STRING containing an ISO-8601 formatted date string can be coerced to TIMESTAMP.
 
 
