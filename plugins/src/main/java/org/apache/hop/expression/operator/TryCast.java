@@ -46,12 +46,12 @@ public class TryCast extends Operator {
     try {     
       DataType type = (DataType) operands[1].eval(context);
 
+      String format = null;
       if (operands.length == 3) {
-        Object format = operands[2].eval(context);
-        return convertTo(value, type, coerceToString(format));
+        format = coerceToString(operands[2].eval(context));
       }
 
-      return convertTo(value, type);
+      return convertTo(value, type, format);
     } catch (Exception e) {
       return null;
     }

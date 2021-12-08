@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class Operator implements Comparable<Operator> {
 
-  protected static final Class<?> PKG = Operator.class; // for i18n purposes
+  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private static final ConcurrentHashMap<String, String> docs = new ConcurrentHashMap<>();
   
@@ -81,7 +81,7 @@ public abstract class Operator implements Comparable<Operator> {
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
     this.isDeterministic = true;
-    this.category = TranslateUtil.translate(category, Operator.class);
+    this.category = TranslateUtil.translate(category, IExpression.class);
     this.description = findDescription(name);
   }
   
@@ -91,7 +91,6 @@ public abstract class Operator implements Comparable<Operator> {
   }
   
   protected static int leftPrecedence(int precedence, boolean isLeftAssociative) {
-    assert (precedence % 2) == 0;
     if (isLeftAssociative) {
       ++precedence;
     }
@@ -99,7 +98,6 @@ public abstract class Operator implements Comparable<Operator> {
   }
 
   protected static int rightPrecedence(int precedence, boolean isLeftAssociative) {
-    assert (precedence % 2) == 0;
     if (!isLeftAssociative) {
       ++precedence;
     }
@@ -255,17 +253,19 @@ public abstract class Operator implements Comparable<Operator> {
     return compare;
   }
 
+
+  public static Object convertTo(Object value, final DataType type) {
+    return convertTo(value, type, null);
+  }
+
   /**
    * Convert a value to the specified type.
    *
    * @param value the value to convert
    * @param type the data type of the returned value
+   * @param pattern the optional pattern to use for conversion to string when value is date or numeric, or null if none 
    * @return the converted value
    */
-  public static Object convertTo(Object value, final DataType type) {
-    return convertTo(value, type, null);
-  }
-
   public static Object convertTo(Object value, final DataType type, String pattern) {
     if (value == null) {
       return null;
@@ -396,42 +396,34 @@ public abstract class Operator implements Comparable<Operator> {
     }
   }
 
-  private static byte[] convertIntegerToBinary(Long number) throws ExpressionException {
-    byte[] buffer = new byte[8];
-    int v = (int) (number >> 32);
-
-    buffer[0] = (byte) v;
-    buffer[1] = (byte) (v >> 8);
-    buffer[2] = (byte) (v >> 16);
-    buffer[3] = (byte) (v >> 24);
-    buffer[4] = (byte) (number >> 32);
-    buffer[5] = (byte) (number >> 40);
-    buffer[6] = (byte) (number >> 48);
-    buffer[7] = (byte) (number >> 56);
-
-    return buffer;
+  private static byte[] convertIntegerToBinary(Long number) {
+    byte[] result = new byte[Long.BYTES];
+    for (int i = Long.BYTES - 1; i >= 0; i--) {
+        result[i] = (byte)(number & 0xFF);
+        number >>= Byte.SIZE;
+    }
+    return result;
   }
   
-  private static Long convertBinaryToInteger(byte[] bytes) throws ExpressionException {   
+  private static Long convertBinaryToInteger(byte[] bytes) {   
     if (bytes.length > 8)
       throw new ExpressionException("Binary too big to fit in integer");
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
-      result = result << 8;
-      result = result | (bytes[i] & 0xFF);
+      result <<= Byte.SIZE;
+      result |= (bytes[i] & 0xFF);
     }
     return result;
   }
 
-  private static Double convertBinaryToNumber(byte[] bytes) throws ExpressionException {   
+  private static Double convertBinaryToNumber(byte[] bytes) {   
     if (bytes.length > 8)
       throw new ExpressionException("Binary too big to fit in number");
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
-      result = result << 8;
-      result = result | (bytes[i] & 0xFF);
+      result <<= Byte.SIZE;
+      result |= (bytes[i] & 0xFF);
     }
-
     return Double.valueOf(result);
   }
   

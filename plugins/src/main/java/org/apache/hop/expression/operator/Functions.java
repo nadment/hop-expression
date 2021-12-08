@@ -1948,7 +1948,7 @@ public class Functions  {
     if (value == null)
       return null;
 
-    return convertTo(value, DataType.BOOLEAN);
+    return convertTo(value, DataType.BOOLEAN, null);
   }
 
   /**
@@ -1961,7 +1961,7 @@ public class Functions  {
     if (value == null)
       return null;
     try {
-      return convertTo(value, DataType.BOOLEAN);
+      return convertTo(value, DataType.BOOLEAN, null);
     } catch (Exception e) {
       return null;
     }

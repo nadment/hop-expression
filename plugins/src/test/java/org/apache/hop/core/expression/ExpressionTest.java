@@ -102,6 +102,7 @@ public class ExpressionTest extends BaseExpressionTest {
     assertTrue(Operator.coerceToBoolean(1L));
     assertFalse(Operator.coerceToBoolean(0L));
     assertFalse(Operator.coerceToBoolean(false));
+    assertThrows(ExpressionException.class, () -> Operator.coerceToBoolean(ZonedDateTime.now()));
   }
    
   @Test
@@ -131,7 +132,7 @@ public class ExpressionTest extends BaseExpressionTest {
   
   @Test
   public void CoerceToBinary() throws Exception {
-    assertNull(Operator.coerceToBinary(null));
+    assertNull(Operator.coerceToBinary(null));    
     assertThrows(ExpressionException.class, () -> Operator.coerceToBinary(true) );
     assertThrows(ExpressionException.class, () -> Operator.coerceToBinary(3L) );
     assertThrows(ExpressionException.class, () -> Operator.coerceToBinary(3D) );
@@ -145,8 +146,9 @@ public class ExpressionTest extends BaseExpressionTest {
   @Test
   public void CoerceToDate() throws Exception {
     assertNull(Operator.coerceToDate(null));
+    assertThrows(ExpressionException.class, () -> Operator.coerceToDate(true));
   }
-
+  
   @Test
   public void CoerceToString() throws Exception {
     assertNull(Operator.coerceToString(null));
@@ -172,6 +174,7 @@ public class ExpressionTest extends BaseExpressionTest {
     assertEquals(Long.valueOf(1), Operator.coerceToInteger(1.2D));
     assertEquals(Long.valueOf(1), Operator.coerceToInteger("1.2"));
     assertEquals(Long.valueOf(-2), Operator.coerceToInteger("-1.6"));
+    assertThrows(ExpressionException.class, () -> Operator.coerceToInteger(ZonedDateTime.now()));
   }
 
   @Test
@@ -193,7 +196,8 @@ public class ExpressionTest extends BaseExpressionTest {
     assertEquals(Double.valueOf(0.1D), Operator.coerceToNumber(".1"));
     assertEquals(Double.valueOf(-2.3E+2D), Operator.coerceToNumber("-2.3E+2"));
     assertEquals(Double.valueOf(-2.3E-2D), Operator.coerceToNumber("-2.3E-2"));
-    assertEquals(Double.valueOf(-2.3E-2D), Operator.coerceToNumber("-2.3e-2"));    
+    assertEquals(Double.valueOf(-2.3E-2D), Operator.coerceToNumber("-2.3e-2"));
+    assertThrows(ExpressionException.class, () -> Operator.coerceToNumber(ZonedDateTime.now()));
   }
   
   @Test
@@ -215,6 +219,7 @@ public class ExpressionTest extends BaseExpressionTest {
     assertEquals(BigDecimal.ONE, Operator.coerceToBigNumber(1D));
     assertEquals(BigDecimal.ONE, Operator.coerceToBigNumber(BigDecimal.ONE) );
     assertSame(BigDecimal.valueOf(3), Operator.coerceToBigNumber(3L));
+    assertThrows(ExpressionException.class, () -> Operator.coerceToBigNumber(ZonedDateTime.now()));
   }
   
   @Test
@@ -226,7 +231,7 @@ public class ExpressionTest extends BaseExpressionTest {
   
   @Test
   public void Operator() throws Exception {
-    assertEquals(OperatorRegistry.MULTIPLY.getCategory(), BaseMessages.getString(PKG, "Operator.Category.Mathematical"));
+    assertEquals("Mathematical",OperatorRegistry.MULTIPLY.getCategory());
     assertTrue(OperatorRegistry.CONCAT.equals(OperatorRegistry.CONCAT));
     assertTrue(OperatorRegistry.CONCAT.isAlias(OperatorRegistry.getFunction("CONCAT")));
     assertFalse(OperatorRegistry.CONCAT.isAlias(null));
