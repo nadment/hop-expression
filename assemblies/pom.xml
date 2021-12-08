@@ -68,7 +68,6 @@
 								<unzip
 									src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
 									dest="${hop.home}/plugins/" />
-
 							</target>
 						</configuration>
 					</execution>

@@ -20,7 +20,9 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Objects;
 
-/** A <code>OperatorCall</code> is a call to an {@link Operator operator}. */
+/** 
+ * A <code>OperatorCall</code> is a call to an {@link Operator}.
+ */
 public class OperatorCall implements IExpression {
 
   protected final Operator operator;
@@ -53,7 +55,6 @@ public class OperatorCall implements IExpression {
     for (IExpression operand : operands) {
       cost += operand.getCost();
     }
-
     return cost;
   }
 
@@ -81,28 +82,6 @@ public class OperatorCall implements IExpression {
     return operands.length;
   }
 
-  /**
-   * Creates a new call to the same operator with different operands.
-   *
-   * @param operands Operands to call
-   * @return New call
-   * @throws EXpressionException
-   */
-  public OperatorCall clone(IExpression... operands) {
-    return new OperatorCall(operator, operands);
-  }
-
-  /**
-   * Creates a new call to the same operator with different operands.
-   *
-   * @param operands Operands to call
-   * @return New call
-   * @throws EXpressionException
-   */
-  public OperatorCall clone(List<IExpression> operands) {
-    return new OperatorCall(operator, operands);
-  }
-
   @Override
   public void write(StringWriter writer) {
     operator.write(writer, operands);
@@ -114,20 +93,4 @@ public class OperatorCall implements IExpression {
     write(writer);
     return writer.toString();
   }
-
-
-
-  // @Override
-  // public void write(StringWriter writer, int leftPrec, int rightPrec) {
-  //
-  // if ((leftPrec < operator.getLeftPrecedence() && (rightPrec != 0))
-  // || (operator.getRightPrecedence() >= rightPrec && (rightPrec != 0))) {
-  // writer.append('(');
-  // operator.write(writer, this, 0, 0);
-  // writer.append(')');
-  // } else {
-  // operator.write(writer, this, leftPrec, rightPrec);
-  // }
-  // }
-
 }

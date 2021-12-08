@@ -83,8 +83,8 @@ public class Optimizer {
       }
       operands[i] = operand;
     }
-    IExpression expression = call.clone(operands);
-
+    IExpression expression = new OperatorCall(call.getOperator(), operands);
+    
     for (Rule rule : RULES) {
       if (expression instanceof OperatorCall) {
         expression = rule.apply(context, (OperatorCall) expression);

@@ -30,12 +30,10 @@
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
 		<hop.version>1.1.0-SNAPSHOT</hop.version>
-
 		<jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
 		<sonar.projectKey>${project.artifactId}</sonar.projectKey>
 		<sonar.organization>nadment</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.exclusions>**/test/*</sonar.exclusions>
 		<sonar.coverage.jacoco.xmlReportPaths>${basedir}/${aggregate.report.dir}</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
@@ -98,11 +96,14 @@
 				</executions>
 			</plugin>
 
-			<!-- <plugin> -->
-			<!-- <groupId>org.sonarsource.scanner.maven</groupId> -->
-			<!-- <artifactId>sonar-maven-plugin</artifactId> -->
-			<!-- </plugin> -->
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>snapshots.apache.org</id>
+			<url>https://repository.apache.org/snapshots</url>
+		</repository>
+	</repositories>
+	
 </project>

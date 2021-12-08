@@ -40,7 +40,7 @@ public class ReorderAssociativeRule implements Rule {
 
       // Swap operands
       if (left.getCost() > right.getCost()) {
-        return call.clone(right, left);
+        return  new OperatorCall(call.getOperator(), right, left);
       }
     }
     return call;

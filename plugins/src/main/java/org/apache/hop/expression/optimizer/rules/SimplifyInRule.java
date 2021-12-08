@@ -47,8 +47,8 @@ public class SimplifyInRule implements Rule {
 
       // Sort list on cost
       list.sort(Comparator.comparing(IExpression::getCost));
-
-      return call.clone(call.getOperand(0), new ExpressionList(list));
+      
+      return new OperatorCall(call.getOperator(), call.getOperand(0), new ExpressionList(list));
     }
 
     return call;
