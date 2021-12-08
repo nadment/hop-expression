@@ -30,7 +30,7 @@ public class BitNot extends Operator {
     super("BITNOT", "~", 40, true, true, "i18n::Operator.Category.Bitwise");
   }
 
-  @ScalarFunction(name = "BITNOT", category = "i18n::Operator.Category.Bitwise")
+  @ScalarFunction(id = "BITNOT", category = "i18n::Operator.Category.Bitwise")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

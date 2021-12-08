@@ -30,7 +30,7 @@ public class ExperimentalFunction {
   /** 
    * The function compute Levenshtein distance.
    */
-  @ScalarFunction(name = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2,
+  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2,
       maxArgs = 2)
   public static Object levenshtein(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
@@ -54,7 +54,7 @@ public class ExperimentalFunction {
    * character string data type (not fixed-length character data type). The result is the same
    * length as the argument.
    */
-  @ScalarFunction(name = "SQUEEZE", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 1)  
+  @ScalarFunction(id = "SQUEEZE", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 1)  
   public static Object squeeze(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);

@@ -36,7 +36,7 @@ public class Add extends Operator {
     super( "ADD", "+", 100, true, true, "i18n::Operator.Category.Mathematical");
   }
 
-  @ScalarFunction(name = "ADD", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "ADD", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)

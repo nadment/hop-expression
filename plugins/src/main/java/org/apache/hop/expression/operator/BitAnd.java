@@ -31,7 +31,7 @@ public class BitAnd extends Operator {
     super("BITAND","&", 70, true, true, "i18n::Operator.Category.Bitwise");
   }
 
-  @ScalarFunction(name = "BITAND", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "BITAND", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Bitwise")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)

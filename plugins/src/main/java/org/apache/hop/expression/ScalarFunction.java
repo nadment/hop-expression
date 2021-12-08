@@ -24,9 +24,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ScalarFunction {
-  String name() default "";
+  String id() default "";
 
-  String[] alias() default {};
+  String[] names() default {};
 
   String category() default "None";
 

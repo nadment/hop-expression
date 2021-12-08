@@ -17,8 +17,8 @@
 package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.operator.Functions;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -58,7 +58,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
       return this.imageVariable;
     }
 
-    if (element instanceof Functions) {
+    if (element instanceof Function) {
       return GuiResource.getInstance().getImageFunction();
     }
 
@@ -87,7 +87,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   public String getToolTipText(Object element) {
     if (element instanceof Operator) {
       Operator operator = (Operator) element;
-      return Operator.getHtml(operator.getName());
+      return Operator.getHtml(operator.getId());
     }
 
     return null;

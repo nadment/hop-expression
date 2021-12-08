@@ -197,28 +197,28 @@ public class ExpressionEditor extends Composite {
     List<Operator> primaryOperators = new ArrayList<>();
     HashMap<String, String> mapDisplay = new HashMap<>();
 
-    // Inventory operator without alias first and category
-    for (Operator o : OperatorRegistry.getOperators()) {
+    // Inventory operator unique identifier and category
+    for (Operator operator : OperatorRegistry.getOperators()) {
 
-      if (!categories.contains(o.getCategory())) {
-        categories.add(o.getCategory());
+      if (!categories.contains(operator.getCategory())) {
+        categories.add(operator.getCategory());
       }
 
-      if (o.getAlias() == null) {
-        primaryOperators.add(o);
-        mapDisplay.put(o.getName(), o.getName());
-      }
+      if (operator.getId().equals(operator.getName())) {
+        primaryOperators.add(operator);
+        mapDisplay.put(operator.getId(), operator.getName());
+      }      
     }
 
     // Alias operator
-    for (Operator o : OperatorRegistry.getOperators()) {
-      if (o.getAlias() != null) {
-        if (mapDisplay.containsKey(o.getName())) {
-          String str = mapDisplay.get(o.getName());
-          mapDisplay.replace(o.getName(), String.join(", ", str, o.getAlias()));
+    for (Operator operator : OperatorRegistry.getOperators()) {
+      if (!operator.getId().equals(operator.getName())) {
+        if (mapDisplay.containsKey(operator.getId())) {
+          String str = mapDisplay.get(operator.getId());
+          mapDisplay.replace(operator.getId(), String.join(", ", str, operator.getName()));
         } else {
-          primaryOperators.add(o);
-          mapDisplay.put(o.getName(), o.getAlias());
+          primaryOperators.add(operator);
+          mapDisplay.put(operator.getId(), operator.getName());
         }
       }
     }
@@ -243,7 +243,7 @@ public class ExpressionEditor extends Composite {
       else
         item = new TreeItem(parentItem, SWT.NULL);
       item.setImage(labelProvider.getImage(operator));
-      item.setText(mapDisplay.get(operator.getName()));
+      item.setText(mapDisplay.get(operator.getId()));
       item.setData(operator);
     }
 

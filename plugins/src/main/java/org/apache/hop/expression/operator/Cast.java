@@ -35,7 +35,7 @@ public class Cast extends Operator {
     super("CAST", "::", 10, true, true, "i18n::Operator.Category.Conversion");
   }
 
-  @ScalarFunction(name = "CAST", minArgs = 2, maxArgs = 3,
+  @ScalarFunction(id = "CAST", minArgs = 2, maxArgs = 3,
       category = "i18n::Operator.Category.Conversion")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

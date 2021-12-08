@@ -233,11 +233,11 @@ public class ExpressionTest extends BaseExpressionTest {
   public void Operator() throws Exception {
     assertEquals("Mathematical",OperatorRegistry.MULTIPLY.getCategory());
     assertTrue(OperatorRegistry.CONCAT.equals(OperatorRegistry.CONCAT));
-    assertTrue(OperatorRegistry.CONCAT.isAlias(OperatorRegistry.getFunction("CONCAT")));
-    assertFalse(OperatorRegistry.CONCAT.isAlias(null));
+    assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
+    assertFalse(OperatorRegistry.CONCAT.isSame(null));
     assertNotNull(OperatorRegistry.CONCAT.getDescription());
     //assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
-    assertTrue(OperatorRegistry.getFunction("TRUNCATE").isAlias(OperatorRegistry.getFunction("TRUNC")));
+    assertTrue(OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));
   }
   
   @Test

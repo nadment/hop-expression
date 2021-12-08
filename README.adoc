@@ -61,7 +61,7 @@ public static class ExperimentalFunction {
   /** 
    * The function compute Levenshtein distance.
    */
-  @ScalarFunction(name = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2,)
+  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2,)
   public Object levenshtein(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);

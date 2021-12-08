@@ -32,7 +32,7 @@ public class Concat extends Operator {
     super("CONCAT", "||", 110, true, true, "i18n::Operator.Category.String");
   }
 
-  @ScalarFunction(name = "CONCAT", minArgs = 2, maxArgs = Integer.MAX_VALUE,
+  @ScalarFunction(id = "CONCAT", minArgs = 2, maxArgs = Integer.MAX_VALUE,
       category = "i18n::Operator.Category.String")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)

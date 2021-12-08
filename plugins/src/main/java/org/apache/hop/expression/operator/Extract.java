@@ -37,10 +37,10 @@ import java.time.temporal.WeekFields;
 public class Extract extends Operator {
 
   public Extract() {
-    super("EXTRACT", null, 10, true, true, "i18n::Operator.Category.Date");
+    super("EXTRACT", 10, true, true, "i18n::Operator.Category.Date");
   }
 
-  @ScalarFunction(name = "EXTRACT", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "EXTRACT", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
@@ -116,7 +116,7 @@ public class Extract extends Operator {
 
   }
 
-  @ScalarFunction(name = "DATE_PART", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "DATE_PART", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Date")
   public Object date_part(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

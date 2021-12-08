@@ -35,7 +35,7 @@ public class Subtract extends Operator {
     super("SUBTRACT", "-", 100, true, true, "i18n::Operator.Category.Mathematical");
   }
 
-  @ScalarFunction(name = "SUBTRACT", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "SUBTRACT", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)

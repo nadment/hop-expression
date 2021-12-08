@@ -39,12 +39,12 @@ public abstract class Operator implements Comparable<Operator> {
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
   private static final ConcurrentHashMap<String, String> docs = new ConcurrentHashMap<>();
-  
-  /** The name of the operator/function. Ex. "COS" or "TRIM" */
-  protected final String name;
 
-  /** The alias of the function. Ex. "TRUNCATE" alias "TRUNC"    */
-  protected final String alias;
+  /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
+  private final String id;
+
+  /** The symbol of the operator or name of function. Ex. "id=TRUNCATE" but alias name is "TRUNC" */
+  private final String name;
 
   /**
    * The precedence with which this operator binds to the expression to the left. This is less than
@@ -67,29 +67,31 @@ public abstract class Operator implements Comparable<Operator> {
   /**
    * Create a new operator for use in expressions.
    *
-   * @param name The name of operator
-   * @param alias The symbol of the operator or alias of function
+   * @param id The unique identifier of operator
+   * @param name The symbol of the operator or name of function
    * @param precedence The precedence value of the operator
-   * @param isLeftAssociative Set to true if the operator is left associative, false if it is right associative
-   * @param isDeterministic Set to true if the operator always returns the same result for the same parameters
+   * @param isLeftAssociative Set to true if the operator is left associative, false if it is right
+   *        associative
+   * @param isDeterministic Set to true if the operator always returns the same result for the same
+   *        parameters
    * @param category The category to group operator
    */
-  protected Operator(String name, String alias, int precedence, boolean isLeftAssociative, boolean isDeterministic,
-      String category) {
-    this.name = name;
-    this.alias = alias;
+  protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
+      boolean isDeterministic, String category) {
+    this.id = Objects.requireNonNull(id);
+    this.name = Objects.requireNonNull(name);
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
     this.isDeterministic = true;
     this.category = TranslateUtil.translate(category, IExpression.class);
-    this.description = findDescription(name);
+    this.description = findDescription(id);
   }
-  
-  protected Operator(String name, int precedence, boolean isLeftAssociative, boolean isDeterministic,
+
+  protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic,
       String category) {
-    this(name, name,  precedence, isLeftAssociative, isDeterministic, category);    
+    this(id, id, precedence, isLeftAssociative, isDeterministic, category);
   }
-  
+
   protected static int leftPrecedence(int precedence, boolean isLeftAssociative) {
     if (isLeftAssociative) {
       ++precedence;
@@ -104,15 +106,18 @@ public abstract class Operator implements Comparable<Operator> {
     return precedence;
   }
 
-  /** 
-   * The unique name of the operator
+  /**
+   * The unique identifier of the operator
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * The name of the operator
    */
   public String getName() {
     return name;
-  }
-
-  public String getAlias() {
-    return alias;
   }
 
   public int getLeftPrecedence() {
@@ -131,9 +136,9 @@ public abstract class Operator implements Comparable<Operator> {
   public boolean isDeterministic() {
     return isDeterministic;
   }
-  
+
   public URL getDocumentationUrl() {
-    return getClass().getResource("/docs/" + name.toLowerCase() + ".html");
+    return getClass().getResource("/docs/" + id.toLowerCase() + ".html");
   }
 
   @Override
@@ -145,18 +150,18 @@ public abstract class Operator implements Comparable<Operator> {
       return false;
     }
     Operator other = (Operator) obj;
-    return name.equals(other.name) && alias.equals(other.alias);
+    return id.equals(other.id) && name.equals(other.name);
   }
 
-  public boolean isAlias(Operator other) {
-    if (other==null)
-      return false;    
-    return name.equals(other.name);
+  public boolean isSame(Operator other) {
+    if (other == null)
+      return false;
+    return id.equals(other.id);
   }
-  
+
   @Override
   public int hashCode() {
-    return Objects.hash(name,alias);
+    return Objects.hash(id, name);
   }
 
   /**
@@ -184,13 +189,15 @@ public abstract class Operator implements Comparable<Operator> {
 
   @Override
   public int compareTo(Operator o) {
-    // Compare with name
-    int compare =  this.name.compareTo(o.name);
-    if ( compare!=0 )
+    // Compare with id
+    int compare = id.compareTo(o.id);
+    if (compare != 0)
       return compare;
-    
+
     // Primary operator first and alias last
-    return this.alias==null ? 1:0; 
+    if ( id.equals(this.name)) return 99;
+    
+    return name.compareTo(o.name);
   }
 
   private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
@@ -263,24 +270,25 @@ public abstract class Operator implements Comparable<Operator> {
    *
    * @param value the value to convert
    * @param type the data type of the returned value
-   * @param pattern the optional pattern to use for conversion to string when value is date or numeric, or null if none 
+   * @param pattern the optional pattern to use for conversion to string when value is date or
+   *        numeric, or null if none
    * @return the converted value
    */
   public static Object convertTo(Object value, final DataType type, String pattern) {
     if (value == null) {
       return null;
-    }    
+    }
 
-    if ( type.isInstance(value) )
+    if (type.isInstance(value))
       return value;
-    
+
     switch (type) {
       case BOOLEAN:
         if (value instanceof Number) {
           return ((Number) value).intValue() != 0;
         }
         if (value instanceof String) {
-          return convertStringToBoolean( (String) value);         
+          return convertStringToBoolean((String) value);
         }
         break;
       case INTEGER:
@@ -288,7 +296,7 @@ public abstract class Operator implements Comparable<Operator> {
           return ((Number) value).longValue();
         }
         if (value instanceof Boolean) {
-          return ((boolean) value) ? 1L:0L;
+          return ((boolean) value) ? 1L : 0L;
         }
         if (value instanceof String) {
           return convertStringToInteger((String) value);
@@ -299,7 +307,7 @@ public abstract class Operator implements Comparable<Operator> {
         break;
       case NUMBER:
         if (value instanceof Boolean) {
-          return ((boolean) value) ? 1D:0D;
+          return ((boolean) value) ? 1D : 0D;
         }
         if (value instanceof Number) {
           return Double.valueOf(((Number) value).doubleValue());
@@ -313,22 +321,22 @@ public abstract class Operator implements Comparable<Operator> {
         break;
       case BIGNUMBER:
         if (value instanceof Boolean) {
-          return ((boolean) value) ? BigDecimal.ONE:BigDecimal.ZERO;
+          return ((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO;
         }
         if (value instanceof Long) {
           long v = (long) value;
-          if (v==0L)
+          if (v == 0L)
             return BigDecimal.ZERO;
-          if (v==1L)
-            return BigDecimal.ONE;      
+          if (v == 1L)
+            return BigDecimal.ONE;
           return BigDecimal.valueOf(v);
         }
         if (value instanceof Double) {
           double v = (double) value;
-          if (v==0D)
+          if (v == 0D)
             return BigDecimal.ZERO;
-          if (v==1D)
-            return BigDecimal.ONE;      
+          if (v == 1D)
+            return BigDecimal.ONE;
           return BigDecimal.valueOf(v);
         }
         if (value instanceof String) {
@@ -341,9 +349,10 @@ public abstract class Operator implements Comparable<Operator> {
         }
         if (value instanceof Number) {
           return NumberFormat.of(pattern).format(coerceToBigNumber(value));
-        } 
-        if (value instanceof ZonedDateTime) {          
-          if ( pattern==null) pattern="YYYY-MM-DD";
+        }
+        if (value instanceof ZonedDateTime) {
+          if (pattern == null)
+            pattern = "YYYY-MM-DD";
           return DateTimeFormat.of(pattern).format((ZonedDateTime) value);
         }
         return coerceToString(value);
@@ -366,7 +375,7 @@ public abstract class Operator implements Comparable<Operator> {
         break;
       case NONE:
         return null;
-      default:    
+      default:
     }
     throw errorUnsupportedConversion(value, type);
   }
@@ -399,13 +408,13 @@ public abstract class Operator implements Comparable<Operator> {
   private static byte[] convertIntegerToBinary(Long number) {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
-        result[i] = (byte)(number & 0xFF);
-        number >>= Byte.SIZE;
+      result[i] = (byte) (number & 0xFF);
+      number >>= Byte.SIZE;
     }
     return result;
   }
-  
-  private static Long convertBinaryToInteger(byte[] bytes) {   
+
+  private static Long convertBinaryToInteger(byte[] bytes) {
     if (bytes.length > 8)
       throw new ExpressionException("Binary too big to fit in integer");
     long result = 0;
@@ -416,7 +425,7 @@ public abstract class Operator implements Comparable<Operator> {
     return result;
   }
 
-  private static Double convertBinaryToNumber(byte[] bytes) {   
+  private static Double convertBinaryToNumber(byte[] bytes) {
     if (bytes.length > 8)
       throw new ExpressionException("Binary too big to fit in number");
     long result = 0;
@@ -426,7 +435,7 @@ public abstract class Operator implements Comparable<Operator> {
     }
     return Double.valueOf(result);
   }
-  
+
   private static boolean convertStringToBoolean(String str) {
     switch (str.length()) {
       case 1:
@@ -566,18 +575,18 @@ public abstract class Operator implements Comparable<Operator> {
     }
     if (value instanceof Long) {
       long v = (long) value;
-      if (v==0L)
+      if (v == 0L)
         return BigDecimal.ZERO;
-      if (v==1L)
-        return BigDecimal.ONE;      
+      if (v == 1L)
+        return BigDecimal.ONE;
       return BigDecimal.valueOf(v);
     }
     if (value instanceof Double) {
       double v = (double) value;
-      if (v==0D)
+      if (v == 0D)
         return BigDecimal.ZERO;
-      if (v==1D)
-        return BigDecimal.ONE;      
+      if (v == 1D)
+        return BigDecimal.ONE;
       return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
@@ -661,9 +670,10 @@ public abstract class Operator implements Comparable<Operator> {
   }
 
   public static final ExpressionException errorUnsupportedConversion(Object value, DataType type) {
-    return ExpressionException.create("Expression.UnsupportedConversion", value, DataType.fromJava(value), type);
+    return ExpressionException.create("Expression.UnsupportedConversion", value,
+        DataType.fromJava(value), type);
   }
-  
+
   public static ExpressionException errorFormatPattern(String s, int i) {
     return ExpressionException.create("Bad format {0} at position {1}", s, i);
   }
@@ -671,7 +681,7 @@ public abstract class Operator implements Comparable<Operator> {
   public static ExpressionException errorRegexpPattern(String s) {
     return ExpressionException.create("Bad regexp {0}", s);
   }
-  
+
   public static ExpressionException errorUnexpectedDataType(String name, DataType type) {
     return ExpressionException.create("Expression.UnexpectedDataType", name, type);
   }
@@ -679,21 +689,21 @@ public abstract class Operator implements Comparable<Operator> {
   public static ExpressionException errorUnexpectedDatePart(String name, DatePart part) {
     return ExpressionException.create("Expression.UnexpectedDatePart", name, part);
   }
-  
-  public static String getHtml(String name) {
-    String doc = docs.get(name);
+
+  public static String getHtml(String id) {
+    String doc = docs.get(id);
     if (doc != null) {
       return doc;
     }
 
-    doc = readAsciidoc(name);
-    docs.put(name, doc);
+    doc = readAsciidoc(id);
+    docs.put(id, doc);
 
     return doc;
   }
 
-  private static String readAsciidoc(String name) {
-    String file = "/docs/" + name.toLowerCase() + ".html";
+  private static String readAsciidoc(String id) {
+    String file = "/docs/" + id.toLowerCase() + ".html";
 
     StringWriter writer = new StringWriter();
 
@@ -702,14 +712,14 @@ public abstract class Operator implements Comparable<Operator> {
       IOUtils.copy(is, writer);
     } catch (Exception e) {
       writer.append(e.getMessage());
-      LogChannel.GENERAL.logDebug("Warning no documentation : " + name);
+      LogChannel.GENERAL.logDebug("Warning no documentation : " + id);
     }
 
     return writer.toString();
   }
 
-  private static String findDescription(String name) {
-    String doc = getHtml(name);
+  private static String findDescription(String id) {
+    String doc = getHtml(id);
 
     if (doc == null)
       return "";

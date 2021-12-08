@@ -18,7 +18,6 @@ import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Objects;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
 
@@ -36,37 +35,17 @@ public class Function extends Operator {
    *
    * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
    * 
+   * @param id The unique identifier of the function
    * @param name The name of function
-   * @param alias The alias of function or null if none
    */
-  public Function(String name, String alias, boolean isDeterministic, Object instance,
+  public Function(String id, String name, boolean isDeterministic, Object instance,
       Method method, int min, int max, String category) throws ExpressionException {
-    super(name, alias, 10, true, isDeterministic, category);
+    super(id, name, 10, true, isDeterministic, category);
 
     this.instance = instance;
     this.method = method;
     this.minArgs = min;
     this.maxArgs = max;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (o == this) {
-      return true;
-    }
-    if (this.getClass() != o.getClass()) {
-      return false;
-    }
-    Function fx = (Function) o;
-    return name.equals(fx.name) && (alias != null && alias.equals(fx.alias));
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, alias);
   }
 
   /**
@@ -78,11 +57,11 @@ public class Function extends Operator {
   public void checkNumberOfArguments(List<IExpression> operands) throws ExpressionException {
 
     if (operands.size() < minArgs) {
-      throw ExpressionException.create("Expression.NotEnoughArguments", this.getName());
+      throw ExpressionException.create("Expression.NotEnoughArguments", this.getId());
     }
 
     if (operands.size() > maxArgs) {
-      throw ExpressionException.create("Expression.TooManyNumberOfArguments", this.getName());
+      throw ExpressionException.create("Expression.TooManyNumberOfArguments", this.getId());
     }
   }
 
@@ -96,7 +75,7 @@ public class Function extends Operator {
         throw (ExpressionException) e.getCause();
       }
       throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.FunctionError", this.getName(), e.getMessage()),
+          BaseMessages.getString(PKG, "Expression.FunctionError", this.getId(), e.getMessage()),
           e);
     }
   }

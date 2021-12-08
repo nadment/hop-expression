@@ -30,7 +30,7 @@ public class BitOr extends Operator {
     super("BITOR", "|", 90, true, true, "i18n::Operator.Category.Bitwise");
   }
 
-  @ScalarFunction(name = "BITOR", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "BITOR", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Bitwise")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)

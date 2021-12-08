@@ -28,8 +28,8 @@ public class OperatorRegistryTest {
     assertNotNull(OperatorRegistry.getOperators());
     assertNotNull(OperatorRegistry.getFunctionNames());
     assertNull(OperatorRegistry.getFunction(null));
-    assertEquals(OperatorRegistry.getFunction("CEIL").getName(), OperatorRegistry.getFunction("CEILING").getName());
-    assertNotEquals(OperatorRegistry.getFunction("CEIL").getAlias(), OperatorRegistry.getFunction("CEILING").getAlias());
+    assertEquals(OperatorRegistry.getFunction("CEIL").getId(), OperatorRegistry.getFunction("CEILING").getId());
+    assertNotEquals(OperatorRegistry.getFunction("CEIL").getName(), OperatorRegistry.getFunction("CEILING").getName());
   }
 }
 

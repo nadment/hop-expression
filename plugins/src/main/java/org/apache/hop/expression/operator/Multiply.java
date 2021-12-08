@@ -31,7 +31,7 @@ public class Multiply extends Operator {
     super("MULTIPLY", "*", 50, true, true, "i18n::Operator.Category.Mathematical");
   }
 
-  @ScalarFunction(name = "MULTIPLY", minArgs = 2, maxArgs = 2,
+  @ScalarFunction(id = "MULTIPLY", minArgs = 2, maxArgs = 2,
       category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)

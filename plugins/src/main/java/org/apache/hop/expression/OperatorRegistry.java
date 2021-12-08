@@ -196,30 +196,31 @@ public class OperatorRegistry {
             // If class doesn't have constructor, method should be static
           }
 
-          if (functions.containsKey(annotation.name())) {
-            log.logError("Function already registred " + annotation.name());
+          if (functions.containsKey(annotation.id())) {
+            log.logError("Function already registred " + annotation.id());
             continue;
           }
 
           if (log.isDebug()) {
-            log.logDebug("Register function " + annotation.name());
+            log.logDebug("Register function " + annotation.id());
           }
 
           // Create function
-          Function function = new Function(annotation.name(), null, annotation.deterministic(),
+          Function function = new Function(annotation.id(), annotation.id(), annotation.deterministic(),
               instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
           operators.add(function);
-          functions.put(function.getName(), function);
-
-          // Create function alias
-          for (String alias : annotation.alias()) {
-            if (log.isDebug()) {
-              log.logDebug("Register alias " + alias + " to function " + annotation.name());
-            }
-            function = new Function(annotation.name(), alias, annotation.deterministic(), instance,
+          functions.put(function.getId(), function);
+  
+          // Create function alias name
+          for (String name : annotation.names()) {
+            function = new Function(annotation.id(), name, annotation.deterministic(), instance,
                 method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
             operators.add(function);
-            functions.put(alias, function);
+            functions.put(name, function);
+
+            if (log.isDebug()) {
+              log.logDebug("Register alias " + function.getName() + " to function " + function.getId());
+            }
           }
         } catch (Exception e) {
           log.logError("Error registring function " + method, e);

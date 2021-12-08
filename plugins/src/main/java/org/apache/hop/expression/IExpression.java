@@ -29,7 +29,7 @@ public interface IExpression {
    * Returns the type of expression.
    *
    * @return a {@link Kind} value, never null
-   * @see #isA
+   * @see #isKind
    */
   public Kind getKind();
 
@@ -44,7 +44,7 @@ public interface IExpression {
     if (this instanceof OperatorCall) {
       OperatorCall call = (OperatorCall) this;
 
-      if (operator.isAlias(call.getOperator()))
+      if (operator.isSame(call.getOperator()))
         return true;
     }
 
