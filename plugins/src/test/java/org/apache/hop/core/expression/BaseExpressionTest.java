@@ -208,7 +208,8 @@ public class BaseExpressionTest {
   public void parser() throws Exception {
 //   ExpressionContext context = createExpressionContext();
 //   context.setAttribute("TEST","");
-
-
+    // Alias
+    //evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);  
+    evalFails("Extract(NULL from Date '2021-01-01')");
   }
 }

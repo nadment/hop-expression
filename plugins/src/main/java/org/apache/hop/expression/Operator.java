@@ -92,14 +92,14 @@ public abstract class Operator implements Comparable<Operator> {
     this(id, id, precedence, isLeftAssociative, isDeterministic, category);
   }
 
-  protected static int leftPrecedence(int precedence, boolean isLeftAssociative) {
+  private static int leftPrecedence(int precedence, boolean isLeftAssociative) {
     if (isLeftAssociative) {
       ++precedence;
     }
     return precedence;
   }
 
-  protected static int rightPrecedence(int precedence, boolean isLeftAssociative) {
+  private static int rightPrecedence(int precedence, boolean isLeftAssociative) {
     if (!isLeftAssociative) {
       ++precedence;
     }
@@ -377,7 +377,7 @@ public abstract class Operator implements Comparable<Operator> {
         return null;
       default:
     }
-    throw errorUnsupportedConversion(value, type);
+    throw ExpressionException.createUnsupportedConversion(value, type);
   }
 
   private static Long convertStringToInteger(String str) throws ExpressionException {
@@ -475,7 +475,7 @@ public abstract class Operator implements Comparable<Operator> {
       default:
         break;
     }
-    throw errorUnsupportedConversion(str, DataType.BOOLEAN);
+    throw ExpressionException.createUnsupportedConversion(str, DataType.BOOLEAN);
   }
 
   public static Boolean coerceToBoolean(Object value) {
@@ -489,7 +489,7 @@ public abstract class Operator implements Comparable<Operator> {
       return ((Number) value).intValue() != 0;
     }
 
-    throw errorUnsupportedConversion(value, DataType.BOOLEAN);
+    throw ExpressionException.createUnsupportedConversion(value, DataType.BOOLEAN);
   }
 
   public static byte[] coerceToBinary(Object value) {
@@ -503,7 +503,7 @@ public abstract class Operator implements Comparable<Operator> {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw errorUnsupportedConversion(value, DataType.BINARY);
+    throw ExpressionException.createUnsupportedConversion(value, DataType.BINARY);
   }
 
   public static String coerceToString(Object value) {
@@ -543,7 +543,7 @@ public abstract class Operator implements Comparable<Operator> {
       return convertBinaryToInteger((byte[]) value);
     }
 
-    throw errorUnsupportedConversion(value, DataType.INTEGER);
+    throw ExpressionException.createUnsupportedConversion(value, DataType.INTEGER);
   }
 
   public static Double coerceToNumber(Object value) {
@@ -563,7 +563,7 @@ public abstract class Operator implements Comparable<Operator> {
       return convertBinaryToNumber((byte[]) value);
     }
 
-    throw errorUnsupportedConversion(value, DataType.NUMBER);
+    throw ExpressionException.createUnsupportedConversion(value, DataType.NUMBER);
   }
 
   public static BigDecimal coerceToBigNumber(Object value) {
@@ -592,7 +592,7 @@ public abstract class Operator implements Comparable<Operator> {
     if (value instanceof String) {
       return convertStringToBigNumber((String) value);
     }
-    throw errorUnsupportedConversion(value, DataType.BIGNUMBER);
+    throw ExpressionException.createUnsupportedConversion(value, DataType.BIGNUMBER);
   }
 
   public static ZonedDateTime coerceToDate(Object value) {
@@ -602,9 +602,23 @@ public abstract class Operator implements Comparable<Operator> {
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-    throw errorUnsupportedConversion(value, DataType.DATE);
+    throw ExpressionException.createUnsupportedConversion(value, DataType.DATE);
   }
 
+  public static DatePart coerceToDatePart(Object value) {
+    if (value instanceof DatePart) {
+      return (DatePart) value;
+    }
+    throw ExpressionException.create("Expression.InvalidDatePart", value);
+  }
+
+  public static DataType coerceToDataType(Object value) {
+    if (value instanceof DataType) {
+      return (DataType) value;
+    }
+    throw ExpressionException.create("Expression.InvalidDataType", value);
+  }
+  
   /** Translates a LIKE pattern to Java regex pattern, with optional escape string. */
   protected static String toRegexLike(String sqlPattern, CharSequence escapeStr) {
     final char escapeChar;
@@ -657,52 +671,19 @@ public abstract class Operator implements Comparable<Operator> {
     return javaPattern.toString();
   }
 
-  public static final ExpressionException errorArgumentOutOfRange(Object arg) {
-    return ExpressionException.create("Expression.ArgumentOutOfRange", arg);
-  }
-
-  public static final ExpressionException errorOverflow(String message) {
-    return ExpressionException.create("Expression.Overflow", message);
-  }
-
-  public static final ExpressionException errorDivisionByZero() {
-    return ExpressionException.create("Expression.DivisionByZero");
-  }
-
-  public static final ExpressionException errorUnsupportedConversion(Object value, DataType type) {
-    return ExpressionException.create("Expression.UnsupportedConversion", value,
-        DataType.fromJava(value), type);
-  }
-
-  public static ExpressionException errorFormatPattern(String s, int i) {
-    return ExpressionException.create("Bad format {0} at position {1}", s, i);
-  }
-
-  public static ExpressionException errorRegexpPattern(String s) {
-    return ExpressionException.create("Bad regexp {0}", s);
-  }
-
-  public static ExpressionException errorUnexpectedDataType(String name, DataType type) {
-    return ExpressionException.create("Expression.UnexpectedDataType", name, type);
-  }
-
-  public static ExpressionException errorUnexpectedDatePart(String name, DatePart part) {
-    return ExpressionException.create("Expression.UnexpectedDatePart", name, part);
-  }
-
-  public static String getHtml(String id) {
+  public static String getDocumention(String id) {
     String doc = docs.get(id);
     if (doc != null) {
       return doc;
     }
 
-    doc = readAsciidoc(id);
+    doc = readDocumentation(id);
     docs.put(id, doc);
 
     return doc;
   }
 
-  private static String readAsciidoc(String id) {
+  private static String readDocumentation(String id) {
     String file = "/docs/" + id.toLowerCase() + ".html";
 
     StringWriter writer = new StringWriter();
@@ -712,17 +693,18 @@ public abstract class Operator implements Comparable<Operator> {
       IOUtils.copy(is, writer);
     } catch (Exception e) {
       writer.append(e.getMessage());
-      LogChannel.GENERAL.logDebug("Warning no documentation : " + id);
+      LogChannel.GENERAL.logError("Warning no documentation : " + id);
     }
 
     return writer.toString();
   }
 
   private static String findDescription(String id) {
-    String doc = getHtml(id);
+    String doc = getDocumention(id);
 
-    if (doc == null)
+    if (doc == null) {  
       return "";
+    }
 
     int beginIndex = doc.indexOf("id=\"preamble\"");
     beginIndex = doc.indexOf("<p>", beginIndex);

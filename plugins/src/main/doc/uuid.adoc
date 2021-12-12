@@ -14,20 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= INSTR
+= UUID
 
-Returns the position in the string that is the first character of a specified occurrence of the substring.
+Return a Universal Unique Identifier (UUID) generated according to RFC 4122.
 		
-
 == Syntax
 ----
-INSTR( <string> , <substring> [, <start_position> ] )
+UUID()
 ----
 
-== Usage
-
-The first position in the string is 1.
-
-If substring is not found in string, then the INSTR function will return 0.
-			
-If the start_position is negative, the INSTR function counts back start_position number of characters from the end of string and then searches towards the beginning of string.
+Return:: String

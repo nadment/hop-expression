@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import static org.apache.hop.expression.Operator.coerceToDatePart;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -23,7 +24,6 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
-
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
  */
@@ -33,19 +33,19 @@ public class SimplifyExtractRule implements Rule {
 
     if (call.isOperator(OperatorRegistry.EXTRACT) && call.getOperandCount() == 2) {
 
-      DatePart part = (DatePart) call.getOperand(0).eval(context);
+      DatePart part = coerceToDatePart(call.getOperand(0).eval(context));
 
       switch (part) {
         case YEAR:
-        case MONTH:
         case QUARTER:
+        case MONTH:
+        case WEEK:
         case DAY:
+        case DAYOFYEAR:
+        case DAYOFWEEK:
         case HOUR:
         case MINUTE:
         case SECOND:
-        case WEEKOFYEAR:
-        case DAYOFYEAR:
-        case DAYOFWEEK:
           Operator operator = OperatorRegistry.getFunction(part.name());
           return new OperatorCall(operator, call.getOperand(1));
         default:

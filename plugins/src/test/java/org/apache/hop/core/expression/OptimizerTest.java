@@ -87,7 +87,7 @@ public class OptimizerTest {
     optimize("EXTRACT(HOUR FROM OrderDate)", "HOUR(OrderDate)");
     optimize("EXTRACT(MINUTE FROM OrderDate)", "MINUTE(OrderDate)");
     optimize("EXTRACT(SECOND FROM OrderDate)", "SECOND(OrderDate)");
-    optimize("EXTRACT(WEEKOFYEAR FROM OrderDate)", "WEEKOFYEAR(OrderDate)");
+    optimize("EXTRACT(WEEK FROM OrderDate)", "WEEK(OrderDate)");
     optimize("EXTRACT(DAYOFYEAR FROM OrderDate)", "DAYOFYEAR(OrderDate)");
     optimize("EXTRACT(DAYOFWEEK FROM OrderDate)", "DAYOFWEEK(OrderDate)");
   }

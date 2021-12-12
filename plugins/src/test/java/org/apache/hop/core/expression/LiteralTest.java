@@ -19,6 +19,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
@@ -39,13 +41,21 @@ public class LiteralTest extends BaseExpressionTest {
   public void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Literal.NULL, Literal.of(null));
-    assertEquals(Literal.NULL, new Literal(null));
     assertEquals(0, Literal.NULL.hashCode());
     assertFalse(Literal.NULL.isKind(null));
     assertFalse(Literal.NULL.isOperator(null));
     assertNotEquals(Literal.NULL,null);
     assertNull(Literal.NULL.eval(null));
     assertThrows(ExpressionException.class, () -> Literal.of(Literal.NULL));
+  }
+
+  @Test
+  public void DatePart() throws Exception {
+    assertEquals(DatePart.HOUR, Literal.of(DatePart.HOUR).eval(null));
+  }
+
+  public void DataType() throws Exception {
+    assertEquals(DataType.BIGNUMBER, Literal.of(DataType.BIGNUMBER).eval(null));
   }
 
   @Test
@@ -65,7 +75,6 @@ public class LiteralTest extends BaseExpressionTest {
 
     writeEquals("'Test ''Bla'' string'");
   }
-
 
   @Test
   public void Boolean() throws Exception {

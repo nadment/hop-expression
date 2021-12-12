@@ -34,11 +34,8 @@ public enum DatePart {
   /** The years */
   YEAR("YY"),
 
-  /** The years of week */
-  YEAROFWEEK("YOW"),
-
-  /** The years of week ISO */
-  YEAROFWEEKISO("YOWISO"),
+  /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
+  YEARISO("YOWISO","YEAROFWEEKISO"),
 
   /** The number (1 - 12) of the month */
   MONTH("MM"),
@@ -50,19 +47,25 @@ public enum DatePart {
   DAYOFWEEK("DOW"),
 
   /**
-   * A number (1 = Monday, …, 7 = Sunday) indicating the day of the week following the ISO-8601
+   * A number (1 = Monday, …, 7 = Sunday) indicating the day of the week following the ISO 8601
    * standard
    */
-  DAYOFWEEKISO("DOWISO"),
+  DAYOFWEEKISO("DOWISO","ISODOW"),
 
   /** A number (1 - 366) indicating the day of the year */
   DAYOFYEAR("DOY"),
 
-  /** The number (1 - 54) of the week of the year */
-  WEEKOFYEAR("WEEK"),
+  /** 
+   * The number (1 - 53) of the week of the year.
+   * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
+   */
+  WEEK("WEEKOFYEAR"),
 
-  /** Week of the year (number from 1-53). */
-  WEEKOFYEARISO("WEEKISO"),
+  /** 
+   * The number (1 - 53) of the week of the year ISO 8601.
+   * The first week of the ISO year is the week that contains January 4. 
+   */
+  WEEKISO("WEEKOFYEARISO"),
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
@@ -88,22 +91,22 @@ public enum DatePart {
   /** The nanosecond. */
   NANOSECOND("NS"),
 
-  // TIMEZONE_REGION,
+  TIMEZONE_REGION,
 
   /** The time zone offset's hour part. */
   TIMEZONE_HOUR,
   /** The time zone offset's minute part. */
   TIMEZONE_MINUTE
-
+  
   ;
 
-  private final String alias;
+  private final String[] alias;
 
   private DatePart() {
-    this.alias = null;
+   this.alias = new String[0];
   }
 
-  private DatePart(final String alias) {
+  private DatePart(final String... alias) {
     this.alias = alias;
   }
 
@@ -113,36 +116,40 @@ public enum DatePart {
    * <p>
    * This method ignore case and search alias too
    *
-   * @param str
+   * @param name
    * @return DatePart
    */
-  public static DatePart of(String str) {
+  public static DatePart of(final String name) {
     for (DatePart part : DatePart.values()) {
-      if (part.name().equalsIgnoreCase(str)) {
+      if (part.name().equalsIgnoreCase(name)) {
         return part;
       }
 
-      if (part.alias != null && part.alias.equalsIgnoreCase(str)) {
-        return part;
+      for (String alias : part.alias) {
+        if (alias.equalsIgnoreCase(name)) {
+          return part;
+        }
       }
     }
 
-    throw new IllegalArgumentException("Invalid date part: " + str);
+    throw new IllegalArgumentException("Invalid date part: " + name);
   }
 
   /**
    * Check if date part exist.
    * 
-   * @param str the name to check
+   * @param name the name to check
    * @return
    */
-  public static boolean exist(final String str) {
+  public static boolean exist(final String name) {
     for (DatePart part : DatePart.values()) {
-      if (part.name().equalsIgnoreCase(str)) {
+      if (part.name().equalsIgnoreCase(name)) {
         return true;
       }
-      if (part.alias != null && part.alias.equalsIgnoreCase(str)) {
-        return true;
+      for (String alias : part.alias) {
+        if (alias.equalsIgnoreCase(name)) {
+          return true;
+        }
       }
     }
     return false;

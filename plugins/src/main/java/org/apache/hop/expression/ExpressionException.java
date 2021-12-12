@@ -28,6 +28,39 @@ public class ExpressionException extends RuntimeException {
     return new ExpressionException(BaseMessages.getString(PKG, message, values));
   }  
   
+  public static ExpressionException createUnexpectedDataType(String name, DataType type) {
+    return create("Expression.UnexpectedDataType", name, type);
+  }  
+  
+  public static final ExpressionException createArgumentOutOfRange(Object arg) {
+    return create("Expression.ArgumentOutOfRange", arg);
+  }
+  
+  public static ExpressionException createUnexpectedDatePart(String name, DatePart part) {
+    return create("Expression.UnexpectedDatePart", name, part);
+  }
+  
+  public static final ExpressionException createDivisionByZero() {
+    return create("Expression.DivisionByZero");
+  }
+  
+  public static final ExpressionException createOverflow(String message) {
+    return create("Expression.Overflow", message);
+  }
+
+  public static final ExpressionException createUnsupportedConversion(Object value, DataType type) {
+    return create("Expression.UnsupportedConversion", value,
+        DataType.fromJava(value), type);
+  }
+
+  public static ExpressionException createFormatPattern(String s, int i) {
+    return create("Bad format {0} at position {1}", s, i);
+  }
+
+  public static ExpressionException createRegexpPattern(String s) {
+    return create("Bad regexp {0}", s);
+  }
+  
   /**
    * Construct a new expression exception.
    * 

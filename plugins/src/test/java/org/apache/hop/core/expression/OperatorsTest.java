@@ -485,24 +485,27 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
     evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
     evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
-    //evalEquals("Extract(YEAROFWEEK from Date '2017-01-01')", 2016);
-    evalEquals("Extract(YEAROFWEEKISO from Date '2017-01-01')", 2017);
+    evalEquals("Extract(YEARISO from Date '2017-01-01')", 2016);
     evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
     evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
     evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
-    evalEquals("Extract(WEEKISO from Date '2010-01-03')", 53);
-    evalEquals("Extract(WEEKISO from Date '2010-01-04')", 1);
+    evalEquals("Extract(WEEK from Timestamp '2020-01-01 23:48:59')", 1);
+    evalEquals("Extract(WEEKISO from Date '2016-01-03')", 53);
+    evalEquals("Extract(WEEKISO from Date '2016-01-04')", 1);
     evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
     evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
     evalEquals("Extract(DD from Timestamp '2020-05-25 23:48:59')", 25);
     evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
+    evalEquals("Extract(DOW from Timestamp '2020-05-25 23:48:59')", 2);
     evalEquals("Extract(DAYOFWEEKISO from Date '2003-12-28')", 7);
+    evalEquals("Extract(DOWISO from Date '2003-12-28')", 7);
     evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
     evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
-    evalEquals("Extract(Millisecond from Timestamp '2020-05-25 00:00:01.123456')", 123);
-    evalEquals("Extract(Microsecond from Timestamp '2020-05-25 00:00:01.123456')", 123456);
-    evalEquals("Extract(Nanosecond from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
+    evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
+    evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
+    evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
+    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "Z");
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
     evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
@@ -513,6 +516,21 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("Extract(BIDON from NULL)");
 
     writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
+    
+    // Alias
+    evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);    
+  }
+  
+  @Test
+  public void Position() throws Exception {   
+    evalEquals("Position('abc' IN 'abcdefgh')", 1);
+    evalEquals("Position('XYZ' IN 'abcdefgh')", 0);
+    evalEquals("Position('def' IN 'abcdefgh')", 4);
+    
+    evalNull("Position(NULL IN 'abcdefgh')");
+    evalNull("Position('abc' IN NULL)");
+    evalFails("Position('abc' IN ");
+    evalFails("Position( IN 'fsd'");
   }
   
   @Test

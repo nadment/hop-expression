@@ -43,7 +43,7 @@ public class Cast extends Operator {
     if (value == null)
       return null;
 
-    DataType type = (DataType) operands[1].eval(context);
+    DataType type = coerceToDataType(operands[1].eval(context));
 
     String format = null;
     if (operands.length == 3) {

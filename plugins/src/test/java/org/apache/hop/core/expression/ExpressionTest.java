@@ -25,10 +25,8 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.i18n.BaseMessages;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,9 +34,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class ExpressionTest extends BaseExpressionTest {
-  private static final Class<?> PKG = IExpression.class; // for i18n purposes
-
-  
+    
   @Test
   public void Comment() throws Exception {
     evalTrue(" // Test line comment \n  true ");
@@ -236,7 +232,7 @@ public class ExpressionTest extends BaseExpressionTest {
     assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
     assertFalse(OperatorRegistry.CONCAT.isSame(null));
     assertNotNull(OperatorRegistry.CONCAT.getDescription());
-    //assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
+    assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
     assertTrue(OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));
   }
   
@@ -258,9 +254,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("42%(3+2)", 2);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("Age-(10+3*10+50-2*25)", 0);
-
     evalEquals("2*'1.23'", 2.46);
-    // integer
 
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
@@ -277,7 +271,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue(" 3 > 5 IS FALSE");
 
     // BETWEEN, IN, LIKE have higher precedence than comparison
-    // evalTrue("6 = 6 between 4 = 4 and 5 = 5");
+    // evalTrue("5 between 4=4 and 6=6");
   }
   
   @Test

@@ -23,11 +23,9 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
-import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
-import java.time.temporal.WeekFields;
 
 /**
  * Extracts the specified date or time part from a date, time, or timestamp.
@@ -53,10 +51,10 @@ public class Extract extends Operator {
     if (value == null)
       return null;
 
-    return extract(coerceToDate(value), DatePart.of(coerceToString(part)));
+    return extract(coerceToDate(value), coerceToDatePart(part));
   }
 
-  protected long extract(ZonedDateTime datetime, DatePart part) {
+  protected Object extract(ZonedDateTime datetime, DatePart part) {
     switch (part) {
       case DAY:
         return datetime.getDayOfMonth();
@@ -69,9 +67,9 @@ public class Extract extends Operator {
         return dow;
       case DAYOFWEEKISO:
         return datetime.getDayOfWeek().getValue();
-      case WEEKOFYEAR:
+      case WEEK:
         return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-      case WEEKOFYEARISO:
+      case WEEKISO:
         return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
       case WEEKOFMONTH:
         return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -81,11 +79,8 @@ public class Extract extends Operator {
         return datetime.get(IsoFields.QUARTER_OF_YEAR);
       case YEAR:
         return datetime.getYear();
-      case YEAROFWEEK:
-        return datetime.get(WeekFields.of(DayOfWeek.SUNDAY, 1).weekBasedYear());
-      case YEAROFWEEKISO:
-        // TODO: Verify DAYOFWEEKISO
-        return datetime.get(WeekFields.of(DayOfWeek.MONDAY, 1).weekBasedYear());
+      case YEARISO:
+        return datetime.get(IsoFields.WEEK_BASED_YEAR);
       case DECADE:
         return decade(datetime.getYear());
       case CENTURY:
@@ -106,12 +101,14 @@ public class Extract extends Operator {
         return datetime.getNano();
       case EPOCH:
         return datetime.toEpochSecond();
+      case TIMEZONE_REGION:
+        return datetime.getZone().getId();
       case TIMEZONE_HOUR:
         return datetime.getOffset().getTotalSeconds() / (60 * 60);
       case TIMEZONE_MINUTE:
         return (datetime.getOffset().getTotalSeconds() / 60) % 60;
       default:
-        throw new ExpressionException("Unsupported date part: " + part);
+        throw ExpressionException.createUnexpectedDatePart("EXTRACT",part);
     }
 
   }

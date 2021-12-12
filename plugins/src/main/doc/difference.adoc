@@ -14,20 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= INSTR
+= DIFFERENCE
 
-Returns the position in the string that is the first character of a specified occurrence of the substring.
+Compares two SOUNDEX values, and return the value of the integer.
 		
-
 == Syntax
 ----
-INSTR( <string> , <substring> [, <start_position> ] )
+DIFFERENCE( <string1>, <string2> )
 ----
 
-== Usage
+Return:: Integer
 
-The first position in the string is 1.
+== USAGE
 
-If substring is not found in string, then the INSTR function will return 0.
-			
-If the start_position is negative, the INSTR function counts back start_position number of characters from the end of string and then searches towards the beginning of string.
+This value measures the degree that the SOUNDEX values match, on a scale of 0 to 4. A value of 0 indicates a weak or no similarity between the SOUNDEX values; 4 indicates that the SOUNDEX values are extremely similar, or even identical.

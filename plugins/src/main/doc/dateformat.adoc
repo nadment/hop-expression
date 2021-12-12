@@ -38,8 +38,8 @@ under the License.
 |FX||Requires exact matches between character data and format model [NOT_IMPLEMENTED] 
 |HH HH12||Hour in AM/PM (1-12)
 |HH24||Hour in day (0-23)
-|IW||Week in year
-|WW||Week in year 
+|IW||Week of year (01-52 or 01-53) based on the ISO-8601 standard.
+|WW||Week of year (01-53) where week 1 starts on the first day of the year.
 |W||Week in month 
 |IYYY IYY IY I||Last 4/3/2/1 digit(s) of ISO year 
 |RRRR RR||Last 4/2 digits of year

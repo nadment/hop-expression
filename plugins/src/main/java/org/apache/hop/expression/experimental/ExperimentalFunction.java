@@ -17,7 +17,6 @@
 package org.apache.hop.expression.experimental;
 
 import static org.apache.hop.expression.Operator.coerceToString;
-import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -26,24 +25,6 @@ import org.apache.hop.expression.ScalarFunction;
 public class ExperimentalFunction {
 
   private ExperimentalFunction() {}
-
-  /** 
-   * The function compute Levenshtein distance.
-   */
-  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2,
-      maxArgs = 2)
-  public static Object levenshtein(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-    Object v1 = operands[1].eval(context);
-    if (v1 == null)
-      return null;
-
-    return Long.valueOf(StringUtils.getLevenshteinDistance(coerceToString(v0), coerceToString(v1)));
-  }
-
 
   /**
    * Compresses white space.

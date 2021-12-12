@@ -47,6 +47,7 @@ import org.apache.hop.expression.operator.Mod;
 import org.apache.hop.expression.operator.Multiply;
 import org.apache.hop.expression.operator.Negative;
 import org.apache.hop.expression.operator.NotEqual;
+import org.apache.hop.expression.operator.Position;
 import org.apache.hop.expression.operator.Subtract;
 import org.apache.hop.expression.operator.TryCast;
 import org.jboss.jandex.AnnotationInstance;
@@ -123,7 +124,8 @@ public class OperatorRegistry {
   public static final Operator TRY_CAST = new TryCast();
   public static final Operator CONCAT = new Concat();
   public static final Operator EXTRACT = new Extract();
-
+  public static final Operator POSITION = new Position();
+  
   static {
     operators = new TreeSet<>(Arrays.asList(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT,
         BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN,

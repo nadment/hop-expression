@@ -31,6 +31,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.JulianFields;
 import java.time.temporal.WeekFields;
@@ -743,8 +744,8 @@ import java.util.Locale;
           }
 
           if ((cap = match(pattern, index, "A.M.")) != null) {
-            boolean isAM = value.getHour() < 12;
-            String am = isAM ? "A.M." : "P.M.";
+
+            String am = (value.getHour() < 12) ? "A.M." : "P.M.";
             output.append(cap.apply(am));
             index += 4;
             continue;
@@ -939,8 +940,12 @@ import java.util.Locale;
 
           // Week of year (1-52 or 1-53) based on the ISO standard
           if (startsWithIgnoreCase(pattern, index, "IW")) {
-            int week = value.get(WeekFields.ISO.weekOfYear());
-            output.append(week);
+            int week = value.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);                       
+            if (fillMode) {
+              appendZeroPadded(output,week,2);
+            } else {
+              output.append(week);
+            }
             index += 2;
             continue;
           }
@@ -1149,8 +1154,12 @@ import java.util.Locale;
           // Week of year (1-53) where week 1 starts on the first day of the year and
           // continues to the seventh day of the year.
           if (startsWithIgnoreCase(pattern, index, "WW")) {
-            int weekOfYear = value.get(WeekFields.SUNDAY_START.weekOfYear());
-            output.append(weekOfYear);
+            int weekOfYear = value.get(ChronoField.ALIGNED_WEEK_OF_YEAR);            
+            if (fillMode) {
+              appendZeroPadded(output,weekOfYear,2);
+            } else {
+              output.append(weekOfYear);
+            }
             index += 2;
             continue;
           }

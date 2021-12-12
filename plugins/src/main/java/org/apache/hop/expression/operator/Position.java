@@ -20,45 +20,43 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
-/** Arithmetic unary minus (negative) operator '<code>-</code>'. */
-public class Negative extends Operator {
+/**
+ * Returns the position in the string that is the first character of a specified occurrence of the
+ * substring.
+ */
+public class Position extends Operator {
 
-  public Negative() {
-    super("NEGATIVE", "-", 30, true, true, "i18n::Operator.Category.Mathematical");
+  public Position() {
+    super("POSITON", 10, true, true, "i18n::Operator.Category.String");
   }
 
+  @ScalarFunction(id = "POSITON", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
+    Object v1 = operands[1].eval(context);
 
-    if (v0 == null)
+    if (v0 == null || v1 == null) {
       return null;
-
-    if (v0 instanceof Double) {
-      double value = (double) v0;
-      if (value == Double.MIN_VALUE) {
-        throw ExpressionException.createOverflow(String.valueOf(v0));
-      }
-      return Double.valueOf(-value);
     }
 
-    if (v0 instanceof Long) {
-      long value = (long) v0;
-      if (value == Long.MIN_VALUE) {
-        throw ExpressionException.createOverflow(String.valueOf(v0));
-      }
-      return Long.valueOf(-value);
-    }
+    String substr = v0.toString();
+    String str = v1.toString();
 
-    return coerceToBigNumber(v0).negate();
+    return Long.valueOf(str.indexOf(substr, 0) + 1L);
   }
 
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
-    writer.append('-');
+    writer.append("POSITION(");
     operands[0].write(writer);
+    writer.append(" IN ");
+    operands[1].write(writer);
+    writer.append(')');
   }
 }

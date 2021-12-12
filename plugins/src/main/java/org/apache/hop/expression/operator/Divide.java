@@ -48,21 +48,21 @@ public class Divide extends Operator {
       BigDecimal divisor = coerceToBigNumber(right);
       // prevent a division by zero ..
       if (divisor.signum() == 0)
-        throw errorDivisionByZero();
+        throw ExpressionException.createDivisionByZero();
       return coerceToBigNumber(left).divide(coerceToBigNumber(right), MathContext.DECIMAL128);
     }
     if (left instanceof Double || right instanceof Double) {
       double divisor = coerceToNumber(right);
       // prevent a division by zero ..
-      if (divisor == 0L)
-        throw errorDivisionByZero();
+      if (divisor == 0D)
+        throw ExpressionException.createDivisionByZero();
       return coerceToNumber(left) / divisor;
     }
     if (left instanceof Long || right instanceof Long) {
       long divisor = coerceToInteger(right);
       // prevent a division by zero ..
       if (divisor == 0L)
-        throw errorDivisionByZero();
+        throw ExpressionException.createDivisionByZero();
 
       return coerceToInteger(left) / divisor;
     }
@@ -76,5 +76,4 @@ public class Divide extends Operator {
     writer.append('/');
     operands[1].write(writer);
   }
-
 }

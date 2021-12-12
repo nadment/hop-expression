@@ -21,13 +21,9 @@ import static org.apache.hop.expression.Operator.coerceToDate;
 import static org.apache.hop.expression.Operator.coerceToInteger;
 import static org.apache.hop.expression.Operator.coerceToNumber;
 import static org.apache.hop.expression.Operator.coerceToString;
+import static org.apache.hop.expression.Operator.coerceToDatePart;
 import static org.apache.hop.expression.Operator.compareTo;
 import static org.apache.hop.expression.Operator.convertTo;
-import static org.apache.hop.expression.Operator.errorArgumentOutOfRange;
-import static org.apache.hop.expression.Operator.errorFormatPattern;
-import static org.apache.hop.expression.Operator.errorRegexpPattern;
-import static org.apache.hop.expression.Operator.errorUnexpectedDataType;
-import static org.apache.hop.expression.Operator.errorUnexpectedDatePart;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.language.Soundex;
@@ -194,7 +190,7 @@ public class Functions  {
       throws ExpressionException {
     return Math.PI;
   }
-
+  
   /** Returns the absolute (positive) value of the numeric value. */
   @ScalarFunction(id= "ABS", category = "i18n::Operator.Category.Mathematical")
   public static Object abs(final IExpressionContext context, final IExpression[] operands)
@@ -336,7 +332,7 @@ public class Functions  {
       return null;
     Double number = coerceToNumber(value);
     if (number <= 0)
-      throw errorArgumentOutOfRange(value);
+      throw ExpressionException.createArgumentOutOfRange(value);
     return FastMath.log(number);
   }
 
@@ -356,7 +352,7 @@ public class Functions  {
       return null;
     Double number = coerceToNumber(value);
     if (number <= 0)
-      throw errorArgumentOutOfRange(value);
+      throw ExpressionException.createArgumentOutOfRange(value);
 
     return FastMath.log(number) / FastMath.log(coerceToNumber(base));
   }
@@ -372,7 +368,7 @@ public class Functions  {
       return null;
     Double number = coerceToNumber(value);
     if (number <= 0)
-      throw errorArgumentOutOfRange(value);
+      throw ExpressionException.createArgumentOutOfRange(value);
     return FastMath.log10(number);
   }
 
@@ -403,7 +399,7 @@ public class Functions  {
       return null;
     Double number = coerceToNumber(value);
     if (number < 0)
-      throw errorArgumentOutOfRange(value);
+      throw ExpressionException.createArgumentOutOfRange(value);
     return FastMath.sqrt(number);
   }
 
@@ -491,6 +487,23 @@ public class Functions  {
     return buffer.toString();
   }
 
+  /** 
+   * The function compute Levenshtein distance.
+   */
+  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2,
+      maxArgs = 2)
+  public static Object levenshtein(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    return Long.valueOf(StringUtils.getLevenshteinDistance(coerceToString(v0), coerceToString(v1)));
+  }
+  
   /**
    * The function return the ASCII value of the first character in a string. If the string is empty,
    * a value of 0 is returned.
@@ -1077,7 +1090,7 @@ public class Functions  {
       char c = s.charAt(i);
       if (c == '\\') {
         if (i + 1 >= s.length()) {
-          throw errorFormatPattern(s, i);
+          throw ExpressionException.createFormatPattern(s, i);
         }
         c = s.charAt(++i);
         switch (c) {
@@ -1119,7 +1132,7 @@ public class Functions  {
             try {
               c = (char) (Integer.parseInt(s.substring(i + 1, i + 5), 16));
             } catch (NumberFormatException e) {
-              throw errorFormatPattern(s, i);
+              throw ExpressionException.createFormatPattern(s, i);
             }
             i += 4;
             builder.append(c);
@@ -1137,7 +1150,7 @@ public class Functions  {
             // builder.append(c);
             // }
 
-            throw errorFormatPattern(s, i);
+            throw ExpressionException.createFormatPattern(s, i);
         }
       } else {
         builder.append(c);
@@ -1480,6 +1493,39 @@ public class Functions  {
   }
   
   /**
+   * Returns the position in the string that is the first character of a specified occurrence of the
+   * substring.
+   */
+  @ScalarFunction(id= "INSTR", minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.String")
+  public static Object instr(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    Object v1 = operands[1].eval(context);
+
+    if (v0 == null || v1 == null) {
+      return null;
+    }
+
+    String str = v0.toString();
+    String substr = v1.toString();
+
+    // If 3 operands
+    int start = 0;
+    if (operands.length == 3) {
+      start = coerceToInteger(operands[2].eval(context)).intValue();
+
+      if (start > 0)
+        start -= 1;
+      else if (start < 0) {
+        return Long.valueOf(str.lastIndexOf(substr, str.length() + start) + 1L);
+      }
+    }
+
+    return Long.valueOf(str.indexOf(substr, start) + 1L);
+  }
+  
+  /**
    * Removes all occurrences of a specified substring, and optionally replaces them with another
    * string.
    */
@@ -1506,38 +1552,7 @@ public class Functions  {
     return StringUtils.remove(string, search);
   }
 
-  /**
-   * Returns the position in the string that is the first character of a specified occurrence of the
-   * substring.
-   */
-  @ScalarFunction(id= "INSTR", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
-  public static Object instr(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    Object v1 = operands[1].eval(context);
-
-    if (v0 == null || v1 == null) {
-      return null;
-    }
-
-    String string = v0.toString();
-    String pattern = v1.toString();
-
-    // If 3 operands
-    int start = 0;
-    if (operands.length == 3) {
-      start = coerceToInteger(operands[2].eval(context)).intValue();
-
-      if (start > 0)
-        start -= 1;
-      else if (start < 0) {
-        return Long.valueOf(string.lastIndexOf(pattern, string.length() + start) + 1L);
-      }
-    }
-
-    return Long.valueOf(string.indexOf(pattern, start) + 1L);
-  }
+  
 
   /**
    * Returns the portion of the string from string, starting from the character/byte specified by
@@ -1606,7 +1621,7 @@ public class Functions  {
       Pattern pattern = Pattern.compile(regexp, flags);
       return pattern.matcher(input).find();
     } catch (PatternSyntaxException e) {
-      throw errorRegexpPattern(regexp);
+      throw ExpressionException.createRegexpPattern(regexp);
     }
   }
 
@@ -1700,7 +1715,7 @@ public class Functions  {
         return buffer.toString();
       }
     } catch (PatternSyntaxException e) {
-      throw errorRegexpPattern(regexp);
+      throw ExpressionException.createRegexpPattern(regexp);
     } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
       // TODO: i18n
       throw new ExpressionException(
@@ -1765,7 +1780,7 @@ public class Functions  {
 
       return null;
     } catch (PatternSyntaxException e) {
-      throw errorRegexpPattern(regexp);
+      throw ExpressionException.createRegexpPattern(regexp);
     }
   }
 
@@ -1839,7 +1854,7 @@ public class Functions  {
 
       return 0L;
     } catch (PatternSyntaxException e) {
-      throw errorRegexpPattern(regexp);
+      throw ExpressionException.createRegexpPattern(regexp);
     }
   }
 
@@ -1994,7 +2009,7 @@ public class Functions  {
       case STRING:
         return value;
       default:
-        throw errorUnexpectedDataType("TO_CHAR", DataType.fromJava(value));
+        throw ExpressionException.createUnexpectedDataType("TO_CHAR", DataType.fromJava(value));
     }
   }
 
@@ -2083,7 +2098,7 @@ public class Functions  {
         }
         return DateTimeFormat.of(pattern).parse(value.toString());
       default:
-        throw errorUnexpectedDataType("TO_DATE", DataType.fromJava(value));
+        throw ExpressionException.createUnexpectedDataType("TO_DATE", DataType.fromJava(value));
     }
   }
 
@@ -2161,10 +2176,7 @@ public class Functions  {
         DatePart part = DatePart.DAY;
 
         if (operands.length == 2) {
-          Object pattern = operands[1].eval(context);
-          if (pattern == null)
-            return null;
-          part = DatePart.of(pattern.toString());
+          part = coerceToDatePart(operands[1].eval(context));
         }
 
         switch (part) {
@@ -2182,7 +2194,7 @@ public class Functions  {
             return datetime.withMonth(month).withDayOfMonth(1);
           }
           // First day of the week
-          case WEEKOFYEAR: {
+          case WEEK: {
             DayOfWeek dow = DayOfWeek.of(((ExpressionContext) context).getFirstDayOfWeek());
             return datetime.with(TemporalAdjusters.previousOrSame(dow));
           }
@@ -2202,12 +2214,12 @@ public class Functions  {
           case NANOSECOND:
             return datetime.truncatedTo(ChronoUnit.NANOS);
           default:
-            throw errorUnexpectedDatePart("TRUNCATE", part);
+            throw ExpressionException.createUnexpectedDatePart("TRUNCATE", part);
         }
       case STRING:
       case BOOLEAN:
       default:
-        throw errorUnexpectedDataType("TRUNCATE", type);
+        throw ExpressionException.createUnexpectedDataType("TRUNCATE", type);
     }
   }
 
@@ -2345,10 +2357,34 @@ public class Functions  {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = coerceToDate(value);
-    return Long.valueOf(dt.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
   }
+  
+  /** Week of the year ISO semantics (number from 1-53). */
+  @ScalarFunction(id= "WEEKOFYEARISO", names = "WEEKISO", category = "i18n::Operator.Category.Date")
+  public static Object weekOfYearIso(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
 
+    ZonedDateTime datetime = coerceToDate(value); 
+    return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
+  }
+  
+  /** Year of the week ISO semantics */
+  @ScalarFunction(id= "YEAROFWEEKISO", names = "YEARISO", category = "i18n::Operator.Category.Date")
+  public static Object yearOfWeekIso(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    ZonedDateTime datetime = coerceToDate(value); 
+    return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
+  }
+  
   /** Week from the beginning of the month (0-5) */
   @ScalarFunction(id= "WEEKOFMONTH", category = "i18n::Operator.Category.Date")
   public static Object weekOfMonth(final IExpressionContext context, final IExpression[] operands)
@@ -2357,8 +2393,8 @@ public class Functions  {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = coerceToDate(value);
-    return Long.valueOf(dt.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
   }
 
   /** Month of the year (number from 1-12). */
@@ -2369,8 +2405,8 @@ public class Functions  {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = coerceToDate(value);
-    return Long.valueOf(dt.getMonthValue());
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.getMonthValue());
   }
 
   /** Returns the name of the month (in English). */
@@ -2381,8 +2417,8 @@ public class Functions  {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = coerceToDate(value);
-    Month month = dt.getMonth();
+    ZonedDateTime datetime = coerceToDate(value);
+    Month month = datetime.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
 
@@ -2394,8 +2430,8 @@ public class Functions  {
     if (value == null)
       return null;
 
-    ZonedDateTime dt = coerceToDate(value);
-    return Long.valueOf(dt.get(IsoFields.QUARTER_OF_YEAR));
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.get(IsoFields.QUARTER_OF_YEAR));
   }
 
   /** The year of a date */
@@ -2740,7 +2776,7 @@ public class Functions  {
       return null;
     Double d = coerceToNumber(value);
     if (d < -1.0 || d > 1.0) {
-      throw errorArgumentOutOfRange(value);
+      throw ExpressionException.createArgumentOutOfRange(value);
     }
     return FastMath.acos(d);
   }
@@ -2828,7 +2864,7 @@ public class Functions  {
 
     double number = coerceToNumber(value);
     if (number == 0)
-      throw errorArgumentOutOfRange(value);
+      throw ExpressionException.createArgumentOutOfRange(value);
 
     return FastMath.cos(number) / FastMath.sin(number);
   }

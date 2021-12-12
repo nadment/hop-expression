@@ -87,7 +87,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
   public String getToolTipText(Object element) {
     if (element instanceof Operator) {
       Operator operator = (Operator) element;
-      return Operator.getHtml(operator.getId());
+      return Operator.getDocumention(operator.getId());
     }
 
     return null;

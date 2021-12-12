@@ -206,12 +206,15 @@ public class Token {
     
     /** Extract(part FROM date_time) operator */
     EXTRACT,
+
+    /** Position(substring IN string) operator */
+    POSITION,
     
     /** Data type element NUMBER, BOOLEAN,... */
-    DATATYPE,
+    LITERAL_DATATYPE,
     
     /** Date part element DAY, MONTH,... */
-    DATEPART;
+    LITERAL_DATEPART;
 
     private final String source;
 

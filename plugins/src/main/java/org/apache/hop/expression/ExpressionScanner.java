@@ -37,9 +37,11 @@ public class ExpressionScanner {
   }
 
   public static boolean isReservedWord(String name) {
+    if (name == null)
+      return false;
     return RESERVED_WORDS.contains(name.toUpperCase());
   }
-  
+
   private String source;
 
   private int index = 0;
@@ -359,7 +361,7 @@ public class ExpressionScanner {
 
           if (c == '(' ) {
             // Special operator with name
-            if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name) ) {
+            if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name) || "POSITION".equals(name) ) {
               return new Token(Id.valueOf(name), start, index, name);
             }
             if ( OperatorRegistry.isFunctionName(name)) {          
@@ -373,11 +375,11 @@ public class ExpressionScanner {
           }
 
           if (DataType.exist(name)) {
-            return new Token(Id.DATATYPE, start, index, name);
+            return new Token(Id.LITERAL_DATATYPE, start, index, name);
           }
 
           if (DatePart.exist(name)) {
-            return new Token(Id.DATEPART, start, index, name);
+            return new Token(Id.LITERAL_DATEPART, start, index, name);
           }
 
           return new Token(Id.IDENTIFIER, start, index, identifier);

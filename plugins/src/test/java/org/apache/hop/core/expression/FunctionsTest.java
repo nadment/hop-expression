@@ -153,7 +153,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Date(2020,15)");
     evalFails("Date(2020,1,1,1)");
   }
-
+  
   @Test
   public void FirstDay() throws Exception {
     evalEquals("First_day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1));
@@ -217,7 +217,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Instr() throws Exception {
+  public void Instr() throws Exception {   
     evalEquals("Instr('abcdefgh','abc')", 1);
     evalEquals("Instr('abcdefgh','ABC')", 0);
     evalEquals("Instr('abcdefgh','ef')", 5);
@@ -407,12 +407,41 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void WeekOfYear() throws Exception {
+    evalEquals("WeekOfYear(Date '2015-12-31')", 53);
+    evalEquals("WeekOfYear(Date '2015-01-01')", 1);
+    evalEquals("WeekOfYear(Date '2015-01-02')", 1);
+    //evalEquals("WeekOfYear(Date '2024-12-31')", 54);
+    evalNull("WeekOfYear(NULL)");
+    evalFails("WeekOfYear()");   
+    
     evalEquals("Week(Date '2019-01-01')", 1);
-    evalEquals("Week(Date '2019-12-31')", 53);
-    evalNull("Week(NULL)");
-    evalFails("Week()");
   }
 
+  @Test
+  public void WeekOfYearIso() throws Exception {
+    evalEquals("WeekOfYearIso(Date '2015-12-31')", 53);
+    evalEquals("WeekOfYearIso(Date '2016-01-01')", 53);
+    evalEquals("WeekOfYearIso(Date '2016-01-02')", 53);
+    evalEquals("WeekOfYearIso(Date '2016-01-03')", 53);
+    evalEquals("WeekOfYearIso(Date '2016-01-04')", 1);
+    evalNull("WeekOfYearIso(NULL)");        
+    evalFails("WeekOfYearIso()");
+    
+    evalEquals("WeekIso(Date '2016-01-01')", 53);
+  }
+    
+  @Test
+  public void YearOfWeekIso() throws Exception {
+    evalEquals("YearOfWeekIso(Date '2015-12-31')", 2015);
+    evalEquals("YearOfWeekIso(Date '2016-01-01')", 2015);
+    evalEquals("YearOfWeekIso(Date '2016-01-02')", 2015);
+    evalEquals("YearOfWeekIso(Date '2016-01-04')", 2016);
+    evalEquals("YearOfWeekIso(Date '2042-12-31')", 2043);
+    
+    evalNull("YearOfWeekIso(NULL)");        
+    evalFails("YearOfWeekIso()");
+  }
+  
   @Test
   public void Add_Years() throws Exception {
     evalEquals("Add_Years(Date '2019-01-15',1)", LocalDate.of(2020, Month.JANUARY, 15));
@@ -671,7 +700,8 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Exp() throws Exception {
-    evalEquals("Exp(2)", 7.38905609893065);
+    evalEquals("Exp(1)", Math.E);
+    evalEquals("Exp(2)", Math.E*Math.E);
     evalNull("Exp(NULL)");
     evalFails("Exp()");
     evalFails("Exp(1,2)");
@@ -1197,9 +1227,20 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-09-23','Mon')", "Sep");
     evalEquals("To_Char(Date '2019-09-23','mon')", "sep");
 
-    evalEquals("To_Char(Date '2019-07-23','WW')", "30"); // Week of year
-    evalEquals("To_Char(Date '2019-07-23','IW')", "30"); // Iso Week of year
-
+    // Week of year and ISO Week of year (The first week of the ISO year is the week that contains January 4.)
+    evalEquals("To_Char(Date '2015-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2015-12-31 thu IYYY=2015 IW=53 WW=53");
+    evalEquals("To_Char(Date '2016-01-01','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-01 fri IYYY=2015 IW=53 WW=01");
+    evalEquals("To_Char(Date '2016-01-02','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-02 sat IYYY=2015 IW=53 WW=01");
+    evalEquals("To_Char(Date '2016-01-03','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-03 sun IYYY=2015 IW=53 WW=01");
+    evalEquals("To_Char(Date '2016-01-04','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-04 mon IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-05','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-05 tue IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-06','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-06 wed IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-07','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-07 thu IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-08','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-08 fri IYYY=2016 IW=01 WW=02");
+    evalEquals("To_Char(Date '2042-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2042-12-31 wed IYYY=2043 IW=01 WW=53");    
+    evalEquals("To_Char(Date '2016-01-04','FM\"IW=\"IW \"WW=\"WW')", "IW=1 WW=1"); // Compact
+    
+        
     evalEquals("To_Char(Date '2019-07-21','D')", "1"); // Day of week
     evalEquals("To_Char(Date '2019-07-23','D')", "3"); // Day of week
     evalEquals("To_Char(Date '2019-07-08','DD')", "08"); // Day of month
@@ -1376,11 +1417,19 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Differencce() throws Exception {
-    evalEquals("DIFFERENCE('Juice', 'Jucy')", 4);
-    evalNull("DIFFERENCE(NULL,NULL)");
-    evalNull("DIFFERENCE(NULL,'Jucy')");
-    evalNull("DIFFERENCE('Juice',NULL)");
+  public void Difference() throws Exception {
+    evalEquals("Difference('Juice', 'Jucy')", 4);
+    evalNull("Difference(NULL,NULL)");
+    evalNull("Difference(NULL,'Jucy')");
+    evalNull("Difference('Juice',NULL)");
+  }
+
+  @Test
+  public void Levenshtein() throws Exception {
+    evalEquals("Levenshtein('kitten', 'sitting')", 3);
+    evalNull("Levenshtein(NULL,NULL)");
+    evalNull("Levenshtein(NULL,'Jucy')");
+    evalNull("Levenshtein('Juice',NULL)");
   }
 
   @Test
@@ -1411,14 +1460,14 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Truncate(TO_DATE('08-05-2020 15:35:32','DD-MM-YYYY HH24:MI:SS'))",
         LocalDate.of(2020, Month.MAY, 8));
     evalEquals("Truncate(DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 8));
-    evalEquals("Truncate(DATE '2020-05-08','year')", LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("Truncate(DATE '2020-05-08','YY')", LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("Truncate(DATE '2020-05-08','MONTH')", LocalDate.of(2020, Month.MAY, 1));
-    evalEquals("Truncate(DATE '2020-05-08','MM')", LocalDate.of(2020, Month.MAY, 1));
-    evalEquals("Truncate(DATE '2020-05-25','DAY')", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Truncate(DATE '2020-05-25','DD')", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Truncate(DATE '2020-05-25','QuArTeR')", LocalDate.of(2020, Month.APRIL, 1));
-    evalEquals("Truncate(DATE '2020-05-25','Q')", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("Truncate(DATE '2020-05-08',year)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Truncate(DATE '2020-05-08',YY)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Truncate(DATE '2020-05-08',MONTH)", LocalDate.of(2020, Month.MAY, 1));
+    evalEquals("Truncate(DATE '2020-05-08',MM)", LocalDate.of(2020, Month.MAY, 1));
+    evalEquals("Truncate(DATE '2020-05-25',DAY)", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Truncate(DATE '2020-05-25',DD)", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Truncate(DATE '2020-05-25',QuArTeR)", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("Truncate(DATE '2020-05-25',Q)", LocalDate.of(2020, Month.APRIL, 1));
     Locale.setDefault(new Locale("en", "EN"));
     // evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 25));
     Locale.setDefault(new Locale("fr", "BE"));
@@ -1428,19 +1477,19 @@ public class FunctionsTest extends BaseExpressionTest {
 
 
     // Truncate timestamp
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','DAY')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',DAY)",
         LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','HOUR')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',HOUR)",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','HH')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',HH)",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','MINUTE')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',MINUTE)",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','MI')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',MI)",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','SeCoNd')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',SeCoNd)",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59','SS')",
+    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',SS)",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
   }
 
