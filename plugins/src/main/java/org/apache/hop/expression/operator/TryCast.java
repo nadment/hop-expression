@@ -27,7 +27,7 @@ import java.io.StringWriter;
 public class TryCast extends Operator {
 
   public TryCast() {
-    super("TRY_CAST", 10, true, true, "i18n::Operator.Category.Conversion");
+    super("TRY_CAST", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/try_cast.html");
   }
 
   /**

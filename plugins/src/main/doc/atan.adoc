@@ -16,8 +16,7 @@ under the License.
 ////
 = ATAN
 
-This function calculates the inverse tangent (arc tangent).
-
+Calculates the inverse tangent (arc tangent).
 
 == Syntax
 ----

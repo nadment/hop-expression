@@ -14,19 +14,24 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= WEEK, WEEKOFYEAR
+= DIV0
 
-This function return the week of the year.
+Divide 2 numeric values like the division operator (/), but returns 0 when the divisor is 0.
 
 == Syntax
+
 ----
-WEEK( <date> )
-----
-----
-WEEKOFYEAR( <date> )
+DIV0( <dividend> , <divisor> )
 ----
 
 == Usage
 
-* Returns an integer between 1 and 53.
-* Equivalent to xref:extract.adoc[EXTRACT](WEEK FROM <date>). 
+* If the divisor is 0, the function returns 0 rather than reporting an error.
+* Returns NULL if one of the arguments is NULL.
+
+
+== Example
+
+----
+DIV(6,0) return 0
+----

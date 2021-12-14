@@ -16,7 +16,7 @@ under the License.
 ////
 = MOD, %
 
-This function returns the remainder of the division of <m> by <n>.
+Returns the remainder of the division of <m> by <n>.
 
 == Syntax
 ----
@@ -30,6 +30,6 @@ The % operator provides alternative syntax.
 == Example
 
 ----
-MOD(16,5)
+MOD(16,5) return 1
 ----
 

@@ -16,7 +16,7 @@ under the License.
 ////
 = DAYOFWEEK
 
-This function returns the day of week of the specified date or timestamp.
+Returns the day of week of the specified date or timestamp.
 
 == Syntax
 ----

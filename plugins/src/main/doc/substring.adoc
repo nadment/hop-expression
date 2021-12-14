@@ -29,4 +29,5 @@ Return:: String
 == Usage
 
 * If length is not specified, all of the characters to the end of the string are used.
-* The first character of a string has position 1. If position is negative, counting begins at the end of the string. 
+* The first character of a string has position 1. If position is negative, counting begins at the end of the string.
+* Returns NULL if one of the arguments is NULL. 

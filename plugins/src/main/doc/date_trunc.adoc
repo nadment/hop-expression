@@ -14,11 +14,32 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= WEEKOFMONTH
+= DATE_TRUNC
 
-This function return the week of month where week 1 starts on the first day of the month and ends on the seventh (integer between 0 to 5).
+Truncate a date or datetime value to the start of a given unit of duration. 
 
 == Syntax
 ----
-WEEKOFMONTH( <date_or_timestamp> )
+DATE_TRUNC( <unit>, <datetime> )
 ----
+
+== Usage
+
+Support unit of time:
+
+- MILLENNIUM
+- CENTURY
+- DECADE
+- YEAR
+- MONTH 
+- QUARTER 
+- WEEK        
+- DAY
+- HOUR
+- MINUTE
+- SECOND
+- MILLISECOND
+- MICROSECOND
+- NANOSECOND
+
+* Returns NULL if one of the arguments is NULL.

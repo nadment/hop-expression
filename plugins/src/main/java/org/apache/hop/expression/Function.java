@@ -39,8 +39,8 @@ public class Function extends Operator {
    * @param name The name of function
    */
   public Function(String id, String name, boolean isDeterministic, Object instance,
-      Method method, int min, int max, String category) throws ExpressionException {
-    super(id, name, 10, true, isDeterministic, category);
+      Method method, int min, int max, String category, String documentationUrl) throws ExpressionException {
+    super(id, name, 10, true, isDeterministic, category, documentationUrl);
 
     this.instance = instance;
     this.method = method;

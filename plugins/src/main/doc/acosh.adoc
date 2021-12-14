@@ -16,7 +16,7 @@ under the License.
 ////
 = ACOSH
 
-This function computes the inverse hyberbolic cosine (arc hyperbolic cosine).
+Calculates the inverse hyberbolic cosine (arc hyperbolic cosine).
 
 == Syntax
 ----

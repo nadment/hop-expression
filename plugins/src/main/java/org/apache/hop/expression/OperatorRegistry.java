@@ -209,14 +209,14 @@ public class OperatorRegistry {
 
           // Create function
           Function function = new Function(annotation.id(), annotation.id(), annotation.deterministic(),
-              instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+              instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
           operators.add(function);
           functions.put(function.getId(), function);
   
           // Create function alias name
           for (String name : annotation.names()) {
             function = new Function(annotation.id(), name, annotation.deterministic(), instance,
-                method, annotation.minArgs(), annotation.maxArgs(), annotation.category());
+                method, annotation.minArgs(), annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
             operators.add(function);
             functions.put(name, function);
 

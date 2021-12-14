@@ -14,17 +14,12 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= MULTIPLY, *
+= * (Multiplication)
 
 Multiply 2 numeric values.
 
 == Syntax
 
-----
-MULTIPLY( <numeric1> , <numeric2> )
-----
-
-The * operator provides alternative syntax.
 ----
 <numeric1> * <numeric2>
 ----

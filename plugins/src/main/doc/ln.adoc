@@ -16,7 +16,7 @@ under the License.
 ////
 = LN
 
-This function calculates the natural logarithm of number.
+Calculates the natural logarithm of number.
 
 == Syntax
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = TANH
 
-This function calculates the hyperbolic tangent.
+Calculates the hyperbolic tangent.
 
 == Syntax
 ----

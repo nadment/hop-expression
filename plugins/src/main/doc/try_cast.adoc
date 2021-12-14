@@ -18,8 +18,6 @@ under the License.
 
 Converts a value of one data type into another data type, and if the cast is not possible, an NULL value is returned.
 
-
-
 == Syntax
 ----
 TRY_CAST( <value> AS <dataType> [ FORMAT <format> ] )

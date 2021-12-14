@@ -16,7 +16,7 @@ under the License.
 ////
 = SHA384
 
-The function calculate the SHA-384 hash of a data value.
+Calculates the SHA-384 hash of a value.
 
 == Syntax
 ----

@@ -28,7 +28,7 @@ import java.io.StringWriter;
 public class BoolAnd extends Operator {
 
   public BoolAnd() {
-    super("BOOLAND", "AND", 160, true, true, "i18n::Operator.Category.Logical");
+    super("BOOLAND", "AND", 160, true, true, "i18n::Operator.Category.Logical", "/docs/booland.html");
   }
 
   @Override

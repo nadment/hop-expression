@@ -16,7 +16,7 @@ under the License.
 ////
 = SQUARE
 
-This function calculates the square of a numeric expression.
+Calculates the square of a numeric expression.
 
 == Syntax
 ----

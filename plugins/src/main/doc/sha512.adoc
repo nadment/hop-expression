@@ -16,7 +16,7 @@ under the License.
 ////
 = SHA512
 
-The function calculate the SHA-512 hash of a data value.
+Calculates the SHA-512 hash of a value.
 
 == Syntax
 ----

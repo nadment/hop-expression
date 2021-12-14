@@ -32,11 +32,11 @@ import java.io.StringWriter;
 public class Cast extends Operator {
 
   public Cast() {
-    super("CAST", "::", 10, true, true, "i18n::Operator.Category.Conversion");
+    super("CAST", "::", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/cast.html");
   }
 
   @ScalarFunction(id = "CAST", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.Conversion")
+      category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/cast.html")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);

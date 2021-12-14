@@ -24,3 +24,7 @@ REPLACE( <source> , <pattern> [, <replacement> ] )
 ----
 
 Returns:: String
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.

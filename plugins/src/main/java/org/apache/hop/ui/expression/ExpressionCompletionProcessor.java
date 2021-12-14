@@ -40,13 +40,20 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
-
+  
+  class ProposalComparator implements Comparator<ICompletionProposal>{
+    public int compare(ICompletionProposal p1, ICompletionProposal p2) {
+        return p1.getDisplayString().compareTo(p2.getDisplayString());
+    }
+}
+  
   private CompletableFuture<IRowMeta> rowMeta;
   private IVariables variables;
   private String message;
@@ -148,6 +155,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           computeReservedWordProposals(proposals, prefix, start, end);
         }
       }
+      proposals.sort(new ProposalComparator());
       return proposals.toArray(new ICompletionProposal[0]);
     } catch (Exception e) {
       message = e.getMessage();

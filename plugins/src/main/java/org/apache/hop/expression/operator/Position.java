@@ -30,11 +30,11 @@ import java.io.StringWriter;
 public class Position extends Operator {
 
   public Position() {
-    super("POSITON", 10, true, true, "i18n::Operator.Category.String");
+    super("POSITON", 10, true, true, "i18n::Operator.Category.String", "/docs/position.html");
   }
 
   @ScalarFunction(id = "POSITON", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/position.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

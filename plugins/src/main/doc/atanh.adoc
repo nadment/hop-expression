@@ -16,7 +16,7 @@ under the License.
 ////
 = ATANH
 
-This function calculates the inverse (arc) hyperbolic tangent.
+Calculates the inverse (arc) hyperbolic tangent.
 
 == Syntax
 ----

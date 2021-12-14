@@ -16,7 +16,7 @@ under the License.
 ////
 = LEAST
 
-The function returns the smallest value in a set of expressions.
+Returns the smallest value in a set of expressions.
 		
 
 == Syntax

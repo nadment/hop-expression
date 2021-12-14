@@ -16,7 +16,7 @@ under the License.
 ////
 = URLENCODE
 
-The function encode a string to be used in a query part of a URL.
+Encode a string to be used in a query part of a URL.
 
 == Syntax
 ----

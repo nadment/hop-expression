@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public class Like extends Operator {
 
   public Like() {
-    super("LIKE", 120, true, true, "i18n::Operator.Category.Comparison");
+    super("LIKE", 120, true, true, "i18n::Operator.Category.Comparison", "/docs/like.html");
   }
 
   @Override

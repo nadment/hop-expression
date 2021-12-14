@@ -16,7 +16,7 @@ under the License.
 ////
 = NEXT_DAY
 
-This function returns the date of the first specified day of week that occurs after the input date.
+Returns the date of the first specified day of week that occurs after the input date.
 
 == Syntax
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = HOURS_BETWEEN
 
-This function compute the number of hours between two dates.
+Compute the number of hours between two dates.
 
 == Syntax
 ----

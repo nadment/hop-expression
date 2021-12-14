@@ -29,11 +29,11 @@ import java.io.StringWriter;
 public class BitXor extends Operator {
 
   public BitXor() {
-    super("BITXOR", "^", 80, true, true, "i18n::Operator.Category.Bitwise");
+    super("BITXOR", "^", 80, true, true, "i18n::Operator.Category.Bitwise", "/docs/bitxor.html");
   }
 
   @ScalarFunction(id = "BITXOR", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise")
+      category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/bitxor.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

@@ -27,11 +27,11 @@ import java.io.StringWriter;
 public class BitOr extends Operator {
 
   public BitOr() {
-    super("BITOR", "|", 90, true, true, "i18n::Operator.Category.Bitwise");
+    super("BITOR", "|", 90, true, true, "i18n::Operator.Category.Bitwise", "/docs/bitor.html");
   }
 
   @ScalarFunction(id = "BITOR", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise")
+      category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/bitor.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

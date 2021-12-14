@@ -27,4 +27,4 @@ Returns:: String or binary
 
 == Usage
 
-If argument is NULL, the result is also NULL.
+* Returns NULL if the argument is NULL.

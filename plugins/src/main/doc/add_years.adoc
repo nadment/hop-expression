@@ -16,7 +16,7 @@ under the License.
 ////
 = ADD_YEARS
 
-This function adds or subtracts a specified number of years to a date or timestamp.
+Adds or subtracts a specified number of years to a date or timestamp.
 		
 == Syntax
 ----
@@ -27,3 +27,4 @@ ADD_YEARS( <date_or_timestamp> , <integer> )
 
 * Decimals are rounded before adding that number.
 * The number of years, can be a positive or negative integer to either add or subtract years, respectively.
+* Returns NULL if one of the arguments is NULL.

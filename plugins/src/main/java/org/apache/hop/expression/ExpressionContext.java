@@ -20,6 +20,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
+import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -75,12 +76,13 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
     this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"),
         ENGINE_SCOPE);
-    this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"),
-        ENGINE_SCOPE);
+
+    this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"), ENGINE_SCOPE);
+            
     this.setAttribute(TWO_DIGIT_CENTURY_START,
         variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
 
-
+    
 //    final Calendar calendar = Calendar.getInstance(locale);
 //    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
 
@@ -156,10 +158,6 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   public int getTwoDigitCenturyStart() {
     return twoDigitCenturyStart;
-  }
-
-  public int getFirstDayOfWeek() {
-    return 1;
   }
 }
 

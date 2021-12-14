@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class BoolOr extends Operator {
 
   public BoolOr() throws ExpressionException {
-    super("BOOLOR", "OR", 180, true, true, "i18n::Operator.Category.Logical");
+    super("BOOLOR", "OR", 180, true, true, "i18n::Operator.Category.Logical", "/docs/boolor.html");
   }
 
   @Override

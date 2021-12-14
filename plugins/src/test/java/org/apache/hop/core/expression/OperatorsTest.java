@@ -253,7 +253,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void Addition() throws Exception {
-    evalEquals("Add(10,-0.5)", 9.5);
+    evalEquals("10+(-0.5)", 9.5);
     evalEquals("0xF+0", 15);
     evalEquals("0b00011+0", 3);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
@@ -272,7 +272,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void Subtract() throws Exception {
-    evalEquals("Subtract(10,-0.5)", 10.5);
+    evalEquals("10-0.5", 9.5);
     evalEquals("Age-0.5", 39.5);
     evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
     evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
@@ -485,27 +485,24 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
     evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
     evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
-    evalEquals("Extract(YEARISO from Date '2017-01-01')", 2016);
+    evalEquals("Extract(YEAR_ISO from Date '2017-01-01')", 2016);
     evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
     evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
     evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
     evalEquals("Extract(WEEK from Timestamp '2020-01-01 23:48:59')", 1);
-    evalEquals("Extract(WEEKISO from Date '2016-01-03')", 53);
-    evalEquals("Extract(WEEKISO from Date '2016-01-04')", 1);
+    evalEquals("Extract(WEEK_ISO from Date '2016-01-03')", 53);
+    evalEquals("Extract(WEEK_ISO from Date '2016-01-04')", 1);
     evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
     evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
-    evalEquals("Extract(DD from Timestamp '2020-05-25 23:48:59')", 25);
     evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(DOW from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(DAYOFWEEKISO from Date '2003-12-28')", 7);
-    evalEquals("Extract(DOWISO from Date '2003-12-28')", 7);
+    evalEquals("Extract(DAYOFWEEK_ISO from Date '2003-12-28')", 7);
     evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
     evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
     evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
     evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
     evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
-    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "Z");
+    evalEquals("Extract(TIMEZONE from Timestamp '2021-01-01 15:28:59')", "Z");
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
     evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
@@ -553,8 +550,8 @@ public class OperatorsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Multiply() throws Exception {
-    evalEquals("Multiply(2.5,10)", 25D);
+  public void Multiplication() throws Exception {
+    evalEquals("2.55*10", 25.5D);
     evalEquals("4*10", 40D);
     evalEquals("-4*-1", 4D);
     evalEquals("2*-2", -4D);
@@ -564,18 +561,31 @@ public class OperatorsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Divide() throws Exception {
-    evalEquals("Divide(10,4)", 2.5);
-    evalEquals("10/4", 2.5);
+  public void Division() throws Exception {
+    //evalEquals("Div(10,4)", 2.5);
+    evalEquals("10/4", 2.5D);
     evalEquals("40/-10", -4D);
     evalEquals("-40/-10", 4D);
-    evalEquals("5/2", 2.5);
+    evalEquals("5/2", 2.5D);
+    evalEquals("10.1/2.1",  4.8095238D);
+    evalEquals("0.1/0.0000000000001", 1000000000000.0000000D);
     evalNull("null/1");
     evalNull("null/0");
     evalNull("1/null");
     evalFails("40/0");
   }
 
+  @Test
+  public void Div0() throws Exception {
+    evalEquals("Div0(10,4)", 2.5D);
+    evalEquals("Div0(40,-10)", -4D);    
+    evalEquals("Div0(5,0)", 0);
+    evalNull("Div0(null,1)");
+    evalNull("Div0(null,0)");
+    evalNull("Div0(1,null)");
+    evalFails("Div0(40)");
+  }
+  
   @Test
   public void BitNot() throws Exception {
     evalEquals("~1", -2);

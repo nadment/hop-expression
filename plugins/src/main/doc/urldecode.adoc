@@ -16,7 +16,7 @@ under the License.
 ////
 = URLDECODE
 
-The function decode a string used in a query part of a URL.
+Decode a string used in a query part of a URL.
 
 
 == Syntax

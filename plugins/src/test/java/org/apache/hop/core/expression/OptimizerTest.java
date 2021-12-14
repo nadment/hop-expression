@@ -81,6 +81,7 @@ public class OptimizerTest {
   @Test
   public void simplifyExtractRule() throws Exception {
     optimize("EXTRACT(YEAR FROM OrderDate)", "YEAR(OrderDate)");
+    optimize("EXTRACT(YEAR_ISO FROM OrderDate)", "YEAR_ISO(OrderDate)");
     optimize("EXTRACT(MONTH FROM OrderDate)", "MONTH(OrderDate)");
     optimize("EXTRACT(QUARTER FROM OrderDate)", "QUARTER(OrderDate)");
     optimize("EXTRACT(DAY FROM OrderDate)", "DAY(OrderDate)");
@@ -88,8 +89,10 @@ public class OptimizerTest {
     optimize("EXTRACT(MINUTE FROM OrderDate)", "MINUTE(OrderDate)");
     optimize("EXTRACT(SECOND FROM OrderDate)", "SECOND(OrderDate)");
     optimize("EXTRACT(WEEK FROM OrderDate)", "WEEK(OrderDate)");
+    optimize("EXTRACT(WEEK_ISO FROM OrderDate)", "WEEK_ISO(OrderDate)");
     optimize("EXTRACT(DAYOFYEAR FROM OrderDate)", "DAYOFYEAR(OrderDate)");
     optimize("EXTRACT(DAYOFWEEK FROM OrderDate)", "DAYOFWEEK(OrderDate)");
+    optimize("EXTRACT(DAYOFWEEK_ISO FROM OrderDate)", "DAYOFWEEK_ISO(OrderDate)");
   }
 
   @Test
@@ -163,8 +166,8 @@ public class OptimizerTest {
     optimizeTrue("'25' in ('1','25','66')");
     optimizeTrue("25.8 between 18 and 32");
     optimizeTrue("Trim(' test ')='test'");
-    optimize("DayOfMonth(Date '2019-02-15')", "15");
-    optimize("DayOfMonth(Date(2019,2,15))", "15");
+    optimize("Day(Date '2019-02-15')", "15");
+    optimize("Day(Date(2019,2,15))", "15");
   }
 
   @Test

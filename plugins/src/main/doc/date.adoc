@@ -16,7 +16,7 @@ under the License.
 ////
 = DATE
 
-Create date from values representing the year, month, and day.
+Returns the date from values representing the year, month, and day.
 		
 == Syntax
 ----

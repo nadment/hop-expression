@@ -23,8 +23,10 @@ Returns a string or binary repeated some number of times.
 REPEAT( <string_or_binary> , <n> )
 ----
 
-== Usage
-
 <string_or_binary>:: The input value to repeat.
 
 <n>:: The number of times the input value should be repeated. The minimum valid number is 0 (which results in an empty string).
+
+== Usage
+
+* Returns NULL if one of the arguments is NULL.

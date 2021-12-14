@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class LessThanOrEqual extends Operator {
 
   public LessThanOrEqual() {
-    super("LESS_THAN_OR_EQUAL", "<=", 130, true, true, "i18n::Operator.Category.Comparison");
+    super("LESS_THAN_OR_EQUAL", "<=", 130, true, true, "i18n::Operator.Category.Comparison", "/docs/less_than_or_equal.html");
   }
 
   @Override

@@ -14,16 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SUBTRACT, -
+= - (Subtraction)
 
 Subtract of 2 numeric values.
 
 == Syntax
+
 ----
-SUBTRACT( <numeric1> , <numeric2> )
-----
-The - operator provides alternative syntax.
-----
-numeric_expression - numeric_expression
+<numeric1> + <numeric2>
+<datetime> - <numeric>
 ----
 
+== Usage
+
+* This subtraction arithmetic operator can also subtract a number, in days, to a date.

@@ -14,15 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= DIVIDE, /
+= / (Division)
 
 Divide 2 numeric values.
 
 == Syntax
 
 ----
-DIVIDE( <numeric1> , <numeric2> )
+<dividend> / <divisor>
 ----
-----
-<numeric1> / <numeric2>
-----
+
+== Usage
+
+* If divisor is 0 the operator raises a division-by-zero error.

@@ -37,7 +37,7 @@ import java.io.StringWriter;
 public class BoolNot extends Operator {
 
   public BoolNot() {
-    super("BOOLNOT", "NOT", 150, false, true, "i18n::Operator.Category.Logical");
+    super("BOOLNOT", "NOT", 150, false, true, "i18n::Operator.Category.Logical", "/docs/boolnot.html");
   }
 
   @Override

@@ -16,7 +16,7 @@ under the License.
 ////
 = SIN
 
-This function calculates the trigonometric sine of the angle in radians.
+Calculates the trigonometric sine of the angle in radians.
 
 == Syntax
 ----
@@ -24,3 +24,8 @@ SIN( <numeric> )
 ----
 
 Return:: Number
+
+
+== Usage
+
+* The argument should be expressed in radians.

@@ -16,7 +16,7 @@ under the License.
 ////
 = TAN
 
-This function calculates the tangent.
+Calculates the tangent.
 
 == Syntax
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = YEARS_BETWEEN
 
-This function computes the number of years between two dates.
+Computes the number of years between two dates.
 
 == Syntax
 ----
@@ -25,4 +25,4 @@ YEARS_BETWEEN( <date1> , <date2> )
 
 == Usage
 
-* Returns NULL if either of <date1> or <date2> is NULL
+* Returns NULL if one of the arguments is NULL.

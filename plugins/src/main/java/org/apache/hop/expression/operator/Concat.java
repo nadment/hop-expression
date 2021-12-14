@@ -29,11 +29,11 @@ import java.io.StringWriter;
 public class Concat extends Operator {
 
   public Concat() {
-    super("CONCAT", "||", 110, true, true, "i18n::Operator.Category.String");
+    super("CONCAT", "||", 110, true, true, "i18n::Operator.Category.String", "/docs/concat.html");
   }
 
   @ScalarFunction(id = "CONCAT", minArgs = 2, maxArgs = Integer.MAX_VALUE,
-      category = "i18n::Operator.Category.String")
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/concat.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

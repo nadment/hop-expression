@@ -16,7 +16,7 @@ under the License.
 ////
 = COSH
 
-This function calculates the hyperbolic cosine.
+Calculates the hyperbolic cosine.
 
 == Syntax
 ----

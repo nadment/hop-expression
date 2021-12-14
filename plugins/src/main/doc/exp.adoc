@@ -16,7 +16,7 @@ under the License.
 ////
 = EXP
 
-This function computes the exponential value of a numeric expression.
+Computes the exponential value of a numeric expression.
 
 == Syntax
 ----

@@ -16,16 +16,13 @@ under the License.
 ////
 = NVL2
 
-
+Substitutes a value when a null value is encountered as well as when a non-null value is encountered.
 
 == Syntax
 ----
-
+NVL2( <expression> , <value_if_not_null> , <value_if_null> )
 ----
 
 == Usage
 
-
-
-Returns::
-
+* All three expressions should have the same (or compatible) data type.

@@ -16,9 +16,13 @@ under the License.
 ////
 = COS
 
-This function calculates the trigonometric cosine of the specified angle in radians in the specified number.
+Calculates the trigonometric cosine of the specified angle in radians.
 
 == Syntax
 ----
 COS( <numeric> )
 ----
+
+== Usage
+
+* The argument should be expressed in radians.

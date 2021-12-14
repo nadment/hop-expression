@@ -81,13 +81,18 @@ public class ExpressionTest extends BaseExpressionTest {
     assertEquals(String.class, DataType.STRING.javaClass() );
     assertEquals(ZonedDateTime.class, DataType.DATE.javaClass() );
   }
-  
+
   @Test
   public void DatePart() throws Exception {
     assertFalse(DatePart.of("HOUR").equals(null));
     assertTrue(DatePart.exist("MONTH"));
-    assertEquals(DatePart.HOUR, DatePart.of("HOUR") );
-    assertEquals(DatePart.QUARTER, DatePart.of("quarter") );
+    assertEquals(DatePart.QUARTER, DatePart.of("quarter"));
+    assertEquals(DatePart.DAY, DatePart.of("d"));
+    assertEquals(DatePart.DAY, DatePart.of("dd"));
+    assertEquals(DatePart.DAY, DatePart.of("dayofmonth"));
+    assertEquals(DatePart.HOUR, DatePart.of("HOUR"));
+    assertEquals(DatePart.HOUR, DatePart.of("HH"));
+
   }
   
   @Test

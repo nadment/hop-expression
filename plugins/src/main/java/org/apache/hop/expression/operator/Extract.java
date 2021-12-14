@@ -35,11 +35,11 @@ import java.time.temporal.IsoFields;
 public class Extract extends Operator {
 
   public Extract() {
-    super("EXTRACT", 10, true, true, "i18n::Operator.Category.Date");
+    super("EXTRACT", 10, true, true, "i18n::Operator.Category.Date", "/docs/extract.html");
   }
 
   @ScalarFunction(id = "EXTRACT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/extract.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
@@ -65,11 +65,11 @@ public class Extract extends Operator {
         if (dow == 8)
           dow = 1;
         return dow;
-      case DAYOFWEEKISO:
+      case DAYOFWEEK_ISO:
         return datetime.getDayOfWeek().getValue();
       case WEEK:
         return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-      case WEEKISO:
+      case WEEK_ISO:
         return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
       case WEEKOFMONTH:
         return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -79,7 +79,7 @@ public class Extract extends Operator {
         return datetime.get(IsoFields.QUARTER_OF_YEAR);
       case YEAR:
         return datetime.getYear();
-      case YEARISO:
+      case YEAR_ISO:
         return datetime.get(IsoFields.WEEK_BASED_YEAR);
       case DECADE:
         return decade(datetime.getYear());
@@ -101,7 +101,7 @@ public class Extract extends Operator {
         return datetime.getNano();
       case EPOCH:
         return datetime.toEpochSecond();
-      case TIMEZONE_REGION:
+      case TIMEZONE:
         return datetime.getZone().getId();
       case TIMEZONE_HOUR:
         return datetime.getOffset().getTotalSeconds() / (60 * 60);
@@ -114,7 +114,7 @@ public class Extract extends Operator {
   }
 
   @ScalarFunction(id = "DATE_PART", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/extract.html")
   public Object date_part(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     return eval(context, operands);

@@ -16,7 +16,7 @@ under the License.
 ////
 = GREATEST
 
-The function returns the largest value in a set of expressions.
+Returns the largest value in a set of expressions.
 		
 
 == Syntax

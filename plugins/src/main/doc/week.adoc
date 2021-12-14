@@ -14,18 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= RPAD
+= WEEK
 
-Right-pads a string with another string, to a certain length.
-
+This function return the aligned week within a year where week 1 starts on the first day of the year.
+ 
 == Syntax
 ----
-RPAD( <string> , <padded_length> [, <pad_string> ] )
+WEEK( <date> )
 ----
 
 == Usage
 
-* If the padded_length is smaller than the original string, the LPAD function will truncate the string to the size of padded_length.
-* Returns NULL if one of the arguments is NULL.
-
-See also xref:lpad.adoc[LPAD]
+* Returns an integer between 1 and 54.
+* Equivalent to xref:extract.adoc[EXTRACT](WEEK FROM <date>). 

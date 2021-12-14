@@ -15,7 +15,8 @@ specific language governing permissions and limitations
 under the License.
 ////
 = TRY_TO_NUMBER
-This function converts a string into a number.
+
+Converts a string into a number.
 
 == Syntax
 ----

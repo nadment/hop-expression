@@ -16,7 +16,7 @@ under the License.
 ////
 = LOG
 
-This function calculates the logarithm of <number> with base <b>.
+Calculates the logarithm of <number> with base <b>.
 
 == Syntax
 ----

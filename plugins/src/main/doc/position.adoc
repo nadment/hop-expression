@@ -14,18 +14,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= RPAD
+= POSITION
 
-Right-pads a string with another string, to a certain length.
+Returns the position in the string that is the first character of a specified occurrence of the substring.
+		
 
 == Syntax
 ----
-RPAD( <string> , <padded_length> [, <pad_string> ] )
+POSITION( <substring> IN <string> )
 ----
 
 == Usage
 
-* If the padded_length is smaller than the original string, the LPAD function will truncate the string to the size of padded_length.
-* Returns NULL if one of the arguments is NULL.
+* The first position in the string is 1.
+* If substring is not found in string, then the function will return 0.
+* Equivalent to xref:instr.adoc[INSTR]( <string>, <substring> ). 
 
-See also xref:lpad.adoc[LPAD]
+
+			
+

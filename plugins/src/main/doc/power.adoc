@@ -16,7 +16,7 @@ under the License.
 ////
 = POWER
 
-This function computes a number raised to the specified power.
+Calculates a number raised to the specified power.
 
 == Syntax
 ----

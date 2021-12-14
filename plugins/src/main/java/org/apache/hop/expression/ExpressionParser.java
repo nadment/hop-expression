@@ -783,14 +783,7 @@ public class ExpressionParser {
       return new OperatorCall(function, operands);
     }
 
-    // TO REMOVE
-//    if ( function.getName().equals("DATE_PART") ) {
-//      operands.add(parseLiteralDatePart(next())); 
-//    }
-//    else {
-      operands.add(this.parseAdditive());
-   // }
-
+    operands.add(this.parseAdditive());
     
     while (is(Id.COMMA)) {
       token = next();

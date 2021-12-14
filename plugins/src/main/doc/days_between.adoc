@@ -16,7 +16,7 @@ under the License.
 ////
 = DAYS_BETWEEN
 
-This function returns the number of days between two date values.
+Returns the number of days between two date values.
 
 == Syntax
 ----

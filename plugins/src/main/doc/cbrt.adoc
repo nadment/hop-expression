@@ -20,5 +20,5 @@ Calculates the cubic root of numeric expression.
 
 == Syntax
 ----
-CBRT( <number> )
+CBRT( <numeric> )
 ----

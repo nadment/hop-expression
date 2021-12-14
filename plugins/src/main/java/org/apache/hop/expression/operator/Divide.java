@@ -20,7 +20,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -29,11 +28,12 @@ import java.math.MathContext;
 public class Divide extends Operator {
 
   public Divide() {
-    super("DIVIDE", "/", 50, true, true, "i18n::Operator.Category.Mathematical");
+    super("DIVIDE", "/", 50, true, true, "i18n::Operator.Category.Mathematical",
+        "/docs/divide.html");
   }
 
-  @ScalarFunction(id = "DIVIDE", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical")
+  // @ScalarFunction(id = "DIVIDE", minArgs = 2, maxArgs = 2,
+  // category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

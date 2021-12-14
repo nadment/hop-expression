@@ -30,6 +30,8 @@ public @interface ScalarFunction {
 
   String category() default "None";
 
+  String documentationUrl() default "";   
+  
   boolean deterministic() default true;
 
   int minArgs() default 1;

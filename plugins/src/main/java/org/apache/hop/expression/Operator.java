@@ -15,20 +15,16 @@
 package org.apache.hop.expression;
 
 
-import org.apache.commons.io.IOUtils;
-import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.DocumentationUtil;
 import org.apache.hop.expression.util.NumberFormat;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Operators have the precedence levels. An operator on higher levels is evaluated before an
@@ -37,8 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class Operator implements Comparable<Operator> {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
-  private static final ConcurrentHashMap<String, String> docs = new ConcurrentHashMap<>();
 
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;
@@ -62,6 +56,10 @@ public abstract class Operator implements Comparable<Operator> {
 
   private final String category;
 
+  private final String documentationUrl;
+  
+  private final String documentation;
+  
   private final String description;
 
   /**
@@ -77,19 +75,21 @@ public abstract class Operator implements Comparable<Operator> {
    * @param category The category to group operator
    */
   protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
-      boolean isDeterministic, String category) {
+      boolean isDeterministic, String category, String documentationUrl) {
     this.id = Objects.requireNonNull(id);
     this.name = Objects.requireNonNull(name);
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
-    this.isDeterministic = true;
+    this.isDeterministic = isDeterministic;
     this.category = TranslateUtil.translate(category, IExpression.class);
-    this.description = findDescription(id);
+    this.documentationUrl = documentationUrl;    
+    this.documentation = DocumentationUtil.load(id, documentationUrl);
+    this.description = DocumentationUtil.findDescription(documentation);
   }
 
   protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic,
-      String category) {
-    this(id, id, precedence, isLeftAssociative, isDeterministic, category);
+      String category, String documentationUrl) {
+    this(id, id, precedence, isLeftAssociative, isDeterministic, category, documentationUrl);
   }
 
   private static int leftPrecedence(int precedence, boolean isLeftAssociative) {
@@ -137,8 +137,8 @@ public abstract class Operator implements Comparable<Operator> {
     return isDeterministic;
   }
 
-  public URL getDocumentationUrl() {
-    return getClass().getResource("/docs/" + id.toLowerCase() + ".html");
+  public String getDocumentationUrl() {
+    return this.documentationUrl;
   }
 
   @Override
@@ -671,50 +671,8 @@ public abstract class Operator implements Comparable<Operator> {
     return javaPattern.toString();
   }
 
-  public static String getDocumention(String id) {
-    String doc = docs.get(id);
-    if (doc != null) {
-      return doc;
-    }
-
-    doc = readDocumentation(id);
-    docs.put(id, doc);
-
-    return doc;
+  public String getDocumentation() {
+    return this.documentation;
   }
 
-  private static String readDocumentation(String id) {
-    String file = "/docs/" + id.toLowerCase() + ".html";
-
-    StringWriter writer = new StringWriter();
-
-    try (
-        InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(file))) {
-      IOUtils.copy(is, writer);
-    } catch (Exception e) {
-      writer.append(e.getMessage());
-      LogChannel.GENERAL.logError("Warning no documentation : " + id);
-    }
-
-    return writer.toString();
-  }
-
-  private static String findDescription(String id) {
-    String doc = getDocumention(id);
-
-    if (doc == null) {  
-      return "";
-    }
-
-    int beginIndex = doc.indexOf("id=\"preamble\"");
-    beginIndex = doc.indexOf("<p>", beginIndex);
-
-    if (beginIndex > 0) {
-      int endIndex = doc.indexOf("</p>", beginIndex);
-
-      return doc.substring(beginIndex + 3, endIndex);
-    }
-
-    return "";
-  }
 }

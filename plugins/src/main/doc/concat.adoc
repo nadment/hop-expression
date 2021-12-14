@@ -16,7 +16,7 @@ under the License.
 ////
 = CONCAT, ||
 
-This function combines multiple strings into one.
+Combines multiple strings or binaries into one.
 
 The || operator provides alternative syntax.
 

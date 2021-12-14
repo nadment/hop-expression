@@ -26,5 +26,6 @@ LPAD( <string> , <padded_length> [, <pad_string> ] )
 == USage 
 
 * If the padded_length is smaller than the original string, the LPAD function will truncate the string to the size of padded_length.
+* Returns NULL if one of the arguments is NULL.
 
 See also xref:rpad.adoc[RPAD]

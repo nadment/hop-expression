@@ -16,7 +16,7 @@ under the License.
 ////
 = COALESCE
 
-The function returns the first of its arguments that is not null.
+Returns the first of its arguments that is not null.
 
 == Syntax
 

@@ -16,7 +16,7 @@ under the License.
 ////
 = TO_DATE
 
-This function converts a string into a date.
+Converts a string into a date.
 
 == Syntax
 ----

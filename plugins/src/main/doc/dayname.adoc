@@ -16,7 +16,7 @@ under the License.
 ////
 = DAYNAME
 
-This function returns the name of the day of week (in English).
+Returns the name of the day of week (in English).
 
 == Syntax
 ----

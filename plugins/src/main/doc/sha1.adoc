@@ -16,7 +16,7 @@ under the License.
 ////
 = SHA1
 
-The function calculate the SHA1 hash of a data value.
+Calculates the SHA1 hash of a value.
 
 == Syntax
 ----

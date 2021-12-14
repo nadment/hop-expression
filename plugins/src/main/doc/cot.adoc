@@ -16,9 +16,13 @@ under the License.
 ////
 = COT
 
-This function calculates the trigonometric cotangent of the angle in radians specified by float expression.
+Calculates the trigonometric cotangent of the angle in radians.
 
 == Syntax
 ----
 COT( <numeric> )
 ----
+
+== Usage
+
+* The argument should be expressed in radians.

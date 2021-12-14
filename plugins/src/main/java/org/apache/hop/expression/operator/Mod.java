@@ -28,11 +28,11 @@ import java.math.BigDecimal;
 public class Mod extends Operator {
 
   public Mod() {
-    super("MOD", "%", 50, true, true, "i18n::Operator.Category.Mathematical");
+    super("MOD", "%", 50, true, true, "i18n::Operator.Category.Mathematical", "/docs/mod.html");
   }
 
   @ScalarFunction(id = "MOD", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical")
+      category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/mod.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

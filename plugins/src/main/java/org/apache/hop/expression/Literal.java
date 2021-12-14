@@ -172,7 +172,7 @@ public class Literal implements IExpression {
     }
   }
 
-  private static char byteToHex(int digit) {
+  private char byteToHex(int digit) {
     if (digit < 10) {
       return (char) ('0' + digit);
     }

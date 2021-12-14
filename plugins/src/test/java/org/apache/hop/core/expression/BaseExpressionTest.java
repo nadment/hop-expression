@@ -41,6 +41,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -210,6 +211,6 @@ public class BaseExpressionTest {
 //   context.setAttribute("TEST","");
     // Alias
     //evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);  
-    evalFails("Extract(NULL from Date '2021-01-01')");
+    //evalEquals("Date_Trunc(DECADE, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
   }
 }

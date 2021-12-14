@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class LessThan extends Operator {
 
   public LessThan() {
-    super("LESS_THAN", "<", 130, true, true, "i18n::Operator.Category.Comparison");
+    super("LESS_THAN", "<", 130, true, true, "i18n::Operator.Category.Comparison", "/docs/less_than.html");
   }
 
   @Override

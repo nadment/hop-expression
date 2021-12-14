@@ -18,10 +18,10 @@ import static org.apache.hop.expression.Operator.coerceToBigNumber;
 import static org.apache.hop.expression.Operator.coerceToBinary;
 import static org.apache.hop.expression.Operator.coerceToBoolean;
 import static org.apache.hop.expression.Operator.coerceToDate;
+import static org.apache.hop.expression.Operator.coerceToDatePart;
 import static org.apache.hop.expression.Operator.coerceToInteger;
 import static org.apache.hop.expression.Operator.coerceToNumber;
 import static org.apache.hop.expression.Operator.coerceToString;
-import static org.apache.hop.expression.Operator.coerceToDatePart;
 import static org.apache.hop.expression.Operator.compareTo;
 import static org.apache.hop.expression.Operator.convertTo;
 import org.apache.commons.codec.EncoderException;
@@ -43,6 +43,7 @@ import org.apache.hop.i18n.BaseMessages;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -70,7 +71,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class Functions  {
+public class Functions {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
@@ -82,12 +83,12 @@ public class Functions  {
   private static final Soundex SOUNDEX = new Soundex();
 
 
- 
+
   /**
    * The NOW function return the current date and time
    */
-  @ScalarFunction(id= "NOW", names = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
-      maxArgs = 0, category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "NOW", names = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl="/docs/now.html")
   public static Object now(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return context.getAttribute(ExpressionContext.CACHED_NOW);
@@ -96,8 +97,8 @@ public class Functions  {
   /**
    * The TODAY function return the current date at time 00:00
    */
-  @ScalarFunction(id= "TODAY", names = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
-      maxArgs = 0, category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "TODAY", names = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl="/docs/today.html")
   public static Object today(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return context.getAttribute(ExpressionContext.CACHED_TODAY);
@@ -113,7 +114,7 @@ public class Functions  {
    *
    * @see {@link #sha1}, {@link #sha256}, {@link #sha384}, {@link #sha512}
    */
-  @ScalarFunction(id= "MD5", category = "i18n::Operator.Category.Cryptographic")
+  @ScalarFunction(id = "MD5", category = "i18n::Operator.Category.Cryptographic", documentationUrl="/docs/md5.html")
   public static Object md5(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return getHash(operands[0].eval(context), "MD5");
@@ -125,7 +126,7 @@ public class Functions  {
    *
    * @see {@link #md5}, {@link #sha256}, {@link #sha384}, {@link #sha512}
    */
-  @ScalarFunction(id= "SHA1", category = "i18n::Operator.Category.Cryptographic")
+  @ScalarFunction(id = "SHA1", category = "i18n::Operator.Category.Cryptographic", documentationUrl="/docs/sha1.html")
   public static Object sha1(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return getHash(operands[0].eval(context), "SHA-1");
@@ -137,7 +138,7 @@ public class Functions  {
    *
    * @see {@link #md5}, {@link #sha1}, {@link #sha384}, {@link #sha512}
    */
-  @ScalarFunction(id= "SHA256", category = "i18n::Operator.Category.Cryptographic")
+  @ScalarFunction(id = "SHA256", category = "i18n::Operator.Category.Cryptographic", documentationUrl="/docs/sha256.html")
   public static Object sha256(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return getHash(operands[0].eval(context), "SHA-256");
@@ -149,7 +150,7 @@ public class Functions  {
    *
    * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha512}
    */
-  @ScalarFunction(id= "SHA384", category = "i18n::Operator.Category.Cryptographic")
+  @ScalarFunction(id = "SHA384", category = "i18n::Operator.Category.Cryptographic", documentationUrl="/docs/sha384.html")
   public static Object sha384(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return getHash(operands[0].eval(context), "SHA-384");
@@ -161,14 +162,14 @@ public class Functions  {
    *
    * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha384}
    */
-  @ScalarFunction(id= "SHA512", category = "i18n::Operator.Category.Cryptographic")
+  @ScalarFunction(id = "SHA512", category = "i18n::Operator.Category.Cryptographic", documentationUrl="/docs/sha512.html")
   public static Object sha512(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return getHash(operands[0].eval(context), "SHA-512");
   }
 
-  @ScalarFunction(id= "BITGET", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise")
+  @ScalarFunction(id = "BITGET", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/bitget.html")
   public static Object bitget(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -184,15 +185,15 @@ public class Functions  {
   /**
    * Returns the number of PI.
    */
-  @ScalarFunction(id= "PI", minArgs = 0, maxArgs = 0,
-      category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "PI", minArgs = 0, maxArgs = 0,
+      category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/pi.html")
   public static Object pi(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return Math.PI;
   }
-  
+
   /** Returns the absolute (positive) value of the numeric value. */
-  @ScalarFunction(id= "ABS", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "ABS", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/abs.html")
   public static Object abs(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -213,7 +214,7 @@ public class Functions  {
   }
 
   /** Returns the sign of a number. */
-  @ScalarFunction(id= "SIGN", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "SIGN", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/sign.html")
   public static Object sign(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -226,7 +227,7 @@ public class Functions  {
   }
 
   /** Function to converts radians to degrees. */
-  @ScalarFunction(id= "DEGREES", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "DEGREES", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/degrees.html")
   public static Object degrees(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -236,7 +237,7 @@ public class Functions  {
   }
 
   /** The function converts degrees to radians. */
-  @ScalarFunction(id= "RADIANS", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "RADIANS", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/radians.html")
   public static Object radians(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -246,7 +247,7 @@ public class Functions  {
   }
 
   /** Returns the exponential value of a numeric expression. */
-  @ScalarFunction(id= "EXP", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "EXP", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/exp.html")
   public static Object exp(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -254,10 +255,53 @@ public class Functions  {
       return null;
     return FastMath.exp(coerceToNumber(value));
   }
+  
+
+  @ScalarFunction(id = "DIV0", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/div0.html")
+  public static Object div0(final IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    Object left = operands[0].eval(context);
+    if (left == null)
+      return null;
+    Object right = operands[1].eval(context);
+    if (right == null)
+      return null;
+
+    if (left instanceof BigDecimal || right instanceof BigDecimal) {
+      BigDecimal divisor = coerceToBigNumber(right);
+
+      // prevent a division by zero and return zero
+      if (divisor.signum() == 0)
+        return divisor;
+
+      return coerceToBigNumber(left).divide(coerceToBigNumber(right), MathContext.DECIMAL128);
+    }
+    if (left instanceof Double || right instanceof Double) {
+      double divisor = coerceToNumber(right);
+      // prevent a division by zero and return zero
+      if (divisor == 0D)
+        return 0D;
+      return coerceToNumber(left) / divisor;
+    }
+    if (left instanceof Long || right instanceof Long) {
+      long divisor = coerceToInteger(right);
+      // prevent a division by zero and return zero
+      if (divisor == 0L)
+        return 0L;
+
+      return coerceToInteger(left) / divisor;
+    }
+
+    BigDecimal divisor = coerceToBigNumber(right);
+    // prevent a division by zero and return zero
+    if (divisor.signum() == 0)
+      return divisor;
+    
+    return coerceToBigNumber(left).divide(divisor);
+  }
 
   /** Returns the values rounded to the nearest equal or larger integer. */
-  @ScalarFunction(id= "CEIL", names = "CEILING",
-      category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "CEIL", names = "CEILING", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/ceil.html")
   public static Object ceil(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -272,7 +316,7 @@ public class Functions  {
   }
 
   /** Returns the values rounded to the nearest equal or smaller integer. */
-  @ScalarFunction(id= "FLOOR", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "FLOOR", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/floor.html")
   public static Object floor(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -287,7 +331,7 @@ public class Functions  {
   }
 
   /** Returns the values rounded to the nearest integer. */
-  @ScalarFunction(id= "ROUND", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "ROUND", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/round.html")
   public static Object round(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -296,8 +340,8 @@ public class Functions  {
     return FastMath.round(coerceToNumber(value));
   }
 
-  @ScalarFunction(id= "RANDOM", names = "RAND", deterministic = false, minArgs = 0, maxArgs = 1,
-      category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "RANDOM", names = "RAND", deterministic = false, minArgs = 0, maxArgs = 1,
+      category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/random.html")
   public static Object random(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
@@ -312,19 +356,19 @@ public class Functions  {
   }
 
   /** Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122) */
-  @ScalarFunction(id= "UUID", minArgs = 0, maxArgs = 0, deterministic = false,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "UUID", minArgs = 0, maxArgs = 0, deterministic = false,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/uuid.html")
   public static Object uuid(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
     return UUID.randomUUID().toString();
   }
 
- 
+
   /**
    * Returns the natural logarithm of a numeric value.
    */
-  @ScalarFunction(id= "LN", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "LN", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/ln.html")
   public static Object ln(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -339,8 +383,8 @@ public class Functions  {
   /**
    * Returns the specified base logarithm of a numeric value.
    */
-  @ScalarFunction(id= "LOG", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "LOG", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/log.html")
   public static Object log(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object base = operands[0].eval(context);
@@ -360,7 +404,7 @@ public class Functions  {
   /**
    * Returns the base 10 logarithm of a numeric value.
    */
-  @ScalarFunction(id= "LOG10", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "LOG10", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/log10.html")
   public static Object log10(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -377,7 +421,7 @@ public class Functions  {
    * 
    * @See {@link #SQRT}
    */
-  @ScalarFunction(id= "CBRT", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "CBRT", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/cbrt.html")
   public static Object cbrt(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -391,7 +435,7 @@ public class Functions  {
    * 
    * @See {@link #CBRT}
    */
-  @ScalarFunction(id= "SQRT", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "SQRT", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/sqrt.html")
   public static Object sqrt(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -407,7 +451,7 @@ public class Functions  {
    * Returns the square of a numeric expression.
    * 
    */
-  @ScalarFunction(id= "SQUARE", category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "SQUARE", category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/square.html")
   public static Object square(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -417,8 +461,8 @@ public class Functions  {
     return FastMath.pow(number, 2);
   }
 
-  @ScalarFunction(id= "POWER", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "POWER", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/power.html")
   public static Object power(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object left = operands[0].eval(context);
@@ -448,8 +492,8 @@ public class Functions  {
     }
   }
 
-  @ScalarFunction(id= "TRANSLATE", minArgs = 3, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "TRANSLATE", minArgs = 3, maxArgs = 3,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/translate.html")
   public static Object translate(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -487,11 +531,11 @@ public class Functions  {
     return buffer.toString();
   }
 
-  /** 
+  /**
    * The function compute Levenshtein distance.
    */
   @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2,
-      maxArgs = 2)
+      maxArgs = 2, documentationUrl="/docs/levenshtein.html")
   public static Object levenshtein(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -503,12 +547,12 @@ public class Functions  {
 
     return Long.valueOf(StringUtils.getLevenshteinDistance(coerceToString(v0), coerceToString(v1)));
   }
-  
+
   /**
    * The function return the ASCII value of the first character in a string. If the string is empty,
    * a value of 0 is returned.
    */
-  @ScalarFunction(id= "ASCII", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "ASCII", category = "i18n::Operator.Category.String", documentationUrl="/docs/ascii.html")
   public static Object ascii(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -528,7 +572,7 @@ public class Functions  {
    *
    * @see {@link #ascii}
    */
-  @ScalarFunction(id= "CHR", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "CHR", category = "i18n::Operator.Category.String", documentationUrl="/docs/chr.html")
   public static Object chr(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -546,17 +590,17 @@ public class Functions  {
   /**
    * Returns a string consisting of a the specified number of blank spaces.
    */
-  @ScalarFunction(id= "SPACE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "SPACE", category = "i18n::Operator.Category.String", documentationUrl="/docs/space.html")
   public static Object space(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    
+
     int length = coerceToInteger(value).intValue();
-    if ( length<0) 
+    if (length < 0)
       return null;
-    
+
     char[] chars = new char[length];
     for (int i = length - 1; i >= 0; i--) {
       chars[i] = ' ';
@@ -568,7 +612,7 @@ public class Functions  {
   /**
    * The function reverses the order of characters in a string value, or of bytes in a binary value.
    */
-  @ScalarFunction(id= "REVERSE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "REVERSE", category = "i18n::Operator.Category.String", documentationUrl="/docs/reverse.html")
   public static Object reverse(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -591,7 +635,7 @@ public class Functions  {
   /**
    * Returns a string that contains a phonetic representation of the input string.
    */
-  @ScalarFunction(id= "SOUNDEX", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "SOUNDEX", category = "i18n::Operator.Category.String", documentationUrl="/docs/soundex.html")
   public static Object soundex(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -600,8 +644,8 @@ public class Functions  {
     return SOUNDEX.soundex(coerceToString(value));
   }
 
-  @ScalarFunction(id= "DIFFERENCE", category = "i18n::Operator.Category.String", minArgs = 2,
-      maxArgs = 2)
+  @ScalarFunction(id = "DIFFERENCE", category = "i18n::Operator.Category.String", minArgs = 2,
+      maxArgs = 2, documentationUrl="/docs/difference.html")
   public static Object difference(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -624,7 +668,7 @@ public class Functions  {
    *
    * @see {@link #CHR}, {@link #ASCII},
    */
-  @ScalarFunction(id= "UNICODE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "UNICODE", category = "i18n::Operator.Category.String", documentationUrl="/docs/unicode.html")
   public static Object unicode(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -643,8 +687,8 @@ public class Functions  {
    *
    * @see {@link #RAPD}
    */
-  @ScalarFunction(id= "LPAD", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "LPAD", minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/lpad.html")
   public static Object lpad(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -701,8 +745,8 @@ public class Functions  {
    *
    * @see {@link #LPAD}
    */
-  @ScalarFunction(id= "RPAD", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "RPAD", minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/rpad.html")
   public static Object rpad(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -786,17 +830,17 @@ public class Functions  {
   /**
    * The function returns the number of characters of the specified string.
    */
-  @ScalarFunction(id= "LENGTH", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "LENGTH", category = "i18n::Operator.Category.String", documentationUrl="/docs/length.html")
   public static Object length(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    
-    if ( value instanceof byte[]) {
+
+    if (value instanceof byte[]) {
       return ((byte[]) value).length;
     }
-    
+
     return Long.valueOf(coerceToString(value).length());
   }
 
@@ -805,7 +849,7 @@ public class Functions  {
    * 
    * @See {@link #INITCAP}, {@link #UPPER}
    */
-  @ScalarFunction(id= "LOWER", names = "LCASE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "LOWER", names = "LCASE", category = "i18n::Operator.Category.String", documentationUrl="/docs/lower.html")
   public static Object lower(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -819,7 +863,7 @@ public class Functions  {
    * 
    * @See {@link #LOWER}, {@link #INITCAP}
    */
-  @ScalarFunction(id= "UPPER", names = "UCASE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "UPPER", names = "UCASE", category = "i18n::Operator.Category.String", documentationUrl="/docs/upper.html")
   public static Object upper(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -832,7 +876,7 @@ public class Functions  {
    * Returns a string with the first letter of each word in uppercase and the subsequent letters in
    * lowercase. @See {@link #LOWER}, {@link #UPPER}
    */
-  @ScalarFunction(id= "INITCAP", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "INITCAP", category = "i18n::Operator.Category.String")
   public static Object initcap(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -864,8 +908,8 @@ public class Functions  {
    *
    * @see {@link #ltrim}, {@link #rtrim}
    */
-  @ScalarFunction(id= "TRIM", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "TRIM", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/trim.html")
   public static Object trim(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -891,8 +935,8 @@ public class Functions  {
    *
    * @see {@link #trim}, {@link #rtrim}
    */
-  @ScalarFunction(id= "LTRIM", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "LTRIM", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/ltrim.html")
   public static Object ltrim(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -917,8 +961,8 @@ public class Functions  {
    *
    * @see {@link #trim}, {@link #ltrim}
    */
-  @ScalarFunction(id= "RTRIM", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "RTRIM", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/rtrim.html")
   public static Object rtrim(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -943,8 +987,8 @@ public class Functions  {
    * 
    * @See {@link #right}
    */
-  @ScalarFunction(id= "LEFT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "LEFT", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/left.html")
   public static Object left(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -980,8 +1024,8 @@ public class Functions  {
    * 
    * @See {@link #left}
    */
-  @ScalarFunction(id= "RIGHT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "RIGHT", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/right.html")
   public static Object right(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1015,7 +1059,7 @@ public class Functions  {
   /**
    * Encodes special characters in a string using the Java string literal encoding format.
    */
-  @ScalarFunction(id= "STRINGENCODE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "STRINGENCODE", category = "i18n::Operator.Category.String", documentationUrl="/docs/stringencode.html")
   public static Object stringEncode(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1076,7 +1120,7 @@ public class Functions  {
    * Converts an encoded string using the Java string literal encoding format. Special characters
    * are \b, \t, \n, \f, \r, \", \, \\uXXXX.
    */
-  @ScalarFunction(id= "STRINGDECODE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "STRINGDECODE", category = "i18n::Operator.Category.String", documentationUrl="/docs/stringdecode.html")
   public static Object stringDecode(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1165,7 +1209,7 @@ public class Functions  {
    *
    * @see {@link #urldecode}
    */
-  @ScalarFunction(id= "URLENCODE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "URLENCODE", category = "i18n::Operator.Category.String", documentationUrl="/docs/urlencode.html")
   public static Object urlEncode(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1183,7 +1227,7 @@ public class Functions  {
    *
    * @see {@link #urlencode}
    */
-  @ScalarFunction(id= "URLDECODE", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "URLDECODE", category = "i18n::Operator.Category.String", documentationUrl="/docs/urldecode.html")
   public static Object urlDecode(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1209,8 +1253,8 @@ public class Functions  {
    * that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown
    * values.
    */
-  @ScalarFunction(id= "EQUAL_NULL", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Comparison")
+  @ScalarFunction(id = "EQUAL_NULL", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison", documentationUrl="/docs/equal_null.html")
   public static Object equal_null(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1236,8 +1280,8 @@ public class Functions  {
    *
    * @see {@link #GREATEST}
    */
-  @ScalarFunction(id= "LEAST", minArgs = 1, maxArgs = Integer.MAX_VALUE,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "LEAST", minArgs = 1, maxArgs = Integer.MAX_VALUE,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/least.html")
   public static Object least(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object result = null;
@@ -1259,8 +1303,8 @@ public class Functions  {
    *
    * @see {@link #LEAST}
    */
-  @ScalarFunction(id= "GREATEST", minArgs = 1, maxArgs = Integer.MAX_VALUE,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "GREATEST", minArgs = 1, maxArgs = Integer.MAX_VALUE,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/greatest.html")
   public static Object greatest(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object result = null;
@@ -1276,8 +1320,8 @@ public class Functions  {
   /**
    * Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
    */
-  @ScalarFunction(id= "IF", minArgs = 3, maxArgs = 3,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "IF", minArgs = 3, maxArgs = 3,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/if.html")
   public static Object iff(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1290,8 +1334,8 @@ public class Functions  {
   /**
    * The IFNULL function replace the null with value (Alias NVL).
    */
-  @ScalarFunction(id= "IFNULL", names = "NVL", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "IFNULL", names = "NVL", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/ifnull.html")
   public static Object ifnull(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1304,8 +1348,8 @@ public class Functions  {
    * The COALESCE function returns the first of its arguments that is not null. Null is returned
    * only if all arguments are null.
    */
-  @ScalarFunction(id= "COALESCE", minArgs = 1, maxArgs = Integer.MAX_VALUE,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "COALESCE", minArgs = 1, maxArgs = Integer.MAX_VALUE,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/coalesce.html")
   public static Object coalesce(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     for (IExpression operand : operands) {
@@ -1317,8 +1361,8 @@ public class Functions  {
     return null;
   }
 
-  @ScalarFunction(id= "NVL2", minArgs = 3, maxArgs = 3,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "NVL2", minArgs = 3, maxArgs = 3,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/nvl2.html")
   public static Object nvl2(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object condition = operands[0].eval(context);
@@ -1334,8 +1378,8 @@ public class Functions  {
    * Compares the select expression to each search expression in order. As soon as a search
    * expression matches the selection expression, the corresponding result expression is returned.
    */
-  @ScalarFunction(id= "DECODE", minArgs = 4, maxArgs = Integer.MAX_VALUE,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "DECODE", minArgs = 4, maxArgs = Integer.MAX_VALUE,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/decode.html")
   public static Object decode(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1358,8 +1402,8 @@ public class Functions  {
   }
 
   /** The function NULLIF */
-  @ScalarFunction(id= "NULLIF", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "NULLIF", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/nullif.html")
   public static Object nullIf(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1374,8 +1418,8 @@ public class Functions  {
   /**
    * Returns 0 if its argument is null; otherwise, returns its argument.
    */
-  @ScalarFunction(id= "ZEROIFNULL", minArgs = 1, maxArgs = 1,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "ZEROIFNULL", minArgs = 1, maxArgs = 1,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/zeroifnull.html")
   public static Object zeroIfNull(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1389,8 +1433,8 @@ public class Functions  {
   /**
    * Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
    */
-  @ScalarFunction(id= "NULLIFZERO", minArgs = 1, maxArgs = 1,
-      category = "i18n::Operator.Category.Conditional")
+  @ScalarFunction(id = "NULLIFZERO", minArgs = 1, maxArgs = 1,
+      category = "i18n::Operator.Category.Conditional", documentationUrl="/docs/nullifzero.html")
   public static Object nullIfZero(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1404,8 +1448,8 @@ public class Functions  {
   /**
    * The function repeats a string as many times as specified.
    */
-  @ScalarFunction(id= "REPEAT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "REPEAT", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/repeat.html")
   public static Object repeat(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1438,10 +1482,11 @@ public class Functions  {
   }
 
   /**
-   * Replaces a substring of the specified length, starting at the specified position, with a new string or binary value.  
+   * Replaces a substring of the specified length, starting at the specified position, with a new
+   * string or binary value.
    */
-  @ScalarFunction(id= "INSERT", minArgs = 4, maxArgs = 4,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "INSERT", minArgs = 4, maxArgs = 4,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/insert.html")
   public static Object insert(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1456,48 +1501,48 @@ public class Functions  {
     Object v3 = operands[3].eval(context);
     if (v3 == null)
       return null;
-    
+
     int position = coerceToInteger(v1).intValue();
-    int length = coerceToInteger(v2).intValue();   
-    
-    if ( v0 instanceof byte[]) {
-      byte[] bytes = (byte[]) v0;     
-      int start  = Math.min(Math.max( 0, position - 1), bytes.length );
-      length = Math.min(length, bytes.length );
-      if(length < 0) 
-        throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);      
-      
+    int length = coerceToInteger(v2).intValue();
+
+    if (v0 instanceof byte[]) {
+      byte[] bytes = (byte[]) v0;
+      int start = Math.min(Math.max(0, position - 1), bytes.length);
+      length = Math.min(length, bytes.length);
+      if (length < 0)
+        throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);
+
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        buffer.write(bytes,0,start);
+        buffer.write(bytes, 0, start);
         buffer.write(coerceToBinary(v3));
-        buffer.write(bytes, start+length, bytes.length-start-length);
+        buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
         throw ExpressionException.create("Expression.InternalError", e);
       }
-    } 
-        
-    String str = coerceToString(v0);    
-    int start  = Math.min(Math.max( 0, position - 1), str.length() );
-     
-    length = Math.min(length, str.length() );
-    if(length < 0) 
+    }
+
+    String str = coerceToString(v0);
+    int start = Math.min(Math.max(0, position - 1), str.length());
+
+    length = Math.min(length, str.length());
+    if (length < 0)
       throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);
-    
+
     StringBuilder builder = new StringBuilder();
-    builder.append(str.substring(0,start));
+    builder.append(str.substring(0, start));
     builder.append(coerceToString(v3));
-    builder.append(str.substring(start+length));
+    builder.append(str.substring(start + length));
     return builder.toString();
   }
-  
+
   /**
    * Returns the position in the string that is the first character of a specified occurrence of the
    * substring.
    */
-  @ScalarFunction(id= "INSTR", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "INSTR", minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/instr.html")
   public static Object instr(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1524,13 +1569,13 @@ public class Functions  {
 
     return Long.valueOf(str.indexOf(substr, start) + 1L);
   }
-  
+
   /**
    * Removes all occurrences of a specified substring, and optionally replaces them with another
    * string.
    */
-  @ScalarFunction(id= "REPLACE", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "REPLACE", minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/replace.html")
   public static Object replace(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1552,14 +1597,14 @@ public class Functions  {
     return StringUtils.remove(string, search);
   }
 
-  
+
 
   /**
    * Returns the portion of the string from string, starting from the character/byte specified by
    * start, with optionally limited length.
    */
-  @ScalarFunction(id= "SUBSTRING", names = {"SUBSTR"}, minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "SUBSTRING", names = {"SUBSTR"}, minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/substring.html")
   public static Object substring(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     String string = coerceToString(operands[0].eval(context));
@@ -1591,8 +1636,8 @@ public class Functions  {
     return string.substring(start - 1, end - 1);
   }
 
-  @ScalarFunction(id= "REGEXP_LIKE", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.Comparison")
+  @ScalarFunction(id = "REGEXP_LIKE", minArgs = 2, maxArgs = 3,
+      category = "i18n::Operator.Category.Comparison", documentationUrl="/docs/regexp_like.html")
   public static Object regexp_like(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
@@ -1626,8 +1671,8 @@ public class Functions  {
   }
 
 
-  @ScalarFunction(id= "REGEXP_REPLACE", minArgs = 2, maxArgs = 6,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "REGEXP_REPLACE", minArgs = 2, maxArgs = 6,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/regexp_replace.html")
   public static Object regexp_replace(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1723,8 +1768,8 @@ public class Functions  {
     }
   }
 
-  @ScalarFunction(id= "REGEXP_SUBSTR", minArgs = 2, maxArgs = 4,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "REGEXP_SUBSTR", minArgs = 2, maxArgs = 4,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/regexp_substr.html")
   public static Object regexp_substr(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1785,8 +1830,8 @@ public class Functions  {
   }
 
 
-  @ScalarFunction(id= "REGEXP_INSTR", minArgs = 2, maxArgs = 6,
-      category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "REGEXP_INSTR", minArgs = 2, maxArgs = 6,
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/regexp_instr.html")
   public static Object regexp_instr(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1803,7 +1848,6 @@ public class Functions  {
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return 0L;
-
 
     // Default position 1
     int position = 1;
@@ -1864,8 +1908,8 @@ public class Functions  {
    *
    * @see {@link #endswith}
    */
-  @ScalarFunction(id= "STARTSWITH", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Comparison")
+  @ScalarFunction(id = "STARTSWITH", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison", documentationUrl="/docs/startswith.html")
   public static Object startsWith(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
@@ -1901,8 +1945,8 @@ public class Functions  {
    *
    * @see {@link #startwith}
    */
-  @ScalarFunction(id= "ENDSWITH", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Comparison")
+  @ScalarFunction(id = "ENDSWITH", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison", documentationUrl="/docs/endswith.html")
   public static Object endsWith(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1935,8 +1979,8 @@ public class Functions  {
 
 
   /** Contains function */
-  @ScalarFunction(id= "CONTAINS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Comparison")
+  @ScalarFunction(id = "CONTAINS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Comparison", documentationUrl="/docs/contains.html")
   public static Object contains(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -1956,7 +2000,7 @@ public class Functions  {
   /**
    * Converts a string or numeric expression to a boolean value.
    */
-  @ScalarFunction(id= "TO_BOOLEAN", category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TO_BOOLEAN", category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_boolean.html")
   public static Object to_boolean(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1969,7 +2013,7 @@ public class Functions  {
   /**
    * Converts a string or numeric expression to a boolean value.
    */
-  @ScalarFunction(id= "TRY_TO_BOOLEAN", category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TRY_TO_BOOLEAN", category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_boolean.html")
   public static Object try_to_boolean(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -1983,8 +2027,8 @@ public class Functions  {
   }
 
   /** Converts a numeric or date expression to a string value. */
-  @ScalarFunction(id= "TO_CHAR", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TO_CHAR", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_char.html")
   public static Object to_char(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2014,8 +2058,8 @@ public class Functions  {
   }
 
   /** Converts a string expression to a number value. */
-  @ScalarFunction(id= "TO_NUMBER", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TO_NUMBER", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_number.html")
   public static Object to_number(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
     Object v0 = operands[0].eval(context);
@@ -2039,8 +2083,8 @@ public class Functions  {
     return NumberFormat.parse(coerceToString(v0), precision, scale);
   }
 
-  @ScalarFunction(id= "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_number.html")
   public static Object try_to_number(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
     Object value = operands[0].eval(context);
@@ -2076,8 +2120,8 @@ public class Functions  {
   }
 
   /** Converts a string expression to a date value. */
-  @ScalarFunction(id= "TO_DATE", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TO_DATE", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_date.html")
   public static Object to_date(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
     Object value = operands[0].eval(context);
@@ -2106,8 +2150,8 @@ public class Functions  {
    * Converts a value of one data type into another data type if the cast succeeds, otherwise
    * returns null.
    */
-  @ScalarFunction(id= "TRY_TO_DATE", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion")
+  @ScalarFunction(id = "TRY_TO_DATE", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_date.html")
   public static Object try_to_date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2144,83 +2188,26 @@ public class Functions  {
   /**
    * Round down numeric expressions or truncates a date or timestamp to the specified part.
    */
-  @ScalarFunction(id= "TRUNCATE", names = "TRUNC", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical")
+  @ScalarFunction(id = "TRUNCATE", names = "TRUNC", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/truncate.html")
   public static Object truncate(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    DataType type = DataType.fromJava(value);
-
-    switch (type) {
-      case INTEGER:
-      case NUMBER:
-      case BIGNUMBER:
-        BigDecimal number = coerceToBigNumber(value);
-        int scale = 0;
-        if (operands.length == 2) {
-          Object pattern = operands[1].eval(context);
-          if (pattern == null)
-            return null;
-          scale = coerceToInteger(pattern).intValue();
-        }
-
-        if (scale > number.scale())
-          scale = number.scale();
-        return number.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
-
-      case DATE:
-        ZonedDateTime datetime = coerceToDate(value);
-        DatePart part = DatePart.DAY;
-
-        if (operands.length == 2) {
-          part = coerceToDatePart(operands[1].eval(context));
-        }
-
-        switch (part) {
-          // First day of the year
-          case YEAR: {
-            return datetime.withDayOfYear(1);
-          }
-          // First day of the month
-          case MONTH: {
-            return datetime.withDayOfMonth(1);
-          }
-          // First day of the quarter
-          case QUARTER: {
-            int month = (datetime.getMonthValue() / 3) * 3 + 1;
-            return datetime.withMonth(month).withDayOfMonth(1);
-          }
-          // First day of the week
-          case WEEK: {
-            DayOfWeek dow = DayOfWeek.of(((ExpressionContext) context).getFirstDayOfWeek());
-            return datetime.with(TemporalAdjusters.previousOrSame(dow));
-          }
-
-          case DAY:
-            return datetime.truncatedTo(ChronoUnit.DAYS);
-          case HOUR:
-            return datetime.truncatedTo(ChronoUnit.HOURS);
-          case MINUTE:
-            return datetime.truncatedTo(ChronoUnit.MINUTES);
-          case SECOND:
-            return datetime.truncatedTo(ChronoUnit.SECONDS);
-          case MILLISECOND:
-            return datetime.truncatedTo(ChronoUnit.MILLIS);
-          case MICROSECOND:
-            return datetime.truncatedTo(ChronoUnit.MICROS);
-          case NANOSECOND:
-            return datetime.truncatedTo(ChronoUnit.NANOS);
-          default:
-            throw ExpressionException.createUnexpectedDatePart("TRUNCATE", part);
-        }
-      case STRING:
-      case BOOLEAN:
-      default:
-        throw ExpressionException.createUnexpectedDataType("TRUNCATE", type);
+    BigDecimal number = coerceToBigNumber(value);
+    int scale = 0;
+    if (operands.length == 2) {
+      Object pattern = operands[1].eval(context);
+      if (pattern == null)
+        return null;
+      scale = coerceToInteger(pattern).intValue();
     }
+
+    if (scale > number.scale())
+      scale = number.scale();
+    return number.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
   }
 
   // -------------------------------------------------------------
@@ -2230,8 +2217,7 @@ public class Functions  {
   /**
    * Build DATE(YYYY,MM,DD) function
    */
-  @ScalarFunction(id= "DATE", minArgs = 3, maxArgs = 3,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DATE", minArgs = 3, maxArgs = 3, category = "i18n::Operator.Category.Date", documentationUrl="/docs/date.html")
   public static Object date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2278,10 +2264,72 @@ public class Functions  {
     return datetime.toZonedDateTime();
   }
 
+
+
+  /**
+   * Truncates a date or timestamp to the specified part.
+   */
+  @ScalarFunction(id = "DATE_TRUNC", minArgs = 1, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/date_trunc.html")
+  public static Object date_trunc(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    DatePart part = coerceToDatePart(v0);        
+    ZonedDateTime datetime = coerceToDate(v1);
+    
+    switch (part) {
+      case MILLENNIUM:
+        return datetime.withDayOfYear(1).minusYears(datetime.getYear()%1000); 
+      case CENTURY:
+        return datetime.withDayOfYear(1).minusYears(datetime.getYear()%100); 
+      case DECADE:
+        return datetime.withDayOfYear(1).minusYears(datetime.getYear()%10); 
+      // First day of the year
+      case YEAR: 
+        return datetime.withDayOfYear(1);     
+      // First day of the month
+      case MONTH: 
+        return datetime.withDayOfMonth(1);      
+      // First day of the quarter
+      case QUARTER: 
+        int month = (datetime.getMonthValue() / 3) * 3 + 1;
+        return datetime.withMonth(month).withDayOfMonth(1);
+      // First day of the week (the week starts on Monday)
+      case WEEK:        
+        // TODO: DayOfWeek dow = DayOfWeek.of(Integer.parseInt((String) context.getAttribute("NLS_FIRST_DAY_OF_WEEK")));        
+        return datetime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+      case DAY:
+        return datetime.truncatedTo(ChronoUnit.DAYS);
+      case HOUR:
+        return datetime.truncatedTo(ChronoUnit.HOURS);
+      case MINUTE:
+        return datetime.truncatedTo(ChronoUnit.MINUTES);
+      case SECOND:
+        return datetime.truncatedTo(ChronoUnit.SECONDS);
+      case MILLISECOND:
+        return datetime.truncatedTo(ChronoUnit.MILLIS);
+      case MICROSECOND:
+        return datetime.truncatedTo(ChronoUnit.MICROS);
+      case NANOSECOND:
+        return datetime.truncatedTo(ChronoUnit.NANOS);
+      default:
+        throw ExpressionException.createUnexpectedDatePart("DATE_TRUNC", part);
+    }
+  }
+
+
   /**
    * Day of the month (number from 1-31).
    */
-  @ScalarFunction(id= "DAY", names = "DAYOFMONTH", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DAY", category = "i18n::Operator.Category.Date", documentationUrl="/docs/day.html")
   public static Object day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2294,7 +2342,7 @@ public class Functions  {
   /**
    * Returns the name of the weekday (in English).
    */
-  @ScalarFunction(id= "DAYNAME", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DAYNAME", category = "i18n::Operator.Category.Date", documentationUrl="/docs/dayname.html")
   public static Object dayname(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2308,7 +2356,7 @@ public class Functions  {
   /**
    * Day of the week (Sunday=1 to Saturday=7).
    */
-  @ScalarFunction(id= "DAYOFWEEK", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DAYOFWEEK", category = "i18n::Operator.Category.Date", documentationUrl="/docs/dayofweek.html")
   public static Object dayofweek(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2327,7 +2375,7 @@ public class Functions  {
   /**
    * Day of the week (Monday=1 to Sunday=7).
    */
-  @ScalarFunction(id= "DAYOFWEEK_ISO", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DAYOFWEEK_ISO", category = "i18n::Operator.Category.Date", documentationUrl="/docs/dayofweek_iso.html")
   public static Object dayofweek_iso(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2339,7 +2387,7 @@ public class Functions  {
   }
 
   /** Day of the year (number from 1-366). */
-  @ScalarFunction(id= "DAYOFYEAR", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DAYOFYEAR", category = "i18n::Operator.Category.Date", documentationUrl="/docs/dayofyear.html")
   public static Object dayofyear(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2349,56 +2397,9 @@ public class Functions  {
     return Long.valueOf(coerceToDate(value).getDayOfYear());
   }
 
-  /** Week of the year (number from 1-54). */
-  @ScalarFunction(id= "WEEKOFYEAR", names = "WEEK", category = "i18n::Operator.Category.Date")
-  public static Object weekOfYear(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
-  }
-  
-  /** Week of the year ISO semantics (number from 1-53). */
-  @ScalarFunction(id= "WEEKOFYEARISO", names = "WEEKISO", category = "i18n::Operator.Category.Date")
-  public static Object weekOfYearIso(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    ZonedDateTime datetime = coerceToDate(value); 
-    return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
-  }
-  
-  /** Year of the week ISO semantics */
-  @ScalarFunction(id= "YEAROFWEEKISO", names = "YEARISO", category = "i18n::Operator.Category.Date")
-  public static Object yearOfWeekIso(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    ZonedDateTime datetime = coerceToDate(value); 
-    return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
-  }
-  
-  /** Week from the beginning of the month (0-5) */
-  @ScalarFunction(id= "WEEKOFMONTH", category = "i18n::Operator.Category.Date")
-  public static Object weekOfMonth(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
-  }
 
   /** Month of the year (number from 1-12). */
-  @ScalarFunction(id= "MONTH", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "MONTH", category = "i18n::Operator.Category.Date", documentationUrl="/docs/month.html")
   public static Object month(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2410,7 +2411,7 @@ public class Functions  {
   }
 
   /** Returns the name of the month (in English). */
-  @ScalarFunction(id= "MONTHNAME", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "MONTHNAME", category = "i18n::Operator.Category.Date", documentationUrl="/docs/monthname.html")
   public static Object monthName(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2423,7 +2424,7 @@ public class Functions  {
   }
 
   /** Quarter of the year (number from 1-4). */
-  @ScalarFunction(id= "QUARTER", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "QUARTER", category = "i18n::Operator.Category.Date", documentationUrl="/docs/quarter.html")
   public static Object quarter(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2435,7 +2436,7 @@ public class Functions  {
   }
 
   /** The year of a date */
-  @ScalarFunction(id= "YEAR", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "YEAR", category = "i18n::Operator.Category.Date", documentationUrl="/docs/year.html")
   public static Object year(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2445,9 +2446,45 @@ public class Functions  {
     ZonedDateTime datetime = coerceToDate(value);
     return Long.valueOf(datetime.getYear());
   }
+  
+  /** Year of the week ISO semantics */
+  @ScalarFunction(id = "YEAR_ISO", category = "i18n::Operator.Category.Date", documentationUrl="/docs/year_iso.html")
+  public static Object year_iso(final IExpressionContext context, final IExpression[] operands)
+    throws ExpressionException {
+  Object value = operands[0].eval(context);
+  if (value == null)
+    return null;
+
+  ZonedDateTime datetime = coerceToDate(value);
+  return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
+}
+
+  /** Week of the year (number from 1-54). */
+  @ScalarFunction(id = "WEEK", category = "i18n::Operator.Category.Date", documentationUrl="/docs/week.html")
+  public static Object week(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+  }
+  
+  /** Week of the year ISO semantics (number from 1-53). */
+  @ScalarFunction(id = "WEEK_ISO", category = "i18n::Operator.Category.Date", documentationUrl="/docs/week_iso.html")
+  public static Object week_iso(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    ZonedDateTime datetime = coerceToDate(value);
+    return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
+  }
 
   /** The hour (0-23). @See {@link #MINUTE}, {@link #SECOND} */
-  @ScalarFunction(id= "HOUR", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "HOUR", category = "i18n::Operator.Category.Date", documentationUrl="/docs/hour.html")
   public static Object hour(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2459,7 +2496,7 @@ public class Functions  {
   }
 
   /** The minute (0-59). @See {@link #HOUR}, {@link #SECOND} */
-  @ScalarFunction(id= "MINUTE", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "MINUTE", category = "i18n::Operator.Category.Date", documentationUrl="/docs/minute.html")
   public static Object minute(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2471,7 +2508,7 @@ public class Functions  {
   }
 
   /** The second (0-59). @See {@link #HOUR}, {@link #MINUTE} */
-  @ScalarFunction(id= "SECOND", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "SECOND", category = "i18n::Operator.Category.Date", documentationUrl="/docs/second.html")
   public static Object second(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2483,8 +2520,8 @@ public class Functions  {
   }
 
   /** Adds or subtracts a specified number of days to a date or timestamp */
-  @ScalarFunction(id= "ADD_DAYS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_DAYS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_days.html")
   public static Object add_days(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2498,8 +2535,8 @@ public class Functions  {
   }
 
   /** Adds or subtracts a specified number of weeks to a date or timestamp */
-  @ScalarFunction(id= "ADD_WEEKS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_WEEKS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_weeks.html")
   public static Object add_weeks(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2513,8 +2550,8 @@ public class Functions  {
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
-  @ScalarFunction(id= "ADD_MONTHS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_MONTHS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_months.html")
   public static Object add_months(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2528,8 +2565,8 @@ public class Functions  {
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
-  @ScalarFunction(id= "ADD_YEARS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_YEARS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_years.html")
   public static Object add_years(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2543,8 +2580,8 @@ public class Functions  {
   }
 
   /** Adds or subtracts a specified number of hours to a date or timestamp */
-  @ScalarFunction(id= "ADD_HOURS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_HOURS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_hours.html")
   public static Object add_hours(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2558,8 +2595,8 @@ public class Functions  {
   }
 
   /** Adds or subtracts a specified number of minutes to a date or timestamp */
-  @ScalarFunction(id= "ADD_MINUTES", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_MINUTES", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_minutes.html")
   public static Object add_minutes(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2575,8 +2612,8 @@ public class Functions  {
   /**
    * Adds or subtracts a specified number of seconds to a date or timestamp
    */
-  @ScalarFunction(id= "ADD_SECONDS", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "ADD_SECONDS", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_seconds.html")
   public static Object add_seconds(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     ZonedDateTime value = coerceToDate(operands[0].eval(context));
@@ -2592,8 +2629,8 @@ public class Functions  {
   /**
    * Returns number of days between two date values.
    */
-  @ScalarFunction(id= "DAYS_BETWEEN", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "DAYS_BETWEEN", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/days_between.html")
   public static Object days_between(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2611,8 +2648,8 @@ public class Functions  {
   /**
    * Returns number of months between two date.
    */
-  @ScalarFunction(id= "MONTHS_BETWEEN", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "MONTHS_BETWEEN", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/months_between.html")
   public static Object months_between(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2629,8 +2666,8 @@ public class Functions  {
   }
 
   /** Returns number of years between two date. */
-  @ScalarFunction(id= "YEARS_BETWEEN", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "YEARS_BETWEEN", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/years_between.html")
   public static Object years_between(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2646,8 +2683,8 @@ public class Functions  {
   }
 
   /** Return the number of hours between two timestamps */
-  @ScalarFunction(id= "HOURS_BETWEEN", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "HOURS_BETWEEN", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/hours_between.html")
   public static Object hours_between(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2663,8 +2700,8 @@ public class Functions  {
   }
 
   /** Return the number of minutes between two timestamps */
-  @ScalarFunction(id= "MINUTES_BETWEEN", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "MINUTES_BETWEEN", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/minutes_between.html")
   public static Object minutes_between(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2680,8 +2717,8 @@ public class Functions  {
   }
 
   /** Return the number of seconds between two timestamps */
-  @ScalarFunction(id= "SECONDS_BETWEEN", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "SECONDS_BETWEEN", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/seconds_between.html")
   public static Object seconds_between(final IExpressionContext context,
       final IExpression[] operands) throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2697,7 +2734,7 @@ public class Functions  {
   }
 
   /** Returns the first day of the month. */
-  @ScalarFunction(id= "FIRST_DAY", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "FIRST_DAY", category = "i18n::Operator.Category.Date", documentationUrl="/docs/first_day.html")
   public static Object first_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2708,7 +2745,7 @@ public class Functions  {
   }
 
   /** Returns the last day of the month. */
-  @ScalarFunction(id= "LAST_DAY", category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "LAST_DAY", category = "i18n::Operator.Category.Date", documentationUrl="/docs/last_day.html")
   // TODO: @ScalarFunction(id= "LAST_DAY", minArgs = 1, maxArgs = 2, category =
   // "i18n::Operator.Category.Date")
   public static Object last_day(final IExpressionContext context, final IExpression[] operands)
@@ -2729,8 +2766,8 @@ public class Functions  {
   /**
    * Returns the date of the first specified day of week that occurs after the input date.
    */
-  @ScalarFunction(id= "NEXT_DAY", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "NEXT_DAY", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/next_day.html")
   public static Object next_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2748,8 +2785,8 @@ public class Functions  {
   /**
    * Returns the date of the first specified day of week that occurs before the input date.
    */
-  @ScalarFunction(id= "PREVIOUS_DAY", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "PREVIOUS_DAY", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Date", documentationUrl="/docs/previous_day.html")
   public static Object previous_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2764,11 +2801,11 @@ public class Functions  {
 
     return coerceToDate(value).with(TemporalAdjusters.previous(dayofweek));
   }
-  
+
   /**
    * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
    */
-  @ScalarFunction(id= "ACOS", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ACOS", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/acos.html")
   public static Object acos(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2781,7 +2818,7 @@ public class Functions  {
     return FastMath.acos(d);
   }
 
-  @ScalarFunction(id= "ACOSH", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ACOSH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/acosh.html")
   public static Object acosh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2790,7 +2827,7 @@ public class Functions  {
     return FastMath.acosh(coerceToNumber(value));
   }
 
-  @ScalarFunction(id= "ASINH", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ASINH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/asinh.html")
   public static Object asinh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2800,7 +2837,7 @@ public class Functions  {
     return FastMath.asinh(coerceToNumber(value));
   }
 
-  @ScalarFunction(id= "ATAN", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ATAN", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/atan.html")
   public static Object atan(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2810,7 +2847,7 @@ public class Functions  {
     return FastMath.atan(coerceToNumber(value));
   }
 
-  @ScalarFunction(id= "ATANH", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ATANH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/atanh.html")
   public static Object atanh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2820,8 +2857,8 @@ public class Functions  {
     return FastMath.atanh(coerceToNumber(value));
   }
 
-  @ScalarFunction(id= "ATAN2", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ATAN2", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/atan2.html")
   public static Object atan2(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -2835,7 +2872,7 @@ public class Functions  {
   }
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  @ScalarFunction(id= "COS", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "COS", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/cos.html")
   public static Object cos(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2845,7 +2882,7 @@ public class Functions  {
   }
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  @ScalarFunction(id= "COSH", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "COSH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/cosh.html")
   public static Object cosh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2855,7 +2892,7 @@ public class Functions  {
   }
 
   /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
-  @ScalarFunction(id= "COT", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "COT", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/cot.html")
   public static Object cot(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2869,7 +2906,7 @@ public class Functions  {
     return FastMath.cos(number) / FastMath.sin(number);
   }
 
-  @ScalarFunction(id= "ASIN", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "ASIN", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/asin.html")
   public static Object asin(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2881,7 +2918,7 @@ public class Functions  {
   /**
    * Calculates the trigonometric sine of the angle in radians.
    */
-  @ScalarFunction(id= "SIN", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "SIN", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/sin.html")
   public static Object sin(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2894,7 +2931,7 @@ public class Functions  {
   /**
    * Calculates the hyperbolic sine of its argument.
    */
-  @ScalarFunction(id= "SINH", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "SINH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/sinh.html")
   public static Object sinh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2906,7 +2943,7 @@ public class Functions  {
   /**
    * Calculates the tangent of its argument, the argument should be expressed in radians.
    */
-  @ScalarFunction(id= "TAN", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "TAN", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/tan.html")
   public static Object tan(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
@@ -2918,7 +2955,7 @@ public class Functions  {
   /**
    * Calculates the hyperbolic tangent of its argument.
    */
-  @ScalarFunction(id= "TANH", category = "i18n::Operator.Category.Trigonometry")
+  @ScalarFunction(id = "TANH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/tanh.html")
   public static Object tanh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);

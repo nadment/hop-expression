@@ -16,11 +16,11 @@ under the License.
 ////
 = ABS
 
-This function returns the absolute (positive) value of the number.
+Returns the absolute (positive) value of the number.
 
 == Syntax
 ----
-ABS( <number> )
+ABS( <numeric> )
 ----
 
 == Usage

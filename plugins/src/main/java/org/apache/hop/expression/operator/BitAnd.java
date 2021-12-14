@@ -28,11 +28,11 @@ import java.io.StringWriter;
 public class BitAnd extends Operator {
 
   public BitAnd() {
-    super("BITAND","&", 70, true, true, "i18n::Operator.Category.Bitwise");
+    super("BITAND","&", 70, true, true, "i18n::Operator.Category.Bitwise", "/docs/bitand.html");
   }
 
   @ScalarFunction(id = "BITAND", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise")
+      category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/bitand.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

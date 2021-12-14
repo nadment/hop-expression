@@ -20,7 +20,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -28,11 +27,11 @@ import java.math.BigDecimal;
 public class Multiply extends Operator {
 
   public Multiply() {
-    super("MULTIPLY", "*", 50, true, true, "i18n::Operator.Category.Mathematical");
+    super("MULTIPLY", "*", 50, true, true, "i18n::Operator.Category.Mathematical", "/docs/multiply.html");
   }
 
-  @ScalarFunction(id = "MULTIPLY", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical")
+//  @ScalarFunction(id = "MULTIPLY", minArgs = 2, maxArgs = 2,
+//      category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

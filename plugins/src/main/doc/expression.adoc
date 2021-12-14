@@ -106,9 +106,6 @@ Or also be composed by 0 and 1 digits with 0b prefix.
 
 NOTE:  A leading 0x is case-sensitive and cannot be written as 0X, but the case of the digits does not matter.
  
-
-TIP: To convert a binary literal into an integer, just add 0.
-
 === Date
 
 Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a YYYY-MM-DD format. 
@@ -119,7 +116,6 @@ Date '2020-05-18'
 ----
 Date(2020,5,18)
 ----
-
 
 === Timestamp
 
@@ -153,11 +149,11 @@ The operator precedence and associativity, highest to lowest.
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[::]|Cast
 |right|+, -|Positive, Negative
 |right|~|Bitwise NOT
-|left|*, /, %|Multiplication, Division, Modulus
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/multiply.adoc[*], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/divide.adoc[/], %|Multiplication, Division, Modulus
 |left|&|Bitwise AND
 |left|^|Bitwise exclusive OR
 |left|\||Bitwise inclusive OR 
-|left|+, -|Addition, Subtraction
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add.adoc[+], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/subtract.adoc[-]|Addition, Subtraction
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Set membership
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
@@ -171,14 +167,15 @@ The operator precedence and associativity, highest to lowest.
 
 NOTE: An operator on higher levels is evaluated before an operator on a lower level.
 
+NOTE: When an operator combines expressions of different data types, the data type with the lower precedence is first converted to the data type with the higher precedence. If the conversion isn't a supported implicit conversion, an error is returned. 
+
 == Function
 
-Expression support scalar functions.
+Expression support most of the standard scalar functions.
 
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/abs.adoc[ABS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/acos.adoc[ACOS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/acosh.adoc[ACOSH]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add.adoc[ADD]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_days.adoc[ADD_DAYS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_hours.adoc[ADD_HOURS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_minutes.adoc[ADD_MINUTES]
@@ -212,7 +209,7 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cosh.adoc[COSH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cot.adoc[COT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date.adoc[DATE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dateformat.adoc[DATEFORMAT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_trunc.adoc[DATE_TRUNC]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/day.adoc[DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dayname.adoc[DAYNAME]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/dayofweek.adoc[DAYOFWEEK]
@@ -221,7 +218,7 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/decode.adoc[DECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/degrees.adoc[DEGREES]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/difference.adoc[DIFFERENCE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/divide.adoc[DIVIDE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/div0.adoc[DIV0]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/endswith.adoc[ENDSWITH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal.adoc[EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal_null.adoc[EQUAL_NULL]
@@ -259,7 +256,6 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/month.adoc[MONTH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/monthname.adoc[MONTHNAME]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/months_between.adoc[MONTHS_BETWEEN]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/multiply.adoc[MULTIPLY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/next_day.adoc[NEXT_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/not_equal.adoc[NOT_EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/now.adoc[NOW]
@@ -301,7 +297,6 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringdecode.adoc[STRINGDECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringencode.adoc[STRINGENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/substring.adoc[SUBSTRING]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/subtract.adoc[SUBTRACT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tan.adoc[TAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tanh.adoc[TANH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
@@ -321,8 +316,8 @@ Expression support scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urldecode.adoc[URLDECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urlencode.adoc[URLENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/uuid.adoc[UUID]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/weekofmonth.adoc[WEEKOFMONTH]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/weekofyear.adoc[WEEKOFYEAR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/week.adoc[WEEK]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/week_iso.adoc[WEEK_ISO]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/year.adoc[YEAR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/years_between.adoc[YEARS_BETWEEN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/zeroifnull.adoc[ZEROIFNULL]

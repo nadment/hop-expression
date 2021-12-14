@@ -32,16 +32,16 @@ public enum DatePart {
   DECADE,
 
   /** The years */
-  YEAR("YY"),
+  YEAR("Y","YY","YYYY"),
 
   /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
-  YEARISO("YOWISO","YEAROFWEEKISO"),
+  YEAR_ISO("YOWISO","YEAROFWEEKISO"),
 
   /** The number (1 - 12) of the month */
   MONTH("MM"),
 
   /** The number (1 - 31) of the day */
-  DAY("DD"),
+  DAY("D","DD","DAYOFMONTH"),
 
   /** A number (1 = Sunday, 2 = Monday, …, 7 = Saturday) indicating the day of the week */
   DAYOFWEEK("DOW"),
@@ -50,28 +50,28 @@ public enum DatePart {
    * A number (1 = Monday, …, 7 = Sunday) indicating the day of the week following the ISO 8601
    * standard
    */
-  DAYOFWEEKISO("DOWISO","ISODOW"),
+  DAYOFWEEK_ISO("DOWISO","ISODOW"),
 
   /** A number (1 - 366) indicating the day of the year */
   DAYOFYEAR("DOY"),
 
   /** 
-   * The number (1 - 53) of the week of the year.
+   * The number (1 - 54) of the week of the year.
    * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
    */
-  WEEK("WEEKOFYEAR"),
+  WEEK("WW","WOY"),
 
   /** 
    * The number (1 - 53) of the week of the year ISO 8601.
    * The first week of the ISO year is the week that contains January 4. 
    */
-  WEEKISO("WEEKOFYEARISO"),
+  WEEK_ISO("WEEKOFYEARISO"),
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
 
   /** The quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
-  QUARTER("Q"),
+  QUARTER("Q","QQ"),
 
   /** The hour (0-23). */
   HOUR("HH"),
@@ -91,12 +91,14 @@ public enum DatePart {
   /** The nanosecond. */
   NANOSECOND("NS"),
 
-  TIMEZONE_REGION,
+  /** The time zone */
+  TIMEZONE,
 
   /** The time zone offset's hour part. */
-  TIMEZONE_HOUR,
+  TIMEZONE_HOUR("TZH"),
+
   /** The time zone offset's minute part. */
-  TIMEZONE_MINUTE
+  TIMEZONE_MINUTE("TZM")
   
   ;
 

@@ -16,7 +16,7 @@ under the License.
 ////
 = YEAR
 
-This function returns the integer that specifies the year of the specified date or timestamp.
+Returns the integer that specifies the year of the specified date or timestamp.
 
 == Syntax
 ----

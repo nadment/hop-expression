@@ -22,5 +22,8 @@ Extracts a number of characters from a string or bytes from binary (starting fro
 ----
 RIGHT( <string_or_binary> [, <length> ] )
 ----
+== Usage
+
+* Returns NULL if one of the arguments is NULL.
 
 See also xref:left.adoc[LEFT]

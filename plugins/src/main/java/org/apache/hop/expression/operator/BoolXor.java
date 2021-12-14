@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class BoolXor extends Operator {
 
   public BoolXor() {
-    super("BOOLXOR", "XOR", 170, true, true, "i18n::Operator.Category.Logical");
+    super("BOOLXOR", "XOR", 170, true, true, "i18n::Operator.Category.Logical", "/docs/boolxor.html");
   }
 
   @Override

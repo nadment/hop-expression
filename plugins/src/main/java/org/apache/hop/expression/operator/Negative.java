@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class Negative extends Operator {
 
   public Negative() {
-    super("NEGATIVE", "-", 30, true, true, "i18n::Operator.Category.Mathematical");
+    super("NEGATIVE", "-", 30, true, true, "i18n::Operator.Category.Mathematical", null);
   }
 
   @Override

@@ -16,7 +16,7 @@ under the License.
 ////
 = PI
 
-This function returns the constant value of pi.
+Returns the constant value of pi.
 
 == Syntax
 ----

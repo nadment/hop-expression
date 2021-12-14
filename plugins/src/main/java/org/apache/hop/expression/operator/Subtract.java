@@ -20,7 +20,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -32,11 +31,11 @@ public class Subtract extends Operator {
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   public Subtract() {
-    super("SUBTRACT", "-", 100, true, true, "i18n::Operator.Category.Mathematical");
+    super("SUBTRACT", "-", 100, true, true, "i18n::Operator.Category.Mathematical", "/docs/subtract.html");
   }
 
-  @ScalarFunction(id = "SUBTRACT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical")
+//  @ScalarFunction(id = "SUBTRACT", minArgs = 2, maxArgs = 2,
+//      category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {

@@ -16,15 +16,16 @@ under the License.
 ////
 = MD5
 
-The function calculate the MD5 hash of a value. The hash will be returned as a 40 characters hex-encoded string.
+Calculates the MD5 hash of a value.
 
 == Syntax
 ----
 MD5( <string_or_binary> )
 ----
 
+<string_or_binary>:: A string expression, the message to be hashed.
+Returns:: String
+
 == Usage
 
-Returns::
-
-String
+* The hash will be returned as a 40 characters hex-encoded string.

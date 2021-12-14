@@ -26,7 +26,7 @@ import java.io.StringWriter;
 public class NotEqual extends Operator {
 
   public NotEqual() {
-    super("NOT_EQUAL", "!=", 130, true, true, "i18n::Operator.Category.Comparison");
+    super("NOT_EQUAL", "!=", 130, true, true, "i18n::Operator.Category.Comparison", "/docs/not_equal.html");
   }
 
   @Override

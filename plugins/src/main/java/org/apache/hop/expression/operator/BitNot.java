@@ -27,10 +27,10 @@ import java.io.StringWriter;
 public class BitNot extends Operator {
 
   public BitNot() {
-    super("BITNOT", "~", 40, true, true, "i18n::Operator.Category.Bitwise");
+    super("BITNOT", "~", 40, true, true, "i18n::Operator.Category.Bitwise", "/docs/bitnot.html");
   }
 
-  @ScalarFunction(id = "BITNOT", category = "i18n::Operator.Category.Bitwise")
+  @ScalarFunction(id = "BITNOT", category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/bitnot.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
@@ -47,5 +47,4 @@ public class BitNot extends Operator {
     writer.append('~');
     operands[1].write(writer);
   }
-
 }

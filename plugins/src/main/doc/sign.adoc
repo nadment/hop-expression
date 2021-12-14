@@ -16,7 +16,7 @@ under the License.
 ////
 = SIGN
 
-The function returns the sign for the numeric expression.
+Returns the sign for the numeric expression.
 
 == Syntax
 ----

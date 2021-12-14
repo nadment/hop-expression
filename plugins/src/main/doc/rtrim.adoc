@@ -29,4 +29,6 @@ Return:: String
 
 == Usage
 
+* Returns NULL if one of the arguments is NULL.
+
 See also xref:ltrim.adoc[LTRIM], xref:trim.adoc[TRIM]

@@ -122,7 +122,7 @@ public class FunctionsTest extends BaseExpressionTest {
     ZonedDateTime today = (ZonedDateTime) context.getAttribute(ExpressionContext.CACHED_TODAY);
     evalEquals("Today()", today, context);
     evalEquals("Current_Date()", today, context);
-    
+
     evalFails("Today(Null)");
   }
 
@@ -132,10 +132,10 @@ public class FunctionsTest extends BaseExpressionTest {
     ZonedDateTime today = (ZonedDateTime) context.getAttribute(ExpressionContext.CACHED_NOW);
     evalEquals("Now()", today, context);
     evalEquals("Current_Timestamp()", today, context);
-    
+
     evalFails("Now(Null)");
   }
-  
+
   @Test
   public void Date() throws Exception {
     evalEquals("Date(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
@@ -153,7 +153,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Date(2020,15)");
     evalFails("Date(2020,1,1,1)");
   }
-  
+
   @Test
   public void FirstDay() throws Exception {
     evalEquals("First_day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1));
@@ -217,7 +217,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Instr() throws Exception {   
+  public void Instr() throws Exception {
     evalEquals("Instr('abcdefgh','abc')", 1);
     evalEquals("Instr('abcdefgh','ABC')", 0);
     evalEquals("Instr('abcdefgh','ef')", 5);
@@ -330,7 +330,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Days_Between(NULL, NULL)");
     evalFails("Days_Between(Date '2007-11-09')");
   }
-  
+
   @Test
   public void Hours_Between() throws Exception {
     evalEquals("Hours_Between(Timestamp '2019-01-01 15:00:59',Timestamp '2019-01-01 15:28:59')", 0);
@@ -391,9 +391,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Day(Date '2019-12-28')", 28);
     evalNull("Day(NULL)");
     evalFails("Day()");
-
-    // Alias
-    evalEquals("DayOfMonth(Date '2019-01-01')", 1);
   }
 
   @Test
@@ -406,42 +403,38 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void WeekOfYear() throws Exception {
-    evalEquals("WeekOfYear(Date '2015-12-31')", 53);
-    evalEquals("WeekOfYear(Date '2015-01-01')", 1);
-    evalEquals("WeekOfYear(Date '2015-01-02')", 1);
-    //evalEquals("WeekOfYear(Date '2024-12-31')", 54);
-    evalNull("WeekOfYear(NULL)");
-    evalFails("WeekOfYear()");   
-    
-    evalEquals("Week(Date '2019-01-01')", 1);
+  public void Week() throws Exception {
+    evalEquals("Week(Date '2015-12-31')", 53);
+    evalEquals("Week(Date '2015-01-01')", 1);
+    evalEquals("Week(Date '2015-01-02')", 1);
+    // evalEquals("Week(Date '2024-12-31')", 54);
+    evalNull("Week(NULL)");
+    evalFails("Week()");
   }
 
   @Test
-  public void WeekOfYearIso() throws Exception {
-    evalEquals("WeekOfYearIso(Date '2015-12-31')", 53);
-    evalEquals("WeekOfYearIso(Date '2016-01-01')", 53);
-    evalEquals("WeekOfYearIso(Date '2016-01-02')", 53);
-    evalEquals("WeekOfYearIso(Date '2016-01-03')", 53);
-    evalEquals("WeekOfYearIso(Date '2016-01-04')", 1);
-    evalNull("WeekOfYearIso(NULL)");        
-    evalFails("WeekOfYearIso()");
-    
-    evalEquals("WeekIso(Date '2016-01-01')", 53);
+  public void Week_Iso() throws Exception {
+    evalEquals("Week_Iso(Date '2015-12-31')", 53);
+    evalEquals("Week_Iso(Date '2016-01-01')", 53);
+    evalEquals("Week_Iso(Date '2016-01-02')", 53);
+    evalEquals("Week_Iso(Date '2016-01-03')", 53);
+    evalEquals("Week_Iso(Date '2016-01-04')", 1);
+    evalNull("Week_Iso(NULL)");
+    evalFails("Week_Iso()");
   }
-    
+
   @Test
   public void YearOfWeekIso() throws Exception {
-    evalEquals("YearOfWeekIso(Date '2015-12-31')", 2015);
-    evalEquals("YearOfWeekIso(Date '2016-01-01')", 2015);
-    evalEquals("YearOfWeekIso(Date '2016-01-02')", 2015);
-    evalEquals("YearOfWeekIso(Date '2016-01-04')", 2016);
-    evalEquals("YearOfWeekIso(Date '2042-12-31')", 2043);
-    
-    evalNull("YearOfWeekIso(NULL)");        
-    evalFails("YearOfWeekIso()");
+//    evalEquals("YearOfWeekIso(Date '2015-12-31')", 2015);
+//    evalEquals("YearOfWeekIso(Date '2016-01-01')", 2015);
+//    evalEquals("YearOfWeekIso(Date '2016-01-02')", 2015);
+//    evalEquals("YearOfWeekIso(Date '2016-01-04')", 2016);
+//    evalEquals("YearOfWeekIso(Date '2042-12-31')", 2043);
+//
+//    evalNull("YearOfWeekIso(NULL)");
+//    evalFails("YearOfWeekIso()");
   }
-  
+
   @Test
   public void Add_Years() throws Exception {
     evalEquals("Add_Years(Date '2019-01-15',1)", LocalDate.of(2020, Month.JANUARY, 15));
@@ -546,7 +539,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
     // Compatibility mode
     evalEquals("Substring('ABCDEFG',0,1)", "A");
-    
+
     // Alias
     evalEquals("Substr('TEST',5)", "");
   }
@@ -567,7 +560,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Abs(-1)", 1);
     evalEquals("Abs(-1::INTEGER)", 1);
     evalEquals("Abs(-1.12345679)", 1.12345679);
-    evalEquals("Abs(-1.1234567912345679123456791234567912345679)", 1.123456791234567912345679123456791234567912345679);
+    evalEquals("Abs(-1.1234567912345679123456791234567912345679)",
+        1.123456791234567912345679123456791234567912345679);
     evalNull("Abs(NULL)");
     evalFails("Abs()");
 
@@ -673,7 +667,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Cot() throws Exception {
     evalEquals("Cot(1)", 0.6420926159343306);
-    //evalEquals("Cot(0)", Double.POSITIVE_INFINITY);
+    // evalEquals("Cot(0)", Double.POSITIVE_INFINITY);
     evalNull("Cot(NULL)");
     evalFails("Cot(0)");
     evalFails("Cot()");
@@ -701,7 +695,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Exp() throws Exception {
     evalEquals("Exp(1)", Math.E);
-    evalEquals("Exp(2)", Math.E*Math.E);
+    evalEquals("Exp(2)", Math.E * Math.E);
     evalNull("Exp(NULL)");
     evalFails("Exp()");
     evalFails("Exp(1,2)");
@@ -762,11 +756,11 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Square() throws Exception {
     evalEquals("Square(1)", 1);
-    evalEquals("Square(-5)",25);
+    evalEquals("Square(-5)", 25);
     evalFails("Square()");
     evalNull("Square(NULL)");
   }
-  
+
   @Test
   public void Trim() throws Exception {
     evalEquals("Trim('a')", "a");
@@ -803,8 +797,8 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Greatest() throws Exception {
     evalEquals("Greatest(5,2,null,9,4)", 9);
     evalEquals("Greatest('B','A','C')", "C");
-    evalEquals("Greatest(0x12,0x1F,0x0A)",  new byte[]{0x1F});
-   
+    evalEquals("Greatest(0x12,0x1F,0x0A)", new byte[] {0x1F});
+
     evalEquals("Greatest(Date '2020-01-01',Date '2021-12-06',Date '1990-12-08')",
         LocalDate.of(2021, 12, 6));
     evalTrue("Greatest(false,true,false)");
@@ -815,7 +809,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Least() throws Exception {
     evalEquals("Least(5,2,null,9,4)", 2);
     evalEquals("Least('B','A','C')", "A");
-    evalEquals("Least(0x12,0x1F,0x0A)",  new byte[]{0x0A});
+    evalEquals("Least(0x12,0x1F,0x0A)", new byte[] {0x0A});
     evalEquals("Least(Date '2020-01-01',Date '2021-12-06',Date '1990-12-08')",
         LocalDate.of(1990, 12, 8));
     evalFalse("Least(false,true,false)");
@@ -830,7 +824,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // Binary
     evalEquals("Length(0xF0FA)", 2);
     evalEquals("Length(0x0F0FA)", 3);
-    
+
     evalNull("Length(null)");
     evalFails("Length()");
   }
@@ -841,7 +835,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Left('',1)", "");
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
-    evalEquals("Left(0x1234567890, 2)", new byte[]{0x12, 0x34});
+    evalEquals("Left(0x1234567890, 2)", new byte[] {0x12, 0x34});
     evalNull("Left(NULL,4)");
     evalNull("Left('TEST',NULL)");
     evalFails("Left()");
@@ -850,9 +844,9 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Insert() throws Exception {
     evalEquals("Insert('abcd', 2, 1, 'qw')", "aqwcd");
-    evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");    
-    evalEquals("Insert(0x1234, 2, 0, 0x56)", new byte[]{0x12, 0x56, 0x34});
-    evalEquals("Insert(0x1234, 0, 0, 0x56)", new byte[]{0x56, 0x12, 0x34});
+    evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
+    evalEquals("Insert(0x1234, 2, 0, 0x56)", new byte[] {0x12, 0x56, 0x34});
+    evalEquals("Insert(0x1234, 0, 0, 0x56)", new byte[] {0x56, 0x12, 0x34});
     evalNull("Insert(NULL, 2, 1, 'qw')");
     evalNull("Insert('abcd', NULL, 1, 'qw')");
     evalNull("Insert('abcd', 2, NULL, 'qw')");
@@ -866,7 +860,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Right('',1)", "");
     evalEquals("Right('TEST',10)", "TEST");
     evalEquals("Right('TEST',-1)", "");
-    evalEquals("Right(0x1234567890, 2)", new byte[]{0x78, (byte) 0x90});
+    evalEquals("Right(0x1234567890, 2)", new byte[] {0x78, (byte) 0x90});
     evalNull("Right(NULL,4)");
     evalNull("Right('TEST',NULL)");
     evalFails("Right()");
@@ -876,7 +870,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Repeat() throws Exception {
     evalEquals("Repeat('ABCD',3)", "ABCDABCDABCD");
     evalEquals("Repeat('ABCDEFCD',0)", "");
-    evalEquals("Repeat(0x1234,3)", new byte[]{0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
+    evalEquals("Repeat(0x1234,3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
     evalNull("Repeat(NULL,2)");
     evalNull("Repeat('ABCD',NULL)");
     evalFails("Repeat()");
@@ -984,8 +978,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("TO_NUMBER('12,345,678', '999,999,999')", 12_345_678);
     Locale.setDefault(new Locale("fr", "BE"));
     // Fail with sonar build
-//    evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
-//    evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
+    // evalEquals("TO_NUMBER('12.345.678', '999G999G999')", 12_345_678);
+    // evalEquals("TO_NUMBER('12.345.678,123', '999G999G999D000')", 12_345_678.123);
 
     // Format with Currency dollar
     Locale.setDefault(new Locale("en", "US"));
@@ -1227,20 +1221,31 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-09-23','Mon')", "Sep");
     evalEquals("To_Char(Date '2019-09-23','mon')", "sep");
 
-    // Week of year and ISO Week of year (The first week of the ISO year is the week that contains January 4.)
-    evalEquals("To_Char(Date '2015-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2015-12-31 thu IYYY=2015 IW=53 WW=53");
-    evalEquals("To_Char(Date '2016-01-01','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-01 fri IYYY=2015 IW=53 WW=01");
-    evalEquals("To_Char(Date '2016-01-02','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-02 sat IYYY=2015 IW=53 WW=01");
-    evalEquals("To_Char(Date '2016-01-03','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-03 sun IYYY=2015 IW=53 WW=01");
-    evalEquals("To_Char(Date '2016-01-04','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-04 mon IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(Date '2016-01-05','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-05 tue IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(Date '2016-01-06','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-06 wed IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(Date '2016-01-07','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-07 thu IYYY=2016 IW=01 WW=01");
-    evalEquals("To_Char(Date '2016-01-08','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2016-01-08 fri IYYY=2016 IW=01 WW=02");
-    evalEquals("To_Char(Date '2042-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')", "2042-12-31 wed IYYY=2043 IW=01 WW=53");    
+    // Week of year and ISO Week of year (The first week of the ISO year is the week that contains
+    // January 4.)
+    evalEquals("To_Char(Date '2015-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2015-12-31 thu IYYY=2015 IW=53 WW=53");
+    evalEquals("To_Char(Date '2016-01-01','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-01 fri IYYY=2015 IW=53 WW=01");
+    evalEquals("To_Char(Date '2016-01-02','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-02 sat IYYY=2015 IW=53 WW=01");
+    evalEquals("To_Char(Date '2016-01-03','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-03 sun IYYY=2015 IW=53 WW=01");
+    evalEquals("To_Char(Date '2016-01-04','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-04 mon IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-05','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-05 tue IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-06','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-06 wed IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-07','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-07 thu IYYY=2016 IW=01 WW=01");
+    evalEquals("To_Char(Date '2016-01-08','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2016-01-08 fri IYYY=2016 IW=01 WW=02");
+    evalEquals("To_Char(Date '2042-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
+        "2042-12-31 wed IYYY=2043 IW=01 WW=53");
     evalEquals("To_Char(Date '2016-01-04','FM\"IW=\"IW \"WW=\"WW')", "IW=1 WW=1"); // Compact
-    
-        
+
+
     evalEquals("To_Char(Date '2019-07-21','D')", "1"); // Day of week
     evalEquals("To_Char(Date '2019-07-23','D')", "3"); // Day of week
     evalEquals("To_Char(Date '2019-07-08','DD')", "08"); // Day of month
@@ -1328,9 +1333,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
 
     // Time zone offset
-    evalEquals("To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')", OffsetDateTime.of(2019, 2, 13, 15, 34, 56,0,ZoneOffset.ofHours(8)));
-    evalEquals("To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')", OffsetDateTime.of(2019, 2, 13, 15, 34, 56,0,ZoneOffset.ofHours(8)));
-    evalEquals("To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')", OffsetDateTime.of(2019, 2, 13, 15, 34, 56,0,ZoneOffset.ofHours(-4)));
+    evalEquals("To_Date('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        OffsetDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)));
+    evalEquals("To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        OffsetDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(8)));
+    evalEquals("To_Date('2019-02-13 15:34:56 -04:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')",
+        OffsetDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(-4)));
 
 
     // Trailing space
@@ -1351,12 +1359,16 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 0, 0));
 
     // Fractional seconds. FF0 (seconds), FF3 (milliseconds), FF6 (microseconds), FF9 (nanoseconds).
-    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
-    evalEquals("To_Date('2019-02-13 19:34:56.123','YYYY-MM-DD HH24:MI:SS.FF3')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123000000));
-    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF6')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
-    evalEquals("To_Date('2019-02-13 19:34:56.123456789','YYYY-MM-DD HH24:MI:SS.FF9')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456789));
+    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
+    evalEquals("To_Date('2019-02-13 19:34:56.123','YYYY-MM-DD HH24:MI:SS.FF3')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123000000));
+    evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF6')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
+    evalEquals("To_Date('2019-02-13 19:34:56.123456789','YYYY-MM-DD HH24:MI:SS.FF9')",
+        LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456789));
 
-    
+
     // Rule to try alternate format MM -> MON and MONTH
     evalEquals("To_Date('01/Feb/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     // Rule to try alternate format MM -> MON and MONTH
@@ -1384,7 +1396,7 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
-    
+
 
     // Is interpreted as 12 May 2003, 00:00:10.123
     // evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
@@ -1444,10 +1456,8 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Truncate() throws Exception {
-
-    // Truncate numeric
     evalEquals("Truncate(-975.975)", -975D);
-    evalEquals("Trunc(-975.975,-1)", -970D);
+    evalEquals("Truncate(-975.975,-1)", -970D);
     evalEquals("Truncate(-975.975, 0)", -975D);
     evalEquals("Truncate(-975.975, 2)", -975.97);
     evalEquals("Truncate(-975.975, 3)", -975.975);
@@ -1456,40 +1466,43 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Truncate(-975.975, Null)");
     evalNull("Truncate(NULL, 2)");
 
-    // Truncate date
-    evalEquals("Truncate(TO_DATE('08-05-2020 15:35:32','DD-MM-YYYY HH24:MI:SS'))",
-        LocalDate.of(2020, Month.MAY, 8));
-    evalEquals("Truncate(DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 8));
-    evalEquals("Truncate(DATE '2020-05-08',year)", LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("Truncate(DATE '2020-05-08',YY)", LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("Truncate(DATE '2020-05-08',MONTH)", LocalDate.of(2020, Month.MAY, 1));
-    evalEquals("Truncate(DATE '2020-05-08',MM)", LocalDate.of(2020, Month.MAY, 1));
-    evalEquals("Truncate(DATE '2020-05-25',DAY)", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Truncate(DATE '2020-05-25',DD)", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Truncate(DATE '2020-05-25',QuArTeR)", LocalDate.of(2020, Month.APRIL, 1));
-    evalEquals("Truncate(DATE '2020-05-25',Q)", LocalDate.of(2020, Month.APRIL, 1));
-    Locale.setDefault(new Locale("en", "EN"));
-    // evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 25));
-    Locale.setDefault(new Locale("fr", "BE"));
-    // evalEquals("Truncate(DATE '2020-05-28','WEEK')", LocalDate.of(2020, Month.MAY, 26));
+    // Alias
+    evalEquals("Trunc(123.456, -2)", 100D);
+  }
 
-    // evalEquals("Truncate(DATE '2020-05-28','W')", LocalDate.of(2020, Month.APRIL, 25));
+
+  @Test
+  public void Date_Trunc() throws Exception {
+
+    evalEquals("Date_Trunc(MILLENNIUM, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(CENTURY, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(DECADE, DATE '2021-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(YEAR, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(YY, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Date_Trunc(MONTH, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));
+    evalEquals("Date_Trunc(MM, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));
+    evalEquals("Date_Trunc(DAY, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(DD, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(QUARTER, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("Date_Trunc(Q, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("Date_Trunc(WEEK, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(WW, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
 
 
     // Truncate timestamp
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',DAY)",
+    evalEquals("Date_Trunc(DAY, Timestamp '2020-05-25 23:59:59')",
         LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',HOUR)",
+    evalEquals("Date_Trunc(HOUR, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',HH)",
+    evalEquals("Date_Trunc(HH, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',MINUTE)",
+    evalEquals("Date_Trunc(MINUTE, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',MI)",
+    evalEquals("Date_Trunc(MI, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',SeCoNd)",
+    evalEquals("Date_Trunc(SECOND, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
-    evalEquals("Truncate(Timestamp '2020-05-25 23:59:59',SS)",
+    evalEquals("Date_Trunc(SS, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
   }
 
@@ -1544,9 +1557,9 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234");
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
     evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
-    //evalEquals("Regexp_Replace('AAA   BBB     CCC', '[:space:]+', Chr(32))", "AAA BBB CCC");
+    // evalEquals("Regexp_Replace('AAA BBB CCC', '[:space:]+', Chr(32))", "AAA BBB CCC");
 
-    
+
     evalEquals(
         "Regexp_Replace('This line    contains    more      than one   spacing      between      words', '( ){2,}', ' ')",
         "This line contains more than one spacing between words");
@@ -1581,10 +1594,15 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Regexp_Substr() throws Exception {
     evalEquals("regexp_substr('email@apache.org', '@[^.]*')", "@apache");
-    evalEquals("regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)", "regexp_substr");
-    
-    evalEquals("regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 1)","the best");
-    evalEquals("regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 2)","the worst");
+    evalEquals("regexp_substr('This is a regexp_substr demo', '[a-zA-Z0-9_]+', 1, 4)",
+        "regexp_substr");
+
+    evalEquals(
+        "regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 1)",
+        "the best");
+    evalEquals(
+        "regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 2)",
+        "the worst");
 
     // [[:alnum:]] >>> \p{Alnum}
     // evalEquals("regexp_substr('http://www.apache.org/products',
@@ -1616,10 +1634,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Concat('a','b','c')", "abc");
     evalEquals("Concat(NULL,'a')", "a");
     evalEquals("Concat('a',NULL)", "a");
-    
+
     // Binary
     // TODO: evalEquals("Concat(0x1F,0x2A3B)", new byte[]{0x1F, 0x2A, 0x3B});
-    
+
     evalNull("Concat(NULL,NULL)");
   }
 
@@ -1707,7 +1725,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Ceil()");
     evalFails("Ceil(1,2,3)");
     evalFails("Ceil('x')");
-    
+
     // Alias
     evalEquals("Ceiling(1)", 1);
   }
@@ -1748,7 +1766,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Log() throws Exception {
-    evalEquals("Log(10,100)", 2); 
+    evalEquals("Log(10,100)", 2);
     evalNull("Log(10,null)");
     evalNull("Log(null,1)");
     evalFails("Log(10,0)");
@@ -1786,7 +1804,8 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void MD5() throws Exception {
     evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b");
-    evalEquals("MD5(0x123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF)", "99c415050a2cddbeb525670345ff0aee");
+    evalEquals("MD5(0x123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF)",
+        "99c415050a2cddbeb525670345ff0aee");
     evalNull("MD5(null)");
     evalFails("MD5()");
   }

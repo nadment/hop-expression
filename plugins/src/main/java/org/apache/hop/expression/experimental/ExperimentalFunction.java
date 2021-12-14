@@ -57,4 +57,22 @@ public class ExperimentalFunction {
     return new String(a, 0, n);    
   }
 
+  
+
+
+
+
+
+
+  /** Week from the beginning of the month (0-5) */
+//  @ScalarFunction(id = "WEEKOFMONTH", category = "i18n::Operator.Category.Date")
+//  public static Object weekOfMonth(final IExpressionContext context, final IExpression[] operands)
+//      throws ExpressionException {
+//    Object value = operands[0].eval(context);
+//    if (value == null)
+//      return null;
+//
+//    ZonedDateTime datetime = coerceToDate(value);
+//    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
+//  }
 }

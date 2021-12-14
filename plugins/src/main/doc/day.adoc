@@ -14,16 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= DAY, DAYOFMONTH
+= DAY
 
 Returns the day of month of the specified date or timestamp.
 		
 == Syntax
 ----
 DAY( <date_or_timestamp> )
-----
-----
-DAYOFMONTH( <date_or_timestamp> )
 ----
 
 == Usage

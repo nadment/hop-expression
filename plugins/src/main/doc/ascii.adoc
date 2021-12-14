@@ -16,7 +16,7 @@ under the License.
 ////
 = ASCII
 
-This function returns the numeric value of the first character in a string that is the numeric representation of the ASCII character.
+Returns the numeric value of the first character in a string that is the numeric representation of the ASCII character.
 
 == Syntax
 ----

@@ -16,7 +16,7 @@ under the License.
 ////
 = ACOS
 
-This function calculates the arc cosine.
+Calculates the arc cosine.
 
 == Syntax
 ----

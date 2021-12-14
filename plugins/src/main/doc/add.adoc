@@ -14,15 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= ADD, +
+= + (Addition)
 
 Sum of 2 numeric values.
 
-== Syntax +
-----
-ADD( <numeric1> , <numeric2> )
-----
-The + operator provides alternative syntax.
+== Syntax
 ----
 <numeric1> + <numeric2>
+<datetime> - <numeric>
 ----
+
+== Usage
+
+* This addition arithmetic operator can also add a number, in days, to a date.
