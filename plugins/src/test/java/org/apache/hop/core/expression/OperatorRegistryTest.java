@@ -20,9 +20,15 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.junit.rules.RestoreHopEnvironment;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 public class OperatorRegistryTest {
+  
+  @ClassRule
+  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+
   @Test
   public void test() throws Exception {
     assertNotNull(OperatorRegistry.getOperators());

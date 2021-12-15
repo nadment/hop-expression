@@ -68,7 +68,7 @@ import java.util.TreeSet;
 
 public class OperatorRegistry {
 
-  private static final ILogChannel log = new LogChannel("OperatorRegistry");
+  private static final ILogChannel log = new LogChannel("Expression");
 
   // -------------------------------------------------------------
   // BITWISE OPERATORS
