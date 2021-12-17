@@ -78,7 +78,7 @@ Integer literals can be either positive numbers or negative numbers, but do not 
 -536
 ----
 
-=== Number
+=== Number and BigNumber
 
 Literals can be either positive numbers or negative numbers and contain decimals. In addition, scientific notation can be used.
 ----
@@ -165,7 +165,7 @@ The operator precedence and associativity, highest to lowest.
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Inclusion 
 |===
 
-NOTE: An operator on higher levels is evaluated before an operator on a lower level.
+NOTE: An operator on higher levels is evaluated before an operator on a lower level. You can enclose an expression in parentheses to force precedence or clarify precedence, for example, (5 + 2) * 3.
 
 NOTE: When an operator combines expressions of different data types, the data type with the lower precedence is first converted to the data type with the higher precedence. If the conversion isn't a supported implicit conversion, an error is returned. 
 

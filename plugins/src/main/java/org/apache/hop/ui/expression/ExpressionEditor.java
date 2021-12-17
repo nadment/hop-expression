@@ -271,7 +271,7 @@ public class ExpressionEditor extends Composite {
 
 
     // Tooltip for syntax and help
-    HtmlToolTip toolTip = new HtmlToolTip(tree, labelProvider);
+    BrowserToolTip toolTip = new BrowserToolTip(tree, labelProvider);
     toolTip.activate();
   }
 

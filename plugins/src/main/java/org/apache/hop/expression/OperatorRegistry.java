@@ -199,12 +199,12 @@ public class OperatorRegistry {
           }
 
           if (functions.containsKey(annotation.id())) {
-            log.logError("Function already registred " + annotation.id());
+            log.logError("Function '{0}' already registred", annotation.id());
             continue;
           }
 
           if (log.isDebug()) {
-            log.logDebug("Register function " + annotation.id());
+            log.logDebug("Register function '{0}'", annotation.id());
           }
 
           // Create function
@@ -221,7 +221,7 @@ public class OperatorRegistry {
             functions.put(name, function);
 
             if (log.isDebug()) {
-              log.logDebug("Register alias " + function.getName() + " to function " + function.getId());
+              log.logDebug("Register alias {1} to function {0}" + function.getId(), function.getName());
             }
           }
         } catch (Exception e) {

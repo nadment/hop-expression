@@ -23,14 +23,15 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-public class HtmlToolTip extends ToolTip {
+public class BrowserToolTip extends ToolTip {
 
   private IToolTipProvider tooltipProvider;
 
-  public HtmlToolTip(Tree control, IToolTipProvider provider) {
+  public BrowserToolTip(Tree control, IToolTipProvider provider) {
     super(control, ToolTip.NO_RECREATE, false);
 
     this.tooltipProvider = provider;
@@ -47,8 +48,11 @@ public class HtmlToolTip extends ToolTip {
   protected Composite createToolTipContentArea(Event event, Composite parent) {
 
     Browser browser = new Browser(parent, SWT.NONE);
-    browser.setSize(450, 400);
+    browser.setSize(500, 500);
 
+    // Replace browser's built-in context menu with none
+    browser.setMenu(new Menu(parent.getShell(), SWT.NONE));
+    
     String doc = this.getText(event);
     if (doc!=null) browser.setText(doc);
 

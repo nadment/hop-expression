@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>Expression</name>
-    <name_sync_with_filename>N</name_sync_with_filename>
+    <name>expression</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
     <pipeline_version/>
@@ -39,8 +39,13 @@
   </notepads>
   <order>
     <hop>
-      <from>Expression</from>
-      <to>Where</to>
+      <from>Where</from>
+      <to>FALSE</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Data grid</from>
+      <to>Clone row</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -49,24 +54,19 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Where</from>
-      <to>FALSE</to>
+      <from>Clone row</from>
+      <to>Expression 2</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Data grid</from>
-      <to>Clone row with expression</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Clone row with expression</from>
-      <to>Expression</to>
+      <from>Expression 2</from>
+      <to>Where</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <transform>
-    <name>Clone row with expression</name>
-    <type>CloneRowExpression</type>
+    <name>Clone row</name>
+    <type>CloneRow</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -75,9 +75,15 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <addcloneflag>N</addcloneflag>
+    <addclonenum>Y</addclonenum>
+    <clonenumfield>ROWNUM</clonenumfield>
+    <nrclonefield>bb</nrclonefield>
+    <nrcloneinfield>N</nrcloneinfield>
+    <nrclones>100000000</nrclones>
     <attributes/>
     <GUI>
-      <xloc>256</xloc>
+      <xloc>240</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -94,81 +100,68 @@
     </partitioning>
     <fields>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_STRING</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>String</type>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_NUMBER</name>
+        <precision>-1</precision>
         <type>Number</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_BOOLEAN</name>
+        <precision>-1</precision>
         <type>Boolean</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
       </field>
       <field>
-        <name>FIELD_DATE</name>
-        <type>Date</type>
+        <set_empty_string>N</set_empty_string>
         <format>yyyy-MM-dd</format>
-        <currency/>
-        <decimal/>
-        <group/>
         <length>-1</length>
+        <name>FIELD_DATE</name>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>Date</type>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>FIELD_INTEGER</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>Integer</type>
       </field>
       <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>FIELD_JSON</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>FIELD_BINARY</name>
+        <precision>-1</precision>
+        <type>Binary</type>
+      </field>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
         <name>YEAR</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
         <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
+        <type>Integer</type>
       </field>
       <field>
-        <name>COST CENTER</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>COST CENTER</name>
+        <precision>-1</precision>
+        <type>String</type>
       </field>
     </fields>
     <data>
@@ -178,6 +171,8 @@
         <item>true</item>
         <item>2020-04-08</item>
         <item>8</item>
+        <item/>
+        <item/>
         <item>2019</item>
         <item>49002</item>
       </line>
@@ -187,6 +182,8 @@
         <item>False</item>
         <item>2020-01-24</item>
         <item>4</item>
+        <item/>
+        <item/>
         <item>2020</item>
         <item>15204</item>
       </line>
@@ -198,19 +195,259 @@
     </GUI>
   </transform>
   <transform>
-    <name>Expression</name>
+    <name>Expression 2</name>
     <type>Expression</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
-    <copies>1</copies>
+    <copies>2</copies>
     <partitioning>
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <fields>
+      <field>
+        <expression>/** 
+ * Multi line comment  ${HOP_DATASETS_FOLDER}
+ * Version 1.3
+ */  
+
+Case 
+	-- Single line comment 
+	When FIELD_NUMBER is NULL Then UUID()
+	When FIELD_NUMBER%2>0 Then Left(Upper(FIELD_STRING),5)
+	// Single line comment
+	When FIELD_NUMBER>100 Then Upper('Variable ''QUOTED'' in string ${os.name} ') || TO_CHAR("YEAR"+1,'FM9999')
+	Else Null
+End </expression>
+        <length>-1</length>
+        <name>FIELD_STRING</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>Date '2020-05-18 15:28:59'</expression>
+        <length>-1</length>
+        <name>LITERAL_TIMESTAMP</name>
+        <precision>-1</precision>
+        <type>Timestamp</type>
+      </field>
+      <field>
+        <expression>'Escape single quotes in expression is to use two single '' quotes '</expression>
+        <length>-1</length>
+        <name>LITERAL_STRING</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>-2.3E-2 + 0.1e10</expression>
+        <length>-1</length>
+        <name>LITERAL_NUMBER</name>
+        <precision>-1</precision>
+        <type>Number</type>
+      </field>
+      <field>
+        <expression>123456</expression>
+        <length>-1</length>
+        <name>LITERAL_INTEGER</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>Date '2020-05-18'</expression>
+        <length>-1</length>
+        <name>LITERAL_DATE</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>TRUE</expression>
+        <length>-1</length>
+        <name>LITERAL_BOOLEAN</name>
+        <precision>-1</precision>
+        <type>Boolean</type>
+      </field>
+      <field>
+        <expression>NULL</expression>
+        <length>-1</length>
+        <name>LITERAL_NULL</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>0b000000010000000000000010000000000000001000010011101110011</expression>
+        <length>-1</length>
+        <name>LITERAL_BINARY_BIT</name>
+        <precision>-1</precision>
+        <type>Binary</type>
+      </field>
+      <field>
+        <expression>0xFFFEEEE0000AAA0</expression>
+        <length>-1</length>
+        <name>LITERAL_BINARY_HEX</name>
+        <precision>-1</precision>
+        <type>Binary</type>
+      </field>
+      <field>
+        <expression>123456789012345678901234567890.123456</expression>
+        <length>-1</length>
+        <name>LITERAL_BIGNUMBER</name>
+        <precision>-1</precision>
+        <type>BigNumber</type>
+      </field>
+      <field>
+        <expression>// When a field name contains one or more space, the field name must be enclosed in square brackets.
+
+Left("COST CENTER",3)</expression>
+        <length>-1</length>
+        <name>ROOT COST CENTER</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>// Support function alias 
+UCASE('${os.name}')</expression>
+        <length>-1</length>
+        <name>OS_NAME</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>100+3*COS(FIELD_NUMBER%1)/SIN(-10.58)</expression>
+        <length>-1</length>
+        <name>MATH</name>
+        <precision>-1</precision>
+        <type>Number</type>
+      </field>
+      <field>
+        <expression>// Reserved keyword enclosed in square brackets is an identifier
+"YEAR"+1</expression>
+        <length>-1</length>
+        <name>NEXT_YEAR</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>DAYS_BETWEEN(Date '1980-05-18',Date(2020,6,29))</expression>
+        <length>-1</length>
+        <name>AGE</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>Extract(MONTH from TODAY())</expression>
+        <length>-1</length>
+        <name>MONTH</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>NOW()</expression>
+        <length>-1</length>
+        <name>NOW</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>TODAY()</expression>
+        <length>-1</length>
+        <name>TODAY</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>DATE_TRUNC(MONTH, TODAY())</expression>
+        <length>-1</length>
+        <name>TODAY TRUNC</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>date_trunc(DAY, NOW() + 1)</expression>
+        <length>-1</length>
+        <name>TOMORROW</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>date_trunc(WEEK, TODAY())</expression>
+        <length>-1</length>
+        <name>FIRST_DAY_OF_CURRENT_WEEK</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>ADD_DAYS(LAST_DAY(CURRENT_DATE()),1)</expression>
+        <length>-1</length>
+        <name>FIRST_DAY_NEXT_MONTH</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
+        <expression>Cast(TO_CHAR(Current_date(),'YYYYMMDD') as INTEGER)</expression>
+        <length>-1</length>
+        <name>CAST_STRING_TO_INTEGER</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>'Yes'::Boolean</expression>
+        <length>-1</length>
+        <name>CAST_STRING_TO_BOOLEAN</name>
+        <precision>-1</precision>
+        <type>Boolean</type>
+      </field>
+      <field>
+        <expression>Cast(FIELD_NUMBER as STRING format 'FML999G999G990D00S')</expression>
+        <length>-1</length>
+        <name>CAST_NUMBER_TO_STRING_WITH_FORMAT</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>FIELD_NUMBER::STRING</expression>
+        <length>-1</length>
+        <name>CAST_NUMBER_TO_STRING</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>LITERAL_INTEGER*3</expression>
+        <length>-1</length>
+        <name>USE_EXPRESSION_RESULT</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>Regexp_Replace(LITERAL_STRING, 's+','s')</expression>
+        <length>-1</length>
+        <name>TEST</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>UUID()</expression>
+        <length>-1</length>
+        <name>UUID</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>Case
+	When FIELD_STRING like '%JOHN%' Then 1
+	When FIELD_STRING='Test2' Then 2
+	Else Null
+End
+	</expression>
+        <length>-1</length>
+        <name>CASE WHEN</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+    </fields>
     <attributes/>
     <GUI>
-      <xloc>416</xloc>
+      <xloc>384</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
@@ -259,9 +496,24 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <expression>/*
+ * Comment multi-lines
+ * Version 123.45
+ */
+
+-- Comment single line with double hyphen
+
+// Comment single line with double slash
+
+ROWNUM between 1 AND 30
+OR ENDSWITH(FIELD_STRING,'A')
+AND "LITERAL_STRING" like 'TEST%'
+</expression>
+    <send_true_to>TRUE</send_true_to>
+    <send_false_to>FALSE</send_false_to>
     <attributes/>
     <GUI>
-      <xloc>560</xloc>
+      <xloc>544</xloc>
       <yloc>96</yloc>
     </GUI>
   </transform>
