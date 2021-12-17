@@ -30,17 +30,16 @@ public class DocumentationUtil {
     super();
   }
 
-
   public static String load(String id, String url) {
     StringWriter writer = new StringWriter();
     try (
-        InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(url))) {
+      InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(url))) {
       IOUtils.copy(is, writer);
-    } catch (Exception e) {
-      writer.append(e.getMessage());      
-      LOG.logError("Warning missing operator documentation: " + id);
+    } catch (Exception e) {  
+      LOG.logError("Warning missing operator documentation: {0}", id);
+      return null;
     }
-
+    
     return writer.toString();
   }
   
