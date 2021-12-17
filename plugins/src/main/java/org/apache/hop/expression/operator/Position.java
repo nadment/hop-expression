@@ -34,7 +34,7 @@ public class Position extends Operator {
   }
 
   @ScalarFunction(id = "POSITON", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Date", documentationUrl="/docs/position.html")
+      category = "i18n::Operator.Category.String", documentationUrl="/docs/position.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
