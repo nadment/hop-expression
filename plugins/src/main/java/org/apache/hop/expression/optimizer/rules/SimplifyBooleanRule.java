@@ -17,11 +17,11 @@
 package org.apache.hop.expression.optimizer.rules;
 
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
@@ -70,20 +70,20 @@ public class SimplifyBooleanRule implements Rule {
     else if (call.isOperator(OperatorRegistry.BOOLOR)) {
 
       if (call.getOperand(0).isKind(Kind.LITERAL)) {
-        Boolean value = Operator.coerceToBoolean(call.getOperand(0).eval(context));
+        Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
         if (value == Boolean.TRUE)
           return Literal.TRUE;
       }
 
       if (call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean value = Operator.coerceToBoolean(call.getOperand(1).eval(context));
+        Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
         if (value == Boolean.TRUE)
           return Literal.TRUE;
       }
 
       if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean left = Operator.coerceToBoolean(call.getOperand(0).eval(context));
-        Boolean right = Operator.coerceToBoolean(call.getOperand(1).eval(context));
+        Boolean left = DataType.toBoolean(call.getOperand(0).eval(context));
+        Boolean right = DataType.toBoolean(call.getOperand(1).eval(context));
         if (left == Boolean.FALSE || right == Boolean.FALSE)
           return Literal.FALSE;
 
@@ -99,20 +99,20 @@ public class SimplifyBooleanRule implements Rule {
     else if (call.isOperator(OperatorRegistry.BOOLAND)) {
 
       if (call.getOperand(0).isKind(Kind.LITERAL)) {
-        Boolean value = Operator.coerceToBoolean(call.getOperand(0).eval(context));
+        Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
         if (value == null)
           return Literal.NULL;
       }
 
       if (call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean value = Operator.coerceToBoolean(call.getOperand(1).eval(context));
+        Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
         if (value == null)
           return Literal.NULL;
       }
 
       if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean value0 = Operator.coerceToBoolean(call.getOperand(0).eval(context));
-        Boolean value1 = Operator.coerceToBoolean(call.getOperand(1).eval(context));
+        Boolean value0 = DataType.toBoolean(call.getOperand(0).eval(context));
+        Boolean value1 = DataType.toBoolean(call.getOperand(1).eval(context));
         if (value0 == Boolean.FALSE || value1 == Boolean.FALSE)
           return Literal.FALSE;
 

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -48,20 +49,20 @@ public class Add extends Operator {
       return null;
     if (left instanceof ZonedDateTime) {
       // Computes fraction of day
-      long seconds = (long) (coerceToNumber(right) * SECONDS_BY_DAY);
-      return coerceToDate(left).plusSeconds(seconds);
+      long seconds = (long) (DataType.toNumber(right) * SECONDS_BY_DAY);
+      return DataType.toDate(left).plusSeconds(seconds);
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return coerceToBigNumber(left).add(coerceToBigNumber(right));
+      return DataType.toBigNumber(left).add(DataType.toBigNumber(right));
     }
     if (left instanceof Double || right instanceof Double) {
-      return coerceToNumber(left) + coerceToNumber(right);
+      return DataType.toNumber(left) + DataType.toNumber(right);
     }
     if (left instanceof Long || right instanceof Long) {
-      return coerceToInteger(left) + coerceToInteger(right);
+      return DataType.toInteger(left) + DataType.toInteger(right);
     }
 
-    return coerceToBigNumber(left).add(coerceToBigNumber(right));
+    return DataType.toBigNumber(left).add(DataType.toBigNumber(right));
   }
 
   @Override

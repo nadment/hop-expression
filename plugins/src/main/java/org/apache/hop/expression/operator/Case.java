@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
@@ -43,7 +44,7 @@ public class Case extends Operator {
     if (switchExpression == null) {
       for (IExpression whenOperand : whenList) {
         Object condition = whenOperand.eval(context);
-        if (coerceToBoolean(condition)) {
+        if (DataType.toBoolean(condition)) {
           return thenList.get(index).eval(context);
         }
         index++;
@@ -52,7 +53,7 @@ public class Case extends Operator {
       Object condition = switchExpression.eval(context);
       for (IExpression whenOperand : whenList) {
         Object value = whenOperand.eval(context);
-        if (compareTo(condition, value) == 0) {
+        if (DataType.compareTo(condition, value) == 0) {
           return thenList.get(index).eval(context);
         }
         index++;

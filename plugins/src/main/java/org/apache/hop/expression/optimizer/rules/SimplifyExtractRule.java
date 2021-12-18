@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
-import static org.apache.hop.expression.Operator.coerceToDatePart;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -33,7 +32,7 @@ public class SimplifyExtractRule implements Rule {
 
     if (call.isOperator(OperatorRegistry.EXTRACT) && call.getOperandCount() == 2) {
 
-      DatePart part = coerceToDatePart(call.getOperand(0).eval(context));
+      DatePart part = DatePart.get(call.getOperand(0).eval(context));
 
       switch (part) {
         case YEAR:

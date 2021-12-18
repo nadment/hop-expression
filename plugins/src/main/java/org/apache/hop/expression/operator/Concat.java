@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -41,7 +42,7 @@ public class Concat extends Operator {
     for (IExpression operand : operands) {
       Object value = operand.eval(context);
       if (value != null)
-        builder.append(coerceToString(value));
+        builder.append(DataType.toString(value));
     }
 
     if (builder.length() == 0)

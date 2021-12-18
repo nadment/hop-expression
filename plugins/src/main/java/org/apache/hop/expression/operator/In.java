@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
@@ -56,7 +57,7 @@ public class In extends Operator {
     ExpressionList list = (ExpressionList) operands[1];
     for (IExpression expression : list) {
       Object value = expression.eval(context);
-      if (compareTo(left, value) == 0) {
+      if (DataType.compareTo(left, value) == 0) {
         return Boolean.TRUE;
       }
     }

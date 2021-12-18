@@ -14,16 +14,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import static org.apache.hop.expression.Operator.coerceToBigNumber;
-import static org.apache.hop.expression.Operator.coerceToBinary;
-import static org.apache.hop.expression.Operator.coerceToBoolean;
-import static org.apache.hop.expression.Operator.coerceToDate;
-import static org.apache.hop.expression.Operator.coerceToDatePart;
-import static org.apache.hop.expression.Operator.coerceToInteger;
-import static org.apache.hop.expression.Operator.coerceToNumber;
-import static org.apache.hop.expression.Operator.coerceToString;
-import static org.apache.hop.expression.Operator.compareTo;
-import static org.apache.hop.expression.Operator.convertTo;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.language.Soundex;
@@ -179,7 +169,7 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    return (coerceToInteger(v0) & (1L << coerceToInteger(v1))) != 0;
+    return (DataType.toInteger(v0) & (1L << DataType.toInteger(v1))) != 0;
   }
 
   /**
@@ -210,7 +200,7 @@ public class Functions {
       return FastMath.abs((long) value);
     }
 
-    return coerceToBigNumber(value).abs();
+    return DataType.toBigNumber(value).abs();
   }
 
   /** Returns the sign of a number. */
@@ -220,7 +210,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    Double number = coerceToNumber(value);
+    Double number = DataType.toNumber(value);
     if (number == 0)
       return 0L;
     return (number > 0) ? 1L : -1L;
@@ -233,7 +223,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.toDegrees(coerceToNumber(value));
+    return FastMath.toDegrees(DataType.toNumber(value));
   }
 
   /** The function converts degrees to radians. */
@@ -243,7 +233,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.toRadians(coerceToNumber(value));
+    return FastMath.toRadians(DataType.toNumber(value));
   }
 
   /** Returns the exponential value of a numeric expression. */
@@ -253,7 +243,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.exp(coerceToNumber(value));
+    return FastMath.exp(DataType.toNumber(value));
   }
   
 
@@ -268,36 +258,36 @@ public class Functions {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = coerceToBigNumber(right);
+      BigDecimal divisor = DataType.toBigNumber(right);
 
       // prevent a division by zero and return zero
       if (divisor.signum() == 0)
         return divisor;
 
-      return coerceToBigNumber(left).divide(coerceToBigNumber(right), MathContext.DECIMAL128);
+      return DataType.toBigNumber(left).divide(DataType.toBigNumber(right), MathContext.DECIMAL128);
     }
     if (left instanceof Double || right instanceof Double) {
-      double divisor = coerceToNumber(right);
+      double divisor = DataType.toNumber(right);
       // prevent a division by zero and return zero
       if (divisor == 0D)
         return 0D;
-      return coerceToNumber(left) / divisor;
+      return DataType.toNumber(left) / divisor;
     }
     if (left instanceof Long || right instanceof Long) {
-      long divisor = coerceToInteger(right);
+      long divisor = DataType.toInteger(right);
       // prevent a division by zero and return zero
       if (divisor == 0L)
         return 0L;
 
-      return coerceToInteger(left) / divisor;
+      return DataType.toInteger(left) / divisor;
     }
 
-    BigDecimal divisor = coerceToBigNumber(right);
+    BigDecimal divisor = DataType.toBigNumber(right);
     // prevent a division by zero and return zero
     if (divisor.signum() == 0)
       return divisor;
     
-    return coerceToBigNumber(left).divide(divisor);
+    return DataType.toBigNumber(left).divide(divisor);
   }
 
   /** Returns the values rounded to the nearest equal or larger integer. */
@@ -310,9 +300,9 @@ public class Functions {
     if (value instanceof Long)
       return value;
     if (value instanceof BigDecimal) {
-      return coerceToBigNumber(value).setScale(0, RoundingMode.CEILING);
+      return DataType.toBigNumber(value).setScale(0, RoundingMode.CEILING);
     }
-    return FastMath.ceil(coerceToNumber(value));
+    return FastMath.ceil(DataType.toNumber(value));
   }
 
   /** Returns the values rounded to the nearest equal or smaller integer. */
@@ -325,9 +315,9 @@ public class Functions {
     if (value instanceof Long)
       return value;
     if (value instanceof BigDecimal) {
-      return coerceToBigNumber(value).setScale(0, RoundingMode.FLOOR);
+      return DataType.toBigNumber(value).setScale(0, RoundingMode.FLOOR);
     }
-    return FastMath.floor(coerceToNumber(value));
+    return FastMath.floor(DataType.toNumber(value));
   }
 
   /** Returns the values rounded to the nearest integer. */
@@ -337,7 +327,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    return FastMath.round(coerceToNumber(value));
+    return FastMath.round(DataType.toNumber(value));
   }
 
   @ScalarFunction(id = "RANDOM", names = "RAND", deterministic = false, minArgs = 0, maxArgs = 1,
@@ -350,7 +340,7 @@ public class Functions {
     if (operands.length == 1) {
       Object value = operands[0].eval(context);
       // FIXME: What if multi random with different SEED ?
-      random.setSeed(coerceToInteger(value));
+      random.setSeed(DataType.toInteger(value));
     }
     return random.nextDouble();
   }
@@ -374,7 +364,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = coerceToNumber(value);
+    Double number = DataType.toNumber(value);
     if (number <= 0)
       throw ExpressionException.createArgumentOutOfRange(value);
     return FastMath.log(number);
@@ -394,11 +384,11 @@ public class Functions {
     Object value = operands[1].eval(context);
     if (value == null)
       return null;
-    Double number = coerceToNumber(value);
+    Double number = DataType.toNumber(value);
     if (number <= 0)
       throw ExpressionException.createArgumentOutOfRange(value);
 
-    return FastMath.log(number) / FastMath.log(coerceToNumber(base));
+    return FastMath.log(number) / FastMath.log(DataType.toNumber(base));
   }
 
   /**
@@ -410,7 +400,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = coerceToNumber(value);
+    Double number = DataType.toNumber(value);
     if (number <= 0)
       throw ExpressionException.createArgumentOutOfRange(value);
     return FastMath.log10(number);
@@ -427,7 +417,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.cbrt(coerceToNumber(value));
+    return FastMath.cbrt(DataType.toNumber(value));
   }
 
   /**
@@ -441,7 +431,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = coerceToNumber(value);
+    Double number = DataType.toNumber(value);
     if (number < 0)
       throw ExpressionException.createArgumentOutOfRange(value);
     return FastMath.sqrt(number);
@@ -457,7 +447,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = coerceToNumber(value);
+    Double number = DataType.toNumber(value);
     return FastMath.pow(number, 2);
   }
 
@@ -470,13 +460,13 @@ public class Functions {
     if (left == null || right == null) {
       return null;
     }
-    Double power = coerceToNumber(right);
+    Double power = DataType.toNumber(right);
     if (power == 0)
       return 1L;
     if (power < 0)
       throw new ArithmeticException("Cannot power negative " + power);
 
-    return FastMath.pow(coerceToNumber(left), coerceToNumber(right));
+    return FastMath.pow(DataType.toNumber(left), DataType.toNumber(right));
   }
 
   private static Object getHash(Object value, String algorithm) {
@@ -485,7 +475,7 @@ public class Functions {
 
     try {
       MessageDigest md = MessageDigest.getInstance(algorithm);
-      md.update(coerceToBinary(value));
+      md.update(DataType.toBinary(value));
       return Hex.encodeHexString(md.digest());
     } catch (NoSuchAlgorithmException e) {
       throw new ExpressionException("Unknow algorithm: " + algorithm);
@@ -506,9 +496,9 @@ public class Functions {
     if (v2 == null)
       return null;
 
-    String string = coerceToString(v0);
-    String findChars = coerceToString(v1);
-    String replaceChars = coerceToString(v2);
+    String string = DataType.toString(v0);
+    String findChars = DataType.toString(v1);
+    String replaceChars = DataType.toString(v2);
 
     StringBuilder buffer = new StringBuilder(string.length());
     // if shorter than findChars, then characters are removed
@@ -545,7 +535,7 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(coerceToString(v0), coerceToString(v1)));
+    return Long.valueOf(StringUtils.getLevenshteinDistance(DataType.toString(v0), DataType.toString(v1)));
   }
 
   /**
@@ -558,7 +548,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String string = value.toString();
+    String string =  DataType.toString(value);
     int ascii = 0;
     if (string.length() > 0) {
       ascii = string.charAt(0);
@@ -578,7 +568,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    int codePoint = coerceToInteger(value).intValue();
+    int codePoint = DataType.toInteger(value).intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
       throw new ExpressionException(
@@ -597,7 +587,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    int length = coerceToInteger(value).intValue();
+    int length = DataType.toInteger(value).intValue();
     if (length < 0)
       return null;
 
@@ -620,7 +610,7 @@ public class Functions {
       return null;
 
     if (value instanceof byte[]) {
-      byte[] data = coerceToBinary(value);
+      byte[] data = DataType.toBinary(value);
       byte[] result = new byte[data.length];
       for (int i = data.length - 1, j = 0; i >= 0; i--, j++) {
         result[j] = data[i];
@@ -628,7 +618,7 @@ public class Functions {
       return result;
     }
 
-    StringBuilder builder = new StringBuilder(value.toString()).reverse();
+    StringBuilder builder = new StringBuilder(DataType.toString(value)).reverse();
     return builder.toString();
   }
 
@@ -641,7 +631,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return SOUNDEX.soundex(coerceToString(value));
+    return SOUNDEX.soundex(DataType.toString(value));
   }
 
   @ScalarFunction(id = "DIFFERENCE", category = "i18n::Operator.Category.String", minArgs = 2,
@@ -656,7 +646,7 @@ public class Functions {
       return null;
 
     try {
-      return Long.valueOf(SOUNDEX.difference(v0.toString(), v1.toString()));
+      return Long.valueOf(SOUNDEX.difference(DataType.toString(v0), DataType.toString(v1)));
     } catch (EncoderException e) {
       return null;
     }
@@ -674,7 +664,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String string = value.toString();
+    String string =  DataType.toString(value);
     int codePoint = 0;
     if (string.length() > 0) {
       codePoint = string.codePointAt(0);
@@ -694,16 +684,16 @@ public class Functions {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String str = v0.toString();
+    String str =  DataType.toString(v0);
 
     Object v1 = operands[1].eval(context);
-    int length = coerceToInteger(v1).intValue();
+    int length = DataType.toInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      pad = v2.toString();
+      pad =  DataType.toString(v2);
     }
 
     if (length < 0) {
@@ -752,16 +742,16 @@ public class Functions {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String str = v0.toString();
+    String str =  DataType.toString(v0);
 
     Object v1 = operands[1].eval(context);
-    int length = coerceToInteger(v1).intValue();
+    int length = DataType.toInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      pad = v2.toString();
+      pad =  DataType.toString(v2);
     }
 
     if (length < 0) {
@@ -836,12 +826,10 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-
     if (value instanceof byte[]) {
       return ((byte[]) value).length;
     }
-
-    return Long.valueOf(coerceToString(value).length());
+    return Long.valueOf(DataType.toString(value).length());
   }
 
   /**
@@ -855,7 +843,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return coerceToString(value).toLowerCase(Locale.getDefault());
+    return DataType.toString(value).toLowerCase(Locale.getDefault());
   }
 
   /**
@@ -869,7 +857,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return coerceToString(value).toUpperCase(Locale.getDefault());
+    return DataType.toString(value).toUpperCase(Locale.getDefault());
   }
 
   /**
@@ -883,7 +871,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    String str = value.toString();
+    String str =  DataType.toString(value);
     int length = str.length();
     StringBuilder builder = new StringBuilder(length);
     boolean capitalizeNext = true;
@@ -916,7 +904,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    String string = value.toString();
+    String string =  DataType.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
@@ -924,7 +912,7 @@ public class Functions {
       if (stripChars == null)
         return null;
 
-      characters = stripChars.toString();
+      characters =  DataType.toString(stripChars);
     }
 
     return StringUtils.strip(string, characters);
@@ -943,14 +931,14 @@ public class Functions {
     if (value == null)
       return null;
 
-    String string = value.toString();
+    String string =  DataType.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
       Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
-      characters = stripChars.toString();
+      characters =  DataType.toString(stripChars);
     }
 
     return StringUtils.stripStart(string, characters);
@@ -969,14 +957,14 @@ public class Functions {
     if (value == null)
       return null;
 
-    String string = value.toString();
+    String string = DataType.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
       Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
-      characters = stripChars.toString();
+      characters = DataType.toString(stripChars);
     }
 
     return StringUtils.stripEnd(string, characters);
@@ -998,7 +986,7 @@ public class Functions {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int length = coerceToInteger(v1).intValue();
+    int length = DataType.toInteger(v1).intValue();
     if (length < 0) {
       length = 0;
     }
@@ -1012,7 +1000,7 @@ public class Functions {
       return result;
     }
 
-    String str = coerceToString(v0);
+    String str = DataType.toString(v0);
     if (str.length() <= length) {
       return str;
     }
@@ -1035,7 +1023,7 @@ public class Functions {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int length = coerceToInteger(v1).intValue();
+    int length = DataType.toInteger(v1).intValue();
     if (length < 0) {
       length = 0;
     }
@@ -1049,7 +1037,7 @@ public class Functions {
       return result;
     }
 
-    String str = v0.toString();
+    String str = DataType.toString(v0);
     if (str.length() <= length) {
       return str;
     }
@@ -1065,12 +1053,12 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String s = value.toString();
+    String str = DataType.toString(value);
 
-    StringBuilder builder = new StringBuilder(s.length());
-    int length = s.length();
+    StringBuilder builder = new StringBuilder(str.length());
+    int length = str.length();
     for (int i = 0; i < length; i++) {
-      char c = s.charAt(i);
+      char c = str.charAt(i);
       switch (c) {
         case '\t':
           // Escape horizontal tab
@@ -1126,17 +1114,17 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String s = value.toString();
+    String str = DataType.toString(value);
 
-    int length = s.length();
+    int length = str.length();
     StringBuilder builder = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
-      char c = s.charAt(i);
+      char c = str.charAt(i);
       if (c == '\\') {
-        if (i + 1 >= s.length()) {
-          throw ExpressionException.createFormatPattern(s, i);
+        if (i + 1 >= str.length()) {
+          throw ExpressionException.createFormatPattern(str, i);
         }
-        c = s.charAt(++i);
+        c = str.charAt(++i);
         switch (c) {
           case 't':
             builder.append('\t');
@@ -1174,9 +1162,9 @@ public class Functions {
           case 'u':
             // Unicode format \u0000
             try {
-              c = (char) (Integer.parseInt(s.substring(i + 1, i + 5), 16));
+              c = (char) (Integer.parseInt(str.substring(i + 1, i + 5), 16));
             } catch (NumberFormatException e) {
-              throw ExpressionException.createFormatPattern(s, i);
+              throw ExpressionException.createFormatPattern(str, i);
             }
             i += 4;
             builder.append(c);
@@ -1194,7 +1182,7 @@ public class Functions {
             // builder.append(c);
             // }
 
-            throw ExpressionException.createFormatPattern(s, i);
+            throw ExpressionException.createFormatPattern(str, i);
         }
       } else {
         builder.append(c);
@@ -1216,7 +1204,7 @@ public class Functions {
     if (value == null)
       return null;
     try {
-      return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.name());
+      return URLEncoder.encode(DataType.toString(value), StandardCharsets.UTF_8.name());
     } catch (Exception e) {
       throw new ExpressionException(BaseMessages.getString(PKG, "Error encoding url"), e);
     }
@@ -1234,7 +1222,7 @@ public class Functions {
     if (value == null)
       return null;
     try {
-      return URLDecoder.decode(value.toString(), StandardCharsets.UTF_8.name());
+      return URLDecoder.decode(DataType.toString(value), StandardCharsets.UTF_8.name());
     } catch (Exception e) {
       throw new ExpressionException(BaseMessages.getString(PKG, "Error decoding url"), e);
     }
@@ -1268,7 +1256,7 @@ public class Functions {
       return Boolean.FALSE;
     }
 
-    return compareTo(v0, v1) == 0;
+    return DataType.compareTo(v0, v1) == 0;
   }
 
   // -------------------------------------------------------------
@@ -1290,7 +1278,7 @@ public class Functions {
       // null is always smaller
       if (value == null)
         continue;
-      if (result == null || compareTo(value, result) < 0) {
+      if (result == null || DataType.compareTo(value, result) < 0) {
         result = value;
       }
     }
@@ -1310,7 +1298,7 @@ public class Functions {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.eval(context);
-      if (compareTo(result, value) < 0)
+      if (DataType.compareTo(result, value) < 0)
         result = value;
     }
 
@@ -1328,7 +1316,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    return operands[coerceToBoolean(value) ? 1 : 2].eval(context);
+    return operands[DataType.toBoolean(value) ? 1 : 2].eval(context);
   }
 
   /**
@@ -1387,7 +1375,7 @@ public class Functions {
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
       Object search = operands[i].eval(context);
-      if (compareTo(value, search) == 0) {
+      if (DataType.compareTo(value, search) == 0) {
         index = i + 1;
         break;
       }
@@ -1409,7 +1397,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     Object compare = operands[1].eval(context);
 
-    if (compareTo(value, compare) == 0)
+    if (DataType.compareTo(value, compare) == 0)
       return null;
 
     return value;
@@ -1439,7 +1427,7 @@ public class Functions {
       throws ExpressionException {
     Object value = operands[0].eval(context);
 
-    if (coerceToInteger(value) == 0L)
+    if (DataType.toInteger(value) == 0L)
       return null;
 
     return value;
@@ -1458,7 +1446,7 @@ public class Functions {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int count = coerceToInteger(v1).intValue();
+    int count = DataType.toInteger(v1).intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -1473,7 +1461,7 @@ public class Functions {
       }
     }
 
-    String value = coerceToString(v0);
+    String value = DataType.toString(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);
@@ -1502,8 +1490,8 @@ public class Functions {
     if (v3 == null)
       return null;
 
-    int position = coerceToInteger(v1).intValue();
-    int length = coerceToInteger(v2).intValue();
+    int position = DataType.toInteger(v1).intValue();
+    int length = DataType.toInteger(v2).intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -1515,7 +1503,7 @@ public class Functions {
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);
-        buffer.write(coerceToBinary(v3));
+        buffer.write(DataType.toBinary(v3));
         buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
@@ -1523,7 +1511,7 @@ public class Functions {
       }
     }
 
-    String str = coerceToString(v0);
+    String str = DataType.toString(v0);
     int start = Math.min(Math.max(0, position - 1), str.length());
 
     length = Math.min(length, str.length());
@@ -1532,7 +1520,7 @@ public class Functions {
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));
-    builder.append(coerceToString(v3));
+    builder.append(DataType.toString(v3));
     builder.append(str.substring(start + length));
     return builder.toString();
   }
@@ -1552,13 +1540,13 @@ public class Functions {
       return null;
     }
 
-    String str = v0.toString();
-    String substr = v1.toString();
+    String str = DataType.toString(v0);
+    String substr = DataType.toString(v1);
 
     // If 3 operands
     int start = 0;
     if (operands.length == 3) {
-      start = coerceToInteger(operands[2].eval(context)).intValue();
+      start = DataType.toInteger(operands[2].eval(context)).intValue();
 
       if (start > 0)
         start -= 1;
@@ -1585,12 +1573,12 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    String string = coerceToString(v0);
-    String search = coerceToString(v1);
+    String string = DataType.toString(v0);
+    String search = DataType.toString(v1);
 
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      String replacement = coerceToString(v2);
+      String replacement = DataType.toString(v2);
       return string.replace(search, replacement);
     }
 
@@ -1607,9 +1595,9 @@ public class Functions {
       category = "i18n::Operator.Category.String", documentationUrl="/docs/substring.html")
   public static Object substring(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    String string = coerceToString(operands[0].eval(context));
+    String string = DataType.toString(operands[0].eval(context));
     int length = string.length();
-    int start = coerceToInteger(operands[1].eval(context)).intValue();
+    int start = DataType.toInteger(operands[1].eval(context)).intValue();
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -1623,7 +1611,7 @@ public class Functions {
       return string.substring(start - 1);
     }
 
-    int end = start + coerceToInteger(operands[2].eval(context)).intValue();
+    int end = start + DataType.toInteger(operands[2].eval(context)).intValue();
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);
@@ -1645,13 +1633,13 @@ public class Functions {
     if (v0 == null) {
       return null;
     }
-    String input = v0.toString();
+    String input = DataType.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = v1.toString();
+    String regexp = DataType.toString(v1);
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return Boolean.FALSE;
@@ -1659,7 +1647,7 @@ public class Functions {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      flags = parseRegexpFlags(v2.toString());
+      flags = parseRegexpFlags(DataType.toString(v2));
     }
 
     try {
@@ -1679,13 +1667,13 @@ public class Functions {
     if (v0 == null) {
       return null;
     }
-    String input = v0.toString();
+    String input = DataType.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = v1.toString();
+    String regexp = DataType.toString(v1);
 
     // An empty pattern matches nothing
     if (regexp.length() == 0)
@@ -1696,7 +1684,7 @@ public class Functions {
     if (operands.length >= 3) {
       Object v2 = operands[2].eval(context);
       if (v2 != null) {
-        replacement = v2.toString();
+        replacement = DataType.toString(v2);
       }
     }
 
@@ -1705,7 +1693,7 @@ public class Functions {
     if (operands.length >= 4) {
       Object v3 = operands[3].eval(context);
       if (v3 != null) {
-        position = coerceToInteger(v3).intValue();
+        position = DataType.toInteger(v3).intValue();
       }
     }
 
@@ -1714,32 +1702,32 @@ public class Functions {
     if (operands.length >= 5) {
       Object v4 = operands[4].eval(context);
       if (v4 != null) {
-        occurrence = coerceToInteger(v4).intValue();
+        occurrence = DataType.toInteger(v4).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].eval(context);
-      flags = parseRegexpFlags(v5.toString());
+      flags = parseRegexpFlags(DataType.toString(v5));
     }
 
     try {
 
       // Back reference
       if ((replacement.indexOf('\\') >= 0) || (replacement.indexOf('$') >= 0)) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < replacement.length(); i++) {
           char c = replacement.charAt(i);
           if (c == '$') {
-            sb.append('\\');
+            builder.append('\\');
           } else if (c == '\\' && ++i < replacement.length()) {
             c = replacement.charAt(i);
-            sb.append(c >= '0' && c <= '9' ? '$' : '\\');
+            builder.append(c >= '0' && c <= '9' ? '$' : '\\');
           }
-          sb.append(c);
+          builder.append(c);
         }
-        replacement = sb.toString();
+        replacement = builder.toString();
       }
 
       Matcher matcher =
@@ -1776,13 +1764,13 @@ public class Functions {
     if (v0 == null) {
       return null;
     }
-    String input = v0.toString();
+    String input = DataType.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = v1.toString();
+    String regexp = DataType.toString(v1);
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return null;
@@ -1792,7 +1780,7 @@ public class Functions {
     if (operands.length >= 3) {
       Object v2 = operands[2].eval(context);
       if (v2 != null) {
-        position = coerceToInteger(v2).intValue();
+        position = DataType.toInteger(v2).intValue();
       }
     }
 
@@ -1801,14 +1789,14 @@ public class Functions {
     if (operands.length >= 4) {
       Object v3 = operands[3].eval(context);
       if (v3 != null) {
-        occurrence = coerceToInteger(v3).intValue();
+        occurrence = DataType.toInteger(v3).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 5) {
       Object v4 = operands[5].eval(context);
-      flags = parseRegexpFlags(v4.toString());
+      flags = parseRegexpFlags(DataType.toString(v4));
     }
 
     try {
@@ -1838,13 +1826,13 @@ public class Functions {
     if (v0 == null) {
       return null;
     }
-    String input = v0.toString();
+    String input = DataType.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = v1.toString();
+    String regexp = DataType.toString(v1);
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return 0L;
@@ -1854,7 +1842,7 @@ public class Functions {
     if (operands.length >= 3) {
       Object v2 = operands[2].eval(context);
       if (v2 != null) {
-        position = coerceToInteger(v2).intValue();
+        position = DataType.toInteger(v2).intValue();
       }
     }
 
@@ -1863,7 +1851,7 @@ public class Functions {
     if (operands.length >= 4) {
       Object v3 = operands[3].eval(context);
       if (v3 != null) {
-        occurrence = coerceToInteger(v3).intValue();
+        occurrence = DataType.toInteger(v3).intValue();
       }
     }
 
@@ -1872,7 +1860,7 @@ public class Functions {
     if (operands.length >= 5) {
       Object v4 = operands[4].eval(context);
       if (v4 != null) {
-        returnOption = coerceToInteger(v4).intValue();
+        returnOption = DataType.toInteger(v4).intValue();
       }
     }
 
@@ -1880,7 +1868,7 @@ public class Functions {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].eval(context);
-      flags = parseRegexpFlags(v5.toString());
+      flags = parseRegexpFlags(DataType.toString(v5));
     }
 
     try {
@@ -1921,8 +1909,8 @@ public class Functions {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = coerceToBinary(v0);
-      byte[] prefix = coerceToBinary(v1);
+      byte[] data = DataType.toBinary(v0);
+      byte[] prefix = DataType.toBinary(v1);
       if (prefix.length > data.length) {
         return Boolean.TRUE;
       } else {
@@ -1936,7 +1924,7 @@ public class Functions {
       return Boolean.TRUE;
     }
 
-    return coerceToString(v0).startsWith(coerceToString(v1));
+    return DataType.toString(v0).startsWith(DataType.toString(v1));
   }
 
   /**
@@ -1957,8 +1945,8 @@ public class Functions {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = coerceToBinary(v0);
-      byte[] suffix = coerceToBinary(v1);
+      byte[] data = DataType.toBinary(v0);
+      byte[] suffix = DataType.toBinary(v1);
       int startOffset = data.length - suffix.length;
 
       if (startOffset < 0) {
@@ -1974,7 +1962,7 @@ public class Functions {
       return Boolean.TRUE;
     }
 
-    return coerceToString(v0).endsWith(coerceToString(v1));
+    return DataType.toString(v0).endsWith(DataType.toString(v1));
   }
 
 
@@ -1991,7 +1979,7 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    if (v0.toString().contains(v1.toString()))
+    if (DataType.toString(v0).contains(DataType.toString(v1)))
       return Boolean.TRUE;
 
     return Boolean.FALSE;
@@ -2007,7 +1995,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    return convertTo(value, DataType.BOOLEAN, null);
+    return DataType.convertTo(value, DataType.BOOLEAN, null);
   }
 
   /**
@@ -2020,7 +2008,7 @@ public class Functions {
     if (value == null)
       return null;
     try {
-      return convertTo(value, DataType.BOOLEAN, null);
+      return DataType.convertTo(value, DataType.BOOLEAN, null);
     } catch (Exception e) {
       return null;
     }
@@ -2039,21 +2027,21 @@ public class Functions {
     if (operands.length > 1) {
       Object v1 = operands[1].eval(context);
       if (v1 != null)
-        pattern = coerceToString(v1);
+        pattern = DataType.toString(v1);
     }
 
-    switch (DataType.fromJava(value)) {
+    switch (DataType.fromData(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
-        return NumberFormat.of(pattern).format(coerceToBigNumber(value));
+        return NumberFormat.of(pattern).format(DataType.toBigNumber(value));
       case DATE:
-        ZonedDateTime datetime = coerceToDate(value);
+        ZonedDateTime datetime = DataType.toDate(value);
         return DateTimeFormat.of(pattern).format(datetime);
       case STRING:
         return value;
       default:
-        throw ExpressionException.createUnexpectedDataType("TO_CHAR", DataType.fromJava(value));
+        throw ExpressionException.createUnexpectedDataType("TO_CHAR", DataType.fromData(value));
     }
   }
 
@@ -2068,49 +2056,49 @@ public class Functions {
 
     // No format
     if (operands.length == 1) {
-      return NumberFormat.of(null).parse(coerceToString(v0));
+      return NumberFormat.of(null).parse(DataType.toString(v0));
     }
 
     Object v1 = operands[1].eval(context);
     if (operands.length == 2) {
-      return NumberFormat.of(coerceToString(v1)).parse(coerceToString(v0));
+      return NumberFormat.of(DataType.toString(v1)).parse(DataType.toString(v0));
     }
 
     // Precision and scale
-    int precision = coerceToInteger(v1).intValue();
+    int precision = DataType.toInteger(v1).intValue();
     Object v2 = operands[2].eval(context);
-    int scale = coerceToInteger(v2).intValue();
-    return NumberFormat.parse(coerceToString(v0), precision, scale);
+    int scale = DataType.toInteger(v2).intValue();
+    return NumberFormat.parse(DataType.toString(v0), precision, scale);
   }
 
   @ScalarFunction(id = "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_number.html")
   public static Object try_to_number(final IExpressionContext context, final IExpression[] operands)
       throws ParseException {
-    Object value = operands[0].eval(context);
+    String value = DataType.toString(operands[0].eval(context));
     if (value == null)
       return null;
 
     try {
       // No format
       if (operands.length == 1) {
-        return NumberFormat.of(null).parse(value.toString());
+        return NumberFormat.of(null).parse(value);
       }
 
       // With format
       if (operands.length == 2) {
-        Object v1 = operands[1].eval(context);
-        return NumberFormat.of(coerceToString(v1)).parse(coerceToString(value));
+        String format = DataType.toString(operands[1].eval(context));
+        return NumberFormat.of(format).parse(value);
       }
 
       // Precision and scale
       if (operands.length == 3) {
         Object v1 = operands[1].eval(context);
-        int precision = coerceToInteger(v1).intValue();
+        int precision = DataType.toInteger(v1).intValue();
         Object v2 = operands[2].eval(context);
-        int scale = coerceToInteger(v2).intValue();
+        int scale = DataType.toInteger(v2).intValue();
 
-        return NumberFormat.parse(value.toString(), precision, scale);
+        return NumberFormat.parse(value, precision, scale);
       }
     } catch (RuntimeException e) {
       // Ignore
@@ -2128,7 +2116,9 @@ public class Functions {
     if (value == null)
       return null;
 
-    switch (DataType.fromJava(value)) {
+    
+    DataType type = DataType.fromData(value);
+    switch (type) {
       case DATE:
         return value;
       case STRING:
@@ -2136,13 +2126,13 @@ public class Functions {
         if (operands.length > 1) {
           Object v1 = operands[1].eval(context);
           if (v1 != null)
-            pattern = coerceToString(v1);
+            pattern = DataType.toString(v1);
         } else {
           pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
-        return DateTimeFormat.of(pattern).parse(value.toString());
+        return DateTimeFormat.of(pattern).parse(DataType.toString(value));
       default:
-        throw ExpressionException.createUnexpectedDataType("TO_DATE", DataType.fromJava(value));
+        throw ExpressionException.createUnexpectedDataType("TO_DATE", type);
     }
   }
 
@@ -2158,7 +2148,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    switch (DataType.fromJava(value)) {
+    switch (DataType.fromData(value)) {
       case DATE:
         return value;
       case STRING:
@@ -2167,13 +2157,13 @@ public class Functions {
         if (operands.length > 1) {
           Object v1 = operands[1].eval(context);
           if (v1 != null)
-            pattern = v1.toString();
+            pattern = DataType.toString(v1);
         } else {
           pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
         try {
           DateTimeFormat format = DateTimeFormat.of(pattern);
-          return format.parse(coerceToString(value));
+          return format.parse(DataType.toString(value));
         } catch (ParseException | RuntimeException e) {
           // Ignore
         }
@@ -2196,13 +2186,13 @@ public class Functions {
     if (value == null)
       return null;
 
-    BigDecimal number = coerceToBigNumber(value);
+    BigDecimal number = DataType.toBigNumber(value);
     int scale = 0;
     if (operands.length == 2) {
       Object pattern = operands[1].eval(context);
       if (pattern == null)
         return null;
-      scale = coerceToInteger(pattern).intValue();
+      scale = DataType.toInteger(pattern).intValue();
     }
 
     if (scale > number.scale())
@@ -2232,9 +2222,9 @@ public class Functions {
     if (v2 == null)
       return null;
 
-    int year = coerceToInteger(v0).intValue();
-    int month = coerceToInteger(v1).intValue();
-    int day = coerceToInteger(v2).intValue();
+    int year = DataType.toInteger(v0).intValue();
+    int month = DataType.toInteger(v1).intValue();
+    int day = DataType.toInteger(v2).intValue();
 
     int monthsToAdd = 0;
     if (month < 1) {
@@ -2282,8 +2272,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    DatePart part = coerceToDatePart(v0);        
-    ZonedDateTime datetime = coerceToDate(v1);
+    DatePart part = DatePart.get(v0);        
+    ZonedDateTime datetime = DataType.toDate(v1);
     
     switch (part) {
       case MILLENNIUM:
@@ -2335,8 +2325,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    return Long.valueOf(coerceToDate(value).getDayOfMonth());
+    return Long.valueOf(DataType.toDate(value).getDayOfMonth());
   }
 
   /**
@@ -2348,8 +2337,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    DayOfWeek weekday = coerceToDate(value).getDayOfWeek();
+    DayOfWeek weekday = DataType.toDate(value).getDayOfWeek();
     return weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
 
@@ -2363,8 +2351,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    DayOfWeek dow = coerceToDate(value).getDayOfWeek();
-
+    DayOfWeek dow = DataType.toDate(value).getDayOfWeek();
     int result = dow.getValue() + 1;
     if (result == 8)
       result = 1;
@@ -2381,8 +2368,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    DayOfWeek dow = coerceToDate(value).getDayOfWeek();
+    DayOfWeek dow = DataType.toDate(value).getDayOfWeek();
     return Long.valueOf(dow.getValue());
   }
 
@@ -2393,10 +2379,8 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    return Long.valueOf(coerceToDate(value).getDayOfYear());
+    return Long.valueOf(DataType.toDate(value).getDayOfYear());
   }
-
 
   /** Month of the year (number from 1-12). */
   @ScalarFunction(id = "MONTH", category = "i18n::Operator.Category.Date", documentationUrl="/docs/month.html")
@@ -2405,9 +2389,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.getMonthValue());
+    return Long.valueOf(DataType.toDate(value).getMonthValue());
   }
 
   /** Returns the name of the month (in English). */
@@ -2418,7 +2400,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    ZonedDateTime datetime = coerceToDate(value);
+    ZonedDateTime datetime = DataType.toDate(value);
     Month month = datetime.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
@@ -2430,9 +2412,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.get(IsoFields.QUARTER_OF_YEAR));
+    return Long.valueOf(DataType.toDate(value).get(IsoFields.QUARTER_OF_YEAR));
   }
 
   /** The year of a date */
@@ -2442,9 +2422,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.getYear());
+    return Long.valueOf(DataType.toDate(value).getYear());
   }
   
   /** Year of the week ISO semantics */
@@ -2454,9 +2432,7 @@ public class Functions {
   Object value = operands[0].eval(context);
   if (value == null)
     return null;
-
-  ZonedDateTime datetime = coerceToDate(value);
-  return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
+  return Long.valueOf(DataType.toDate(value).get(IsoFields.WEEK_BASED_YEAR));
 }
 
   /** Week of the year (number from 1-54). */
@@ -2466,9 +2442,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+    return Long.valueOf(DataType.toDate(value).get(ChronoField.ALIGNED_WEEK_OF_YEAR));
   }
   
   /** Week of the year ISO semantics (number from 1-53). */
@@ -2478,9 +2452,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
+    return Long.valueOf(DataType.toDate(value).get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
   }
 
   /** The hour (0-23). @See {@link #MINUTE}, {@link #SECOND} */
@@ -2490,9 +2462,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.getHour());
+    return Long.valueOf(DataType.toDate(value).getHour());
   }
 
   /** The minute (0-59). @See {@link #HOUR}, {@link #SECOND} */
@@ -2501,10 +2471,8 @@ public class Functions {
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
-      return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.getMinute());
+      return null;    
+    return Long.valueOf(DataType.toDate(value).getMinute());
   }
 
   /** The second (0-59). @See {@link #HOUR}, {@link #MINUTE} */
@@ -2514,9 +2482,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    ZonedDateTime datetime = coerceToDate(value);
-    return Long.valueOf(datetime.getSecond());
+    return Long.valueOf(DataType.toDate(value).getSecond());
   }
 
   /** Adds or subtracts a specified number of days to a date or timestamp */
@@ -2524,14 +2490,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_days.html")
   public static Object add_days(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object days = operands[1].eval(context);
     if (days == null)
       return null;
 
-    return value.plusDays(coerceToInteger(days));
+    return value.plusDays(DataType.toInteger(days));
   }
 
   /** Adds or subtracts a specified number of weeks to a date or timestamp */
@@ -2539,14 +2505,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_weeks.html")
   public static Object add_weeks(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object weeks = operands[1].eval(context);
     if (weeks == null)
       return null;
 
-    return value.plusWeeks(coerceToInteger(weeks));
+    return value.plusWeeks(DataType.toInteger(weeks));
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
@@ -2554,14 +2520,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_months.html")
   public static Object add_months(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object months = operands[1].eval(context);
     if (months == null)
       return null;
 
-    return value.plusMonths(coerceToInteger(months));
+    return value.plusMonths(DataType.toInteger(months));
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
@@ -2569,14 +2535,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_years.html")
   public static Object add_years(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object years = operands[1].eval(context);
     if (years == null)
       return null;
 
-    return value.plusYears(coerceToInteger(years));
+    return value.plusYears(DataType.toInteger(years));
   }
 
   /** Adds or subtracts a specified number of hours to a date or timestamp */
@@ -2584,14 +2550,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_hours.html")
   public static Object add_hours(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object hours = operands[1].eval(context);
     if (hours == null)
       return null;
 
-    return value.plusHours(coerceToInteger(hours));
+    return value.plusHours(DataType.toInteger(hours));
   }
 
   /** Adds or subtracts a specified number of minutes to a date or timestamp */
@@ -2599,14 +2565,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_minutes.html")
   public static Object add_minutes(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object minutes = operands[1].eval(context);
     if (minutes == null)
       return null;
 
-    return value.plusMinutes(coerceToInteger(minutes));
+    return value.plusMinutes(DataType.toInteger(minutes));
   }
 
   /**
@@ -2616,14 +2582,14 @@ public class Functions {
       category = "i18n::Operator.Category.Date", documentationUrl="/docs/add_seconds.html")
   public static Object add_seconds(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = coerceToDate(operands[0].eval(context));
+    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object seconds = operands[1].eval(context);
     if (seconds == null)
       return null;
 
-    return value.plusSeconds(coerceToInteger(seconds));
+    return value.plusSeconds(DataType.toInteger(seconds));
   }
 
   /**
@@ -2640,8 +2606,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = coerceToDate(v0);
-    ZonedDateTime endDateTime = coerceToDate(v1);
+    ZonedDateTime startDateTime = DataType.toDate(v0);
+    ZonedDateTime endDateTime = DataType.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.DAYS);
   }
 
@@ -2659,8 +2625,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = coerceToDate(v0);
-    ZonedDateTime endDateTime = coerceToDate(v1);
+    ZonedDateTime startDateTime = DataType.toDate(v0);
+    ZonedDateTime endDateTime = DataType.toDate(v1);
     long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
     return days / 31d;
   }
@@ -2677,8 +2643,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = coerceToDate(v0);
-    ZonedDateTime endDateTime = coerceToDate(v1);
+    ZonedDateTime startDateTime = DataType.toDate(v0);
+    ZonedDateTime endDateTime = DataType.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.YEARS);
   }
 
@@ -2694,8 +2660,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = coerceToDate(v0);
-    ZonedDateTime endDateTime = coerceToDate(v1);
+    ZonedDateTime startDateTime = DataType.toDate(v0);
+    ZonedDateTime endDateTime = DataType.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.HOURS);
   }
 
@@ -2711,8 +2677,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = coerceToDate(v0);
-    ZonedDateTime endDateTime = coerceToDate(v1);
+    ZonedDateTime startDateTime = DataType.toDate(v0);
+    ZonedDateTime endDateTime = DataType.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.MINUTES);
   }
 
@@ -2728,8 +2694,8 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = coerceToDate(v0);
-    ZonedDateTime endDateTime = coerceToDate(v1);
+    ZonedDateTime startDateTime = DataType.toDate(v0);
+    ZonedDateTime endDateTime = DataType.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.SECONDS);
   }
 
@@ -2741,7 +2707,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    return coerceToDate(value).with(TemporalAdjusters.firstDayOfMonth());
+    return DataType.toDate(value).with(TemporalAdjusters.firstDayOfMonth());
   }
 
   /** Returns the last day of the month. */
@@ -2760,7 +2726,7 @@ public class Functions {
     //
     // }
 
-    return coerceToDate(value).with(adjuster);
+    return DataType.toDate(value).with(adjuster);
   }
 
   /**
@@ -2779,7 +2745,7 @@ public class Functions {
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
 
-    return coerceToDate(value).with(TemporalAdjusters.next(dayofweek));
+    return DataType.toDate(value).with(TemporalAdjusters.next(dayofweek));
   }
 
   /**
@@ -2799,7 +2765,7 @@ public class Functions {
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
 
-    return coerceToDate(value).with(TemporalAdjusters.previous(dayofweek));
+    return DataType.toDate(value).with(TemporalAdjusters.previous(dayofweek));
   }
 
   /**
@@ -2811,7 +2777,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double d = coerceToNumber(value);
+    Double d = DataType.toNumber(value);
     if (d < -1.0 || d > 1.0) {
       throw ExpressionException.createArgumentOutOfRange(value);
     }
@@ -2824,7 +2790,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.acosh(coerceToNumber(value));
+    return FastMath.acosh(DataType.toNumber(value));
   }
 
   @ScalarFunction(id = "ASINH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/asinh.html")
@@ -2834,7 +2800,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    return FastMath.asinh(coerceToNumber(value));
+    return FastMath.asinh(DataType.toNumber(value));
   }
 
   @ScalarFunction(id = "ATAN", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/atan.html")
@@ -2844,7 +2810,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    return FastMath.atan(coerceToNumber(value));
+    return FastMath.atan(DataType.toNumber(value));
   }
 
   @ScalarFunction(id = "ATANH", category = "i18n::Operator.Category.Trigonometry", documentationUrl="/docs/atanh.html")
@@ -2854,7 +2820,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    return FastMath.atanh(coerceToNumber(value));
+    return FastMath.atanh(DataType.toNumber(value));
   }
 
   @ScalarFunction(id = "ATAN2", minArgs = 2, maxArgs = 2,
@@ -2868,7 +2834,7 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    return FastMath.atan2(coerceToNumber(v0), coerceToNumber(v1));
+    return FastMath.atan2(DataType.toNumber(v0), DataType.toNumber(v1));
   }
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
@@ -2878,7 +2844,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.cos(coerceToNumber(value));
+    return FastMath.cos(DataType.toNumber(value));
   }
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
@@ -2888,7 +2854,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.cosh(coerceToNumber(value));
+    return FastMath.cosh(DataType.toNumber(value));
   }
 
   /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
@@ -2899,7 +2865,7 @@ public class Functions {
     if (value == null)
       return null;
 
-    double number = coerceToNumber(value);
+    double number = DataType.toNumber(value);
     if (number == 0)
       throw ExpressionException.createArgumentOutOfRange(value);
 
@@ -2912,7 +2878,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.asin(coerceToNumber(value));
+    return FastMath.asin(DataType.toNumber(value));
   }
 
   /**
@@ -2925,7 +2891,7 @@ public class Functions {
     if (value == null)
       return value;
 
-    return FastMath.sin(coerceToNumber(value));
+    return FastMath.sin(DataType.toNumber(value));
   }
 
   /**
@@ -2937,7 +2903,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.sinh(coerceToNumber(value));
+    return FastMath.sinh(DataType.toNumber(value));
   }
 
   /**
@@ -2949,7 +2915,7 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.tan(coerceToNumber(value));
+    return FastMath.tan(DataType.toNumber(value));
   }
 
   /**
@@ -2961,8 +2927,6 @@ public class Functions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.tanh(coerceToNumber(value));
+    return FastMath.tanh(DataType.toNumber(value));
   }
 }
-
-

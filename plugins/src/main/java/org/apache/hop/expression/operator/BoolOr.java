@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -35,12 +36,12 @@ public class BoolOr extends Operator {
     Object left = operands[0].eval(context);
     Object right = operands[1].eval(context);
     if (left == null) {
-      return coerceToBoolean(right);
+      return DataType.toBoolean(right);
     }
     if (right == null) {
-      return coerceToBoolean(left);
+      return DataType.toBoolean(left);
     }
-    return Boolean.logicalOr(coerceToBoolean(left), coerceToBoolean(right));
+    return Boolean.logicalOr(DataType.toBoolean(left), DataType.toBoolean(right));
   }
 
   @Override

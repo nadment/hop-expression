@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -45,29 +46,29 @@ public class Divide extends Operator {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = coerceToBigNumber(right);
+      BigDecimal divisor = DataType.toBigNumber(right);
       // prevent a division by zero ..
       if (divisor.signum() == 0)
         throw ExpressionException.createDivisionByZero();
-      return coerceToBigNumber(left).divide(coerceToBigNumber(right), MathContext.DECIMAL128);
+      return DataType.toBigNumber(left).divide(DataType.toBigNumber(right), MathContext.DECIMAL128);
     }
     if (left instanceof Double || right instanceof Double) {
-      double divisor = coerceToNumber(right);
+      double divisor = DataType.toNumber(right);
       // prevent a division by zero ..
       if (divisor == 0D)
         throw ExpressionException.createDivisionByZero();
-      return coerceToNumber(left) / divisor;
+      return DataType.toNumber(left) / divisor;
     }
     if (left instanceof Long || right instanceof Long) {
-      long divisor = coerceToInteger(right);
+      long divisor = DataType.toInteger(right);
       // prevent a division by zero ..
       if (divisor == 0L)
         throw ExpressionException.createDivisionByZero();
 
-      return coerceToInteger(left) / divisor;
+      return DataType.toInteger(left) / divisor;
     }
 
-    return coerceToBigNumber(left).divide(coerceToBigNumber(right));
+    return DataType.toBigNumber(left).divide(DataType.toBigNumber(right));
   }
 
   @Override

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -42,7 +43,7 @@ public class Equal extends Operator {
     if (right == null) {
       return null;
     }
-    return compareTo(left, right) == 0;
+    return DataType.compareTo(left, right) == 0;
   }
 
   @Override

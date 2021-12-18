@@ -27,6 +27,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+/**
+ * Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget.
+ */
 public class BrowserToolTip extends ToolTip {
 
   private IToolTipProvider tooltipProvider;

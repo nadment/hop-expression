@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 package org.apache.hop.expression.operator;
-
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -23,7 +23,9 @@ import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
-/** Arithmetic multiplication operator '<code>*</code>'. */
+/**
+ * Arithmetic multiplication operator '<code>*</code>'.
+ */
 public class Multiply extends Operator {
 
   public Multiply() {
@@ -43,16 +45,16 @@ public class Multiply extends Operator {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return coerceToBigNumber(left).multiply(coerceToBigNumber(right));
+      return DataType.toBigNumber(left).multiply(DataType.toBigNumber(right));
     }
     if (left instanceof Double || right instanceof Double) {
-      return coerceToNumber(left) * coerceToNumber(right);
+      return DataType.toNumber(left) * DataType.toNumber(right);
     }
     if (left instanceof Long || right instanceof Long) {
-      return coerceToInteger(left) * coerceToInteger(right);
+      return DataType.toInteger(left) * DataType.toInteger(right);
     }
 
-    return coerceToBigNumber(left).multiply(coerceToBigNumber(right));
+    return DataType.toBigNumber(left).multiply(DataType.toBigNumber(right));
   }
 
   @Override

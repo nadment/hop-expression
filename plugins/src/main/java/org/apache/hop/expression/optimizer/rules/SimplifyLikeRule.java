@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
@@ -48,14 +48,14 @@ public class SimplifyLikeRule implements Rule {
 
       IExpression v1 = call.getOperand(1);
       if (v1.getKind() == Kind.LITERAL) {
-        String pattern = Operator.coerceToString(v1.eval(context));
+        String pattern = DataType.toString(v1.eval(context));
 
         // Optimize FIELD LIKE NULL to NULL
         if (pattern == null)
           return Literal.NULL;
 
         if (call.getOperandCount() == 3) {
-          String escape = Operator.coerceToString(call.getOperand(2).eval(context));
+          String escape = DataType.toString(call.getOperand(2).eval(context));
           if (escape == null)
             return Literal.NULL;
 

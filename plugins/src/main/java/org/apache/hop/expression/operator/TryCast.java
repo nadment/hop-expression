@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import static org.apache.hop.expression.DataType.toString;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -48,10 +49,10 @@ public class TryCast extends Operator {
 
       String format = null;
       if (operands.length == 3) {
-        format = coerceToString(operands[2].eval(context));
+        format = DataType.toString(operands[2].eval(context));
       }
 
-      return convertTo(value, type, format);
+      return DataType.convertTo(value, type, format);
     } catch (Exception e) {
       return null;
     }

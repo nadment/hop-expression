@@ -168,7 +168,7 @@ public class Literal implements IExpression {
       }
       writer.append('\'');
     } else {
-      writer.append(Operator.coerceToString(value));
+      writer.append(DataType.toString(value));
     }
   }
 

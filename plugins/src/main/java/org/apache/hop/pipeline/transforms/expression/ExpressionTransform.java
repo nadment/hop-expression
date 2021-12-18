@@ -14,11 +14,13 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
+import static org.apache.hop.expression.DataType.toNumber;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
@@ -195,23 +197,23 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
       case IValueMeta.TYPE_STRING:
-        return Operator.coerceToString(value);
+        return DataType.toString(value);
       case IValueMeta.TYPE_NUMBER:
-        return Operator.coerceToNumber(value);
+        return DataType.toNumber(value);
       case IValueMeta.TYPE_INTEGER:
-        return Operator.coerceToInteger(value);
+        return DataType.toInteger(value);
       case IValueMeta.TYPE_DATE:
-        ZonedDateTime date = Operator.coerceToDate(value);
+        ZonedDateTime date = DataType.toDate(value);        
         return Date.from(date.toInstant());
       case IValueMeta.TYPE_TIMESTAMP:
-        ZonedDateTime timestamp = Operator.coerceToDate(value);
+        ZonedDateTime timestamp = DataType.toDate(value);
         return java.sql.Timestamp.from(timestamp.toInstant());
       case IValueMeta.TYPE_BIGNUMBER:
-        return Operator.coerceToBigNumber(value);
+        return DataType.toBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:
-        return Operator.coerceToBoolean(value);
+        return DataType.toBoolean(value);
       case IValueMeta.TYPE_BINARY:
-        return Operator.coerceToBinary(value);
+        return DataType.toBinary(value);
       default:
         throw new HopValueException(
             value + " : I can't convert the specified value to data type : " + meta.getType());

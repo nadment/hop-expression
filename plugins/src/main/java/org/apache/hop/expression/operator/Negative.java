@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -53,7 +54,7 @@ public class Negative extends Operator {
       return Long.valueOf(-value);
     }
 
-    return coerceToBigNumber(v0).negate();
+    return DataType.toBigNumber(v0).negate();
   }
 
   @Override

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -51,7 +52,7 @@ public class Extract extends Operator {
     if (value == null)
       return null;
 
-    return extract(coerceToDate(value), coerceToDatePart(part));
+    return extract(DataType.toDate(value), DatePart.get(part));
   }
 
   protected Object extract(ZonedDateTime datetime, DatePart part) {

@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -40,7 +41,7 @@ public class Between extends Operator {
       return null;
     }
 
-    return compareTo(value, start) >= 0 && compareTo(value, end) <= 0;
+    return DataType.compareTo(value, start) >= 0 && DataType.compareTo(value, end) <= 0;
   }
 
   @Override

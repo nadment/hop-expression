@@ -15,15 +15,23 @@
  * limitations under the License.
  */
 package org.apache.hop.expression.experimental;
-
-import static org.apache.hop.expression.Operator.coerceToString;
+import org.apache.hop.core.compress.CompressionInputStream;
+import org.apache.hop.core.compress.CompressionOutputStream;
+import org.apache.hop.core.compress.CompressionPluginType;
+import org.apache.hop.core.compress.ICompressionProvider;
+import org.apache.hop.core.plugins.IPlugin;
+import org.apache.hop.core.plugins.PluginRegistry;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ScalarFunction;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class ExperimentalFunction {
-
+ 
   private ExperimentalFunction() {}
 
   /**
@@ -42,7 +50,7 @@ public class ExperimentalFunction {
     if (v0 == null)
       return null;
 
-    String str = coerceToString(v0);
+    String str = DataType.toString(v0);
     char[] a = str.toCharArray();
     int n = 1;
     for (int i = 1; i < a.length; i++) { 
@@ -56,12 +64,87 @@ public class ExperimentalFunction {
     
     return new String(a, 0, n);    
   }
-
   
+  // TODO: Use a cache
+  private static ICompressionProvider getCompressionProvider(String id)
+      throws ExpressionException {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    for (IPlugin plugin : registry.getPlugins(CompressionPluginType.class)) {
+      if (id.equalsIgnoreCase(plugin.getIds()[0])) {
+        try {
+          return registry.loadClass(plugin, ICompressionProvider.class);
+        } catch (Exception e) {
+          throw ExpressionException.create("No compression provider {0}", id);
+        }
+      }
+    }
+    return null;
+  }
+
+/**
+ * Compress the data using the specified algorithm. If no algorithm is supplied, GZIP is used.
+ * 
+ * The function returns a byte array of type.
+ * 
+ * @param context
+ * @param operands
+ * @return
+ * @throws ExpressionException
+ */
+  //@ScalarFunction(id = "COMPRESS", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 1)
+  public static Object compress(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+
+    String algorithm = "SNAPPY";
+    ICompressionProvider provider = getCompressionProvider(algorithm);
+    try {
+      byte[] bytes = DataType.toBinary(v0);   
+      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+200);
+      CompressionOutputStream  compression = provider.createOutputStream(output);
+      compression.write(bytes);
+      compression.flush();      
+      return output.toByteArray();
+    } catch (IOException e) {
+      throw ExpressionException.create("Compress {0} error {1}", algorithm, e.getMessage());
+    }
+  }
 
 
-
-
+  /** 
+   * Decompress an input value, using the GZIP algorithm. 
+   * DECOMPRESS will return a byte array 
+   * @param context
+   * @param operands
+   * @return
+   * @throws ExpressionException
+   */
+ // @ScalarFunction(id = "DECOMPRESS", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 1)
+  public static Object decompress(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    
+    String algorithm = "SNAPPY";
+    ICompressionProvider provider = getCompressionProvider(algorithm);
+    
+    try {      
+      byte[] bytes = DataType.toBinary(v0);
+      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+100);
+      CompressionInputStream decompression = provider.createInputStream(new ByteArrayInputStream(bytes));      
+      final byte[] buffer = new byte[8024];
+      int n = 0;
+      while (-1 != (n = decompression.read(buffer))) {
+          output.write(buffer, 0, n);
+      }      
+      return output.toByteArray();
+    } catch (IOException e) {
+      throw ExpressionException.create("Decompress {0} error {1}", algorithm, e.getMessage());
+    }
+  }
 
 
   /** Week from the beginning of the month (0-5) */
@@ -72,7 +155,7 @@ public class ExperimentalFunction {
 //    if (value == null)
 //      return null;
 //
-//    ZonedDateTime datetime = coerceToDate(value);
+//    ZonedDateTime datetime = DataType.toDate(value);
 //    return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
 //  }
 }

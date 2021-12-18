@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -42,7 +43,7 @@ public class BoolAnd extends Operator {
     if (right == null) {
       return null;
     }
-    return Boolean.logicalAnd(coerceToBoolean(left), coerceToBoolean(right));
+    return Boolean.logicalAnd(DataType.toBoolean(left), DataType.toBoolean(right));
   }
 
   @Override

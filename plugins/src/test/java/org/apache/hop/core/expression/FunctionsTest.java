@@ -1854,5 +1854,9 @@ public class FunctionsTest extends BaseExpressionTest {
     evalTrue("Rand()>0");
   }
 
+  @Test
+  public void Compress() throws Exception {
+    //evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+  }
 }
 

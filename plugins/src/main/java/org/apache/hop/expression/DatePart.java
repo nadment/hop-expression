@@ -137,6 +137,19 @@ public enum DatePart {
     throw new IllegalArgumentException("Invalid date part: " + name);
   }
 
+
+  /**
+   * Coerce value to {@link org.apache.hop.expression.DatePart}
+   * @param value the value to coerce
+   * @return DatePart
+   */
+  public static DatePart get(Object value) {
+    if (value instanceof DatePart) {
+      return (DatePart) value;
+    }
+    throw ExpressionException.create("Expression.InvalidDatePart", value);
+  }
+  
   /**
    * Check if date part exist.
    * 

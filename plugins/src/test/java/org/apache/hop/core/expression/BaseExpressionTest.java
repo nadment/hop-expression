@@ -27,13 +27,14 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.optimizer.Optimizer;
-import org.apache.hop.junit.rules.RestoreHopEnvironment;
+import org.apache.hop.junit.rules.RestoreHopEngineEnvironment;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -49,9 +50,9 @@ import java.util.function.Consumer;
 
 public class BaseExpressionTest {
     
-  @ClassRule
-  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-
+  //@ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  @ClassRule public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
+  
   protected ExpressionContext createExpressionContext() throws Exception {
 
     IVariables variables = new Variables();
@@ -151,7 +152,7 @@ public class BaseExpressionTest {
 
   protected void evalEquals(String source, double expected) throws Exception {
     Object value = eval(source);
-    assertEquals(expected, Operator.coerceToNumber(value), 0.000001);
+    assertEquals(expected, DataType.toNumber(value), 0.000001);
   }
 
   protected void evalEquals(String source, BigDecimal expected) throws Exception {

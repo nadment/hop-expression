@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -47,7 +48,7 @@ public class BoolNot extends Operator {
     if (value == null) {
       return null;
     }
-    return coerceToBoolean(value) ? Boolean.FALSE : Boolean.TRUE;
+    return DataType.toBoolean(value) ? Boolean.FALSE : Boolean.TRUE;
   }
 
   @Override

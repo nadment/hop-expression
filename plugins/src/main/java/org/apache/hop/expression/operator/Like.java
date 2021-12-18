@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -62,14 +63,14 @@ public class Like extends Operator {
       if (escapeValue == null) {
         return null;
       }
-      escape = coerceToString(escapeValue);
+      escape = DataType.toString(escapeValue);
     }
 
-    final String regex = toRegexLike(coerceToString(pattern), escape);
+    final String regex = toRegexLike(DataType.toString(pattern), escape);
 
     Pattern p = Pattern.compile(regex, Pattern.DOTALL);
 
-    return p.matcher(coerceToString(input)).matches();
+    return p.matcher(DataType.toString(input)).matches();
   }
 
   @Override

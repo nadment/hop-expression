@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -44,7 +45,7 @@ public class BitXor extends Operator {
     if (right == null)
       return null;
 
-    return coerceToInteger(left) ^ coerceToInteger(right);
+    return DataType.toInteger(left) ^ DataType.toInteger(right);
   }
 
   @Override

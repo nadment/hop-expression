@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -38,7 +39,7 @@ public class BitNot extends Operator {
     if (value == null)
       return value;
 
-    return ~coerceToInteger(value);
+    return ~DataType.toInteger(value);
   }
 
   @Override

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -45,8 +46,8 @@ public class Position extends Operator {
       return null;
     }
 
-    String substr = v0.toString();
-    String str = v1.toString();
+    String substr = DataType.toString(v0);
+    String str = DataType.toString(v1);
 
     return Long.valueOf(str.indexOf(substr, 0) + 1L);
   }

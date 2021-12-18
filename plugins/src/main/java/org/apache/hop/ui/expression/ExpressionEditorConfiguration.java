@@ -28,8 +28,10 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -45,7 +47,9 @@ import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,10 +72,23 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private static final Set<String> RESERVED_LITERALS =
       new TreeSet<>(Arrays.asList("NULL", "TRUE", "FALSE"));
 
+  private org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter presenter;
+
   public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta) {
     super();
     this.variables = variables;
     this.rowMeta = rowMeta;
+
+    presenter = new DefaultInformationControl.IInformationPresenter() {
+      @Override
+      public String updatePresentation(Display display, String hoverInfo,
+          TextPresentation presentation, int maxWidth, int maxHeight) {
+
+        StyleRange title = new StyleRange(0, 3, null, null, SWT.BOLD | SWT.ITALIC);
+        presentation.addStyleRange(title);
+        return hoverInfo;
+      }
+    };
   }
 
   @Override
@@ -113,6 +130,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     assistant.setStatusMessage("Press 'Ctrl+Space' to show variables");
     return assistant;
   }
+
   @Override
   public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
     return new IInformationControlCreator() {
@@ -234,7 +252,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     IRule[] rules = {
         // Add rule for variables
         new PatternRule("${", "}", variable, (char) 0, false)};
-    RuleBasedScanner scanner = new RuleBasedScanner();
+    RuleBasedScanner scanner = new  RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
     return scanner;
@@ -244,5 +262,10 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer,
       String contentType) {
     return new DoubleClickStrategy();
+  }
+
+  @Override
+  public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+    return new ExpressionEditorTextHover();
   }
 }

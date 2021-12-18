@@ -84,8 +84,8 @@ public class LiteralTest extends BaseExpressionTest {
     assertEquals(Literal.FALSE, Literal.of(false));
     assertEquals(Literal.FALSE.hashCode(), Literal.of(false).hashCode());
 
-    assertEquals("TRUE", Operator.coerceToString(Literal.TRUE));
-    assertEquals("FALSE", Operator.coerceToString(Literal.FALSE));
+    assertEquals("TRUE", DataType.toString(Literal.TRUE));
+    assertEquals("FALSE", DataType.toString(Literal.FALSE));
 
     evalTrue("True");
     evalTrue("True");

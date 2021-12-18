@@ -43,14 +43,19 @@ public class Cast extends Operator {
     if (value == null)
       return null;
 
-    DataType type = coerceToDataType(operands[1].eval(context));
-
-    String format = null;
-    if (operands.length == 3) {
-      format = coerceToString(operands[2].eval(context));
+    Object v1 = operands[1].eval(context);
+       
+    if (!(v1 instanceof DataType)) {
+      throw ExpressionException.create("Expression.InvalidDataType", v1);    
     }
 
-    return convertTo(value, type, format);
+    DataType type = ( DataType) v1;
+    String format = null;
+    if (operands.length == 3) {
+      format = DataType.toString(operands[2].eval(context));
+    }
+
+    return DataType.convertTo(value, type, format);
   }
 
   @Override

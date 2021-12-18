@@ -50,7 +50,7 @@ public class ExpressionException extends RuntimeException {
 
   public static final ExpressionException createUnsupportedConversion(Object value, DataType type) {
     return create("Expression.UnsupportedConversion", value,
-        DataType.fromJava(value), type);
+        DataType.fromData(value), type);
   }
 
   public static ExpressionException createFormatPattern(String s, int i) {

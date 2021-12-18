@@ -212,9 +212,12 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       if (name.length() >= prefix.length()
           && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
-        Function function = OperatorRegistry.getFunction(name);
-        CompletionProposal proposal = new CompletionProposal(name, start, end - start,
-            name.length(), image, name, null, function.getDescription());
+        Function function = OperatorRegistry.getFunction(name);        
+        String replacement = name;
+        // TODO: add function arguments to proposal 
+        String diplayName = name;
+        CompletionProposal proposal = new CompletionProposal(replacement, start, end - start,
+            replacement.length(), image, diplayName, null, function.getDescription());
         proposals.add(proposal);
       }
     }
@@ -243,11 +246,11 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
           Image image = GuiResource.getInstance().getImage(valueMeta);
           StringBuilder description = new StringBuilder();
-          description.append("Type: ");
+          description.append("<b>Type:</b> ");
           description.append(valueMeta.getTypeDesc());
-          description.append("<br>Step origin: ");
+          description.append("<br><b>Step origin:</b> ");
           description.append(valueMeta.getOrigin());
-          description.append("<br>Comment: ");
+          description.append("<br><b>Comment:</b> ");
           description.append(StringUtils.defaultString(valueMeta.getComments()));
 
           CompletionProposal proposal = new CompletionProposal(content, start, end - start,
