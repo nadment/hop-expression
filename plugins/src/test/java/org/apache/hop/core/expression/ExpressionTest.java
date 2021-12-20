@@ -18,19 +18,13 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorRegistry;
 import org.junit.Test;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class ExpressionTest extends BaseExpressionTest {
@@ -60,176 +54,21 @@ public class ExpressionTest extends BaseExpressionTest {
   }
   
   @Test
-  public void DataType() throws Exception {
-    assertEquals(DataType.NONE, DataType.fromData(null) );
-    assertEquals(DataType.BOOLEAN, DataType.fromData(true));
-    assertEquals(DataType.STRING, DataType.fromData("") );
-    assertEquals(DataType.INTEGER, DataType.fromData(1L));
-    assertEquals(DataType.NUMBER, DataType.fromData(1D));
-    assertEquals(DataType.BIGNUMBER, DataType.fromData(BigDecimal.ONE) );
-    assertEquals(DataType.BINARY, DataType.fromData(new byte[] {0x78}));
-    assertEquals(DataType.DATE,
-        DataType.fromData(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh")))
-        );
-    
-    assertThrows(IllegalArgumentException.class, () -> DataType.fromData(Float.class) );
-
-    assertEquals(Boolean.class, DataType.BOOLEAN.javaClass() );
-    assertEquals(Long.class, DataType.INTEGER.javaClass() );
-    assertEquals(Double.class, DataType.NUMBER.javaClass() );
-    assertEquals(BigDecimal.class, DataType.BIGNUMBER.javaClass() );
-    assertEquals(String.class, DataType.STRING.javaClass() );
-    assertEquals(ZonedDateTime.class, DataType.DATE.javaClass() );
-  }
-
-  @Test
   public void DatePart() throws Exception {
     assertFalse(DatePart.of("HOUR").equals(null));
+    assertTrue(DatePart.of("HOUR").equals(DatePart.HOUR));
     assertTrue(DatePart.exist("MONTH"));
+    assertEquals(DatePart.DECADE, DatePart.of("DECADE"));
+    assertEquals(DatePart.CENTURY, DatePart.of("CENTURY"));
     assertEquals(DatePart.QUARTER, DatePart.of("quarter"));
     assertEquals(DatePart.DAY, DatePart.of("d"));
     assertEquals(DatePart.DAY, DatePart.of("dd"));
     assertEquals(DatePart.DAY, DatePart.of("dayofmonth"));
     assertEquals(DatePart.HOUR, DatePart.of("HOUR"));
     assertEquals(DatePart.HOUR, DatePart.of("HH"));
-
+    assertThrows(IllegalArgumentException.class, () -> DatePart.of("NOP"));
   }
-  
-  @Test
-  public void CoerceToBoolean() throws Exception {
-    assertNull(DataType.toBoolean(null));
-    assertTrue(DataType.toBoolean(true));
-    assertTrue(DataType.toBoolean(3L));
-    assertTrue(DataType.toBoolean(1L));
-    assertFalse(DataType.toBoolean(0L));
-    assertFalse(DataType.toBoolean(false));
-    assertThrows(ExpressionException.class, () -> DataType.toBoolean(ZonedDateTime.now()));
-  }
-   
-  @Test
-  public void ConverToBoolean() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo(3L, DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo(1L, DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("1", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("T", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("True", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("Y", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("Yes", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("ON", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo(0L, DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("0", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("F", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("False", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("N", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("No", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("Off", DataType.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("3", DataType.BOOLEAN) );
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("MO", DataType.BOOLEAN) );
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("BAD", DataType.BOOLEAN) );
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("TRUL", DataType.BOOLEAN) );    
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("FILSE", DataType.BOOLEAN) );
-  }
-  
-  @Test
-  public void CoerceToBinary() throws Exception {
-    assertNull(DataType.toBinary(null));    
-    assertThrows(ExpressionException.class, () -> DataType.toBinary(true) );
-    assertThrows(ExpressionException.class, () -> DataType.toBinary(3L) );
-    assertThrows(ExpressionException.class, () -> DataType.toBinary(3D) );
-  }
-  
-  @Test
-  public void ConverToBinary() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.BINARY));
-  }
-  
-  @Test
-  public void CoerceToDate() throws Exception {
-    assertNull(DataType.toDate(null));
-    assertThrows(ExpressionException.class, () -> DataType.toDate(true));
-  }
-  
-  @Test
-  public void CoerceToString() throws Exception {
-    assertNull(DataType.toString(null));
-    assertEquals("-1.0", DataType.toString(-1.0D));
-    assertEquals("ABCD", DataType.toString(DataType.toBinary("ABCD")));
-    assertEquals("-1.2", DataType.toString(-1.2));    
-    assertEquals("0.1", DataType.toString(0.1D));
-    assertEquals("-0.1", DataType.toString(-0.1D));
-  }
-   
-  @Test
-  public void ConverToString() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.STRING));
-    assertEquals("TRUE", DataType.convertTo(true, DataType.STRING));
-    assertEquals("FALSE", DataType.convertTo(false, DataType.STRING));
-  }
-  
-  @Test
-  public void CoerceToInteger() throws Exception {
-    assertNull(DataType.toInteger(null));
-    assertEquals(Long.valueOf(1), DataType.toInteger(1));
-    assertEquals(Long.valueOf(1), DataType.toInteger(1L));
-    assertEquals(Long.valueOf(1), DataType.toInteger(1.2D));
-    assertEquals(Long.valueOf(1), DataType.toInteger("1.2"));
-    assertEquals(Long.valueOf(-2), DataType.toInteger("-1.6"));
-    assertThrows(ExpressionException.class, () -> DataType.toInteger(ZonedDateTime.now()));
-  }
-
-  @Test
-  public void ConverToInteger() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.INTEGER));
-    assertEquals(1L, DataType.convertTo(true, DataType.INTEGER));
-    assertEquals(0L, DataType.convertTo(false, DataType.INTEGER));
-    assertEquals(0L, DataType.convertTo(0L, DataType.INTEGER));
-    assertEquals(3L, DataType.convertTo(3L, DataType.INTEGER));
-    assertEquals(0L, DataType.convertTo(0.0D, DataType.INTEGER));
-    assertEquals(3L, DataType.convertTo(3.3D, DataType.INTEGER));
-  }
-  
-  @Test
-  public void CoerceToNumber() throws Exception {
-    assertNull(DataType.toNumber(null));
-    assertEquals(Double.valueOf(1D), DataType.toNumber("1"));
-    assertEquals(Double.valueOf(1.2D), DataType.toNumber("1.2"));
-    assertEquals(Double.valueOf(0.1D), DataType.toNumber(".1"));
-    assertEquals(Double.valueOf(-2.3E+2D), DataType.toNumber("-2.3E+2"));
-    assertEquals(Double.valueOf(-2.3E-2D), DataType.toNumber("-2.3E-2"));
-    assertEquals(Double.valueOf(-2.3E-2D), DataType.toNumber("-2.3e-2"));
-    assertThrows(ExpressionException.class, () -> DataType.toNumber(ZonedDateTime.now()));
-  }
-  
-  @Test
-  public void ConverToNumber() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.NUMBER));
-    assertEquals(Double.valueOf(1D), DataType.convertTo(true, DataType.NUMBER));
-    assertEquals(Double.valueOf(0D), DataType.convertTo(false, DataType.NUMBER));
-    assertEquals(Double.valueOf(0D), DataType.convertTo(0L, DataType.NUMBER));
-    assertEquals(Double.valueOf(3D), DataType.convertTo(3L, DataType.NUMBER));
-    assertEquals(Double.valueOf(-2.3E+2D), DataType.convertTo(-2.3E+2D, DataType.NUMBER));    
-  }
-
-  @Test
-  public void CoerceToBigNumber() throws Exception {
-    assertNull(DataType.toBigNumber(null));
-    assertEquals(BigDecimal.ZERO, DataType.toBigNumber(0D));
-    assertEquals(BigDecimal.ZERO, DataType.toBigNumber(BigDecimal.ZERO));
-    assertEquals(BigDecimal.ONE, DataType.toBigNumber(1L));
-    assertEquals(BigDecimal.ONE, DataType.toBigNumber(1D));
-    assertEquals(BigDecimal.ONE, DataType.toBigNumber(BigDecimal.ONE) );
-    assertSame(BigDecimal.valueOf(3), DataType.toBigNumber(3L));
-    assertThrows(ExpressionException.class, () -> DataType.toBigNumber(ZonedDateTime.now()));
-  }
-  
-  @Test
-  public void ConverToBigNumber() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, DataType.convertTo(true, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, DataType.convertTo(false, DataType.BIGNUMBER));
-  }
-  
+ 
   @Test
   public void Operator() throws Exception {
     assertEquals("Mathematical",OperatorRegistry.MULTIPLY.getCategory());

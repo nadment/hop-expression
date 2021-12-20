@@ -16,7 +16,7 @@ under the License.
 ////
 = MONTHS_BETWEEN
 
-This function compute the number of months between two dates.
+Returns the number of months between two dates.
 
 == Syntax
 ----

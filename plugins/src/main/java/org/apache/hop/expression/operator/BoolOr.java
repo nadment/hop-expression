@@ -26,7 +26,7 @@ import java.io.StringWriter;
 /** Logical disjunction <code>OR</code> operator. */
 public class BoolOr extends Operator {
 
-  public BoolOr() throws ExpressionException {
+  public BoolOr() {
     super("BOOLOR", "OR", 180, true, true, "i18n::Operator.Category.Logical", "/docs/boolor.html");
   }
 

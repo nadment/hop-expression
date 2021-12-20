@@ -175,6 +175,16 @@ public abstract class Operator implements Comparable<Operator> {
     return description;
   }
 
+  /**
+   * Check if the number of arguments is correct.
+   *
+   * @param len the number of arguments set
+   * @throws error if not enough or too many arguments
+   */
+  protected void checkNumberOfArguments(IExpression[] operands) {    
+  }
+
+  
   public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException;
 
@@ -198,7 +208,7 @@ public abstract class Operator implements Comparable<Operator> {
 
   
   /** Translates a LIKE pattern to Java regex pattern, with optional escape string. */
-  protected static String toRegexLike(String sqlPattern, CharSequence escapeStr) {
+  protected static String toRegexLike(String sqlPattern, CharSequence escapeStr) throws ExpressionException {
     final char escapeChar;
     if (escapeStr != null) {
 
@@ -214,7 +224,7 @@ public abstract class Operator implements Comparable<Operator> {
   }
 
   /** Translates a LIKE pattern to Java regex pattern. */
-  protected static String toRegexLike(String sqlPattern, char escapeChar) {
+  protected static String toRegexLike(String sqlPattern, char escapeChar) throws ExpressionException {
     int i;
     final int len = sqlPattern.length();
     final StringBuilder javaPattern = new StringBuilder(len + len);

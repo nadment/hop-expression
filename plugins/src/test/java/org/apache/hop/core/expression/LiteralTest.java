@@ -19,12 +19,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,7 +44,7 @@ public class LiteralTest extends BaseExpressionTest {
     assertFalse(Literal.NULL.isOperator(null));
     assertNotEquals(Literal.NULL,null);
     assertNull(Literal.NULL.eval(null));
-    assertThrows(ExpressionException.class, () -> Literal.of(Literal.NULL));
+    assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
   }
 
   @Test

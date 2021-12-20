@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression.optimizer;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -34,7 +33,7 @@ import java.util.List;
 public class Optimizer {
 
   public interface Rule {
-    public IExpression apply(IExpressionContext context, OperatorCall call);
+    public IExpression apply(IExpressionContext context, OperatorCall call)        ;
   }
 
   private static final List<Rule> RULES = Arrays.asList(new ReorderAssociativeRule(),
@@ -49,8 +48,7 @@ public class Optimizer {
    * @return the optimized expression
    */
   public IExpression optimize(IExpressionContext context, IExpression expression)
-      throws ExpressionException {
-
+      {
     if (expression instanceof OperatorCall) {
       return optimizeCall(context, (OperatorCall) expression);
     } else if (expression instanceof ExpressionList) {
@@ -84,7 +82,7 @@ public class Optimizer {
       operands[i] = operand;
     }
     IExpression expression = new OperatorCall(call.getOperator(), operands);
-    
+
     for (Rule rule : RULES) {
       if (expression instanceof OperatorCall) {
         expression = rule.apply(context, (OperatorCall) expression);

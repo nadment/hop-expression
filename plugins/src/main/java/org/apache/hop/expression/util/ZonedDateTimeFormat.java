@@ -34,7 +34,6 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.JulianFields;
-import java.time.temporal.WeekFields;
 import java.util.IllegalFormatFlagsException;
 import java.util.Locale;
 
@@ -858,12 +857,12 @@ import java.util.Locale;
         case 'F':
           // Fractional seconds
           if (startsWithIgnoreCase(pattern, index, "FF0", "FF1", "FF3", "FF6", "FF9")) {
-            int x = pattern.charAt(index + 2) - '0';
+            int length = pattern.charAt(index + 2) - '0';
 
             int nanos = value.getNano();
 
-            int scale = (int) (nanos * FastMath.pow(10d, x - 9d));
-            appendZeroPadded(output, x, scale);
+            int scale = (int) (nanos * FastMath.pow(10d, length - 9d));
+            appendZeroPadded(output, scale, length);
             index += 3;
             continue;
           }
@@ -1301,7 +1300,7 @@ import java.util.Locale;
     throw new ParseException("Invalid roman month when parsing date with format RM", index);
   }
 
-  protected final ExpressionException createInvalidFormat(final String error) {
+  protected final ExpressionException createInvalidDateFormat(final String error) {
     return new ExpressionException(
         BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
   }

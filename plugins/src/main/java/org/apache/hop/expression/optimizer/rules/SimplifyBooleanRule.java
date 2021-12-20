@@ -18,6 +18,7 @@ package org.apache.hop.expression.optimizer.rules;
 
 
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
@@ -37,95 +38,100 @@ public class SimplifyBooleanRule implements Rule {
 
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
+    try {
+      if (call.isOperator(OperatorRegistry.BOOLNOT)) {
 
-    if ( call.isOperator(OperatorRegistry.BOOLNOT)) {
+        IExpression operand = call.getOperand(0);
 
-      IExpression operand = call.getOperand(0);
-
-      // NOT(l > r) => l <= r
-      if ( operand.isOperator(OperatorRegistry.GREATER_THAN)) {
-        return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL,
-            ((OperatorCall) operand).getOperands());
-        // return new LessThanOrEqual(((OperatorCall) operand).getOperands());
-      }
-      // NOT(l >= r) => l < r
-      else if (operand.isOperator(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {
-        return new OperatorCall(OperatorRegistry.LESS_THAN, ((OperatorCall) operand).getOperands());
-      }
-      // NOT(l < r) => l >= r
-      else if (operand.isOperator(OperatorRegistry.LESS_THAN)) {
-        return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL,
-            ((OperatorCall) operand).getOperands());
-      }
-      // NOT(l <= r) => l > r
-      else if (operand.isOperator(OperatorRegistry.LESS_THAN_OR_EQUAL)) {
-        return new OperatorCall(OperatorRegistry.GREATER_THAN, ((OperatorCall) operand).getOperands());
-      }
-      // NOT(NOT(e)) => e
-      if (operand.isOperator(OperatorRegistry.BOOLNOT)) {
-        return ((OperatorCall) operand).getOperand(0);
-      }
-    }
-
-    else if (call.isOperator(OperatorRegistry.BOOLOR)) {
-
-      if (call.getOperand(0).isKind(Kind.LITERAL)) {
-        Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
-        if (value == Boolean.TRUE)
-          return Literal.TRUE;
+        // NOT(l > r) => l <= r
+        if (operand.isOperator(OperatorRegistry.GREATER_THAN)) {
+          return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL,
+              ((OperatorCall) operand).getOperands());
+          // return new LessThanOrEqual(((OperatorCall) operand).getOperands());
+        }
+        // NOT(l >= r) => l < r
+        else if (operand.isOperator(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {
+          return new OperatorCall(OperatorRegistry.LESS_THAN,
+              ((OperatorCall) operand).getOperands());
+        }
+        // NOT(l < r) => l >= r
+        else if (operand.isOperator(OperatorRegistry.LESS_THAN)) {
+          return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL,
+              ((OperatorCall) operand).getOperands());
+        }
+        // NOT(l <= r) => l > r
+        else if (operand.isOperator(OperatorRegistry.LESS_THAN_OR_EQUAL)) {
+          return new OperatorCall(OperatorRegistry.GREATER_THAN,
+              ((OperatorCall) operand).getOperands());
+        }
+        // NOT(NOT(e)) => e
+        if (operand.isOperator(OperatorRegistry.BOOLNOT)) {
+          return ((OperatorCall) operand).getOperand(0);
+        }
       }
 
-      if (call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
-        if (value == Boolean.TRUE)
-          return Literal.TRUE;
-      }
+      else if (call.isOperator(OperatorRegistry.BOOLOR)) {
 
-      if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean left = DataType.toBoolean(call.getOperand(0).eval(context));
-        Boolean right = DataType.toBoolean(call.getOperand(1).eval(context));
-        if (left == Boolean.FALSE || right == Boolean.FALSE)
-          return Literal.FALSE;
+        if (call.getOperand(0).isKind(Kind.LITERAL)) {
+          Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          if (value == Boolean.TRUE)
+            return Literal.TRUE;
+        }
 
-        return Literal.NULL;
-      }
+        if (call.getOperand(1).isKind(Kind.LITERAL)) {
+          Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          if (value == Boolean.TRUE)
+            return Literal.TRUE;
+        }
 
-      // [field] OR [field] => [field]
-      if (call.getOperand(0).equals(call.getOperand(1))) {
-        return call.getOperand(0);
-      }
-    }
+        if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
+          Boolean left = DataType.toBoolean(call.getOperand(0).eval(context));
+          Boolean right = DataType.toBoolean(call.getOperand(1).eval(context));
+          if (left == Boolean.FALSE || right == Boolean.FALSE)
+            return Literal.FALSE;
 
-    else if (call.isOperator(OperatorRegistry.BOOLAND)) {
-
-      if (call.getOperand(0).isKind(Kind.LITERAL)) {
-        Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
-        if (value == null)
           return Literal.NULL;
+        }
+
+        // [field] OR [field] => [field]
+        if (call.getOperand(0).equals(call.getOperand(1))) {
+          return call.getOperand(0);
+        }
       }
 
-      if (call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
-        if (value == null)
-          return Literal.NULL;
+      else if (call.isOperator(OperatorRegistry.BOOLAND)) {
+
+        if (call.getOperand(0).isKind(Kind.LITERAL)) {
+          Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          if (value == null)
+            return Literal.NULL;
+        }
+
+        if (call.getOperand(1).isKind(Kind.LITERAL)) {
+          Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          if (value == null)
+            return Literal.NULL;
+        }
+
+        if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
+          Boolean value0 = DataType.toBoolean(call.getOperand(0).eval(context));
+          Boolean value1 = DataType.toBoolean(call.getOperand(1).eval(context));
+          if (value0 == Boolean.FALSE || value1 == Boolean.FALSE)
+            return Literal.FALSE;
+
+          return Literal.TRUE;
+        }
+
+        // [field] AND [field] => [field]
+        if (call.getOperand(0).equals(call.getOperand(1))) {
+          return call.getOperand(0);
+        }
       }
 
-      if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
-        Boolean value0 = DataType.toBoolean(call.getOperand(0).eval(context));
-        Boolean value1 = DataType.toBoolean(call.getOperand(1).eval(context));
-        if (value0 == Boolean.FALSE || value1 == Boolean.FALSE)
-          return Literal.FALSE;
-
-        return Literal.TRUE;
-      }
-
-      // [field] AND [field] => [field]
-      if (call.getOperand(0).equals(call.getOperand(1))) {
-        return call.getOperand(0);
-      }
+      return call;
+    } catch (Exception e) {
+      return call;
     }
-
-    return call;
   }
 
 }

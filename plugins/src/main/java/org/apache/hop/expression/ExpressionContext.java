@@ -15,13 +15,15 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.exception.HopValueException;
+import org.apache.hop.core.logging.ILogChannel;
+import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
-import java.time.DayOfWeek;
-import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -31,7 +33,9 @@ import javax.script.SimpleScriptContext;
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
+  
+  private static final ILogChannel log = new LogChannel("Expression");
+  
   /**
    * This parameter prevents ambiguous dates when importing or converting data with the YY date
    * format.
@@ -91,8 +95,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
       String variable = variables.getVariable(TWO_DIGIT_CENTURY_START, "1970");
       this.twoDigitCenturyStart = Integer.parseInt(variable);
     } catch (NumberFormatException e) {
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.InvalidVariable", TWO_DIGIT_CENTURY_START));
+      log.logError(BaseMessages.getString(PKG, "Expression.InvalidVariable", TWO_DIGIT_CENTURY_START));
     }
 
     // Initialize
@@ -135,8 +138,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
           Date date = rowMeta.getDate(row, index);
           if (date == null)
             return null;
-
-          return OffsetDateTime.from(date.toInstant()).toZonedDateTime();
+          return date.toInstant().atZone(ZoneId.systemDefault());          
         case IValueMeta.TYPE_STRING:
           return rowMeta.getString(row, index);
         case IValueMeta.TYPE_INTEGER:

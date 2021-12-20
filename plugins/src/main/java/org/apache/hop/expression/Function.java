@@ -17,7 +17,6 @@ package org.apache.hop.expression;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
 
@@ -54,14 +53,16 @@ public class Function extends Operator {
    * @param len the number of arguments set
    * @throws error if not enough or too many arguments
    */
-  public void checkNumberOfArguments(List<IExpression> operands) throws ExpressionException {
+  @Override
+  public void checkNumberOfArguments(IExpression[] operands) {
 
-    if (operands.size() < minArgs) {
-      throw ExpressionException.create("Expression.NotEnoughArguments", this.getId());
+    if (operands.length < minArgs) {
+      throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getId()));
     }
 
-    if (operands.size() > maxArgs) {
-      throw ExpressionException.create("Expression.TooManyNumberOfArguments", this.getId());
+    if (operands.length > maxArgs) {
+      throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.TooManyNumberOfArguments", this.getId()));
+      //throw ExpressionException.create("Expression.TooManyNumberOfArguments", this.getId());
     }
   }
 
@@ -71,12 +72,11 @@ public class Function extends Operator {
     try {
       return method.invoke(instance, context, operands);
     } catch (Exception e) {
-      if (e.getCause() instanceof ExpressionException) {
-        throw (ExpressionException) e.getCause();
+      Throwable throwable = e.getCause();
+      if (throwable instanceof ExpressionException) {
+        throw (ExpressionException) throwable;
       }
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.FunctionError", this.getId(), e.getMessage()),
-          e);
+      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionError", this.getId(), throwable.getMessage()));
     }
   }
 

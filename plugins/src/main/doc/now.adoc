@@ -16,7 +16,7 @@ under the License.
 ////
 = NOW, CURRENT_TIMESTAMP
 
-Returns the current date and time in the context time zone (UTC by default).
+Returns the current date and time in the context time zone (System time zone by default).
 
 == Syntax
 ----

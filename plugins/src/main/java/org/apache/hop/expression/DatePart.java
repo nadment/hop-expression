@@ -14,6 +14,8 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.i18n.BaseMessages;
+
 /**
  * A date part can be used with expression functions such as extract(). It describes a
  * part of a date / datetime value
@@ -92,7 +94,7 @@ public enum DatePart {
   NANOSECOND("NS"),
 
   /** The time zone */
-  TIMEZONE,
+  TIMEZONE_REGION("TZR"),
 
   /** The time zone offset's hour part. */
   TIMEZONE_HOUR("TZH"),
@@ -134,16 +136,16 @@ public enum DatePart {
       }
     }
 
-    throw new IllegalArgumentException("Invalid date part: " + name);
+    throw new IllegalArgumentException(BaseMessages.getString(IExpression.class, "Expression.InvalidDatePart", name));
   }
 
 
   /**
-   * Coerce value to {@link org.apache.hop.expression.DatePart}
+   * Coerce value to DatePart
    * @param value the value to coerce
    * @return DatePart
    */
-  public static DatePart get(Object value) {
+  public static DatePart get(Object value) throws ExpressionException {
     if (value instanceof DatePart) {
       return (DatePart) value;
     }

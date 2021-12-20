@@ -263,7 +263,7 @@ public abstract class DateTimeFormat extends BaseFormat {
 
   /**
    * <p>
-   * See also TO_CHAR(datetime) and datetime format models in the Oracle documentation.
+   * See also TO_CHAR(datetime) and datetime format models.
    *
    * @param value the date-time value to format
    * @return the formatted timestamp

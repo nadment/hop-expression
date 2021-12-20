@@ -35,7 +35,7 @@ public class Multiply extends Operator {
 //  @ScalarFunction(id = "MULTIPLY", minArgs = 2, maxArgs = 2,
 //      category = "i18n::Operator.Category.Mathematical")
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object left = operands[0].eval(context);
     if (left == null)

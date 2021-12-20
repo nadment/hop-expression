@@ -14,15 +14,15 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= HOURS_BETWEEN
+= GETBIT
 
-Returns the number of hours between two dates.
+Returns the value of a bit at a specified position.
 
 == Syntax
 ----
-HOURS_BETWEEN( <time1> , <time2> )
+GETBIT <integer>, <position> )
 ----
 
 == Usage
 
-* Returns NULL if either of <time1> or <time2> is NULL
+The second parameter is zero-indexed; the least significant bit has position 0.

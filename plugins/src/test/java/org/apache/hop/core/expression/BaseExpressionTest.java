@@ -32,9 +32,8 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.optimizer.Optimizer;
-import org.apache.hop.junit.rules.RestoreHopEngineEnvironment;
+import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -45,13 +44,14 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Consumer;
 
 public class BaseExpressionTest {
     
-  //@ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-  @ClassRule public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
+  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+ // @ClassRule public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
   
   protected ExpressionContext createExpressionContext() throws Exception {
 
@@ -61,6 +61,7 @@ public class BaseExpressionTest {
     IRowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta(new ValueMetaString("NAME"));
     rowMeta.addValueMeta(new ValueMetaString("SEX"));
+    rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE"));
     rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
     rowMeta.addValueMeta(new ValueMetaDate("DN"));
     rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
@@ -73,20 +74,24 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
-    Object[] row = new Object[13];
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(1981, 5, 23);
+    
+    Object[] row = new Object[14];
     row[0] = "TEST";
     row[1] = "F";
-    row[2] = 40L;
-    row[3] = new Date();
-    row[4] = true;
-    row[5] = null;
-    row[6] = 2020L;
-    row[7] = "Paris";
-    row[8] = -5.12D;
-    row[9] = BigDecimal.valueOf(123456.789);
-    row[10] = "SPACE";
-    row[11] = "UNDERSCORE";
-    row[12] = "lower";
+    row[2] = calendar.getTime();
+    row[3] = 40L;
+    row[4] = new Date();
+    row[5] = true;
+    row[6] = null;
+    row[7] = 2020L;
+    row[8] = "Paris";
+    row[9] = -5.12D;
+    row[10] = BigDecimal.valueOf(123456.789);
+    row[11] = "SPACE";
+    row[12] = "UNDERSCORE";
+    row[13] = "lower";
 
     ExpressionContext context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
@@ -214,3 +219,4 @@ public class BaseExpressionTest {
     //evalEquals("Date_Trunc(DECADE, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
   }
 }
+

@@ -28,16 +28,20 @@ public class OperatorCall implements IExpression {
   protected final Operator operator;
   protected final IExpression[] operands;
 
-  public OperatorCall(Operator operator, IExpression... operands) throws ExpressionException {
+  public OperatorCall(Operator operator, IExpression... operands) {
     super();
     this.operator = Objects.requireNonNull(operator);
-    this.operands = operands;
+    this.operands = Objects.requireNonNull(operands);
+    
+    operator.checkNumberOfArguments(operands);
   }
 
-  public OperatorCall(Operator operator, List<IExpression> operands) throws ExpressionException {
+  public OperatorCall(Operator operator, List<IExpression> operands) {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
+    
+    operator.checkNumberOfArguments(this.operands);
   }
 
   public Object eval(IExpressionContext context) throws ExpressionException {
@@ -59,7 +63,7 @@ public class OperatorCall implements IExpression {
   }
 
   /**
-   * Get to the operator
+   * Get the operator
    *
    * @return the operator
    */
@@ -67,6 +71,12 @@ public class OperatorCall implements IExpression {
     return operator;
   }
 
+  /**
+   * Get array of operands.
+   * An empty array is returned if no operands
+   *
+   * @return the operands
+   */
   public IExpression[] getOperands() {
     return operands;
   }

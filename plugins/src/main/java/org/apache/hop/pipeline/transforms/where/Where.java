@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,6 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineHopMeta;
@@ -37,13 +36,8 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class;
 
-  public Where(
-      TransformMeta transformMeta,
-      WhereMeta meta,
-      WhereData data,
-      int copyNr,
-      PipelineMeta pipelineMeta,
-      Pipeline pipeline) {
+  public Where(TransformMeta transformMeta, WhereMeta meta, WhereData data, int copyNr,
+      PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
@@ -87,9 +81,9 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       // use meta.getFields() to change it, so it reflects the output row
       // structure
       meta.getFields(data.outputRowMeta, getTransformName(), null, null, this, null);
-      
+
       data.expressionContext = new ExpressionContext(this, getInputRowMeta());
-      
+
       // Cache the position of the RowSet for the output.
       List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
 
@@ -97,11 +91,10 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         TransformMeta to = streams.get(0).getTransformMeta();
         PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
         if (hop != null && hop.isEnabled()) {
-          data.trueRowSet =
-              findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
+          data.trueRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
           if (data.trueRowSet == null) {
             throw new HopTransformException(BaseMessages.getString(PKG,
-                "Where.Log.TargetTransformInvalid", streams.get(0).getTransformName()));
+                "Where.Exception.TargetTransformInvalid", streams.get(0).getTransformName()));
           }
         }
       } else {
@@ -110,16 +103,12 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
 
       if (!Utils.isEmpty(streams.get(1).getTransformName())) {
         TransformMeta to = streams.get(1).getTransformMeta();
-        PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);        
-        if ( hop!=null && hop.isEnabled() ) {
-          data.falseRowSet =
-              findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
+        PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
+        if (hop != null && hop.isEnabled()) {
+          data.falseRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
           if (data.falseRowSet == null) {
-            throw new HopTransformException(
-                BaseMessages.getString(
-                    PKG,
-                    "Where.Log.TargetTransformInvalid",
-                    streams.get(1).getTransformName()));
+            throw new HopTransformException(BaseMessages.getString(PKG,
+                "Where.Exception.TargetTransformInvalid", streams.get(1).getTransformName()));
           }
         }
       } else {
@@ -127,36 +116,35 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       }
     }
 
-    
-    data.expressionContext.setRow(row);
-    Object keep = data.condition.eval(data.expressionContext);
 
-    if (keep==null || ! DataType.toBoolean(keep)) {
-      // put the row to the FALSE output row stream
-      if (data.falseRowSet != null) {
-        if (log.isRowLevel()) {
-          logRowlevel(
-              BaseMessages.getString(
-                  PKG,
-                  "Where.Log.FilterRow",
-                  data.falseRowSet.getDestinationTransformName(),
-                  getInputRowMeta().getString(row)));
+    data.expressionContext.setRow(row);
+
+    try {
+      Object keep = data.condition.eval(data.expressionContext);
+
+      if (keep == null || !DataType.toBoolean(keep)) {
+        // put the row to the FALSE output row stream
+        if (data.falseRowSet != null) {
+          if (log.isRowLevel()) {
+            logRowlevel(BaseMessages.getString(PKG, "Where.Log.FilterRow",
+                data.falseRowSet.getDestinationTransformName(), getInputRowMeta().getString(row)));
+          }
+          putRowTo(data.outputRowMeta, row, data.falseRowSet);
         }
-        putRowTo(data.outputRowMeta, row, data.falseRowSet);
-      }
-    } else {
-      // put the row to the TRUE output row stream
-      if (data.trueRowSet != null) {
-        if (log.isRowLevel()) {
-          logRowlevel(
-              BaseMessages.getString(
-                  PKG,
-                  "Where.Log.KeepRow",
-                  data.trueRowSet.getDestinationTransformName(),
-                  getInputRowMeta().getString(row)));
+      } else {
+        // put the row to the TRUE output row stream
+        if (data.trueRowSet != null) {
+          if (log.isRowLevel()) {
+            logRowlevel(BaseMessages.getString(PKG, "Where.Log.KeepRow",
+                data.trueRowSet.getDestinationTransformName(), getInputRowMeta().getString(row)));
+          }
+          putRowTo(data.outputRowMeta, row, data.trueRowSet);
         }
-        putRowTo(data.outputRowMeta, row, data.trueRowSet);
       }
+    } catch (ExpressionException e) {
+      throw new HopTransformException(
+          BaseMessages.getString(PKG, "Where.Exception.FailureExpressionEvaluation", meta.getExpression()),
+          e);
     }
 
     // log progress if it is time to to so

@@ -45,6 +45,7 @@ DATE_PART( <part> , <date_or_timestamp> )
 |MONTH|MM|The month (1-12)
 |QUARTER|Q, QQ|The quarter of the year (1-4)
 |SECOND|SS, SECONDS|The second (and fractional seconds)
+|TIMEZONE_REGION|TZR|The time zone region
 |TIMEZONE_HOUR|TZH|The hour of the time zone offset
 |TIMEZONE_MINUTE|TZM|The minute of the time zone offset
 |WEEK|WW, WOY|The aligned week of year (01-53) where week 1 starts on the first day of the year.

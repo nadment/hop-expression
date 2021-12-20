@@ -16,7 +16,7 @@ under the License.
 ////
 = MINUTES_BETWEEN
 
-This function returns the number of minutes between two timestamps.
+Returns the number of minutes between two timestamps.
 
 == Syntax
 ----

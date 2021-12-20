@@ -44,18 +44,17 @@ public class Extract extends Operator {
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
-    Object part = operands[0].eval(context);
-    if (part == null)
-      return null;
+    // Null throw exception
+    DatePart part = DatePart.get(operands[0].eval(context));
 
     Object value = operands[1].eval(context);
     if (value == null)
       return null;
 
-    return extract(DataType.toDate(value), DatePart.get(part));
+    return extract(DataType.toDate(value), part);
   }
 
-  protected Object extract(ZonedDateTime datetime, DatePart part) {
+  protected Object extract(ZonedDateTime datetime, DatePart part) throws ExpressionException {
     switch (part) {
       case DAY:
         return datetime.getDayOfMonth();
@@ -102,7 +101,7 @@ public class Extract extends Operator {
         return datetime.getNano();
       case EPOCH:
         return datetime.toEpochSecond();
-      case TIMEZONE:
+      case TIMEZONE_REGION:
         return datetime.getZone().getId();
       case TIMEZONE_HOUR:
         return datetime.getOffset().getTotalSeconds() / (60 * 60);

@@ -19,6 +19,12 @@ import java.text.ParsePosition;
 
 public abstract class BaseFormat {
 
+  private static final String[] UNIT_WORDS = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+      "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+      "seventeen", "eighteen", "nineteen"};
+  private static final String[] TEN_WORDS = {"zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy",
+      "eighty", "ninety"};
+  
   protected BaseFormat() {
     super();
   }
@@ -181,8 +187,6 @@ public abstract class BaseFormat {
     return null;
   }
 
-
-
   /**
    * Append a zero-padded number to a string builder.
    *
@@ -201,33 +205,10 @@ public abstract class BaseFormat {
     return builder.append(s);
   }
 
-  /**
-   * Append a zero-padded number to a string builder.
-   *
-   * @param builder the string builder
-   * @param positiveValue the number to append
-   * @param length the number of characters to append
-   * @return the specified string builder
-   */
-  public static StringBuilder appendZeroPadded(StringBuilder builder, long positiveValue,
-      int length) {
-    String s = Long.toString(positiveValue);
-    length -= s.length();
-    for (; length > 0; length--) {
-      builder.append('0');
-    }
-    return builder.append(s);
-  }
-
   protected static String toWord(int number) {
     // variable to hold string representation of number
     StringBuilder words = new StringBuilder();
-    String[] unitsArray = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
-        "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
-        "seventeen", "eighteen", "nineteen"};
-    String[] tensArray = {"zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy",
-        "eighty", "ninety"};
-
+ 
     if (number == 0) {
       return "zero";
     }
@@ -252,12 +233,12 @@ public abstract class BaseFormat {
       // check if number is within teens
       if (number < 20) {
         // fetch the appropriate value from unit array
-        words.append(unitsArray[number]);
+        words.append(UNIT_WORDS[number]);
       } else {
         // fetch the appropriate value from tens array
-        words.append(tensArray[number / 10]);
+        words.append(TEN_WORDS[number / 10]);
         if ((number % 10) > 0) {
-          words.append('-').append(unitsArray[number % 10]);
+          words.append('-').append(UNIT_WORDS[number % 10]);
         }
       }
     }

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import static org.apache.hop.expression.DataType.toString;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;

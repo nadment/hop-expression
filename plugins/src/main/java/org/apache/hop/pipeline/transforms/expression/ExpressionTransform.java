@@ -14,7 +14,6 @@
  */
 package org.apache.hop.pipeline.transforms.expression;
 
-import static org.apache.hop.expression.DataType.toNumber;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
@@ -24,7 +23,6 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -189,13 +187,14 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
     return true;
   }
   
-  public Object convertValue(IValueMeta meta, Object value) throws HopValueException {
+  public Object convertValue(IValueMeta meta, Object value) throws HopException {
 
     if (value == null)
       return null;
 
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
+        return null;
       case IValueMeta.TYPE_STRING:
         return DataType.toString(value);
       case IValueMeta.TYPE_NUMBER:
@@ -204,6 +203,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
         return DataType.toInteger(value);
       case IValueMeta.TYPE_DATE:
         ZonedDateTime date = DataType.toDate(value);        
+        System.out.println(date);
         return Date.from(date.toInstant());
       case IValueMeta.TYPE_TIMESTAMP:
         ZonedDateTime timestamp = DataType.toDate(value);

@@ -22,7 +22,7 @@ public class Identifier implements IExpression {
 
   public Identifier(final String name) {
     super();
-    this.name = Objects.requireNonNull(name, "name");
+    this.name = Objects.requireNonNull(name, "name must not be null");
   }
 
   @Override

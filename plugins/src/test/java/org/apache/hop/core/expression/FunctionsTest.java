@@ -385,10 +385,11 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void DayOfMonth() throws Exception {
+  public void Day() throws Exception {
     evalEquals("Day(Date '2019-01-01')", 1);
     evalEquals("Day(Date '2019-02-28')", 28);
     evalEquals("Day(Date '2019-12-28')", 28);
+    evalEquals("Day(BIRTHDATE)", 23);
     evalNull("Day(NULL)");
     evalFails("Day()");
   }
@@ -1263,15 +1264,13 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','dy')", "tue"); // Day name
 
 
+    
+    
     // evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456789','yyyy-mm-dd hh:mi:ss.FF')",
     // "2020-12-03 01:02:03.123456789");
 
     // Time Zone Region
     evalEquals("To_Char(Date '2019-07-23','TZR')", "Z");
-    // Time Zone Hour
-    evalEquals("To_Char(Date '2019-07-23','TZH')", "+00");
-    // Time Zone Minute
-    evalEquals("To_Char(Date '2019-07-23','TZM')", "00");
     // Time Zone Hour:Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");
     // Time
@@ -1280,8 +1279,13 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','HH12:MI:SS AM')", "03:34:56 AM");
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH12:MI:SS AM')", "03:34:56 PM");
     // Time 24 hours
-    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH24:MI:SS')", "15:34:56");
-
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123','HH24:MI:SS')", "15:34:56");
+    // Time fraction
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123','HH24:MI:SS.FF3')", "15:34:56.123");
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456','HH24:MI:SS.FF6')", "15:34:56.123456");
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')", "15:34:56.123456789");
+    
+    
     // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
     // evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
     // evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short
@@ -1470,7 +1474,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Trunc(123.456, -2)", 100D);
   }
 
-
   @Test
   public void Date_Trunc() throws Exception {
 
@@ -1487,7 +1490,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Date_Trunc(Q, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(WW, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
-
+    evalNull("Date_Trunc(DAY, NULL)");
+    evalFails("Date_Trunc(NULL, DATE '2020-05-25')");
 
     // Truncate timestamp
     evalEquals("Date_Trunc(DAY, Timestamp '2020-05-25 23:59:59')",
@@ -1504,6 +1508,7 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
     evalEquals("Date_Trunc(SS, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
+
   }
 
   @Test

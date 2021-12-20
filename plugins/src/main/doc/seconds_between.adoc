@@ -16,7 +16,7 @@ under the License.
 ////
 = SECONDS_BETWEEN
 
-This function returns the number of seconds between two timestamps.
+Returns the number of seconds between two timestamps.
 
 == Syntax
 ----

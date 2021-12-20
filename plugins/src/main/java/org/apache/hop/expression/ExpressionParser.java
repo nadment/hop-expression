@@ -41,7 +41,7 @@ public class ExpressionParser {
       return parser.parse();
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);
-    } catch (ExpressionException | IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       throw createException(source, parser.getPosition(), e);
     }
   }
@@ -60,7 +60,7 @@ public class ExpressionParser {
     }
     String message =
         BaseMessages.getString(PKG, "Expression.SyntaxError", line, column, e.getMessage());
-    return new ExpressionException(message, e);
+    return new ExpressionException(message);
   }
 
   protected ExpressionParser(String source) {
@@ -779,7 +779,6 @@ public class ExpressionParser {
     // No param function
     if (is(Id.RPARENTHESIS)) {
       next();
-      function.checkNumberOfArguments(operands);
       return new OperatorCall(function, operands);
     }
 
@@ -796,8 +795,6 @@ public class ExpressionParser {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
           token.start());
     }
-
-    function.checkNumberOfArguments(operands);
 
     return new OperatorCall(function, operands);
   }

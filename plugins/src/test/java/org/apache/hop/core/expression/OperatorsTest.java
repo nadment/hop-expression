@@ -387,11 +387,24 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("CAST('1234.567' as Integer)", 1235L);
 
     // String to Number
+    evalEquals("'1'::Number", 1d);
     evalEquals("'1234'::Number", 1234d);
     evalEquals("CAST('1234' as Number)", 1234d);
     evalEquals("CAST('1234.567' as Number)", 1234.567d);
     evalEquals("CAST('  -1e-37  ' as Number)", -1e-37d);
 
+    // Number to BigNumber
+    evalEquals("CAST(0 as BigNumber)", 0);
+    evalEquals("CAST(1234.456 as BigNumber)", 1234.456);
+
+    // String to BigNumber
+    evalEquals("CAST('0' as BigNumber)", 0);
+    evalEquals("CAST('1' As BigNumber)", 1);
+    evalEquals("CAST('-1e-37' as BigNumber)", -1e-37d);
+    // TODO: fix if white space before or after
+    //evalEquals("CAST(' -1e-37' as BigNumber)", -1e-37d);
+
+    
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
     evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2020, 1, 19, 11,23,44));
@@ -502,7 +515,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
     evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
     evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
-    evalEquals("Extract(TIMEZONE from Timestamp '2021-01-01 15:28:59')", "Z");
+    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "Z");
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
     evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);

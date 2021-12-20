@@ -226,6 +226,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/extract.adoc[EXTRACT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/first_day.adoc[FIRST_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/floor.adoc[FLOOR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/getbit.adoc[GETBIT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greater_than.adoc[GREATER_THAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greater_than_or_equal.adoc[GREATER_THAN_OR_EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greatest.adoc[GREATEST]

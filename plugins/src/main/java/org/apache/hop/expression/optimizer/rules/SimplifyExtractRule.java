@@ -17,43 +17,46 @@
 package org.apache.hop.expression.optimizer.rules;
 
 import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.optimizer.Optimizer.Rule;
+
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
  */
 public class SimplifyExtractRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
+    try {
+      if (call.isOperator(OperatorRegistry.EXTRACT) && call.getOperandCount() == 2) {
+        DatePart part = DatePart.get(call.getOperand(0).eval(context));
 
-    if (call.isOperator(OperatorRegistry.EXTRACT) && call.getOperandCount() == 2) {
-
-      DatePart part = DatePart.get(call.getOperand(0).eval(context));
-
-      switch (part) {
-        case YEAR:
-        case YEAR_ISO:
-        case QUARTER:
-        case MONTH:
-        case WEEK:
-        case WEEK_ISO:
-        case DAY:
-        case DAYOFYEAR:
-        case DAYOFWEEK:
-        case DAYOFWEEK_ISO:
-        case HOUR:
-        case MINUTE:
-        case SECOND:
-          Operator operator = OperatorRegistry.getFunction(part.name());
-          return new OperatorCall(operator, call.getOperand(1));
-        default:
+        switch (part) {
+          case YEAR:
+          case YEAR_ISO:
+          case QUARTER:
+          case MONTH:
+          case WEEK:
+          case WEEK_ISO:
+          case DAY:
+          case DAYOFYEAR:
+          case DAYOFWEEK:
+          case DAYOFWEEK_ISO:
+          case HOUR:
+          case MINUTE:
+          case SECOND:
+            Operator operator = OperatorRegistry.getFunction(part.name());
+            return new OperatorCall(operator, call.getOperand(1));
+          default:
+        }
       }
+      return call;
+    } catch (ExpressionException e) {
+      return call;
     }
-
-    return call;
   }
 }

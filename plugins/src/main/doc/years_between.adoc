@@ -16,7 +16,7 @@ under the License.
 ////
 = YEARS_BETWEEN
 
-Computes the number of years between two dates.
+Returns the number of years between two dates.
 
 == Syntax
 ----

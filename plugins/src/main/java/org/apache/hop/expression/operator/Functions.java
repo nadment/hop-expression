@@ -72,8 +72,6 @@ public class Functions {
 
   private static final Soundex SOUNDEX = new Soundex();
 
-
-
   /**
    * The NOW function return the current date and time
    */
@@ -158,9 +156,9 @@ public class Functions {
     return getHash(operands[0].eval(context), "SHA-512");
   }
 
-  @ScalarFunction(id = "BITGET", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/bitget.html")
-  public static Object bitget(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "GETBIT", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl="/docs/getbit.html")
+  public static Object getbit(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
@@ -169,7 +167,7 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    return (DataType.toInteger(v0) & (1L << DataType.toInteger(v1))) != 0;
+    return (DataType.toInteger(v0) & (1L << DataType.toInteger(v1).intValue())) != 0;
   }
 
   /**
@@ -469,7 +467,7 @@ public class Functions {
     return FastMath.pow(DataType.toNumber(left), DataType.toNumber(right));
   }
 
-  private static Object getHash(Object value, String algorithm) {
+  private static Object getHash(Object value, String algorithm) throws ExpressionException {
     if (value == null)
       return null;
 
@@ -790,7 +788,7 @@ public class Functions {
   }
 
 
-  private static int parseRegexpFlags(String str) {
+  private static int parseRegexpFlags(String str) throws ExpressionException {
     int flags = Pattern.UNICODE_CASE;
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {
@@ -2030,7 +2028,7 @@ public class Functions {
         pattern = DataType.toString(v1);
     }
 
-    switch (DataType.fromData(value)) {
+    switch (DataType.from(value)) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
@@ -2041,7 +2039,7 @@ public class Functions {
       case STRING:
         return value;
       default:
-        throw ExpressionException.createUnexpectedDataType("TO_CHAR", DataType.fromData(value));
+        throw ExpressionException.createUnexpectedDataType("TO_CHAR", DataType.from(value));
     }
   }
 
@@ -2049,32 +2047,36 @@ public class Functions {
   @ScalarFunction(id = "TO_NUMBER", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_number.html")
   public static Object to_number(final IExpressionContext context, final IExpression[] operands)
-      throws ParseException {
+      throws ExpressionException {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
 
-    // No format
-    if (operands.length == 1) {
-      return NumberFormat.of(null).parse(DataType.toString(v0));
-    }
+    try {
+      // No format
+      if (operands.length == 1) {
+        return NumberFormat.of(null).parse(DataType.toString(v0));
+      }
 
-    Object v1 = operands[1].eval(context);
-    if (operands.length == 2) {
-      return NumberFormat.of(DataType.toString(v1)).parse(DataType.toString(v0));
-    }
+      Object v1 = operands[1].eval(context);
+      if (operands.length == 2) {
+        return NumberFormat.of(DataType.toString(v1)).parse(DataType.toString(v0));
+      }
 
-    // Precision and scale
-    int precision = DataType.toInteger(v1).intValue();
-    Object v2 = operands[2].eval(context);
-    int scale = DataType.toInteger(v2).intValue();
-    return NumberFormat.parse(DataType.toString(v0), precision, scale);
+      // Precision and scale
+      int precision = DataType.toInteger(v1).intValue();
+      Object v2 = operands[2].eval(context);
+      int scale = DataType.toInteger(v2).intValue();
+      return NumberFormat.parse(DataType.toString(v0), precision, scale);   
+    } catch (ParseException e) {
+      throw ExpressionException.create(e.getMessage());
+    }
   }
 
   @ScalarFunction(id = "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_number.html")
   public static Object try_to_number(final IExpressionContext context, final IExpression[] operands)
-      throws ParseException {
+      throws ExpressionException {
     String value = DataType.toString(operands[0].eval(context));
     if (value == null)
       return null;
@@ -2100,8 +2102,8 @@ public class Functions {
 
         return NumberFormat.parse(value, precision, scale);
       }
-    } catch (RuntimeException e) {
-      // Ignore
+    } catch (Exception e) {
+      // Ignore     
     }
 
     return null;
@@ -2111,13 +2113,13 @@ public class Functions {
   @ScalarFunction(id = "TO_DATE", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_date.html")
   public static Object to_date(final IExpressionContext context, final IExpression[] operands)
-      throws ParseException {
+      throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
     
-    DataType type = DataType.fromData(value);
+    DataType type = DataType.from(value);
     switch (type) {
       case DATE:
         return value;
@@ -2130,7 +2132,11 @@ public class Functions {
         } else {
           pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
-        return DateTimeFormat.of(pattern).parse(DataType.toString(value));
+        try {
+          return DateTimeFormat.of(pattern).parse(DataType.toString(value));
+        } catch (ParseException e) {
+          throw ExpressionException.create(e.getMessage());
+        }
       default:
         throw ExpressionException.createUnexpectedDataType("TO_DATE", type);
     }
@@ -2146,9 +2152,9 @@ public class Functions {
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
-      return null;
+      return null;  
 
-    switch (DataType.fromData(value)) {
+    switch (DataType.from(value)) {
       case DATE:
         return value;
       case STRING:
@@ -2249,7 +2255,7 @@ public class Functions {
       localDate = localDate.plusDays(daysToAdd);
 
     OffsetDateTime datetime =
-        OffsetDateTime.of(localDate, LocalTime.of(0, 0, 0), ZoneOffset.ofHours(0));
+        OffsetDateTime.of(localDate, LocalTime.of(0, 0, 0), ZoneOffset.UTC);
 
     return datetime.toZonedDateTime();
   }
@@ -2264,15 +2270,12 @@ public class Functions {
   public static Object date_trunc(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
+    DatePart part = DatePart.get(operands[0].eval(context));
     
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-
-    DatePart part = DatePart.get(v0);        
+        
     ZonedDateTime datetime = DataType.toDate(v1);
     
     switch (part) {

@@ -15,7 +15,6 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -984,8 +983,8 @@ final class SimpleNumberFormat extends NumberFormat {
     return 1;
   }
 
-  protected final ExpressionException createInvalidFormat(final String error) {
-    return new ExpressionException(
+  protected final IllegalArgumentException createInvalidFormat(final String error) {
+    return new IllegalArgumentException(
         BaseMessages.getString(PKG, "Expression.InvalidNumberFormat", error));
   }
 

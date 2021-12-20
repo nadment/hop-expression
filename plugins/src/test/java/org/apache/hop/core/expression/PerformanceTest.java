@@ -24,12 +24,12 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
-import java.text.ParseException;
 import java.util.Date;
 
 public class PerformanceTest {
@@ -37,8 +37,8 @@ public class PerformanceTest {
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
-  public void perf(String e) throws ParseException {
-    IExpression expression = ExpressionParser.parse(e);
+  public void perf(String source) throws Exception {
+    IExpression expression = ExpressionParser.parse(source);
 
     IRowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta(new ValueMetaString("NOM"));
@@ -61,20 +61,24 @@ public class PerformanceTest {
 
     long cycle = 1000000;
     long startTime = System.currentTimeMillis();
-    for (long i = cycle; i > 0; i--) {
-      @SuppressWarnings("unused")
-      Object result = expression.eval(context);
+    try {
+      for (long i = cycle; i > 0; i--) {
+        @SuppressWarnings("unused")
+        Object result = expression.eval(context);
+      }
+    } catch (ExpressionException e) {
+      e.printStackTrace();
     }
 
     long endTime = System.currentTimeMillis();
     long duration = endTime - startTime;
 
     System.out
-        .println("Performance(\"" + e + "\") Duration for " + cycle + " cycles = " + duration);
+        .println("Performance(\"" + source + "\") Duration for " + cycle + " cycles = " + duration);
   }
 
   @Test
-  public void performance() throws ParseException {
+  public void performance() throws Exception {
     perf("AGE>10");
     // perf("NOM||left(to_char(AGE+5,'000'),2)");
     // perf("NOM||left(to_char(AGE+5,'000'),2)");

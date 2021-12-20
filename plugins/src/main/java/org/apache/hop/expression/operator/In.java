@@ -42,7 +42,7 @@ import java.io.StringWriter;
  */
 public class In extends Operator {
 
-  public In() throws ExpressionException {
+  public In() {
     super("IN", 120, true, true, "i18n::Operator.Category.Comparison", "/docs/in.html");
   }
 

@@ -28,27 +28,29 @@ import org.apache.hop.expression.optimizer.Optimizer.Rule;
 public class DeterministicRule implements Rule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
+    try {
+      Operator operator = call.getOperator();
 
-    Operator operator = call.getOperator();
-
-    if (!operator.isDeterministic())
-      return call;
-
-    for (IExpression operand : call.getOperands()) {
-      if (operand == null)
-        continue;
-
-      if (operand instanceof ExpressionList) {
-        for (IExpression expression : (ExpressionList) operand) {
-          if (!expression.isKind(Kind.LITERAL)) {
-            return call;
-          }
-        }
-      } else if (!operand.isKind(Kind.LITERAL)) {
+      if (!operator.isDeterministic())
         return call;
-      }
-    }
 
-    return Literal.of(call.eval(context));
+      for (IExpression operand : call.getOperands()) {
+        if (operand == null)
+          continue;
+
+        if (operand instanceof ExpressionList) {
+          for (IExpression expression : (ExpressionList) operand) {
+            if (!expression.isKind(Kind.LITERAL)) {
+              return call;
+            }
+          }
+        } else if (!operand.isKind(Kind.LITERAL)) {
+          return call;
+        }
+      }
+      return Literal.of(call.eval(context));
+    } catch (Exception e) {
+      return call;
+    }
   }
 }

@@ -15,6 +15,7 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -23,6 +24,9 @@ import java.time.ZonedDateTime;
  * Expression representing a literal value.
  */
 public class Literal implements IExpression {
+  
+  private static final Class<?> PKG = IExpression.class; // for i18n purposes
+  
   public static final Literal NULL = new Literal(null);
   public static final Literal TRUE = new Literal(Boolean.TRUE);
   public static final Literal FALSE = new Literal(Boolean.FALSE);
@@ -78,7 +82,7 @@ public class Literal implements IExpression {
       return new Literal(value);
     }
 
-    throw ExpressionException.create("Expression.InvalidLiteral", value);
+    throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.InvalidLiteral", value));
   }
 
   private Object value;

@@ -16,9 +16,10 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.core.exception.HopException;
 import org.apache.hop.i18n.BaseMessages;
 
-public class ExpressionException extends RuntimeException {
+public class ExpressionException extends HopException {
  
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
@@ -46,11 +47,6 @@ public class ExpressionException extends RuntimeException {
   
   public static final ExpressionException createOverflow(String message) {
     return create("Expression.Overflow", message);
-  }
-
-  public static final ExpressionException createUnsupportedConversion(Object value, DataType type) {
-    return create("Expression.UnsupportedConversion", value,
-        DataType.fromData(value), type);
   }
 
   public static ExpressionException createFormatPattern(String s, int i) {
