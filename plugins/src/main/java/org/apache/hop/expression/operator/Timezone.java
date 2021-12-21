@@ -22,6 +22,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.time.ZoneId;
 
@@ -30,12 +31,13 @@ import java.time.ZoneId;
  * <p>
  * <code>value AT TIME ZONE zone.<code>
  */
-public class ToTimezone extends Operator {
+public class Timezone extends Operator {
 
-  public ToTimezone() {
-    super("TO_TIMEZONE", "AT TIME ZONE", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/to_timezone.html");
+  public Timezone() {
+    super("TO_TIMEZONE", "AT TIME ZONE", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/timezone.html");
   }
 
+  //@ScalarFunction(id = "TIMEZONE", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Date", documentationUrl="/docs/timezone.html")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
