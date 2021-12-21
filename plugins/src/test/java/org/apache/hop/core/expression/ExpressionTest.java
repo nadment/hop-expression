@@ -20,12 +20,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.OperatorRegistry;
 import org.junit.Test;
-import java.time.ZonedDateTime;
 
 public class ExpressionTest extends BaseExpressionTest {
     
@@ -78,7 +75,7 @@ public class ExpressionTest extends BaseExpressionTest {
     assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
     assertFalse(OperatorRegistry.CONCAT.isSame(null));
     assertNotNull(OperatorRegistry.CONCAT.getDescription());
-    assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
+    //assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
     assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
     assertTrue(OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));
   }
