@@ -116,7 +116,6 @@ public enum DatePart {
 
   /**
    * Create date part for the given name or throws exception if not exist.
-   *
    * <p>
    * This method ignore case and search alias too
    *
@@ -138,7 +137,6 @@ public enum DatePart {
 
     throw new IllegalArgumentException(BaseMessages.getString(IExpression.class, "Expression.InvalidDatePart", name));
   }
-
 
   /**
    * Coerce value to DatePart

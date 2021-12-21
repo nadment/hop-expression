@@ -18,9 +18,9 @@ under the License.
 
 An expression is a combination of one or more values, operators and functions that evaluate to a value.
 
-Expression are not case-sensitive, excepted for identifier.
+An expression are not case-sensitive, excepted for identifier.
 
-Expression is optimized immediately after parsing, so the 24 * 60 expression is optimized in 1440.
+An expression is optimized immediately after parsing, so the 24*60+5 is optimized to 1445 and has no impact on performance.
 
 == Comments
 
@@ -220,15 +220,12 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/difference.adoc[DIFFERENCE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/div0.adoc[DIV0]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/endswith.adoc[ENDSWITH]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal.adoc[EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal_null.adoc[EQUAL_NULL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/exp.adoc[EXP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/extract.adoc[EXTRACT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/first_day.adoc[FIRST_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/floor.adoc[FLOOR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/getbit.adoc[GETBIT]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greater_than.adoc[GREATER_THAN]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greater_than_or_equal.adoc[GREATER_THAN_OR_EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greatest.adoc[GREATEST]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hour.adoc[HOUR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hours_between.adoc[HOURS_BETWEEN]
@@ -241,8 +238,6 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/least.adoc[LEAST]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/left.adoc[LEFT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/length.adoc[LENGTH]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/less_than.adoc[LESS_THAN]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/less_than_or_equal.adoc[LESS_THAN_OR_EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ln.adoc[LN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/log.adoc[LOG]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/log10.adoc[LOG10]
@@ -258,7 +253,6 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/monthname.adoc[MONTHNAME]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/months_between.adoc[MONTHS_BETWEEN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/next_day.adoc[NEXT_DAY]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/not_equal.adoc[NOT_EQUAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/now.adoc[NOW]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullif.adoc[NULLIF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullifzero.adoc[NULLIFZERO]
