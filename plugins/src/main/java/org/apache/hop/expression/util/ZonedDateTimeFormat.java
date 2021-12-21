@@ -16,7 +16,6 @@ package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -26,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -318,6 +318,7 @@ import java.util.Locale;
     boolean isEpochDay = false;
     boolean isDayOfYear = false;
     boolean isTimeZoneOffset = false;
+    boolean isTimeZoneId = false;
     int length = pattern.length();
     int index = 0;
     while (index < length) {
@@ -442,13 +443,15 @@ import java.util.Locale;
             continue;
           }
 
-        // FIXME: Day of week (1-7)
+        // TODO: Day of week (1-7)
         {
-          day = parseInt(text, position, "D".length());
-          isDayOfYear = false;
-          isEpochDay = false;
-          index += 1;
-          continue;
+          //day = parseInt(text, position, "D".length());
+          //isDayOfYear = false;
+          //isEpochDay = false;
+          //index += 1;
+          /* NOT supported yet */
+          throw new ParseException("Parsing format D not supported yet", index);
+          //continue;
         }
 
         // Fractional seconds FF[0-9]
@@ -470,7 +473,7 @@ import java.util.Locale;
             continue;
           }
 
-          throw new ParseException("Parsing format F not supported yet", 0);
+          throw new ParseException("Parsing format F not supported yet", index);
 
         case 'J': {
           // Julian day; the number of days since Jan 1, 4712 BC.
@@ -549,7 +552,7 @@ import java.util.Locale;
 
         case 'Q':
           /* NOT supported yet */
-          throw new IllegalFormatFlagsException("Parsing format Q not supported yet");
+          throw new ParseException("Parsing format Q not supported yet", index);
 
         case 'R':
           // Roman numeral month (I-XII; January = I).
@@ -594,12 +597,14 @@ import java.util.Locale;
         case 'T':
           // Time zone hour [+-][0]0
           if (startsWithIgnoreCase(pattern, index, "TZH")) {
+            isTimeZoneOffset = true;
             timeZoneHour = parseSignedInt(text, position, 3);
             index += 3;
           }
 
           // Time zone minute
           if (startsWithIgnoreCase(pattern, index, "TZM")) {
+            isTimeZoneOffset = true;
             timeZoneMinute = parseInt(text, position, 2);
             index += 3;
           }
@@ -667,19 +672,18 @@ import java.util.Locale;
     if (isHourFormat12) {
       hour = hour % 12;
       if (isPM) {
-        hour += 12;
+        hour += 12;;
       }
     }
     LocalTime time = LocalTime.of(hour, minute, second, nanos);
     LocalDateTime localDatetime = LocalDateTime.of(date, time);
-    ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
-    OffsetDateTime datetime = OffsetDateTime.of(localDatetime, zoneOffset);
-
-    // TODO: parse zonedID
-    //ZoneOffset.UTC;
+    if ( isTimeZoneOffset ) {
+      ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
+      OffsetDateTime datetime = OffsetDateTime.of(localDatetime, zoneOffset);
+      return datetime.toZonedDateTime();
+    }
     
-    return datetime.toZonedDateTime();
-
+    return ZonedDateTime.of(localDatetime, ZoneId.systemDefault());
   }
 
   /**
@@ -1108,9 +1112,9 @@ import java.util.Locale;
             continue;
           }
 
-          // TODO: Time zone region with Daylight Saving Time information included
+          // Time zone region abbreviated with Daylight Saving Time information included
           if (startsWithIgnoreCase(pattern, index, "TZD")) {
-            // output.append(getTimeZone(value, true));
+            output.append(value.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH));            
             index += 3;
             continue;
           }
@@ -1300,8 +1304,8 @@ import java.util.Locale;
     throw new ParseException("Invalid roman month when parsing date with format RM", index);
   }
 
-  protected final ExpressionException createInvalidDateFormat(final String error) {
-    return new ExpressionException(
+  protected final IllegalArgumentException createInvalidDateFormat(final String error) {
+    return new IllegalArgumentException(
         BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
   }
 

@@ -515,7 +515,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
     evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
     evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
-    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "Z");
+    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "UTC");
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
     evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);

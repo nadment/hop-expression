@@ -43,10 +43,8 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Month;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
@@ -328,7 +326,7 @@ public class Functions {
     return FastMath.round(DataType.toNumber(value));
   }
 
-  @ScalarFunction(id = "RANDOM", names = "RAND", deterministic = false, minArgs = 0, maxArgs = 1,
+  @ScalarFunction(id = "RANDOM", deterministic = false, minArgs = 0, maxArgs = 1,
       category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/random.html")
   public static Object random(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
@@ -2247,17 +2245,13 @@ public class Functions {
       day = 1;
     }
 
-
     LocalDate localDate = LocalDate.of(year, month, day);
     if (monthsToAdd != 0)
       localDate = localDate.plusMonths(monthsToAdd);
     if (daysToAdd != 0)
       localDate = localDate.plusDays(daysToAdd);
 
-    OffsetDateTime datetime =
-        OffsetDateTime.of(localDate, LocalTime.of(0, 0, 0), ZoneOffset.UTC);
-
-    return datetime.toZonedDateTime();
+    return localDate.atStartOfDay().atZone(ZoneId.systemDefault());
   }
 
 

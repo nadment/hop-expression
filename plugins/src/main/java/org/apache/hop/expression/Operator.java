@@ -183,7 +183,6 @@ public abstract class Operator implements Comparable<Operator> {
    */
   protected void checkNumberOfArguments(IExpression[] operands) {    
   }
-
   
   public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException;

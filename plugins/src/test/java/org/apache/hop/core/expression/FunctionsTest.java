@@ -1270,9 +1270,14 @@ public class FunctionsTest extends BaseExpressionTest {
     // "2020-12-03 01:02:03.123456789");
 
     // Time Zone Region
-    evalEquals("To_Char(Date '2019-07-23','TZR')", "Z");
+    evalEquals("To_Char(Date '2019-07-23','TZR')", "UTC");
+    // Time zone region abbreviated with Daylight Saving Time
+    evalEquals("To_Char(Date '2019-07-23','TZD')", "UTC");
+    
     // Time Zone Hour:Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");
+    
+    
     // Time
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56");
     // Time 12 hours
@@ -1856,7 +1861,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalTrue("Random(180)>0");
 
     // Alias
-    evalTrue("Rand()>0");
+    //evalTrue("Rand()>0");
   }
 
   @Test

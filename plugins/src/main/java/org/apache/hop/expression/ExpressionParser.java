@@ -178,7 +178,7 @@ public class ExpressionParser {
    * Parse IS expression
    *
    * <p>
-   * RelationalExpression [NOT] LiteralBasicExpression
+   * RelationalExpression [NOT] LiteralBooleanExpression
    */
   private IExpression parseIs() throws ParseException {
     IExpression expression = this.parseComparaison();
@@ -187,7 +187,7 @@ public class ExpressionParser {
       if (next(Id.NOT)) {
         not = true;
       }
-      IExpression result = new OperatorCall(OperatorRegistry.IS, expression, parseLiteralBasic());
+      IExpression result = new OperatorCall(OperatorRegistry.IS, expression, parseLiteralBoolean());
       if (not)
         return new OperatorCall(OperatorRegistry.BOOLNOT, result);
       return result;
@@ -319,7 +319,7 @@ public class ExpressionParser {
   }
 
   /** Literal TRUE | FALSE | NULL */
-  private Literal parseLiteralBasic() throws ParseException {
+  private Literal parseLiteralBoolean() throws ParseException {
 
     Token token = next();
 
@@ -460,17 +460,13 @@ public class ExpressionParser {
   }
 
   private Literal parseLiteralBinaryHexa(Token token) throws ParseException {
-
-    String s = token.text();
-
-    if (s.length() % 2 > 0)
-      s = '0' + s;
-
-    byte[] bytes = new byte[s.length() / 2];
-
+    String str = token.text();
+    if (str.length() % 2 > 0)
+      str = '0' + str;
+    byte[] bytes = new byte[str.length() / 2];
     for (int i = 0; i < bytes.length; i++) {
       int start = i * 2;
-      bytes[i] = (byte) Integer.parseInt(s.substring(start, start + 2), 16);
+      bytes[i] = (byte) Integer.parseInt(str.substring(start, start + 2), 16);
     }
 
 //    if (bytes.length <= 8) {
@@ -488,12 +484,12 @@ public class ExpressionParser {
 
   private Literal parseLiteralBinaryBit(Token token) throws ParseException {
 
-    String s = token.text();
-    BitSet bitset = new BitSet(s.length());
+    String str = token.text();
+    BitSet bitset = new BitSet(str.length());
 
-    int length = s.length();
+    int length = str.length();
     for (int i = length - 1; i >= 0; i--) {
-      if (s.charAt(i) == '1') {
+      if (str.charAt(i) == '1') {
         bitset.set(length - i - 1);
       }
     }
@@ -507,8 +503,8 @@ public class ExpressionParser {
   }
 
   /**
-   * Parses a date literal. The parsing is strict and requires months to be less than 12, days to be
-   * less than 31, etc.
+   * Parses a date literal.
+   * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
     try {
@@ -572,7 +568,10 @@ public class ExpressionParser {
     }
   }
 
-  /** Parses a list of expressions separated by commas. */
+  /** 
+   * Parses a list of expressions separated by commas. 
+   * (expression [,expression...] ) 
+   */
   private ExpressionList parseList() throws ParseException {
 
     List<IExpression> list = new ArrayList<>();
@@ -693,6 +692,7 @@ public class ExpressionParser {
     return expression;
   }
 
+  /** POSITION(<expression> IN <expression>) */
   private IExpression parsePositionFunction(Token token) throws ParseException {
 
     List<IExpression> operands = new ArrayList<>();
@@ -724,6 +724,22 @@ public class ExpressionParser {
     return new OperatorCall(OperatorRegistry.POSITION, operands);
   }
   
+  /** <expression> AT TIMEZONE <term> ) */
+  private IExpression parseAtTimezone() throws ParseException {
+    IExpression operand = this.parseAdditive();
+    
+    if (next(Id.AT) ) {
+      if ( next(Id.TIME) && next(Id.ZONE)) {
+        return new OperatorCall(OperatorRegistry.TO_TIMEZONE, operand, this.parseTerm());
+      }      
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.AT),
+          this.getPosition());
+    }
+    
+    return operand;
+  }
+
+  /** EXTRACT(<part> FROM <expression>) */
   private IExpression parseExtractFunction(Token token) throws ParseException {
 
     if (is(Id.LPARENTHESIS))
@@ -744,14 +760,6 @@ public class ExpressionParser {
     }
 
     operands.add(this.parseAdditive());
-
-    // if (next(Id.AT)) {
-    // if (next(Id.TIME)) {
-    // if (next(Id.ZONE)) {
-    // operands.add(this.parseLogicalOr());
-    // }
-    // }
-    // }
 
     if (is(Id.RPARENTHESIS)) {
       next();

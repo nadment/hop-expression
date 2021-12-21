@@ -23,8 +23,6 @@ Truncate a date or datetime value to the start of a given unit of duration.
 DATE_TRUNC( <unit>, <datetime> )
 ----
 
-== Usage
-
 Support unit of time:
 
 - MILLENNIUM
@@ -41,5 +39,7 @@ Support unit of time:
 - MILLISECOND
 - MICROSECOND
 - NANOSECOND
+
+== Usage
 
 * Returns NULL if one of the arguments is NULL.

@@ -42,7 +42,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -165,11 +165,11 @@ public class BaseExpressionTest {
   }
 
   protected void evalEquals(String source, LocalDate expected) throws Exception {
-    assertEquals(expected.atStartOfDay().atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(),eval(source));
+    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()),eval(source));
   }
 
   protected void evalEquals(String source, LocalDateTime expected) throws Exception {    
-    assertEquals(expected.atOffset(ZoneOffset.ofHours(0)).toZonedDateTime(), eval(source));
+    assertEquals(expected.atZone(ZoneId.systemDefault()), eval(source));
   }
   
   protected void evalEquals(String source, OffsetDateTime expected) throws Exception {
@@ -219,4 +219,3 @@ public class BaseExpressionTest {
     //evalEquals("Date_Trunc(DECADE, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
   }
 }
-
