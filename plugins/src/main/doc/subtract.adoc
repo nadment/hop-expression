@@ -14,9 +14,9 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= - (Subtraction)
+= - (Subtraction operator)
 
-Subtract of 2 numeric values.
+Subtracts two numeric values.
 
 == Syntax
 

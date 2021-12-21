@@ -75,6 +75,7 @@ public class ExpressionTest extends BaseExpressionTest {
     assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
     assertFalse(OperatorRegistry.CONCAT.isSame(null));
     assertNotNull(OperatorRegistry.CONCAT.getDescription());
+    // FIXME: Don't work on github
     //assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
     assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
     assertTrue(OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));

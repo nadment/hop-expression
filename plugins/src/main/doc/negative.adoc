@@ -14,16 +14,11 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= / (Division operator)
+= - (Unary negative operator)
 
-Divide 2 numeric values.
+Reverses the sign of a numeric expression.
 
 == Syntax
-
 ----
-<dividend> / <divisor>
+- <expression>
 ----
-
-== Usage
-
-* If divisor is 0 the operator raises a division-by-zero error.

@@ -14,16 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= / (Division operator)
+= YEAR
 
-Divide 2 numeric values.
+Returns the integer that specifies the year following the ISO-8601 standard.
 
 == Syntax
+----
+YEAR_ISO( <date> )
+----
 
-----
-<dividend> / <divisor>
-----
+Return:: Integer
 
 == Usage
 
-* If divisor is 0 the operator raises a division-by-zero error.
+* Equivalent to xref:extract.adoc[EXTRACT](YEAR_ISO FROM <date>).
