@@ -410,32 +410,31 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Week(Date '2015-12-31')", 53);
     evalEquals("Week(Date '2015-01-01')", 1);
     evalEquals("Week(Date '2015-01-02')", 1);
-    // evalEquals("Week(Date '2024-12-31')", 54);
     evalNull("Week(NULL)");
     evalFails("Week()");
   }
 
   @Test
-  public void Week_Iso() throws Exception {
-    evalEquals("Week_Iso(Date '2015-12-31')", 53);
-    evalEquals("Week_Iso(Date '2016-01-01')", 53);
-    evalEquals("Week_Iso(Date '2016-01-02')", 53);
-    evalEquals("Week_Iso(Date '2016-01-03')", 53);
-    evalEquals("Week_Iso(Date '2016-01-04')", 1);
-    evalNull("Week_Iso(NULL)");
-    evalFails("Week_Iso()");
+  public void IsoWeek() throws Exception {
+    evalEquals("IsoWeek(Date '2015-12-31')", 53);
+    evalEquals("IsoWeek(Date '2016-01-01')", 53);
+    evalEquals("IsoWeek(Date '2016-01-02')", 53);
+    evalEquals("IsoWeek(Date '2016-01-03')", 53);
+    evalEquals("IsoWeek(Date '2016-01-04')", 1);
+    evalNull("IsoWeek(NULL)");
+    evalFails("IsoWeek()");
   }
 
   @Test
-  public void YearOfWeekIso() throws Exception {
-//    evalEquals("YearOfWeekIso(Date '2015-12-31')", 2015);
-//    evalEquals("YearOfWeekIso(Date '2016-01-01')", 2015);
-//    evalEquals("YearOfWeekIso(Date '2016-01-02')", 2015);
-//    evalEquals("YearOfWeekIso(Date '2016-01-04')", 2016);
-//    evalEquals("YearOfWeekIso(Date '2042-12-31')", 2043);
-//
-//    evalNull("YearOfWeekIso(NULL)");
-//    evalFails("YearOfWeekIso()");
+  public void IsoYear() throws Exception {
+    evalEquals("IsoYear(Date '2015-12-31')", 2015);
+    evalEquals("IsoYear(Date '2016-01-01')", 2015);
+    evalEquals("IsoYear(Date '2016-01-02')", 2015);
+    evalEquals("IsoYear(Date '2016-01-04')", 2016);
+    evalEquals("IsoYear(Date '2042-12-31')", 2043);
+    evalNull("IsoYear(NULL)");
+    evalFails("IsoYear('ERROR')");
+    evalFails("IsoYear()");
   }
 
   @Test

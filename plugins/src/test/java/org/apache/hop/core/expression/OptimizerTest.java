@@ -81,7 +81,7 @@ public class OptimizerTest {
   @Test
   public void simplifyExtractRule() throws Exception {
     optimize("EXTRACT(YEAR FROM OrderDate)", "YEAR(OrderDate)");
-    optimize("EXTRACT(YEAR_ISO FROM OrderDate)", "YEAR_ISO(OrderDate)");
+    optimize("EXTRACT(ISOYEAR FROM OrderDate)", "ISOYEAR(OrderDate)");
     optimize("EXTRACT(MONTH FROM OrderDate)", "MONTH(OrderDate)");
     optimize("EXTRACT(QUARTER FROM OrderDate)", "QUARTER(OrderDate)");
     optimize("EXTRACT(DAY FROM OrderDate)", "DAY(OrderDate)");
@@ -89,10 +89,10 @@ public class OptimizerTest {
     optimize("EXTRACT(MINUTE FROM OrderDate)", "MINUTE(OrderDate)");
     optimize("EXTRACT(SECOND FROM OrderDate)", "SECOND(OrderDate)");
     optimize("EXTRACT(WEEK FROM OrderDate)", "WEEK(OrderDate)");
-    optimize("EXTRACT(WEEK_ISO FROM OrderDate)", "WEEK_ISO(OrderDate)");
+    optimize("EXTRACT(ISOWEEK FROM OrderDate)", "ISOWEEK(OrderDate)");
     optimize("EXTRACT(DAYOFYEAR FROM OrderDate)", "DAYOFYEAR(OrderDate)");
     optimize("EXTRACT(DAYOFWEEK FROM OrderDate)", "DAYOFWEEK(OrderDate)");
-    optimize("EXTRACT(DAYOFWEEK_ISO FROM OrderDate)", "DAYOFWEEK_ISO(OrderDate)");
+    optimize("EXTRACT(ISODAYOFWEEK FROM OrderDate)", "ISODAYOFWEEK(OrderDate)");
   }
 
   @Test
