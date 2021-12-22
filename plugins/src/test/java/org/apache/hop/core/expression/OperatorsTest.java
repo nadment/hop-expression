@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 public class OperatorsTest extends BaseExpressionTest {
 
@@ -54,7 +53,11 @@ public class OperatorsTest extends BaseExpressionTest {
     // Date
     evalTrue("Date '2019-01-01' = Date '2019-01-01'");
     evalFalse("Date '2019-01-01' = Date '2018-01-01'");
+    
+    // Timestamp
+    //evalTrue("Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'");
 
+    
     // Null
     evalNull("1 = null");
     evalNull("null = true");
@@ -90,6 +93,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Date '2019-01-01' <> Date '2018-01-01'");
     evalFalse("Date '2019-01-01' <> Date '2019-01-01'");
 
+    //evalTrue("Timestamp '2019-01-01 8:00:00 UTC' <> Timestamp '2019-01-01 8:00:00 US/Pacific'");
+    //evalFalse("Timestamp '2019-01-01 8:00:00 -8:00' <> Timestamp '2019-01-01 11:00:00 -5:00'");
+    
     evalNull("null <> 'bar'");
     evalNull("'bar' <> null");
     evalNull("null <> null");
@@ -495,7 +501,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void Timezone() throws Exception {
-    //evalEquals("Timezone(Timestamp '2020-05-25 20:48:00','Europe/Paris')", LocalDateTime.of(2020, 5, 25, 21,48,00).atZone(ZoneId.of("Europe/Paris")));
+    //evalEquals("Timezone(Timestamp '2020-05-25 20:48:00','Europe/Paris')", LocalDateTime.of(2020, 5, 25, 22,48,00).atZone(ZoneId.of("Europe/Paris")));
   }
   
   @Test

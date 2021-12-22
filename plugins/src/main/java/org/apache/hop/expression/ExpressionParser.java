@@ -21,6 +21,7 @@ import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -46,8 +47,7 @@ public class ExpressionParser {
     }
   }
 
-  protected static ExpressionException createException(String source, int offset,
-      Exception e) {
+  protected static ExpressionException createException(String source, int offset, Exception e) {
     int line = 1;
     int column = 1;
     for (int index = 0; index < offset; index++) {
@@ -370,7 +370,7 @@ public class ExpressionParser {
         case LITERAL_DATEPART:
           return parseLiteralDatePart(token);
         case LITERAL_DATATYPE:
-          return parseLiteralDataType(token);          
+          return parseLiteralDataType(token);
         case DATE:
           return parseLiteralDate(next());
         case TIME:
@@ -388,7 +388,7 @@ public class ExpressionParser {
           return parsePositionFunction(token);
         case FUNCTION:
           return parseFunction(token);
-        case LPARENTHESIS:          
+        case LPARENTHESIS:
           IExpression expression = this.parseLogicalOr();
 
           token = next();
@@ -469,15 +469,15 @@ public class ExpressionParser {
       bytes[i] = (byte) Integer.parseInt(str.substring(start, start + 2), 16);
     }
 
-//    if (bytes.length <= 8) {
-//      // Value as integer if less than or equals 8 bytes
-//      long result = 0;
-//      for (int i = 0; i < bytes.length; i++) {
-//        result = result << 8;
-//        result = result | (bytes[i] & 0xFF);
-//      }
-//      return new Literal(result);
-//    }
+    // if (bytes.length <= 8) {
+    // // Value as integer if less than or equals 8 bytes
+    // long result = 0;
+    // for (int i = 0; i < bytes.length; i++) {
+    // result = result << 8;
+    // result = result | (bytes[i] & 0xFF);
+    // }
+    // return new Literal(result);
+    // }
 
     return Literal.of(bytes);
   }
@@ -494,10 +494,10 @@ public class ExpressionParser {
       }
     }
 
-//    if (bitset.length() <= 32) {
-//      // Value as integer if less than or equals 32 bits
-//      return new Literal(bitset.toLongArray()[0]);
-//    }
+    // if (bitset.length() <= 32) {
+    // // Value as integer if less than or equals 32 bits
+    // return new Literal(bitset.toLongArray()[0]);
+    // }
 
     return Literal.of(bitset.toByteArray());
   }
@@ -530,37 +530,80 @@ public class ExpressionParser {
   }
 
   /**
-   * Parses a timestamp literal. The parsing is strict and requires months to be less than 12, days
-   * to be
-   * less than 31, etc.
+   * Parses a timestamp literal with ISO Formats.
+   * 
+   * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
     try {
-      String pattern =
-          "YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS";
-      switch (token.text().length()) {
-        case 29:
+      String pattern;
+      String str = token.text();
+      switch (str.length()) {
+        case 36: // 2021-01-01 15:28:59.123456789 +02:00
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF9 TZH:TZM";
+          break;
+        case 35: // 2021-01-01 15:28:59.123456789+02:00
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZH:TZM";
+          break;          
+        case 34: // 2021-01-01 15:28:59.123456789+0200
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
+          break;          
+        case 29: // 2021-12-01 12:01:01.123456789
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
           break;
         case 26:
-          if (token.text().indexOf('.') > 0)
-            pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
+          if ( str.indexOf('.',10)>0 )
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
           else
-            pattern = "YYYY-MM-DD HH24:MI:SS TZH:TZM";
+          pattern = "YYYY-MM-DD HH24:MI:SS TZH:TZM";
           break;
         case 23:
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
+          if ( str.indexOf('.',10)>0 )
+            pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
+          else
+          pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
           break;
-        case 20:
-          pattern = "YYYY-MM-DD HH24:MI:SS";
+        case 25:
+          pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+          break;          
+        case 24: // 2021-01-01 15:28:59+0200
+          pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
           break;
-
+        case 22: // 2021-01-01 15:28+02:00
+          pattern = "YYYY-MM-DD HH24:MITZH:TZM";
+          break;
+        case 18:
+        case 19: // 2021-04-28 20:57:48
+          if (str.indexOf('+') > 0 || str.indexOf('-', 15) > 0 )
+            pattern = "YYYY-MM-DD HH24:MITZH";
+          else
+            pattern = "YYYY-MM-DD HH24:MI:SS";                    
+          break;
+        case 16: // 2021-02-25 03:59
+          pattern = "YYYY-MM-DD HH24:MI";
+          break;
+        case 13: // 2021-02-25T23
+          pattern = "YYYY-MM-DD HH24";
+          break;
         default:
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF|YYYY-MM-DD HH24:MI:SS TZH:TZM|YYYY-MM-DD HH24:MI:SS";
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF";
       }
 
+      //System.out.println("TIMESTAMP(" + str + ") lenght=" + str.length() + "  >>  " + pattern);
       DateTimeFormat format = DateTimeFormat.of(pattern);
       ZonedDateTime datetime = format.parse(token.text());
+      
+      // AT TIME ZONE <zoneId> 
+      if (is(Id.AT)) {
+        next();
+        if (!next(Id.TIME) || !next(Id.ZONE)) {
+          throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp", Id.AT),
+              this.getPosition());
+        }
+        Token zone = next();
+        ZoneId zoneId = ZoneId.of(zone.text());    
+        datetime =  datetime.withZoneSameLocal(zoneId);
+      }
       return Literal.of(datetime);
     } catch (Exception e) {
       throw new ParseException(
@@ -568,9 +611,9 @@ public class ExpressionParser {
     }
   }
 
-  /** 
-   * Parses a list of expressions separated by commas. 
-   * (expression [,expression...] ) 
+  /**
+   * Parses a list of expressions separated by commas.
+   * (expression [,expression...] )
    */
   private ExpressionList parseList() throws ParseException {
 
@@ -696,24 +739,24 @@ public class ExpressionParser {
   private IExpression parsePositionFunction(Token token) throws ParseException {
 
     List<IExpression> operands = new ArrayList<>();
-    
+
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
           token.start());
     }
-    
+
     operands.add(this.parseAdditive());
-    
+
     if (!next(Id.IN)) {
       throw new ParseException(
           BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionPosition"),
           this.getPosition());
     }
-    
+
     operands.add(this.parseAdditive());
-    
+
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
@@ -723,19 +766,19 @@ public class ExpressionParser {
 
     return new OperatorCall(OperatorRegistry.POSITION, operands);
   }
-  
+
   /** <expression> AT TIMEZONE <term> ) */
   private IExpression parseAtTimezone() throws ParseException {
     IExpression operand = this.parseAdditive();
-    
-    if (next(Id.AT) ) {
-      if ( next(Id.TIME) && next(Id.ZONE)) {
+
+    if (next(Id.AT)) {
+      if (next(Id.TIME) && next(Id.ZONE)) {
         return new OperatorCall(OperatorRegistry.TO_TIMEZONE, operand, this.parseTerm());
-      }      
+      }
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.AT),
           this.getPosition());
     }
-    
+
     return operand;
   }
 
@@ -752,7 +795,7 @@ public class ExpressionParser {
     List<IExpression> operands = new ArrayList<>();
 
     operands.add(this.parseTerm());
-    
+
     if (!next(Id.FROM)) {
       throw new ParseException(
           BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
@@ -791,7 +834,7 @@ public class ExpressionParser {
     }
 
     operands.add(this.parseAdditive());
-    
+
     while (is(Id.COMMA)) {
       token = next();
       operands.add(this.parseAdditive());
@@ -815,7 +858,7 @@ public class ExpressionParser {
     DatePart part = DatePart.of(token.text());
     return Literal.of(part);
   }
-  
+
   private Literal parseLiteralDataType(Token token) throws ParseException {
     if (token == null) {
       throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingDataType"),

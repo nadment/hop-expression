@@ -282,8 +282,8 @@ public class Token {
   /** Returns the token value. */
   public String text() {
     return text;
-  }
-
+  } 
+  
   @Override
   public String toString() {
     return id.name() + "(" + text + ")";

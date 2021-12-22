@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= =
+= = (Equal operator)
 
 First expression is equal than second expression.
 
@@ -23,6 +23,9 @@ First expression is equal than second expression.
 <expression> = <expression>
 ----
 
-TIP: NULL is not equal ( = ) to anything—not even to another NULL.
+= Usage
+
+* NULL is not equal ( = ) to anything—not even to another NULL.
+* Timestamp '2022-03-01 8:00:00 -8:00' is equal to Timestamp '2022-03-01 11:00:00 -5:00'
 
 See also xref:equal_null.adoc[EQUAL_NULL]

@@ -34,7 +34,7 @@ import java.time.ZoneId;
 public class Timezone extends Operator {
 
   public Timezone() {
-    super("TO_TIMEZONE", "AT TIME ZONE", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/timezone.html");
+    super("TIMEZONE", "AT TIME ZONE", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/timezone.html");
   }
 
   //@ScalarFunction(id = "TIMEZONE", minArgs = 2, maxArgs = 2, category = "i18n::Operator.Category.Date", documentationUrl="/docs/timezone.html")

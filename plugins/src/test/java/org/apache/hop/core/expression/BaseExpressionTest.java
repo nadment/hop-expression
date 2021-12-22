@@ -214,8 +214,6 @@ public class BaseExpressionTest {
   public void parser() throws Exception {
 //   ExpressionContext context = createExpressionContext();
 //   context.setAttribute("TEST","");
-    // Alias
-    //evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);  
-    //evalEquals("Date_Trunc(DECADE, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("Timestamp '2021-01-01 15:28' AT TIME ZONE 'UTC'", ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC")));
   }
 }
