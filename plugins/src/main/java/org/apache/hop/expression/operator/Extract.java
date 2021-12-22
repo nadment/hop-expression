@@ -25,8 +25,10 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
+import java.util.Locale;
 
 /**
  * Extracts the specified date or time part from a date, time, or timestamp.
@@ -65,11 +67,11 @@ public class Extract extends Operator {
         if (dow == 8)
           dow = 1;
         return dow;
-      case DAYOFWEEK_ISO:
+      case ISODAYOFWEEK:
         return datetime.getDayOfWeek().getValue();
       case WEEK:
         return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-      case WEEK_ISO:
+      case ISOWEEK:
         return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
       case WEEKOFMONTH:
         return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -79,7 +81,7 @@ public class Extract extends Operator {
         return datetime.get(IsoFields.QUARTER_OF_YEAR);
       case YEAR:
         return datetime.getYear();
-      case YEAR_ISO:
+      case ISOYEAR:
         return datetime.get(IsoFields.WEEK_BASED_YEAR);
       case DECADE:
         return decade(datetime.getYear());
@@ -101,6 +103,8 @@ public class Extract extends Operator {
         return datetime.getNano();
       case EPOCH:
         return datetime.toEpochSecond();
+      case TIMEZONE_ABBR:
+        return datetime.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH);   
       case TIMEZONE_REGION:
         return datetime.getZone().getId();
       case TIMEZONE_HOUR:

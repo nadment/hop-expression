@@ -143,11 +143,13 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Date(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
     evalEquals("Date(2020,-6,1)", LocalDate.of(2019, Month.JULY, 1));
     evalEquals("Date(2020,-1,1)", LocalDate.of(2019, Month.DECEMBER, 1));
-
+    evalEquals("Date(2020, 6, 50)", LocalDate.of(2020, Month.JULY, 21));
+        
     evalNull("Date(null,-1,1)");
     evalNull("Date(2020,null,1)");
     evalNull("Date(2020,-1,null)");
 
+    
     evalFails("Date()");
     evalFails("Date(2020)");
     evalFails("Date(2020,15)");

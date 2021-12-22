@@ -37,15 +37,15 @@ public class SimplifyExtractRule implements Rule {
 
         switch (part) {
           case YEAR:
-          case YEAR_ISO:
+          case ISOYEAR:
           case QUARTER:
           case MONTH:
           case WEEK:
-          case WEEK_ISO:
+          case ISOWEEK:
           case DAY:
           case DAYOFYEAR:
           case DAYOFWEEK:
-          case DAYOFWEEK_ISO:
+          case ISODAYOFWEEK:
           case HOUR:
           case MINUTE:
           case SECOND:

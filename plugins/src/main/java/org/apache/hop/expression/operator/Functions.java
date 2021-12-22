@@ -2229,7 +2229,7 @@ public class Functions {
     int year = DataType.toInteger(v0).intValue();
     int month = DataType.toInteger(v1).intValue();
     int day = DataType.toInteger(v2).intValue();
-
+    
     int monthsToAdd = 0;
     if (month < 1) {
       monthsToAdd = month;
@@ -2359,8 +2359,8 @@ public class Functions {
   /**
    * Day of the week (Monday=1 to Sunday=7).
    */
-  @ScalarFunction(id = "DAYOFWEEK_ISO", category = "i18n::Operator.Category.Date", documentationUrl="/docs/dayofweek_iso.html")
-  public static Object dayofweek_iso(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ISODAYOFWEEK", category = "i18n::Operator.Category.Date", documentationUrl="/docs/isodayofweek.html")
+  public static Object isodayofweek(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
@@ -2423,8 +2423,8 @@ public class Functions {
   }
   
   /** Year of the week ISO semantics */
-  @ScalarFunction(id = "YEAR_ISO", category = "i18n::Operator.Category.Date", documentationUrl="/docs/year_iso.html")
-  public static Object year_iso(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ISOYEAR", category = "i18n::Operator.Category.Date", documentationUrl="/docs/isoyear.html")
+  public static Object isoyear(final IExpressionContext context, final IExpression[] operands)
     throws ExpressionException {
   Object value = operands[0].eval(context);
   if (value == null)
@@ -2443,8 +2443,8 @@ public class Functions {
   }
   
   /** Week of the year ISO semantics (number from 1-53). */
-  @ScalarFunction(id = "WEEK_ISO", category = "i18n::Operator.Category.Date", documentationUrl="/docs/week_iso.html")
-  public static Object week_iso(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ISOWEEK", category = "i18n::Operator.Category.Date", documentationUrl="/docs/isoweek.html")
+  public static Object isoweek(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)

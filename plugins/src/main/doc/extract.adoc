@@ -33,25 +33,26 @@ DATE_PART( <part> , <date_or_timestamp> )
 |CENTURY||The century is the year divided by 100
 |DAY|D, DD, DAYOFMONTH|The day of the month (1-31)
 |DAYOFWEEK|DOW|The day of week (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
-|DAYOFWEEK_ISO|ISODOW|The day of week following the ISO-8601 standard (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)
+|ISODAYOFWEEK|ISODOW|The day of week following the ISO-8601 standard (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)
 |DAYOFYEAR|DOY|The day of year (1-365/366)
 |DECADE||The decade is the year divided by 10
 |EPOCH||The number of seconds since 1970-01-01 00:00:00 UTC
 |HOUR|HH|The hour (0-23)
-|MILLISECOND|MS,MILLISECONDS|Seconds (and fractional seconds) multiplied by 1,000
+|MILLISECOND|MS|Seconds (and fractional seconds) multiplied by 1,000
 |MICROSECOND|MCS|Seconds (and fractional seconds) multiplied by 1,000,000
 |NANOSECOND|NS|The nanosecond
-|MINUTE|MI, MINUTES|The minute (0-59)
+|MINUTE|MI|The minute (0-59)
 |MONTH|MM|The month (1-12)
-|QUARTER|Q, QQ|The quarter of the year (1-4)
-|SECOND|SS, SECONDS|The second (and fractional seconds)
+|QUARTER|Q|The quarter of the year (1-4)
+|SECOND|SS|The second (and fractional seconds)
+|TIMEZONE_ABBR|TZD|Time zone region abbreviated
 |TIMEZONE_REGION|TZR|The time zone region
 |TIMEZONE_HOUR|TZH|The hour of the time zone offset
 |TIMEZONE_MINUTE|TZM|The minute of the time zone offset
 |WEEK|WW, WOY|The aligned week of year (01-53) where week 1 starts on the first day of the year.
-|WEEK_ISO|IW, ISOWEEK|The week of year (01-52 or 01-53) based on the ISO-8601 standard. The first week of each ISO year begins on the Monday before the first Thursday of the Gregorian calendar year.
+|ISOWEEK|IW, ISOWOY|The week of year (01-52 or 01-53) based on the ISO-8601 standard. The first week of each ISO year begins on the Monday before the first Thursday of the Gregorian calendar year.
 |YEAR|Y, YY, YYYY|The year
-|YEAR_ISO||The ISO year 
+|ISOYEAR|IY, IYYY, ISOYOW|The ISO year of week 
 |===
 
 See also functions xref:year.adoc[YEAR], xref:month.adoc[MONTH], xref:day.adoc[DAY], xref:hour.adoc[HOUR], xref:minute.adoc[MINUTE], xref:second.adoc[SECOND]

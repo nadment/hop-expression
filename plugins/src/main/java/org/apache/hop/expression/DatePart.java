@@ -37,7 +37,7 @@ public enum DatePart {
   YEAR("Y","YY","YYYY"),
 
   /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
-  YEAR_ISO("YOWISO","YEAROFWEEKISO"),
+  ISOYEAR("IY","IYYY"),
 
   /** The number (1 - 12) of the month */
   MONTH("MM"),
@@ -52,7 +52,7 @@ public enum DatePart {
    * A number (1 = Monday, …, 7 = Sunday) indicating the day of the week following the ISO 8601
    * standard
    */
-  DAYOFWEEK_ISO("DOWISO","ISODOW"),
+  ISODAYOFWEEK("ISODOW"),
 
   /** A number (1 - 366) indicating the day of the year */
   DAYOFYEAR("DOY"),
@@ -67,39 +67,42 @@ public enum DatePart {
    * The number (1 - 53) of the week of the year ISO 8601.
    * The first week of the ISO year is the week that contains January 4. 
    */
-  WEEK_ISO("WEEKOFYEARISO"),
+  ISOWEEK("IW","ISOWOY","ISOWEEKOFYEAR"),
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
 
-  /** The quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
-  QUARTER("Q","QQ"),
+  /** Quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
+  QUARTER("Q"),
 
-  /** The hour (0-23). */
+  /** Hour (0-23). */
   HOUR("HH"),
 
-  /** The minute (0-59). */
+  /** Minute (0-59). */
   MINUTE("MI"),
 
-  /** The second (0-59). */
+  /** Second (0-59). */
   SECOND("SS"),
 
-  /** The millisecond. */
+  /** Millisecond. */
   MILLISECOND("MS"),
 
-  /** The microsecond. */
+  /** Microsecond. */
   MICROSECOND("MCS"),
 
   /** The nanosecond. */
   NANOSECOND("NS"),
 
-  /** The time zone */
+  /** Time zone region abbreviated */
+  TIMEZONE_ABBR("TZD"),
+  
+  /** Time zone region */
   TIMEZONE_REGION("TZR"),
 
-  /** The time zone offset's hour part. */
+  /** Time zone offset's hour part. */
   TIMEZONE_HOUR("TZH"),
 
-  /** The time zone offset's minute part. */
+  /** Time zone offset's minute part. */
   TIMEZONE_MINUTE("TZM")
   
   ;

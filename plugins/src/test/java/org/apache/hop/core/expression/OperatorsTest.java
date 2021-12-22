@@ -18,6 +18,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class OperatorsTest extends BaseExpressionTest {
 
@@ -490,6 +492,12 @@ public class OperatorsTest extends BaseExpressionTest {
     writeEquals("TRY_CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
   }
 
+
+  @Test
+  public void Timezone() throws Exception {
+    //evalEquals("Timezone(Timestamp '2020-05-25 20:48:00','Europe/Paris')", LocalDateTime.of(2020, 5, 25, 21,48,00).atZone(ZoneId.of("Europe/Paris")));
+  }
+  
   @Test
   public void Extract() throws Exception {
     evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
@@ -498,23 +506,24 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
     evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
     evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
-    evalEquals("Extract(YEAR_ISO from Date '2017-01-01')", 2016);
+    evalEquals("Extract(ISOYEAR from Date '2017-01-01')", 2016);
     evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
     evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
     evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
     evalEquals("Extract(WEEK from Timestamp '2020-01-01 23:48:59')", 1);
-    evalEquals("Extract(WEEK_ISO from Date '2016-01-03')", 53);
-    evalEquals("Extract(WEEK_ISO from Date '2016-01-04')", 1);
+    evalEquals("Extract(ISOWEEK from Date '2016-01-03')", 53);
+    evalEquals("Extract(ISOWEEK from Date '2016-01-04')", 1);
     evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
     evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
     evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(DAYOFWEEK_ISO from Date '2003-12-28')", 7);
+    evalEquals("Extract(ISODAYOFWEEK from Date '2003-12-28')", 7);
     evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
     evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
     evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
     evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
     evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
+    evalEquals("Extract(TIMEZONE_ABBR from Timestamp '2021-01-01 15:28:59')", "UTC");
     evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "UTC");
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
     evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
