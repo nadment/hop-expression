@@ -22,7 +22,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.time.ZoneId;
 
@@ -31,9 +30,9 @@ import java.time.ZoneId;
  * <p>
  * <code>value AT TIME ZONE zone.<code>
  */
-public class Timezone extends Operator {
+public class AtTimeZone extends Operator {
 
-  public Timezone() {
+  public AtTimeZone() {
     super("TIMEZONE", "AT TIME ZONE", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/timezone.html");
   }
 

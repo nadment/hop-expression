@@ -522,10 +522,11 @@ public enum DataType {
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
       ZonedDateTime dt1 = toDate(left);
       ZonedDateTime dt2 = toDate(right);
-      // This 2 timestamp are the same:  Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
+      // Two timestamp are equal if they represent the same moment in time:
+      // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       if (dt1.isEqual(dt2)) {
         return 0;       
-      }
+      }     
       return dt1.compareTo(dt2);
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {

@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.zone.ZoneRulesException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -540,36 +541,41 @@ public class ExpressionParser {
       String str = token.text();
       switch (str.length()) {
         case 36: // 2021-01-01 15:28:59.123456789 +02:00
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF9 TZH:TZM";
-          break;
         case 35: // 2021-01-01 15:28:59.123456789+02:00
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZH:TZM";
           break;          
+        case 33: // 2021-01-01 5:28:59.123456789+0200
         case 34: // 2021-01-01 15:28:59.123456789+0200
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
-          break;          
+          break;
+        case 28: // 2021-12-01 2:01:01.123456789
         case 29: // 2021-12-01 12:01:01.123456789
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
-          break;
+          break;            
         case 26:
           if ( str.indexOf('.',10)>0 )
           pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
           else
-          pattern = "YYYY-MM-DD HH24:MI:SS TZH:TZM";
+          pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+          break;
+        case 25: // 2021-01-01 15:28:59+02:00
+          pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+          break;          
+        case 24: // 2021-01-01 15:28:59+0200
+                 // 2021-01-01 5:28:59+02:00
+          if ( str.indexOf(':',20)>0 )
+            pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+          else
+            pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
           break;
         case 23:
           if ( str.indexOf('.',10)>0 )
             pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
           else
           pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
-          break;
-        case 25:
-          pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
           break;          
-        case 24: // 2021-01-01 15:28:59+0200
-          pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
-          break;
-        case 22: // 2021-01-01 15:28+02:00
+        case 21: // 2021-01-01 5:28+02:00
+        case 22: // 2021-01-01 15:28+02:00 or  2021-01-01 5:28 +02:00          
           pattern = "YYYY-MM-DD HH24:MITZH:TZM";
           break;
         case 18:
@@ -600,11 +606,14 @@ public class ExpressionParser {
           throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp", Id.AT),
               this.getPosition());
         }
-        Token zone = next();
-        ZoneId zoneId = ZoneId.of(zone.text());    
+        token = next();
+        ZoneId zoneId = ZoneId.of(token.text());           
         datetime =  datetime.withZoneSameLocal(zoneId);
       }
       return Literal.of(datetime);
+    } catch (ZoneRulesException e) {
+      throw new ParseException(
+          BaseMessages.getString(PKG, "Expression.UnknownTimeZone", token.text()), token.start());
     } catch (Exception e) {
       throw new ParseException(
           BaseMessages.getString(PKG, "Expression.InvalidTimestamp", token.text()), token.start());
@@ -768,12 +777,12 @@ public class ExpressionParser {
   }
 
   /** <expression> AT TIMEZONE <term> ) */
-  private IExpression parseAtTimezone() throws ParseException {
+  private IExpression parseAtTimeZone() throws ParseException {
     IExpression operand = this.parseAdditive();
 
     if (next(Id.AT)) {
       if (next(Id.TIME) && next(Id.ZONE)) {
-        return new OperatorCall(OperatorRegistry.TO_TIMEZONE, operand, this.parseTerm());
+        return new OperatorCall(OperatorRegistry.AT_TIME_ZONE, operand, this.parseTerm());
       }
       throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.AT),
           this.getPosition());

@@ -318,7 +318,8 @@ import java.util.Locale;
     boolean isEpochDay = false;
     boolean isDayOfYear = false;
     boolean isTimeZoneOffset = false;
-    boolean isTimeZoneId = false;
+    ZoneId zoneId = null;
+    
     int length = pattern.length();
     int index = 0;
     while (index < length) {
@@ -597,6 +598,9 @@ import java.util.Locale;
         case 'T':
           // Time zone hour [+-][0]0
           if (startsWithIgnoreCase(pattern, index, "TZH")) {
+            // Skip space
+            int i = position.getIndex();
+            if ( Characters.isSpace(text.charAt(i)) ) position.setIndex(++i);
             isTimeZoneOffset = true;
             timeZoneHour = parseSignedInt(text, position, 3);
             index += 3;
@@ -608,8 +612,23 @@ import java.util.Locale;
             timeZoneMinute = parseInt(text, position, 2);
             index += 3;
           }
+          
+          // Time zone region
+          if (startsWithIgnoreCase(pattern, index, "TZR")) {
+            int i = position.getIndex();
+            char ch;
+            while ( i<text.length() ) {
+              ch = text.charAt(i);
+              if ( ! (Character.isLetter(ch) || ch=='/') ) break;
+              i++;            
+            }
+            
+            String zone = text.substring(position.getIndex(),i);
+            zoneId = ZoneId.of(zone);
+            position.setIndex(i);
+            index += 3;
+          }
           break;
-
 
         case 'Y':
           // 4-digit year
@@ -677,13 +696,15 @@ import java.util.Locale;
     }
     LocalTime time = LocalTime.of(hour, minute, second, nanos);
     LocalDateTime localDatetime = LocalDateTime.of(date, time);
-    if ( isTimeZoneOffset ) {
-      ZoneOffset zoneOffset = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
-      OffsetDateTime datetime = OffsetDateTime.of(localDatetime, zoneOffset);
-      return datetime.toZonedDateTime();
+    if ( zoneId==null ) {
+      if ( isTimeZoneOffset ) {
+        zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
+      }
+      else {
+        zoneId = ZoneId.systemDefault();        
+      }
     }
-    
-    return ZonedDateTime.of(localDatetime, ZoneId.systemDefault());
+    return ZonedDateTime.of(localDatetime, zoneId);
   }
 
   /**

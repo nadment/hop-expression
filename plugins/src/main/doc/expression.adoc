@@ -120,6 +120,11 @@ The parsing is strict and requires months to be less than 12, days to be less th
 
 
 Literal timestamp can includes a time zone offset or a time zone region.
+
+----
+Timestamp 'yyyy-mm-dd hh24:mi:ss.ffffff' [AT TIME ZONE  '...']
+----
+Examples:
 ----
 Timestamp '2020-05-18 23:48'
 Timestamp '2020-05-18 23:48:59'
@@ -128,6 +133,8 @@ Timestamp '2020-05-18 23:48:59 +05:00'
 Timestamp '2020-05-18T23:48:59+0500'
 Timestamp '2021-01-01 15:28:59' AT TIME ZONE 'US/Pacific'
 ----
+
+In some of the timestamp formats, the letter T is used as a separator between the date and time.
 
 == Identifier
 

@@ -20,7 +20,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Stream;
 
-/** Immutable list of expression. */
+/** 
+ * An expression list is a combination of other expressions.
+ */
 public class ExpressionList implements IExpression, Iterable<IExpression> {
 
   /**

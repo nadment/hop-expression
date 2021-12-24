@@ -41,7 +41,7 @@ An expression is a combination of one or more literals values, resolvable identi
 Upper(Left(LABEL,5)) || ' | ' || InitCap(Substr(LABEL,8,50)) || To_Char([YEAR]+1,'FM9999') || CASE when REGION_ID>0 then 'A' else 'B' end
 ----
 
-* Supports 6 data types: Boolean, Integer, Number, BigNumber, String, Binary. 
+* Supports 7 data types: Boolean, Integer, Number, BigNumber, String, Date, Binary. 
 * Supports most of the arithmetic, bitwise, logical and comparison operators.
 * Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
 * Use of comments to facilitate reading.

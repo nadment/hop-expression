@@ -50,7 +50,7 @@ import org.apache.hop.expression.operator.NotEqual;
 import org.apache.hop.expression.operator.Position;
 import org.apache.hop.expression.operator.Subtract;
 import org.apache.hop.expression.operator.TryCast;
-import org.apache.hop.expression.operator.Timezone;
+import org.apache.hop.expression.operator.AtTimeZone;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
@@ -123,7 +123,7 @@ public class OperatorRegistry {
   // -------------------------------------------------------------
   public static final Operator CAST = new Cast();
   public static final Operator TRY_CAST = new TryCast();
-  public static final Operator TO_TIMEZONE = new Timezone();
+  public static final Operator AT_TIME_ZONE = new AtTimeZone();
   public static final Operator CONCAT = new Concat();
   public static final Operator EXTRACT = new Extract();
   public static final Operator POSITION = new Position();

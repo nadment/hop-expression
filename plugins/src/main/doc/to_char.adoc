@@ -35,3 +35,12 @@ include::numberformat.adoc[]
 
 
 NOTE: Fill mode modifier; toggles between compact and fill modes.
+
+== Format examples
+ 
+[cols="2,2"]
+|===
+|DY, DD MON YYYY HH12:MI:SS AM|Thu, 21 Dec 2021 04:01:07 PM
+|YYYY-MM-DD"T"HH24:MI:SS.FF6TZH:TZM|2021-12-21T04:01:07.123456+02:00
+|DD/MM/YYYY HH24:MI TZR|21/12/2021 04:01:07 Europe/Paris
+|===

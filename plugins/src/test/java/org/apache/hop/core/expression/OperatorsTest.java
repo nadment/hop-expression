@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class OperatorsTest extends BaseExpressionTest {
 
@@ -55,8 +56,10 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("Date '2019-01-01' = Date '2018-01-01'");
     
     // Timestamp
-    //evalTrue("Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'");
-
+    evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
+    evalTrue("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
+    evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
+    evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
     
     // Null
     evalNull("1 = null");
@@ -93,8 +96,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Date '2019-01-01' <> Date '2018-01-01'");
     evalFalse("Date '2019-01-01' <> Date '2019-01-01'");
 
-    //evalTrue("Timestamp '2019-01-01 8:00:00 UTC' <> Timestamp '2019-01-01 8:00:00 US/Pacific'");
-    //evalFalse("Timestamp '2019-01-01 8:00:00 -8:00' <> Timestamp '2019-01-01 11:00:00 -5:00'");
+    evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'UTC' <> Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'US/Pacific'");
+    evalFalse("Timestamp '2019-01-01 08:00:00 -8:00' <> Timestamp '2019-01-01 11:00:00 -5:00'");
     
     evalNull("null <> 'bar'");
     evalNull("'bar' <> null");
@@ -104,7 +107,6 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("NOM <> ");
     evalFails("NOM!");
     evalFails("NOM ! ");
-
   }
 
   @Test
@@ -500,8 +502,9 @@ public class OperatorsTest extends BaseExpressionTest {
 
 
   @Test
-  public void Timezone() throws Exception {
-    //evalEquals("Timezone(Timestamp '2020-05-25 20:48:00','Europe/Paris')", LocalDateTime.of(2020, 5, 25, 22,48,00).atZone(ZoneId.of("Europe/Paris")));
+  public void AtTimeZone() throws Exception {
+    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("Europe/Paris")));
+    evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'BIDON'");
   }
   
   @Test

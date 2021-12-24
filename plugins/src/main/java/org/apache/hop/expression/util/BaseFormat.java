@@ -78,7 +78,6 @@ public abstract class BaseFormat {
           position.setErrorIndex(index);
           throw new NumberFormatException("Invalid number: " + value);
         }
-
         break;
       }
 
