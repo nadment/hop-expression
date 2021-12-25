@@ -2015,8 +2015,8 @@ public class Functions {
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_char.html")
   public static Object to_char(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
 
     String pattern = null;
@@ -2026,18 +2026,18 @@ public class Functions {
         pattern = DataType.toString(v1);
     }
 
-    switch (DataType.from(value)) {
+    DataType type = DataType.from(v0);
+    switch (type) {
       case INTEGER:
       case NUMBER:
       case BIGNUMBER:
-        return NumberFormat.of(pattern).format(DataType.toBigNumber(value));
+        return NumberFormat.of(pattern).format(DataType.toBigNumber(v0));
       case DATE:
-        ZonedDateTime datetime = DataType.toDate(value);
-        return DateTimeFormat.of(pattern).format(datetime);
+        return DateTimeFormat.of(pattern).format(DataType.toDate(v0));
       case STRING:
-        return value;
+        return v0;
       default:
-        throw ExpressionException.createUnexpectedDataType("TO_CHAR", DataType.from(value));
+        throw ExpressionException.createUnexpectedDataType("TO_CHAR", type);
     }
   }
 
@@ -2051,21 +2051,14 @@ public class Functions {
       return null;
 
     try {
-      // No format
-      if (operands.length == 1) {
-        return NumberFormat.of(null).parse(DataType.toString(v0));
-      }
-
-      Object v1 = operands[1].eval(context);
+      String str = DataType.toString(v0);
+      String format = null;
+      
+      // With format 
       if (operands.length == 2) {
-        return NumberFormat.of(DataType.toString(v1)).parse(DataType.toString(v0));
-      }
-
-      // Precision and scale
-      int precision = DataType.toInteger(v1).intValue();
-      Object v2 = operands[2].eval(context);
-      int scale = DataType.toInteger(v2).intValue();
-      return NumberFormat.parse(DataType.toString(v0), precision, scale);   
+        format = DataType.toString(operands[1].eval(context));
+      }      
+      return NumberFormat.of(format).parse(str);
     } catch (ParseException e) {
       throw ExpressionException.create(e.getMessage());
     }
@@ -2075,31 +2068,19 @@ public class Functions {
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_number.html")
   public static Object try_to_number(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    String value = DataType.toString(operands[0].eval(context));
-    if (value == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
 
     try {
-      // No format
-      if (operands.length == 1) {
-        return NumberFormat.of(null).parse(value);
-      }
-
-      // With format
+      String str = DataType.toString(v0);
+      String format = null;
+      
+      // With format 
       if (operands.length == 2) {
-        String format = DataType.toString(operands[1].eval(context));
-        return NumberFormat.of(format).parse(value);
-      }
-
-      // Precision and scale
-      if (operands.length == 3) {
-        Object v1 = operands[1].eval(context);
-        int precision = DataType.toInteger(v1).intValue();
-        Object v2 = operands[2].eval(context);
-        int scale = DataType.toInteger(v2).intValue();
-
-        return NumberFormat.parse(value, precision, scale);
-      }
+        format = DataType.toString(operands[1].eval(context));
+      }      
+      return NumberFormat.of(format).parse(str);      
     } catch (Exception e) {
       // Ignore     
     }
@@ -2112,26 +2093,25 @@ public class Functions {
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/to_date.html")
   public static Object to_date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;
-
     
-    DataType type = DataType.from(value);
+    DataType type = DataType.from(v0);
     switch (type) {
       case DATE:
-        return value;
+        return v0;
       case STRING:
-        String pattern = null;
+        String format = null;
         if (operands.length > 1) {
           Object v1 = operands[1].eval(context);
           if (v1 != null)
-            pattern = DataType.toString(v1);
+            format = DataType.toString(v1);
         } else {
-          pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+          format = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
         try {
-          return DateTimeFormat.of(pattern).parse(DataType.toString(value));
+          return DateTimeFormat.of(format).parse(DataType.toString(v0));
         } catch (ParseException e) {
           throw ExpressionException.create(e.getMessage());
         }
@@ -2148,26 +2128,24 @@ public class Functions {
       category = "i18n::Operator.Category.Conversion", documentationUrl="/docs/try_to_date.html")
   public static Object try_to_date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
       return null;  
 
-    switch (DataType.from(value)) {
+    switch (DataType.from(v0)) {
       case DATE:
-        return value;
+        return v0;
       case STRING:
-
-        String pattern = null;
+        String format = null;
         if (operands.length > 1) {
           Object v1 = operands[1].eval(context);
           if (v1 != null)
-            pattern = DataType.toString(v1);
+            format = DataType.toString(v1);
         } else {
-          pattern = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+          format = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
         }
         try {
-          DateTimeFormat format = DateTimeFormat.of(pattern);
-          return format.parse(DataType.toString(value));
+          return DateTimeFormat.of(format).parse(DataType.toString(v0));
         } catch (ParseException | RuntimeException e) {
           // Ignore
         }

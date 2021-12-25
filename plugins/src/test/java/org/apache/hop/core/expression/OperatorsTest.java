@@ -394,7 +394,7 @@ public class OperatorsTest extends BaseExpressionTest {
     // String to Integer
     evalEquals("CAST('1234' as Integer)", 1234L);
     evalEquals("'1234'::Integer+5", 1239L);
-    evalEquals("CAST('1234.567' as Integer)", 1235L);
+    evalEquals("CAST('1234.567' as Integer)", 1234L);
 
     // String to Number
     evalEquals("'1'::Number", 1d);

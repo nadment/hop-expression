@@ -16,6 +16,7 @@
  */
 package org.apache.hop.core.expression;
 
+
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
@@ -36,7 +37,7 @@ public class PerformanceTest {
 
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-
+  
   public void perf(String source) throws Exception {
     IExpression expression = ExpressionParser.parse(source);
 

@@ -604,7 +604,6 @@ final class SimpleNumberFormat extends NumberFormat {
           break;
       }
 
-
       // Hex
       if (pattern.charAt(0) == 'X') {
         String str = text.substring(start, end);
@@ -612,7 +611,6 @@ final class SimpleNumberFormat extends NumberFormat {
 
         return new BigDecimal(bigInt);
       }
-
 
       StringBuilder digits = new StringBuilder();
 
@@ -990,8 +988,6 @@ final class SimpleNumberFormat extends NumberFormat {
 
   protected final ParseException createUnparsableNumber(final String text, int index) {
     return new ParseException(
-        BaseMessages.getString(PKG, "Expression.UnparsableNumber", text, format), index);
+        BaseMessages.getString(PKG, "Expression.UnparsableNumberWithFormat", text, format), index);
   }
-
-
 }

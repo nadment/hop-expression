@@ -37,13 +37,14 @@ import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Mode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -213,10 +214,9 @@ public class BaseExpressionTest {
 //   context.setAttribute("TEST","");
  
     //evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
-    evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
-    
-    //evalEquals("Timestamp '2021-01-01 5:28+02:00'", OffsetDateTime.of(2021, 1, 1, 5, 28, 0, 0, ZoneOffset.ofHoursMinutes(2, 0)));
-   // evalEquals("Timestamp '2021-01-01 5:28 -02:00'", OffsetDateTime.of(2021, 1, 1, 5, 28, 0, 0, ZoneOffset.ofHoursMinutes(-2, 0)));
-    //evalTrue("Timestamp '2021-01-01 08:00:00 -08:00' = Timestamp '2021-01-01 11:00:00 -05:00'");   
+    //evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
+    evalEquals("CONCAT('TES','T')", "TEST");
+    evalEquals("0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+
   }
 }

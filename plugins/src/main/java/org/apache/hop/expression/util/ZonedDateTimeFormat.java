@@ -24,7 +24,6 @@ import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -654,8 +653,7 @@ import java.util.Locale;
           int pos = position.getIndex();
           while (true) {
             if (index == pattern.length()) {
-              throw new ParseException(
-                  "Error parsing date '" + text + "' with format '" + pattern + '\'', pos);
+              throw createUnparsableDate(text, pos);
             }
             char s = pattern.charAt(index++);
             if (s == '"')
@@ -666,10 +664,7 @@ import java.util.Locale;
           break;
 
         default:
-          throw new ParseException(
-              "Error parsing date '" + text + "' with format '" + pattern + '\'',
-              position.getErrorIndex());
-
+          throw createUnparsableDate(text, position.getErrorIndex());
       }
     }
 
@@ -1299,8 +1294,8 @@ import java.util.Locale;
     }
 
     position.setErrorIndex(index);
-
-    throw new ParseException("Invalid month name", position.getIndex());
+    
+    throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"), position.getIndex());
   }
 
   protected static int parseMonthRoman(String value, ParsePosition position) throws ParseException {
@@ -1328,6 +1323,11 @@ import java.util.Locale;
   protected final IllegalArgumentException createInvalidDateFormat(final String error) {
     return new IllegalArgumentException(
         BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
+  }
+  
+  protected final ParseException createUnparsableDate(final String text, int index) {
+    return new ParseException(
+        BaseMessages.getString(PKG, "Expression.UnparsableDateWithFormat", text, pattern), index);
   }
 
   @Override

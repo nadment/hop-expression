@@ -21,7 +21,6 @@ import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.time.ZonedDateTime;
 
 /**
@@ -401,9 +400,9 @@ public enum DataType {
 
   private static final Long convertStringToInteger(final String str) throws ExpressionException {
     try {
-      BigDecimal number = NumberFormat.parse(str, 38, 0);
+      Double number = Double.parseDouble(str);
       return number.longValue();
-    } catch (ParseException | NumberFormatException e) {
+    } catch (NumberFormatException e) {
       throw new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.InvalidInteger", str));
     }
   }

@@ -18,7 +18,6 @@ package org.apache.hop.expression.optimizer.rules;
 
 
 import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;

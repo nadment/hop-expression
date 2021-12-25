@@ -15,7 +15,6 @@
 package org.apache.hop.expression.util;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,20 +156,6 @@ public abstract class NumberFormat extends BaseFormat {
     }
 
     return new SimpleNumberFormat(pattern);
-  }
-
-  public static final BigDecimal parse(String value, int precision, int scale)
-      throws ParseException {
-
-    // TODO: not thread safe
-    DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance();
-    format.setParseBigDecimal(true);
-    // format.setMaximumIntegerDigits(precision);
-    format.setMaximumFractionDigits(scale);
-    BigDecimal result = (BigDecimal) format.parse(value);
-    result = result.setScale(scale, BigDecimal.ROUND_HALF_UP);
-
-    return result;
   }
 
   /**

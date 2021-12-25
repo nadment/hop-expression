@@ -572,7 +572,7 @@ public class ExpressionParser {
           if ( str.indexOf('.',10)>0 )
             pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
           else
-          pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
+            pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
           break;          
         case 21: // 2021-01-01 5:28+02:00
         case 22: // 2021-01-01 15:28+02:00 or  2021-01-01 5:28 +02:00          

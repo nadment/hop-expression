@@ -194,7 +194,7 @@ public abstract class BaseFormat {
    * @param length the number of characters to append
    * @return the specified string builder
    */
-  public static StringBuilder appendZeroPadded(StringBuilder builder, int positiveValue,
+  protected static StringBuilder appendZeroPadded(StringBuilder builder, int positiveValue,
       int length) {
     String s = Integer.toString(positiveValue);
     length -= s.length();

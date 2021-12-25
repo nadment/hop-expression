@@ -141,7 +141,7 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(Long.valueOf(1), DataType.toInteger(1L));
     assertEquals(Long.valueOf(1), DataType.toInteger(1.2D));
     assertEquals(Long.valueOf(1), DataType.toInteger("1.2"));
-    assertEquals(Long.valueOf(-2), DataType.toInteger("-1.6"));
+    assertEquals(Long.valueOf(-1), DataType.toInteger("-1.6"));
     assertThrows(ExpressionException.class, () -> DataType.toInteger(ZonedDateTime.now()));
   }
 
