@@ -22,6 +22,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 
 /** 
@@ -38,15 +40,41 @@ public class Concat extends Operator {
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
+
+    Object firstNotNull = null;
+    Object[] values = new Object[operands.length];
+    int i=0;
+    for (IExpression operand : operands) {
+      Object value = operand.eval(context);
+      if (firstNotNull==null && value != null)  firstNotNull=value;
+      values[i++] = value;
+    }
+    
+    if (firstNotNull == null )
+      return null;
+    
+    // Concat Binary
+    if (firstNotNull instanceof byte[]) {
+      // int lenth = 0;
+      try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+        for (Object value : values) {
+          if (value != null) {
+            output.write((byte[]) value);
+          }
+        }
+        return output.toByteArray();
+      } catch (IOException e) {
+         throw ExpressionException.create(e.getMessage());
+      }
+    }
+
+    // Concat String
     StringBuilder builder = new StringBuilder();
     for (IExpression operand : operands) {
       Object value = operand.eval(context);
       if (value != null)
         builder.append(DataType.toString(value));
     }
-
-    if (builder.length() == 0)
-      return null;
 
     return builder.toString();
   }

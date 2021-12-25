@@ -789,6 +789,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void Concat() throws Exception {
+    // String
     evalEquals("CONCAT('TES','T')", "TEST");
     evalTrue("NAME='TES'||'T'");
     evalTrue("NAME='TES'||NULLIS||'T'");
@@ -796,7 +797,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("null||'TEST'", "TEST");
     
     // Binary
-    // TODO: evalEquals("0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("0x1F || null || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("null || 0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("0x1F || 0x2A3B || null", new byte[]{0x1F, 0x2A, 0x3B});
     
     evalNull("null||null");
 
