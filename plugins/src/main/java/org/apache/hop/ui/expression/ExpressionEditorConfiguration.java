@@ -191,7 +191,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // Add rule for operator
     rules.add(new OperatorRule(keyword));
 
-    // Add rule for reserved world and function name
+    // Add case insensitive rule for reserved world and function name
     WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
     for (String name : OperatorRegistry.getFunctionNames()) {
       rule.addWord(name, function);
@@ -208,21 +208,22 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     for (DataType type : DataType.values()) {
       rule.addWord(type.name(), extra);
     }
-
-    // Add rule for identifier
+    rules.add(rule);
+    
+    // Add case sensitive rule for identifier  
     if (rowMeta != null) {
+      WordRule ruleIdentifier = new WordRule(new WordDetector(), Token.UNDEFINED, false);
       try {
         for (IValueMeta vm : rowMeta.get().getValueMetaList()) {
-          rule.addWord(vm.getName(), identifier);
+          ruleIdentifier.addWord(vm.getName(), identifier);
         }
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
         // Ignore
       }
+      rules.add(ruleIdentifier);
     }
-
-    rules.add(rule);
 
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules.toArray(new IRule[0]));
