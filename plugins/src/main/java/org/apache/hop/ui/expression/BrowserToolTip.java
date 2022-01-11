@@ -21,6 +21,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
@@ -52,6 +53,14 @@ public class BrowserToolTip extends ToolTip {
 
     Browser browser = new Browser(parent, SWT.NONE);
     browser.setSize(500, 500);
+    
+    GridData gridData = new GridData();
+    gridData.widthHint = 500;
+    gridData.heightHint = 500;
+    browser.setLayoutData(gridData);
+    
+    // Cancel opening of new windows
+    browser.addOpenWindowListener(e -> e.required=true);
 
     // Replace browser's built-in context menu with none
     browser.setMenu(new Menu(parent.getShell(), SWT.NONE));
