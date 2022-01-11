@@ -258,6 +258,7 @@ public class ExpressionText extends Composite {
   @Override
   public void setEnabled(boolean flag) {
     wText.setEnabled(flag);
+    wToolBar.setEnabled(flag);
   }
 
   @Override
