@@ -190,29 +190,10 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
     // Add rule for operator
     rules.add(new OperatorRule(keyword));
-
-    // Add case insensitive rule for reserved world and function name
-    WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
-    for (String name : OperatorRegistry.getFunctionNames()) {
-      rule.addWord(name, function);
-    }
-    for (String word : RESERVED_WORDS) {
-      rule.addWord(word, keyword);
-    }
-    for (String word : RESERVED_LITERALS) {
-      rule.addWord(word, extra);
-    }
-    for (DatePart datapart : DatePart.values()) {
-      rule.addWord(datapart.name(), extra);
-    }
-    for (DataType type : DataType.values()) {
-      rule.addWord(type.name(), extra);
-    }
-    rules.add(rule);
     
-    // Add case sensitive rule for identifier  
+    // Add case sensitive rule for identifier without double quote 
     if (rowMeta != null) {
-      WordRule ruleIdentifier = new WordRule(new WordDetector(), Token.UNDEFINED, false);
+      WordRule ruleIdentifier = new WordRule(new IndentifierDetector(), Token.UNDEFINED, false);
       try {
         for (IValueMeta vm : rowMeta.get().getValueMetaList()) {
           ruleIdentifier.addWord(vm.getName(), identifier);
@@ -224,6 +205,26 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       }
       rules.add(ruleIdentifier);
     }
+    
+    // Add case insensitive rule for reserved world and function name
+    // If word not found use Token.WHITESPACE to signal problem 
+    WordRule rule = new WordRule(new WordDetector(), Token.WHITESPACE, true);
+    for (String name : OperatorRegistry.getFunctionNames()) {
+      rule.addWord(name, function);
+    }
+    for (String word : RESERVED_WORDS) {
+      rule.addWord(word, keyword);
+    }
+    for (String word : RESERVED_LITERALS) {
+      rule.addWord(word, extra);
+    }
+    for (DataType type : DataType.values()) {
+      rule.addWord(type.name(), extra);
+    }
+    for (DatePart datapart : DatePart.values()) {
+      rule.addWord(datapart.name(), extra);
+    }
+    rules.add(rule);
 
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules.toArray(new IRule[0]));

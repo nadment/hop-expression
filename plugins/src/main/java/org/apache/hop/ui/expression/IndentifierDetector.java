@@ -14,10 +14,16 @@
  */
 package org.apache.hop.ui.expression;
 
-import org.eclipse.jface.text.rules.IWhitespaceDetector;
+import org.eclipse.jface.text.rules.IWordDetector;
 
-public class WhitespaceDetector implements IWhitespaceDetector {
-  public boolean isWhitespace(char character) {
-    return Character.isWhitespace(character);
+public class IndentifierDetector implements IWordDetector {
+  @Override
+  public boolean isWordPart(char character) {
+    return Character.isJavaIdentifierPart(character);
+  }
+
+  @Override
+  public boolean isWordStart(char character) {
+    return Character.isJavaIdentifierStart(character);
   }
 }
