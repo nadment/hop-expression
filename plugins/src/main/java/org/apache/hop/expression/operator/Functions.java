@@ -335,7 +335,7 @@ public class Functions {
 
     if (operands.length == 1) {
       Object value = operands[0].eval(context);
-      // FIXME: What if multi random with different SEED ?
+      // FIXME: What if multi random in the same with different SEED ?
       random.setSeed(DataType.toInteger(value));
     }
     return random.nextDouble();

@@ -280,6 +280,8 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
                 try {
                   IRowMeta rowMeta = pipelineMeta.getPrevTransformFields(getVariables(), transformMeta);
                   wnrClone.setRowMeta(rowMeta);
+                  wcloneFlagField.setRowMeta(rowMeta);                  
+                  wCloneNumField.setRowMeta(rowMeta);
                 } catch (HopException e) {
                   new ErrorDialog(
                       shell,

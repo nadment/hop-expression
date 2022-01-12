@@ -262,4 +262,9 @@ public abstract class Operator implements Comparable<Operator> {
     return this.documentation;
   }
 
+  @Override
+  public String toString() {
+    return id;
+  }
+
 }

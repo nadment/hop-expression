@@ -159,7 +159,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = convertValue(valueMeta, value);
 
-        // FIXME: Don't work with Instant
+        // FIXME: Don't work with ZonedDateTime
         // outputRowValues[index] = valueMeta.convertData(valueMeta,value);
       } catch (Exception ex) {
         String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateExpressionError",
@@ -202,12 +202,9 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
       case IValueMeta.TYPE_INTEGER:
         return DataType.toInteger(value);
       case IValueMeta.TYPE_DATE:
-        ZonedDateTime date = DataType.toDate(value);        
-        System.out.println(date);
-        return Date.from(date.toInstant());
+        return Date.from(DataType.toDate(value).toInstant());
       case IValueMeta.TYPE_TIMESTAMP:
-        ZonedDateTime timestamp = DataType.toDate(value);
-        return java.sql.Timestamp.from(timestamp.toInstant());
+        return java.sql.Timestamp.from(DataType.toDate(value).toInstant());
       case IValueMeta.TYPE_BIGNUMBER:
         return DataType.toBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:

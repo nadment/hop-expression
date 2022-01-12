@@ -23,7 +23,7 @@ First expression is equal than second expression.
 <expression> = <expression>
 ----
 
-= Usage
+== Usage
 
 * NULL is not equal ( = ) to anything—not even to another NULL.
 * Timestamp '2022-03-01 8:00:00 -8:00' is equal to Timestamp '2022-03-01 11:00:00 -5:00'

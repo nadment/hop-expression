@@ -55,7 +55,7 @@ public class OperatorCall implements IExpression {
 
   @Override
   public int getCost() {
-    int cost = 1;
+    int cost = 2;
     for (IExpression operand : operands) {
       cost += operand.getCost();
     }

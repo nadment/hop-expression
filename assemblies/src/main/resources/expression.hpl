@@ -370,6 +370,13 @@ UCASE('${os.name}')</expression>
         <type>Date</type>
       </field>
       <field>
+        <expression>FIELD_DATE+5</expression>
+        <length>-1</length>
+        <name>DATE_PLUS_FIVE</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+      <field>
         <expression>date_trunc(WEEK, TODAY())</expression>
         <length>-1</length>
         <name>FIRST_DAY_OF_CURRENT_WEEK</name>

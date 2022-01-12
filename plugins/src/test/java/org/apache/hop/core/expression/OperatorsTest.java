@@ -353,7 +353,6 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("CAST('false' as Boolean)");
     evalFalse("CAST('False' as Boolean)");
 
-
     // Number to Boolean
     evalTrue("CAST(1 as Boolean)");
     evalTrue("1::Boolean");
@@ -363,12 +362,11 @@ public class OperatorsTest extends BaseExpressionTest {
     // Number to Integer
     evalEquals("CAST(1.25 as Integer)", 1);
     // Oracle truncate to 1 and Snowflake round it to 2
-    // TODO: evalEquals("CAST(1.75 as Integer)",2);
+    evalEquals("CAST(1.75 as Integer)", 1);
 
     // Boolean to String
     evalEquals("CAST(true as String)", "TRUE");
     evalEquals("true::String", "TRUE");
-
 
     // Date to String
     evalEquals("CAST(Date '2019-02-25' AS String)", "2019-02-25");
@@ -413,7 +411,6 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("CAST('-1e-37' as BigNumber)", -1e-37d);
     // TODO: fix if white space before or after
     //evalEquals("CAST(' -1e-37' as BigNumber)", -1e-37d);
-
     
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
@@ -424,7 +421,6 @@ public class OperatorsTest extends BaseExpressionTest {
 
 
     evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124);
-
 
     evalEquals("CAST(12345678901234567890123456789012345678 as BigNumber)",
         new BigDecimal("12345678901234567890123456789012345678"));
@@ -454,7 +450,6 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT NULL)");
 
-
     // Bad data type
     evalFails("Cast(123 as Nill)");
 
@@ -482,7 +477,6 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("TRY_CAST('2019-99-25' AS Date)");
     evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
 
-
     evalNull("TRY_CAST(NULL AS Date)");
 
     // Bad syntax
@@ -499,7 +493,6 @@ public class OperatorsTest extends BaseExpressionTest {
     writeEquals("TRY_CAST('1234' AS NUMBER)");
     writeEquals("TRY_CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
   }
-
 
   @Test
   public void AtTimeZone() throws Exception {
