@@ -44,8 +44,7 @@ public class BitNot extends Operator {
 
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
-    operands[0].write(writer);
     writer.append('~');
-    operands[1].write(writer);
+    operands[0].write(writer);
   }
 }
