@@ -270,9 +270,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("PRICE+PRICE", -10.24);
     evalEquals("AMOUNT+1", 123456.789 + 1);
 
-    evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
-    evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
-    evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
+    //evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
+    //evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
+    //evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
 
     evalNull("5+NULL+5");
     evalNull("+NULL+5");
@@ -284,14 +284,15 @@ public class OperatorsTest extends BaseExpressionTest {
   public void Subtract() throws Exception {
     evalEquals("10-0.5", 9.5);
     evalEquals("Age-0.5", 39.5);
-    evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
-    evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
-    evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-    evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
+    
+    //evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
+    //evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+    //evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+    //evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 
-    evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
-    evalEquals("Date '2019-02-23'-Date '2019-02-25'", -2);
-    evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
+    //evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
+    //evalEquals("Date '2019-02-23'-Date '2019-02-25'", -2);
+    //evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
 
     evalNull("5-NULL");
     evalNull("NULL-5");

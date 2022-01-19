@@ -465,6 +465,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Add_Days() throws Exception {
     evalEquals("Add_Days(Date '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
+    evalEquals("Add_Days(Date '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
     evalNull("Add_Days(Null,140)");
     evalNull("Add_Days(Date '2019-01-15',Null)");
     evalFails("Add_Days(Date '2019-01-15')");

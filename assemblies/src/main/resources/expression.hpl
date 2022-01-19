@@ -363,14 +363,14 @@ UCASE('${os.name}')</expression>
         <type>Date</type>
       </field>
       <field>
-        <expression>date_trunc(DAY, NOW() + 1)</expression>
+        <expression>date_trunc(DAY, ADD_DAYS(NOW(),1))</expression>
         <length>-1</length>
         <name>TOMORROW</name>
         <precision>-1</precision>
         <type>Date</type>
       </field>
       <field>
-        <expression>FIELD_DATE+5</expression>
+        <expression>ADD_DAYS(FIELD_DATE,5)</expression>
         <length>-1</length>
         <name>DATE_PLUS_FIVE</name>
         <precision>-1</precision>

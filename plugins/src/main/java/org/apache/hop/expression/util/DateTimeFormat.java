@@ -240,7 +240,7 @@ public abstract class DateTimeFormat extends BaseFormat {
 
   public static DateTimeFormat of(String pattern) {
     if (pattern == null) {
-      pattern = "DD-MON-YY HH.MI.SS.FF PM";
+      pattern = "YYYY-MM-DD";
     }
 
     return cache.computeIfAbsent(pattern, DateTimeFormat::create);

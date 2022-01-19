@@ -17,6 +17,7 @@
 package org.apache.hop.expression;
 
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,7 +56,7 @@ public class OperatorCall implements IExpression {
 
   @Override
   public int getCost() {
-    int cost = 2;
+    int cost = 3;
     for (IExpression operand : operands) {
       cost += operand.getCost();
     }
@@ -70,7 +71,7 @@ public class OperatorCall implements IExpression {
   public Operator getOperator() {
     return operator;
   }
-
+  
   /**
    * Get array of operands.
    * An empty array is returned if no operands
@@ -90,6 +91,23 @@ public class OperatorCall implements IExpression {
    */
   public int getOperandCount() {
     return operands.length;
+  }
+  
+  @Override
+  public boolean equals(Object other) {
+    if (other == null)
+      return false;
+
+    if (other instanceof OperatorCall) {
+      OperatorCall call = (OperatorCall) other;
+      return this.operator.equals(call.operator) && Arrays.equals(this.operands,call.operands);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(operator,operands);
   }
 
   @Override

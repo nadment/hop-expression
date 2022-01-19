@@ -42,8 +42,8 @@ public class OptimizerTest {
 
     int gain = expression.getCost() - optimized.getCost();
 
-    System.out.println("(" + gain + ") optimize(" + e + ")[" + expression.getCost()
-        + "] >>> optimized(" + optimized + ")[" + optimized.getCost() + "]");
+    System.out.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> (" + optimized + ") cost="
+        + optimized.getCost()+" reduced=" + gain  );
     return optimized;
   }
 
@@ -134,7 +134,7 @@ public class OptimizerTest {
 
     optimize("'A'||'B'", "'AB'");
 
-    optimize("3+1", "4");
+    optimize("3+1+1+1+1+1+1+1+1+1+1+1", "14");
     optimize("3+1+2", "6");
     optimize("3+1*2", "5");
     optimize("(3+1)*2", "8");
@@ -161,6 +161,7 @@ public class OptimizerTest {
     optimize("AGE between 3 and (5+1)");
     optimizeFalse("2 between 3 and (5+1)");
 
+    optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
 
     optimize("null=null");
     optimizeTrue("'25' in ('1','25','66')");
@@ -174,13 +175,16 @@ public class OptimizerTest {
   public void combineConcatsRule() throws Exception {
     // Same syntax but cost reduced
     optimize("'A'||FIELD1||FIELD2||'C'", "'A'||FIELD1||FIELD2||'C'");
-    optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')))", "'A'||FIELD1||FIELD2||'C'");
+    optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')||'D'))", "'A'||FIELD1||FIELD2||'C'||'D'");
   }
 
   @Test
-  public void permutationRule() throws Exception {
-    // optimize("1+AGE+3+FIELD+5","8+AGE+FIELD");
+  public void arithmeticRule() throws Exception {
+    optimize("AGE*3*2", "6*AGE");
+    optimize("3*(AGE*1)*1*(2*5)", "30*AGE");
+    optimize("1+AGE+3+FIELD+5*2", "14+AGE+FIELD");
     optimize("AGE+3+1", "4+AGE");
-    // TODO: optimize("4*AGE*0.5","2.0*AGE");
+    optimize("4+AGE+1", "5+AGE");
+    optimize("4*AGE*0.5", "2.0*AGE");
   }
 }

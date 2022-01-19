@@ -21,9 +21,4 @@ Sum of 2 numeric values.
 == Syntax
 ----
 <numeric1> + <numeric2>
-<datetime> - <numeric>
 ----
-
-== Usage
-
-* This addition arithmetic operator can also add a number, in days, to a date.

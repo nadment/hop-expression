@@ -17,11 +17,12 @@ package org.apache.hop.expression.optimizer;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.optimizer.rules.ArithmeticRule;
 import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
 import org.apache.hop.expression.optimizer.rules.DeterministicRule;
-import org.apache.hop.expression.optimizer.rules.ReorderAssociativeRule;
+import org.apache.hop.expression.optimizer.rules.ReorganizeCommutativeRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyBooleanRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyExtractRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyInRule;
@@ -33,12 +34,13 @@ import java.util.List;
 public class Optimizer {
 
   public interface Rule {
-    public IExpression apply(IExpressionContext context, OperatorCall call)        ;
+    public IExpression apply(IExpressionContext context, OperatorCall call);
   }
 
-  private static final List<Rule> RULES = Arrays.asList(new ReorderAssociativeRule(),
-      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(),
-      new CombineConcatRule(), new SimplifyBooleanRule(), new DeterministicRule());
+  private static final List<Rule> RULES = Arrays.asList(new ReorganizeCommutativeRule(),
+      new ArithmeticRule(), new SimplifyLikeRule(),
+      new SimplifyInRule(), new SimplifyExtractRule(), new CombineConcatRule(),
+      new SimplifyBooleanRule(), new DeterministicRule());
 
   /**
    * Try to optimize the expression.
@@ -47,13 +49,32 @@ public class Optimizer {
    * @param expression the expression to optimize
    * @return the optimized expression
    */
-  public IExpression optimize(IExpressionContext context, IExpression expression)
-      {
-    if (expression instanceof OperatorCall) {
-      return optimizeCall(context, (OperatorCall) expression);
-    } else if (expression instanceof ExpressionList) {
-      return optimizeList(context, (ExpressionList) expression);
-    }
+  public IExpression optimize(IExpressionContext context, IExpression expression) {
+    // System.out.println("Optimize: "+expression);
+    IExpression original = expression;
+    int cycle = 20;
+    do {
+      switch (expression.getKind()) {
+        case LITERAL:
+        case JSON:
+        case IDENTIFIER:
+          return expression;
+        case OPERATOR:
+          expression = optimizeCall(context, (OperatorCall) expression);
+          break;
+        case LIST:
+          expression = optimizeList(context, (ExpressionList) expression);
+          break;
+      }
+
+      if (expression.equals(original)) {
+        return expression;
+      }
+
+      //System.out.println("*** Optimized cycle " + cycle + ": " + original + " >>> " + expression);
+
+      original = expression;
+    } while (--cycle > 0);
 
     return expression;
   }
@@ -69,37 +90,22 @@ public class Optimizer {
   }
 
   protected IExpression optimizeCall(IExpressionContext context, OperatorCall call) {
+    IExpression expression = call;
 
+    // Optimize operands first
     IExpression[] operands = new IExpression[call.getOperandCount()];
-
     for (int i = 0; i < call.getOperandCount(); i++) {
       IExpression operand = optimize(context, call.getOperand(i));
-      for (Rule rule : RULES) {
-        if (operand instanceof OperatorCall) {
-          operand = rule.apply(context, (OperatorCall) operand);
-        }
-      }
       operands[i] = operand;
     }
-    IExpression expression = new OperatorCall(call.getOperator(), operands);
+    expression = new OperatorCall(call.getOperator(), operands);
 
+    // Apply rules
     for (Rule rule : RULES) {
       if (expression instanceof OperatorCall) {
         expression = rule.apply(context, (OperatorCall) expression);
       }
     }
-
-
-    // IExpression expression = call;
-    // for (Rule rule : RULES) {
-    // if (expression instanceof ExpressionCall) {
-    // expression = rule.apply(context, (ExpressionCall) expression);
-    // } else
-    // break;
-    // }
-
-    // if (!original.equals(expression) && expression instanceof ExpressionCall)
-    // return optimizeCall(context, (ExpressionCall) expression);
 
     return expression;
   }

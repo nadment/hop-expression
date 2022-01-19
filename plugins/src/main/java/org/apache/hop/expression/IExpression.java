@@ -36,7 +36,7 @@ public interface IExpression {
   public default boolean isKind(Kind kind) {
     return getKind() == kind;
   }
-
+  
   /** Check if the expression is a call to this operator or a alias of this operator */
   public default boolean isOperator(Operator operator) {
     if (operator == null)
@@ -50,6 +50,8 @@ public interface IExpression {
 
     return false;
   }
+
+
 
   /**
    * Estimate the cost to process the expression. Used when optimizing the query, to optimize the

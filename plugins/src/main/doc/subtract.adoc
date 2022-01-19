@@ -22,9 +22,4 @@ Subtracts two numeric values.
 
 ----
 <numeric1> + <numeric2>
-<datetime> - <numeric>
 ----
-
-== Usage
-
-* This subtraction arithmetic operator can also subtract a number, in days, to a date.

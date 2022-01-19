@@ -83,15 +83,6 @@ public class SimplifyBooleanRule implements Rule {
             return Literal.TRUE;
         }
 
-        if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
-          Boolean left = DataType.toBoolean(call.getOperand(0).eval(context));
-          Boolean right = DataType.toBoolean(call.getOperand(1).eval(context));
-          if (left == Boolean.FALSE || right == Boolean.FALSE)
-            return Literal.FALSE;
-
-          return Literal.NULL;
-        }
-
         // [field] OR [field] => [field]
         if (call.getOperand(0).equals(call.getOperand(1))) {
           return call.getOperand(0);
@@ -110,15 +101,6 @@ public class SimplifyBooleanRule implements Rule {
           Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
           if (value == null)
             return Literal.NULL;
-        }
-
-        if (call.getOperand(0).isKind(Kind.LITERAL) && call.getOperand(1).isKind(Kind.LITERAL)) {
-          Boolean value0 = DataType.toBoolean(call.getOperand(0).eval(context));
-          Boolean value1 = DataType.toBoolean(call.getOperand(1).eval(context));
-          if (value0 == Boolean.FALSE || value1 == Boolean.FALSE)
-            return Literal.FALSE;
-
-          return Literal.TRUE;
         }
 
         // [field] AND [field] => [field]

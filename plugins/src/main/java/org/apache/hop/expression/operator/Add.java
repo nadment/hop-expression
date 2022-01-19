@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 
 /**
  * Arithmetic addition operator '<code>+</code>'.
@@ -47,11 +46,13 @@ public class Add extends Operator {
     Object right = operands[1].eval(context);
     if (right == null)
       return null;
-    if (left instanceof ZonedDateTime) {
-      // Computes fraction of day
-      long seconds = (long) (DataType.toNumber(right) * SECONDS_BY_DAY);
-      return DataType.toDate(left).plusSeconds(seconds);
-    }
+    
+// Removed because hard to optimize    
+//    if (left instanceof ZonedDateTime) {
+//      // Computes fraction of day
+//      long seconds = (long) (DataType.toNumber(right) * SECONDS_BY_DAY);
+//      return DataType.toDate(left).plusSeconds(seconds);
+//    }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
       return DataType.toBigNumber(left).add(DataType.toBigNumber(right));
     }
@@ -67,8 +68,10 @@ public class Add extends Operator {
 
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
+    //writer.append('(');
     operands[0].write(writer);
     writer.append('+');
     operands[1].write(writer);
+    //writer.append(')');
   }
 }

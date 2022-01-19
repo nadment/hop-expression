@@ -47,18 +47,19 @@ public class Subtract extends Operator {
     if (right == null)
       return null;
 
-    if (left instanceof ZonedDateTime) {
-      // If number, subtract fraction of day
-      if (right instanceof Number) {
-        long seconds = (long) (DataType.toNumber(right) * SECONDS_BY_DAY);
-        return DataType.toDate(left).minusSeconds(seconds);
-      }
-
-      // If right operand is date, return difference in fraction of day
-      if (right instanceof ZonedDateTime) {
-        return DataType.toDate(right).until(DataType.toDate(left), ChronoUnit.SECONDS) / SECONDS_BY_DAY;
-      }
-    }
+// Removed because hard to optimize
+//    if (left instanceof ZonedDateTime) {
+//      // If number, subtract fraction of day
+//      if (right instanceof Number) {
+//        long seconds = (long) (DataType.toNumber(right) * SECONDS_BY_DAY);
+//        return DataType.toDate(left).minusSeconds(seconds);
+//      }
+//
+//      // If right operand is date, return difference in fraction of day
+//      if (right instanceof ZonedDateTime) {
+//        return DataType.toDate(right).until(DataType.toDate(left), ChronoUnit.SECONDS) / SECONDS_BY_DAY;
+//      }
+//    }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
       return DataType.toBigNumber(left).subtract(DataType.toBigNumber(right));
     }

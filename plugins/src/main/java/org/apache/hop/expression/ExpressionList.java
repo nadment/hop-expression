@@ -15,8 +15,10 @@
 package org.apache.hop.expression;
 
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -105,6 +107,23 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
     throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == null)
+      return false;
+
+    if (other instanceof ExpressionList) {
+      ExpressionList o = (ExpressionList) other;
+      return Arrays.equals(values,o.values);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(values);
   }
 
   @Override
