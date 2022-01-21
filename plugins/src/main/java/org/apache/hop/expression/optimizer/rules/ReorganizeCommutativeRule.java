@@ -50,14 +50,12 @@ public class ReorganizeCommutativeRule implements Rule {
 
       // Move low cost operand to the left
       if (left.getCost() > right.getCost()) {
-        //System.out.println("Swap cost (" + left + ") " + operator.getName() + " (" + right + ")");
         return new OperatorCall(operator, right, left);
       }
 
       // Order identifier by name
       if (left.isKind(Kind.IDENTIFIER) && right.isKind(Kind.IDENTIFIER)) {
         if (((Identifier) left).getName().compareTo(((Identifier) right).getName()) > 0) {
-          //System.out.println("Swap name (" + left + ") " + operator.getName() + " (" + right + ")");
           return new OperatorCall(operator, right, left);
         }
       }
@@ -69,14 +67,12 @@ public class ReorganizeCommutativeRule implements Rule {
                
         // Go up an operand if low cost
         if (subLeft.getCost() < left.getCost()) {
-          //System.out.println("Reorganize cost: "+ call +" >>> (" + subLeft + operator.getName() + " (" + left  + operator.getName() + subRight + "))");
           return new OperatorCall(operator, subLeft, new OperatorCall(operator, left, subRight));
         }
 
         // Order identifier by name
         if (left.isKind(Kind.IDENTIFIER) && subLeft.isKind(Kind.IDENTIFIER)) {
           if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) < 0) {
-            //System.out.println("Reorganize name (" + left + ") " + operator.getName() + " (" + right + ")");
             return new OperatorCall(operator, subLeft, new OperatorCall(operator, left, subRight));
           }
         }

@@ -575,6 +575,22 @@ public class OperatorsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Mod() throws Exception {
+    evalEquals("15%4", 3);
+    evalEquals("Mod(15,4)", 3);
+    evalEquals("Mod(15.3,4)", 3.3);
+    evalEquals("Mod(15.3::BIGNUMBER,4)", 3.3);
+    evalNull("Mod(NULL,2)");
+    evalNull("Mod(2,NULL)");
+    evalFails("'TEST'%5");
+    evalFails("Mod()");
+    evalFails("Mod(9,0)");
+    evalFails("Mod(3)");
+    
+    writeEquals("15%4");
+  }
+  
+  @Test
   public void Multiplication() throws Exception {
     evalEquals("2.55*10", 25.5D);
     evalEquals("4*10", 40D);
@@ -583,11 +599,12 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("1.23456::BigNumber*-2.987654", -3.68843812224);
     evalNull("null*1");
     evalNull("1*null");
+    writeEquals("15*4");
   }
 
   @Test
-  public void Division() throws Exception {
-    //evalEquals("Div(10,4)", 2.5);
+  public void Div() throws Exception {
+    evalEquals("Div(10,4)", 2.5);
     evalEquals("10/4", 2.5D);
     evalEquals("40/-10", -4D);
     evalEquals("-40/-10", 4D);
@@ -598,6 +615,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("null/0");
     evalNull("1/null");
     evalFails("40/0");
+    
+    writeEquals("15/4");
   }
 
   @Test
@@ -624,6 +643,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     // Alias
     evalEquals("BITNOT(1)", -2);
+    
+    writeEquals("~15");
   }
 
   @Test
@@ -635,6 +656,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("NULL & 100");
     evalFails("100&");
     evalFails("100 & ");
+    
+    writeEquals("15&4");
   }
 
   @Test
@@ -646,6 +669,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("NULL | 100");
     evalFails("3|");
     evalFails("3 | ");
+    
+    writeEquals("15|4");
   }
 
   @Test
@@ -657,6 +682,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("NULL ^ 100");
     evalFails("100^");
     evalFails("100 ^ ");
+    
+    writeEquals("15^4");
   }
 
   @Test
@@ -670,6 +697,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("NOT NULL");
     evalFails("FLAG is ");
     evalFails("NOT");
+    
     writeEquals("FIELD IS NOT TRUE", "NOT FIELD IS TRUE");
   }
 
@@ -700,6 +728,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("false AND null");
     evalNull("null AND false");
     evalNull("null AND null");
+    
     writeEquals("FIELD1 AND FIELD2");
   }
 

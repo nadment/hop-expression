@@ -705,16 +705,6 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Mod() throws Exception {
-    evalEquals("Mod(15,4)", 3);
-    evalNull("Mod(NULL,2)");
-    evalNull("Mod(2,NULL)");
-    evalFails("Mod()");
-    evalFails("Mod(9,0)");
-    evalFails("Mod(3)");
-  }
-
-  @Test
   public void Power() throws Exception {
     evalEquals("Power(3,2)", 9D);
     evalEquals("Power(100,0.5)", 10D);

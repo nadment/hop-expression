@@ -48,8 +48,7 @@ public class DeterministicRule implements Rule {
           return call;
         }
       }
-      
-      //System.out.println("Eval " + call + "=" + call.eval(context));
+
       return Literal.of(call.eval(context));
     } catch (Exception e) {
       return call;

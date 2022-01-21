@@ -32,7 +32,7 @@ import org.apache.hop.expression.operator.BoolXor;
 import org.apache.hop.expression.operator.Case;
 import org.apache.hop.expression.operator.Cast;
 import org.apache.hop.expression.operator.Concat;
-import org.apache.hop.expression.operator.Divide;
+import org.apache.hop.expression.operator.Div;
 import org.apache.hop.expression.operator.Equal;
 import org.apache.hop.expression.operator.Extract;
 import org.apache.hop.expression.operator.GreaterThan;
@@ -113,7 +113,7 @@ public class OperatorRegistry {
   // -------------------------------------------------------------
   public static final Operator NEGATIVE = new Negative();
   public static final Operator MULTIPLY = new Multiply();
-  public static final Operator DIVIDE = new Divide();
+  public static final Operator DIVIDE = new Div();
   public static final Operator MODULUS = new Mod();
   public static final Operator ADD = new Add();
   public static final Operator SUBTRACT = new Subtract();

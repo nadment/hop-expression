@@ -470,16 +470,6 @@ public class ExpressionParser {
       bytes[i] = (byte) Integer.parseInt(str.substring(start, start + 2), 16);
     }
 
-    // if (bytes.length <= 8) {
-    // // Value as integer if less than or equals 8 bytes
-    // long result = 0;
-    // for (int i = 0; i < bytes.length; i++) {
-    // result = result << 8;
-    // result = result | (bytes[i] & 0xFF);
-    // }
-    // return new Literal(result);
-    // }
-
     return Literal.of(bytes);
   }
 
@@ -494,11 +484,6 @@ public class ExpressionParser {
         bitset.set(length - i - 1);
       }
     }
-
-    // if (bitset.length() <= 32) {
-    // // Value as integer if less than or equals 32 bits
-    // return new Literal(bitset.toLongArray()[0]);
-    // }
 
     return Literal.of(bitset.toByteArray());
   }
@@ -595,7 +580,6 @@ public class ExpressionParser {
           pattern = "YYYY-MM-DD HH24:MI:SS.FF";
       }
 
-      //System.out.println("TIMESTAMP(" + str + ") lenght=" + str.length() + "  >>  " + pattern);
       DateTimeFormat format = DateTimeFormat.of(pattern);
       ZonedDateTime datetime = format.parse(token.text());
       

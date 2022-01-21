@@ -28,7 +28,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -142,7 +141,6 @@ public class LiteralTest extends BaseExpressionTest {
     assertEquals(Literal.ZERO, Literal.of(0D));  
     assertEquals(Literal.ONE, Literal.of(1D));   
     assertEquals(Double.valueOf(2.2), Literal.of(2.2D).eval(null));
-    assertEquals(Math.PI, Literal.PI.eval(createExpressionContext() ));
     assertEquals("-123456.789", Literal.of(-123456.789D).toString());
 
     // Number

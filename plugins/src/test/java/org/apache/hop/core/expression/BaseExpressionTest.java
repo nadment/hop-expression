@@ -17,6 +17,7 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -34,12 +35,8 @@ import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
-import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -51,10 +48,11 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 public class BaseExpressionTest {
-    
-  @ClassRule public static RestoreHopEnvironment env = new RestoreHopEnvironment();
- // @ClassRule public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
-  
+
+  @ClassRule
+  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  // @ClassRule public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
+
   protected ExpressionContext createExpressionContext() throws Exception {
 
     IVariables variables = new Variables();
@@ -78,7 +76,7 @@ public class BaseExpressionTest {
 
     Calendar calendar = Calendar.getInstance();
     calendar.set(1981, 5, 23);
-    
+
     Object[] row = new Object[14];
     row[0] = "TEST";
     row[1] = "F";
@@ -97,32 +95,41 @@ public class BaseExpressionTest {
 
     ExpressionContext context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
-   
+
     return context;
   }
-  protected Object eval(String source)  throws Exception {
+
+  protected Object eval(String source) throws Exception {
     return eval(source, createExpressionContext(), null);
   }
 
-  protected Object eval(String source, ExpressionContext context)  throws Exception {
+  protected Object eval(String source, ExpressionContext context) throws Exception {
     return eval(source, context, null);
   }
-  
-  protected Object eval(String source, ExpressionContext context, Consumer<ExpressionContext> consumer) throws Exception {
+
+  protected Object eval(String source, ExpressionContext context,
+      Consumer<ExpressionContext> consumer) throws Exception {
 
     IExpression expression = ExpressionParser.parse(source);
     Optimizer optimizer = new Optimizer();
 
     // Create default context
-    if ( context==null) context = createExpressionContext();
-    
+    if (context == null)
+      context = createExpressionContext();
+
     // Optimize in context
     expression = optimizer.optimize(context, expression);
 
     // Apply context customization
-    if ( consumer!=null) consumer.accept(context);
-    
-    return expression.eval(context);
+    if (consumer != null)
+      consumer.accept(context);
+
+    try {
+      return expression.eval(context);
+    } catch (ExpressionException ex) {
+      System.out.println(source + " > " + ex.getMessage());
+      throw ex;
+    }
   }
 
   protected void evalNull(String source) throws Exception {
@@ -140,21 +147,23 @@ public class BaseExpressionTest {
   protected void evalEquals(String source, byte[] expected) throws Exception {
     assertArrayEquals(expected, (byte[]) eval(source));
   }
-  
+
   protected void evalEquals(String source, String expected) throws Exception {
     assertEquals(expected, (String) eval(source));
   }
 
-  protected void evalEquals(String source, String expected, ExpressionContext context) throws Exception {
+  protected void evalEquals(String source, String expected, ExpressionContext context)
+      throws Exception {
     assertEquals(expected, (String) eval(source, context, null));
   }
-  
-  protected void evalEquals(String source, String expected, Consumer<ExpressionContext> consumer) throws Exception {
+
+  protected void evalEquals(String source, String expected, Consumer<ExpressionContext> consumer)
+      throws Exception {
     assertEquals(expected, (String) eval(source, null, consumer));
   }
-  
-  protected void evalEquals(String source, Long expected) throws Exception {    
-    assertEquals(expected, (Long)  eval(source));
+
+  protected void evalEquals(String source, Long expected) throws Exception {
+    assertEquals(expected, (Long) eval(source));
   }
 
   protected void evalEquals(String source, double expected) throws Exception {
@@ -167,35 +176,31 @@ public class BaseExpressionTest {
   }
 
   protected void evalEquals(String source, LocalDate expected) throws Exception {
-    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()),eval(source));
+    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source));
   }
 
-  protected void evalEquals(String source, LocalDateTime expected) throws Exception {    
+  protected void evalEquals(String source, LocalDateTime expected) throws Exception {
     assertEquals(expected.atZone(ZoneId.systemDefault()), eval(source));
   }
-    
+
   protected void evalEquals(String source, ZonedDateTime expected) throws Exception {
     assertEquals(expected, eval(source));
   }
-  protected void evalEquals(String source, ZonedDateTime expected, ExpressionContext context) throws Exception {
+
+  protected void evalEquals(String source, ZonedDateTime expected, ExpressionContext context)
+      throws Exception {
     assertEquals(expected, eval(source, context, null));
   }
 
-  protected void evalEquals(String source, ZonedDateTime expected, Consumer<ExpressionContext> consumer) throws Exception {
+  protected void evalEquals(String source, ZonedDateTime expected,
+      Consumer<ExpressionContext> consumer) throws Exception {
     assertEquals(expected, eval(source, null, consumer));
   }
-  
+
   protected void evalFails(final String source) {
-    try {
-      eval(source);
-      Assert.fail(source + " Syntax or result should be invalid\n");
-    } catch (ExpressionException ex) {      
-      System.out.println(source+" > "+ex.toString());
-    } catch (Exception ex) {
-      Assert.fail(source + " Uncatched exception " + ex.getClass());
-    }
+    assertThrows(ExpressionException.class, () -> eval(source));
   }
-  
+
   protected void writeEquals(String source) throws Exception {
     writeEquals(source, source);
   }
@@ -203,20 +208,22 @@ public class BaseExpressionTest {
   protected void writeEquals(String source, String result) throws Exception {
     IExpression expression = ExpressionParser.parse(source);
 
-    StringWriter writer = new StringWriter(); 
+    StringWriter writer = new StringWriter();
     expression.write(writer);
     assertEquals(result, writer.toString());
   }
 
   @Test
   public void test() throws Exception {
-//   ExpressionContext context = createExpressionContext();
-//   context.setAttribute("TEST","");
- 
-    //evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
-    //evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
-   // evalEquals("CONCAT('TES','T')", "TEST");
-    //evalEquals("0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    // ExpressionContext context = createExpressionContext();
+    // context.setAttribute("TEST","");
+
+    // evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
+    // ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
+    // evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
+    // ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
+    // evalEquals("CONCAT('TES','T')", "TEST");
+    // evalEquals("0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
 
   }
 }

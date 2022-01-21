@@ -17,11 +17,14 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.operator.Concat;
 import org.junit.Test;
 
 public class ExpressionTest extends BaseExpressionTest {
@@ -69,12 +72,14 @@ public class ExpressionTest extends BaseExpressionTest {
   @Test
   public void Operator() throws Exception {
     assertEquals("Mathematical",OperatorRegistry.MULTIPLY.getCategory());
-    assertTrue(OperatorRegistry.CONCAT.equals(OperatorRegistry.CONCAT));
-    assertFalse(OperatorRegistry.CONCAT.equals(OperatorRegistry.getFunction("CONCAT")));
-    assertFalse(OperatorRegistry.CONCAT.equals(OperatorRegistry.EQUAL));    
+    assertEquals(OperatorRegistry.CONCAT, new Concat());
+    assertNotEquals(OperatorRegistry.CONCAT,OperatorRegistry.EQUAL);    
     assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
     assertFalse(OperatorRegistry.CONCAT.isSame(null));
     assertNotNull(OperatorRegistry.CONCAT.getDescription());
+    assertNotEquals(OperatorRegistry.CONCAT, null);
+    assertNotEquals(OperatorRegistry.CONCAT, OperatorRegistry.getFunction("CONCAT"));
+    
     // FIXME: Don't work on github
     //assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
     assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
@@ -116,7 +121,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue(" 3 > 5 IS FALSE");
 
     // BETWEEN, IN, LIKE have higher precedence than comparison
-    // evalTrue("5 between 4=4 and 6=6");
+    // evalFalse("5 between 4>=4 and 6<=6");
   }
   
   @Test
@@ -126,7 +131,9 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("9!7");
     evalFails("9+(");
     evalFails("9+*(");
+    evalFails("Left||'X'");
     evalFails("Year(");
+    evalFails("Year(2020");
     evalFails("Year)");
     evalFails("Year()");
     evalFails("Year(()");
@@ -155,6 +162,8 @@ public class ExpressionTest extends BaseExpressionTest {
     // Coercion Number to Boolean
     evalTrue("true = 1");
     evalTrue("false = 0");
+    evalTrue("true OR 0");
+    evalFalse("false AND 0");
   }
   
   @Test

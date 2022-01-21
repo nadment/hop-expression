@@ -32,7 +32,6 @@ public class Literal implements IExpression {
   public static final Literal FALSE = new Literal(Boolean.FALSE);
   public static final Literal ZERO = new Literal(0L);
   public static final Literal ONE = new Literal(1L);
-  public static final Literal PI = new Literal(Math.PI);
 
   public static Literal of(Object value) {
     if (value == null)

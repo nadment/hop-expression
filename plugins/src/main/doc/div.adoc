@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= / (Division operator)
+= DIV, / (Division operator)
 
 Divide 2 numeric values.
 
@@ -23,7 +23,9 @@ Divide 2 numeric values.
 ----
 <dividend> / <divisor>
 ----
-
+----
+DIV( <dividend> , <divisor> )
+----
 == Usage
 
 * If divisor is 0 the operator raises a division-by-zero error.

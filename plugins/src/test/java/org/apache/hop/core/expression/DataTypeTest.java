@@ -72,7 +72,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
    
   @Test
-  public void converToBoolean() throws Exception {
+  public void convertToBoolean() throws Exception {
     assertNull(DataType.convertTo(null, DataType.BOOLEAN));
     assertEquals(Boolean.TRUE, DataType.convertTo(3L, DataType.BOOLEAN));
     assertEquals(Boolean.TRUE, DataType.convertTo(1L, DataType.BOOLEAN));
@@ -105,7 +105,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
   
   @Test
-  public void converToBinary() throws Exception {
+  public void convertToBinary() throws Exception {
     assertNull(DataType.convertTo(null, DataType.BINARY));
   }
   
@@ -128,7 +128,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
    
   @Test
-  public void converToString() throws Exception {
+  public void convertToString() throws Exception {
     assertNull(DataType.convertTo(null, DataType.STRING));
     assertEquals("TRUE", DataType.convertTo(true, DataType.STRING));
     assertEquals("FALSE", DataType.convertTo(false, DataType.STRING));
@@ -146,7 +146,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
 
   @Test
-  public void converToInteger() throws Exception {
+  public void convertToInteger() throws Exception {
     assertNull(DataType.convertTo(null, DataType.INTEGER));
     assertEquals(1L, DataType.convertTo(true, DataType.INTEGER));
     assertEquals(0L, DataType.convertTo(false, DataType.INTEGER));
@@ -169,7 +169,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
   
   @Test
-  public void converToNumber() throws Exception {
+  public void convertToNumber() throws Exception {
     assertNull(DataType.convertTo(null, DataType.NUMBER));
     assertEquals(Double.valueOf(1D), DataType.convertTo(true, DataType.NUMBER));
     assertEquals(Double.valueOf(0D), DataType.convertTo(false, DataType.NUMBER));
@@ -192,7 +192,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
   
   @Test
-  public void converToBigNumber() throws Exception {
+  public void convertToBigNumber() throws Exception {
     assertNull(DataType.convertTo(null, DataType.BIGNUMBER));    
     assertEquals(BigDecimal.ZERO, DataType.convertTo(false, DataType.BIGNUMBER));
     assertEquals(BigDecimal.ZERO, DataType.convertTo(0L, DataType.BIGNUMBER));
@@ -211,7 +211,7 @@ public class DataTypeTest extends BaseExpressionTest {
   }
   
   @Test
-  public void converToNone() throws Exception {
+  public void convertToNone() throws Exception {
     assertNull(DataType.convertTo(null, DataType.NONE));
     assertNull(DataType.convertTo(true, DataType.NONE));
     assertNull(DataType.convertTo(BigDecimal.ZERO, DataType.NONE));

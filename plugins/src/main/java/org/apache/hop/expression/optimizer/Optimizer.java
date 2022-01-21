@@ -93,16 +93,15 @@ public class Optimizer {
   }
 
   protected IExpression optimizeCall(IExpressionContext context, OperatorCall call) {
-    IExpression expression = call;
-
     // Optimize operands first
     IExpression[] operands = new IExpression[call.getOperandCount()];
     for (int i = 0; i < call.getOperandCount(); i++) {
       IExpression operand = optimize(context, call.getOperand(i));
       operands[i] = operand;
     }
-    expression = new OperatorCall(call.getOperator(), operands);
-
+    
+    IExpression expression = new OperatorCall(call.getOperator(), operands);
+        
     // Apply rules
     for (Rule rule : RULES) {
       if (expression instanceof OperatorCall) {
