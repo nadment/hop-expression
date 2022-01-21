@@ -195,7 +195,7 @@ public class OperatorRegistry {
           // If method is not static, need an instance to be invoked.
           // Operator combined with function is not static.
           try {
-            instance = clazz.newInstance();
+            instance = clazz.getDeclaredConstructor().newInstance();            
           } catch (Exception e) {
             // If class doesn't have constructor, method should be static
           }

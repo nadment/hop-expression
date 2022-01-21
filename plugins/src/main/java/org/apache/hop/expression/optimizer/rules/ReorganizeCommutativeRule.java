@@ -29,7 +29,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Move low cost operand to the left if operator is commutative
+ * Reorganize commutative operator
+ * 
+ * 1. Move low cost operand to the left
+ * 2. Go up an operand if low cost
+ * 3. Order identifier by name (only useful for test)
  */
 public class ReorganizeCommutativeRule implements Rule {
 
@@ -44,13 +48,13 @@ public class ReorganizeCommutativeRule implements Rule {
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);
 
-      // Swap operands by cost
+      // Move low cost operand to the left
       if (left.getCost() > right.getCost()) {
         //System.out.println("Swap cost (" + left + ") " + operator.getName() + " (" + right + ")");
         return new OperatorCall(operator, right, left);
       }
 
-      // Swap identifier by name
+      // Order identifier by name
       if (left.isKind(Kind.IDENTIFIER) && right.isKind(Kind.IDENTIFIER)) {
         if (((Identifier) left).getName().compareTo(((Identifier) right).getName()) > 0) {
           //System.out.println("Swap name (" + left + ") " + operator.getName() + " (" + right + ")");
@@ -58,20 +62,21 @@ public class ReorganizeCommutativeRule implements Rule {
         }
       }
 
-      // Reorganize with child's 
       if (right.isOperator(operator)) {
         OperatorCall subCall = (OperatorCall) right;
         IExpression subLeft = subCall.getOperand(0);
         IExpression subRight = subCall.getOperand(1);
                
+        // Go up an operand if low cost
         if (subLeft.getCost() < left.getCost()) {
-          //System.out.println("Reassociation cost: "+ call +" >>> (" + subLeft + operator.getName() + " (" + left  + operator.getName() + subRight + "))");
+          //System.out.println("Reorganize cost: "+ call +" >>> (" + subLeft + operator.getName() + " (" + left  + operator.getName() + subRight + "))");
           return new OperatorCall(operator, subLeft, new OperatorCall(operator, left, subRight));
         }
 
+        // Order identifier by name
         if (left.isKind(Kind.IDENTIFIER) && subLeft.isKind(Kind.IDENTIFIER)) {
           if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) < 0) {
-            //System.out.println("Reassociation name (" + left + ") " + operator.getName() + " (" + right + ")");
+            //System.out.println("Reorganize name (" + left + ") " + operator.getName() + " (" + right + ")");
             return new OperatorCall(operator, subLeft, new OperatorCall(operator, left, subRight));
           }
         }

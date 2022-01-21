@@ -38,9 +38,8 @@ public class Optimizer {
   }
 
   private static final List<Rule> RULES = Arrays.asList(new ReorganizeCommutativeRule(),
-      new ArithmeticRule(), new SimplifyLikeRule(),
-      new SimplifyInRule(), new SimplifyExtractRule(), new CombineConcatRule(),
-      new SimplifyBooleanRule(), new DeterministicRule());
+      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(),
+      new CombineConcatRule(), new SimplifyBooleanRule(), new DeterministicRule());
 
   /**
    * Try to optimize the expression.
@@ -51,6 +50,9 @@ public class Optimizer {
    */
   public IExpression optimize(IExpressionContext context, IExpression expression) {
     // System.out.println("Optimize: "+expression);
+    if ( expression  == null )
+       return null;
+    
     IExpression original = expression;
     int cycle = 20;
     do {
@@ -71,7 +73,8 @@ public class Optimizer {
         return expression;
       }
 
-      //System.out.println("*** Optimized cycle " + cycle + ": " + original + " >>> " + expression);
+      // System.out.println("*** Optimized cycle " + cycle + ": " + original + " >>> " +
+      // expression);
 
       original = expression;
     } while (--cycle > 0);

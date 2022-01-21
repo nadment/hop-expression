@@ -554,9 +554,9 @@ public class ExpressionParser {
           break;            
         case 26:
           if ( str.indexOf('.',10)>0 )
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
+            pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
           else
-          pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
+            pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
           break;
         case 25: // 2021-01-01 15:28:59+02:00
           pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";

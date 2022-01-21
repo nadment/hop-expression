@@ -34,7 +34,8 @@ public class ArithmeticRule implements Rule {
         if (operand.isOperator(OperatorRegistry.NEGATIVE)) {
           return ((OperatorCall) operand).getOperand(0);
         }
-      } else if (call.isOperator(OperatorRegistry.ADD)) {
+      }
+      else if (call.isOperator(OperatorRegistry.ADD)) {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
         if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.ADD)) {

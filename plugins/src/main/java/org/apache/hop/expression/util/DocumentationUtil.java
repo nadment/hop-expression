@@ -36,7 +36,7 @@ public class DocumentationUtil {
       InputStreamReader is = new InputStreamReader(IExpression.class.getResourceAsStream(url))) {
       IOUtils.copy(is, writer);
     } catch (Exception e) {  
-      //LOG.logError("Missing operator documentation: {0}", id);
+      LOG.logError("Missing operator documentation: {0}", id);
       return null;
     }
     
