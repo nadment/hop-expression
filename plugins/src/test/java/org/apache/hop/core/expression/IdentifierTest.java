@@ -16,6 +16,7 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Identifier;
 import org.junit.Test;
@@ -27,11 +28,10 @@ public class IdentifierTest extends BaseExpressionTest {
   public void test() throws Exception {
     Identifier identifier = new Identifier("NAME");
     assertEquals("NAME", identifier.getName());
-    assertTrue(identifier.equals(identifier));
-    assertFalse(identifier.equals(null));
     assertFalse(identifier.equals("NAME"));
     assertEquals(new Identifier("NAME"), identifier);
     assertEquals(new Identifier("NAME").hashCode(), identifier.hashCode());
+    assertNotEquals(identifier,null);
   }
   
   @Test

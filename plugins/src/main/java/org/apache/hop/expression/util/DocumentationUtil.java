@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 
 public class DocumentationUtil {
-  private static ILogChannel LOG = new LogChannel("Expression");
+  private static final ILogChannel LOG = new LogChannel("Expression");
   
   private DocumentationUtil() {
     super();

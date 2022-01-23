@@ -23,8 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 /** Arithmetic subtraction operator '<code>-</code>'. */
 public class Subtract extends Operator {

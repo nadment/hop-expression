@@ -306,9 +306,6 @@ final class SimpleNumberFormat extends NumberFormat {
           if (c != 'X' && c != 'x')
             break;
         }
-
-        // } else if (c == ' ') {
-        // builder.append(c);
       } else
         break;
     }

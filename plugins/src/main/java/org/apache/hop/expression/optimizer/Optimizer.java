@@ -17,7 +17,6 @@ package org.apache.hop.expression.optimizer;
 import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.optimizer.rules.ArithmeticRule;
 import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
@@ -49,7 +48,6 @@ public class Optimizer {
    * @return the optimized expression
    */
   public IExpression optimize(IExpressionContext context, IExpression expression) {
-    // System.out.println("Optimize: "+expression);
     if ( expression  == null )
        return null;
     
@@ -72,9 +70,6 @@ public class Optimizer {
       if (expression.equals(original)) {
         return expression;
       }
-
-      // System.out.println("*** Optimized cycle " + cycle + ": " + original + " >>> " +
-      // expression);
 
       original = expression;
     } while (--cycle > 0);

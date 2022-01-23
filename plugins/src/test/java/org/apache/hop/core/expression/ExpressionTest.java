@@ -22,42 +22,41 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.operator.Concat;
 import org.junit.Test;
 
 public class ExpressionTest extends BaseExpressionTest {
-    
+
   @Test
   public void Comment() throws Exception {
     evalTrue(" // Test line comment \n  true ");
     evalTrue(" /* Test block comment */  true ");
     evalTrue(" true /* Test block comment */");
     evalTrue("/*\n * Comment on multi line\n *\n */ True");
-    evalTrue("/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
+    evalTrue(
+        "/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
 
     // Single line comment
     evalTrue("// Single line comment\nTrue");
     evalTrue("-- Single line comment\nTrue");
-    
+
     // Multi line comment
     evalTrue("/* Line 1\n * Line 2 */ True");
 
     // Empty
-    evalFails("-- Single line comment\n");    
+    evalFails("-- Single line comment\n");
     evalFails(" /");
     evalFails("/*   True");
     evalFails("/   True");
     evalFails("/*   True*");
     evalFails("/* /* nested block comment */    True");
   }
-  
+
   @Test
   public void DatePart() throws Exception {
-    assertFalse(DatePart.of("HOUR").equals(null));
-    assertTrue(DatePart.of("HOUR").equals(DatePart.HOUR));
     assertTrue(DatePart.exist("MONTH"));
+    assertEquals(DatePart.HOUR, DatePart.of("HOUR"));
     assertEquals(DatePart.DECADE, DatePart.of("DECADE"));
     assertEquals(DatePart.CENTURY, DatePart.of("CENTURY"));
     assertEquals(DatePart.QUARTER, DatePart.of("quarter"));
@@ -66,32 +65,35 @@ public class ExpressionTest extends BaseExpressionTest {
     assertEquals(DatePart.DAY, DatePart.of("dayofmonth"));
     assertEquals(DatePart.HOUR, DatePart.of("HOUR"));
     assertEquals(DatePart.HOUR, DatePart.of("HH"));
+    assertNotEquals(DatePart.HOUR, DatePart.MINUTE);
+    assertNotEquals(DatePart.of("HOUR"), null);
     assertThrows(IllegalArgumentException.class, () -> DatePart.of("NOP"));
   }
- 
+
   @Test
   public void Operator() throws Exception {
-    assertEquals("Mathematical",OperatorRegistry.MULTIPLY.getCategory());
+    assertEquals("Mathematical", OperatorRegistry.MULTIPLY.getCategory());
     assertEquals(OperatorRegistry.CONCAT, new Concat());
-    assertNotEquals(OperatorRegistry.CONCAT,OperatorRegistry.EQUAL);    
+    assertNotEquals(OperatorRegistry.CONCAT, OperatorRegistry.EQUAL);
     assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
     assertFalse(OperatorRegistry.CONCAT.isSame(null));
     assertNotNull(OperatorRegistry.CONCAT.getDescription());
     assertNotEquals(OperatorRegistry.CONCAT, null);
     assertNotEquals(OperatorRegistry.CONCAT, OperatorRegistry.getFunction("CONCAT"));
-    
+
     // FIXME: Don't work on github
-    //assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
+    // assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
     assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
-    assertTrue(OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));
+    assertTrue(
+        OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));
   }
-  
+
   @Test
   public void precedenceAndAssociativity() throws Exception {
 
     assertEquals(51, OperatorRegistry.MULTIPLY.getLeftPrecedence());
     assertEquals(50, OperatorRegistry.MULTIPLY.getRightPrecedence());
-    
+
     // Arithmetic
     evalEquals("3*5/2", ((3 * 5) / 2d));
     evalEquals("9/3*3", (9 / 3) * 3);
@@ -123,7 +125,7 @@ public class ExpressionTest extends BaseExpressionTest {
     // BETWEEN, IN, LIKE have higher precedence than comparison
     // evalFalse("5 between 4>=4 and 6<=6");
   }
-  
+
   @Test
   public void SyntaxError() throws Exception {
     evalFails("'T'||'T");
@@ -156,7 +158,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("0xABCDEFg");
     evalFails("Date '2020-20-28'");
   }
-  
+
   @Test
   public void CoercionImplicit() throws Exception {
     // Coercion Number to Boolean
@@ -165,7 +167,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("true OR 0");
     evalFalse("false AND 0");
   }
-  
+
   @Test
   public void CoercionExplicit() throws Exception {
     // Coercion String to Boolean

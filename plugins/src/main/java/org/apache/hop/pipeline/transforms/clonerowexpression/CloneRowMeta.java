@@ -98,6 +98,7 @@ public class CloneRowMeta extends BaseTransformMeta
     readData(transformNode);
   }
 
+  @Override
   public Object clone() {
     Object retval = super.clone();
     return retval;
@@ -212,6 +213,7 @@ public class CloneRowMeta extends BaseTransformMeta
     }
   }
 
+  @Override
   public void check(
       List<ICheckResult> remarks,
       PipelineMeta pipelineMeta,
