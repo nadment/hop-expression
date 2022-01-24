@@ -1689,11 +1689,10 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void StringDecode() throws Exception {
     evalEquals("StringDecode('\\t\\r\\n\\f\\b\\\"')", "\t\r\n\f\b\"");
-    // Decode 16 bit unicode
+    // Decode 16 bits unicode
     evalEquals("StringDecode('\\u20AC')", "€");
-    // TODO: Decode 32 bit unicode
-    // evalEquals("StringDecode('\\U000020AC')", "€");
-
+    // Decode octal
+    evalEquals("StringDecode('\366\344\374')", "öäü");
     evalNull("StringDecode(NULL)");
   }
 

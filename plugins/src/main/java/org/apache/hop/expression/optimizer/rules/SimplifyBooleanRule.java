@@ -46,7 +46,6 @@ public class SimplifyBooleanRule implements Rule {
         if (operand.isOperator(OperatorRegistry.GREATER_THAN)) {
           return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL,
               ((OperatorCall) operand).getOperands());
-          // return new LessThanOrEqual(((OperatorCall) operand).getOperands());
         }
         // NOT(l >= r) => l < r
         else if (operand.isOperator(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {

@@ -157,9 +157,6 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
 
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = convertValue(valueMeta, value);
-
-        // FIXME: Don't work with ZonedDateTime
-        // outputRowValues[index] = valueMeta.convertData(valueMeta,value);
       } catch (Exception ex) {
         String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateExpressionError",
             field.getName(), field.getExpression(), ex.toString());
@@ -186,6 +183,14 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
     return true;
   }
   
+  /**
+   * We can't use valueMeta.convertData(valueMeta,value) because doesn't support ZonedDateTime
+   * 
+   * @param meta
+   * @param value
+   * @return
+   * @throws HopException
+   */
   public Object convertValue(IValueMeta meta, Object value) throws HopException {
 
     if (value == null)
