@@ -888,7 +888,8 @@ public class Functions {
    * Returns a string with the first letter of each word in uppercase and the subsequent letters in
    * lowercase. @See {@link #LOWER}, {@link #UPPER}
    */
-  @ScalarFunction(id = "INITCAP", category = "i18n::Operator.Category.String")
+  @ScalarFunction(id = "INITCAP", category = "i18n::Operator.Category.String",
+      documentationUrl = "/docs/initcap.html")
   public static Object initcap(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
