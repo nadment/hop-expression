@@ -19,12 +19,6 @@ import java.text.ParsePosition;
 
 public abstract class BaseFormat {
 
-  private static final String[] UNIT_WORDS = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
-      "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
-      "seventeen", "eighteen", "nineteen"};
-  private static final String[] TEN_WORDS = {"zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy",
-      "eighty", "ninety"};
-  
   protected BaseFormat() {
     super();
   }
@@ -202,46 +196,5 @@ public abstract class BaseFormat {
       builder.append('0');
     }
     return builder.append(s);
-  }
-
-  protected static String toWord(int number) {
-    // variable to hold string representation of number
-    StringBuilder words = new StringBuilder();
- 
-    if (number == 0) {
-      return "zero";
-    }
-
-    // check if number is divisible by 1 million
-    // if ((number / 1000000) > 0) {
-    // words += toWord(number / 1000000) + " million ";
-    // number %= 1000000;
-    // }
-    // check if number is divisible by 1 thousand
-    if ((number / 1000) > 0) {
-      words.append(toWord(number / 1000)).append(" thousand ");
-      number %= 1000;
-    }
-    // check if number is divisible by 1 hundred
-    if ((number / 100) > 0) {
-      words.append(toWord(number / 100)).append(" hundred ");
-      number %= 100;
-    }
-
-    if (number > 0) {
-      // check if number is within teens
-      if (number < 20) {
-        // fetch the appropriate value from unit array
-        words.append(UNIT_WORDS[number]);
-      } else {
-        // fetch the appropriate value from tens array
-        words.append(TEN_WORDS[number / 10]);
-        if ((number % 10) > 0) {
-          words.append('-').append(UNIT_WORDS[number % 10]);
-        }
-      }
-    }
-
-    return words.toString();
   }
 }

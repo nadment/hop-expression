@@ -144,12 +144,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Date(2020,-6,1)", LocalDate.of(2019, Month.JULY, 1));
     evalEquals("Date(2020,-1,1)", LocalDate.of(2019, Month.DECEMBER, 1));
     evalEquals("Date(2020, 6, 50)", LocalDate.of(2020, Month.JULY, 21));
-        
+
     evalNull("Date(null,-1,1)");
     evalNull("Date(2020,null,1)");
     evalNull("Date(2020,-1,null)");
 
-    
+
     evalFails("Date()");
     evalFails("Date(2020)");
     evalFails("Date(2020,15)");
@@ -922,12 +922,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("TO_NUMBER('1.2E3')", 1200D);
     evalEquals("TO_NUMBER('1.2E-3')", 0.0012D);
 
-    // Precision and scale
-    // evalEquals("TO_NUMBER('12.3456',10,1)", 12.3);
-    // evalEquals("TO_NUMBER('12.3456',10,8)", 12.34560000);
-    // evalEquals("TO_NUMBER('98.76546',10,1)", 98.8);
-    // evalEquals("TO_NUMBER('98.76546',37,1)", 98.76546000);
-
     // Format with Decimals
     evalEquals("TO_NUMBER('5467.12', '999999.99')", 5467.12);
     evalEquals("TO_NUMBER('1234.5','09999.99')", 1234.5);
@@ -1151,9 +1145,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(123,'FM0XXX')", "007B");
     evalEquals("TO_CHAR(9234,'xx')", "###");
 
-    // Multiplied by 10^n
-    // evalEquals("TO_CHAR(12.4, '99V999')", " 12400");
-
     // No space
     evalFails("TO_CHAR(485,'9 9 9')");
 
@@ -1184,17 +1175,27 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(To_Date('-0200','SYYYY'),'SCC')", "-02");
     evalEquals("To_Char(To_Date('-0200','SYYYY'),'FMSCC')", "-2");
 
-    evalEquals("To_Char(Date '2018-07-23','YEAR')", "TWO THOUSAND EIGHTEEN");
-    evalEquals("To_Char(Date '2018-07-23','year')", "two thousand eighteen");
-    evalEquals("To_Char(Date '2019-07-23','SYEAR')", " TWO THOUSAND NINETEEN");
-    evalEquals("To_Char(Date '2019-07-23','YYYY')", "2019");
-    evalEquals("To_Char(Date '0800-07-23','YYYY')", "0800");
-    evalEquals("To_Char(Date '0800-07-23','FMYYYY')", "800"); // Year compact
 
-    evalEquals("To_Char(Date '2019-07-23','YYY')", "019");
-    evalEquals("To_Char(Date '2019-07-23','YY')", "19");
-    evalEquals("To_Char(Date '2019-07-23','Y')", "9");
-    evalEquals("To_Char(Date '2019-07-23','SYYYY')", " 2019");
+    evalEquals("To_Char(Date '2122-01-01','YEAR')", "TWENTY-ONE TWENTY-TWO");
+    evalEquals("To_Char(Date '2021-01-01','YEAR')", "TWENTY TWENTY-ONE");
+    evalEquals("To_Char(Date '2020-01-01','YEAR')", "TWENTY TWENTY");
+    evalEquals("To_Char(Date '1999-01-01','YEAR')", "NINETEEN NINETY-NINE");
+    evalEquals("To_Char(Date '1900-01-01','YEAR')", "NINETEEN HUNDRED");
+    evalEquals("To_Char(Date '1830-01-01','YEAR')", "EIGHTEEN THIRTY");
+    evalEquals("To_Char(Date '2020-01-01','year')", "twenty twenty");
+    evalEquals("To_Char(Date '2020-01-01','syear')", " twenty twenty");
+    evalEquals("To_Char(Date '2020-01-01','FMsyear')", "twenty twenty");
+    evalEquals("To_Char(To_Date('-1999','SYYYY'),'SYEAR')", "-NINETEEN NINETY-NINE");
+    evalEquals("To_Char(To_Date('-0228','SYYYY'),'SYEAR')", "-TWO TWENTY-EIGHT");
+
+    evalEquals("To_Char(Date '2019-01-01','YYYY')", "2019");
+    evalEquals("To_Char(Date '0800-01-01','YYYY')", "0800");
+    evalEquals("To_Char(Date '0800-01-01','FMYYYY')", "800"); // Year compact
+
+    evalEquals("To_Char(Date '2019-01-01','YYY')", "019");
+    evalEquals("To_Char(Date '2019-01-01','YY')", "19");
+    evalEquals("To_Char(Date '2019-01-01','Y')", "9");
+    evalEquals("To_Char(Date '2019-01-01','SYYYY')", " 2019");
     evalEquals("To_Char(To_Date('-2000','SYYYY'),'YYYY BC')", "2000 BC");
     evalEquals("To_Char(To_Date('-800','SYYYY'),'SYYYY')", "-0800"); // Negative signed year
     evalEquals("To_Char(To_Date('-800','SYYYY'),'YYYY BC')", "0800 BC");
@@ -1256,8 +1257,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','dy')", "tue"); // Day name
 
 
-    
-    
+
     // evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456789','yyyy-mm-dd hh:mi:ss.FF')",
     // "2020-12-03 01:02:03.123456789");
 
@@ -1265,11 +1265,11 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','TZR')", "UTC");
     // Time zone region abbreviated with Daylight Saving Time
     evalEquals("To_Char(Date '2019-07-23','TZD')", "UTC");
-    
+
     // Time Zone Hour:Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");
-    
-    
+
+
     // Time
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56");
     // Time 12 hours
@@ -1279,10 +1279,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123','HH24:MI:SS')", "15:34:56");
     // Time fraction
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123','HH24:MI:SS.FF3')", "15:34:56.123");
-    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456','HH24:MI:SS.FF6')", "15:34:56.123456");
-    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')", "15:34:56.123456789");
-    
-    
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456','HH24:MI:SS.FF6')",
+        "15:34:56.123456");
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')",
+        "15:34:56.123456789");
+
+
     // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
     // evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
     // evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short
@@ -1340,9 +1342,11 @@ public class FunctionsTest extends BaseExpressionTest {
         ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneOffset.ofHours(-4)));
 
     // Time zone region
-    evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
-    evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')", ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
-    
+    evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
+    evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
+        ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
+
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
 
@@ -1851,12 +1855,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalTrue("Random(180)>0");
 
     // Alias
-    //evalTrue("Rand()>0");
+    // evalTrue("Rand()>0");
   }
 
   @Test
   public void Compress() throws Exception {
-    //evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+    // evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
   }
 }
 

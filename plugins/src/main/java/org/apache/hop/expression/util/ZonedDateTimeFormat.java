@@ -792,7 +792,7 @@ import java.util.Locale;
         case 'C':
           // Century
           if (startsWithIgnoreCase(pattern, index, "CC")) {
-            int year = Math.abs(value.getYear());
+            int year = FastMath.abs(value.getYear());
             int century = year / 100;
             if ((year % 100) != 0) {
               century += 1;
@@ -841,7 +841,7 @@ import java.util.Locale;
             output.append('/');
             appendZeroPadded(output, value.getDayOfMonth(), "MM".length());
             output.append('/');
-            appendZeroPadded(output, Math.abs(value.getYear()), "YYYY".length());
+            appendZeroPadded(output, FastMath.abs(value.getYear()), "YYYY".length());
             index += 2;
             continue;
           }
@@ -935,7 +935,7 @@ import java.util.Locale;
         case 'I':
           // 4-digit year based on the ISO standard.
           if (startsWithIgnoreCase(pattern, index, "IYYY")) {
-            int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+            int weekYear = FastMath.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             appendZeroPadded(output, weekYear, 4);
             index += 4;
             continue;
@@ -943,7 +943,7 @@ import java.util.Locale;
 
           // Last 3 digits of ISO year.
           if (startsWithIgnoreCase(pattern, index, "IYY")) {
-            int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+            int weekYear = FastMath.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             appendZeroPadded(output, weekYear % 1000, 3);
             index += 3;
             continue;
@@ -951,7 +951,7 @@ import java.util.Locale;
 
           // Last 2 digits of ISO year.
           if (startsWithIgnoreCase(pattern, index, "IY")) {
-            int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+            int weekYear = FastMath.abs(value.get(IsoFields.WEEK_BASED_YEAR));
             appendZeroPadded(output, weekYear % 100, 2);
             index += 2;
             continue;
@@ -971,7 +971,7 @@ import java.util.Locale;
 
         // Last 1 digit of ISO year "I".
         {
-          int weekYear = Math.abs(value.get(IsoFields.WEEK_BASED_YEAR));
+          int weekYear = FastMath.abs(value.get(IsoFields.WEEK_BASED_YEAR));
           output.append(weekYear % 10);
           index += 1;
           continue;
@@ -1089,7 +1089,7 @@ import java.util.Locale;
 
             if (fillMode) {
               output.append(year < 0 ? '-' : ' ');
-              appendZeroPadded(output, Math.abs(century), "CC".length());
+              appendZeroPadded(output, FastMath.abs(century), "CC".length());
             } else {
               output.append(century);
             }
@@ -1103,7 +1103,7 @@ import java.util.Locale;
             int year = value.getYear();
             if (fillMode) {
               output.append(year < 0 ? '-' : ' ');
-              appendZeroPadded(output, Math.abs(year), 4);
+              appendZeroPadded(output, FastMath.abs(year), 4);
             } else {
               output.append(year);
             }
@@ -1113,8 +1113,14 @@ import java.util.Locale;
 
           if ((cap = match(pattern, index, "SYEAR")) != null) {
             int year = value.getYear();
-            output.append(year < 0 ? '-' : ' ');
-            output.append(cap.apply(toWord(year)));
+            if ( year <0 ) {
+              output.append('-');
+              year = FastMath.abs(year);
+            }
+            else if (fillMode) {
+              output.append(' ');
+            }
+            output.append(cap.apply(NumberWords.convertYear(year)));
             index += 5;
             continue;
           }
@@ -1140,7 +1146,7 @@ import java.util.Locale;
             ZoneOffset offset = value.getOffset();
             int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
             output.append(hours < 0 ? '-' : '+');
-            appendZeroPadded(output, Math.abs(hours), "HH".length());
+            appendZeroPadded(output, FastMath.abs(hours), "HH".length());
             index += 3;
             continue;
           }
@@ -1196,7 +1202,7 @@ import java.util.Locale;
         case 'Y':
           // 4-digit year
           if (startsWithIgnoreCase(pattern, index, "YYYY", "RRRR")) {
-            int year = Math.abs(value.getYear());
+            int year = FastMath.abs(value.getYear());
             if (fillMode) {
               appendZeroPadded(output, year, 4);
             } else {
@@ -1208,14 +1214,14 @@ import java.util.Locale;
 
           // Last 3 digits of year.
           if (startsWithIgnoreCase(pattern, index, "YYY")) {
-            int year = Math.abs(value.getYear());
+            int year = FastMath.abs(value.getYear());
             appendZeroPadded(output, year % 1000, 3);
             index += 3;
             continue;
           }
           // Last 2 digits of year.
           if (startsWithIgnoreCase(pattern, index, "YY", "RR")) {
-            int year = Math.abs(value.getYear());
+            int year = FastMath.abs(value.getYear());
             appendZeroPadded(output, year % 100, 2);
             index += 2;
             continue;
@@ -1223,7 +1229,7 @@ import java.util.Locale;
 
           // Year with comma in this position.
           if (startsWithIgnoreCase(pattern, index, "Y,YYY")) {
-            int year = Math.abs(value.getYear());
+            int year = FastMath.abs(value.getYear());
             output.append(new DecimalFormat("#,###").format(year));
             index += 5;
             continue;
@@ -1231,15 +1237,15 @@ import java.util.Locale;
 
           // Year
           if ((cap = match(pattern, index, "YEAR")) != null) {
-            int year = Math.abs(value.getYear());
-            output.append(cap.apply(toWord(year)));
+            int year = FastMath.abs(value.getYear());
+            output.append(cap.apply(NumberWords.convertYear(year)));
             index += 4;
             continue;
           }
 
           // Last 1 digit of year.
           // if (match(format, index, "Y"))
-          int year = Math.abs(value.getYear());
+          int year = FastMath.abs(value.getYear());
           output.append(year % 10);
           index += "Y".length();
           continue;
