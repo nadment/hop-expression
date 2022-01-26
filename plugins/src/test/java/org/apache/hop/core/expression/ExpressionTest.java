@@ -26,8 +26,16 @@ import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.operator.Concat;
 import org.junit.Test;
 
-public class ExpressionTest extends BaseExpressionTest {
+public class ExpressionTest extends BaseExpressionTest { 
 
+  @Test
+  public void Empty() throws Exception {
+    evalNull("");
+    evalNull(" ");
+    evalNull("\t");
+    evalNull("\n");    
+  }
+    
   @Test
   public void Comment() throws Exception {
     evalTrue(" // Test line comment \n  true ");
@@ -40,12 +48,15 @@ public class ExpressionTest extends BaseExpressionTest {
     // Single line comment
     evalTrue("// Single line comment\nTrue");
     evalTrue("-- Single line comment\nTrue");
+    evalTrue("-- Single line comment\rTrue");
 
     // Multi line comment
     evalTrue("/* Line 1\n * Line 2 */ True");
 
     // Empty
-    evalFails("-- Single line comment\n");
+    evalNull("-- Single line comment\n");
+    
+    // Syntax error
     evalFails(" /");
     evalFails("/*   True");
     evalFails("/   True");
@@ -53,6 +64,12 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("/* /* nested block comment */    True");
   }
 
+  @Test
+  public void CarriageReturnAndLineFeed() throws Exception {
+    evalTrue(" \rTrue");
+    evalTrue(" \nTrue");
+  }
+  
   @Test
   public void DatePart() throws Exception {
     assertTrue(DatePart.exist("MONTH"));
@@ -189,4 +206,5 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'FALSE'::Boolean=false");
   }
 }
+
 

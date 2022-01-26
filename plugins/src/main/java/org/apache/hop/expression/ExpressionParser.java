@@ -105,11 +105,9 @@ public class ExpressionParser {
   }
 
   private IExpression parse() throws ParseException {
-    if (StringUtils.isEmpty(source))
-      return Literal.NULL;
 
     // Tokenize
-    ExpressionScanner scanner = new ExpressionScanner(source);
+    ExpressionScanner scanner = new ExpressionScanner(source);    
     for (Token token = scanner.tokenize(); token != null; token = scanner.tokenize()) {
 
       // Ignore comment
@@ -118,7 +116,11 @@ public class ExpressionParser {
 
       tokens.add(token);
     }
-
+    
+    // Empty source return NULL
+    if ( tokens.isEmpty())
+      return Literal.NULL;   
+    
     IExpression expression = this.parseLogicalOr();
 
     if (hasNext()) {
