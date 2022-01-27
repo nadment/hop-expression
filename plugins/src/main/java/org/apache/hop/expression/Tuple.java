@@ -22,12 +22,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /** 
- * An expression list is a combination of other expressions.
+ * A tuple is a immutable ordered list of expressions.
  */
-public class ExpressionList implements IExpression, Iterable<IExpression> {
+public class Tuple implements IExpression, Iterable<IExpression> {
 
   /**
-   * Iterator implementation used to efficiently expose contents of an ExpressionList as read-only
+   * Iterator implementation used to efficiently expose contents of an Tuple as read-only
    * iterator.
    */
   public class Iterator implements java.util.Iterator<IExpression> {
@@ -57,25 +57,25 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
     }
   }
 
-  /** An immutable, empty ExpressionList. */
-  public static final ExpressionList EMPTY = new ExpressionList() {};
+  /** An immutable, empty Tuple. */
+  public static final Tuple EMPTY = new Tuple() {};
 
   private final IExpression[] values;
 
-  public ExpressionList(IExpression... expressions) {
+  public Tuple(IExpression... expressions) {
     this.values = expressions;
   }
 
-  public ExpressionList(List<IExpression> expressions) {
+  public Tuple(List<IExpression> expressions) {
     this.values = expressions.toArray(new IExpression[0]);
   }
 
-  public ExpressionList(Set<IExpression> expressions) {
+  public Tuple(Set<IExpression> expressions) {
     this.values = expressions.toArray(new IExpression[0]);
   }
 
   public Kind getKind() {
-    return Kind.LIST;
+    return Kind.TUPLE;
   }
 
   @Override
@@ -105,7 +105,7 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
 
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-    throw new ExpressionException("ExpressionException.ExpressionListNotEvaluable");
+    throw new ExpressionException("Expression.InternalError");
   }
 
   @Override
@@ -113,8 +113,8 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
     if (other == null)
       return false;
 
-    if (other instanceof ExpressionList) {
-      ExpressionList o = (ExpressionList) other;
+    if (other instanceof Tuple) {
+      Tuple o = (Tuple) other;
       return Arrays.equals(values,o.values);
     }
     return false;
@@ -133,7 +133,6 @@ public class ExpressionList implements IExpression, Iterable<IExpression> {
   }
 
   public void write(StringWriter writer) {
-
     writer.append('(');
     boolean first = true;
     for (IExpression expression : values) {

@@ -19,10 +19,10 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.Tuple;
 import java.io.StringWriter;
 
 /** An operator describing the <code>CASE</code> operator. */
@@ -37,24 +37,24 @@ public class Case extends Operator {
       throws ExpressionException {
     int index = 0;
     IExpression switchExpression = operands[0];
-    ExpressionList whenList = (ExpressionList) operands[1];
-    ExpressionList thenList = (ExpressionList) operands[2];
+    Tuple whenTuple = (Tuple) operands[1];
+    Tuple thenTuple = (Tuple) operands[2];
     IExpression elseExpression = operands[3];
 
     if (switchExpression == null) {
-      for (IExpression whenOperand : whenList) {
+      for (IExpression whenOperand : whenTuple) {
         Object condition = whenOperand.eval(context);
         if (DataType.toBoolean(condition)) {
-          return thenList.get(index).eval(context);
+          return thenTuple.get(index).eval(context);
         }
         index++;
       }
     } else {
       Object condition = switchExpression.eval(context);
-      for (IExpression whenOperand : whenList) {
+      for (IExpression whenOperand : whenTuple) {
         Object value = whenOperand.eval(context);
         if (DataType.compareTo(condition, value) == 0) {
-          return thenList.get(index).eval(context);
+          return thenTuple.get(index).eval(context);
         }
         index++;
       }
@@ -75,12 +75,12 @@ public class Case extends Operator {
     }
 
     int index = 0;
-    ExpressionList whenList = (ExpressionList) operands[1];
-    ExpressionList thenList = (ExpressionList) operands[2];
-    for (IExpression whenOperand : whenList) {
+    Tuple whenTuple = (Tuple) operands[1];
+    Tuple thenTuple = (Tuple) operands[2];
+    for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
       whenOperand.write(writer);
-      IExpression thenOperand = thenList.get(index++);
+      IExpression thenOperand = thenTuple.get(index++);
       writer.append(" THEN ");
       thenOperand.write(writer);
     }

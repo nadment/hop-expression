@@ -31,7 +31,7 @@ image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/sr
 
 ## Expression language
 
-An expression is a combination of one or more literals values, resolvable identifier, operators and functions that evaluate to a value.
+An expression is a combination of one or more literal values, resolvable identifiers, operators and functions that evaluate to a value.
 
 ----
 /** 
@@ -41,12 +41,13 @@ An expression is a combination of one or more literals values, resolvable identi
 Upper(Left(LABEL,5)) || ' | ' || InitCap(Substr(LABEL,8,50)) || To_Char([YEAR]+1,'FM9999') || CASE when REGION_ID>0 then 'A' else 'B' end
 ----
 
-* Supports 7 data types: Boolean, Integer, Number, BigNumber, String, Date, Binary. 
+* Supports 7 data types: `Boolean`, `Integer`, `Number`, `BigNumber`, `String`, `Date`, `Binary`. 
 * Supports most of the arithmetic, bitwise, logical and comparison operators.
 * Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
 * Use of comments to facilitate reading.
 * Are not case-sensitive, excepted for identifier.
-* Optimized for performance, so the 24 * 60 expression is optimized in 1440.
+* Can be parenthesized to control the precedence order.
+* Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance.
 
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
 

@@ -20,28 +20,28 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionList;
+import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.junit.Test;
 
-public class ExpressionListTest extends BaseExpressionTest {
+public class TupleTest extends BaseExpressionTest {
  
   @Test
   public void test() throws Exception {
-    ExpressionList list0 = new ExpressionList();
-    ExpressionList list1 = new ExpressionList(Literal.ONE, Literal.ZERO, Literal.NULL);
-    ExpressionList list2 = new ExpressionList(Literal.ONE, Literal.ZERO, Literal.NULL);
+    Tuple tuple0 = new Tuple();
+    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
+    Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
 
-    assertEquals(Kind.LIST, list1.getKind());
-    assertTrue(list0.isEmpty());
-    assertFalse(list1.isEmpty());
-    assertEquals(list1, list2);
-    assertNotEquals(list1, null);
-    assertEquals(list1.hashCode(), list2.hashCode());    
-    assertEquals("(1,0,NULL)", list1.toString());
+    assertEquals(Kind.TUPLE, tuple1.getKind());
+    assertTrue(tuple0.isEmpty());
+    assertFalse(tuple1.isEmpty());
+    assertEquals(tuple1, tuple2);
+    assertNotEquals(tuple1, null);
+    assertEquals(tuple1.hashCode(), tuple2.hashCode());    
+    assertEquals("(1,0,NULL)", tuple1.toString());
     
     // Not evaluable alone
-    assertThrows(ExpressionException.class, () -> list1.eval(createExpressionContext()));      
+    assertThrows(ExpressionException.class, () -> tuple1.eval(createExpressionContext()));      
   }
 }

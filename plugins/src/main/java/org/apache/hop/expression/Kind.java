@@ -19,7 +19,7 @@ package org.apache.hop.expression;
  */
 public enum Kind {
   LITERAL,
-  LIST,
+  TUPLE,
   IDENTIFIER, 
   OPERATOR,
   JSON;

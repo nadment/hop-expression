@@ -16,11 +16,11 @@ under the License.
 ////
 = Expression
 
-An expression is a combination of one or more values, operators and functions that evaluate to a value.
+An expression is a combination of one or more literal values, resolvable identifiers, operators and functions that evaluate to a value.
 
-An expression are not case-sensitive, excepted for identifier.
-
-An expression is optimized immediately after parsing, so the 24*60+5 is optimized to 1445 and has no impact on performance.
+- Can be parenthesized to control the precedence order.
+- Are not case-sensitive, excepted for identifier.
+- Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance.
 
 == Comments
 
@@ -47,11 +47,12 @@ NOTE: A comment is removed when parsing expression before evaluation, therefore 
 
 == Literals
 
-The following types of literals (constant values) can be used in expression.
+The simplest kind of expression is a literal that directly represents a constant value.
+The following types of literals can be used in expression.
 
 === String
 
-String literals are always surrounded by single quotes (').
+String literals are always surrounded by single quotes `'`.
 
 ----
 'test value'
@@ -63,7 +64,7 @@ String literals are always surrounded by single quotes (').
 
 === Boolean
 
-Boolean literals are TRUE and FALSE, with no quotation marks and case-insensitive.
+Boolean literals are `TRUE` and `FALSE`, with no quotation marks and case-insensitive.
 ----
 TRUE
 false
@@ -93,22 +94,22 @@ NOTE: The decimal point must be represented by a period. A comma is not recogniz
 
 === Binary
 
-Binary can be a sequence of hexadecimal digits with 0x prefix.
+Binary can be a sequence of hexadecimal digits with `0x` prefix.
 ----
-0xAE  
-0x12Ef  
-0x69048AEFDD010E 
+0xAE
+0x12Ef
+0x69048AEFDD010E
 ----
-Or also be composed by 0 and 1 digits with 0b prefix. 
+Or also be composed by 0 and 1 digits with `0b` prefix. 
 ----
 0b1000001011110
 ----
 
-NOTE:  A leading 0x is case-sensitive and cannot be written as 0X, but the case of the digits does not matter.
- 
+NOTE:  A leading `0x` is case-sensitive and cannot be written as `0X`, but the case of the digits does not matter.
+
 === Date
 
-Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a YYYY-MM-DD format. 
+Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a `YYYY-MM-DD` format. 
 
 ----
 Date '2020-05-18'
@@ -140,12 +141,11 @@ In some of the timestamp formats, the letter T is used as a separator between th
 
 Identifiers are the names of fields and is case-sensitive. 
 
-When a field name contains one or more space, the field name must be enclosed in double quotes
-such as "Employee Name".
- 
-You cannot use reserved words as identifiers such as AND operator or function name. For example, YEAR cannot be used whereas "YEAR" can be accepted. 
+The field name can be enclosed in double quotes `"` such as `"Employee Name"`, this would allow identifiers to contain spaces, other punctuation, and to be keywords.
 
-TIP: If you wish to include a double quote in an identifier, use another double quote to escape it.
+For example, `YEAR` cannot be used whereas `"YEAR"` can be accepted. 
+
+NOTE: If you wish to include a double quote in an identifier, use another double quote to escape it.
 
 == Operator
 
@@ -332,7 +332,7 @@ Expression support most of the standard scalar functions.
 
 == Coercion rules
 
-Expression supports both implicit and explicit conversion between data types. Explicit conversion is supported by using the CAST function.
+Expression supports both implicit and explicit conversion between data types. Explicit conversion is supported by using the `CAST` function.
 
 * Numeric types can be coerced to a wider numeric type. For example, an INTEGER expression can be coerced to a NUMBER, which can be coerced to a BIGNUMBER.
 * A STRING containing a number can be coerced to a numeric type.

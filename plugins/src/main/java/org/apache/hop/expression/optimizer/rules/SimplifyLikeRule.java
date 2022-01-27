@@ -23,7 +23,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.regex.Pattern;
 
 /**
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * condition. For example, when the expression is just checking to see if a string starts with a
  * given pattern.
  */
-public class SimplifyLikeRule implements Rule {
+public class SimplifyLikeRule implements OptimizerRule {
   Pattern startsWith = Pattern.compile("^([^_%]+)%$");
   Pattern endsWith = Pattern.compile("^%([^_%]+)$");
   Pattern contains = Pattern.compile("^%([^_%]+)%$");

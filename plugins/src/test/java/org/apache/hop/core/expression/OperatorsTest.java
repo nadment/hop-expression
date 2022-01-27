@@ -410,8 +410,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("CAST('0' as BigNumber)", 0);
     evalEquals("CAST('1' As BigNumber)", 1);
     evalEquals("CAST('-1e-37' as BigNumber)", -1e-37d);
-    // TODO: fix if white space before or after
-    //evalEquals("CAST(' -1e-37' as BigNumber)", -1e-37d);
+    // TODO: evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
     
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
@@ -708,6 +707,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("false OR true");
     evalFalse("false OR false");
     evalTrue("true OR null");
+    evalTrue("true OR FIELD");
     evalTrue("null OR true");
     evalFalse("false OR null");
     evalFalse("null OR false");
@@ -720,9 +720,10 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void BoolAnd() throws Exception {
     evalTrue("true AND true");
-    evalFalse("true AND false");
+    evalFalse("true AND false");    
     evalFalse("false AND true");
     evalFalse("false AND false");
+    evalFalse("false AND FIELD");
     evalNull("true AND null");
     evalNull("null AND true");
     evalNull("false AND null");

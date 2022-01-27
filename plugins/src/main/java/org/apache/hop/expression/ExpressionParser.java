@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -230,7 +229,7 @@ public class ExpressionParser {
       } else
         expression = new OperatorCall(OperatorRegistry.ILIKE, expression, pattern);
     } else if (next(Id.IN)) {
-      expression = new OperatorCall(OperatorRegistry.IN, expression, this.parseList());
+      expression = new OperatorCall(OperatorRegistry.IN, expression, this.parseTuple());
     } else if (next(Id.BETWEEN)) {
       IExpression begin = this.parseAdditive();
       if (!next(Id.AND)) {
@@ -610,7 +609,7 @@ public class ExpressionParser {
    * Parses a list of expressions separated by commas.
    * (expression [,expression...] )
    */
-  private ExpressionList parseList() throws ParseException {
+  private Tuple parseTuple() throws ParseException {
 
     List<IExpression> list = new ArrayList<>();
 
@@ -626,7 +625,7 @@ public class ExpressionParser {
 
         if (is(Id.RPARENTHESIS)) {
           next();
-          return new ExpressionList(list);
+          return new Tuple(list);
         }
 
         break;
@@ -667,8 +666,8 @@ public class ExpressionParser {
           this.getPosition());
     }
 
-    return new OperatorCall(OperatorRegistry.CASE, valueExpression, new ExpressionList(whenList),
-        new ExpressionList(thenList), elseExpression);
+    return new OperatorCall(OperatorRegistry.CASE, valueExpression, new Tuple(whenList),
+        new Tuple(thenList), elseExpression);
   }
 
   /**

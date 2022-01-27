@@ -24,7 +24,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 
 /**
  * Simplifies boolean expressions:
@@ -33,7 +33,7 @@ import org.apache.hop.expression.optimizer.Optimizer.Rule;
  * 2. Merge same expressions.
  * 3. Removes `Not` operator.
  */
-public class SimplifyBooleanRule implements Rule {
+public class SimplifyBooleanRule implements OptimizerRule {
 
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
@@ -89,20 +89,32 @@ public class SimplifyBooleanRule implements Rule {
       }
 
       else if (call.isOperator(OperatorRegistry.BOOLAND)) {
+        boolean left = true;
+        boolean right = true;
 
         if (call.getOperand(0).isKind(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
           if (value == null)
             return Literal.NULL;
+          if (value == Boolean.FALSE)
+            left = false;
         }
 
         if (call.getOperand(1).isKind(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
           if (value == null)
             return Literal.NULL;
+          if (value == Boolean.FALSE)
+            right = false;
         }
 
-        // [field] AND [field] => [field]
+        // FALSE AND "field" => FALSE
+        // "field" AND FALSE => FALSE
+        if (!left || !right) {
+          return Literal.FALSE;
+        }
+
+        // "field" AND "field" => "field"
         if (call.getOperand(0).equals(call.getOperand(1))) {
           return call.getOperand(0);
         }

@@ -1641,7 +1641,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Concat('a',NULL)", "a");
 
     // Binary
-    // TODO: evalEquals("Concat(0x1F,0x2A3B)", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("Concat(0x1F,0x2A3B)", new byte[]{0x1F, 0x2A, 0x3B});
 
     evalNull("Concat(NULL,NULL)");
   }
@@ -1686,7 +1686,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("StringEncode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"");
     // Encode 16 bit unicode
     evalEquals("StringEncode('€')", "\\u20AC");
-
     evalNull("StringEncode(NULL)");
   }
 

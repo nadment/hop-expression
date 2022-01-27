@@ -23,12 +23,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
  */
-public class SimplifyExtractRule implements Rule {
+public class SimplifyExtractRule implements OptimizerRule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
     try {

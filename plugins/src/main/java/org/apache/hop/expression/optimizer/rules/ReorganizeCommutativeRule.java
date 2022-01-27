@@ -23,7 +23,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +35,7 @@ import java.util.Set;
  * 2. Go up an operand if low cost
  * 3. Order identifier by name (only useful for test)
  */
-public class ReorganizeCommutativeRule implements Rule {
+public class ReorganizeCommutativeRule implements OptimizerRule {
 
   static final Set<Operator> COMMUTATIVE = new HashSet<>(Arrays.asList(OperatorRegistry.BOOLAND,
       OperatorRegistry.BOOLOR, OperatorRegistry.ADD, OperatorRegistry.MULTIPLY));

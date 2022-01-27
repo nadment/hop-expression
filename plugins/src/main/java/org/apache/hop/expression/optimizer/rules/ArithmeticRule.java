@@ -22,9 +22,9 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 
-public class ArithmeticRule implements Rule {
+public class ArithmeticRule implements OptimizerRule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
     try {

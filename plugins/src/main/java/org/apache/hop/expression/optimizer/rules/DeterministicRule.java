@@ -16,16 +16,16 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
-import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 
-public class DeterministicRule implements Rule {
+public class DeterministicRule implements OptimizerRule {
   @Override
   public IExpression apply(IExpressionContext context, OperatorCall call) {
     try {
@@ -38,8 +38,8 @@ public class DeterministicRule implements Rule {
         if (operand == null)
           continue;
 
-        if (operand instanceof ExpressionList) {
-          for (IExpression expression : (ExpressionList) operand) {
+        if (operand instanceof Tuple) {
+          for (IExpression expression : (Tuple) operand) {
             if (!expression.isKind(Kind.LITERAL)) {
               return call;
             }

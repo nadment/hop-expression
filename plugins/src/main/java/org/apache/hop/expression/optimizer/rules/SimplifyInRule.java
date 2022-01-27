@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
-import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.OperatorRegistry;
-import org.apache.hop.expression.optimizer.Optimizer.Rule;
+import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,14 +31,14 @@ import java.util.List;
  * 1. Remove duplicate expression in list.
  * 2. Sort expression on cost.
  */
-public class SimplifyInRule implements Rule {
+public class SimplifyInRule implements OptimizerRule {
   public IExpression apply(IExpressionContext context, OperatorCall call) {
     if (call.isOperator(OperatorRegistry.IN)) {
 
       List<IExpression> list = new ArrayList<>();
 
       // Remove duplicate element in list
-      for (IExpression expression : (ExpressionList) call.getOperand(1)) {
+      for (IExpression expression : (Tuple) call.getOperand(1)) {
         // If this element is not present in newList then add it
         if (!list.contains(expression)) {
           list.add(expression);
@@ -48,7 +48,7 @@ public class SimplifyInRule implements Rule {
       // Sort list on cost
       list.sort(Comparator.comparing(IExpression::getCost));
       
-      return new OperatorCall(call.getOperator(), call.getOperand(0), new ExpressionList(list));
+      return new OperatorCall(call.getOperator(), call.getOperand(0), new Tuple(list));
     }
 
     return call;

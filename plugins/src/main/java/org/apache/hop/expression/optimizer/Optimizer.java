@@ -14,10 +14,10 @@
  */
 package org.apache.hop.expression.optimizer;
 
-import org.apache.hop.expression.ExpressionList;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCall;
+import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.optimizer.rules.ArithmeticRule;
 import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
 import org.apache.hop.expression.optimizer.rules.DeterministicRule;
@@ -32,11 +32,7 @@ import java.util.List;
 
 public class Optimizer {
 
-  public interface Rule {
-    public IExpression apply(IExpressionContext context, OperatorCall call);
-  }
-
-  private static final List<Rule> RULES = Arrays.asList(new ReorganizeCommutativeRule(),
+  private static final List<OptimizerRule> RULES = Arrays.asList(new ReorganizeCommutativeRule(),
       new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(),
       new CombineConcatRule(), new SimplifyBooleanRule(), new DeterministicRule());
 
@@ -62,8 +58,8 @@ public class Optimizer {
         case OPERATOR:
           expression = optimizeCall(context, (OperatorCall) expression);
           break;
-        case LIST:
-          expression = optimizeList(context, (ExpressionList) expression);
+        case TUPLE:
+          expression = optimizeTuple(context, (Tuple) expression);
           break;
       }
 
@@ -77,14 +73,14 @@ public class Optimizer {
     return expression;
   }
 
-  protected IExpression optimizeList(IExpressionContext context, ExpressionList list) {
+  protected IExpression optimizeTuple(IExpressionContext context, Tuple list) {
 
     List<IExpression> elements = new ArrayList<>(list.size());
     for (IExpression element : list) {
       elements.add(optimize(context, element));
     }
 
-    return new ExpressionList(elements);
+    return new Tuple(elements);
   }
 
   protected IExpression optimizeCall(IExpressionContext context, OperatorCall call) {
@@ -98,7 +94,7 @@ public class Optimizer {
     IExpression expression = new OperatorCall(call.getOperator(), operands);
         
     // Apply rules
-    for (Rule rule : RULES) {
+    for (OptimizerRule rule : RULES) {
       if (expression instanceof OperatorCall) {
         expression = rule.apply(context, (OperatorCall) expression);
       }
