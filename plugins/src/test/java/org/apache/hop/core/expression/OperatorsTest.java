@@ -410,7 +410,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("CAST('0' as BigNumber)", 0);
     evalEquals("CAST('1' As BigNumber)", 1);
     evalEquals("CAST('-1e-37' as BigNumber)", -1e-37d);
-    // TODO: evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
+    evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
     
     // String to Date
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
@@ -608,13 +608,13 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("40/-10", -4D);
     evalEquals("-40/-10", 4D);
     evalEquals("5/2", 2.5D);
-    evalEquals("10.1/2.1",  4.8095238D);
+    evalEquals("10.1/2.1",  4.809523809523809D);
     evalEquals("0.1/0.0000000000001", 1000000000000.0000000D);
     evalNull("null/1");
     evalNull("null/0");
     evalNull("1/null");
     evalFails("40/0");
-    
+        
     writeEquals("15/4");
   }
 

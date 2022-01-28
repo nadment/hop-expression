@@ -38,11 +38,20 @@ An expression is a combination of one or more literal values, resolvable identif
  * Multi line comment
  */
 
-Upper(Left(LABEL,5)) || ' | ' || InitCap(Substr(LABEL,8,50)) || To_Char([YEAR]+1,'FM9999') || CASE when REGION_ID>0 then 'A' else 'B' end
+case 
+  when REGION_ID<0 then Upper(Left(LABEL,5))
+  when REGION_ID between 0 and 100 then InitCap(Substr("LABEL FR",8,50)) 
+  else To_Char([YEAR]+1,'FM9999') || ' XXX '
+end
 ----
 
-* Supports 7 data types: `Boolean`, `Integer`, `Number`, `BigNumber`, `String`, `Date`, `Binary`. 
-* Supports most of the arithmetic, bitwise, logical and comparison operators.
+* Supports 7 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary`. 
+* Logical operators `AND` `OR` `NOT`.
+* Arithmetic operators `+` `-` `*` `/` `%`.
+* Bitwise operators  `&` `|` `~` `^`.
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE`.
+* Conditional operator `CASE`.
+* Cast operator  `::`.
 * Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
 * Use of comments to facilitate reading.
 * Are not case-sensitive, excepted for identifier.

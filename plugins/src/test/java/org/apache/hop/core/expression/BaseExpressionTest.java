@@ -168,7 +168,7 @@ public class BaseExpressionTest {
 
   protected void evalEquals(String source, double expected) throws Exception {
     Object value = eval(source);
-    assertEquals(expected, DataType.toNumber(value), 0.000001);
+    assertEquals(expected, DataType.toNumber(value), 0.000000000000001);
   }
 
   protected void evalEquals(String source, BigDecimal expected) throws Exception {
@@ -217,7 +217,12 @@ public class BaseExpressionTest {
   public void test() throws Exception {
     // ExpressionContext context = createExpressionContext();
     // context.setAttribute("TEST","");
-
+    
+     //evalEquals(" ' -1 ' + 1", 0);
+     //evalEquals(" ' 5e-2 ' + 1",501);
+     //evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
+     
+    // evalEquals(" '8' || 1 + 1", 82);
     // evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
     // ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
     // evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
