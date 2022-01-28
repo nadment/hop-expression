@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
@@ -208,13 +209,13 @@ public enum DataType {
       return ((Number) value).longValue();
     }
     if (value instanceof String) {
-      return convertStringToInteger((String) value);
+      return convertToInteger((String) value);
     }
     if (value instanceof Boolean) {
       return ((boolean) value) ? 1L : 0L;
     }
     if (value instanceof byte[]) {
-      return convertBinaryToInteger((byte[]) value);
+      return convertToInteger((byte[]) value);
     }
 
     throw createUnsupportedConversion(value, INTEGER);
@@ -236,10 +237,10 @@ public enum DataType {
       return Double.valueOf(((Number) value).doubleValue());
     }
     if (value instanceof String) {
-      return convertStringToNumber((String) value);
+      return convertToNumber((String) value);
     }
     if (value instanceof byte[]) {
-      return convertBinaryToNumber((byte[]) value);
+      return convertToNumber((byte[]) value);
     }
 
     throw createUnsupportedConversion(value, NUMBER);
@@ -274,7 +275,7 @@ public enum DataType {
       return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
-      return convertStringToBigNumber((String) value);
+      return convertToBigNumber((String) value);
     }
     throw createUnsupportedConversion(value, BIGNUMBER);
   }
@@ -306,7 +307,7 @@ public enum DataType {
           return ((Number) value).intValue() != 0;
         }
         if (value instanceof String) {
-          return convertStringToBoolean((String) value);
+          return convertToBoolean((String) value);
         }
         break;
       case INTEGER:
@@ -317,10 +318,10 @@ public enum DataType {
           return ((boolean) value) ? 1L : 0L;
         }
         if (value instanceof String) {
-          return convertStringToInteger((String) value);
+          return convertToInteger((String) value);
         }
         if (value instanceof byte[]) {
-          return convertBinaryToInteger((byte[]) value);
+          return convertToInteger((byte[]) value);
         }
         break;
       case NUMBER:
@@ -331,10 +332,10 @@ public enum DataType {
           return Double.valueOf(((Number) value).doubleValue());
         }
         if (value instanceof String) {
-          return convertStringToNumber((String) value);
+          return convertToNumber((String) value);
         }
         if (value instanceof byte[]) {
-          return convertBinaryToNumber((byte[]) value);
+          return convertToNumber((byte[]) value);
         }
         break;
       case BIGNUMBER:
@@ -358,7 +359,7 @@ public enum DataType {
           return BigDecimal.valueOf(v);
         }
         if (value instanceof String) {
-          return convertStringToBigNumber((String) value);
+          return convertToBigNumber((String) value);
         }
         break;
       case STRING:
@@ -388,7 +389,7 @@ public enum DataType {
           return ((String) value).getBytes(StandardCharsets.UTF_8);
         }
         if (value instanceof Long) {
-          return convertIntegerToBinary((Long) value);
+          return convertToBinary((Long) value);
         }
         break;
       case NONE:
@@ -398,7 +399,7 @@ public enum DataType {
     throw createUnsupportedConversion(value, type);
   }
 
-  private static final Long convertStringToInteger(final String str) throws ExpressionException {
+  private static final Long convertToInteger(final String str) throws ExpressionException {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
@@ -407,7 +408,7 @@ public enum DataType {
     }
   }
 
-  private static final Double convertStringToNumber(final String str) throws ExpressionException {
+  private static final Double convertToNumber(final String str) throws ExpressionException {
     try {
       return Double.parseDouble(str);
     } catch (NumberFormatException e) {
@@ -415,15 +416,15 @@ public enum DataType {
     }
   }
 
-  private static final BigDecimal convertStringToBigNumber(final String str) throws ExpressionException {
+  private static final BigDecimal convertToBigNumber(final String str) throws ExpressionException {
     try {     
-      return new BigDecimal(str);
+      return new BigDecimal(StringUtils.trim(str));
     } catch (NumberFormatException e) {
       throw new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.InvalidBigNumber", str)); 
     }
   }
 
-  private static byte[] convertIntegerToBinary(Long number) {
+  private static byte[] convertToBinary(Long number) {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
       result[i] = (byte) (number & 0xFF);
@@ -432,7 +433,7 @@ public enum DataType {
     return result;
   }
 
-  private static Long convertBinaryToInteger(final byte[] bytes) throws ExpressionException {
+  private static Long convertToInteger(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
       throw new ExpressionException("Binary too big to fit in data type Integer");
     long result = 0;
@@ -443,7 +444,7 @@ public enum DataType {
     return result;
   }
 
-  private static Double convertBinaryToNumber(final byte[] bytes) throws ExpressionException {
+  private static Double convertToNumber(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
       throw new ExpressionException("Binary too big to fit in data type Number");
     long result = 0;
@@ -454,7 +455,7 @@ public enum DataType {
     return Double.valueOf(result);
   }
 
-  private static final boolean convertStringToBoolean(final String str) throws ExpressionException {
+  private static final boolean convertToBoolean(final String str) throws ExpressionException {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {

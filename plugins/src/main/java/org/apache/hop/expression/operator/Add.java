@@ -35,8 +35,6 @@ public class Add extends Operator {
     super( "ADD", "+", 100, true, true, "i18n::Operator.Category.Mathematical", "/docs/add.html");
   }
 
-//  @ScalarFunction(id = "ADD", minArgs = 2, maxArgs = 2,
-//      category = "i18n::Operator.Category.Mathematical")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
@@ -68,10 +66,8 @@ public class Add extends Operator {
 
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
-    //writer.append('(');
     operands[0].write(writer);
     writer.append('+');
     operands[1].write(writer);
-    //writer.append(')');
   }
 }

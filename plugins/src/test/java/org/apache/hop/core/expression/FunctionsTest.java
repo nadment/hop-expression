@@ -599,14 +599,14 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Asinh() throws Exception {
-    evalEquals("Asinh(asin(0.5))", 0.502218985);
+    evalEquals("Asinh(asin(0.5))", 0.5022189850346116D);
     evalNull("Asinh(NULL)");
     evalFails("Asinh()");
   }
 
   @Test
   public void Atan() throws Exception {
-    evalEquals("Atan(0.5)", 0.46364760900008061);
+    evalEquals("Atan(0.5)", 0.4636476090008061D);
     evalEquals("Atan(Tan(0.5))", 0.5);
     evalNull("Atan(NULL)");
     evalFails("Atan()");
@@ -624,7 +624,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Atanh() throws Exception {
-    evalEquals("Atanh(0.2)", 0.2027325541);
+    evalEquals("Atanh(0.2)", 0.2027325540540821D);
     evalNull("Atanh(NULL)");
     evalFails("Atanh()");
   }
@@ -641,7 +641,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Cosh() throws Exception {
-    evalEquals("Cosh(1.234)", 1.863033802);
+    evalEquals("Cosh(1.234)", 1.8630338016984225);
     evalEquals("Cosh(0)", 1.0);
     evalNull("Cosh(NULL)");
     evalFails("Cosh()");
@@ -688,7 +688,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Tanh() throws Exception {
-    evalEquals("Tanh(1.234)", 0.8437356626D);
+    evalEquals("Tanh(1.234)", 0.8437356625893302D);
     evalEquals("Tanh(0)", 0D);
     evalNull("Tanh(NULL)");
     evalFails("Tanh()");
@@ -732,7 +732,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Cbrt() throws Exception {
     evalEquals("Cbrt(0)", 0);
-    evalEquals("Cbrt(2)", 1.25992105);
+    evalEquals("Cbrt(2)", 1.2599210498948732D);
     evalEquals("Cbrt(-343)", -7);
     evalNull("Cbrt(NULL)");
     evalFails("Cbrt()");

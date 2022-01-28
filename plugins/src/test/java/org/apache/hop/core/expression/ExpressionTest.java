@@ -25,6 +25,8 @@ import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.expression.operator.Concat;
 import org.junit.Test;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 public class ExpressionTest extends BaseExpressionTest { 
 
@@ -123,8 +125,8 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("42%(3+2)", 2);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
     evalEquals("Age-(10+3*10+50-2*25)", 0);
-    evalEquals("2*'1.23'", 2.46);
 
+      
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
     evalTrue("NOT 5 = 5 OR NOT 'Test' = 'X' AND NOT 5 = 4");
@@ -183,11 +185,22 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("false = 0");
     evalTrue("true OR 0");
     evalFalse("false AND 0");
+    
+    // String to Number
+    evalEquals("2*'1.23'", 2.46);
+        
+    // Integer to BigNumber
+    evalEquals("'-1e-3'::BigNumber * 2", new BigDecimal("-2e-3", MathContext.DECIMAL128));    
+    // Number to BigNumber
+    evalEquals("'-1e-3'::BigNumber * 0.5", new BigDecimal("-5e-4", MathContext.DECIMAL128));
+    
+    evalEquals(" 4 + 4 || '2' ", "82");    
+    evalEquals(" '8' || 1 + 1", 82);
   }
 
   @Test
   public void CoercionExplicit() throws Exception {
-    // Coercion String to Boolean
+    // Cast String to Boolean
     evalTrue("'1'::Boolean=true");
     evalTrue("'On'::Boolean=true");
     evalTrue("'Y'::Boolean=true");
@@ -204,6 +217,10 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("'OFF'::Boolean=false");
     evalTrue("'F'::Boolean=false");
     evalTrue("'FALSE'::Boolean=false");
+    
+    // String to BigNumber
+    evalEquals("' -1e-3 '::BigNumber", new BigDecimal("-1e-3", MathContext.DECIMAL128));    
+
   }
 }
 
