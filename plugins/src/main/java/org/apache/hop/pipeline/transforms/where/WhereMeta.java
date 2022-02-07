@@ -57,7 +57,7 @@ import java.util.Optional;
     description = "i18n::Where.Description",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Flow",
     documentationUrl = "/pipeline/transforms/where.html",
-    keywords = "i18n::Where.Keyword")
+    keywords = "i18n::Where.Keywords")
 @InjectionSupported(localizationPrefix = "Where.Injection.")
 public class WhereMeta extends BaseTransformMeta
     implements ITransformMeta<Where, WhereData> {
@@ -114,12 +114,8 @@ public class WhereMeta extends BaseTransformMeta
     StringBuilder xml = new StringBuilder(500);
 
     xml.append(XmlHandler.addTagValue(TAG_EXPRESSION, expression));
-    // if (getTrueStepName() != null) {
     xml.append(XmlHandler.addTagValue(TAG_SEND_TRUE_TO, getTrueTransformName()));
-    // }
-    // if (getFalseStepName() != null) {
     xml.append(XmlHandler.addTagValue(TAG_SEND_FALSE_TO, getFalseTransformName()));
-    // }
     return xml.toString();
   }
 
@@ -280,7 +276,6 @@ public class WhereMeta extends BaseTransformMeta
               BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"),
               StreamIcon.FALSE,
               null));
-      // setStepIOMeta(ioMeta);
     }
 
     return transformIOMeta;
@@ -343,9 +338,6 @@ public class WhereMeta extends BaseTransformMeta
         targets.get(0).setTransformMeta(null);
       }
     }
-
-    // this.resetStepIoMeta(); // force stepIo to be recreated when it is next
-    // needed.
   }
 
   @Override

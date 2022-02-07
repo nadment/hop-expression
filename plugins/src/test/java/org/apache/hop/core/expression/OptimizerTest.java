@@ -114,6 +114,7 @@ public class OptimizerTest {
     optimizeTrue("null or true");
     optimizeNull("null or null");
     optimizeTrue("\"FIELD\" or true");
+    optimize("\"FIELD\" or false","\"FIELD\"");
     optimizeTrue("true or FIELD");
     optimize("FIELD or FIELD", "FIELD");
 

@@ -1,0 +1,28 @@
+
+Expr ::=  Literal
+         |Identifier                
+         |ParenthesizedExpr
+         |OperatorCall
+         |CaseExpr
+
+Literal ::=  BooleanLiteral  
+						|StringLiteral
+            |IntegerLiteral
+            |NumberLiteral
+            |BigNumberLiteral
+            |BinaryLiteral
+            |"NULL"
+            |"TRUE"
+            |"FALSE"
+
+ParenthesizedExpr ::= ("(" Expr ")") | Expr
+
+OperatorCall ::= UnaryOperator Expr | Expr BinaryOperator Expr | Function
+
+Function ::= Name "(" Expr ("," Expr)* ")"
+
+CaseExpr ::= SimpleCaseExpr | SearchedCaseExpr
+
+SimpleCaseExpr ::= "CASE" Expr ("WHEN" Expr "THEN" Expr)+ ("ELSE" Expr)? "END"
+
+SearchedCaseExpr ::= "CASE" ("WHEN" Expr "THEN" Expr)+ ("ELSE" Expr)? "END"
