@@ -212,7 +212,7 @@ public abstract class Operator implements Comparable<Operator> {
     if (escapeStr != null) {
 
       if (escapeStr.length() != 1) {
-        throw ExpressionException.create("Expression.InvalidEscapeCharacter", escapeStr.toString());
+        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, escapeStr.toString());
       }
 
       escapeChar = escapeStr.charAt(0);
@@ -235,7 +235,7 @@ public abstract class Operator implements Comparable<Operator> {
 
       if (c == escapeChar) {
         if (i == (sqlPattern.length() - 1)) {
-          throw ExpressionException.create("Expression.InvalidEscape", sqlPattern, i);
+          throw new ExpressionException(Error.INVALID_REGEXP_ESCAPE, sqlPattern, i);
         }
         char nextChar = sqlPattern.charAt(i + 1);
         if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
@@ -245,7 +245,7 @@ public abstract class Operator implements Comparable<Operator> {
           javaPattern.append(nextChar);
           i++;
         } else {
-          throw ExpressionException.create("Expression.InvalidEscape", sqlPattern, i);
+          throw new ExpressionException(Error.INVALID_REGEXP_ESCAPE, sqlPattern, i);
         }
       } else if (c == '_') {
         javaPattern.append('.');

@@ -25,56 +25,16 @@ public class ExpressionException extends HopException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 
-  public static ExpressionException create(String message, Object... values) {  
-    return new ExpressionException(BaseMessages.getString(PKG, message, values));
-  }  
-  
-  public static ExpressionException createUnexpectedDataType(String name, DataType type) {
-    return create("Expression.UnexpectedDataType", name, type);
-  }  
-  
-  public static final ExpressionException createArgumentOutOfRange(Object arg) {
-    return create("Expression.ArgumentOutOfRange", arg);
-  }
-  
-  public static ExpressionException createUnexpectedDatePart(String name, DatePart part) {
-    return create("Expression.UnexpectedDatePart", name, part);
-  }
-  
-  public static final ExpressionException createDivisionByZero() {
-    return create("Expression.DivisionByZero");
-  }
-  
-  public static final ExpressionException createOverflow(String message) {
-    return create("Expression.Overflow", message);
-  }
-
-  public static ExpressionException createFormatPattern(String s, int i) {
-    return create("Bad format {0} at position {1}", s, i);
-  }
-
-  public static ExpressionException createRegexpPattern(String s) {
-    return create("Bad regexp {0}", s);
-  }
-  
   /**
    * Construct a new expression exception.
    * 
-   * @param message a descriptive message
+   * @param error a error message
    */
-  public ExpressionException(String message) {
-    super(message);
+  public ExpressionException(Error error) {
+    super(BaseMessages.getString(PKG, error.message()));
   }
 
-  /**
-   * Construct a new expression exception.
-   * 
-   * @param message a descriptive message
-   * @param cause the underlying cause of this exception
-   */
-  public ExpressionException(String message, Throwable exception) {
-    super(message, exception);
+  public ExpressionException(Error error, Object... values) {       
+    super(BaseMessages.getString(PKG, error.message(), values));
   }
-
-
 }

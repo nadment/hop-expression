@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -25,6 +26,7 @@ import org.apache.hop.expression.ScalarFunction;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+
 
 /** 
  * String concatenation operator '<code>||</code>'
@@ -64,7 +66,7 @@ public class Concat extends Operator {
         }
         return output.toByteArray();
       } catch (IOException e) {
-         throw ExpressionException.create(e.getMessage());
+         throw new ExpressionException(Error.INTERNAL_ERROR, e.getMessage());
       }
     }
 

@@ -1703,6 +1703,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void UrlEncode() throws Exception {
     evalEquals("UrlEncode('a b')", "a+b");
     evalEquals("UrlEncode('a+b')", "a%2Bb");
+    evalEquals("UrlEncode('âéè')", "%C3%A2%C3%A9%C3%A8");
     evalNull("UrlEncode(NULL)");
     evalFails("UrlEncode()");
     evalFails("UrlEncode('x','y')");
@@ -1712,7 +1713,9 @@ public class FunctionsTest extends BaseExpressionTest {
   public void UrlDecode() throws Exception {
     evalEquals("UrlDecode('a+b')", "a b");
     evalEquals("UrlDecode('a%2Bb')", "a+b");
+    evalEquals("UrlDecode('%C3%A2%C3%A9%C3%A8')", "âéè");
     evalNull("UrlDecode(NULL)");
+    evalFails("UrlDecode('a%%2Bb')");
     evalFails("UrlDecode()");
     evalFails("UrlDecode('x','y')");
   }

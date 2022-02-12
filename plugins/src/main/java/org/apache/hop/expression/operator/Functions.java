@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -376,7 +377,7 @@ public class Functions {
       return null;
     Double number = DataType.toNumber(value);
     if (number <= 0)
-      throw ExpressionException.createArgumentOutOfRange(value);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
     return FastMath.log(number);
   }
 
@@ -396,7 +397,7 @@ public class Functions {
       return null;
     Double number = DataType.toNumber(value);
     if (number <= 0)
-      throw ExpressionException.createArgumentOutOfRange(value);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
 
     return FastMath.log(number) / FastMath.log(DataType.toNumber(base));
   }
@@ -413,7 +414,7 @@ public class Functions {
       return null;
     Double number = DataType.toNumber(value);
     if (number <= 0)
-      throw ExpressionException.createArgumentOutOfRange(value);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
     return FastMath.log10(number);
   }
 
@@ -446,7 +447,7 @@ public class Functions {
       return null;
     Double number = DataType.toNumber(value);
     if (number < 0)
-      throw ExpressionException.createArgumentOutOfRange(value);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
     return FastMath.sqrt(number);
   }
 
@@ -477,8 +478,9 @@ public class Functions {
     Double power = DataType.toNumber(right);
     if (power == 0)
       return 1L;
+    // Power can not be negative
     if (power < 0)
-      throw new ArithmeticException("Cannot power negative " + power);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, power);
 
     return FastMath.pow(DataType.toNumber(left), DataType.toNumber(right));
   }
@@ -492,7 +494,7 @@ public class Functions {
       md.update(DataType.toBinary(value));
       return Hex.encodeHexString(md.digest());
     } catch (NoSuchAlgorithmException e) {
-      throw new ExpressionException("Unknow algorithm: " + algorithm);
+      throw new ExpressionException(Error.ILLEGAL_ARGUMENT, algorithm);
     }
   }
 
@@ -588,8 +590,7 @@ public class Functions {
     int codePoint = DataType.toInteger(value).intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Expression.ArgumentOutOfRange", codePoint));
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, codePoint);
     }
     return new String(Character.toChars(codePoint));
   }
@@ -831,7 +832,7 @@ public class Functions {
             flags |= Pattern.MULTILINE;
             break;
           default:
-            throw new ExpressionException("Invalid input for Regexp");
+            throw new ExpressionException(Error.ILLEGAL_ARGUMENT, str);
         }
       }
     }
@@ -1115,7 +1116,7 @@ public class Functions {
     try {
       return URLEncoder.encode(DataType.toString(value), StandardCharsets.UTF_8.name());
     } catch (Exception e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Error encoding url"), e);
+      throw new ExpressionException(Error.URLENCODE_ERROR, value, e.getMessage());
     }
   }
 
@@ -1134,7 +1135,7 @@ public class Functions {
     try {
       return URLDecoder.decode(DataType.toString(value), StandardCharsets.UTF_8.name());
     } catch (Exception e) {
-      throw new ExpressionException(BaseMessages.getString(PKG, "Error decoding url"), e);
+      throw new ExpressionException(Error.URLDECODE_ERROR, value, e.getMessage());
     }
   }
 
@@ -1408,7 +1409,7 @@ public class Functions {
       int start = Math.min(Math.max(0, position - 1), bytes.length);
       length = Math.min(length, bytes.length);
       if (length < 0)
-        throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);
+        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, length);
 
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -1417,7 +1418,7 @@ public class Functions {
         buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
-        throw ExpressionException.create("Expression.InternalError", e);
+        throw new ExpressionException(Error.INTERNAL_ERROR, e);
       }
     }
 
@@ -1426,7 +1427,7 @@ public class Functions {
 
     length = Math.min(length, str.length());
     if (length < 0)
-      throw ExpressionException.create("Expression.InvalidLengthFunctionInsert", length);
+      throw new ExpressionException(Error.ILLEGAL_ARGUMENT, length);
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));
@@ -1563,8 +1564,8 @@ public class Functions {
     try {
       Pattern pattern = Pattern.compile(regexp, flags);
       return pattern.matcher(input).find();
-    } catch (PatternSyntaxException e) {
-      throw ExpressionException.createRegexpPattern(regexp);
+    } catch (PatternSyntaxException e) {      
+      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 
@@ -1657,12 +1658,10 @@ public class Functions {
         matcher.appendTail(buffer);
         return buffer.toString();
       }
-    } catch (PatternSyntaxException e) {
-      throw ExpressionException.createRegexpPattern(regexp);
-    } catch (StringIndexOutOfBoundsException | IllegalArgumentException e) {
-      // TODO: i18n
-      throw new ExpressionException(
-          BaseMessages.getString(PKG, "Error regexp replace {0}", replacement));
+    } catch (PatternSyntaxException e) {      
+      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
+    } catch (Exception e) {
+      throw new ExpressionException(Error.REGEXP_REPLACE_ERROR, replacement);
     }
   }
 
@@ -1723,7 +1722,7 @@ public class Functions {
 
       return null;
     } catch (PatternSyntaxException e) {
-      throw ExpressionException.createRegexpPattern(regexp);
+      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 
@@ -1796,7 +1795,7 @@ public class Functions {
 
       return 0L;
     } catch (PatternSyntaxException e) {
-      throw ExpressionException.createRegexpPattern(regexp);
+      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 
@@ -1952,8 +1951,8 @@ public class Functions {
         return DateTimeFormat.of(pattern).format(DataType.toDate(v0));
       case STRING:
         return v0;
-      default:
-        throw ExpressionException.createUnexpectedDataType("TO_CHAR", type);
+      default:        
+        throw new ExpressionException(Error.UNEXPECTED_DATA_TYPE, "TO_CHAR", type);
     }
   }
 
@@ -1976,7 +1975,7 @@ public class Functions {
       }
       return NumberFormat.of(format).parse(str);
     } catch (ParseException e) {
-      throw ExpressionException.create(e.getMessage());
+      throw new ExpressionException(Error.PARSE_ERROR, e.getMessage());
     }
   }
 
@@ -2030,10 +2029,10 @@ public class Functions {
         try {
           return DateTimeFormat.of(format).parse(DataType.toString(v0));
         } catch (ParseException e) {
-          throw ExpressionException.create(e.getMessage());
+          throw new ExpressionException(Error.PARSE_ERROR, e.getMessage());
         }
       default:
-        throw ExpressionException.createUnexpectedDataType("TO_DATE", type);
+        throw new ExpressionException(Error.UNEXPECTED_DATA_TYPE, "TO_DATE", type);
     }
   }
 
@@ -2204,8 +2203,8 @@ public class Functions {
         return datetime.truncatedTo(ChronoUnit.MICROS);
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
-      default:
-        throw ExpressionException.createUnexpectedDatePart("DATE_TRUNC", part);
+      default:        
+        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
     }
   }
 
@@ -2691,7 +2690,7 @@ public class Functions {
       return null;
     Double d = DataType.toNumber(value);
     if (d < -1.0 || d > 1.0) {
-      throw ExpressionException.createArgumentOutOfRange(value);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
     }
     return FastMath.acos(d);
   }
@@ -2786,7 +2785,7 @@ public class Functions {
 
     double number = DataType.toNumber(value);
     if (number == 0)
-      throw ExpressionException.createArgumentOutOfRange(value);
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
 
     return FastMath.cos(number) / FastMath.sin(number);
   }

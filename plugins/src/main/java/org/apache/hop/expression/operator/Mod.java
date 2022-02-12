@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -48,21 +49,21 @@ public class Mod extends Operator {
       BigDecimal divisor = DataType.toBigNumber(right);
       // prevent a division by zero ..
       if (divisor.signum() == 0)
-        throw ExpressionException.createDivisionByZero();
+        throw new ExpressionException(Error.DIVISION_BY_ZERO);
       return DataType.toBigNumber(left).remainder(divisor);
     }
     if (left instanceof Double || right instanceof Double) {
       double divisor = DataType.toNumber(right);
       // prevent a division by zero ..
       if (divisor == 0L)
-        throw ExpressionException.createDivisionByZero();
+        throw new ExpressionException(Error.DIVISION_BY_ZERO);
       return DataType.toNumber(left) % divisor;
     }
     if (left instanceof Long || right instanceof Long) {
       long divisor = DataType.toInteger(right);
       // prevent a division by zero ..
       if (divisor == 0L)
-        throw ExpressionException.createDivisionByZero();
+        throw new ExpressionException(Error.DIVISION_BY_ZERO);
       return DataType.toInteger(left) % divisor;
     }
 

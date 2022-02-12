@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -112,7 +113,7 @@ public class Extract extends Operator {
       case TIMEZONE_MINUTE:
         return (datetime.getOffset().getTotalSeconds() / 60) % 60;
       default:
-        throw ExpressionException.createUnexpectedDatePart("EXTRACT",part);
+        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
     }
 
   }

@@ -120,11 +120,11 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public Object resolve(String name) throws ExpressionException {
 
     if (rowMeta == null)
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.NoRowMeta", name));
+      throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);
 
     int index = rowMeta.indexOfValue(name);
     if (index < 0)
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FieldNotFound", name));
+      throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);
 
     IValueMeta valueMeta = rowMeta.getValueMeta(index);
     try {
@@ -149,11 +149,10 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
         case IValueMeta.TYPE_BINARY:
           return rowMeta.getBinary(row, index);
         default:
-          throw new ExpressionException(BaseMessages.getString(PKG,
-              "Expression.ValueMetaTypeNotSupported", name, valueMeta.getType()));
+          throw new ExpressionException(Error.INVALID_IDENTIFIER_TYPE, name, valueMeta.getTypeDesc());
       }
     } catch (HopValueException e) {
-      throw new ExpressionException("Error resolve field value " + name + ":" + e.toString());
+      throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);
     }
   }
 

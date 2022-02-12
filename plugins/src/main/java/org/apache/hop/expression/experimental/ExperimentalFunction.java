@@ -22,6 +22,7 @@ import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;
 import org.apache.hop.core.plugins.PluginRegistry;
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -74,7 +75,7 @@ public class ExperimentalFunction {
         try {
           return registry.loadClass(plugin, ICompressionProvider.class);
         } catch (Exception e) {
-          throw ExpressionException.create("No compression provider {0}", id);
+          throw new ExpressionException(Error.ILLEGAL_ARGUMENT, id);
         }
       }
     }
@@ -92,26 +93,26 @@ public class ExperimentalFunction {
  * @throws ExpressionException
  */
   //@ScalarFunction(id = "COMPRESS", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 1)
-  public static Object compress(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-
-    String algorithm = "SNAPPY";
-    ICompressionProvider provider = getCompressionProvider(algorithm);
-    try {
-      byte[] bytes = DataType.toBinary(v0);   
-      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+200);
-      CompressionOutputStream  compression = provider.createOutputStream(output);
-      compression.write(bytes);
-      compression.flush();      
-      return output.toByteArray();
-    } catch (IOException e) {
-      throw ExpressionException.create("Compress {0} error {1}", algorithm, e.getMessage());
-    }
-  }
-
+//  public static Object compress(final IExpressionContext context, final IExpression[] operands)
+//      throws ExpressionException {
+//    Object v0 = operands[0].eval(context);
+//    if (v0 == null)
+//      return null;
+//
+//    String algorithm = "SNAPPY";
+//    ICompressionProvider provider = getCompressionProvider(algorithm);
+//    try {
+//      byte[] bytes = DataType.toBinary(v0);   
+//      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+200);
+//      CompressionOutputStream  compression = provider.createOutputStream(output);
+//      compression.write(bytes);
+//      compression.flush();      
+//      return output.toByteArray();
+//    } catch (IOException e) {
+//      throw new ExpressionException("Compress {0} error {1}", algorithm, e.getMessage());
+//    }
+//  }
+//
 
   /** 
    * Decompress an input value, using the GZIP algorithm. 
@@ -122,29 +123,29 @@ public class ExperimentalFunction {
    * @throws ExpressionException
    */
  // @ScalarFunction(id = "DECOMPRESS", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 1)
-  public static Object decompress(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-    
-    String algorithm = "SNAPPY";
-    ICompressionProvider provider = getCompressionProvider(algorithm);
-    
-    try {      
-      byte[] bytes = DataType.toBinary(v0);
-      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+100);
-      CompressionInputStream decompression = provider.createInputStream(new ByteArrayInputStream(bytes));      
-      final byte[] buffer = new byte[8024];
-      int n = 0;
-      while (-1 != (n = decompression.read(buffer))) {
-          output.write(buffer, 0, n);
-      }      
-      return output.toByteArray();
-    } catch (IOException e) {
-      throw ExpressionException.create("Decompress {0} error {1}", algorithm, e.getMessage());
-    }
-  }
+//  public static Object decompress(final IExpressionContext context, final IExpression[] operands)
+//      throws ExpressionException {
+//    Object v0 = operands[0].eval(context);
+//    if (v0 == null)
+//      return null;
+//    
+//    String algorithm = "SNAPPY";
+//    ICompressionProvider provider = getCompressionProvider(algorithm);
+//    
+//    try {      
+//      byte[] bytes = DataType.toBinary(v0);
+//      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+100);
+//      CompressionInputStream decompression = provider.createInputStream(new ByteArrayInputStream(bytes));      
+//      final byte[] buffer = new byte[8024];
+//      int n = 0;
+//      while (-1 != (n = decompression.read(buffer))) {
+//          output.write(buffer, 0, n);
+//      }      
+//      return output.toByteArray();
+//    } catch (IOException e) {
+//      throw new ExpressionException("Decompress {0} error {1}", algorithm, e.getMessage());
+//    }
+//  }
 
 
   /** Week from the beginning of the month (0-5) */

@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -39,17 +40,17 @@ public class Negative extends Operator {
       return null;
 
     if (v0 instanceof Double) {
-      double value = (double) v0;
+      Double value = (Double) v0;      
       if (value == Double.MIN_VALUE) {
-        throw ExpressionException.createOverflow(String.valueOf(v0));
+        throw new ExpressionException(Error.ARITHMETIC_OVERFLOW, value);
       }
       return Double.valueOf(-value);
     }
 
     if (v0 instanceof Long) {
-      long value = (long) v0;
+      Long value = (Long) v0;
       if (value == Long.MIN_VALUE) {
-        throw ExpressionException.createOverflow(String.valueOf(v0));
+        throw new ExpressionException(Error.ARITHMETIC_OVERFLOW, value);
       }
       return Long.valueOf(-value);
     }

@@ -218,7 +218,7 @@ public class BaseExpressionTest {
     // ExpressionContext context = createExpressionContext();
     // context.setAttribute("TEST","");
     
-     //evalEquals(" ' -1 ' + 1", 0);
+   //evalEquals(" Power(2,-4)", 4);
      //evalEquals(" ' 5e-2 ' + 1",501);
      //evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
      

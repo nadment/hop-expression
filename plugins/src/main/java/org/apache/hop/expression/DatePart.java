@@ -150,7 +150,7 @@ public enum DatePart {
     if (value instanceof DatePart) {
       return (DatePart) value;
     }
-    throw ExpressionException.create("Expression.InvalidDatePart", value);
+    throw new ExpressionException(Error.INVALID_DATE_PART, value);
   }
   
   /**

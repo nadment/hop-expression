@@ -71,6 +71,9 @@ public class OperatorRegistry {
 
   private static final ILogChannel log = new LogChannel("Expression");
 
+//  @Variable (value="100", description="i18n::Package.HOP_TEST_VARIABLE")
+//  public static final String HOP_TEST_VARIABLE = "HOP_TEST_VARIABLE";
+  
   // -------------------------------------------------------------
   // BITWISE OPERATORS
   // -------------------------------------------------------------

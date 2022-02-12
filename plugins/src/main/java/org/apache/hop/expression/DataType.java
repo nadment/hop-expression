@@ -72,14 +72,15 @@ public enum DataType {
   public boolean isInstance(Object value) {
     return javaClass.isInstance(value);
   }
-  
+
   public static DataType of(final String name) {
     for (DataType type : DataType.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
     }
-    throw new IllegalArgumentException(BaseMessages.getString(IExpression.class, "Expression.InvalidDataType", name));
+    throw new IllegalArgumentException(
+        BaseMessages.getString(IExpression.class, "Expression.InvalidDataType", name));
   }
 
   public static DataType from(final Object object) {
@@ -100,7 +101,8 @@ public enum DataType {
     if (object instanceof byte[])
       return BINARY;
 
-    throw new IllegalArgumentException(BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", object.getClass()));
+    throw new IllegalArgumentException(
+        BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", object.getClass()));
   }
 
   /**
@@ -120,10 +122,11 @@ public enum DataType {
 
   /**
    * Coerce value to data type BOOLEAN
+   * 
    * @param value the value to coerce
    * @return Boolean
    */
-  
+
   public static final Boolean toBoolean(final Object value) throws ExpressionException {
     if (value == null) {
       return null;
@@ -136,9 +139,10 @@ public enum DataType {
     }
     throw createUnsupportedConversion(value, BOOLEAN);
   }
-  
+
   /**
    * Coerce value to data type DATE
+   * 
    * @param value the value to coerce
    * @return ZonedDateTime
    */
@@ -154,6 +158,7 @@ public enum DataType {
 
   /**
    * Coerce value to data type STRING
+   * 
    * @param value the value to coerce
    * @return String
    */
@@ -176,6 +181,7 @@ public enum DataType {
 
   /**
    * Coerce value to data type BINARY
+   * 
    * @param value the value to coerce
    * @return bytes array
    */
@@ -191,10 +197,11 @@ public enum DataType {
     }
 
     throw createUnsupportedConversion(value, BINARY);
-  }  
-  
+  }
+
   /**
    * Coerce value to data type INTEGER
+   * 
    * @param value the value to coerce
    * @return Long
    */
@@ -219,10 +226,11 @@ public enum DataType {
     }
 
     throw createUnsupportedConversion(value, INTEGER);
-  }  
-  
+  }
+
   /**
    * Coerce value to data type NUMBER
+   * 
    * @param value the value to coerce
    * @return Double
    */
@@ -248,6 +256,7 @@ public enum DataType {
 
   /**
    * Coerce value to data type BIGNUMBER
+   * 
    * @param value the value to coerce
    * @return BigDecimal
    */
@@ -279,7 +288,7 @@ public enum DataType {
     }
     throw createUnsupportedConversion(value, BIGNUMBER);
   }
-  
+
   public static Object convertTo(Object value, final DataType type) throws ExpressionException {
     return convertTo(value, type, null);
   }
@@ -293,7 +302,8 @@ public enum DataType {
    *        numeric, or null if none
    * @return the converted value
    */
-  public static final Object convertTo(final Object value, final DataType type, String pattern) throws ExpressionException {
+  public static final Object convertTo(final Object value, final DataType type, String pattern)
+      throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -380,7 +390,7 @@ public enum DataType {
           try {
             return DateTimeFormat.of(pattern).parse((String) value);
           } catch (Exception e) {
-            throw new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.InvalidDate", value));          
+            throw new ExpressionException(Error.INVALID_DATE, value);
           }
         }
         break;
@@ -404,7 +414,7 @@ public enum DataType {
       Double number = Double.parseDouble(str);
       return number.longValue();
     } catch (NumberFormatException e) {
-      throw new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.InvalidInteger", str));
+      throw new ExpressionException(Error.INVALID_INTEGER, str);
     }
   }
 
@@ -412,15 +422,15 @@ public enum DataType {
     try {
       return Double.parseDouble(str);
     } catch (NumberFormatException e) {
-      throw new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.InvalidNumber", str));
+      throw new ExpressionException(Error.INVALID_NUMBER, str);
     }
   }
 
   private static final BigDecimal convertToBigNumber(final String str) throws ExpressionException {
-    try {     
+    try {
       return new BigDecimal(StringUtils.trim(str));
     } catch (NumberFormatException e) {
-      throw new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.InvalidBigNumber", str)); 
+      throw new ExpressionException(Error.INVALID_BIGNUMBER, str);
     }
   }
 
@@ -435,7 +445,7 @@ public enum DataType {
 
   private static Long convertToInteger(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ExpressionException("Binary too big to fit in data type Integer");
+      throw new ExpressionException(Error.CONVERSION_ERROR, BINARY, bytes, INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -446,7 +456,7 @@ public enum DataType {
 
   private static Double convertToNumber(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ExpressionException("Binary too big to fit in data type Number");
+      throw new ExpressionException(Error.CONVERSION_ERROR, BINARY, bytes, NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -506,7 +516,8 @@ public enum DataType {
    * @param value the other value
    * @return 0 if both values are equal, -1 if this value is smaller, and 1 otherwise
    */
-  public static final int compareTo(final Object left, final Object right) throws ExpressionException {
+  public static final int compareTo(final Object left, final Object right)
+      throws ExpressionException {
 
     if (left == null && right == null)
       return 0;
@@ -525,8 +536,8 @@ public enum DataType {
       // Two timestamp are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       if (dt1.isEqual(dt2)) {
-        return 0;       
-      }     
+        return 0;
+      }
       return dt1.compareTo(dt2);
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
@@ -562,7 +573,8 @@ public enum DataType {
     return compare;
   }
 
-  private static final ExpressionException createUnsupportedConversion(Object value, DataType type) {
-    return new ExpressionException(BaseMessages.getString(IExpression.class, "Expression.UnsupportedConversion", value, DataType.from(value), type)); 
+  private static final ExpressionException createUnsupportedConversion(Object value,
+      DataType type) {
+    return new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value), type);
   }
 }

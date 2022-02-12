@@ -38,7 +38,7 @@ public class Function extends Operator {
    * @param name The name of function
    */
   public Function(String id, String name, boolean isDeterministic, Object instance,
-      Method method, int min, int max, String category, String documentationUrl) throws ExpressionException {
+      Method method, int min, int max, String category, String documentationUrl) {
     super(id, name, 10, true, isDeterministic, category, documentationUrl);
 
     this.instance = instance;
@@ -56,13 +56,12 @@ public class Function extends Operator {
   @Override
   public void checkNumberOfArguments(IExpression[] operands) {
 
-    if (operands.length < minArgs) {
+    if (operands.length < minArgs) {      
       throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getId()));
     }
 
     if (operands.length > maxArgs) {
-      throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.TooManyNumberOfArguments", this.getId()));
-      //throw ExpressionException.create("Expression.TooManyNumberOfArguments", this.getId());
+      throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.TooManyArguments", this.getId()));
     }
   }
 
@@ -76,7 +75,7 @@ public class Function extends Operator {
       if (throwable instanceof ExpressionException) {
         throw (ExpressionException) throwable;
       }
-      throw new ExpressionException(BaseMessages.getString(PKG, "Expression.FunctionError", this.getId(), throwable.getMessage()));
+      throw new ExpressionException(Error.FUNCTION_CALL_ERROR, this.getId(), throwable.getMessage());
     }
   }
 

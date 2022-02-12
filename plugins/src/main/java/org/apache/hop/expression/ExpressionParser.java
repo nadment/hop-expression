@@ -58,9 +58,7 @@ public class ExpressionParser {
       } else
         column++;
     }
-    String message =
-        BaseMessages.getString(PKG, "Expression.SyntaxError", line, column, e.getMessage());
-    return new ExpressionException(message);
+    return new ExpressionException(Error.SYNTAX_ERROR, line, column, e.getMessage());
   }
 
   protected ExpressionParser(String source) {

@@ -18,6 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -46,7 +47,7 @@ public class Cast extends Operator {
     Object v1 = operands[1].eval(context);
        
     if (!(v1 instanceof DataType)) {
-      throw ExpressionException.create("Expression.InvalidDataType", v1);    
+      throw new ExpressionException(Error.INVALID_DATA_TYPE, v1);    
     }
 
     DataType type = ( DataType) v1;

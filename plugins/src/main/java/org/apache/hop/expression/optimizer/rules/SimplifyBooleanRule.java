@@ -72,16 +72,33 @@ public class SimplifyBooleanRule implements OptimizerRule {
 
         if (call.getOperand(0).isKind(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          if (value == null)
+            return call.getOperand(1);
           if (value == Boolean.TRUE)
             return Literal.TRUE;
         }
 
         if (call.getOperand(1).isKind(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          if (value == null)
+            return call.getOperand(0);
           if (value == Boolean.TRUE)
             return Literal.TRUE;
         }
 
+        if (call.getOperand(0).isKind(Kind.LITERAL)) {
+          Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          if (value == Boolean.FALSE)
+            return call.getOperand(1);
+        }
+
+        if (call.getOperand(1).isKind(Kind.LITERAL)) {
+          Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          if (value == Boolean.FALSE)
+            return call.getOperand(0);
+        }
+
+        
         // [field] OR [field] => [field]
         if (call.getOperand(0).equals(call.getOperand(1))) {
           return call.getOperand(0);
