@@ -216,12 +216,7 @@ public class BaseExpressionTest {
   @Test
   public void test() throws Exception {
     // ExpressionContext context = createExpressionContext();
-    // context.setAttribute("TEST","");
-    
-   //evalEquals(" Power(2,-4)", 4);
-     //evalEquals(" ' 5e-2 ' + 1",501);
-     //evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
-     
+    // context.setAttribute("TEST","");     
     // evalEquals(" '8' || 1 + 1", 82);
     // evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
     // ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
