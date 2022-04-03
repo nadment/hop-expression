@@ -29,10 +29,8 @@ import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
-import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
-import org.apache.hop.pipeline.transform.ITransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +46,7 @@ import java.util.List;
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     documentationUrl = "/pipeline/transforms/expresssion.html",
     keywords = "i18n::Expression.Keywords")
-public class ExpressionTransformMeta extends BaseTransformMeta
-    implements ITransformMeta<ExpressionTransform, ExpressionTransformData> {
+public class ExpressionTransformMeta extends BaseTransformMeta<ExpressionTransform, ExpressionTransformData> {
 
   private static final Class<?> PKG = ExpressionTransformMeta.class;
  
@@ -67,21 +64,6 @@ public class ExpressionTransformMeta extends BaseTransformMeta
     for (ExpressionField field : other.getFields()) {
       fields.add(new ExpressionField(field));
     }
-  }
-
-  @Override
-  public ExpressionTransform createTransform(
-      TransformMeta transformMeta,
-      ExpressionTransformData data,
-      int cnr,
-      PipelineMeta tr,
-      Pipeline pipeline) {
-    return new ExpressionTransform(transformMeta, this, data, cnr, tr, pipeline);
-  }
-
-  @Override
-  public ExpressionTransformData getTransformData() {
-    return new ExpressionTransformData();
   }
 
   @Override

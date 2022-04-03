@@ -59,8 +59,7 @@ import java.util.List;
     image = "clonerow.svg",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility"
     )
-public class CloneRowMeta extends BaseTransformMeta
-    implements ITransformMeta<CloneRow, CloneRowData> {
+public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
 
   private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator!!
 
@@ -295,16 +294,5 @@ public class CloneRowMeta extends BaseTransformMeta
               transformMeta);
     }
     remarks.add(cr);
-  }
-
-  @Override
-  public CloneRow createTransform(
-      TransformMeta transformMeta, CloneRowData data, int cnr, PipelineMeta tr, Pipeline pipeline) {
-    return new CloneRow(transformMeta, this, data, cnr, tr, pipeline);
-  }
-
-  @Override
-  public CloneRowData getTransformData() {
-    return new CloneRowData();
   }
 }

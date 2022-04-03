@@ -113,8 +113,8 @@ public class OptimizerTest {
     optimizeTrue("true or null");
     optimizeTrue("null or true");
     optimizeNull("null or null");
-    optimizeTrue("\"FIELD\" or true");
-    optimize("\"FIELD\" or false","FIELD");
+    optimizeTrue("FIELD or true");
+    optimize("FIELD or false","FIELD");
     optimizeTrue("true or FIELD");
     optimize("FIELD or FIELD", "FIELD");
 
@@ -142,10 +142,10 @@ public class OptimizerTest {
     optimize("-(10+2)", "-12");
     optimize("-(0)", "0");
 
-    optimize("not ( not \"FIELD\" is NULL )");
-    optimize("-(-\"FIELD\")");
-    optimize("false and true or \"FIELD\"");
-    optimize("false and \"FIELD\"");
+    optimize("not (FIELD is not NULL)","FIELD IS NULL");
+    optimize("-(-FIELD)","FIELD");
+    optimize("false and true or FIELD","FIELD");
+    optimizeFalse("false and FIELD");
 
     optimizeTrue("null is null");
     optimizeTrue("true is true");

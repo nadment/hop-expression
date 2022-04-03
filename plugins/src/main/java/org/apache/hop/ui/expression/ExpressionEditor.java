@@ -14,10 +14,10 @@
  */
 package org.apache.hop.ui.expression;
 
-import org.apache.hop.core.Const;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.ExpressionScanner;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorRegistry;
@@ -257,7 +257,7 @@ public class ExpressionEditor extends Composite {
 
       treeItemVariable.removeAll();
       for (String name : names) {
-        boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(name);
+        boolean isDeprecated = VariableRegistry.getInstance().getDeprecatedVariableNames().contains(name);
 
         String data = "${" + name + '}';
 

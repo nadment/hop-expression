@@ -30,17 +30,15 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
-import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformIOMeta;
-import org.apache.hop.pipeline.transform.ITransformMeta;
 import org.apache.hop.pipeline.transform.TransformIOMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import org.apache.hop.pipeline.transform.errorhandling.IStream;
-import org.apache.hop.pipeline.transform.errorhandling.IStream.StreamType;
-import org.apache.hop.pipeline.transform.errorhandling.Stream;
-import org.apache.hop.pipeline.transform.errorhandling.StreamIcon;
+import org.apache.hop.pipeline.transform.stream.IStream;
+import org.apache.hop.pipeline.transform.stream.IStream.StreamType;
+import org.apache.hop.pipeline.transform.stream.Stream;
+import org.apache.hop.pipeline.transform.stream.StreamIcon;
 import org.w3c.dom.Node;
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +57,7 @@ import java.util.Optional;
     documentationUrl = "/pipeline/transforms/where.html",
     keywords = "i18n::Where.Keywords")
 @InjectionSupported(localizationPrefix = "Where.Injection.")
-public class WhereMeta extends BaseTransformMeta
-    implements ITransformMeta<Where, WhereData> {
+public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
   private static final Class<?> PKG = WhereMeta.class; // for i18n purposes
 
@@ -83,21 +80,6 @@ public class WhereMeta extends BaseTransformMeta
     this.setFalseTransformName(other.getFalseTransformName());
   }
   
-  @Override
-  public Where createTransform(
-      TransformMeta transformMeta,
-      WhereData data,
-      int cnr,
-      PipelineMeta pipelineMeta,
-      Pipeline pipeline) {
-    return new Where(transformMeta, this, data, cnr, pipelineMeta, pipeline);
-  }
-
-  @Override
-  public WhereData getTransformData() {
-    return new WhereData();
-  }
-
   @Override
   public void setDefault() {
     this.expression = "";

@@ -18,11 +18,11 @@ package org.apache.hop.ui.expression;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
-import org.apache.hop.core.HopVariablesList;
-import org.apache.hop.core.config.DescribedVariable;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.variables.DescribedVariable;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionScanner;
@@ -39,7 +39,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,13 +46,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class ExpressionCompletionProcessor implements IContentAssistProcessor {
-  
-  class ProposalComparator implements Comparator<ICompletionProposal>{
+
+  class ProposalComparator implements Comparator<ICompletionProposal> {
     public int compare(ICompletionProposal p1, ICompletionProposal p2) {
-        return p1.getDisplayString().compareTo(p2.getDisplayString());
+      return p1.getDisplayString().compareTo(p2.getDisplayString());
     }
-}
-  
+  }
+
   private CompletableFuture<IRowMeta> rowMeta;
   private IVariables variables;
   private String message;
@@ -171,7 +170,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       // Add to proposal if variable name start with the qualifier
       if (variableName.length() >= prefix.length()
           && variableName.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
-        boolean isDeprecated = Arrays.asList(Const.DEPRECATED_VARIABLES).contains(variableName);
+        
+        
+        boolean isDeprecated = VariableRegistry.getInstance().getDeprecatedVariableNames().contains(variableName);
 
         String content = "${" + variableName + '}';
         ContextInformation contextInfo =
@@ -181,7 +182,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
         String additionalInfo = null;
         DescribedVariable variable =
-            HopVariablesList.getInstance().findEnvironmentVariable(variableName);
+            VariableRegistry.getInstance().findDescribedVariable(variableName);
         if (variable != null) {
           additionalInfo = variable.getDescription();
         }
@@ -212,9 +213,9 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       if (name.length() >= prefix.length()
           && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
-        Function function = OperatorRegistry.getFunction(name);        
+        Function function = OperatorRegistry.getFunction(name);
         String replacement = name;
-        // TODO: add function arguments to proposal 
+        // TODO: add function arguments to proposal
         String diplayName = name;
         CompletionProposal proposal = new CompletionProposal(replacement, start, end - start,
             replacement.length(), image, diplayName, null, function.getDescription());

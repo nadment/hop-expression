@@ -90,7 +90,7 @@ public static class ExperimentalFunction {
 
 ### System Requirements
 
-https://hop.apache.org[Apache Hop] 1.0 or above.
+https://hop.apache.org[Apache Hop] 2.0 or above.
 Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install

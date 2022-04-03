@@ -218,7 +218,7 @@ public class ExpressionTransformDialog extends BaseTransformDialog implements IT
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -props.getMargin()).result());
     wTransformName.addModifyListener(lsMod);
-    props.setLook(wTransformName);
+
 
 //    final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
 //    deco.setDescriptionText(BaseMessages.getString("System.TransformNameMissing.Msg"));

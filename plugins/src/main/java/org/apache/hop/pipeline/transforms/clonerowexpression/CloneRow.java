@@ -32,17 +32,12 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
-import org.apache.hop.pipeline.transform.ITransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 
 /**
  * Clone input row.
- *
- * @author Samatar
- * @since 27-06-2008
  */
-public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData>
-    implements ITransform<CloneRowMeta, CloneRowData> {
+public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
   private static final Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by
                                                           // Translator!!
