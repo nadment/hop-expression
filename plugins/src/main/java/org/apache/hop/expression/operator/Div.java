@@ -27,7 +27,10 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-/** Arithmetic division operator '<code>/</code>'. */
+/** 
+ * Arithmetic division operator.
+ * <br><strong>Syntax:</strong> <code>x / y</code>
+ */
 public class Div extends Operator {
 
   public Div() {

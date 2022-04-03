@@ -23,7 +23,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 
-/** Comparison less than operator '<code>&lt;</code>'. */
+/** 
+ * Comparison less than operator. 
+ * <br><strong>Syntax:</strong> <code>x &lt; y</code>
+ */
 public class LessThan extends Operator {
 
   public LessThan() {

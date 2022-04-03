@@ -26,7 +26,10 @@ import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
-/** Arithmetic modulus operator '<code>%</code>'. */
+/** 
+ * Arithmetic modulus operator.
+ * <br><strong>Syntax:</strong> <code>x % y</code>
+ */
 public class Mod extends Operator {
 
   public Mod() {

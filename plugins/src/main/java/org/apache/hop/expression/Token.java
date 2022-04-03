@@ -22,197 +22,116 @@ public class Token {
   public enum Id {
     /** The bitwise AND operator "&". */
     BITWISE_AND("&"),
-
     /** The bitwise NOT operator "~". */
     BITWISE_NOT("~"),
-
     /** The bitwise OR operator "|". */
     BITWISE_OR("|"),
-
     /** The bitwise exclusive OR operator "^". */
     BITWISE_XOR("^"),
-
     /** Case when operator */
     CASE,
-
-    /**
-     * Concat operator <code>||<code>
-     */
-    CONCAT("||"),
-    
+    /** Concat operator <code>||<code>.*/
+    CONCAT("||"),    
     /** CAST(value AS type) */
     CAST,
-    
     /** CAST(value AS type) */
     AS,
-    
     /** The AT TIME ZONE */
-    AT,
-    
+    AT,    
     /** CAST(value AS type FORMAT '9999') */
-    FORMAT,
-    
-    /**
-     * Cast operator <code>::<code>
-     */
+    FORMAT,    
+    /** Cast operator <code>::<code>.*/
     CAST_OP("::"),
-
     /** Comment */
     COMMENT,
-
     /** Comma separator */
     COMMA(","),
-
     /** Left parenthesis */
     LPARENTHESIS("("),
-
     /** Right parenthesis */
     RPARENTHESIS(")"),
-
     /** Literal number. */
     LITERAL_NUMBER,
-
     /** Literal hex binary 0x1234567890ABCDEF */
     LITERAL_BINARY_HEX,
-
     /** Literal bit binary 0b1101010101 */
     LITERAL_BINARY_BIT,
-
     /** Literal string. */
     LITERAL_STRING,
-
     /** The "DATE" word for literal date. */
     DATE,
-
     /** The "TIME" word for literal time. */
     TIME,
-
     /** The "TIMESTAMP" word for literal timesamp. */
     TIMESTAMP,
-
     /** TRY_CAST(value AS type) */
     TRY_CAST,
-    
     /** The AT TIME ZONE */
     ZONE,
-
     /** Identifier */
     IDENTIFIER,
-
     /** Function */
     FUNCTION,
-
     /** Extract(part FROM date_time) */
     FROM,
-
     /** The arithmetic division operator, "/". */
     DIVIDE("/"),
-
     /** The arithmetic multiplication operator, "*". */
     MULTIPLY("*"),
-
     /** ESCAPE word for LIKE operator */
     ESCAPE,
-
-    // /**
-    // * TOOD: remove or implement: The arithmetic power operator, "**".
-    // */
-    // POWER("**"),
-
     /** The arithmetic remainder operator, "MOD" (and "%" in some dialects). */
     MODULUS("%"),
-
-    /**
-     * The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".
-     */
+    /** The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".*/
     PLUS("+"),
-
-    /**
-     * The arithmetic unary minus (negative) operator "-" or the arithmetic subtract operator "-".
-     */
+    /** The arithmetic unary minus (negative) operator "-" or the arithmetic subtract operator "-".*/
     MINUS("-"),
-
     /** The "IN" operator. */
     IN,
-
     /** The "BETWEEN" operator. */
     BETWEEN,
-
     /** The less-than operator "&lt;". */
-    LESS_THAN("<"),
-
+    LT("<"),
     /** The greater-than operator "&gt;". */
-    GREATER_THAN(">"),
-
+    GT(">"),
     /** The less-than-or-equal operator "&lt;=". */
-    LESS_THAN_OR_EQUAL("<="),
-
+    LTE("<="),
     /** The greater-than-or-equal operator "&gt;=". */
-    GREATER_THAN_OR_EQUAL(">="),
-
+    GTE(">="),
     /** The equals operator "=". */
     EQUAL("="),
-
-    /**
-     * Compares whether two expressions are equal.
-     *
-     * <p>
-     * The function is NULL-safe, meaning it treats NULLs as known values for comparing equality.
-     * Note that this is different from the EQUAL comparison operator (=), which treats NULLs as
-     * unknown values.
-     */
-    EQUAL_NULL,
-
-    /** The not-equals operator, "&#33;=". */
-    NOT_EQUAL("!="),
-
-    /** The not-equals operator "&lt;&gt;". */
-    LESS_THAN_OR_GREATER_THAN("<>"),
-
-    /** The logical "OR" operator. */
+    /** The not-equals operator "&lt;&gt;" or "&#33;=". */
+    NOT_EQUAL("<>"),
+    /** The logical "OR" operator.*/
     OR,
-
-    /** The logical "XOR" operator. */
+    /** The logical "XOR" operator.*/
     XOR,
-
     /** The logical "AND" operator or keyword for BEETWEN value1 "AND" value2 . */
     AND,
-
-    /** The "LIKE" operator. */
+    /** The "LIKE" operator.*/
     LIKE,
-
-    /** The "ILIKE" operator. */
+    /** The "ILIKE" operator.*/
     ILIKE,
-
-    /** The logical "NOT" operator. */
+    /** The logical "NOT" operator.*/
     NOT,
-
-    /** The literal value "NULL". */
+    /** The literal value "NULL".*/
     NULL,
-
-    /** The "IS" operator. */
+    /** The "IS" operator.*/
     IS,
-
-    /** The literal value "TRUE". */
+    /** The literal value "TRUE".*/
     TRUE,
-
-    /** The literal value "FALSE". */
+    /** The literal value "FALSE".*/
     FALSE,
-
     ELSE, 
     THEN, 
     END, 
-    WHEN,
-    
+    WHEN, 
     /** Extract(part FROM date_time) operator */
     EXTRACT,
-
     /** Position(substring IN string) operator */
     POSITION,
-    
     /** Data type element NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
-    
     /** Date part element DAY, MONTH,... */
     LITERAL_DATEPART;
 

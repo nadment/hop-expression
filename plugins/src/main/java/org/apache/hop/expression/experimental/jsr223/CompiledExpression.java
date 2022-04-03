@@ -26,10 +26,10 @@ import javax.script.ScriptException;
 
 public class CompiledExpression extends CompiledScript {
 
-  private final ExpressionEngine engine;
+  private final ExpressionScriptEngine engine;
   private final IExpression expression;
 
-  public CompiledExpression(ExpressionEngine engine, IExpression expression) {
+  public CompiledExpression(ExpressionScriptEngine engine, IExpression expression) {
     this.engine = engine;
     this.expression = expression;
   }

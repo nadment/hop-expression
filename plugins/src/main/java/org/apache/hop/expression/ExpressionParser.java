@@ -36,7 +36,7 @@ public class ExpressionParser {
   private List<Token> tokens = new ArrayList<>();
   private int index = 0;
 
-  public static IExpression parse(String source) throws ExpressionException {
+  public static IExpression parse(final String source) throws ExpressionException {
     ExpressionParser parser = new ExpressionParser(source);
     try {
       return parser.parse();
@@ -415,21 +415,17 @@ public class ExpressionParser {
     if (next(Id.NOT_EQUAL)) {
       return new OperatorCall(OperatorRegistry.NOT_EQUAL, expression, this.parseRelational());
     }
-    if (next(Id.LESS_THAN_OR_GREATER_THAN)) {
-      return new OperatorCall(OperatorRegistry.LESS_THAN_OR_GREATER_THAN, expression,
-          this.parseRelational());
-    }
-    if (next(Id.GREATER_THAN)) {
+    if (next(Id.GT)) {
       return new OperatorCall(OperatorRegistry.GREATER_THAN, expression, this.parseRelational());
     }
-    if (next(Id.GREATER_THAN_OR_EQUAL)) {
+    if (next(Id.GTE)) {
       return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL, expression,
           this.parseRelational());
     }
-    if (next(Id.LESS_THAN)) {
+    if (next(Id.LT)) {
       return new OperatorCall(OperatorRegistry.LESS_THAN, expression, this.parseRelational());
     }
-    if (next(Id.LESS_THAN_OR_EQUAL)) {
+    if (next(Id.LTE)) {
       return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL, expression,
           this.parseRelational());
     }

@@ -25,7 +25,8 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 
 /**
- * Arithmetic addition operator '<code>+</code>'.
+ * Arithmetic addition operator.
+ * <br><strong>Syntax:</strong> <code>x + y</code>
  */
 public class Add extends Operator {
 

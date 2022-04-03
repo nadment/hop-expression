@@ -25,7 +25,10 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
-/** Bitwise AND operator "&". */
+/** 
+ * Bitwise AND operator. 
+ * <br><strong>Syntax:</strong> <code>x &amp; y</code>
+ */
 public class BitAnd extends Operator {
 
   public BitAnd() {

@@ -25,19 +25,21 @@ import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-public final class ExpressionEngine extends AbstractScriptEngine
-    implements ScriptEngine, Compilable {
+/**
+ * Implements the Expression ScriptEngine for JSR-223.
+ */
+public final class ExpressionScriptEngine extends AbstractScriptEngine
+    implements Compilable {
 
-  private ExpressionEngineFactory factory;
+  private ExpressionScriptEngineFactory factory;
 
   @Override
   public synchronized ScriptEngineFactory getFactory() {
     if (this.factory == null) {
-      this.factory = new ExpressionEngineFactory();
+      this.factory = new ExpressionScriptEngineFactory();
     }
     return this.factory;
   }

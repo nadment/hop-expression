@@ -24,7 +24,8 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 
 /**
- * Arithmetic multiplication operator '<code>*</code>'.
+ * Arithmetic multiply operator.
+ * <br><strong>Syntax:</strong> <code>x * y</code>
  */
 public class Multiply extends Operator {
 

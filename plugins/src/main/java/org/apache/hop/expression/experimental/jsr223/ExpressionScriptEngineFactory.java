@@ -16,34 +16,26 @@
  */
 package org.apache.hop.expression.experimental.jsr223;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
-public class ExpressionEngineFactory implements ScriptEngineFactory {
+public class ExpressionScriptEngineFactory implements ScriptEngineFactory {
   private static final String ENGINE_NAME = "HOP Expression Language";
   private static final String ENGINE_VERSION = "0.1";
-  private static final String LANGUAGE_NAME = "expression";
+  private static final String LANGUAGE_NAME = "hop-expression";
   private static final String LANGUAGE_VERSION = "0.1";
 
-  private static final List<String> NAMES;
-  private static final List<String> EXTENSIONS;
-  private static final List<String> MIME_TYPES;
+  @Override
+  public String getLanguageName() {
+    return LANGUAGE_NAME;
+  }
 
-  private static final ExpressionEngine EXPRESSION_ENGINE = new ExpressionEngine();
-
-  static {
-    List<String> n = new ArrayList<>(1);
-    n.add(LANGUAGE_NAME);
-    NAMES = Collections.unmodifiableList(n);
-
-    EXTENSIONS = NAMES;
-
-    n = new ArrayList<>(1);
-    n.add("application/x-" + LANGUAGE_NAME);
-    MIME_TYPES = Collections.unmodifiableList(n);
+  @Override
+  public String getLanguageVersion() {
+    return LANGUAGE_VERSION;
   }
 
   @Override
@@ -58,43 +50,34 @@ public class ExpressionEngineFactory implements ScriptEngineFactory {
 
   @Override
   public List<String> getExtensions() {
-    return EXTENSIONS;
+    return Collections.unmodifiableList(Arrays.asList("hxp"));
   }
 
   @Override
   public List<String> getMimeTypes() {
-    return MIME_TYPES;
+    return Collections.unmodifiableList(Arrays.asList("application/x-hop-expression"));
   }
 
   @Override
   public List<String> getNames() {
-    return NAMES;
-  }
-
-  @Override
-  public String getLanguageName() {
-    return LANGUAGE_NAME;
-  }
-
-  @Override
-  public String getLanguageVersion() {
-    return LANGUAGE_VERSION;
+    return Collections.unmodifiableList(Arrays.asList("hop-expression"));
   }
 
   @Override
   public Object getParameter(String key) {
-    if (ScriptEngine.NAME.equals(key)) {
-      return getLanguageName();
-    } else if (ScriptEngine.ENGINE.equals(key)) {
-      return getEngineName();
-    } else if (ScriptEngine.ENGINE_VERSION.equals(key)) {
-      return getEngineVersion();
-    } else if (ScriptEngine.LANGUAGE.equals(key)) {
-      return getLanguageName();
-    } else if (ScriptEngine.LANGUAGE_VERSION.equals(key)) {
-      return getLanguageVersion();
-    } else {
-      return null;
+    switch (key) {
+      case ScriptEngine.ENGINE:
+        return getEngineName();
+      case ScriptEngine.ENGINE_VERSION:
+        return getEngineVersion();
+      case ScriptEngine.NAME:
+        return getNames();
+      case ScriptEngine.LANGUAGE:
+        return getLanguageName();
+      case ScriptEngine.LANGUAGE_VERSION:
+        return getLanguageVersion();
+      default:
+        return null;
     }
   }
 
@@ -109,12 +92,19 @@ public class ExpressionEngineFactory implements ScriptEngineFactory {
   }
 
   @Override
-  public String getProgram(String... statements) {
-    return null;
+  public String getProgram(final String... statements) {
+    final StringBuilder sb = new StringBuilder();
+    for (final String statement : statements) {
+      sb.append(statement.trim());
+      if (!statement.endsWith(";")) {
+        sb.append(';');
+      }
+    }
+    return sb.toString();
   }
 
   @Override
   public ScriptEngine getScriptEngine() {
-    return EXPRESSION_ENGINE;
+    return new ExpressionScriptEngine();
   }
 }

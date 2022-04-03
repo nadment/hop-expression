@@ -134,14 +134,14 @@ public class ExpressionScanner {
             c = source.charAt(index);
             if (c == '=') {
               index++;
-              return new Token(Id.LESS_THAN_OR_EQUAL, start);
+              return new Token(Id.LTE, start);
             }
             if (c == '>') {
               index++;
-              return new Token(Id.LESS_THAN_OR_GREATER_THAN, start);
+              return new Token(Id.NOT_EQUAL, start);
             }
           }
-          return new Token(Id.LESS_THAN, start);
+          return new Token(Id.LT, start);
         }
 
         // parse greater symbol
@@ -151,10 +151,10 @@ public class ExpressionScanner {
             c = source.charAt(index);
             if (c == '=') {
               index++;
-              return new Token(Id.GREATER_THAN_OR_EQUAL, start);
+              return new Token(Id.GTE, start);
             }
           }
-          return new Token(Id.GREATER_THAN, start);
+          return new Token(Id.GT, start);
         }
 
         // parse not equal symbol

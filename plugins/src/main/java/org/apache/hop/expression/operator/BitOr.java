@@ -24,7 +24,10 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
-/** Bitwise OR operator "|". */
+/** 
+ * Bitwise OR operator.
+ * <br><strong>Syntax:</strong> <code>x | y</code>
+ */
 public class BitOr extends Operator {
 
   public BitOr() {

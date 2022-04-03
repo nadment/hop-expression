@@ -24,7 +24,10 @@ import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
-/** Arithmetic subtraction operator '<code>-</code>'. */
+/** 
+ * Arithmetic subtraction operator.
+ * <br><strong>Syntax:</strong> <code>x - y</code>
+ */
 public class Subtract extends Operator {
 
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;

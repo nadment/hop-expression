@@ -24,7 +24,10 @@ import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
-/** Bitwise NOT operator "~". */
+/** 
+ * Bitwise NOT operator.
+ * <br><strong>Syntax:</strong> <code>~x</code>
+ */
 public class BitNot extends Operator {
 
   public BitNot() {

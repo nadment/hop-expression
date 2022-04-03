@@ -25,7 +25,8 @@ import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 
 /** 
- * Bitwise XOR operator "^".
+ * Bitwise XOR operator.
+ * <br><strong>Syntax:</strong> <code>x ^ y</code>
  */
 public class BitXor extends Operator {
 

@@ -23,7 +23,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 
-/** Comparison equals operator '<code>=</code>'. */
+/** 
+ * Comparison equals operator.
+ * <br><strong>Syntax:</strong> <code>x = y</code>
+ */
 public class Equal extends Operator {
 
   public Equal() {
