@@ -35,15 +35,15 @@ public class BoolAnd extends Operator {
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
-    Boolean left = DataType.toBoolean(operands[0].eval(context));
+    Object left = operands[0].eval(context);
     if (left == null) {
       return null;
     }
-    Boolean right = DataType.toBoolean(operands[1].eval(context));
+    Object right = operands[1].eval(context);
     if (right == null) {
       return null;
     }
-    return Boolean.logicalAnd(left, right);
+    return Boolean.logicalAnd(DataType.toBoolean(left), DataType.toBoolean(right));
   }
 
   @Override
