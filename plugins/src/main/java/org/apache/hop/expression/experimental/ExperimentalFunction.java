@@ -40,7 +40,7 @@ public class ExperimentalFunction {
    * White space is defined as any sequence of blanks, null characters, newlines (line feeds),
    * carriage returns, horizontal tabs and form feeds (vertical tabs). Trims white space from the
    * beginning and end of the string, and replaces all other white space with single blanks.
-   * This function is useful for comparisons. The value for c1 must be a string of variablelength
+   * This function is useful for comparisons. The value for c1 must be a string of variable length
    * character string data type (not fixed-length character data type). The result is the same
    * length as the argument.
    */

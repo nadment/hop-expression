@@ -18,7 +18,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
-import org.apache.hop.expression.ExpressionScanner;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorRegistry;
 import org.apache.hop.i18n.BaseMessages;
@@ -81,7 +81,9 @@ public class ExpressionEditor extends Composite {
     this.createEditor(sashForm);
 
     // When IRowMeta is ready   
-    rowMetaProvider.thenAccept(this::initFields);
+    if ( rowMetaProvider!=null ) {
+      rowMetaProvider.thenAccept(this::initFields);
+    }
     
     sashForm.setWeights(25, 75);    
   }
@@ -301,7 +303,7 @@ public class ExpressionEditor extends Composite {
 
           // Escape field name matching reserved words or function name
           String name = valueMeta.getName();
-          if (ExpressionScanner.isReservedWord(name) || OperatorRegistry.isFunctionName(name)) {
+          if (ExpressionParser.isReservedWord(name) || OperatorRegistry.isFunctionName(name)) {
             name = '[' + name + ']';
           }
 

@@ -83,26 +83,26 @@ public enum DataType {
         BaseMessages.getString(IExpression.class, "Expression.InvalidDataType", name));
   }
 
-  public static DataType from(final Object object) {
-    if (object == null)
+  public static DataType from(final Object value) {
+    if (value == null)
       return NONE;
-    if (object instanceof Boolean)
+    if (value instanceof Boolean)
       return BOOLEAN;
-    if (object instanceof String)
+    if (value instanceof String)
       return STRING;
-    if (object instanceof BigDecimal)
+    if (value instanceof BigDecimal)
       return BIGNUMBER;
-    if (object instanceof Double)
+    if (value instanceof Double)
       return NUMBER;
-    if (object instanceof Long)
+    if (value instanceof Long)
       return INTEGER;
-    if (object instanceof ZonedDateTime)
+    if (value instanceof ZonedDateTime)
       return DATE;
-    if (object instanceof byte[])
+    if (value instanceof byte[])
       return BINARY;
 
     throw new IllegalArgumentException(
-        BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", object.getClass()));
+        BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", value.getClass()));
   }
 
   /**

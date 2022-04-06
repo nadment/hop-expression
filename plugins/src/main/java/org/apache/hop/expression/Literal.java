@@ -81,7 +81,7 @@ public class Literal implements IExpression {
       return new Literal(value);
     }
 
-    throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.InvalidLiteral", value));
+    throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.UnsupportedLiteralType", value.getClass(), value));
   }
 
   private Object value;

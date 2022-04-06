@@ -31,7 +31,6 @@ import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.i18n.BaseMessages;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;

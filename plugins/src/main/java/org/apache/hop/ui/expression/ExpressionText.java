@@ -71,40 +71,9 @@ public class ExpressionText extends Composite {
   protected boolean isUseField;
 
   public ExpressionText(IVariables variables, Composite composite, int flags, boolean isUseField) {
-    this(variables, composite, flags, null, null, null);
-
+    super(composite, SWT.NONE);
+    initialize(variables, composite, flags, null, null, null, null);
     this.isUseField = isUseField;
-  }
-
-  public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText) {
-    this(variables, composite, flags, toolTipText, null, null);
-  }
-
-  public ExpressionText(IVariables variables, Composite composite, int flags,
-      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface) {
-    this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface);
-  }
-
-  public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText,
-      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface) {
-    super(composite, SWT.NONE);
-    initialize(variables, composite, flags, toolTipText, getCaretPositionInterface,
-        insertTextInterface, null);
-  }
-
-  public ExpressionText(Composite composite, IVariables variables, int flags,
-      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
-      SelectionListener selectionListener) {
-    this(variables, composite, flags, null, getCaretPositionInterface, insertTextInterface,
-        selectionListener);
-  }
-
-  public ExpressionText(IVariables variables, Composite composite, int flags, String toolTipText,
-      IGetCaretPosition getCaretPositionInterface, IInsertText insertTextInterface,
-      SelectionListener selectionListener) {
-    super(composite, SWT.NONE);
-    initialize(variables, composite, flags, toolTipText, getCaretPositionInterface,
-        insertTextInterface, selectionListener);
   }
 
   protected void initialize(IVariables variables, Composite composite, int flags,

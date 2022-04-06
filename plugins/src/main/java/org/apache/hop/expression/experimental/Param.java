@@ -14,22 +14,29 @@
  */
 package org.apache.hop.expression.experimental;
 
+import org.apache.hop.metadata.api.HopMetadataProperty;
 import java.util.Objects;
 
 public class Param {
-  private final String name;
-  private boolean optional;
+
+  @HopMetadataProperty
+  private String name;
+  //private boolean optional;
   
-  public Param(final String name, boolean optional) {
+  public Param(final String name) {
     super();
     this.name = Objects.requireNonNull(name, "name");
-    this.optional = optional;
+//    this.optional = optional;
   }
 
   public String getName() {
     return name;
   }
 
+//  public void setName(String name) {
+//    this.name = name;
+//  } 
+  
   @Override
   public int hashCode() {
     return name.hashCode();

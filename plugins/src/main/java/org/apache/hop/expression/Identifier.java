@@ -17,6 +17,9 @@ package org.apache.hop.expression;
 import java.io.StringWriter;
 import java.util.Objects;
 
+/**
+ * Expression representing a named column in an input row.
+ */
 public class Identifier implements IExpression {
   private final String name;
 
@@ -47,7 +50,7 @@ public class Identifier implements IExpression {
   @Override
   public void write(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
-    if (name.indexOf(' ') >= 0 || ExpressionScanner.isReservedWord(name)
+    if (name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
         || DataType.exist(name) || DatePart.exist(name)
         || OperatorRegistry.isFunctionName(name)) {
       writer.append('\"');
