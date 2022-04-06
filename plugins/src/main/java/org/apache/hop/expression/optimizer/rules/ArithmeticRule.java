@@ -38,6 +38,13 @@ public class ArithmeticRule implements OptimizerRule {
       else if (call.isOperator(OperatorRegistry.ADD)) {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
+        
+        // If add 0
+        if (Literal.ZERO.equals(left)) {
+          return right;
+        }   
+        
+        // Pull up literal
         if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.ADD)) {
           OperatorCall child = (OperatorCall) right;
           if (child.getOperand(0).isKind(Kind.LITERAL)) {
@@ -50,6 +57,13 @@ public class ArithmeticRule implements OptimizerRule {
       } else if (call.isOperator(OperatorRegistry.MULTIPLY)) {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
+        
+        // If multiply 1
+        if (Literal.ONE.equals(left)) {
+          return right;
+        }                  
+        
+        // Pull up literal
         if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.MULTIPLY)) {
           OperatorCall child = (OperatorCall) right;
           if (child.getOperand(0).isKind(Kind.LITERAL)) {

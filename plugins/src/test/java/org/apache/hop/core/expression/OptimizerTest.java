@@ -181,6 +181,13 @@ public class OptimizerTest {
 
   @Test
   public void arithmeticRule() throws Exception {
+        
+    optimize("AGE+0", "AGE");
+    optimize("0+AGE", "AGE");
+    
+    optimize("AGE*1", "AGE");
+    optimize("1*AGE", "AGE");
+    
     optimize("AGE*3*2", "6*AGE");
     optimize("3*(AGE*1)*1*(2*5)", "30*AGE");
     optimize("1+AGE+3+FIELD+5*2", "14+AGE+FIELD");
