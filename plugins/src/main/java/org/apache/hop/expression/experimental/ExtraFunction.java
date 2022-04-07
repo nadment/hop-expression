@@ -31,9 +31,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class ExperimentalFunction {
+public class ExtraFunction {
  
-  private ExperimentalFunction() {}
+  private ExtraFunction() {}
 
   /**
    * Compresses white space.

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.experimental.Param;
 import org.apache.hop.metadata.api.HopMetadata;
 import org.apache.hop.metadata.api.HopMetadataBase;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -37,12 +36,12 @@ public class Udf extends HopMetadataBase implements IHopMetadata {
   @HopMetadataProperty
   private String source;
   
-  @HopMetadataProperty(key = "params")
-  private List<Param> params;
+  @HopMetadataProperty(key = "arguments")
+  private List<Argument> arguments;
 
   public Udf() {
     super();
-    params = new ArrayList<>();
+    arguments = new ArrayList<>();
   }
   
   /**
@@ -63,10 +62,14 @@ public class Udf extends HopMetadataBase implements IHopMetadata {
     this.description = description;
   }
   
-  public List<Param> getParams() {
-    return params;
+  public List<Argument> getArguments() {
+    return arguments;
   }
 
+  public void setArguments(List<Argument> arguments) {
+    this.arguments = arguments;
+  }
+  
   public String getSource() {
     return source;
   }

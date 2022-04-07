@@ -55,11 +55,11 @@
     </hop>
     <hop>
       <from>Clone row</from>
-      <to>Expression 2</to>
+      <to>Expression</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Expression 2</from>
+      <from>Expression</from>
       <to>Where</to>
       <enabled>Y</enabled>
     </hop>
@@ -195,7 +195,7 @@
     </GUI>
   </transform>
   <transform>
-    <name>Expression 2</name>
+    <name>Expression</name>
     <type>Expression</type>
     <description/>
     <distribute>Y</distribute>

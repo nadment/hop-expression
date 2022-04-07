@@ -12,31 +12,44 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.expression.experimental;
+package org.apache.hop.expression;
 
 import org.apache.hop.metadata.api.HopMetadataProperty;
-import java.util.Objects;
 
-public class Param {
+public class Argument {
 
   @HopMetadataProperty
   private String name;
-  //private boolean optional;
   
-  public Param(final String name) {
+  @HopMetadataProperty
+  private DataType type;
+  
+  public Argument() {
     super();
-    this.name = Objects.requireNonNull(name, "name");
-//    this.optional = optional;
   }
 
+  public Argument(String name, DataType type) {
+    super();
+    this.name = name;
+    this.type = type;
+  }
+  
   public String getName() {
     return name;
   }
 
-//  public void setName(String name) {
-//    this.name = name;
-//  } 
+  public void setName(String name) {
+    this.name = name;
+  } 
   
+  public DataType getType() {
+    return type;
+  }
+
+  public void setType(DataType type) {
+    this.type = type;
+  }
+
   @Override
   public int hashCode() {
     return name.hashCode();
@@ -51,7 +64,7 @@ public class Param {
     if (getClass() != o.getClass())
       return false;
 
-    return name.equals(((Param) o).name);
+    return name.equals(((Argument) o).name);
   }
 
   @Override

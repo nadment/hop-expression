@@ -16,9 +16,8 @@ under the License.
 ////
 = LEAST
 
-Returns the smallest value in a set of expressions.
+Returns the smallest value of all arguments, skipping null values.
 		
-
 == Syntax
 ----
 LEAST( <expression1> [, <expressionN>... ] )

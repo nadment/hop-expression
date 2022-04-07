@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.Udf;
-import org.apache.hop.expression.experimental.Param;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.dialog.ErrorDialog;
@@ -32,7 +32,6 @@ import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.hopgui.HopGui;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -46,8 +45,8 @@ public class UdfEditor extends MetadataEditor<Udf> {
   private Text wName;
   private Text wDescription;
   private TableView wParams;
-  private ExpressionEditor wSource;
-  
+  private ExpressionEditor wExpression;
+
   public UdfEditor(HopGui hopGui, MetadataManager<Udf> manager, Udf udf) {
     super(hopGui, manager, udf);
   }
@@ -59,7 +58,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
 
     int margin = Const.MARGIN;
 
-    // The name of the group...
+    // The icon
     //
     Label wIcon = new Label(parent, SWT.RIGHT);
     wIcon.setImage(getImage());
@@ -69,7 +68,8 @@ public class UdfEditor extends MetadataEditor<Udf> {
     wIcon.setLayoutData(fdlicon);
     props.setLook(wIcon);
 
-    // What's the name
+    // The name
+    //
     Label wlName = new Label(parent, SWT.RIGHT);
     props.setLook(wlName);
     wlName.setText(BaseMessages.getString(PKG, "UdfDialog.Name.Label"));
@@ -85,6 +85,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdName.left = new FormAttachment(0, 0);
     fdName.right = new FormAttachment(wIcon, -5);
     wName.setLayoutData(fdName);
+    wName.addListener(SWT.Modify, e -> setChanged());
 
     Label spacer = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
     FormData fdSpacer = new FormData();
@@ -93,7 +94,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdSpacer.right = new FormAttachment(100, 0);
     spacer.setLayoutData(fdSpacer);
 
-    // The description of the group...
+    // The description of the user function...
     //
     Label wlDescription = new Label(parent, SWT.LEFT);
     props.setLook(wlDescription);
@@ -111,67 +112,56 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdDescription.left = new FormAttachment(0, 0);
     fdDescription.right = new FormAttachment(100, 0);
     wDescription.setLayoutData(fdDescription);
+    wDescription.addListener(SWT.Modify, e -> setChanged());
 
-        
-    // The field mapping from the input to the data set...
+    // The arguments of the user function
     //
-    Label wlParams = new Label(parent, SWT.NONE);
-    wlParams.setText(BaseMessages.getString(PKG, "UdfDialog.Params.Label"));
-    props.setLook(wlParams);
+    Label wlArguments = new Label(parent, SWT.NONE);
+    wlArguments.setText(BaseMessages.getString(PKG, "UdfDialog.Arguments.Label"));
+    props.setLook(wlArguments);
     FormData fdlParams = new FormData();
     fdlParams.left = new FormAttachment(0, 0);
     fdlParams.top = new FormAttachment(wDescription, margin * 2);
-    wlParams.setLayoutData(fdlParams);
+    wlArguments.setLayoutData(fdlParams);
 
-    // the field mapping grid in between
+    ColumnInfo[] columns = new ColumnInfo[] {
+        new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getAllValueMetaNames(), false)};
+
+    wParams = new TableView(new Variables(), parent,
+        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, 0, null,
+        props);
+
+    FormData fdArguments = new FormData();
+    fdArguments.left = new FormAttachment(0, 0);
+    fdArguments.top = new FormAttachment(wlArguments, margin);
+    fdArguments.right = new FormAttachment(100, 0);
+    fdArguments.bottom = new FormAttachment(40, 0);
+    wParams.setLayoutData(fdArguments);
+    wParams.addListener(SWT.Modify, e -> setChanged());
+
+    // The expression
     //
-    ColumnInfo[] columns =
-        new ColumnInfo[] {
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              new String[] {""},
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              ValueMetaFactory.getAllValueMetaNames(),
-              false)          
-        };
-
-    wParams =
-        new TableView(
-            new Variables(),
-            parent,
-            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            columns,
-            0, //etadata().getFields().size(),
-            null,
-            props);
-
-    FormData fdParams = new FormData();
-    fdParams.left = new FormAttachment(0, 0);
-    fdParams.top = new FormAttachment(wlParams, margin);
-    fdParams.right = new FormAttachment(100, 0);
-    //fdParams.bottom = new FormAttachment(100, -2 * margin);
-    wParams.setLayoutData(fdParams);
-
-    wSource = new ExpressionEditor(parent, SWT.NONE, new Variables(), null);
-    FormData fdSource = new FormData();
-    fdSource.left = new FormAttachment(0, 0);
-    fdSource.top = new FormAttachment(wParams, margin);
-    fdSource.right = new FormAttachment(100, 0);
-    fdSource.bottom = new FormAttachment(100, -2 * margin);
-    wSource.setLayoutData(fdSource);
-
+    Label wlExpression = new Label(parent, SWT.NONE);
+    wlExpression.setText(BaseMessages.getString(PKG, "UdfDialog.Expression.Label"));
+    props.setLook(wlExpression);
+    FormData fdlSource = new FormData();
+    fdlSource.left = new FormAttachment(0, 0);
+    fdlSource.top = new FormAttachment(wParams, margin * 2);
+    wlExpression.setLayoutData(fdlSource);
     
-    this.setWidgetsContent();
+    wExpression = new ExpressionEditor(parent, SWT.NONE, this.getVariables(), null);
+    FormData fdExression = new FormData();
+    fdExression.left = new FormAttachment(0, 0);
+    fdExression.top = new FormAttachment(wlExpression, margin);
+    fdExression.right = new FormAttachment(100, 0);
+    fdExression.bottom = new FormAttachment(100, -2 * margin);
+    wExpression.setLayoutData(fdExression);
+    wExpression.addListener(SWT.Modify, e -> setChanged());
 
-    // Add listener to detect change after loading data
-    ModifyListener lsMod = e -> setChanged();
-    wName.addModifyListener(lsMod);
-    wDescription.addModifyListener(lsMod);
-    wParams.addModifyListener(lsMod);
+    this.setWidgetsContent();
   }
 
 
@@ -181,12 +171,10 @@ public class UdfEditor extends MetadataEditor<Udf> {
 
     wName.setText(Const.NVL(udf.getName(), ""));
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
-    wSource.setText(Const.NVL(udf.getSource(),""));
-    for (int i = 0; i < udf.getParams().size(); i++) {
-      Param param = udf.getParams().get(i);
-      int colNr = 1;
-      wParams.setText(Const.NVL(param.getName(), ""), colNr++, i);
-  //    wFieldMapping.setText(ValueMetaFactory.getValueMetaName(field.getType()), colNr++, i);
+    wExpression.setText(Const.NVL(udf.getSource(), ""));
+    for (int i = 0; i < udf.getArguments().size(); i++) {
+      Argument argument = udf.getArguments().get(i);
+      wParams.setText(Const.NVL(argument.getName(), ""), 1, i);
     }
   }
 
@@ -194,14 +182,14 @@ public class UdfEditor extends MetadataEditor<Udf> {
   public void getWidgetsContent(Udf udf) {
     udf.setName(wName.getText());
     udf.setDescription(wDescription.getText());
-    udf.setSource(wSource.getText());
-    udf.getParams().clear();
+    udf.setSource(wExpression.getText());
+    udf.getArguments().clear();
     int nrFields = wParams.nrNonEmpty();
     for (int i = 0; i < nrFields; i++) {
-      TableItem item = wParams.getNonEmpty(i);      
+      TableItem item = wParams.getNonEmpty(i);
       String name = item.getText(1);
-      Param param = new Param(name);
-      udf.getParams().add(param);
+      Argument argument = new Argument(name, null);
+      udf.getArguments().add(argument);
     }
   }
 
@@ -209,19 +197,15 @@ public class UdfEditor extends MetadataEditor<Udf> {
   public void save() throws HopException {
 
     try {
-   //   verifySettings();
+      // verifySettings();
     } catch (Exception e) {
-      new ErrorDialog(
-          getShell(),
-          "Error",
-          BaseMessages.getString(PKG, "UdfDialog.Error.ValidationError"),
-          e);
+      new ErrorDialog(getShell(), "Error",
+          BaseMessages.getString(PKG, "UdfDialog.Error.ValidationError"), e);
     }
 
     getWidgetsContent(getMetadata());
 
-    super.save();
-    ;
+    super.save();;
   }
 
   @Override

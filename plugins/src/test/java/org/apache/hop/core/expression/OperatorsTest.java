@@ -603,7 +603,6 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void Div() throws Exception {
-    evalEquals("Div(10,4)", 2.5);
     evalEquals("10/4", 2.5D);
     evalEquals("40/-10", -4D);
     evalEquals("-40/-10", 4D);

@@ -22,7 +22,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.ScalarFunction;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -38,8 +37,6 @@ public class Div extends Operator {
         "/docs/div.html");
   }
 
-  @ScalarFunction(id = "DIV", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Mathematical", documentationUrl="/docs/div.html")
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
