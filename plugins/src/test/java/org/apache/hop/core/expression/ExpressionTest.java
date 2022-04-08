@@ -22,7 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.operator.Concat;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -91,27 +92,27 @@ public class ExpressionTest extends BaseExpressionTest {
 
   @Test
   public void Operator() throws Exception {
-    assertEquals("Mathematical", OperatorRegistry.MULTIPLY.getCategory());
-    assertEquals(OperatorRegistry.CONCAT, new Concat());
-    assertNotEquals(OperatorRegistry.CONCAT, OperatorRegistry.EQUAL);
-    assertTrue(OperatorRegistry.CONCAT.isSame(OperatorRegistry.getFunction("CONCAT")));
-    assertFalse(OperatorRegistry.CONCAT.isSame(null));
-    assertNotNull(OperatorRegistry.CONCAT.getDescription());
-    assertNotEquals(OperatorRegistry.CONCAT, null);
-    assertNotEquals(OperatorRegistry.CONCAT, OperatorRegistry.getFunction("CONCAT"));
+    assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
+    assertEquals(Operators.CONCAT, new Concat());
+    assertNotEquals(Operators.CONCAT, Operators.EQUAL);
+    assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
+    assertFalse(Operators.CONCAT.is(null));
+    assertNotNull(Operators.CONCAT.getDescription());
+    assertNotEquals(Operators.CONCAT, null);
+    assertNotEquals(Operators.CONCAT, FunctionRegistry.getFunction("CONCAT"));
 
     // FIXME: Don't work on github
     // assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
-    assertNotNull(OperatorRegistry.CONCAT.getDocumentationUrl());
+    assertNotNull(Operators.CONCAT.getDocumentationUrl());
     assertTrue(
-        OperatorRegistry.getFunction("TRUNCATE").isSame(OperatorRegistry.getFunction("TRUNC")));
+        FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
   }
 
   @Test
   public void precedenceAndAssociativity() throws Exception {
 
-    assertEquals(51, OperatorRegistry.MULTIPLY.getLeftPrecedence());
-    assertEquals(50, OperatorRegistry.MULTIPLY.getRightPrecedence());
+    assertEquals(51, Operators.MULTIPLY.getLeftPrecedence());
+    assertEquals(50, Operators.MULTIPLY.getRightPrecedence());
 
     // Arithmetic
     evalEquals("3*5/2", ((3 * 5) / 2d));

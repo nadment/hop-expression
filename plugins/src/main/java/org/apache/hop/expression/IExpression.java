@@ -29,33 +29,21 @@ public interface IExpression {
    * Returns the type of expression.
    *
    * @return a {@link Kind} value, never null
-   * @see #isKind
+   * @see #is
    */
   public Kind getKind();
 
-  public default boolean isKind(Kind kind) {
+  public default boolean is(Kind kind) {
     return getKind() == kind;
   }
   
-  /** Check if the expression is a call to this operator or a alias of this operator */
-  public default boolean isOperator(Operator operator) {
-    if (operator == null)
-      return false;
-    if (this instanceof OperatorCall) {
-      OperatorCall call = (OperatorCall) this;
-
-      if (operator.isSame(call.getOperator()))
-        return true;
-    }
-
-    return false;
+  /** Check if the expression is a call to this operator or an alias of this operator */
+  public default boolean is(Operator operator) {
+     return false;
   }
 
-
-
   /**
-   * Estimate the cost to process the expression. Used when optimizing the query, to optimize the
-   * expression with the lowest estimated cost.
+   * Estimate the cost to process the expression, used when optimizing the expression.
    *
    * @return the estimated cost
    */

@@ -16,13 +16,14 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.regex.Pattern;
 
@@ -38,9 +39,9 @@ public class SimplifyLikeRule implements OptimizerRule {
   Pattern equalTo = Pattern.compile("^[^_%]*$");
 
   @Override
-  public IExpression apply(IExpressionContext context, OperatorCall call) {
+  public IExpression apply(IExpressionContext context, Call call) {
     try {
-      if (call.isOperator(OperatorRegistry.LIKE)) {
+      if (call.is(Operators.LIKE)) {
 
         // Optimize NULL LIKE FIELD to NULL
         IExpression v0 = call.getOperand(0);
@@ -48,7 +49,7 @@ public class SimplifyLikeRule implements OptimizerRule {
           return Literal.NULL;
 
         IExpression v1 = call.getOperand(1);
-        if (v1.getKind() == Kind.LITERAL) {
+        if (v1.is(Kind.LITERAL)) {
           String pattern = DataType.toString(v1.eval(context));
 
           // Optimize FIELD LIKE NULL to NULL
@@ -68,28 +69,28 @@ public class SimplifyLikeRule implements OptimizerRule {
           // Try contains before starts and ends
           if (contains.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new OperatorCall(OperatorRegistry.getFunction("CONTAINS"), v0,
+            return new Call(FunctionRegistry.getFunction("CONTAINS"), v0,
                 Literal.of(search));
           }
 
           // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')
           if (startsWith.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new OperatorCall(OperatorRegistry.getFunction("STARTSWITH"), v0,
+            return new Call(FunctionRegistry.getFunction("STARTSWITH"), v0,
                 Literal.of(search));
           }
 
           // Optimize the common case of FIELD LIKE '%foo' to ENDSWITH(FIELD,'foo')
           if (endsWith.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new OperatorCall(OperatorRegistry.getFunction("ENDSWITH"), v0,
+            return new Call(FunctionRegistry.getFunction("ENDSWITH"), v0,
                 Literal.of(search));
           }
 
           // Optimize FIELD LIKE 'Hello' to FIELD='Hello'
           if (equalTo.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new OperatorCall(OperatorRegistry.EQUAL, v0, Literal.of(search));
+            return new Call(Operators.EQUAL, v0, Literal.of(search));
           }
         }
       }

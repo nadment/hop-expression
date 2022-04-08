@@ -18,9 +18,21 @@ package org.apache.hop.expression;
  * Enumerates the possible types of {@link IExpression}.
  */
 public enum Kind {
+  /**
+   * An object of type {@link org.apache.hop.expression.Literal}
+   */
   LITERAL,
+  /**
+   * An object of type {@link org.apache.hop.expression.Tuple}
+   */
   TUPLE,
-  IDENTIFIER, 
-  OPERATOR,
+  /**
+   * An object of type {@link org.apache.hop.expression.Identifier}
+   */
+  IDENTIFIER,
+  /**
+   * An object of type {@link org.apache.hop.expression.Call}
+   */
+  CALL,
   JSON;
 }

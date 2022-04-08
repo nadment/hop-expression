@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 package org.apache.hop.expression.experimental;
-import org.apache.hop.core.compress.CompressionInputStream;
-import org.apache.hop.core.compress.CompressionOutputStream;
 import org.apache.hop.core.compress.CompressionPluginType;
 import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;
@@ -27,9 +25,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ScalarFunction;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 public class ExtraFunction {
  

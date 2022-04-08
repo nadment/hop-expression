@@ -19,8 +19,9 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -194,13 +195,14 @@ public class ExpressionEditor extends Composite {
     treeItemOperator.setImage(GuiResource.getInstance().getImageFolder());
     treeItemOperator.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Operators.Label"));
 
-
     Set<String> categories = new TreeSet<>();
     List<Operator> primaryOperators = new ArrayList<>();
     HashMap<String, String> mapDisplay = new HashMap<>();
 
+    Set<Operator> operators = Operators.getOperators();         
+   
     // Inventory operator unique identifier and category
-    for (Operator operator : OperatorRegistry.getOperators()) {
+    for (Operator operator : operators) {
 
       if (!categories.contains(operator.getCategory())) {
         categories.add(operator.getCategory());
@@ -213,7 +215,7 @@ public class ExpressionEditor extends Composite {
     }
 
     // Alias operator
-    for (Operator operator : OperatorRegistry.getOperators()) {
+    for (Operator operator : operators) {
       if (!operator.getId().equals(operator.getName())) {
         if (mapDisplay.containsKey(operator.getId())) {
           String str = mapDisplay.get(operator.getId());
@@ -303,7 +305,7 @@ public class ExpressionEditor extends Composite {
 
           // Escape field name matching reserved words or function name
           String name = valueMeta.getName();
-          if (ExpressionParser.isReservedWord(name) || OperatorRegistry.isFunctionName(name)) {
+          if (ExpressionParser.isReservedWord(name) || FunctionRegistry.isFunction(name)) {
             name = '[' + name + ']';
           }
 

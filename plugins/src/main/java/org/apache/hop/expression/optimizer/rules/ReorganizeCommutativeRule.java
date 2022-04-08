@@ -16,16 +16,14 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -37,11 +35,11 @@ import java.util.Set;
  */
 public class ReorganizeCommutativeRule implements OptimizerRule {
 
-  static final Set<Operator> COMMUTATIVE = new HashSet<>(Arrays.asList(OperatorRegistry.BOOLAND,
-      OperatorRegistry.BOOLOR, OperatorRegistry.ADD, OperatorRegistry.MULTIPLY));
+  static final Set<Operator> COMMUTATIVE =
+      Set.of(Operators.BOOLAND, Operators.BOOLOR, Operators.ADD, Operators.MULTIPLY);
 
   @Override
-  public IExpression apply(IExpressionContext context, OperatorCall call) {
+  public IExpression apply(IExpressionContext context, Call call) {
 
     if (COMMUTATIVE.contains(call.getOperator())) {
       Operator operator = call.getOperator();
@@ -50,30 +48,30 @@ public class ReorganizeCommutativeRule implements OptimizerRule {
 
       // Move low cost operand to the left
       if (left.getCost() > right.getCost()) {
-        return new OperatorCall(operator, right, left);
+        return new Call(operator, right, left);
       }
 
       // Order identifier by name
-      if (left.isKind(Kind.IDENTIFIER) && right.isKind(Kind.IDENTIFIER)) {
+      if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
         if (((Identifier) left).getName().compareTo(((Identifier) right).getName()) > 0) {
-          return new OperatorCall(operator, right, left);
+          return new Call(operator, right, left);
         }
       }
 
-      if (right.isOperator(operator)) {
-        OperatorCall subCall = (OperatorCall) right;
+      if (right.is(operator)) {
+        Call subCall = (Call) right;
         IExpression subLeft = subCall.getOperand(0);
         IExpression subRight = subCall.getOperand(1);
-               
+
         // Go up an operand if low cost
         if (subLeft.getCost() < left.getCost()) {
-          return new OperatorCall(operator, subLeft, new OperatorCall(operator, left, subRight));
+          return new Call(operator, subLeft, new Call(operator, left, subRight));
         }
 
         // Order identifier by name
-        if (left.isKind(Kind.IDENTIFIER) && subLeft.isKind(Kind.IDENTIFIER)) {
+        if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)) {
           if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) < 0) {
-            return new OperatorCall(operator, subLeft, new OperatorCall(operator, left, subRight));
+            return new Call(operator, subLeft, new Call(operator, left, subRight));
           }
         }
       }

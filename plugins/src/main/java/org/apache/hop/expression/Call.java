@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Objects;
 
 /** 
- * A <code>OperatorCall</code> is a call to an {@link Operator}.
+ * A <code>Call</code> is a call to an {@link Operator}.
  */
-public class OperatorCall implements IExpression {
+public class Call implements IExpression {
 
   protected final Operator operator;
   protected final IExpression[] operands;
 
-  public OperatorCall(Operator operator, IExpression... operands) {
+  public Call(Operator operator, IExpression... operands) {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = Objects.requireNonNull(operands);
@@ -37,7 +37,7 @@ public class OperatorCall implements IExpression {
     operator.checkNumberOfArguments(operands);
   }
 
-  public OperatorCall(Operator operator, List<IExpression> operands) {
+  public Call(Operator operator, List<IExpression> operands) {
     super();
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
@@ -48,10 +48,18 @@ public class OperatorCall implements IExpression {
   public Object eval(IExpressionContext context) throws ExpressionException {
     return operator.eval(context, operands);
   }
+  
+  @Override
+  public boolean is(final Operator other) {
+    if (other == null)
+      return false;
+    
+    return operator.is(other);
+  }
 
   @Override
   public Kind getKind() {
-    return Kind.OPERATOR;
+    return Kind.CALL;
   }
 
   @Override
@@ -98,8 +106,8 @@ public class OperatorCall implements IExpression {
     if (other == null)
       return false;
 
-    if (other instanceof OperatorCall) {
-      OperatorCall call = (OperatorCall) other;
+    if (other instanceof Call) {
+      Call call = (Call) other;
       return this.operator.equals(call.operator) && Arrays.equals(this.operands,call.operands);
     }
     return false;

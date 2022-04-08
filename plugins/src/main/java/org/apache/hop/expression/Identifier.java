@@ -32,7 +32,7 @@ public class Identifier implements IExpression {
   public Kind getKind() {
     return Kind.IDENTIFIER;
   }
-
+  
   public String getName() {
     return name;
   }
@@ -52,7 +52,7 @@ public class Identifier implements IExpression {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
         || DataType.exist(name) || DatePart.exist(name)
-        || OperatorRegistry.isFunctionName(name)) {
+        || FunctionRegistry.isFunction(name)) {
       writer.append('\"');
       writer.append(name);
       writer.append('\"');

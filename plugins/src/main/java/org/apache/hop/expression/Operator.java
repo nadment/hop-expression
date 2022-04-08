@@ -26,7 +26,7 @@ import java.util.Objects;
 public abstract class Operator implements Comparable<Operator> {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
+   
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;
 
@@ -146,7 +146,12 @@ public abstract class Operator implements Comparable<Operator> {
     return id.equals(other.id) && name.equals(other.name);
   }
 
-  public boolean isSame(Operator other) {
+  /**
+   * Check if it's the same operator.
+   * @param other
+   * @return 
+   */
+  public boolean is(Operator other) {
     if (other == null)
       return false;
     return id.equals(other.id);

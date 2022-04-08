@@ -27,7 +27,7 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -209,11 +209,11 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
     // Functions
     Image image = GuiResource.getInstance().getImageFunction();
-    for (String name : OperatorRegistry.getFunctionNames()) {
+    for (String name : FunctionRegistry.getFunctionNames()) {
       if (name.length() >= prefix.length()
           && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
-        Function function = OperatorRegistry.getFunction(name);
+        Function function = FunctionRegistry.getFunction(name);
         String replacement = name;
         // TODO: add function arguments to proposal
         String diplayName = name;
@@ -241,7 +241,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           // quoted
           if (quoted || name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
               || DataType.exist(name) || DatePart.exist(name)
-              || OperatorRegistry.isFunctionName(name)) {
+              || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';
           }
 

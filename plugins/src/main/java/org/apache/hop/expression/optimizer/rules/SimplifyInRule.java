@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import java.util.List;
  * 2. Sort expression on cost.
  */
 public class SimplifyInRule implements OptimizerRule {
-  public IExpression apply(IExpressionContext context, OperatorCall call) {
-    if (call.isOperator(OperatorRegistry.IN)) {
+  public IExpression apply(IExpressionContext context, Call call) {
+    if (call.is(Operators.IN)) {
 
       List<IExpression> list = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public class SimplifyInRule implements OptimizerRule {
       // Sort list on cost
       list.sort(Comparator.comparing(IExpression::getCost));
       
-      return new OperatorCall(call.getOperator(), call.getOperand(0), new Tuple(list));
+      return new Call(call.getOperator(), call.getOperand(0), new Tuple(list));
     }
 
     return call;

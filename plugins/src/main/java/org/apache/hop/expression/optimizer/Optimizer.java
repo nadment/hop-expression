@@ -14,9 +14,9 @@
  */
 package org.apache.hop.expression.optimizer;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCall;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.optimizer.rules.ArithmeticRule;
 import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
@@ -55,8 +55,8 @@ public class Optimizer {
         case JSON:
         case IDENTIFIER:
           return expression;
-        case OPERATOR:
-          expression = optimizeCall(context, (OperatorCall) expression);
+        case CALL:
+          expression = optimizeCall(context, (Call) expression);
           break;
         case TUPLE:
           expression = optimizeTuple(context, (Tuple) expression);
@@ -83,7 +83,7 @@ public class Optimizer {
     return new Tuple(elements);
   }
 
-  protected IExpression optimizeCall(IExpressionContext context, OperatorCall call) {
+  protected IExpression optimizeCall(IExpressionContext context, Call call) {
     // Optimize operands first
     IExpression[] operands = new IExpression[call.getOperandCount()];
     for (int i = 0; i < call.getOperandCount(); i++) {
@@ -91,12 +91,12 @@ public class Optimizer {
       operands[i] = operand;
     }
     
-    IExpression expression = new OperatorCall(call.getOperator(), operands);
+    IExpression expression = new Call(call.getOperator(), operands);
         
     // Apply rules
     for (OptimizerRule rule : RULES) {
-      if (expression instanceof OperatorCall) {
-        expression = rule.apply(context, (OperatorCall) expression);
+      if (expression instanceof Call) {
+        expression = rule.apply(context, (Call) expression);
       }
     }
 

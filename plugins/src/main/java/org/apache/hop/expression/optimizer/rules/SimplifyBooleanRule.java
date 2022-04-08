@@ -17,13 +17,13 @@
 package org.apache.hop.expression.optimizer.rules;
 
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
 
 /**
@@ -36,41 +36,41 @@ import org.apache.hop.expression.optimizer.OptimizerRule;
 public class SimplifyBooleanRule implements OptimizerRule {
 
   @Override
-  public IExpression apply(IExpressionContext context, OperatorCall call) {
+  public IExpression apply(IExpressionContext context, Call call) {
     try {
-      if (call.isOperator(OperatorRegistry.BOOLNOT)) {
+      if (call.is(Operators.BOOLNOT)) {
 
         IExpression operand = call.getOperand(0);
 
         // NOT(l > r) => l <= r
-        if (operand.isOperator(OperatorRegistry.GREATER_THAN)) {
-          return new OperatorCall(OperatorRegistry.LESS_THAN_OR_EQUAL,
-              ((OperatorCall) operand).getOperands());
+        if (operand.is(Operators.GREATER_THAN)) {
+          return new Call(Operators.LESS_THAN_OR_EQUAL,
+              ((Call) operand).getOperands());
         }
         // NOT(l >= r) => l < r
-        else if (operand.isOperator(OperatorRegistry.GREATER_THAN_OR_EQUAL)) {
-          return new OperatorCall(OperatorRegistry.LESS_THAN,
-              ((OperatorCall) operand).getOperands());
+        else if (operand.is(Operators.GREATER_THAN_OR_EQUAL)) {
+          return new Call(Operators.LESS_THAN,
+              ((Call) operand).getOperands());
         }
         // NOT(l < r) => l >= r
-        else if (operand.isOperator(OperatorRegistry.LESS_THAN)) {
-          return new OperatorCall(OperatorRegistry.GREATER_THAN_OR_EQUAL,
-              ((OperatorCall) operand).getOperands());
+        else if (operand.is(Operators.LESS_THAN)) {
+          return new Call(Operators.GREATER_THAN_OR_EQUAL,
+              ((Call) operand).getOperands());
         }
         // NOT(l <= r) => l > r
-        else if (operand.isOperator(OperatorRegistry.LESS_THAN_OR_EQUAL)) {
-          return new OperatorCall(OperatorRegistry.GREATER_THAN,
-              ((OperatorCall) operand).getOperands());
+        else if (operand.is(Operators.LESS_THAN_OR_EQUAL)) {
+          return new Call(Operators.GREATER_THAN,
+              ((Call) operand).getOperands());
         }
         // NOT(NOT(e)) => e
-        if (operand.isOperator(OperatorRegistry.BOOLNOT)) {
-          return ((OperatorCall) operand).getOperand(0);
+        if (operand.is(Operators.BOOLNOT)) {
+          return ((Call) operand).getOperand(0);
         }
       }
 
-      else if (call.isOperator(OperatorRegistry.BOOLOR)) {
+      else if (call.is(Operators.BOOLOR)) {
 
-        if (call.getOperand(0).isKind(Kind.LITERAL)) {
+        if (call.getOperand(0).is(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
           if (value == null)
             return call.getOperand(1);
@@ -78,7 +78,7 @@ public class SimplifyBooleanRule implements OptimizerRule {
             return Literal.TRUE;
         }
 
-        if (call.getOperand(1).isKind(Kind.LITERAL)) {
+        if (call.getOperand(1).is(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
           if (value == null)
             return call.getOperand(0);
@@ -86,13 +86,13 @@ public class SimplifyBooleanRule implements OptimizerRule {
             return Literal.TRUE;
         }
 
-        if (call.getOperand(0).isKind(Kind.LITERAL)) {
+        if (call.getOperand(0).is(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
           if (value == Boolean.FALSE)
             return call.getOperand(1);
         }
 
-        if (call.getOperand(1).isKind(Kind.LITERAL)) {
+        if (call.getOperand(1).is(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
           if (value == Boolean.FALSE)
             return call.getOperand(0);
@@ -105,11 +105,11 @@ public class SimplifyBooleanRule implements OptimizerRule {
         }
       }
 
-      else if (call.isOperator(OperatorRegistry.BOOLAND)) {
+      else if (call.is(Operators.BOOLAND)) {
         boolean left = true;
         boolean right = true;
 
-        if (call.getOperand(0).isKind(Kind.LITERAL)) {
+        if (call.getOperand(0).is(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
           if (value == null)
             return Literal.NULL;
@@ -117,7 +117,7 @@ public class SimplifyBooleanRule implements OptimizerRule {
             left = false;
         }
 
-        if (call.getOperand(1).isKind(Kind.LITERAL)) {
+        if (call.getOperand(1).is(Kind.LITERAL)) {
           Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
           if (value == null)
             return Literal.NULL;

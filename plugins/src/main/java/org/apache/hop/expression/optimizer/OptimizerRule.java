@@ -14,10 +14,10 @@
  */
 package org.apache.hop.expression.optimizer;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCall;
 
 public interface OptimizerRule {
-  public IExpression apply(IExpressionContext context, OperatorCall call);
+  public IExpression apply(IExpressionContext context, Call call);
 }

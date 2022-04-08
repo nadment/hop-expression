@@ -17,7 +17,7 @@
 package org.apache.hop.ui.expression;
 
 import org.apache.hop.expression.Function;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.FunctionRegistry;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
@@ -60,7 +60,7 @@ public class ExpressionEditorTextHover implements ITextHover, ITextHoverExtensio
       // If hover identifier, display
 
       // If hover function, display description
-      Function function = OperatorRegistry.getFunction(text);
+      Function function = FunctionRegistry.getFunction(text);
       if (function != null)
         return function.getDescription();
 

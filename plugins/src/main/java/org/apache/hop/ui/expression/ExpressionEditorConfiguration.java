@@ -20,7 +20,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -209,7 +209,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     // Add case insensitive rule for reserved world and function name
     // If word not found use Token.WHITESPACE to signal problem 
     WordRule rule = new WordRule(new WordDetector(), Token.WHITESPACE, true);
-    for (String name : OperatorRegistry.getFunctionNames()) {
+    for (String name : FunctionRegistry.getFunctionNames()) {
       rule.addWord(name, function);
     }
     for (String word : RESERVED_WORDS) {

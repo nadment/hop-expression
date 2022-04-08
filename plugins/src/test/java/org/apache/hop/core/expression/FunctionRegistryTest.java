@@ -19,23 +19,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-public class OperatorRegistryTest {
+public class FunctionRegistryTest {
   
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
   @Test
   public void test() throws Exception {
-    assertNotNull(OperatorRegistry.getOperators());
-    assertNotNull(OperatorRegistry.getFunctionNames());
-    assertNull(OperatorRegistry.getFunction(null));
-    assertEquals(OperatorRegistry.getFunction("CEIL").getId(), OperatorRegistry.getFunction("CEILING").getId());
-    assertNotEquals(OperatorRegistry.getFunction("CEIL").getName(), OperatorRegistry.getFunction("CEILING").getName());
+    assertNotNull(FunctionRegistry.getFunctions());
+    assertNotNull(FunctionRegistry.getFunctionNames());
+    assertNull(FunctionRegistry.getFunction(null));
+    assertEquals(FunctionRegistry.getFunction("CEIL").getId(), FunctionRegistry.getFunction("CEILING").getId());
+    assertNotEquals(FunctionRegistry.getFunction("CEIL").getName(), FunctionRegistry.getFunction("CEILING").getName());
   }
 }
 

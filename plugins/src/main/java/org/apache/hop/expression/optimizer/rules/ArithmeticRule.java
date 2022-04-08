@@ -16,26 +16,26 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
 
 public class ArithmeticRule implements OptimizerRule {
   @Override
-  public IExpression apply(IExpressionContext context, OperatorCall call) {
+  public IExpression apply(IExpressionContext context, Call call) {
     try {
       // Eliminate double NEGATIVE
-      if (call.isOperator(OperatorRegistry.NEGATIVE)) {
+      if (call.is(Operators.NEGATIVE)) {
         IExpression operand = call.getOperand(0);
-        if (operand.isOperator(OperatorRegistry.NEGATIVE)) {
-          return ((OperatorCall) operand).getOperand(0);
+        if (operand.is(Operators.NEGATIVE)) {
+          return ((Call) operand).getOperand(0);
         }
       }
-      else if (call.isOperator(OperatorRegistry.ADD)) {
+      else if (call.is(Operators.ADD)) {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
         
@@ -45,16 +45,16 @@ public class ArithmeticRule implements OptimizerRule {
         }   
         
         // Pull up literal
-        if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.ADD)) {
-          OperatorCall child = (OperatorCall) right;
-          if (child.getOperand(0).isKind(Kind.LITERAL)) {
+        if (left.is(Kind.LITERAL) && right.is(Operators.ADD)) {
+          Call child = (Call) right;
+          if (child.getOperand(0).is(Kind.LITERAL)) {
             IExpression operation =
-                new OperatorCall(OperatorRegistry.ADD, left, child.getOperand(0));
+                new Call(Operators.ADD, left, child.getOperand(0));
             Literal literal = Literal.of(operation.eval(context));
-            return new OperatorCall(OperatorRegistry.ADD, literal, child.getOperand(1));
+            return new Call(Operators.ADD, literal, child.getOperand(1));
           }
         }
-      } else if (call.isOperator(OperatorRegistry.MULTIPLY)) {
+      } else if (call.is(Operators.MULTIPLY)) {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
         
@@ -64,13 +64,13 @@ public class ArithmeticRule implements OptimizerRule {
         }                  
         
         // Pull up literal
-        if (left.isKind(Kind.LITERAL) && right.isOperator(OperatorRegistry.MULTIPLY)) {
-          OperatorCall child = (OperatorCall) right;
-          if (child.getOperand(0).isKind(Kind.LITERAL)) {
+        if (left.is(Kind.LITERAL) && right.is(Operators.MULTIPLY)) {
+          Call child = (Call) right;
+          if (child.getOperand(0).is(Kind.LITERAL)) {
             IExpression operation =
-                new OperatorCall(OperatorRegistry.MULTIPLY, left, child.getOperand(0));
+                new Call(Operators.MULTIPLY, left, child.getOperand(0));
             Literal literal = Literal.of(operation.eval(context));
-            return new OperatorCall(OperatorRegistry.MULTIPLY, literal, child.getOperand(1));
+            return new Call(Operators.MULTIPLY, literal, child.getOperand(1));
           }
         }
       }

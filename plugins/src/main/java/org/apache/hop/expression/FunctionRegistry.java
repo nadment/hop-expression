@@ -18,39 +18,6 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.plugins.JarCache;
-import org.apache.hop.expression.operator.Add;
-import org.apache.hop.expression.operator.AtTimeZone;
-import org.apache.hop.expression.operator.Between;
-import org.apache.hop.expression.operator.BitAnd;
-import org.apache.hop.expression.operator.BitNot;
-import org.apache.hop.expression.operator.BitOr;
-import org.apache.hop.expression.operator.BitXor;
-import org.apache.hop.expression.operator.BoolAnd;
-import org.apache.hop.expression.operator.BoolNot;
-import org.apache.hop.expression.operator.BoolOr;
-import org.apache.hop.expression.operator.BoolXor;
-import org.apache.hop.expression.operator.Case;
-import org.apache.hop.expression.operator.Cast;
-import org.apache.hop.expression.operator.Concat;
-import org.apache.hop.expression.operator.Div;
-import org.apache.hop.expression.operator.Equal;
-import org.apache.hop.expression.operator.Extract;
-import org.apache.hop.expression.operator.GreaterThan;
-import org.apache.hop.expression.operator.GreaterThanOrEqual;
-import org.apache.hop.expression.operator.ILike;
-import org.apache.hop.expression.operator.In;
-import org.apache.hop.expression.operator.Is;
-import org.apache.hop.expression.operator.LessThan;
-import org.apache.hop.expression.operator.LessThanOrEqual;
-import org.apache.hop.expression.operator.LessThanOrGreaterThan;
-import org.apache.hop.expression.operator.Like;
-import org.apache.hop.expression.operator.Mod;
-import org.apache.hop.expression.operator.Multiply;
-import org.apache.hop.expression.operator.Negative;
-import org.apache.hop.expression.operator.NotEqual;
-import org.apache.hop.expression.operator.Position;
-import org.apache.hop.expression.operator.Subtract;
-import org.apache.hop.expression.operator.TryCast;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
@@ -61,101 +28,30 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
-public class OperatorRegistry {
-
+public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
 
-//  @Variable (value="100", description="i18n::Package.HOP_TEST_VARIABLE")
-//  public static final String HOP_TEST_VARIABLE = "HOP_TEST_VARIABLE";
-  
-  // -------------------------------------------------------------
-  // BITWISE OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator BITAND = new BitAnd();
-  public static final Operator BITOR = new BitOr();
-  public static final Operator BITNOT = new BitNot();
-  public static final Operator BITXOR = new BitXor();
-
-  // -------------------------------------------------------------
-  // LOGICAL OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator BOOLNOT = new BoolNot();
-  public static final Operator BOOLOR = new BoolOr();
-  public static final Operator BOOLAND = new BoolAnd();
-  public static final Operator BOOLXOR = new BoolXor();
-
-  // -------------------------------------------------------------
-  // CONDITIONAL OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator CASE = new Case();
-  
-  // -------------------------------------------------------------
-  // COMPARISON OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator IS = new Is();
-  public static final Operator IN = new In();
-  public static final Operator LIKE = new Like();
-  public static final Operator ILIKE = new ILike();
-  public static final Operator BETWEEN = new Between();
-  public static final Operator EQUAL = new Equal();
-  public static final Operator NOT_EQUAL = new NotEqual();
-  public static final Operator LESS_THAN_OR_GREATER_THAN = new LessThanOrGreaterThan();
-  public static final Operator LESS_THAN = new LessThan();
-  public static final Operator LESS_THAN_OR_EQUAL = new LessThanOrEqual();
-  public static final Operator GREATER_THAN = new GreaterThan();
-  public static final Operator GREATER_THAN_OR_EQUAL = new GreaterThanOrEqual();
-
-  // -------------------------------------------------------------
-  // ARITHMETIC OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator NEGATIVE = new Negative();
-  public static final Operator MULTIPLY = new Multiply();
-  public static final Operator DIVIDE = new Div();
-  public static final Operator MODULUS = new Mod();
-  public static final Operator ADD = new Add();
-  public static final Operator SUBTRACT = new Subtract();
-
-  // -------------------------------------------------------------
-  // SPECIAL OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator CAST = new Cast();
-  public static final Operator TRY_CAST = new TryCast();
-  public static final Operator AT_TIME_ZONE = new AtTimeZone();
-  public static final Operator CONCAT = new Concat();
-  public static final Operator EXTRACT = new Extract();
-  public static final Operator POSITION = new Position();
-  
   static {
-    operators = new TreeSet<>(Arrays.asList(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT,
-        BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN,
-        LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE, CONCAT,
-        IN, IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR));
-   
     functions = new HashMap<>(256);
 
     init();
   }
 
-  public static boolean isFunctionName(String name) {
+  public static boolean isFunction(final String name) {
     return getFunction(name) != null;
   }
-
-  /** Set of operators. */
-  private static final Set<Operator> operators;
 
   /** Set of functions or alias by name. */
   private static final HashMap<String, Function> functions;
 
-  public static Set<Operator> getOperators() {
-    return operators;
+  public static Set<Function> getFunctions() {
+    return Set.copyOf(functions.values());
   }
-
+  
   /**
    * Get function by name or alias (ignore case)
    * 
@@ -177,17 +73,14 @@ public class OperatorRegistry {
   /**
    * Initialize the registry, keep private to keep this a singleton
    */
-  private OperatorRegistry() {
+  private FunctionRegistry() {
   }
 
   /**
    * Register functions
    */
   private static void init() {
-    try {
-      
-     // functions.put(CAST.getName(), CAST);
-      
+    try {    
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
       for (Method method : methods) {
         try {
@@ -215,14 +108,12 @@ public class OperatorRegistry {
           // Create function
           Function function = new Function(annotation.id(), annotation.id(), annotation.deterministic(),
               instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
-          operators.add(function);
           functions.put(function.getId(), function);
   
           // Create function alias name
           for (String name : annotation.names()) {
             function = new Function(annotation.id(), name, annotation.deterministic(), instance,
                 method, annotation.minArgs(), annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
-            operators.add(function);
             functions.put(name, function);
 
             if (log.isDebug()) {

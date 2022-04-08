@@ -23,6 +23,7 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.Operator;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,8 +40,8 @@ public class LiteralTest extends BaseExpressionTest {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Literal.NULL, Literal.of(null));
     assertEquals(0, Literal.NULL.hashCode());
-    assertFalse(Literal.NULL.isKind(null));
-    assertFalse(Literal.NULL.isOperator(null));
+    assertFalse(Literal.NULL.is((Kind)null));    
+    assertFalse(Literal.NULL.is((Operator)null));
     assertNotEquals(Literal.NULL,null);
     assertNull(Literal.NULL.eval(null));
     assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));

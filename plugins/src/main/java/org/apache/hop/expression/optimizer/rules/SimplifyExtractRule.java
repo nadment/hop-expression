@@ -16,13 +16,14 @@
  */
 package org.apache.hop.expression.optimizer.rules;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCall;
-import org.apache.hop.expression.OperatorRegistry;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
 
 /**
@@ -30,9 +31,9 @@ import org.apache.hop.expression.optimizer.OptimizerRule;
  */
 public class SimplifyExtractRule implements OptimizerRule {
   @Override
-  public IExpression apply(IExpressionContext context, OperatorCall call) {
+  public IExpression apply(IExpressionContext context, Call call) {
     try {
-      if (call.isOperator(OperatorRegistry.EXTRACT) && call.getOperandCount() == 2) {
+      if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
         DatePart part = DatePart.get(call.getOperand(0).eval(context));
 
         switch (part) {
@@ -49,8 +50,8 @@ public class SimplifyExtractRule implements OptimizerRule {
           case HOUR:
           case MINUTE:
           case SECOND:
-            Operator operator = OperatorRegistry.getFunction(part.name());
-            return new OperatorCall(operator, call.getOperand(1));
+            Function function = FunctionRegistry.getFunction(part.name());
+            return new Call(function, call.getOperand(1));
           default:
         }
       }
