@@ -28,7 +28,7 @@ import java.io.StringWriter;
 
 /**
  * Converts a value of one data type into another data type <code>::</code> or <code>
- * CAST(value AS type FORMAT format)</code>.
+ * CAST(value AS type [FORMAT format])</code>.
  */
 public class Cast extends Operator {
 
@@ -47,7 +47,7 @@ public class Cast extends Operator {
     Object v1 = operands[1].eval(context);
        
     if (!(v1 instanceof DataType)) {
-      throw new ExpressionException(Error.INVALID_DATA_TYPE, v1);    
+      throw new ExpressionException(Error.INVALID_DATATYPE, v1);    
     }
 
     DataType type = ( DataType) v1;

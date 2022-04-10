@@ -198,6 +198,11 @@ public class BaseExpressionTest {
   }
 
   protected void evalFails(final String source) {
+    try {
+      eval(source);
+    } catch (Exception e) {
+      System.out.println(source+" >>> "+e.getMessage());
+    }
     assertThrows(ExpressionException.class, () -> eval(source));
   }
 
@@ -215,6 +220,7 @@ public class BaseExpressionTest {
 
   @Test
   public void test() throws Exception {
+    evalFails("Year)");
     // ExpressionContext context = createExpressionContext();
     // context.setAttribute("TEST","");     
     // evalEquals(" '8' || 1 + 1", 82);

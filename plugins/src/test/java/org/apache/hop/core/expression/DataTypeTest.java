@@ -31,7 +31,19 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class DataTypeTest extends BaseExpressionTest {
-      
+    
+  @Test
+  public void of() throws Exception {
+    assertEquals(DataType.BOOLEAN, DataType.of("BOOLEAN"));
+    assertEquals(DataType.STRING, DataType.of("STRING") );
+    assertEquals(DataType.DATE, DataType.of("DATE") );
+    assertEquals(DataType.NUMBER, DataType.of("NUMBER") );
+    assertEquals(DataType.BIGNUMBER, DataType.of("BIGNUMBER") );
+    assertEquals(DataType.BINARY, DataType.of("BINARY") );
+    assertEquals(DataType.INTEGER, DataType.of("INTEGER") );
+    assertThrows(IllegalArgumentException.class, () -> DataType.of("NOP") );
+  }
+  
   @Test
   public void from() throws Exception {
     assertEquals(DataType.NONE, DataType.from(null) );

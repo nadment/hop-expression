@@ -14,6 +14,8 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.i18n.BaseMessages;
+
 /**
  * Enumeration of the error which can be used in expression exception.
  */
@@ -21,39 +23,54 @@ public enum Error {
   INTERNAL_ERROR("Expression.InternalError"),
   SYNTAX_ERROR("Expression.SyntaxError"),
   DIVISION_BY_ZERO("Expression.DivisionByZero"),
-  ILLEGAL_ARGUMENT("Expression.IllegalArgument"),
+  ILLEGAL_ARGUMENT("Expression.IllegalArgument"), 
   UNRESOLVED_IDENTIFIER("Expression.UnresolvedIdentifier"),
-  INVALID_IDENTIFIER_TYPE("Expression.InvalidIdentifierType"),
-  //NOT_ENOUGH_ARGUMENT("Expression.NotEnoughArguments"),
-  //TOO_MANY_ARGUMENT("Expression.TooManyArguments"),
+  NOT_ENOUGH_ARGUMENT("Expression.NotEnoughArguments"),
+  TOO_MANY_ARGUMENT("Expression.TooManyArguments"),
+  MISSING_END_BLOCK_COMMENT("Expression.MissingEndBlockComment"),
+  MISSING_END_SINGLE_QUOTED_STRING("Expression.MissingEndSingleQuotedString"),
+  MISSING_RIGHT_PARENTHESIS("Expression.MissingRightParenthesis"),
+  MISSING_LEFT_PARENTHESIS("Expression.MissingLeftParenthesis"),
+  UNBALANCE_PARENTHESIS("Expression.UnbalancedParenthesis"),
+  UNEXPECTED_CHARACTER("Expression.UnexpectedCharacter"),
+  UNEXPECTED_END_OF_EXPRESSION("Expression.UnexpectedEndOfExpression"),
+  UNEXPECTED_DATA_TYPE("Expression.UnexpectedDataType"),
   ARITHMETIC_OVERFLOW("Expression.ArithmeticOverflow"),
   ARGUMENT_OUT_OF_RANGE("Expression.ArgumentOutOfRange"),
+  INVALID_OPERATOR("Expression.InvalidOperator"),
   INVALID_DATE("Expression.InvalidDate"),
+  INVALID_TIME("Expression.InvalidTime"),
+  INVALID_TIMESTAMP("Expression.InvalidTimestamp"),
   INVALID_INTEGER("Expression.InvalidInteger"),
-  INVALID_NUMBER("Expression.InvalidNumber"),
-  INVALID_BIGNUMBER("Expression.InvalidBigNumber"),  
-  INVALID_DATA_TYPE("Expression.InvalidDataType"),
-  INVALID_DATE_PART("Expression.InvalidDatePart"),
+  INVALID_NUMBER("Expression.InvalidNumber"), 
+  INVALID_BIGNUMBER("Expression.InvalidBigNumber"),
+  INVALID_DATATYPE("Expression.InvalidDataType"),
+  INVALID_DATEPART("Expression.InvalidDatePart"),
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
-  INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),
-  UNEXPECTED_DATA_TYPE("Expression.UnexpectedDataType"),  
+  INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),  
   UNSUPPORTED_CONVERSION("Expression.UnsupportedConversion"),
+  UNSUPPORTED_IDENTIFIER_DATATYPE("Expression.UnsupportedIdentifierDataType"),
+  UNKNOWN_DATATYPE("Expression.UnknownDataType"),
+  UNKNOWN_TIMEZONE("Expression.UnknownTimeZone"),
   FUNCTION_CALL_ERROR("Expression.FunctionError"),
   PARSE_ERROR("Expression.ParseError"),
   BAD_FORMAT_PATTERN("Bad format {0} at position {1}"),
   CONVERSION_ERROR("Expression.ConversionError"),
-  REGEXP_REPLACE_ERROR("Expression.RegexpReplaceError"),
+  REGEXP_REPLACE_ERROR("Expression.RegexpReplaceError"), 
   URLENCODE_ERROR("Expression.UrlEncodeError"),
-  URLDECODE_ERROR("Expression.UrlDecodeError")
-  ;
-  
+  URLDECODE_ERROR("Expression.UrlDecodeError");
+
   private final String message;
-  
-  Error(String message) {
+
+  Error(final String message) {
     this.message = message;
   }
 
   public String message() {
-    return message;
+    return BaseMessages.getString(Error.class, message);
+  }
+
+  public String message(Object... objects) {
+    return BaseMessages.getString(Error.class, message, objects);
   }
 }

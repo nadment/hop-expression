@@ -79,8 +79,7 @@ public enum DataType {
         return type;
       }
     }
-    throw new IllegalArgumentException(
-        BaseMessages.getString(IExpression.class, "Expression.InvalidDataType", name));
+    throw new IllegalArgumentException(Error.INVALID_DATATYPE.message(name));
   }
 
   public static DataType from(final Object value) {
@@ -137,7 +136,7 @@ public enum DataType {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) ,DataType.BOOLEAN);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BOOLEAN);
   }
 
   /**
@@ -153,7 +152,7 @@ public enum DataType {
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) ,DataType.DATE);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.DATE);
   }
 
   /**
@@ -196,7 +195,7 @@ public enum DataType {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) ,DataType.BINARY);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BINARY);
   }
 
   /**
@@ -225,7 +224,7 @@ public enum DataType {
       return convertToInteger((byte[]) value);
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) ,DataType.INTEGER);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.INTEGER);
   }
 
   /**
@@ -251,7 +250,7 @@ public enum DataType {
       return convertToNumber((byte[]) value);
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) ,DataType.NUMBER);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.NUMBER);
   }
 
   /**
@@ -286,7 +285,7 @@ public enum DataType {
     if (value instanceof String) {
       return convertToBigNumber((String) value);
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) ,DataType.BIGNUMBER);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BIGNUMBER);
   }
 
   public static Object convertTo(Object value, final DataType type) throws ExpressionException {
@@ -407,7 +406,7 @@ public enum DataType {
       default:
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.from(value) , type);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) , type);
   }
 
   private static final Long convertToInteger(final String str) throws ExpressionException {

@@ -18,7 +18,6 @@ import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -42,7 +41,7 @@ public class ExpressionParser {
     return RESERVED_WORDS;
   }
 
-  public static boolean isReservedWord(String name) {
+  public static boolean isReservedWord(final String name) {
     if (name == null)
       return false;
     return RESERVED_WORDS.contains(name.toUpperCase());
@@ -141,7 +140,8 @@ public class ExpressionParser {
     IExpression expression = this.parseLogicalOr();
 
     if (hasNext()) {
-      throw new ParseException(next().text(), this.getPosition());
+      Token token = next();
+      throw new ParseException(Error.UNEXPECTED_CHARACTER.message(token.text()), token.start());
     }
 
     return expression;
@@ -251,9 +251,7 @@ public class ExpressionParser {
     } else if (next(Id.BETWEEN)) {
       IExpression begin = this.parseAdditive();
       if (!next(Id.AND)) {
-        throw new ParseException(
-            BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.BETWEEN),
-            this.getPosition());
+        throw new ParseException(Error.INVALID_OPERATOR.message(Id.BETWEEN), this.getPosition());
       }
       IExpression end = this.parseAdditive();
 
@@ -344,8 +342,7 @@ public class ExpressionParser {
     Token token = next();
 
     if (token == null)
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedEndOfExpression"),
-          this.getPosition());
+      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
 
     switch (token.id()) {
       case TRUE:
@@ -392,11 +389,17 @@ public class ExpressionParser {
         case LITERAL_DATATYPE:
           return parseLiteralDataType(token);
         case DATE:
-          return parseLiteralDate(next());
+          token = next();
+          if ( token==null) break;
+          return parseLiteralDate(token);
         case TIME:
-          return parseLiteralTime(next());
+          token = next();
+          if ( token==null) break;
+          return parseLiteralTime(token);
         case TIMESTAMP:
-          return parseLiteralTimestamp(next());
+          token = next();
+          if ( token==null) break;
+          return parseLiteralTimestamp(token);
         case CASE:
           return parseCaseWhen();
         case CAST:
@@ -415,14 +418,12 @@ public class ExpressionParser {
           if (token.is(Id.RPARENTHESIS)) {
             return expression;
           }
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnbalancedParenthesis"),
-              token.start());
+          throw new ParseException(Error.UNBALANCE_PARENTHESIS.message(), token.start());
         default:
           // Syntax error
       }
     }
-    throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedEndOfExpression"),
-        this.getPosition());
+    throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
@@ -508,25 +509,31 @@ public class ExpressionParser {
    * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
+    if (token==null) {
+      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    }
+
     try {
       DateTimeFormat format = DateTimeFormat.of("YYYY-MM-DD");
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidDate", token.text()),
-          token.start());
+      throw new ParseException(Error.INVALID_DATE.message(token.text()), token.start());
     }
   }
 
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
+    if (token==null) {
+      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    }
+
     try {
       DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTime", token.text()),
-          token.start());
+      throw new ParseException(Error.INVALID_TIME.message(token.text()), token.start());
     }
   }
 
@@ -536,6 +543,10 @@ public class ExpressionParser {
    * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
+    if (token==null) {
+      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    }
+    
     try {
       String pattern;
       String str = token.text();
@@ -602,8 +613,7 @@ public class ExpressionParser {
       if (is(Id.AT)) {
         next();
         if (!next(Id.TIME) || !next(Id.ZONE)) {
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidTimestamp", Id.AT),
-              this.getPosition());
+          throw new ParseException(Error.INVALID_OPERATOR.message("AT TIME ZONE"), this.getPosition());
         }
         token = next();
         ZoneId zoneId = ZoneId.of(token.text());           
@@ -611,11 +621,9 @@ public class ExpressionParser {
       }
       return Literal.of(datetime);
     } catch (ZoneRulesException e) {
-      throw new ParseException(
-          BaseMessages.getString(PKG, "Expression.UnknownTimeZone", token.text()), token.start());
+      throw new ParseException(Error.UNKNOWN_TIMEZONE.message(token.text()), token.start());
     } catch (Exception e) {
-      throw new ParseException(
-          BaseMessages.getString(PKG, "Expression.InvalidTimestamp", token.text()), token.start());
+      throw new ParseException(Error.INVALID_TIMESTAMP.message(token.text()), token.start());
     }
   }
 
@@ -645,7 +653,7 @@ public class ExpressionParser {
         break;
       } while (true);
     }
-    throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
+    throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(),
         this.getPosition());
   }
 
@@ -665,8 +673,7 @@ public class ExpressionParser {
     while (next(Id.WHEN)) {
       whenList.add(this.parseLogicalOr());
       if (!next(Id.THEN)) {
-        throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.CASE),
-            this.getPosition());
+        throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
       }
       thenList.add(this.parseLogicalOr());
     }
@@ -676,8 +683,7 @@ public class ExpressionParser {
     }
 
     if (!next(Id.END)) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.CASE),
-          this.getPosition());
+      throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
     }
 
     return new Call(Operators.CASE, valueExpression, new Tuple(whenList),
@@ -697,15 +703,13 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     operands.add(this.parseLogicalOr());
 
     if (!next(Id.AS)) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"),
-          token.start());
+      throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), token.start());
     }
 
     operands.add(this.parseLiteralDataType(next()));
@@ -716,15 +720,13 @@ public class ExpressionParser {
       if (token.is(Token.Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
-        throw new ParseException(
-            BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionCast"), token.start());
+        throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), token.start());
     }
 
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(operator, operands);
@@ -751,16 +753,13 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     operands.add(this.parseAdditive());
 
     if (!next(Id.IN)) {
-      throw new ParseException(
-          BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionPosition"),
-          this.getPosition());
+      throw new ParseException(Error.INVALID_OPERATOR.message(Id.POSITION), this.getPosition());
     }
 
     operands.add(this.parseAdditive());
@@ -768,8 +767,7 @@ public class ExpressionParser {
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(Operators.POSITION, operands);
@@ -783,8 +781,7 @@ public class ExpressionParser {
       if (next(Id.TIME) && next(Id.ZONE)) {
         return new Call(Operators.AT_TIME_ZONE, operand, this.parseTerm());
       }
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidOperator", Id.AT),
-          this.getPosition());
+      throw new ParseException(Error.INVALID_OPERATOR.message(Id.AT), this.getPosition());
     }
 
     return operand;
@@ -796,8 +793,7 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -805,9 +801,7 @@ public class ExpressionParser {
     operands.add(this.parseTerm());
 
     if (!next(Id.FROM)) {
-      throw new ParseException(
-          BaseMessages.getString(PKG, "Expression.InvalidSyntaxFunctionExtract"),
-          this.getPosition());
+      throw new ParseException(Error.INVALID_OPERATOR.message(Id.EXTRACT), this.getPosition());
     }
 
     operands.add(this.parseAdditive());
@@ -815,8 +809,7 @@ public class ExpressionParser {
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(Operators.EXTRACT, operands);
@@ -831,8 +824,7 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingLeftParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     // No param function
@@ -851,37 +843,37 @@ public class ExpressionParser {
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingRightParenthesis"),
-          token.start());
+      throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(function, operands);
   }
 
   private Literal parseLiteralDatePart(Token token) throws ParseException {
-    if (token == null) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingDatePart"),
-          this.getPosition());
-    }
-    DatePart part = DatePart.of(token.text());
-    return Literal.of(part);
-  }
-
-  private Literal parseLiteralDataType(Token token) throws ParseException {
-    if (token == null) {
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.MissingDataType"),
-          this.getPosition());
+    if (token==null) {
+      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
     }
 
     try {
-      DataType type = DataType.of(token.text());
-      return Literal.of(type);
+      DatePart part = DatePart.of(token.text());
+      return Literal.of(part);
     } catch (RuntimeException e) {
-      throw new ParseException(
-          BaseMessages.getString(PKG, "Expression.InvalidDataType", token.text()), token.start());
+      throw new ParseException(Error.INVALID_DATEPART.message(token.text()), token.start());
     }
   }
-  
+
+  private Literal parseLiteralDataType(Token token) throws ParseException {
+    if (token==null) {
+      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    }
+    
+    try {
+      DataType datatype = DataType.of(token.text());
+      return Literal.of(datatype);
+    } catch (RuntimeException e) {
+      throw new ParseException(Error.INVALID_DATATYPE.message(token.text()), token.start());
+    }
+  }
 
   /** Parses an expression string to return the individual tokens. */
   protected Token tokenize() throws ParseException {
@@ -920,9 +912,9 @@ public class ExpressionParser {
             text.append(c);
           }
 
-          if (c != '\'')
-            throw new ParseException(
-                BaseMessages.getString(PKG, "Expression.MissingEndSingleQuotedString"), start);
+          if (c != '\'') {
+            throw new ParseException(Error.MISSING_END_SINGLE_QUOTED_STRING.message(), start);
+          }
 
           return new Token(Id.LITERAL_STRING, start, position, text.toString());
         }
@@ -999,8 +991,7 @@ public class ExpressionParser {
               return new Token(Id.NOT_EQUAL, start);
             }
           }
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"),
-              start);
+          throw new ParseException(Error.UNEXPECTED_CHARACTER.message('!'), start);
         }
 
 
@@ -1014,8 +1005,7 @@ public class ExpressionParser {
               return new Token(Id.CAST, start);
             }
           }
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"),
-              start);
+          throw new ParseException(Error.UNEXPECTED_CHARACTER.message(':'), start);
         }
 
         // possible start of '/*' or '//' comment
@@ -1042,10 +1032,7 @@ public class ExpressionParser {
                   } else
                     position++;
                 } else {
-                  throw new ParseException(
-                      BaseMessages.getString(PKG, "Expression.MissingEndBlockComment"),
-
-                      start);
+                  throw new ParseException(Error.MISSING_END_BLOCK_COMMENT.message(), start);
                 }
               }
 
@@ -1100,8 +1087,7 @@ public class ExpressionParser {
               return new Token(Id.IDENTIFIER, start, position, value);
             }
           }
-          throw new ParseException(BaseMessages.getString(PKG, "Expression.UnexpectedCharacter"),
-              start);
+          throw new ParseException(Error.UNEXPECTED_CHARACTER.message(), start);
         }
 
         case '.': // Number without zero .1

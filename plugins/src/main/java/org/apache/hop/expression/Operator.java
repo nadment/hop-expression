@@ -136,14 +136,11 @@ public abstract class Operator implements Comparable<Operator> {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof Operator)) {
-      return false;
+    if (obj instanceof Operator) {
+      Operator other = (Operator) obj;
+      return id.equals(other.id) && name.equals(other.name);
     }
-    if (!obj.getClass().equals(this.getClass())) {
-      return false;
-    }
-    Operator other = (Operator) obj;
-    return id.equals(other.id) && name.equals(other.name);
+    return false;
   }
 
   /**

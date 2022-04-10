@@ -32,7 +32,7 @@ import java.util.List;
 
 public class Optimizer {
 
-  private static final List<OptimizerRule> RULES = Arrays.asList(new ReorganizeCommutativeRule(),
+  private static final List<OptimizerRule> RULES = List.of(new ReorganizeCommutativeRule(),
       new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(),
       new CombineConcatRule(), new SimplifyBooleanRule(), new DeterministicRule());
 

@@ -109,13 +109,13 @@ public class Operators {
   public static final Operator POSITION = new Position();
 
   /** Set of operators. */
-  private static final Set<Operator> operators = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
+  private static final Set<Operator> OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
       BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
       LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE,
       CONCAT, IN, IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR);
 
   public static Set<Operator> getOperators() {
-    Set<Operator> set = new TreeSet<>(operators);
+    Set<Operator> set = new TreeSet<>(OPERATORS);
     set.addAll(FunctionRegistry.getFunctions());
     return set;
   }

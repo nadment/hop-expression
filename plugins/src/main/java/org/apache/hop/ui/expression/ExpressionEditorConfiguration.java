@@ -64,13 +64,11 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private IVariables variables;
   private CompletableFuture<IRowMeta> rowMeta;
-  private static final Set<String> RESERVED_WORDS =
-      new TreeSet<>(Arrays.asList("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "ELSE",
+  private static final Set<String> RESERVED_WORDS = Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "ELSE",
           "END", "ESCAPE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "OR", "SYMMETRY",
-          "THEN", "TIME", "TIMESTAMP", "WHEN", "XOR", "ZONE"));
+          "THEN", "TIME", "TIMESTAMP", "WHEN", "XOR", "ZONE");
 
-  private static final Set<String> RESERVED_LITERALS =
-      new TreeSet<>(Arrays.asList("NULL", "TRUE", "FALSE"));
+  private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
 
   private org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter presenter;
 

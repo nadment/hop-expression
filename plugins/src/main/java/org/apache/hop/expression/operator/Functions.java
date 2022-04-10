@@ -2023,7 +2023,7 @@ public class Functions {
           if (v1 != null)
             format = DataType.toString(v1);
         } else {
-          format = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+          format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
         }
         try {
           return DateTimeFormat.of(format).parse(DataType.toString(v0));
@@ -2057,7 +2057,7 @@ public class Functions {
           if (v1 != null)
             format = DataType.toString(v1);
         } else {
-          format = (String) context.getAttribute(ExpressionContext.NLS_DATE_FORMAT);
+          format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
         }
         try {
           return DateTimeFormat.of(format).parse(DataType.toString(v0));

@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression.experimental.jsr223;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -50,17 +48,17 @@ public class ExpressionScriptEngineFactory implements ScriptEngineFactory {
 
   @Override
   public List<String> getExtensions() {
-    return Collections.unmodifiableList(Arrays.asList("hxp"));
+    return List.of("hxp");
   }
 
   @Override
   public List<String> getMimeTypes() {
-    return Collections.unmodifiableList(Arrays.asList("application/x-hop-expression"));
+    return List.of("application/x-hop-expression");
   }
 
   @Override
   public List<String> getNames() {
-    return Collections.unmodifiableList(Arrays.asList("hop-expression"));
+    return List.of("hop-expression");
   }
 
   @Override

@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public class CombineConcatRule implements OptimizerRule {
   @Override
@@ -33,7 +33,8 @@ public class CombineConcatRule implements OptimizerRule {
 
       for (IExpression expression : call.getOperands()) {
         if (expression.is(Operators.CONCAT)) {
-          operands.addAll(Arrays.asList(((Call) expression).getOperands()));
+          Call childCall = (Call) expression;
+          operands.addAll(List.of(childCall.getOperands()));
         } else {
           operands.add(expression);
         }

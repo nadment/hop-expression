@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 
@@ -57,11 +56,11 @@ public class Function extends Operator {
   public void checkNumberOfArguments(IExpression[] operands) {
 
     if (operands.length < minArgs) {      
-      throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.NotEnoughArguments", this.getId()));
+      throw new IllegalArgumentException(Error.NOT_ENOUGH_ARGUMENT.message(this.getId()));
     }
 
     if (operands.length > maxArgs) {
-      throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.TooManyArguments", this.getId()));
+      throw new IllegalArgumentException(Error.TOO_MANY_ARGUMENT.message(this.getId()));
     }
   }
 

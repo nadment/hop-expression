@@ -20,6 +20,7 @@ import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.Variable;
 import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
 import java.time.ZoneId;
@@ -41,23 +42,25 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
    * Control Two-digit year, when set to 1980, values of 79 and 80 parsed as 2079 and 1980
    * respectively.
    */
-  public static final String TWO_DIGIT_CENTURY_START = "TWO_DIGIT_CENTURY_START";
+  public static final String EXPRESSION_TWO_DIGIT_CENTURY_START = "EXPRESSION_TWO_DIGIT_CENTURY_START";
 
   /**
    * The date format used for conversions between dates and strings.
    */
-  public static final String NLS_DATE_FORMAT = "NLS_DATE_FORMAT";
+  @Variable(value = "YYYY-MM-DD", description = "The default date format used by expression for conversions between dates and strings.")
+  public static final String EXPRESSION_DATE_FORMAT = "EXPRESSION_DATE_FORMAT";
 
   /**
    * The timestamp format used for conversions between timestamps and strings
    */
-  public static final String NLS_TIMESTAMP_FORMAT = "NLS_TIMESTAMP_FORMAT";
+  @Variable(value = "YYYY-MM-DD H24:MI:SS", description = "The default timestamp format used by expression for conversions between timestamps and strings.")
+  public static final String EXPRESSION_TIMESTAMP_FORMAT = "EXPRESSION_TIMESTAMP_FORMAT";
 
   /**
    * Defines the first day of a week.
    * The integer value follows the ISO-8601 standard, from 1 (Monday) to 7 (Sunday).
    */
-  public static final String NLS_FIRST_DAY_OF_WEEK = "WEEK_START";
+  public static final String EXPRESSION_FIRST_DAY_OF_WEEK = "EXPRESSION_FIRST_DAY_OF_WEEK";
 
   public static final String CACHED_TODAY = "__TODAY";
   public static final String CACHED_NOW = "__NOW";
@@ -77,13 +80,9 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public ExpressionContext(IVariables variables) {
     super();
 
-    this.setAttribute(NLS_DATE_FORMAT, variables.getVariable(NLS_DATE_FORMAT, "YYYY-MM-DD"),
-        ENGINE_SCOPE);
-
-    this.setAttribute(NLS_FIRST_DAY_OF_WEEK, variables.getVariable(NLS_FIRST_DAY_OF_WEEK, "1"), ENGINE_SCOPE);
-            
-    this.setAttribute(TWO_DIGIT_CENTURY_START,
-        variables.getVariable(TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
+    this.setAttribute(EXPRESSION_DATE_FORMAT, variables.getVariable(EXPRESSION_DATE_FORMAT, "YYYY-MM-DD"), ENGINE_SCOPE);
+    this.setAttribute(EXPRESSION_FIRST_DAY_OF_WEEK, variables.getVariable(EXPRESSION_FIRST_DAY_OF_WEEK, "1"), ENGINE_SCOPE);           
+    this.setAttribute(EXPRESSION_TWO_DIGIT_CENTURY_START, variables.getVariable(EXPRESSION_TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
 
     
 //    final Calendar calendar = Calendar.getInstance(locale);
@@ -91,10 +90,10 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
 
     try {
-      String variable = variables.getVariable(TWO_DIGIT_CENTURY_START, "1970");
+      String variable = variables.getVariable(EXPRESSION_TWO_DIGIT_CENTURY_START, "1970");
       this.twoDigitCenturyStart = Integer.parseInt(variable);
     } catch (NumberFormatException e) {
-      log.logError(BaseMessages.getString(PKG, "Expression.InvalidVariable", TWO_DIGIT_CENTURY_START));
+      log.logError(BaseMessages.getString(PKG, "Expression.InvalidVariable", EXPRESSION_TWO_DIGIT_CENTURY_START));
     }
 
     // Initialize
@@ -149,7 +148,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
         case IValueMeta.TYPE_BINARY:
           return rowMeta.getBinary(row, index);
         default:
-          throw new ExpressionException(Error.INVALID_IDENTIFIER_TYPE, name, valueMeta.getTypeDesc());
+          throw new ExpressionException(Error.UNSUPPORTED_IDENTIFIER_DATATYPE, name, valueMeta.getTypeDesc());
       }
     } catch (HopValueException e) {
       throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);

@@ -17,12 +17,9 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.i18n.BaseMessages;
 
 public class ExpressionException extends HopException {
  
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
   private static final long serialVersionUID = 8634955627375465878L;
 
   /**
@@ -31,10 +28,10 @@ public class ExpressionException extends HopException {
    * @param error a error message
    */
   public ExpressionException(Error error) {
-    super(BaseMessages.getString(PKG, error.message()));
+    super(error.message());
   }
 
   public ExpressionException(Error error, Object... values) {       
-    super(BaseMessages.getString(PKG, error.message(), values));
+    super(error.message(values));
   }
 }

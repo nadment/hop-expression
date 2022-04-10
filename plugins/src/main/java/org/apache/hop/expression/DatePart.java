@@ -14,8 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.i18n.BaseMessages;
-
 /**
  * A date part can be used with expression functions such as extract(). It describes a
  * part of a date / datetime value
@@ -138,7 +136,7 @@ public enum DatePart {
       }
     }
 
-    throw new IllegalArgumentException(BaseMessages.getString(IExpression.class, "Expression.InvalidDatePart", name));
+    throw new IllegalArgumentException(Error.INVALID_DATEPART.message(name));
   }
 
   /**
@@ -150,7 +148,7 @@ public enum DatePart {
     if (value instanceof DatePart) {
       return (DatePart) value;
     }
-    throw new ExpressionException(Error.INVALID_DATE_PART, value);
+    throw new ExpressionException(Error.INVALID_DATEPART, value);
   }
   
   /**
