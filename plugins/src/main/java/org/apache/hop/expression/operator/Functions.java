@@ -70,97 +70,68 @@ public class Functions {
   private static final Soundex SOUNDEX = new Soundex();
 
   /**
-   * The NOW function return the current date and time
+   * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
    */
-  @ScalarFunction(id = "NOW", names = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
-      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/now.html")
-  public static Object now(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ACOS", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/acos.html")
+  public static Object acos(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return context.getAttribute(ExpressionContext.CACHED_NOW);
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    Double d = DataType.toNumber(value);
+    if (d < -1.0 || d > 1.0) {
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+    }
+    return FastMath.acos(d);
   }
 
-  /**
-   * The TODAY function return the current date at time 00:00
-   */
-  @ScalarFunction(id = "TODAY", names = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
-      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/today.html")
-  public static Object today(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ACOSH", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/acosh.html")
+  public static Object acosh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return context.getAttribute(ExpressionContext.CACHED_TODAY);
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.acosh(DataType.toNumber(value));
   }
 
-  // -------------------------------------------------------------
-  // CRYPTOGRAPHIC
-  // -------------------------------------------------------------
-
-  /**
-   * The function calculate the MD5 hash of a data value. The hash will be returned as a 32
-   * characters hex-encoded string.
-   *
-   * @see {@link #sha1}, {@link #sha256}, {@link #sha384}, {@link #sha512}
-   */
-  @ScalarFunction(id = "MD5", category = "i18n::Operator.Category.Cryptographic",
-      documentationUrl = "/docs/md5.html")
-  public static Object md5(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ASINH", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/asinh.html")
+  public static Object asinh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return getHash(operands[0].eval(context), "MD5");
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    return FastMath.asinh(DataType.toNumber(value));
   }
 
-  /**
-   * The function calculate the SHA-1 hash of a data value. The hash will be returned as a 40
-   * characters hex-encoded string.
-   *
-   * @see {@link #md5}, {@link #sha256}, {@link #sha384}, {@link #sha512}
-   */
-  @ScalarFunction(id = "SHA1", category = "i18n::Operator.Category.Cryptographic",
-      documentationUrl = "/docs/sha1.html")
-  public static Object sha1(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ATAN", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/atan.html")
+  public static Object atan(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return getHash(operands[0].eval(context), "SHA-1");
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    return FastMath.atan(DataType.toNumber(value));
   }
 
-  /**
-   * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
-   * characters hex-encoded string.
-   *
-   * @see {@link #md5}, {@link #sha1}, {@link #sha384}, {@link #sha512}
-   */
-  @ScalarFunction(id = "SHA256", category = "i18n::Operator.Category.Cryptographic",
-      documentationUrl = "/docs/sha256.html")
-  public static Object sha256(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ATANH", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/atanh.html")
+  public static Object atanh(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    return getHash(operands[0].eval(context), "SHA-256");
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    return FastMath.atanh(DataType.toNumber(value));
   }
 
-  /**
-   * The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96
-   * characters hex-encoded string.
-   *
-   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha512}
-   */
-  @ScalarFunction(id = "SHA384", category = "i18n::Operator.Category.Cryptographic",
-      documentationUrl = "/docs/sha384.html")
-  public static Object sha384(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    return getHash(operands[0].eval(context), "SHA-384");
-  }
-
-  /**
-   * The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128
-   * characters hex-encoded string.
-   *
-   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha384}
-   */
-  @ScalarFunction(id = "SHA512", category = "i18n::Operator.Category.Cryptographic",
-      documentationUrl = "/docs/sha512.html")
-  public static Object sha512(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    return getHash(operands[0].eval(context), "SHA-512");
-  }
-
-  @ScalarFunction(id = "GETBIT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/getbit.html")
-  public static Object getbit(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "ATAN2", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/atan2.html")
+  public static Object atan2(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
@@ -169,7 +140,107 @@ public class Functions {
     if (v1 == null)
       return null;
 
-    return (DataType.toInteger(v0) & (1L << DataType.toInteger(v1).intValue())) != 0;
+    return FastMath.atan2(DataType.toNumber(v0), DataType.toNumber(v1));
+  }
+
+  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
+  @ScalarFunction(id = "COS", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/cos.html")
+  public static Object cos(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.cos(DataType.toNumber(value));
+  }
+
+  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
+  @ScalarFunction(id = "COSH", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/cosh.html")
+  public static Object cosh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.cosh(DataType.toNumber(value));
+  }
+
+  /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
+  @ScalarFunction(id = "COT", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/cot.html")
+  public static Object cot(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+
+    double number = DataType.toNumber(value);
+    if (number == 0)
+      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+
+    return FastMath.cos(number) / FastMath.sin(number);
+  }
+
+  @ScalarFunction(id = "ASIN", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/asin.html")
+  public static Object asin(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.asin(DataType.toNumber(value));
+  }
+
+  /**
+   * Calculates the trigonometric sine of the angle in radians.
+   */
+  @ScalarFunction(id = "SIN", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/sin.html")
+  public static Object sin(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return value;
+    return FastMath.sin(DataType.toNumber(value));
+  }
+
+  /**
+   * Calculates the hyperbolic sine of its argument.
+   */
+  @ScalarFunction(id = "SINH", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/sinh.html")
+  public static Object sinh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.sinh(DataType.toNumber(value));
+  }
+
+  /**
+   * Calculates the tangent of its argument, the argument should be expressed in radians.
+   */
+  @ScalarFunction(id = "TAN", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/tan.html")
+  public static Object tan(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.tan(DataType.toNumber(value));
+  }
+
+  /**
+   * Calculates the hyperbolic tangent of its argument.
+   */
+  @ScalarFunction(id = "TANH", category = "i18n::Operator.Category.Trigonometry",
+      documentationUrl = "/docs/tanh.html")
+  public static Object tanh(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].eval(context);
+    if (value == null)
+      return null;
+    return FastMath.tanh(DataType.toNumber(value));
   }
 
   /**
@@ -338,32 +409,7 @@ public class Functions {
       return value;
     return FastMath.round(DataType.toNumber(value));
   }
-
-  @ScalarFunction(id = "RANDOM", deterministic = false, minArgs = 0, maxArgs = 1,
-      category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/random.html")
-  public static Object random(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-
-    Random random = (Random) context.getAttribute(ExpressionContext.CACHED_RANDOM);
-
-    if (operands.length == 1) {
-      Object value = operands[0].eval(context);
-      // FIXME: What if multi random in the same with different SEED ?
-      random.setSeed(DataType.toInteger(value));
-    }
-    return random.nextDouble();
-  }
-
-  /** Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122) */
-  @ScalarFunction(id = "UUID", minArgs = 0, maxArgs = 0, deterministic = false,
-      category = "i18n::Operator.Category.String", documentationUrl = "/docs/uuid.html")
-  public static Object uuid(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-
-    return UUID.randomUUID().toString();
-  }
-
-
+  
   /**
    * Returns the natural logarithm of a numeric value.
    */
@@ -483,6 +529,137 @@ public class Functions {
 
     return FastMath.pow(DataType.toNumber(left), DataType.toNumber(right));
   }
+  
+  
+  /**
+   * The NOW function return the current date and time
+   */
+  @ScalarFunction(id = "NOW", names = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/now.html")
+  public static Object now(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return context.getAttribute(ExpressionContext.CACHED_NOW);
+  }
+
+  /**
+   * The TODAY function return the current date at time 00:00
+   */
+  @ScalarFunction(id = "TODAY", names = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/today.html")
+  public static Object today(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return context.getAttribute(ExpressionContext.CACHED_TODAY);
+  }
+
+  // -------------------------------------------------------------
+  // CRYPTOGRAPHIC
+  // -------------------------------------------------------------
+
+  /**
+   * The function calculate the MD5 hash of a data value. The hash will be returned as a 32
+   * characters hex-encoded string.
+   *
+   * @see {@link #sha1}, {@link #sha256}, {@link #sha384}, {@link #sha512}
+   */
+  @ScalarFunction(id = "MD5", category = "i18n::Operator.Category.Cryptographic",
+      documentationUrl = "/docs/md5.html")
+  public static Object md5(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "MD5");
+  }
+
+  /**
+   * The function calculate the SHA-1 hash of a data value. The hash will be returned as a 40
+   * characters hex-encoded string.
+   *
+   * @see {@link #md5}, {@link #sha256}, {@link #sha384}, {@link #sha512}
+   */
+  @ScalarFunction(id = "SHA1", category = "i18n::Operator.Category.Cryptographic",
+      documentationUrl = "/docs/sha1.html")
+  public static Object sha1(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-1");
+  }
+
+  /**
+   * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
+   * characters hex-encoded string.
+   *
+   * @see {@link #md5}, {@link #sha1}, {@link #sha384}, {@link #sha512}
+   */
+  @ScalarFunction(id = "SHA256", category = "i18n::Operator.Category.Cryptographic",
+      documentationUrl = "/docs/sha256.html")
+  public static Object sha256(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-256");
+  }
+
+  /**
+   * The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96
+   * characters hex-encoded string.
+   *
+   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha512}
+   */
+  @ScalarFunction(id = "SHA384", category = "i18n::Operator.Category.Cryptographic",
+      documentationUrl = "/docs/sha384.html")
+  public static Object sha384(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-384");
+  }
+
+  /**
+   * The function calculate the SHA-512 hash of a data value. The hash will be returned as a 128
+   * characters hex-encoded string.
+   *
+   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha384}
+   */
+  @ScalarFunction(id = "SHA512", category = "i18n::Operator.Category.Cryptographic",
+      documentationUrl = "/docs/sha512.html")
+  public static Object sha512(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-512");
+  }
+
+  @ScalarFunction(id = "GETBIT", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/getbit.html")
+  public static Object getbit(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    return (DataType.toInteger(v0) & (1L << DataType.toInteger(v1).intValue())) != 0;
+  }
+
+
+  @ScalarFunction(id = "RANDOM", deterministic = false, minArgs = 0, maxArgs = 1,
+      category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/random.html")
+  public static Object random(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+
+    Random random = (Random) context.getAttribute(ExpressionContext.CACHED_RANDOM);
+
+    if (operands.length == 1) {
+      Object value = operands[0].eval(context);
+      // FIXME: What if multi random in the same with different SEED ?
+      random.setSeed(DataType.toInteger(value));
+    }
+    return random.nextDouble();
+  }
+
+  /** Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122) */
+  @ScalarFunction(id = "UUID", minArgs = 0, maxArgs = 0, deterministic = false,
+      category = "i18n::Operator.Category.String", documentationUrl = "/docs/uuid.html")
+  public static Object uuid(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+
+    return UUID.randomUUID().toString();
+  }
+
+
 
   private static Object getHash(Object value, String algorithm) throws ExpressionException {
     if (value == null)
@@ -1894,6 +2071,104 @@ public class Functions {
   }
 
   /**
+   * Splits a string on the specified string delimiter and returns the part at the specified position.
+   * 
+   * @param context
+   * @param operands
+   * @return
+   * @throws ExpressionException
+   * @See {@link #strtok}
+   */
+  @ScalarFunction(id = "SPLIT_PART", category = "i18n::Operator.Category.String", minArgs = 3, maxArgs = 3, documentationUrl = "/docs/split_part.html")  
+  public static Object split_part(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    Object v2 = operands[2].eval(context);
+    if (v2 == null)
+      return null;
+    
+    String str = DataType.toString(v0);
+    String delimiter = DataType.toString(v1);
+    int index = DataType.toInteger(v2).intValue();
+    
+    String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
+    
+    // If the part number is negative, the parts are counted backward from the end of the string.
+    if ( index<0 ) index += parts.length+1;
+    
+    // If the part index is out of range, the returned value is an empty string.
+    if ( index<1 || index>parts.length ) {
+      return "";
+    }
+          
+    return parts[index-1];    
+  }
+  
+  /**
+   * Splits a string on the specified list of delimiter characters and returns the part at the specified position.
+   * 
+   * @param context The expression context
+   * @param operands The operands
+   * @return value
+   * @throws ExpressionException
+   * @See {@link #split_part}
+   */
+  @ScalarFunction(id = "STRTOK", category = "i18n::Operator.Category.String", minArgs = 1, maxArgs = 3, documentationUrl = "/docs/strtok.html")  
+  public static Object strtok(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    String str = DataType.toString(v0);
+
+    // Default value
+    String delimiter = " ";
+    int index = 1;
+    
+    if ( operands.length==2) {
+      Object v1 = operands[1].eval(context);
+      if (v1 == null)
+        return null;
+    
+      if ( v1 instanceof Number ) {
+        index = DataType.toInteger(v1).intValue();   
+      }
+      else {
+        delimiter = DataType.toString(v1);
+      }
+    }
+    else if ( operands.length==3) {
+      Object v1 = operands[1].eval(context);
+      if (v1 == null)
+        return null;
+      delimiter = DataType.toString(v1);
+      Object v2 = operands[2].eval(context);
+      if (v2 == null)
+        return null;
+      index = DataType.toInteger(v2).intValue();      
+    }
+    
+    String[] parts = StringUtils.split(str,delimiter);
+    
+    if ( index<0 ) index += parts.length+1;
+    
+    // If the part index is out of range, the returned value is an empty string.
+    if ( index<1 || index>parts.length ) {
+      return null;
+    }
+          
+    return parts[index-1];
+  }
+  
+  
+  /**
    * Converts a string or numeric expression to a boolean value.
    */
   @ScalarFunction(id = "TO_BOOLEAN", category = "i18n::Operator.Category.Conversion",
@@ -2677,177 +2952,4 @@ public class Functions {
     return DataType.toDate(value).with(TemporalAdjusters.previous(dayofweek));
   }
 
-  /**
-   * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
-   */
-  @ScalarFunction(id = "ACOS", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/acos.html")
-  public static Object acos(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    Double d = DataType.toNumber(value);
-    if (d < -1.0 || d > 1.0) {
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
-    }
-    return FastMath.acos(d);
-  }
-
-  @ScalarFunction(id = "ACOSH", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/acosh.html")
-  public static Object acosh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.acosh(DataType.toNumber(value));
-  }
-
-  @ScalarFunction(id = "ASINH", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/asinh.html")
-  public static Object asinh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    return FastMath.asinh(DataType.toNumber(value));
-  }
-
-  @ScalarFunction(id = "ATAN", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/atan.html")
-  public static Object atan(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    return FastMath.atan(DataType.toNumber(value));
-  }
-
-  @ScalarFunction(id = "ATANH", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/atanh.html")
-  public static Object atanh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    return FastMath.atanh(DataType.toNumber(value));
-  }
-
-  @ScalarFunction(id = "ATAN2", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/atan2.html")
-  public static Object atan2(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-    Object v1 = operands[1].eval(context);
-    if (v1 == null)
-      return null;
-
-    return FastMath.atan2(DataType.toNumber(v0), DataType.toNumber(v1));
-  }
-
-  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  @ScalarFunction(id = "COS", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/cos.html")
-  public static Object cos(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.cos(DataType.toNumber(value));
-  }
-
-  /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
-  @ScalarFunction(id = "COSH", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/cosh.html")
-  public static Object cosh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.cosh(DataType.toNumber(value));
-  }
-
-  /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
-  @ScalarFunction(id = "COT", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/cot.html")
-  public static Object cot(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-
-    double number = DataType.toNumber(value);
-    if (number == 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
-
-    return FastMath.cos(number) / FastMath.sin(number);
-  }
-
-  @ScalarFunction(id = "ASIN", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/asin.html")
-  public static Object asin(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.asin(DataType.toNumber(value));
-  }
-
-  /**
-   * Calculates the trigonometric sine of the angle in radians.
-   */
-  @ScalarFunction(id = "SIN", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/sin.html")
-  public static Object sin(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return value;
-    return FastMath.sin(DataType.toNumber(value));
-  }
-
-  /**
-   * Calculates the hyperbolic sine of its argument.
-   */
-  @ScalarFunction(id = "SINH", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/sinh.html")
-  public static Object sinh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.sinh(DataType.toNumber(value));
-  }
-
-  /**
-   * Calculates the tangent of its argument, the argument should be expressed in radians.
-   */
-  @ScalarFunction(id = "TAN", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/tan.html")
-  public static Object tan(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.tan(DataType.toNumber(value));
-  }
-
-  /**
-   * Calculates the hyperbolic tangent of its argument.
-   */
-  @ScalarFunction(id = "TANH", category = "i18n::Operator.Category.Trigonometry",
-      documentationUrl = "/docs/tanh.html")
-  public static Object tanh(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    return FastMath.tanh(DataType.toNumber(value));
-  }
 }

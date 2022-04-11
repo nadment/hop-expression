@@ -548,6 +548,59 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Split_part() throws Exception {
+    evalEquals("Split_Part('127.1.2.3','.',1)", "127");
+    evalEquals("Split_Part('127.1.2.3','.',2)", "1");
+    evalEquals("Split_Part('127.1.2.3','.',4)", "3");    
+    evalEquals("Split_Part('127.1.2.3','.',-1)", "3");
+    evalEquals("Split_Part('127.1.2.3','.',-2)", "2");
+    evalEquals("SPLIT_PART('user@hop.apache.org', '.', -2)","apache");
+    evalEquals("Split_Part('AAA-@-BBB-BBB-@-CCC','-@-',2)", "BBB-BBB");
+    
+    // No split if delimiter is empty
+    evalEquals("Split_Part('127.1.2.3','',1)", "127.1.2.3");
+    
+    // If the part index is out of range, the returned value is an empty string.
+    evalEquals("Split_Part('127.1.2.3','.',5)","");
+    
+    evalNull("Split_Part(NULL,'.',5)");
+    evalNull("Split_Part('127.1.2.3',NULL,5)");
+    evalNull("Split_Part('127.1.2.3','.',NULL)");
+    
+    evalFails("Split_Part('127.1.2.3','.')");
+  }
+  
+  @Test
+  public void Strtok() throws Exception {
+    evalEquals("Strtok('127.1-2-3','.-:',1)", "127");
+    evalEquals("Strtok('127.1-2-3','.-:',2)", "1");
+    evalEquals("Strtok('127.1-2-3','.-:',4)", "3");    
+    evalEquals("Strtok('127.1-2-3','.-:',-1)", "3");
+    evalEquals("Strtok('127.1-2-3','.-:',-2)", "2");
+    evalEquals("Strtok('AAA.BBB:CCC-DDD','.-:',2)", "BBB");
+    
+    // Optional arguments
+    evalEquals("Strtok('AAA BBB CCC DDD')", "AAA");
+    evalEquals("Strtok('AAA BBB CCC DDD',3)", "CCC");
+    evalEquals("Strtok('AAA:BBB-CCC DDD','-: ')", "AAA");
+    
+    // No split if delimiter is empty
+    evalEquals("Strtok('127.1.2.3','',1)", "127.1.2.3");
+    
+    // If the part index is out of range, the returned value is null.
+    evalNull("Strtok('127.1.2.3','.',5)");    
+    evalNull("Strtok('','',1)");
+    
+    // If one operands is null
+    evalNull("Strtok(NULL,'.',5)");
+    evalNull("Strtok('127.1.2.3',NULL,5)");
+    evalNull("Strtok('127.1.2.3','.',NULL)");
+    
+    evalFails("Strtok()");
+    evalFails("Strtok('127.1.2.3','.',5,5)");
+  }
+  
+  @Test
   public void Space() throws Exception {
     evalEquals("Space(4)", "    ");
     evalEquals("Space(0)", "");

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.apache.hop.expression.experimental;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.compress.CompressionPluginType;
 import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;
@@ -60,7 +61,8 @@ public class ExtraFunction {
     
     return new String(a, 0, n);    
   }
-  
+
+ 
   // TODO: Use a cache
   private static ICompressionProvider getCompressionProvider(String id)
       throws ExpressionException {
