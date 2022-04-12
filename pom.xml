@@ -85,6 +85,7 @@
 						<exclude>**/*.hpl</exclude>
 						<exclude>**/*.hwf</exclude>
 						<exclude>**/*.ebnf</exclude>
+						<exclude>**/*.yml</exclude>
 					</excludes>
 				</configuration>
 				<executions>
