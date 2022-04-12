@@ -31,6 +31,7 @@ import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.RegexpUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -987,34 +988,6 @@ public class Functions {
     return str;
   }
 
-
-  private static int parseRegexpFlags(String str) throws ExpressionException {
-    int flags = Pattern.UNICODE_CASE;
-    if (str != null) {
-      for (int i = 0; i < str.length(); ++i) {
-        switch (str.charAt(i)) {
-          // Enables case-insensitive matching
-          case 'i':
-            flags |= Pattern.CASE_INSENSITIVE;
-            break;
-          // Enables case-sensitive matching
-          case 'c':
-            flags &= ~Pattern.CASE_INSENSITIVE;
-            break;
-          case 'n':
-            flags |= Pattern.DOTALL;
-            break;
-          case 'm':
-            flags |= Pattern.MULTILINE;
-            break;
-          default:
-            throw new ExpressionException(Error.ILLEGAL_ARGUMENT, str);
-        }
-      }
-    }
-    return flags;
-  }
-
   /**
    * The function returns the number of characters of the specified string.
    */
@@ -1711,41 +1684,6 @@ public class Functions {
     return string.substring(start - 1, end - 1);
   }
 
-  @ScalarFunction(id = "REGEXP_LIKE", minArgs = 2, maxArgs = 3,
-      category = "i18n::Operator.Category.Comparison", documentationUrl = "/docs/regexp_like.html")
-  public static Object regexp_like(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-
-    Object v0 = operands[0].eval(context);
-    if (v0 == null) {
-      return null;
-    }
-    String input = DataType.toString(v0);
-
-    Object v1 = operands[1].eval(context);
-    if (v1 == null) {
-      return null;
-    }
-    String regexp = DataType.toString(v1);
-    // An empty pattern matches nothing
-    if (regexp.length() == 0)
-      return Boolean.FALSE;
-
-    int flags = Pattern.UNICODE_CASE;
-    if (operands.length == 3) {
-      Object v2 = operands[2].eval(context);
-      flags = parseRegexpFlags(DataType.toString(v2));
-    }
-
-    try {
-      Pattern pattern = Pattern.compile(regexp, flags);
-      return pattern.matcher(input).find();
-    } catch (PatternSyntaxException e) {      
-      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
-    }
-  }
-
-
   @ScalarFunction(id = "REGEXP_REPLACE", minArgs = 2, maxArgs = 6,
       category = "i18n::Operator.Category.String", documentationUrl = "/docs/regexp_replace.html")
   public static Object regexp_replace(final IExpressionContext context,
@@ -1796,7 +1734,7 @@ public class Functions {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].eval(context);
-      flags = parseRegexpFlags(DataType.toString(v5));
+      flags = RegexpUtils.parseFlags(DataType.toString(v5));
     }
 
     try {
@@ -1881,7 +1819,7 @@ public class Functions {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 5) {
       Object v4 = operands[5].eval(context);
-      flags = parseRegexpFlags(DataType.toString(v4));
+      flags = RegexpUtils.parseFlags(DataType.toString(v4));
     }
 
     try {
@@ -1953,7 +1891,7 @@ public class Functions {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].eval(context);
-      flags = parseRegexpFlags(DataType.toString(v5));
+      flags = RegexpUtils.parseFlags(DataType.toString(v5));
     }
 
     try {

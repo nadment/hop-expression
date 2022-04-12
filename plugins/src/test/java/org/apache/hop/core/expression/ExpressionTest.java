@@ -136,7 +136,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("NOT 2 = 1");
 
     // IS NULL has higher precedence than NOT
-    evalFalse("NOT \"NULLIS\" IS NULL");
+    evalFalse("NOT VALUE_NULL IS NULL");
 
     // IS NULL has lower precedence than comparison (1 = 1) IS NULL
     evalFalse("1 = 1 is null");

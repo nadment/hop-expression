@@ -24,11 +24,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 
-/** Arithmetic unary minus (negative) operator '<code>-</code>'. */
+/** 
+ * Arithmetic unary minus (negative) operator '<code>-</code>'.
+ */
 public class Negative extends Operator {
-
   public Negative() {
-    super("NEGATIVE", "-", 30, true, true, "i18n::Operator.Category.Mathematical", null);
+    super("NEGATIVE", "-", 30, true, true, "i18n::Operator.Category.Mathematical", "/docs/negative.html");
   }
 
   @Override

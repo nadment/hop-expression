@@ -116,22 +116,11 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       }
     }
 
-
-    data.expressionContext.setRow(row);
-
     try {
-      Object keep = data.condition.eval(data.expressionContext);
+      data.expressionContext.setRow(row);
+      Object predicat = data.condition.eval(data.expressionContext);
 
-      if (keep == null || !DataType.toBoolean(keep)) {
-        // put the row to the FALSE output row stream
-        if (data.falseRowSet != null) {
-          if (log.isRowLevel()) {
-            logRowlevel(BaseMessages.getString(PKG, "Where.Log.FilterRow",
-                data.falseRowSet.getDestinationTransformName(), getInputRowMeta().getString(row)));
-          }
-          putRowTo(data.outputRowMeta, row, data.falseRowSet);
-        }
-      } else {
+      if (DataType.isPredicatTrue(predicat)) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {
           if (log.isRowLevel()) {
@@ -140,11 +129,19 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
           }
           putRowTo(data.outputRowMeta, row, data.trueRowSet);
         }
+      } else {
+        // put the row to the FALSE output row stream
+        if (data.falseRowSet != null) {
+          if (log.isRowLevel()) {
+            logRowlevel(BaseMessages.getString(PKG, "Where.Log.FilterRow",
+                data.falseRowSet.getDestinationTransformName(), getInputRowMeta().getString(row)));
+          }
+          putRowTo(data.outputRowMeta, row, data.falseRowSet);
+        }
       }
     } catch (ExpressionException e) {
-      throw new HopTransformException(
-          BaseMessages.getString(PKG, "Where.Exception.FailureExpressionEvaluation", meta.getExpression()),
-          e);
+      throw new HopTransformException(BaseMessages.getString(PKG,
+          "Where.Exception.FailureExpressionEvaluation", meta.getExpression()), e);
     }
 
     // log progress if it is time to to so

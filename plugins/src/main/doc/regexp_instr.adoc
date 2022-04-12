@@ -30,8 +30,8 @@ REGEXP_INSTR( <subject> , <pattern> [, <position> [, <occurrence> [, <return_opt
 <position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
 <occurrence>:: Specifies which occurrence of the pattern to replace. This argument is also optional. If 0 is specified, all occurrences are replaced. Default value is 0 (all occurrences)
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
-* c – Case-sensitive matching.
-* i – Case-insensitive matching.
+* `c` Case-sensitive matching.
+* `i` Case-insensitive matching.
 
 Return type:: Integer
 

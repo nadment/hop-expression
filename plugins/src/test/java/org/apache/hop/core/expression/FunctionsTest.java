@@ -1594,6 +1594,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalTrue("Regexp_Like('12345TEST','123[:alnum:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
+    evalTrue("'aaa' RLIKE 'a{2,4}'");
 
     evalTrue("Regexp_Like('A','[a-z]','i')");
     evalFalse("Regexp_Like('A','[a-z]','c')");

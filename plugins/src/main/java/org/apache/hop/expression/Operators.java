@@ -45,6 +45,7 @@ import org.apache.hop.expression.operator.Multiply;
 import org.apache.hop.expression.operator.Negative;
 import org.apache.hop.expression.operator.NotEqual;
 import org.apache.hop.expression.operator.Position;
+import org.apache.hop.expression.operator.RLike;
 import org.apache.hop.expression.operator.Subtract;
 import org.apache.hop.expression.operator.TryCast;
 import java.util.Set;
@@ -79,6 +80,7 @@ public class Operators {
   public static final Operator IN = new In();
   public static final Operator LIKE = new Like();
   public static final Operator ILIKE = new ILike();
+  public static final Operator RLIKE = new RLike();
   public static final Operator BETWEEN = new Between();
   public static final Operator EQUAL = new Equal();
   public static final Operator NOT_EQUAL = new NotEqual();
@@ -112,7 +114,7 @@ public class Operators {
   private static final Set<Operator> OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
       BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
       LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE,
-      CONCAT, IN, IS, LIKE, BOOLNOT, BOOLOR, BOOLXOR);
+      CONCAT, IN, IS, LIKE, RLIKE, BOOLNOT, BOOLOR, BOOLXOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(OPERATORS);

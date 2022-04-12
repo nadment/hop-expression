@@ -18,6 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -42,12 +43,19 @@ public class AtTimeZone extends Operator {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-
-    String zone = DataType.toString(operands[1].eval(context));
-    ZoneId zoneId = ZoneId.of(zone);    
-    return  DataType.toDate(value).withZoneSameInstant(zoneId);
+   
+    ZoneId zone = toZoneId(DataType.toString(operands[1].eval(context)));    
+    return  DataType.toDate(value).withZoneSameInstant(zone);
   }
 
+  protected ZoneId toZoneId(String zone) throws ExpressionException {
+    try {
+     return ZoneId.of(zone);
+    } catch (Exception e) {
+     throw new ExpressionException(Error.UNKNOWN_TIMEZONE, zone);
+    }    
+  }
+  
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
     operands[0].write(writer);

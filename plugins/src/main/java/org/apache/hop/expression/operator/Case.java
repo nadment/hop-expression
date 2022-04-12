@@ -44,7 +44,7 @@ public class Case extends Operator {
     if (switchExpression == null) {
       for (IExpression whenOperand : whenTuple) {
         Object condition = whenOperand.eval(context);
-        if (DataType.toBoolean(condition)) {
+        if (DataType.isPredicatTrue(condition)) {
           return thenTuple.get(index).eval(context);
         }
         index++;

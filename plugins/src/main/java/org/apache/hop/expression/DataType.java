@@ -120,6 +120,26 @@ public enum DataType {
   }
 
   /**
+   * Check if predicat is true
+   * 
+   * @param value the value to coerce
+   * @return Boolean
+   */
+
+  public static final boolean isPredicatTrue(final Object value) throws ExpressionException {
+    if (value == null) {
+      return false;
+    }
+    if (value instanceof Boolean) {
+      return ((Boolean) value).booleanValue();
+    }
+    if (value instanceof Number) {
+      return ((Number) value).intValue() != 0;
+    }
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BOOLEAN);
+  }
+  
+  /**
    * Coerce value to data type BOOLEAN
    * 
    * @param value the value to coerce

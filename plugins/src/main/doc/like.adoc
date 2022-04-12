@@ -28,8 +28,8 @@ Case-sensitive matching of strings based on comparison with a pattern.
 
 Wildcards are supported in pattern
 
-*	An underscore(_) matches any single character.
-*	A percent sign (%) matches any sequence of zero or more characters.
+*	An underscore `_` matches any single character.
+*	A percent sign `%` matches any sequence of zero or more characters.
 	
 The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
 

@@ -61,7 +61,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
     
-    // Null
+    // Null    
+    evalNull("VALUE_NULL = null");
     evalNull("1 = null");
     evalNull("null = true");
     evalNull("null = false");
@@ -130,8 +131,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("Date '2019-01-01' > Date '2019-01-01'");
     evalFalse("Date '2018-01-01' > Date '2019-01-01'");
 
-    evalNull("null > 0");
-    evalNull("1 > null");
+    evalNull("VALUE_NULL > 0");
+    evalNull("1 > VALUE_NULL");
 
     evalFails("NOM>");
     evalFails("NOM > ");
@@ -158,8 +159,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Date '2019-01-01' >= Date '2019-01-01'");
     evalFalse("Date '2018-01-01' >= Date '2019-01-01'");
 
-    evalNull("null >= 0");
-    evalNull("1 >= null");
+    evalNull("VALUE_NULL >= 0");
+    evalNull("1 >= VALUE_NULL");
 
     evalFails("NOM>=");
     evalFails("NOM >=");
@@ -254,9 +255,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("True IS Null");
     evalTrue("False IS False");
     evalFalse("False IS Null");
+    evalFalse("VALUE_NULL IS NOT NULL");
     evalFalse("Null is True");
     evalFalse("Null IS False");
     evalTrue("Null IS NULL");
+    evalTrue("VALUE_NULL IS NULL");
 
     writeEquals("FIELD IS TRUE");
   }
@@ -497,7 +500,8 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void AtTimeZone() throws Exception {
     evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("Europe/Paris")));
-    evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'BIDON'");
+    evalEquals("Add_Days(Timestamp '2020-05-25 10:48:00' AT TIME ZONE 'UTC',1) AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));    
+    evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'XYZ'");
   }
   
   @Test
@@ -687,8 +691,8 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void BoolNot() throws Exception {
     evalTrue("FLAG is not false");
-    evalTrue("NULLIS is null");
-    evalTrue("NOT (NULLIS is not null)");
+    evalTrue("VALUE_NULL is null");
+    evalTrue("NOT (VALUE_NULL is not null)");
     evalFalse("NOT 1");
     evalTrue("NOT 0");
     evalTrue("NOT NOT True");
@@ -815,7 +819,7 @@ public class OperatorsTest extends BaseExpressionTest {
     // String
     evalEquals("CONCAT('TES','T')", "TEST");
     evalTrue("NAME='TES'||'T'");
-    evalTrue("NAME='TES'||NULLIS||'T'");
+    evalTrue("NAME='TES'||VALUE_NULL||'T'");
     evalEquals("'TEST'||null", "TEST");
     evalEquals("null||'TEST'", "TEST");
     
@@ -842,7 +846,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     // Search CASE WHEN
     evalEquals("case when Age=10+20 then 1*5 when Age=20+20 then 2*5 else 50 end", 10L);
-        
+    evalEquals("case when VALUE_NULL=Age then null when Age=20+20 then 2*5 else 50 end", 10L);
+    
     // Simple CASE
     evalEquals("case Age when 10 then 10 when 40 then 40 else 50 end", 40L);
     evalEquals("case Age when 10 then 10 when 20 then 20 else -1 end", -1L);

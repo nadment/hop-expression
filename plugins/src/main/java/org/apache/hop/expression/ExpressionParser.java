@@ -30,11 +30,9 @@ import java.util.Set;
 
 public class ExpressionParser {
 
-  private static final Class<?> PKG = IExpression.class; // for i18n purposes
-
   private static final Set<String> RESERVED_WORDS =
      Set.of("AND", "AS",  "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
-          "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULL", "OR", "SYMMETRY",
+          "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE","IN", "IS", "LIKE", "NOT", "NULL", "OR",  "SYMMETRY",
           "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE");
     
   public static Set<String> getReservedWords() {
@@ -234,7 +232,7 @@ public class ExpressionParser {
       IExpression pattern = this.parseAdditive();
 
       if (next(Id.ESCAPE)) {
-        IExpression escape = this.parseCastOperator();
+        IExpression escape = this.parsePrimary();
         expression = new Call(Operators.LIKE, expression, pattern, escape);
       } else
         expression = new Call(Operators.LIKE, expression, pattern);
@@ -246,6 +244,9 @@ public class ExpressionParser {
         expression = new Call(Operators.ILIKE, expression, pattern, escape);
       } else
         expression = new Call(Operators.ILIKE, expression, pattern);
+    } else if (next(Id.RLIKE)) {
+      IExpression pattern = this.parseAdditive();     
+      expression = new Call(Operators.RLIKE, expression, pattern);
     } else if (next(Id.IN)) {
       expression = new Call(Operators.IN, expression, this.parseTuple());
     } else if (next(Id.BETWEEN)) {
@@ -327,22 +328,22 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ParseException {
 
     if (next(Id.MINUS)) {
-      return new Call(Operators.NEGATIVE, this.parseCastOperator());
+      return new Call(Operators.NEGATIVE, this.parsePrimary());
     }
     if (next(Id.PLUS)) {
       // Ignore
     }
 
-    return this.parseCastOperator();
+    return this.parsePrimary();
   }
 
   /** Literal TRUE | FALSE | NULL */
   private Literal parseLiteralBoolean() throws ParseException {
 
     Token token = next();
-
-    if (token == null)
+    if (token == null) {
       throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    }
 
     switch (token.id()) {
       case TRUE:
@@ -352,8 +353,7 @@ public class ExpressionParser {
       case NULL:
         return Literal.NULL;
       default:
-        // Syntax error
-        throw new ParseException(" ERROR2 ", token.start());
+        throw new ParseException(Error.INVALID_BOOLEAN.message(token.text()), token.start());
     }
   }
 
@@ -362,6 +362,26 @@ public class ExpressionParser {
     return Literal.of(token.text());
   }
 
+
+  /**
+   * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone>)
+   *
+   */
+  private IExpression parsePrimary() throws ParseException {
+    IExpression expression = this.parseTerm();
+    if (next(Id.CAST)) {
+      Literal type = parseLiteralDataType(next());
+      return new Call(Operators.CAST, expression, type);
+    }
+    if (next(Id.AT)) {
+      if (next(Id.TIME) && next(Id.ZONE)) {
+        return new Call(Operators.AT_TIME_ZONE, expression, this.parseTerm());
+      }
+      throw new ParseException(Error.INVALID_OPERATOR.message(Id.AT), this.getPosition());
+    }
+    return expression;
+  }
+  
   /** Term = Literal | Identifier | Function | '(' Expression ')' */
   private IExpression parseTerm() throws ParseException {
     Token token = next();
@@ -638,7 +658,7 @@ public class ExpressionParser {
     if (next(Id.LPARENTHESIS)) {
 
       do {
-        list.add(parseCastOperator());
+        list.add(parsePrimary());
 
         if (is(Id.COMMA)) {
           next();
@@ -732,19 +752,6 @@ public class ExpressionParser {
     return new Call(operator, operands);
   }
 
-  /**
-   * Cast operator ::
-   *
-   */
-  private IExpression parseCastOperator() throws ParseException {
-    IExpression expression = this.parseTerm();
-    if (next(Id.CAST)) {
-      Literal type = parseLiteralDataType(next());
-      return new Call(Operators.CAST, expression, type);
-    }
-    return expression;
-  }
-
   /** POSITION(<expression> IN <expression>) */
   private IExpression parsePositionFunction(Token token) throws ParseException {
 
@@ -773,20 +780,6 @@ public class ExpressionParser {
     return new Call(Operators.POSITION, operands);
   }
 
-  /** <expression> AT TIMEZONE <term> ) */
-  private IExpression parseAtTimeZone() throws ParseException {
-    IExpression operand = this.parseAdditive();
-
-    if (next(Id.AT)) {
-      if (next(Id.TIME) && next(Id.ZONE)) {
-        return new Call(Operators.AT_TIME_ZONE, operand, this.parseTerm());
-      }
-      throw new ParseException(Error.INVALID_OPERATOR.message(Id.AT), this.getPosition());
-    }
-
-    return operand;
-  }
-
   /** EXTRACT(<part> FROM <expression>) */
   private IExpression parseExtractFunction(Token token) throws ParseException {
 
@@ -798,7 +791,7 @@ public class ExpressionParser {
 
     List<IExpression> operands = new ArrayList<>();
 
-    operands.add(this.parseTerm());
+    operands.add(this.parseLiteralDatePart(next()));
 
     if (!next(Id.FROM)) {
       throw new ParseException(Error.INVALID_OPERATOR.message(Id.EXTRACT), this.getPosition());

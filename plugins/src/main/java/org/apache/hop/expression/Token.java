@@ -112,6 +112,8 @@ public class Token {
     LIKE,
     /** The "ILIKE" operator.*/
     ILIKE,
+    /** The "RLIKE" operator.*/
+    RLIKE,
     /** The logical "NOT" operator.*/
     NOT,
     /** The literal value "NULL".*/

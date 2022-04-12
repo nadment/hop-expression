@@ -47,7 +47,7 @@ public class PerformanceTest {
     rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
     rowMeta.addValueMeta(new ValueMetaDate("DN"));
     rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("VALUE_NULL"));
 
     Object[] row = new Object[6];
     row[0] = "TEST";

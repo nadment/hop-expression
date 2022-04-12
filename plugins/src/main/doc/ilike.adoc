@@ -17,14 +17,18 @@ under the License.
 = ILIKE
 
 Case-insensitive matching of strings based on comparison with a pattern.
-SQL wildcards are supported in pattern:
-	An underscore(_) matches any single character.
-	A percent sign (%) matches any sequence of zero or more characters.
 	
-The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
-		
-
 == Syntax
 ----
 <string> [NOT] ILIKE <pattern> [ ESCAPE <escape> ]
 ----
+
+== Usage
+
+SQL wildcards are supported in pattern:
+
+*	An underscore `_` matches any single character.
+*	A percent sign `%` matches any sequence of zero or more characters.
+
+The escape character instructs the operator to treat the wildcard characters as the regular characters. 	
+	

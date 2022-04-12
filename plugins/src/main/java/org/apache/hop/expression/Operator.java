@@ -203,63 +203,7 @@ public abstract class Operator implements Comparable<Operator> {
     
     return name.compareTo(o.name);
   }
-
-  private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
-
-
   
-  /** Translates a LIKE pattern to Java regex pattern, with optional escape string. */
-  protected static String toRegexLike(String sqlPattern, CharSequence escapeStr) throws ExpressionException {
-    final char escapeChar;
-    if (escapeStr != null) {
-
-      if (escapeStr.length() != 1) {
-        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, escapeStr.toString());
-      }
-
-      escapeChar = escapeStr.charAt(0);
-    } else {
-      escapeChar = 0;
-    }
-    return toRegexLike(sqlPattern, escapeChar);
-  }
-
-  /** Translates a LIKE pattern to Java regex pattern. */
-  protected static String toRegexLike(String sqlPattern, char escapeChar) throws ExpressionException {
-    int i;
-    final int len = sqlPattern.length();
-    final StringBuilder javaPattern = new StringBuilder(len + len);
-    for (i = 0; i < len; i++) {
-      char c = sqlPattern.charAt(i);
-      if (JAVA_REGEX_SPECIALS.indexOf(c) >= 0) {
-        javaPattern.append('\\');
-      }
-
-      if (c == escapeChar) {
-        if (i == (sqlPattern.length() - 1)) {
-          throw new ExpressionException(Error.INVALID_REGEXP_ESCAPE, sqlPattern, i);
-        }
-        char nextChar = sqlPattern.charAt(i + 1);
-        if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
-          if (JAVA_REGEX_SPECIALS.indexOf(nextChar) >= 0) {
-            javaPattern.append('\\');
-          }
-          javaPattern.append(nextChar);
-          i++;
-        } else {
-          throw new ExpressionException(Error.INVALID_REGEXP_ESCAPE, sqlPattern, i);
-        }
-      } else if (c == '_') {
-        javaPattern.append('.');
-      } else if (c == '%') {
-        javaPattern.append("(?s:.*)");
-      } else {
-        javaPattern.append(c);
-      }
-    }
-    return javaPattern.toString();
-  }
-
   public String getDocumentation() {
     return this.documentation;
   }
@@ -268,5 +212,4 @@ public abstract class Operator implements Comparable<Operator> {
   public String toString() {
     return id;
   }
-
 }

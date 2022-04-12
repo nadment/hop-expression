@@ -31,9 +31,9 @@ REGEXP_SUBSTR( <source> , <pattern> [ , <position> [ , <occurrence> [ , <paramet
 <position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
 <occurrence>:: Specifies which occurrence of the pattern to match. This argument is also optional.
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
-* c – Case-sensitive matching.
-* i – Case-insensitive matching.
-* m - Multi-line mode.
+* `c` Case-sensitive matching.
+* `i` Case-insensitive matching.
+* `m` Multi-line mode.
 Return type:: String
 
 == Usage

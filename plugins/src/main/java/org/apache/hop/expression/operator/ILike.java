@@ -21,6 +21,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.RegexpUtils;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,7 @@ public class ILike extends Operator {
       escape = DataType.toString(escapeValue);
     }
 
-    final String regex = toRegexLike(DataType.toString(v1), escape);
+    final String regex = RegexpUtils.toRegexLike(DataType.toString(v1), escape);
 
     Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 

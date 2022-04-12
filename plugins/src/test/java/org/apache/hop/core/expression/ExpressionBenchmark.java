@@ -90,7 +90,7 @@ public class ExpressionBenchmark {
     rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
     rowMeta.addValueMeta(new ValueMetaDate("DN"));
     rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("NULLIS"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("VALUE_NULL"));
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("FROM"));
     rowMeta.addValueMeta(new ValueMetaNumber("PRICE"));

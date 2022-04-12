@@ -30,5 +30,5 @@ The returned value is of the same data type as the parameter.
 == Example
 
 ----
-ABS(-123)
+ABS(-123) return 123
 ----

@@ -26,8 +26,8 @@ REGEXP_LIKE( <subject> , <pattern> [, <parameters> ] )
 <source>:: The string to be searched for.
 <pattern>:: The regular expression pattern.
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
-* c – Perform case-sensitive matching.
-* i – Perform case-insensitive matching.
+* `c` Case-sensitive matching.
+* `i` Case-insensitive matching.
 
 == Usage
 
