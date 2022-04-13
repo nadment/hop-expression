@@ -28,7 +28,7 @@ import java.io.StringWriter;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-/** The ILIKE case-insensitive operator. */
+/** The RLIKE regexp operator. */
 public class RLike extends Operator {
 
   public RLike() {
@@ -69,7 +69,6 @@ public class RLike extends Operator {
       throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
     }
   }
-
 
   @Override
   public void write(StringWriter writer, IExpression[] operands) {

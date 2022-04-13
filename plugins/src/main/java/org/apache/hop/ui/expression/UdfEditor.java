@@ -19,9 +19,9 @@ package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Argument;
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.Udf;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
@@ -128,10 +128,10 @@ public class UdfEditor extends MetadataEditor<Udf> {
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaFactory.getAllValueMetaNames(), false)};
+            ColumnInfo.COLUMN_TYPE_CCOMBO, DataType.getDataTypeNames(), false)};
 
     wParams = new TableView(new Variables(), parent,
-        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, 0, null,
+        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), null,
         props);
 
     FormData fdArguments = new FormData();
@@ -152,7 +152,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdlSource.top = new FormAttachment(wParams, margin * 2);
     wlExpression.setLayoutData(fdlSource);
     
-    wExpression = new ExpressionEditor(parent, SWT.NONE, this.getVariables(), null);
+    wExpression = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), null);
     FormData fdExression = new FormData();
     fdExression.left = new FormAttachment(0, 0);
     fdExression.top = new FormAttachment(wlExpression, margin);
@@ -171,7 +171,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
 
     wName.setText(Const.NVL(udf.getName(), ""));
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
-    wExpression.setText(Const.NVL(udf.getSource(), ""));
+    wExpression.setText(Const.NVL(udf.getSource(), ""));    
     for (int i = 0; i < udf.getArguments().size(); i++) {
       Argument argument = udf.getArguments().get(i);
       wParams.setText(Const.NVL(argument.getName(), ""), 1, i);

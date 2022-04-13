@@ -23,6 +23,10 @@ import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Enumeration of the data type which can be used to construct a expression.
@@ -61,16 +65,14 @@ public enum DataType {
 
   private final Class<?> javaClass;
 
+  private static final Set<String> names = Set.of("BigNumber","Binary","Boolean","Date","Integer","Number","String"); 
+  
   private DataType(Class<?> javaClass) {
     this.javaClass = javaClass;
   }
 
-  public Class<?> javaClass() {
+  public Class<?> getDataTypeClass() {
     return javaClass;
-  }
-
-  public boolean isInstance(Object value) {
-    return javaClass.isInstance(value);
   }
 
   public static DataType of(final String name) {
@@ -326,9 +328,11 @@ public enum DataType {
     if (value == null) {
       return null;
     }
-
-    if (type.isInstance(value))
+    Objects.requireNonNull(type);
+        
+    if (type.getDataTypeClass().isInstance(value)) {
       return value;
+    }
 
     switch (type) {
       case BOOLEAN:
@@ -593,4 +597,9 @@ public enum DataType {
 
     return compare;
   }
+  
+  public static String[] getDataTypeNames() {
+    return names.toArray(new String[0]);
+  }
+
 }

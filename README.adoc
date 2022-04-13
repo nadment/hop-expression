@@ -49,7 +49,7 @@ end
 * Logical operators `AND` `OR` `NOT`.
 * Arithmetic operators `+` `-` `*` `/` `%`.
 * Bitwise operators  `&` `|` `~` `^`.
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE`.
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE` `RLIKE`.
 * Conditional operator `CASE`.
 * Cast operator  `::`.
 * Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).

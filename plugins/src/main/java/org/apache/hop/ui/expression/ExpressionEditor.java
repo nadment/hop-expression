@@ -113,7 +113,9 @@ public class ExpressionEditor extends Composite {
         event.doit = false;
       }
     });
-
+    PropsUi.getInstance().setLook(sourceViewer.getTextWidget());
+    
+    
     Menu menu = new Menu(getShell(), SWT.POP_UP);
     MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
     undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Undo"));

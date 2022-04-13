@@ -25,8 +25,8 @@ import java.util.List;
 
 @HopMetadata(
     key = "udf",
-    name = "User define function",
-    description = "User define function for expression",
+    name = "User defined function",
+    description = "User defined function for expression",
     image = "function.svg")
 public class Udf extends HopMetadataBase implements IHopMetadata {
 

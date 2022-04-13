@@ -63,13 +63,13 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void javaClass() throws Exception {
-    assertEquals(Boolean.class, DataType.BOOLEAN.javaClass() );
-    assertEquals(Long.class, DataType.INTEGER.javaClass() );
-    assertEquals(Double.class, DataType.NUMBER.javaClass() );
-    assertEquals(BigDecimal.class, DataType.BIGNUMBER.javaClass() );
-    assertEquals(String.class, DataType.STRING.javaClass() );
-    assertEquals(ZonedDateTime.class, DataType.DATE.javaClass() );
-    assertEquals(byte[].class, DataType.BINARY.javaClass() );
+    assertEquals(Boolean.class, DataType.BOOLEAN.getDataTypeClass() );
+    assertEquals(Long.class, DataType.INTEGER.getDataTypeClass() );
+    assertEquals(Double.class, DataType.NUMBER.getDataTypeClass() );
+    assertEquals(BigDecimal.class, DataType.BIGNUMBER.getDataTypeClass() );
+    assertEquals(String.class, DataType.STRING.getDataTypeClass() );
+    assertEquals(ZonedDateTime.class, DataType.DATE.getDataTypeClass() );
+    assertEquals(byte[].class, DataType.BINARY.getDataTypeClass() );
   }
   
   @Test
