@@ -196,7 +196,7 @@ public class ExpressionParser {
    * Parse IS expression
    *
    * <p>
-   * RelationalExpression [NOT] LiteralBooleanExpression
+   * RelationalExpression [NOT] TRUE|FALSE|NULL
    */
   private IExpression parseIs() throws ParseException {
     IExpression expression = this.parseComparaison();
@@ -205,10 +205,26 @@ public class ExpressionParser {
       if (next(Id.NOT)) {
         not = true;
       }
-      IExpression result = new Call(Operators.IS, expression, parseLiteralBoolean());
-      if (not)
-        return new Call(Operators.BOOLNOT, result);
-      return result;
+      
+      Token token = next();
+      if (token == null) {
+        throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+      }
+      Operator operator;
+      switch (token.id()) {
+        case TRUE:
+          operator = (not) ? Operators.IS_FALSE:Operators.IS_TRUE;
+          break;
+        case FALSE:
+          operator = (not) ? Operators.IS_TRUE:Operators.IS_FALSE;
+          break;
+        case NULL:
+          operator = (not) ? Operators.IS_NOT_NULL:Operators.IS_NULL;
+          break;
+        default:
+          throw new ParseException(Error.INVALID_BOOLEAN.message(token.text()), token.start());
+      }
+      expression = new Call(operator, expression);
     }
     return expression;
   }
@@ -337,31 +353,10 @@ public class ExpressionParser {
     return this.parsePrimary();
   }
 
-  /** Literal TRUE | FALSE | NULL */
-  private Literal parseLiteralBoolean() throws ParseException {
-
-    Token token = next();
-    if (token == null) {
-      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
-    }
-
-    switch (token.id()) {
-      case TRUE:
-        return Literal.TRUE;
-      case FALSE:
-        return Literal.FALSE;
-      case NULL:
-        return Literal.NULL;
-      default:
-        throw new ParseException(Error.INVALID_BOOLEAN.message(token.text()), token.start());
-    }
-  }
-
   /** Literal String */
   private Literal parseLiteralString(Token token) {
     return Literal.of(token.text());
   }
-
 
   /**
    * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone>)

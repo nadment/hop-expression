@@ -251,9 +251,13 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("True IS True");
     evalTrue("True IS NOT False");
     evalTrue("FLAG is True");
+    evalFalse("VALUE_NULL IS True");  
     evalFalse("True IS False");
     evalFalse("True IS Null");
     evalTrue("False IS False");
+    evalTrue("False IS NOT TRUE");   
+    evalFalse("VALUE_NULL IS False");
+    
     evalFalse("False IS Null");
     evalFalse("VALUE_NULL IS NOT NULL");
     evalFalse("Null is True");
@@ -700,7 +704,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("FLAG is ");
     evalFails("NOT");
     
-    writeEquals("FIELD IS NOT TRUE", "NOT FIELD IS TRUE");
+    writeEquals("FIELD IS NOT TRUE", "FIELD IS FALSE");
   }
 
   @Test

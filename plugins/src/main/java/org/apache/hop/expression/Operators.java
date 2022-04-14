@@ -35,7 +35,10 @@ import org.apache.hop.expression.operator.GreaterThan;
 import org.apache.hop.expression.operator.GreaterThanOrEqual;
 import org.apache.hop.expression.operator.ILike;
 import org.apache.hop.expression.operator.In;
-import org.apache.hop.expression.operator.Is;
+import org.apache.hop.expression.operator.IsFalse;
+import org.apache.hop.expression.operator.IsNotNull;
+import org.apache.hop.expression.operator.IsNull;
+import org.apache.hop.expression.operator.IsTrue;
 import org.apache.hop.expression.operator.LessThan;
 import org.apache.hop.expression.operator.LessThanOrEqual;
 import org.apache.hop.expression.operator.LessThanOrGreaterThan;
@@ -76,7 +79,10 @@ public class Operators {
   // -------------------------------------------------------------
   // COMPARISON OPERATORS
   // -------------------------------------------------------------
-  public static final Operator IS = new Is();
+  public static final Operator IS_NULL = new IsNull();
+  public static final Operator IS_NOT_NULL = new IsNotNull();
+  public static final Operator IS_TRUE = new IsTrue();
+  public static final Operator IS_FALSE = new IsFalse();
   public static final Operator IN = new In();
   public static final Operator LIKE = new Like();
   public static final Operator ILIKE = new ILike();
@@ -114,7 +120,7 @@ public class Operators {
   private static final Set<Operator> OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
       BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
       LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE,
-      CONCAT, IN, IS, LIKE, RLIKE, BOOLNOT, BOOLOR, BOOLXOR);
+      CONCAT, IN, IS_NULL, IS_NOT_NULL, IS_FALSE, IS_TRUE, LIKE, RLIKE, BOOLNOT, BOOLOR, BOOLXOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(OPERATORS);

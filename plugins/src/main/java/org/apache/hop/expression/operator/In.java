@@ -47,7 +47,7 @@ public class In extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object left = operands[0].eval(context);
     if (left == null) {

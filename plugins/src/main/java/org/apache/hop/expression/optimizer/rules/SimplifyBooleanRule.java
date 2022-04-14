@@ -48,23 +48,39 @@ public class SimplifyBooleanRule implements OptimizerRule {
               ((Call) operand).getOperands());
         }
         // NOT(l >= r) => l < r
-        else if (operand.is(Operators.GREATER_THAN_OR_EQUAL)) {
+        if (operand.is(Operators.GREATER_THAN_OR_EQUAL)) {
           return new Call(Operators.LESS_THAN,
               ((Call) operand).getOperands());
         }
         // NOT(l < r) => l >= r
-        else if (operand.is(Operators.LESS_THAN)) {
+        if (operand.is(Operators.LESS_THAN)) {
           return new Call(Operators.GREATER_THAN_OR_EQUAL,
               ((Call) operand).getOperands());
         }
         // NOT(l <= r) => l > r
-        else if (operand.is(Operators.LESS_THAN_OR_EQUAL)) {
+        if (operand.is(Operators.LESS_THAN_OR_EQUAL)) {
           return new Call(Operators.GREATER_THAN,
               ((Call) operand).getOperands());
         }
         // NOT(NOT(e)) => e
         if (operand.is(Operators.BOOLNOT)) {
           return ((Call) operand).getOperand(0);
+        }
+        // NOT(e IS TRUE) => e IS FALSE
+        if (operand.is(Operators.IS_TRUE)) {
+          return new Call(Operators.IS_FALSE, ((Call) operand).getOperands());
+        }
+        // NOT(e IS FALSE) => e IS TRUE
+        if (operand.is(Operators.IS_FALSE)) {
+          return new Call(Operators.IS_TRUE, ((Call) operand).getOperands());
+        }
+        // NOT(e IS NULL) => e IS NOT NULL
+        if (operand.is(Operators.IS_NULL)) {
+          return new Call(Operators.IS_NOT_NULL, ((Call) operand).getOperands());
+        }
+        // NOT(e IS NOT NULL) => e IS NULL
+        if (operand.is(Operators.IS_NOT_NULL)) {
+          return new Call(Operators.IS_NULL, ((Call) operand).getOperands());
         }
       }
 
