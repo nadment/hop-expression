@@ -28,7 +28,7 @@ import java.io.StringWriter;
 public class IsNotNull extends Operator {
 
   public IsNotNull() {
-    super("ISNOTNULL", 140, true, true, "i18n::Operator.Category.Comparison", "/docs/is.html");
+    super("IS NOT NULL", 140, true, true, "i18n::Operator.Category.Comparison", "/docs/isNull.html");
   }
 
   @Override

@@ -14,12 +14,15 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= IS TRUE, IS FALSE
+= IS NULL
 
-Check whether a value is true or false.
+Check whether a value is or is not null.
 
 == Syntax
 [source,sql]
 ----
-IS [NOT] TRUE | FALSE
+IS [NOT] NULL
 ----
+
+
+NOTE: Do not write expression = NULL because NULL is not "equal to" NULL. (The null value represents an unknown value, and it is not known whether two unknown values are equal.)  

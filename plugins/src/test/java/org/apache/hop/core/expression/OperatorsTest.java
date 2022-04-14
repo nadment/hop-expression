@@ -291,6 +291,7 @@ public class OperatorsTest extends BaseExpressionTest {
   public void Subtract() throws Exception {
     evalEquals("10-0.5", 9.5);
     evalEquals("Age-0.5", 39.5);
+    evalEquals("Age-10::INTEGER", 30L);
     
     //evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
     //evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
@@ -313,6 +314,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("3 between 1 and 5");
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
+    evalFalse("5 between 5 and 3");
+    evalTrue("5 between symmetric 5 and 3");
     evalTrue("-1 between -3+1 and 5");
     evalTrue("'the' between 'that' and 'then'");
     evalFalse("1 between 3 and 5");
@@ -323,8 +326,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
 
     evalNull("NULL between -10 and 20");
-    evalNull("1 between NULL and 20");
+    evalNull("NULL between symmetric -10 and 20");
+    evalNull("1 between NULL and 20");    
+    evalNull("1 between symmetric NULL and 20");
     evalNull("1 between -10 and NULL");
+    evalNull("1 between symmetric -10 and NULL");
 
     evalFails("Age between 10 and");
     evalFails("Age between and 10");

@@ -48,7 +48,7 @@ public class NotEqual extends Operator {
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
     operands[0].write(writer);
-    writer.append("<>");
+    writer.append("!=");
     operands[1].write(writer);
   }
 }

@@ -23,7 +23,10 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
-
+/**
+ * <code>BETWEEN</code> operator that requires the lower bound and upper bound to be "in order"
+ * 
+ */
 public class Between extends Operator {
 
   public Between() {
@@ -47,9 +50,7 @@ public class Between extends Operator {
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
     operands[0].write(writer);
-    writer.append(' ');
-    writer.append("BETWEEN");
-    writer.append(' ');
+    writer.append(" BETWEEN ");
     operands[1].write(writer);
     writer.append(" AND ");
     operands[2].write(writer);

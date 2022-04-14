@@ -60,6 +60,8 @@ public class Token {
     LITERAL_STRING,
     /** The "DATE" word for literal date. */
     DATE,
+    /** The BETWEEN SYMMTRIC operator*/
+    SYMMETRIC,
     /** The "TIME" word for literal time. */
     TIME,
     /** The "TIMESTAMP" word for literal timesamp. */

@@ -17,6 +17,7 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.operator.Add;
 import org.apache.hop.expression.operator.AtTimeZone;
 import org.apache.hop.expression.operator.Between;
+import org.apache.hop.expression.operator.BetweenSymmetric;
 import org.apache.hop.expression.operator.BitAnd;
 import org.apache.hop.expression.operator.BitNot;
 import org.apache.hop.expression.operator.BitOr;
@@ -88,6 +89,7 @@ public class Operators {
   public static final Operator ILIKE = new ILike();
   public static final Operator RLIKE = new RLike();
   public static final Operator BETWEEN = new Between();
+  public static final Operator BETWEEN_SYMMETRIC = new BetweenSymmetric();
   public static final Operator EQUAL = new Equal();
   public static final Operator NOT_EQUAL = new NotEqual();
   public static final Operator LESS_THAN_OR_GREATER_THAN = new LessThanOrGreaterThan();
@@ -120,7 +122,7 @@ public class Operators {
   private static final Set<Operator> OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
       BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
       LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE,
-      CONCAT, IN, IS_NULL, IS_NOT_NULL, IS_FALSE, IS_TRUE, LIKE, RLIKE, BOOLNOT, BOOLOR, BOOLXOR);
+      CONCAT, IN, IS_NULL, IS_FALSE, IS_TRUE, LIKE, RLIKE, BOOLNOT, BOOLOR, BOOLXOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(OPERATORS);

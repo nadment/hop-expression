@@ -32,7 +32,7 @@ public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
      Set.of("AND", "AS",  "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
-          "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE","IN", "IS", "LIKE", "NOT", "NULL", "OR",  "SYMMETRY",
+          "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE","IN", "IS", "LIKE", "NOT", "NULL", "OR",  "SYMMETRIC",
           "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE");
     
   public static Set<String> getReservedWords() {
@@ -266,13 +266,18 @@ public class ExpressionParser {
     } else if (next(Id.IN)) {
       expression = new Call(Operators.IN, expression, this.parseTuple());
     } else if (next(Id.BETWEEN)) {
-      IExpression begin = this.parseAdditive();
+      Operator operator = Operators.BETWEEN;
+      if (next(Id.SYMMETRIC)) {
+        operator = Operators.BETWEEN_SYMMETRIC;
+      }
+      
+      IExpression start = this.parseAdditive();
       if (!next(Id.AND)) {
         throw new ParseException(Error.INVALID_OPERATOR.message(Id.BETWEEN), this.getPosition());
       }
       IExpression end = this.parseAdditive();
 
-      expression = new Call(Operators.BETWEEN, expression, begin, end);
+      expression = new Call(operator, expression, start, end);
     }
 
     if (not) {

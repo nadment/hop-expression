@@ -20,8 +20,9 @@ Determines whether the value of one expression is in an interval defined by two 
 
 == Syntax
 ----
-<expression> [NOT] BETWEEN <lower_bound> AND <upper_bound>
+<expression> [NOT] BETWEEN [SYMMETRIC] <lower_bound> AND <upper_bound>
 ----
+
 == Usage
 
-The specified upper boundary must be greater than the lower boundary.
+The specified upper boundary must be greater than the lower boundary, but when using SYMMETRIC, the order is irrelevant. 

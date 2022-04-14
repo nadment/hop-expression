@@ -14,8 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -23,28 +25,41 @@ import org.apache.hop.expression.Operator;
 import java.io.StringWriter;
 
 /**
- * An operator describing the <code>IS TRUE</code> operator.
+ * <code>BETWEEN SYMMETRIC</code> operator. 
+ * The order of lower bound and upper bound is irrelevant.
+ *  
  */
-public class IsTrue extends Operator {
+public class BetweenSymmetric extends Operator {
 
-  public IsTrue() {
-    super("IS TRUE", 140, true, true, "i18n::Operator.Category.Comparison", "/docs/is.html");
+  public BetweenSymmetric() {
+    super("BETWEEN", 120, true, true, "i18n::Operator.Category.Comparison", "/docs/between.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
+    Object start = operands[1].eval(context);
+    Object end = operands[2].eval(context);
 
-    if (value == Boolean.TRUE) {
-      return Boolean.TRUE;
+    if (value == null || start == null || end == null) {
+      return null;
     }
-    return Boolean.FALSE;
+
+    // If lower bound is greater than upper bound 
+    if ( DataType.compareTo(start, end) >= 0 ) {
+      return DataType.compareTo(value, end) >= 0 && DataType.compareTo(value, start) <= 0;
+    }
+    
+    return DataType.compareTo(value, start) >= 0 && DataType.compareTo(value, end) <= 0;
   }
 
   @Override
   public void write(StringWriter writer, IExpression[] operands) {
     operands[0].write(writer);
-    writer.append(" IS TRUE");
+    writer.append(" BETWEEN SYMMETRIC ");
+    operands[1].write(writer);
+    writer.append(" AND ");
+    operands[2].write(writer);
   }
 }
