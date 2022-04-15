@@ -27,7 +27,6 @@ import org.apache.hop.expression.optimizer.rules.SimplifyExtractRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyInRule;
 import org.apache.hop.expression.optimizer.rules.SimplifyLikeRule;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Optimizer {

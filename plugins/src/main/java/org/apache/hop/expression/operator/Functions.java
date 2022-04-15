@@ -70,6 +70,10 @@ public class Functions {
 
   private static final Soundex SOUNDEX = new Soundex();
 
+  private Functions() {
+    // Utility class
+  }
+  
   /**
    * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
    */

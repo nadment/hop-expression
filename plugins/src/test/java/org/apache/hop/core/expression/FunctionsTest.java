@@ -461,6 +461,15 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Add_Months(Date '2019-01-15',Null)");
     evalFails("Add_Months(Date '2019-01-15')");
   }
+  
+  @Test
+  public void Add_Weeks() throws Exception {
+    evalEquals("Add_Weeks(Date '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
+    evalEquals("Add_Weeks(Date '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
+    evalNull("Add_Weeks(Null,140)");
+    evalNull("Add_Weeks(Date '2019-01-15',Null)");
+    evalFails("Add_Weeks(Date '2019-01-15')");
+  }
 
   @Test
   public void Add_Days() throws Exception {
@@ -1562,6 +1571,12 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
     evalEquals("Date_Trunc(SS, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
+    evalEquals("Date_Trunc(MILLISECOND, Timestamp '2020-05-25 23:59:59.123456789')",
+        LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123000000));
+    evalEquals("Date_Trunc(MICROSECOND, Timestamp '2020-05-25 23:59:59.123456789')",
+        LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123456000));
+    evalEquals("Date_Trunc(NANOSECOND, Timestamp '2020-05-25 23:59:59.123456789')",
+        LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123456789));  
   }
 
   @Test
@@ -1591,10 +1606,12 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Regexp_Like() throws Exception {
+    // Alias RLIKE operator
+    evalTrue("'aaa' RLIKE 'a{2,4}'");
+    
     evalTrue("Regexp_Like('12345TEST','123[:alnum:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
-    evalTrue("'aaa' RLIKE 'a{2,4}'");
 
     evalTrue("Regexp_Like('A','[a-z]','i')");
     evalFalse("Regexp_Like('A','[a-z]','c')");

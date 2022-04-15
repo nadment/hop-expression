@@ -22,6 +22,10 @@ import java.util.regex.Pattern;
 public class RegexpUtils {
   private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
+  private RegexpUtils() {
+    // Utility class
+  }
+  
   /** Translates a LIKE pattern to Java regex pattern, with optional escape string. */
   public static String toRegexLike(String pattern, CharSequence escapeStr) throws ExpressionException {
     final char escapeChar;

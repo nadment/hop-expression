@@ -46,7 +46,7 @@ import org.apache.hop.expression.operator.LessThanOrGreaterThan;
 import org.apache.hop.expression.operator.Like;
 import org.apache.hop.expression.operator.Mod;
 import org.apache.hop.expression.operator.Multiply;
-import org.apache.hop.expression.operator.Negative;
+import org.apache.hop.expression.operator.Negate;
 import org.apache.hop.expression.operator.NotEqual;
 import org.apache.hop.expression.operator.Position;
 import org.apache.hop.expression.operator.RLike;
@@ -101,7 +101,7 @@ public class Operators {
   // -------------------------------------------------------------
   // ARITHMETIC OPERATORS
   // -------------------------------------------------------------
-  public static final Operator NEGATIVE = new Negative();
+  public static final Operator NEGATIVE = new Negate();
   public static final Operator MULTIPLY = new Multiply();
   public static final Operator DIVIDE = new Div();
   public static final Operator MODULUS = new Mod();
@@ -119,13 +119,13 @@ public class Operators {
   public static final Operator POSITION = new Position();
 
   /** Set of operators. */
-  private static final Set<Operator> OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
+  private static final Set<Operator> SET_OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
       BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
       LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE,
       CONCAT, IN, IS_NULL, IS_FALSE, IS_TRUE, LIKE, RLIKE, BOOLNOT, BOOLOR, BOOLXOR);
 
   public static Set<Operator> getOperators() {
-    Set<Operator> set = new TreeSet<>(OPERATORS);
+    Set<Operator> set = new TreeSet<>(SET_OPERATORS);
     set.addAll(FunctionRegistry.getFunctions());
     return set;
   }

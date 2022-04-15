@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= <=
+= Less than or equal operator <=
 
 First expression is less than or equal to the second expression.
 
