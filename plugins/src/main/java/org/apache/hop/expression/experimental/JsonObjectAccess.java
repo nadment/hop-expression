@@ -52,7 +52,7 @@ public class JsonObjectAccess implements IExpression {
   }
 
   @Override
-  public void write(StringWriter writer) {
+  public void unparse(StringWriter writer) {
     writer.append('{');
     writer.append(this.name);
     writer.append('}');

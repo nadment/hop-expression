@@ -35,7 +35,9 @@ public class DataTypeTest extends BaseExpressionTest {
   @Test
   public void of() throws Exception {
     assertEquals(DataType.BOOLEAN, DataType.of("BOOLEAN"));
+    assertEquals(DataType.BOOLEAN, DataType.of("Boolean"));
     assertEquals(DataType.STRING, DataType.of("STRING") );
+    assertEquals(DataType.STRING, DataType.of("String") );
     assertEquals(DataType.DATE, DataType.of("DATE") );
     assertEquals(DataType.NUMBER, DataType.of("NUMBER") );
     assertEquals(DataType.BIGNUMBER, DataType.of("BIGNUMBER") );
@@ -46,7 +48,7 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void from() throws Exception {
-    assertEquals(DataType.NONE, DataType.from(null) );
+    assertEquals(DataType.UNKNOWN, DataType.from(null) );
     assertEquals(DataType.BOOLEAN, DataType.from(true));
     assertEquals(DataType.STRING, DataType.from("") );
     assertEquals(DataType.INTEGER, DataType.from(1L));
@@ -224,9 +226,9 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void convertToNone() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.NONE));
-    assertNull(DataType.convertTo(true, DataType.NONE));
-    assertNull(DataType.convertTo(BigDecimal.ZERO, DataType.NONE));
+    assertNull(DataType.convertTo(null, DataType.UNKNOWN));
+    assertNull(DataType.convertTo(true, DataType.UNKNOWN));
+    assertNull(DataType.convertTo(BigDecimal.ZERO, DataType.UNKNOWN));
   }
 }
 

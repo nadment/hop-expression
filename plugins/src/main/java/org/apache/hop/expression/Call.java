@@ -119,14 +119,14 @@ public class Call implements IExpression {
   }
 
   @Override
-  public void write(StringWriter writer) {
-    operator.write(writer, operands);
+  public void unparse(StringWriter writer) {
+    operator.unparse(writer, operands);
   }
 
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    write(writer);
+    unparse(writer);
     return writer.toString();
   }
 }

@@ -48,7 +48,7 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public void write(StringWriter writer) {
+  public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
         || DataType.exist(name) || DatePart.exist(name)

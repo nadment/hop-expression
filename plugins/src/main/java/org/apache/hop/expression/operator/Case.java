@@ -64,14 +64,14 @@ public class Case extends Operator {
   }
 
   @Override
-  public void write(StringWriter writer, IExpression[] operands) {
+  public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("CASE");
 
     // Form switch expression
     IExpression switchExpression = operands[0];
     if (switchExpression != null) {
       writer.append(' ');
-      switchExpression.write(writer);
+      switchExpression.unparse(writer);
     }
 
     int index = 0;
@@ -79,16 +79,16 @@ public class Case extends Operator {
     Tuple thenTuple = (Tuple) operands[2];
     for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
-      whenOperand.write(writer);
+      whenOperand.unparse(writer);
       IExpression thenOperand = thenTuple.get(index++);
       writer.append(" THEN ");
-      thenOperand.write(writer);
+      thenOperand.unparse(writer);
     }
 
     IExpression elseExpression = operands[3];
     if (elseExpression != null) {
       writer.append(" ELSE ");
-      elseExpression.write(writer);
+      elseExpression.unparse(writer);
     }
     writer.append(" END");
   }

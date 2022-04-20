@@ -189,7 +189,7 @@ public abstract class Operator implements Comparable<Operator> {
   public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException;
 
-  public abstract void write(StringWriter writer, IExpression[] operands);
+  public abstract void unparse(StringWriter writer, IExpression[] operands);
 
   @Override
   public int compareTo(Operator o) {

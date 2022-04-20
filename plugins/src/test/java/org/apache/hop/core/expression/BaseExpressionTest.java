@@ -214,7 +214,7 @@ public class BaseExpressionTest {
     IExpression expression = ExpressionParser.parse(source);
 
     StringWriter writer = new StringWriter();
-    expression.write(writer);
+    expression.unparse(writer);
     assertEquals(result, writer.toString());
   }
 

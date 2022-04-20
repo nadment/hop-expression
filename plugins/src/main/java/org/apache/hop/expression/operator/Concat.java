@@ -82,14 +82,14 @@ public class Concat extends Operator {
   }
 
   @Override
-  public void write(StringWriter writer, IExpression[] operands) {
+  public void unparse(StringWriter writer, IExpression[] operands) {
     boolean concatFirst = true;
     for (IExpression operand : operands) {
       if (concatFirst)
         concatFirst = false;
       else
         writer.append("||");
-      operand.write(writer);
+      operand.unparse(writer);
     }
   }
 }

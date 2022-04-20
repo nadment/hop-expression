@@ -75,13 +75,13 @@ public class Like extends Operator {
   }
 
   @Override
-  public void write(StringWriter writer, IExpression[] operands) {
-    operands[0].write(writer);
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    operands[0].unparse(writer);
     writer.append(" LIKE ");
-    operands[1].write(writer);
+    operands[1].unparse(writer);
     if (operands.length == 3) {
       writer.append(" ESCAPE ");
-      operands[2].write(writer);
+      operands[2].unparse(writer);
     }
   }
 }

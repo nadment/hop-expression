@@ -131,12 +131,12 @@ public class Literal implements IExpression {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    write(writer);
+    unparse(writer);
     return writer.toString();
   }
 
   @Override
-  public void write(StringWriter writer) {
+  public void unparse(StringWriter writer) {
     if (value == null) {
       writer.append("NULL");
     } else if (value instanceof String) {

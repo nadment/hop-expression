@@ -79,7 +79,7 @@ public class Function extends Operator {
   }
 
   @Override
-  public void write(StringWriter writer, IExpression[] operands) {
+  public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());
     writer.append('(');
     boolean first = true;
@@ -88,7 +88,7 @@ public class Function extends Operator {
         writer.append(',');
       else
         first = false;
-      operand.write(writer);
+      operand.unparse(writer);
     }
     writer.append(')');
   }

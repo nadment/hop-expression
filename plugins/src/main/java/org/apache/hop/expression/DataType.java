@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public enum DataType {
   /** A unknown type */
-  NONE(Void.class),
+  UNKNOWN(Void.class),
 
   /** Unlimited length text */
   STRING(String.class),
@@ -62,8 +62,8 @@ public enum DataType {
   BINARY(byte[].class);
 
   private final Class<?> javaClass;
-
-  private static final Set<String> names = Set.of("BigNumber","Binary","Boolean","Date","Integer","Number","String"); 
+ 
+  private static final String[] names = Set.of("BigNumber","Binary","Boolean","Date","Integer","Number","String").toArray(new String[0]);
   
   private DataType(Class<?> javaClass) {
     this.javaClass = javaClass;
@@ -84,7 +84,7 @@ public enum DataType {
 
   public static DataType from(final Object value) {
     if (value == null)
-      return NONE;
+      return UNKNOWN;
     if (value instanceof Boolean)
       return BOOLEAN;
     if (value instanceof String)
@@ -104,6 +104,28 @@ public enum DataType {
         BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", value.getClass()));
   }
 
+  
+  public static String name(final Object value) {
+    if (value == null)
+      return UNKNOWN.name();
+    if (value instanceof Boolean)
+      return BOOLEAN.name();
+    if (value instanceof String)
+      return STRING.name();
+    if (value instanceof BigDecimal)
+      return BIGNUMBER.name();
+    if (value instanceof Double)
+      return NUMBER.name();
+    if (value instanceof Long)
+      return INTEGER.name();
+    if (value instanceof ZonedDateTime)
+      return DATE.name();
+    if (value instanceof byte[])
+      return BINARY.name();
+
+    return UNKNOWN.name();
+  }
+  
   /**
    * Check if data type exist.
    * 
@@ -120,7 +142,7 @@ public enum DataType {
   }
 
   /**
-   * Check if predicat is true
+   * Check if predicate is true
    * 
    * @param value the value to coerce
    * @return Boolean
@@ -136,7 +158,7 @@ public enum DataType {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BOOLEAN);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.BOOLEAN);
   }
   
   /**
@@ -156,7 +178,7 @@ public enum DataType {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BOOLEAN);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.BOOLEAN);
   }
 
   /**
@@ -172,7 +194,7 @@ public enum DataType {
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.DATE);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.DATE);
   }
 
   /**
@@ -215,7 +237,7 @@ public enum DataType {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BINARY);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.BINARY);
   }
 
   /**
@@ -244,7 +266,7 @@ public enum DataType {
       return convertToInteger((byte[]) value);
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.INTEGER);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.INTEGER);
   }
 
   /**
@@ -270,7 +292,7 @@ public enum DataType {
       return convertToNumber((byte[]) value);
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.NUMBER);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.NUMBER);
   }
 
   /**
@@ -305,7 +327,7 @@ public enum DataType {
     if (value instanceof String) {
       return convertToBigNumber((String) value);
     }
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) ,DataType.BIGNUMBER);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.BIGNUMBER);
   }
 
   public static Object convertTo(Object value, final DataType type) throws ExpressionException {
@@ -423,12 +445,12 @@ public enum DataType {
           return convertToBinary((Long) value);
         }
         break;
-      case NONE:
+      case UNKNOWN:
         return null;
       default:
     }
 
-    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, from(value) , type);
+    throw new ExpressionException(Error.UNSUPPORTED_CONVERSION, value, DataType.name(value) , type);
   }
 
   private static final Long convertToInteger(final String str) throws ExpressionException {
@@ -597,7 +619,6 @@ public enum DataType {
   }
   
   public static String[] getDataTypeNames() {
-    return names.toArray(new String[0]);
+    return names;
   }
-
 }

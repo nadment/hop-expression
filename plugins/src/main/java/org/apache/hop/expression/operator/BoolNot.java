@@ -52,8 +52,8 @@ public class BoolNot extends Operator {
   }
 
   @Override
-  public void write(StringWriter writer, IExpression[] operands) {
+  public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("NOT ");
-    operands[0].write(writer);
+    operands[0].unparse(writer);
   }
 }

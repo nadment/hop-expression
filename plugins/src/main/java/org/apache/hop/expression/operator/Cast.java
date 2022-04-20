@@ -50,7 +50,7 @@ public class Cast extends Operator {
       throw new ExpressionException(Error.INVALID_DATATYPE, v1);    
     }
 
-    DataType type = ( DataType) v1;
+    DataType type = (DataType) v1;
     String format = null;
     if (operands.length == 3) {
       format = DataType.toString(operands[2].eval(context));
@@ -60,14 +60,14 @@ public class Cast extends Operator {
   }
 
   @Override
-  public void write(StringWriter writer, IExpression[] operands) {
+  public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("CAST(");
-    operands[0].write(writer);
+    operands[0].unparse(writer);
     writer.append(" AS ");
     writer.append(operands[1].toString());
     if (operands.length == 3) {
       writer.append(" FORMAT ");
-      operands[2].write(writer);
+      operands[2].unparse(writer);
     }
     writer.append(')');
   }

@@ -128,11 +128,11 @@ public class Tuple implements IExpression, Iterable<IExpression> {
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
-    write(writer);
+    unparse(writer);
     return writer.toString();
   }
 
-  public void write(StringWriter writer) {
+  public void unparse(StringWriter writer) {
     writer.append('(');
     boolean first = true;
     for (IExpression expression : values) {
@@ -141,7 +141,7 @@ public class Tuple implements IExpression, Iterable<IExpression> {
       else {
         writer.append(',');
       }
-      expression.write(writer);
+      expression.unparse(writer);
     }
     writer.append(')');
   }

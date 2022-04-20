@@ -269,7 +269,7 @@ public class OperatorsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Addition() throws Exception {
+  public void Add() throws Exception {
     evalEquals("10+(-0.5)", 9.5);
     evalEquals("0xF+0", 15);
     evalEquals("0b00011+0", 3);
