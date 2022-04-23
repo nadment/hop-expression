@@ -48,7 +48,7 @@ public class Extract extends Operator {
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     // Null throw exception
-    DatePart part = DatePart.get(operands[0].eval(context));
+    DatePart part = DatePart.to(operands[0].eval(context));
 
     Object value = operands[1].eval(context);
     if (value == null)

@@ -25,9 +25,12 @@ import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 import javax.script.SimpleScriptContext;
 
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
@@ -64,6 +67,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   public static final String CACHED_TODAY = "__TODAY";
   public static final String CACHED_NOW = "__NOW";
+  public static final String CACHED_TIMEZONE = "__TIMEZONE";
   public static final String CACHED_RANDOM = "__RANDOM";
 
   private IRowMeta rowMeta;
@@ -79,7 +83,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   public ExpressionContext(IVariables variables) {
     super();
-
+    
     this.setAttribute(EXPRESSION_DATE_FORMAT, variables.getVariable(EXPRESSION_DATE_FORMAT, "YYYY-MM-DD"), ENGINE_SCOPE);
     this.setAttribute(EXPRESSION_FIRST_DAY_OF_WEEK, variables.getVariable(EXPRESSION_FIRST_DAY_OF_WEEK, "1"), ENGINE_SCOPE);           
     this.setAttribute(EXPRESSION_TWO_DIGIT_CENTURY_START, variables.getVariable(EXPRESSION_TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
@@ -95,11 +99,12 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
     } catch (NumberFormatException e) {
       log.logError(BaseMessages.getString(PKG, "Expression.InvalidVariable", EXPRESSION_TWO_DIGIT_CENTURY_START));
     }
-
+   
     // Initialize
-    this.setAttribute(CACHED_NOW, ZonedDateTime.now(), ENGINE_SCOPE);
-    this.setAttribute(CACHED_TODAY, ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS),
-        ENGINE_SCOPE);
+    ZonedDateTime now = ZonedDateTime.now();
+    this.setAttribute(CACHED_TIMEZONE, ZoneId.systemDefault().getId());
+    this.setAttribute(CACHED_NOW, now, ENGINE_SCOPE);
+    this.setAttribute(CACHED_TODAY, now.truncatedTo(ChronoUnit.DAYS), ENGINE_SCOPE);
     this.setAttribute(CACHED_RANDOM, new SecureRandom(), ENGINE_SCOPE);
   }
 

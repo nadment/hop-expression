@@ -23,7 +23,11 @@ public class RomanNumeral {
   private static final String[] NUMERALS =
       {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
 
-  private RomanNumeral() {}
+  /**
+   * Private constructor since this is a utility class.
+   */
+  private RomanNumeral() {    
+  }
 
   /**
    * Convert an arabic integer value into a roman numeral string

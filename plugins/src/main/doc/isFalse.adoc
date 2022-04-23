@@ -14,12 +14,12 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= IS TRUE, IS FALSE
+= IS FALSE
 
-Check whether a value is true or false.
+Check if the value is false.
 
 == Syntax
 [source,sql]
 ----
-IS [NOT] TRUE | FALSE
+IS [NOT] FALSE
 ----

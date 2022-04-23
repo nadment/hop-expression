@@ -17,8 +17,11 @@
 package org.apache.hop.expression.util;
 
 public class Characters {
+  
+  /**
+   * Private constructor since this is a utility class.
+   */
   private Characters() {
-    super();
   }
 
   private static final byte[] FLAGS = new byte[256];

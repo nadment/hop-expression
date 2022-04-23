@@ -34,7 +34,7 @@ public class SimplifyExtractRule implements OptimizerRule {
   public IExpression apply(IExpressionContext context, Call call) {
     try {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
-        DatePart part = DatePart.get(call.getOperand(0).eval(context));
+        DatePart part = DatePart.to(call.getOperand(0).eval(context));
 
         switch (part) {
           case YEAR:

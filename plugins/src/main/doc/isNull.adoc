@@ -16,13 +16,12 @@ under the License.
 ////
 = IS NULL
 
-Check whether a value is or is not null.
+Check if the value is null.
 
 == Syntax
 [source,sql]
 ----
 IS [NOT] NULL
 ----
-
 
 NOTE: Do not write expression = NULL because NULL is not "equal to" NULL. (The null value represents an unknown value, and it is not known whether two unknown values are equal.)  

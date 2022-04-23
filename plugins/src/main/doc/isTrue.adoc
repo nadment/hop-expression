@@ -14,20 +14,12 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= NOW, CURRENT_TIMESTAMP
+= IS TRUE
 
-Returns the current date and time in the context time zone (System time zone by default).
+Check if the value is true.
 
 == Syntax
+[source,sql]
 ----
-NOW()
+IS [NOT] TRUE
 ----
-----
-CURRENT_TIMESTAMP()
-----
-
-== Usage
-
-This function always return the same value within a execution context like running a pipeline.
-
-The TODAY function is similar but returns the date only.

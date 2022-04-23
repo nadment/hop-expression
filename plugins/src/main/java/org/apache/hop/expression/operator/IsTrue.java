@@ -28,7 +28,7 @@ import java.io.StringWriter;
 public class IsTrue extends Operator {
 
   public IsTrue() {
-    super("IS TRUE", 140, true, true, "i18n::Operator.Category.Comparison", "/docs/is.html");
+    super("IS TRUE", 140, true, true, "i18n::Operator.Category.Comparison", "/docs/isTrue.html");
   }
 
   @Override

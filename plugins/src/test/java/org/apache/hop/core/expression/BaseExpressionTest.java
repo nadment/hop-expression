@@ -51,10 +51,8 @@ public class BaseExpressionTest {
 
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-  // @ClassRule public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
 
   protected ExpressionContext createExpressionContext() throws Exception {
-
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
 
@@ -220,16 +218,9 @@ public class BaseExpressionTest {
 
   @Test
   public void test() throws Exception {
-    evalFails("Year)");
     // ExpressionContext context = createExpressionContext();
     // context.setAttribute("TEST","");     
-    // evalEquals(" '8' || 1 + 1", 82);
-    // evalEquals("To_Date('2019-02-13 15:34:56 US/Pacific','YYYY-MM-DD HH24:MI:SS TZR')",
-    // ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("US/Pacific")));
-    // evalEquals("To_Date('Europe/Paris 2019-02-13 15:34:56','TZR YYYY-MM-DD HH24:MI:SS')",
-    // ZonedDateTime.of(2019, 2, 13, 15, 34, 56, 0, ZoneId.of("Europe/Paris")));
-    // evalEquals("CONCAT('TES','T')", "TEST");
-    // evalEquals("0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    //evalFails("Year)");
 
   }
 }

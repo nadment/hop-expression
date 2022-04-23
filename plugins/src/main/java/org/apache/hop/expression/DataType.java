@@ -103,7 +103,6 @@ public enum DataType {
     throw new IllegalArgumentException(
         BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", value.getClass()));
   }
-
   
   public static String name(final Object value) {
     if (value == null)

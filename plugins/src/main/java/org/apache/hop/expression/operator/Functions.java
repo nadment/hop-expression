@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
+
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.language.Soundex;
@@ -30,6 +31,8 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.FirstDayOfQuarter;
+import org.apache.hop.expression.util.LastDayOfQuarter;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.RegexpUtils;
 import java.io.ByteArrayOutputStream;
@@ -70,6 +73,9 @@ public class Functions {
 
   private static final Soundex SOUNDEX = new Soundex();
 
+  private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
+  private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
+  
   private Functions() {
     // Utility class
   }
@@ -534,28 +540,37 @@ public class Functions {
 
     return FastMath.pow(DataType.toNumber(left), DataType.toNumber(right));
   }
-  
-  
-  /**
-   * The NOW function return the current date and time
-   */
-  @ScalarFunction(id = "NOW", names = {"CURRENT_TIMESTAMP"}, deterministic = false, minArgs = 0,
-      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/now.html")
-  public static Object now(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    return context.getAttribute(ExpressionContext.CACHED_NOW);
-  }
 
   /**
-   * The TODAY function return the current date at time 00:00
+   * The function return the current date at time 00:00
    */
-  @ScalarFunction(id = "TODAY", names = {"CURRENT_DATE"}, deterministic = false, minArgs = 0,
-      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/today.html")
-  public static Object today(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "CURRENT_DATE", names = {"TODAY"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/current_date.html")
+  public static Object current_date(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     return context.getAttribute(ExpressionContext.CACHED_TODAY);
   }
-
+  
+  /**
+   * The function return the current date and time
+   */
+  @ScalarFunction(id = "CURRENT_TIMESTAMP", names = {"NOW"}, deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/current_timestamp.html")
+  public static Object current_datetime(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return context.getAttribute(ExpressionContext.CACHED_NOW);
+  }
+  
+  /**
+   * The function return the current time zone
+   */
+  @ScalarFunction(id = "CURRENT_TIMEZONE", deterministic = false, minArgs = 0,
+      maxArgs = 0, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/current_timezone.html")
+  public static Object current_timezone(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return context.getAttribute(ExpressionContext.CACHED_TIMEZONE);
+  }
+  
   // -------------------------------------------------------------
   // CRYPTOGRAPHIC
   // -------------------------------------------------------------
@@ -2147,8 +2162,9 @@ public class Functions {
   public static Object to_char(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
-    if (v0 == null)
+    if (v0 == null) {
       return null;
+    }
 
     String pattern = null;
     if (operands.length > 1) {
@@ -2157,19 +2173,19 @@ public class Functions {
         pattern = DataType.toString(v1);
     }
 
-    DataType type = DataType.from(v0);
-    switch (type) {
-      case INTEGER:
-      case NUMBER:
-      case BIGNUMBER:
-        return NumberFormat.of(pattern).format(DataType.toBigNumber(v0));
-      case DATE:
-        return DateTimeFormat.of(pattern).format(DataType.toDate(v0));
-      case STRING:
-        return v0;
-      default:        
-        throw new ExpressionException(Error.UNEXPECTED_DATA_TYPE, "TO_CHAR", type);
+    if ( v0 instanceof String) {
+      return v0;
     }
+    
+    if ( v0 instanceof Number ) {
+      return NumberFormat.of(pattern).format(DataType.toBigNumber(v0));
+    }
+    
+    if ( v0 instanceof ZonedDateTime ) {
+      return DateTimeFormat.of(pattern).format(DataType.toDate(v0));
+    }
+    
+    throw new ExpressionException(Error.UNEXPECTED_DATA_TYPE, "TO_CHAR", DataType.name(v0));
   }
 
   /** Converts a string expression to a number value. */
@@ -2229,26 +2245,21 @@ public class Functions {
     if (v0 == null)
       return null;
 
-    DataType type = DataType.from(v0);
-    switch (type) {
-      case DATE:
-        return v0;
-      case STRING:
-        String format = null;
-        if (operands.length > 1) {
-          Object v1 = operands[1].eval(context);
-          if (v1 != null)
-            format = DataType.toString(v1);
-        } else {
-          format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
-        }
-        try {
-          return DateTimeFormat.of(format).parse(DataType.toString(v0));
-        } catch (ParseException e) {
-          throw new ExpressionException(Error.PARSE_ERROR, e.getMessage());
-        }
-      default:
-        throw new ExpressionException(Error.UNEXPECTED_DATA_TYPE, "TO_DATE", type);
+    if (v0 instanceof ZonedDateTime)
+      return v0;
+
+    String format = null;
+    if (operands.length > 1) {
+      Object v1 = operands[1].eval(context);
+      if (v1 != null)
+        format = DataType.toString(v1);
+    } else {
+      format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
+    }
+    try {
+      return DateTimeFormat.of(format).parse(DataType.toString(v0));
+    } catch (ParseException e) {
+      throw new ExpressionException(Error.PARSE_ERROR, e.getMessage());
     }
   }
 
@@ -2264,26 +2275,21 @@ public class Functions {
     if (v0 == null)
       return null;
 
-    switch (DataType.from(v0)) {
-      case DATE:
-        return v0;
-      case STRING:
-        String format = null;
-        if (operands.length > 1) {
-          Object v1 = operands[1].eval(context);
-          if (v1 != null)
-            format = DataType.toString(v1);
-        } else {
-          format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
-        }
-        try {
-          return DateTimeFormat.of(format).parse(DataType.toString(v0));
-        } catch (ParseException | RuntimeException e) {
-          // Ignore
-        }
-        break;
-      default:
-        // Try nothing
+    if (v0 instanceof ZonedDateTime)
+      return v0;
+
+    String format = null;
+    if (operands.length > 1) {
+      Object v1 = operands[1].eval(context);
+      if (v1 != null)
+        format = DataType.toString(v1);
+    } else {
+      format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
+    }
+    try {
+      return DateTimeFormat.of(format).parse(DataType.toString(v0));
+    } catch (ParseException | RuntimeException e) {
+      // Ignore
     }
 
     return null;
@@ -2375,7 +2381,7 @@ public class Functions {
   public static Object date_trunc(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
-    DatePart part = DatePart.get(operands[0].eval(context));
+    DatePart part = DatePart.to(operands[0].eval(context));
 
     Object v1 = operands[1].eval(context);
     if (v1 == null)
@@ -2423,7 +2429,6 @@ public class Functions {
         throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
     }
   }
-
 
   /**
    * Day of the month (number from 1-31).
@@ -2824,33 +2829,74 @@ public class Functions {
   }
 
   /** Returns the first day of the month. */
-  @ScalarFunction(id = "FIRST_DAY", category = "i18n::Operator.Category.Date",
-      documentationUrl = "/docs/first_day.html")
+  @ScalarFunction(id = "FIRST_DAY", category = "i18n::Operator.Category.Date", minArgs = 1, maxArgs = 2, documentationUrl = "/docs/first_day.html")
   public static Object first_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
-    return DataType.toDate(value).with(TemporalAdjusters.firstDayOfMonth());
+    // Default to first day of month
+    TemporalAdjuster adjuster = TemporalAdjusters.firstDayOfMonth();    
+    
+    if (operands.length == 2) {
+      Object v1 = operands[1].eval(context);
+      if ( v1==null)
+        return null;
+      DatePart part = DatePart.to(v1);
+      switch(part) {
+        case YEAR:
+          adjuster = TemporalAdjusters.firstDayOfYear();
+          break;
+        case QUARTER:          
+          adjuster = FirstDayOfQuarter;
+          break;
+        case MONTH:
+          adjuster = TemporalAdjusters.firstDayOfMonth();
+          break;
+        case WEEK:
+          adjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
+          break;
+        default:
+          throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
+      }      
+    }
+    
+    return DataType.toDate(value).with(adjuster);
   }
 
   /** Returns the last day of the month. */
-  @ScalarFunction(id = "LAST_DAY", category = "i18n::Operator.Category.Date",
-      documentationUrl = "/docs/last_day.html")
-  // TODO: @ScalarFunction(id= "LAST_DAY", minArgs = 1, maxArgs = 2, category =
-  // "i18n::Operator.Category.Date")
+  @ScalarFunction(id = "LAST_DAY", category = "i18n::Operator.Category.Date", minArgs = 1, maxArgs = 2, documentationUrl = "/docs/last_day.html")
   public static Object last_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
 
+    // Default to last day of month
     TemporalAdjuster adjuster = TemporalAdjusters.lastDayOfMonth();
-    // if ( operands.length==2) {
-    // Object v1 = operands[1].eval(context);
-    //
-    // }
+    if (operands.length == 2) {
+      Object v1 = operands[1].eval(context);
+      if ( v1==null)
+        return null;
+      DatePart part = DatePart.to(v1);
+      switch(part) {
+        case YEAR:
+          adjuster = TemporalAdjusters.lastDayOfYear();
+          break;
+        case QUARTER:          
+          adjuster = LastDayOfQuarter;
+          break;
+        case MONTH:
+          adjuster = TemporalAdjusters.lastDayOfMonth();
+          break;    
+        case WEEK:
+          adjuster = TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
+          break;
+        default:
+          throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
+      }      
+    }
 
     return DataType.toDate(value).with(adjuster);
   }

@@ -16,11 +16,16 @@ under the License.
 ////
 = LAST_DAY
 
-Returns the last day of the month.
+Returns the last day of the specified date part.
 
 == Syntax
 ----
-LAST_DAY( <date> )
+LAST_DAY( <date>[, <part>] )
 ----
+
+== Usage
+
+* Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
+* Returns NULL if one of the arguments is NULL.
 
 See also xref:first_day.adoc[FIRST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]

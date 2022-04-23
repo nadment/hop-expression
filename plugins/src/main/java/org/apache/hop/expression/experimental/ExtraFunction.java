@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package org.apache.hop.expression.experimental;
-import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.compress.CompressionPluginType;
 import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;

@@ -14,32 +14,20 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= DATE_TRUNC
+= CURRENT_DATE, TODAY
 
-Truncate a date or datetime value to the start of a given unit of duration. 
+Returns the current date in the context time zone (System time zone by default).
 
 == Syntax
 ----
-DATE_TRUNC( <part>, <datetime> )
+CURRENT_DATE()
 ----
-
-Support part of date and time:
-
-- MILLENNIUM
-- CENTURY
-- DECADE
-- YEAR
-- MONTH 
-- QUARTER 
-- WEEK        
-- DAY
-- HOUR
-- MINUTE
-- SECOND
-- MILLISECOND
-- MICROSECOND
-- NANOSECOND
+----
+TODAY()
+----
 
 == Usage
 
-* Returns NULL if one of the arguments is NULL.
+This function always return the same value within a execution context like running a pipeline.
+
+The CURRENT_TIMESTAMP() function is similar but returns the date and time.

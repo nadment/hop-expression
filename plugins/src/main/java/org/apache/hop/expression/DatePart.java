@@ -144,7 +144,7 @@ public enum DatePart {
    * @param value the value to coerce
    * @return DatePart
    */
-  public static DatePart get(Object value) throws ExpressionException {
+  public static DatePart to(Object value) throws ExpressionException {
     if (value instanceof DatePart) {
       return (DatePart) value;
     }

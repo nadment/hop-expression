@@ -25,6 +25,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Random;
+import java.util.TimeZone;
 
 public class FunctionsTest extends BaseExpressionTest {
 
@@ -117,7 +118,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Today() throws Exception {
+  public void Current_Date() throws Exception {
     ExpressionContext context = createExpressionContext();
     ZonedDateTime today = (ZonedDateTime) context.getAttribute(ExpressionContext.CACHED_TODAY);
     evalEquals("Today()", today, context);
@@ -127,13 +128,22 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Now() throws Exception {
+  public void Current_Timestamp() throws Exception {
     ExpressionContext context = createExpressionContext();
     ZonedDateTime today = (ZonedDateTime) context.getAttribute(ExpressionContext.CACHED_NOW);
     evalEquals("Now()", today, context);
     evalEquals("Current_Timestamp()", today, context);
 
     evalFails("Now(Null)");
+  }
+
+  @Test
+  public void Current_TimeZone() throws Exception {
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
+    evalEquals("Current_Timezone()", "Europe/Paris");
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    evalEquals("Current_Timezone()", "UTC");
+    evalFails("Current_Timezone(Null)");
   }
 
   @Test
@@ -149,7 +159,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Date(2020,null,1)");
     evalNull("Date(2020,-1,null)");
 
-
     evalFails("Date()");
     evalFails("Date(2020)");
     evalFails("Date(2020,15)");
@@ -157,45 +166,62 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void FirstDay() throws Exception {
-    evalEquals("First_day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1));
-    evalEquals("First_day(Date '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 1));
-
-    evalNull("First_day(NULL)");
-
-    evalFails("First_day()");
-    evalFails("First_day('test')");
+  public void First_Day() throws Exception {
+    evalEquals("First_Day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 1));
+    evalEquals("First_Day(Date '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals("First_Day(Date '2020-02-27', YEAR)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("First_Day(Date '2020-02-27', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals("First_Day(Date '2020-02-27', QUARTER)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("First_Day(Date '2020-05-27', QUARTER)", LocalDate.of(2020, Month.APRIL, 1));
+    evalEquals("First_Day(Date '2020-02-01', WEEK)", LocalDate.of(2020, Month.JANUARY, 27));
+    evalEquals("First_Day(Date '2020-02-27', WEEK)", LocalDate.of(2020, Month.FEBRUARY, 24));
+    evalEquals("First_Day(Date '2020-12-31', WEEK)", LocalDate.of(2020, Month.DECEMBER, 28));
+    
+    evalNull("First_Day(NULL)");
+    evalNull("First_day(Date '2020-02-27', NULL)");
+    
+    evalFails("First_Day()");
+    evalFails("First_Day('test')");
   }
 
   @Test
-  public void LastDay() throws Exception {
-    evalEquals("Last_day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 31));
-    evalEquals("Last_day(Date '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 29));
-    evalNull("Last_day(NULL)");
-    evalFails("Last_day()");
-    evalFails("Last_day('test')");
+  public void Last_Day() throws Exception {
+    evalEquals("Last_Day(Date '2019-01-01')", LocalDate.of(2019, Month.JANUARY, 31));
+    evalEquals("Last_Day(Date '2020-02-27')", LocalDate.of(2020, Month.FEBRUARY, 29));
+    evalEquals("Last_Day(Date '2020-02-27', YEAR)", LocalDate.of(2020, Month.DECEMBER, 31));
+    evalEquals("Last_Day(Date '2022-02-27', MONTH)", LocalDate.of(2022, Month.FEBRUARY, 28));
+    evalEquals("Last_Day(Date '2020-02-27', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 29));
+    evalEquals("Last_Day(Date '2020-02-27', QUARTER)", LocalDate.of(2020, Month.MARCH, 31));
+    evalEquals("Last_Day(Date '2020-07-27', QUARTER)", LocalDate.of(2020, Month.SEPTEMBER, 30));
+    evalEquals("Last_Day(Date '2020-12-31', WEEK)", LocalDate.of(2021, Month.JANUARY, 3));
+    
+    evalNull("Last_Day(NULL)");
+    evalNull("Last_Day(Date '2020-02-27', NULL)");
+    
+    evalFails("Last_Day()");
+    evalFails("Last_Day('test')");
   }
 
   @Test
-  public void NextDay() throws Exception {
-    evalEquals("Next_day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2));
+  public void Next_Day() throws Exception {
+    evalEquals("Next_Day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2));
 
-    evalNull("Next_day(null, 'monday')");
-    evalNull("Next_day(Date '2020-02-28', null)");
+    evalNull("Next_Day(null, 'monday')");
+    evalNull("Next_Day(Date '2020-02-28', null)");
 
-    evalFails("Next_day()");
-    evalFails("Next_day(Date '2020-02-28')");
+    evalFails("Next_Day()");
+    evalFails("Next_Day(Date '2020-02-28')");
   }
 
   @Test
-  public void PreviousDay() throws Exception {
-    evalEquals("Previous_day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24));
+  public void Previous_Day() throws Exception {
+    evalEquals("Previous_Day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24));
 
-    evalNull("Previous_day(null, 'monday')");
-    evalNull("Previous_day(Date '2020-02-28', null)");
+    evalNull("Previous_Day(null, 'monday')");
+    evalNull("Previous_Day(Date '2020-02-28', null)");
 
-    evalFails("Previous_day()");
-    evalFails("Previous_day(Date '2020-02-28')");
+    evalFails("Previous_Day()");
+    evalFails("Previous_Day(Date '2020-02-28')");
   }
 
   @Test
@@ -1608,7 +1634,8 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Regexp_Like() throws Exception {
     // Alias RLIKE operator
     evalTrue("'aaa' RLIKE 'a{2,4}'");
-    
+       
+    evalTrue("Regexp_Like('Erdbeere','Erd[a[:SPACE:]b]eere')"); 
     evalTrue("Regexp_Like('12345TEST','123[:alnum:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");
     evalTrue("Regexp_Like('ABcdf987','[:xdigit:]*')");

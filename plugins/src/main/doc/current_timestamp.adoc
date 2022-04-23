@@ -14,20 +14,20 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TODAY, CURRENT_DATE
+= CURRENT_TIMESTAMP, NOW
 
-Returns the current date in the context time zone (System time zone by default).
+Returns the current date and time in the context time zone (System time zone by default).
 
 == Syntax
 ----
-TODAY()
+CURRENT_TIMESTAMP()
 ----
 ----
-CURRENT_DATE()
+NOW()
 ----
 
 == Usage
 
 This function always return the same value within a execution context like running a pipeline.
 
-The NOW function is similar but returns the date and time.
+The CURRENT_DATE() function is similar but returns the date only.

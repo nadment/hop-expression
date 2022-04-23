@@ -16,11 +16,16 @@ under the License.
 ////
 = FIRST_DAY
 
-Returns the first day of the month.
+Returns the first day of the specified date part.
 
 == Syntax
 ----
-FIRST_DAY( <date> )
+FIRST_DAY( <date>[, <part>] )
 ----
+
+== Usage
+
+* Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
+* Returns NULL if one of the arguments is NULL.
 
 See also xref:last_day.adoc[LAST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]
