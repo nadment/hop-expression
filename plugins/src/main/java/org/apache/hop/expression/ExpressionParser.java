@@ -31,7 +31,7 @@ import java.util.Set;
 public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
-     Set.of("AND", "AS",  "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
+     Set.of("AND", "AS",  "ASYMMETRIC", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
           "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE","IN", "IS", "LIKE", "NOT", "NULL", "OR",  "SYMMETRIC",
           "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE");
     
@@ -267,7 +267,10 @@ public class ExpressionParser {
       expression = new Call(Operators.IN, expression, this.parseTuple());
     } else if (next(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN;
-      if (next(Id.SYMMETRIC)) {
+      if (next(Id.ASYMMETRIC)) {
+        // Ignore
+      }
+      else if (next(Id.SYMMETRIC)) {
         operator = Operators.BETWEEN_SYMMETRIC;
       }
       
