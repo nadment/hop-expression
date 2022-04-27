@@ -53,7 +53,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
 
 
   private static IStream newDefaultStream = new Stream(StreamType.TARGET, null,
-      BaseMessages.getString(PKG, "RouteMeta.DefaultTarget.Description"), StreamIcon.TARGET, null);
+      BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"), StreamIcon.TARGET, null);
   private static IStream newTargetStream = new Stream(StreamType.TARGET, null,
       BaseMessages.getString(PKG, "RouteMeta.Route.NewTarget.Description"), StreamIcon.TARGET,
       null);
@@ -170,7 +170,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
       //
       if (StringUtils.isNotEmpty(defaultTargetTransformName)) {
         ioMeta.addStream(new Stream(StreamType.TARGET, null,
-            BaseMessages.getString(PKG, "RouteMeta.DefaultTarget.Description"), StreamIcon.TARGET,
+            BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"), StreamIcon.TARGET,
             defaultTargetTransformName));
       }
       setTransformIOMeta(ioMeta);
@@ -223,7 +223,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
       defaultTargetTransformName = stream.getTransformMeta().getName();
 
       IStream newStream = new Stream(StreamType.TARGET, stream.getTransformMeta(),
-          BaseMessages.getString(PKG, "RouteMeta.DefaultTarget.Description"), StreamIcon.TARGET,
+          BaseMessages.getString(PKG, "RouteMeta.Route.DefaultTarget.Description"), StreamIcon.TARGET,
           stream.getTransformMeta().getName());
       getTransformIOMeta().addStream(newStream);
     } else if (stream == newTargetStream) {
