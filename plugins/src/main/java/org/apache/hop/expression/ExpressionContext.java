@@ -33,7 +33,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 import javax.script.SimpleScriptContext;
 
-public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
+public class ExpressionContext extends SimpleScriptContext implements IExpressionContext, IRowContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
@@ -111,15 +111,21 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public void setAttribute(String name, Object value) {
     this.setAttribute(name, value, ENGINE_SCOPE);
   }
-
+  @Override
   public IRowMeta getRowMeta() {
     return rowMeta;
   }
-
+  
+  @Override
+  public Object[] getRow() {
+    return this.row;
+  }
+  
+  @Override
   public void setRow(Object[] row) {
     this.row = row;
   }
-
+  
   @Override
   public Object resolve(String name) throws ExpressionException {
 

@@ -21,12 +21,15 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 ## Overview
 
-This plugin provide expression language and 2 transforms.
+This plugin provides 3 transformations that use the power of an expression language.
 
-* Expression transformation calculate fields with the power of expression 
+* The `Expression` transformation calculate fields with expression 
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression]
 
-* Where transformation filter rows with expression 
+* The `Route` transformation switches rows according to an expression condition
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/route.svg[Route]
+
+* The `Where` transformation filter rows with expression condition
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/where.svg[Where]
 
 ## Expression language
@@ -46,12 +49,13 @@ end
 ----
 
 * Supports 7 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary`. 
+* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, Date '2022-4-25'
 * Logical operators `AND` `OR` `NOT`.
 * Arithmetic operators `+` `-` `*` `/` `%`.
 * Bitwise operators  `&` `|` `~` `^`.
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE` `RLIKE`.
 * Conditional operator `CASE`.
-* Cast operator  `::`.
+* Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>).
 * Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
 * Use of comments to facilitate reading.
 * Are not case-sensitive, excepted for identifier.

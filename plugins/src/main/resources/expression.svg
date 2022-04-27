@@ -1,60 +1,17 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="expression.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   xml:space="preserve"
-   enable-background="new 0 0 42 42"
-   viewBox="0 0 42 42"
-   height="42px"
-   width="42px"
-   y="0px"
-   x="0px"
-   id="Layer_1"
-   version="1.1"><metadata
-   id="metadata13"><rdf:RDF><cc:Work
-       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
-   id="defs11" /><sodipodi:namedview
-   inkscape:document-rotation="0"
-   inkscape:current-layer="Layer_1"
-   inkscape:window-maximized="1"
-   inkscape:window-y="-8"
-   inkscape:window-x="-8"
-   inkscape:cy="34.718403"
-   inkscape:cx="-55.098168"
-   inkscape:zoom="11.313708"
-   showgrid="false"
-   id="namedview9"
-   inkscape:window-height="1387"
-   inkscape:window-width="3440"
-   inkscape:pageshadow="2"
-   inkscape:pageopacity="0"
-   guidetolerance="10"
-   gridtolerance="10"
-   objecttolerance="10"
-   borderopacity="1"
-   bordercolor="#666666"
-   pagecolor="#ffffff" /><path
-   inkscape:connector-curvature="0"
-   id="path4161"
-   d="m 29.476296,37.842568 c -0.152117,-0.346003 -0.291333,-0.632623 -0.309369,-0.636935 -0.01804,-0.0043 -0.160207,-0.03138 -0.315935,-0.06016 -0.71041,-0.131266 -1.190619,-0.541199 -1.354277,-1.156085 -0.06721,-0.25252 -0.06618,-2.924222 0.0012,-3.183016 0.147702,-0.567066 0.559327,-0.952539 1.206966,-1.130283 0.329364,-0.09039 1.107994,-0.0966 1.435958,-0.01144 0.619721,0.160914 1.040175,0.52758 1.221131,1.064912 0.06232,0.18505 0.06686,0.274559 0.07748,1.527562 0.01263,1.490313 -0.0016,1.664386 -0.163611,2.007849 -0.184989,0.392069 -0.501658,0.66444 -0.934634,0.803889 -0.118852,0.03828 -0.216095,0.07914 -0.216095,0.09081 0,0.01167 0.09268,0.230016 0.205954,0.485223 0.113275,0.255206 0.201554,0.468411 0.196177,0.473789 -0.0054,0.0054 -0.181816,0.087 -0.392085,0.181376 l -0.382306,0.171599 -0.276576,-0.629095 z m 0.628338,-1.56122 c 0.231832,-0.114131 0.334785,-0.228014 0.410517,-0.454103 0.04293,-0.128173 0.05043,-0.338809 0.05043,-1.417867 0,-1.41814 -0.0098,-1.49954 -0.20653,-1.717308 -0.257017,-0.284487 -0.897779,-0.389234 -1.447141,-0.236568 -0.237311,0.06595 -0.40085,0.199578 -0.505787,0.413287 l -0.08995,0.183187 0,1.337061 c 0,1.478181 0.001,1.486896 0.198059,1.705003 0.216106,0.239204 0.454539,0.310315 1.000683,0.298447 0.3582,-0.0078 0.393164,-0.01437 0.589724,-0.111139 z"
-   style="opacity:1;fill:none;fill-opacity:0;fill-rule:nonzero;stroke:none;stroke-width:12.01181126;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /><text
-   transform="scale(1.0704145,0.93421754)"
-   id="text4140"
-   y="35.745544"
-   x="-0.58169407"
-   style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#0e3a5a;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-   xml:space="preserve"><tspan
-     style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.3918px;line-height:1.25;font-family:'Lucida Calligraphy';-inkscape-font-specification:'Lucida Calligraphy Italic';fill:#0e3a5a;fill-opacity:1;"
-     y="35.745544"
-     x="-0.58169407"
-     id="tspan4142"
-     sodipodi:role="line">e</tspan></text>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="Layer_1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="42px" height="42px"
+	 viewBox="0 0 42 42" enable-background="new 0 0 42 42" xml:space="preserve">
+<g enable-background="new    ">
+	<path fill="#0E3A5A" d="M33.102,31.312l-0.866,2.082c-7.572,2.961-13.768,4.017-18.584,3.168c-3.053-0.539-5.367-1.909-6.941-4.11
+		c-1.574-2.201-2.1-4.783-1.578-7.746c0.933-5.287,4.132-9.852,9.599-13.693s10.834-5.296,16.103-4.367
+		c1.914,0.337,3.363,1.173,4.347,2.505c0.984,1.333,1.318,2.899,1.001,4.698c-0.634,3.598-3.286,6.318-7.958,8.161
+		c-4.67,1.843-9.931,2.249-15.779,1.218l-0.255,1.262c-0.966,5.48,0.851,8.626,5.453,9.438
+		C21.619,34.628,26.772,33.756,33.102,31.312z M12.811,21.521c4.876,0.512,8.831,0.091,11.863-1.261
+		c3.032-1.352,4.805-3.482,5.317-6.392c0.507-2.872-0.434-4.518-2.821-4.938c-2.58-0.455-5.339,0.602-8.275,3.17
+		C15.958,14.67,13.931,17.81,12.811,21.521z"/>
+</g>
 </svg>

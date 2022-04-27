@@ -21,9 +21,8 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.pipeline.transform.BaseTransformData;
-import org.apache.hop.pipeline.transform.ITransformData;
 
-public class WhereData extends BaseTransformData implements ITransformData {
+public class WhereData extends BaseTransformData {
 
   protected IRowMeta outputRowMeta;
   protected IRowSet trueRowSet;

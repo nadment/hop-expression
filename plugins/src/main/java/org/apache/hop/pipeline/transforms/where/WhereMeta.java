@@ -45,7 +45,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * This transform where filter rows with expression and keeps only rows where this expression is
+ * This transform filter rows with expression and keeps only rows where this expression is
  * true.
  */
 @Transform(

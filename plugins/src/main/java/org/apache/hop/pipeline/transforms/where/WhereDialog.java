@@ -37,7 +37,6 @@ import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -54,7 +53,6 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
   private final WhereMeta input;
   private ExpressionEditor wEditor;
-  private ModifyListener lsMod;
 
   public WhereDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
       String name) {
@@ -80,20 +78,12 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     props.setLook(shell);
 
-
-    // The ModifyListener used on all controls. It will update the meta object to
-    // indicate that changes are being made.
-    lsMod = e -> {
-      baseTransformMeta.setChanged();
-      wOk.setEnabled(isValid());
-    };
-
     this.createContents(shell);
 
     // Save the value of the changed flag on the meta object. If the user cancels
     // the dialog, it will be restored to this saved value.
     // The "changed" variable is inherited from BaseStepDialog
-    changed = baseTransformMeta.hasChanged();
+    boolean changed = baseTransformMeta.hasChanged();
 
     // Populate the dialog with the values from the meta object
     setWidgetsContent(input);
@@ -111,19 +101,6 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     // The "transformName" variable is inherited from BaseTransformDialog
     return transformName;
-  }
-
-  public Image getImage() {
-
-    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
-        this.transformMeta.getPluginId());
-
-    if (plugin.getImageFile() != null) {
-      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
-          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
-    }
-
-    return GuiResource.getInstance().getImageError();
   }
 
   protected void setWidgetsContent(final WhereMeta meta) {
@@ -190,7 +167,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     wTransformName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -props.getMargin()).result());
-    wTransformName.addModifyListener(lsMod);
+    wTransformName.addListener(SWT.Modify, e -> onChanged());
 
 
     final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
@@ -213,6 +190,19 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     return composite;
   }
 
+  public Image getImage() {
+
+    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
+        this.transformMeta.getPluginId());
+
+    if (plugin.getImageFile() != null) {
+      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
+          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
+    }
+
+    return GuiResource.getInstance().getImageError();
+  }
+  
   // Search the fields in the background
   protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
       PipelineMeta pipelineMeta, String transformName) {
@@ -235,8 +225,15 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), rowMetaProvider);
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-
+    wEditor.addListener(SWT.Modify, e -> onChanged());
+        
     return parent;
+  }
+  
+  /** Update the meta object to indicate that changes are being made. */
+  protected void onChanged()  {
+    baseTransformMeta.setChanged();
+    wOk.setEnabled(isValid());
   }
 
   /** Called when the user confirms the dialog. Subclasses may override if desired. */

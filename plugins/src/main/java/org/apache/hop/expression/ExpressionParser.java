@@ -268,7 +268,7 @@ public class ExpressionParser {
     } else if (next(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN;
       if (next(Id.ASYMMETRIC)) {
-        // Ignore
+        // Igonre
       }
       else if (next(Id.SYMMETRIC)) {
         operator = Operators.BETWEEN_SYMMETRIC;
