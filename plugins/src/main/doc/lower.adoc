@@ -14,14 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= LOWER, LCASE
+= LOWER
 
 Converts a string to lower case.
 
 == Syntax
 ----
 LOWER( <string> )
-LCASE( <string> )
 ----
 
 See also xref:upper.adoc[UPPER]

@@ -14,13 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= UPPER
+= UNACCENT
 
-Converts a string to upper case.
+The function removes accents (diacritic marks) from a given string.
 
 == Syntax
 ----
-UPPER( <string> )
+UNACCENT( <string> )
 ----
 
-See also xref:lower.adoc[LOWER]
+Return:: String
+
+== Usage
+
+* Note that ligatures will be left as is.

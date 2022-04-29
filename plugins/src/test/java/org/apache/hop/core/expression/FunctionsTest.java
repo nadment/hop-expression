@@ -225,13 +225,38 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Unaccent() throws Exception {
+    evalEquals("Unaccent('ÁÀÂÃÄÅĀĄàáâãäåāą')", "AAAAAAAAaaaaaaaa");
+    evalEquals("Unaccent('ÇĆČçćč')", "CCCccc");
+    evalEquals("Unaccent('ĎḌḒďḍḓ')", "DDDddd");   
+    evalEquals("Unaccent('ÈÉÊËĚĒĘèéêëěēę')", "EEEEEEEeeeeeee");
+    evalEquals("Unaccent('ÌÍÎÏĪìíîïī')", "IIIIIiiiii");
+    evalEquals("Unaccent('Łł')", "Ll");
+    evalEquals("Unaccent('ÑŇŃñňń')", "NNNnnn");
+    evalEquals("Unaccent('ÒÓÔÕÕÖŌòóôõöō')", "OOOOOOOoooooo");
+    evalEquals("Unaccent('ÙÚÛÜŮŪùúûüůū')", "UUUUUUuuuuuu");
+    evalEquals("Unaccent('Řř')", "Rr");
+    evalEquals("Unaccent('ŠŚšś')", "SSss");
+    evalEquals("Unaccent('Ťť')", "Tt");
+    evalEquals("Unaccent('ÝŸÿý')", "YYyy");    
+    evalEquals("Unaccent('ŽŻŹžżź')", "ZZZzzz");    
+    evalEquals("Unaccent('άώὨ')", "αωΩ");
+
+     // Keep ligature and special char
+    evalEquals("Unaccent('ÆæØøµß¢©')", "ÆæØøµß¢©");
+    
+    evalNull("Unaccent(NULL)");
+    evalFails("Unaccent()");
+  }
+  
+  @Test
   public void Upper() throws Exception {
     evalEquals("Upper('test')", "TEST");
     evalNull("Upper(NULL)");
     evalFails("Upper()");
 
     // Alias
-    evalEquals("UCase('test')", "TEST");
+    // evalEquals("UCase('test')", "TEST");
   }
 
   @Test
@@ -564,7 +589,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Lower('Test','Test')");
 
     // Alias
-    evalEquals("LCase('TesT')", "test");
+    // evalEquals("LCase('TesT')", "test");
   }
 
   @Test

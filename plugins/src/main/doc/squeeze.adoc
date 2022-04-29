@@ -14,13 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= UPPER
+= SQUEEZE
 
-Converts a string to upper case.
+Trims white space from the beginning and end of the string, and replaces all other white space with single blanks.
 
 == Syntax
 ----
-UPPER( <string> )
+SQUEEZE( <string> )
 ----
 
-See also xref:lower.adoc[LOWER]
+Return:: String
+
+== Usage
+
+White space is defined as any sequence of blanks, null characters, newlines (line feeds), carriage returns, horizontal tabs and form feeds (vertical tabs).

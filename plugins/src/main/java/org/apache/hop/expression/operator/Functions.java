@@ -1028,7 +1028,7 @@ public class Functions {
    * 
    * @See {@link #INITCAP}, {@link #UPPER}
    */
-  @ScalarFunction(id = "LOWER", names = "LCASE", category = "i18n::Operator.Category.String",
+  @ScalarFunction(id = "LOWER", category = "i18n::Operator.Category.String",
       documentationUrl = "/docs/lower.html")
   public static Object lower(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
@@ -1043,7 +1043,7 @@ public class Functions {
    * 
    * @See {@link #LOWER}, {@link #INITCAP}
    */
-  @ScalarFunction(id = "UPPER", names = "UCASE", category = "i18n::Operator.Category.String",
+  @ScalarFunction(id = "UPPER", category = "i18n::Operator.Category.String",
       documentationUrl = "/docs/upper.html")
   public static Object upper(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
@@ -1164,6 +1164,39 @@ public class Functions {
     return StringUtils.stripEnd(string, characters);
   }
 
+
+  /**
+   * Trims white space from the beginning and end of the string, and replaces all other white space
+   * with single blanks.
+   * 
+   * White space is defined as any sequence of blanks, null characters, newlines (line feeds),
+   * carriage returns, horizontal tabs and form feeds (vertical tabs).
+   */
+  @ScalarFunction(id = "SQUEEZE", category = "i18n::Operator.Category.String", minArgs = 1,
+      maxArgs = 1, documentationUrl = "/docs/squeeze.html")
+  public static Object squeeze(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+
+    String str = DataType.toString(v0);
+    char[] a = str.toCharArray();
+    int n = 1;
+    for (int i = 1; i < a.length; i++) {
+      a[n] = a[i];
+      if (!Character.isSpaceChar(a[n]))
+        n++;
+      else {
+        a[n] = ' ';
+        if (a[n - 1] != ' ')
+          n++;
+      }
+    }
+
+    return new String(a, 0, n);
+  }
+  
   /**
    * The function extracts a number of characters from a string starting from left.
    * 
