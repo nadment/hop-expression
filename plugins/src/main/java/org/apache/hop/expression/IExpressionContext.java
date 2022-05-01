@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.row.IRowMeta;
-
 public interface IExpressionContext {
 
   /**

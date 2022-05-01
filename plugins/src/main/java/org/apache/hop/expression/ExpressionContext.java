@@ -25,12 +25,9 @@ import org.apache.hop.i18n.BaseMessages;
 import java.security.SecureRandom;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.TimeZone;
 import javax.script.SimpleScriptContext;
 
 public class ExpressionContext extends SimpleScriptContext implements IExpressionContext, IRowContext {

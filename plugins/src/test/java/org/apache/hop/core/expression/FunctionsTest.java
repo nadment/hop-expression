@@ -177,6 +177,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("First_Day(Date '2020-02-27', WEEK)", LocalDate.of(2020, Month.FEBRUARY, 24));
     evalEquals("First_Day(Date '2020-12-31', WEEK)", LocalDate.of(2020, Month.DECEMBER, 28));
     
+    // Remove time
+    evalEquals("First_Day(Timestamp '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.JANUARY, 1));
+    evalEquals("First_Day(Timestamp '2020-02-27 23:59:12', MONTH)", LocalDate.of(2020, Month.FEBRUARY, 1));
+    
     evalNull("First_Day(NULL)");
     evalNull("First_day(Date '2020-02-27', NULL)");
     
@@ -194,6 +198,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Last_Day(Date '2020-02-27', QUARTER)", LocalDate.of(2020, Month.MARCH, 31));
     evalEquals("Last_Day(Date '2020-07-27', QUARTER)", LocalDate.of(2020, Month.SEPTEMBER, 30));
     evalEquals("Last_Day(Date '2020-12-31', WEEK)", LocalDate.of(2021, Month.JANUARY, 3));
+    
+    // Remove time
+    evalEquals("Last_Day(Timestamp '2020-02-27 23:59:12')", LocalDate.of(2020, Month.FEBRUARY, 29));
+    evalEquals("Last_Day(Timestamp '2020-02-27 23:59:12', YEAR)", LocalDate.of(2020, Month.DECEMBER, 31));
     
     evalNull("Last_Day(NULL)");
     evalNull("Last_Day(Date '2020-02-27', NULL)");

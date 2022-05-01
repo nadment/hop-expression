@@ -2861,7 +2861,7 @@ public class Functions {
     return startDateTime.until(endDateTime, ChronoUnit.SECONDS);
   }
 
-  /** Returns the first day of the month. */
+  /** Returns the first day of the date part. */
   @ScalarFunction(id = "FIRST_DAY", category = "i18n::Operator.Category.Date", minArgs = 1, maxArgs = 2, documentationUrl = "/docs/first_day.html")
   public static Object first_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
@@ -2895,10 +2895,11 @@ public class Functions {
       }      
     }
     
-    return DataType.toDate(value).with(adjuster);
+    // Remove time and adjust
+    return DataType.toDate(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
   }
 
-  /** Returns the last day of the month. */
+  /** Returns the last day of the date part. */
   @ScalarFunction(id = "LAST_DAY", category = "i18n::Operator.Category.Date", minArgs = 1, maxArgs = 2, documentationUrl = "/docs/last_day.html")
   public static Object last_day(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
@@ -2931,7 +2932,8 @@ public class Functions {
       }      
     }
 
-    return DataType.toDate(value).with(adjuster);
+    // Remove time and adjust
+    return DataType.toDate(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
   }
 
   /**

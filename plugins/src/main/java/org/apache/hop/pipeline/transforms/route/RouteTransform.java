@@ -74,10 +74,8 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       putRowTo(data.outputRowMeta, row, data.defaultRowSet);
     }
     
-    if (checkFeedback(getLinesRead())) {
-      if (log.isBasic()) {
-        logBasic(BaseMessages.getString(PKG, "Route.Log.LineNumber", getLinesRead()));
-      }
+    if (checkFeedback(getLinesRead()) && log.isBasic()) {
+        logBasic(BaseMessages.getString(PKG, "Route.Log.LineNumber", getLinesRead()));      
     }
 
     return true;
