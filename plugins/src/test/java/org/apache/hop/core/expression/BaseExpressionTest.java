@@ -32,11 +32,13 @@ import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -52,6 +54,16 @@ public class BaseExpressionTest {
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
+  @ClassRule
+  public static ExternalResource getResource() {
+      return new ExternalResource() {
+          @Override
+          protected void before() throws Throwable {
+            FunctionRegistry.init();
+          }
+      };
+  }
+  
   protected ExpressionContext createExpressionContext() throws Exception {
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");

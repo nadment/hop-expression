@@ -35,18 +35,17 @@ import java.util.Set;
 public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
 
-  static {
-    functions = new HashMap<>(256);
-
-    init();
-  }
+  /** Set of functions or alias by name. */
+  private static final HashMap<String, Function> functions  = new HashMap<>(256);
+  
+//  static {
+//    init();
+//  }
 
   public static boolean isFunction(final String name) {
     return getFunction(name) != null;
   }
 
-  /** Set of functions or alias by name. */
-  private static final HashMap<String, Function> functions;
 
   public static Set<Function> getFunctions() {
     return Set.copyOf(functions.values());
@@ -79,7 +78,10 @@ public class FunctionRegistry {
   /**
    * Register functions
    */
-  private static void init() {
+  public static void init() {
+    if (log.isDebug()) {
+      log.logDebug("Init expression FunctionRegistry");
+    }
     try {    
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
       for (Method method : methods) {
