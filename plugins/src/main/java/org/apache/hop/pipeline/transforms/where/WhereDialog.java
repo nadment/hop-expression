@@ -104,14 +104,14 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
   }
 
   protected void setWidgetsContent(final WhereMeta meta) {
-    this.wEditor.setText(meta.getExpression());
+    this.wEditor.setText(meta.getCondition());
   }
 
   protected void getWidgetsContent(final WhereMeta meta) {
     // save step name
     this.transformName = this.wTransformName.getText();
 
-    meta.setExpression(this.wEditor.getText());
+    meta.setCondition(this.wEditor.getText());
   }
 
   protected final Control createContents(final Composite parent) {

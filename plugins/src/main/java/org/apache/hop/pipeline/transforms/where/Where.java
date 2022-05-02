@@ -67,13 +67,13 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       first = false;
 
       // Resolve variable
-      String expression = resolve(meta.getExpression());
+      String expression = resolve(meta.getCondition());
 
       // Parse expression
       try {
         data.condition = ExpressionParser.parse(expression);
       } catch (ExpressionException e) {
-        throw new HopTransformException(meta.getExpression(), e);
+        throw new HopTransformException(meta.getCondition(), e);
       }
 
       // clone the input row structure and place it in our data object
@@ -87,6 +87,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       // Cache the position of the RowSet for the output.
       List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
 
+      // Find TRUE output row set
       if (!Utils.isEmpty(streams.get(0).getTransformName())) {
         TransformMeta to = streams.get(0).getTransformMeta();
         PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
@@ -101,6 +102,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         data.trueRowSet = null;
       }
 
+      // Find FALSE output row set
       if (!Utils.isEmpty(streams.get(1).getTransformName())) {
         TransformMeta to = streams.get(1).getTransformMeta();
         PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
@@ -141,7 +143,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       }
     } catch (ExpressionException e) {
       throw new HopTransformException(BaseMessages.getString(PKG,
-          "Where.Exception.FailureExpressionEvaluation", meta.getExpression()), e);
+          "Where.Exception.FailureExpressionEvaluation", meta.getCondition()), e);
     }
 
     // log progress if it is time to to so
