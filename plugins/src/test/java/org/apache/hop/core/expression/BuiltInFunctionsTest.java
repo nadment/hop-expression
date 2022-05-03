@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
-public class FunctionsTest extends BaseExpressionTest {
+public class BuiltInFunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Coalesce() throws Exception {
@@ -1565,12 +1565,25 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Levenshtein() throws Exception {
+    evalEquals("Levenshtein('Superman', 'Superman')", 0);
     evalEquals("Levenshtein('kitten', 'sitting')", 3);
     evalNull("Levenshtein(NULL,NULL)");
-    evalNull("Levenshtein(NULL,'Jucy')");
-    evalNull("Levenshtein('Juice',NULL)");
+    evalNull("Levenshtein(NULL,'Superman')");
+    evalNull("Levenshtein('Superman',NULL)");
   }
 
+  @Test
+  public void JaroWinkler() throws Exception {
+    evalEquals("JaroWinkler('Superman', 'Superman')", 100);
+    evalEquals("JaroWinkler('Peter Parker', 'Pete Parker')", 88);
+    evalEquals("JaroWinkler('święta', 'swieta')", 78);
+    evalEquals("JaroWinkler('Ich weiß nicht', 'Ich weiss nicht')", 93);
+    
+    evalNull("JaroWinkler(NULL,NULL)");
+    evalNull("JaroWinkler(NULL,'Superman')");
+    evalNull("JaroWinkler('Superman',NULL)");
+  }
+  
   @Test
   public void Translate() throws Exception {
     evalEquals("Translate('Hello, world!','eo','EO')", "HEllO, wOrld!");

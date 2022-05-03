@@ -22,7 +22,7 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Udf;
+import org.apache.hop.expression.UdfMeta;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.dialog.ErrorDialog;
@@ -31,23 +31,25 @@ import org.apache.hop.ui.core.metadata.MetadataManager;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.hopgui.HopGui;
+import org.apache.hop.ui.hopgui.perspective.metadata.MetadataPerspective;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-public class UdfEditor extends MetadataEditor<Udf> {
-  private static final Class<?> PKG = UdfEditor.class; // For Translator
+public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
+  private static final Class<?> PKG = UdfMetaEditor.class; // For Translator
 
   private Text wName;
   private Text wDescription;
   private TableView wParams;
   private ExpressionEditor wExpression;
 
-  public UdfEditor(HopGui hopGui, MetadataManager<Udf> manager, Udf udf) {
+  public UdfMetaEditor(HopGui hopGui, MetadataManager<UdfMeta> manager, UdfMeta udf) {
     super(hopGui, manager, udf);
   }
 
@@ -58,6 +60,13 @@ public class UdfEditor extends MetadataEditor<Udf> {
 
     int margin = Const.MARGIN;
 
+    // Add listener to detect change after loading data
+    Listener modifyListener =
+        event -> {
+          setChanged();
+          MetadataPerspective.getInstance().updateEditor(this);
+        };
+    
     // The icon
     //
     Label wIcon = new Label(parent, SWT.RIGHT);
@@ -85,7 +94,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdName.left = new FormAttachment(0, 0);
     fdName.right = new FormAttachment(wIcon, -5);
     wName.setLayoutData(fdName);
-    wName.addListener(SWT.Modify, e -> setChanged());
+    wName.addListener(SWT.Modify, modifyListener);
 
     Label spacer = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
     FormData fdSpacer = new FormData();
@@ -112,7 +121,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdDescription.left = new FormAttachment(0, 0);
     fdDescription.right = new FormAttachment(100, 0);
     wDescription.setLayoutData(fdDescription);
-    wDescription.addListener(SWT.Modify, e -> setChanged());
+    wDescription.addListener(SWT.Modify, modifyListener);
 
     // The arguments of the user function
     //
@@ -140,7 +149,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdArguments.right = new FormAttachment(100, 0);
     fdArguments.bottom = new FormAttachment(40, 0);
     wParams.setLayoutData(fdArguments);
-    wParams.addListener(SWT.Modify, e -> setChanged());
+    wParams.addListener(SWT.Modify, modifyListener);
 
     // The expression
     //
@@ -159,15 +168,18 @@ public class UdfEditor extends MetadataEditor<Udf> {
     fdExression.right = new FormAttachment(100, 0);
     fdExression.bottom = new FormAttachment(100, -2 * margin);
     wExpression.setLayoutData(fdExression);
-    wExpression.addListener(SWT.Modify, e -> setChanged());
+    wExpression.addListener(SWT.Modify, modifyListener);
 
     this.setWidgetsContent();
+    
+    // Some widget set changed
+    this.resetChanged();
   }
 
 
   @Override
   public void setWidgetsContent() {
-    Udf udf = getMetadata();
+    UdfMeta udf = getMetadata();
 
     wName.setText(Const.NVL(udf.getName(), ""));
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
@@ -179,7 +191,7 @@ public class UdfEditor extends MetadataEditor<Udf> {
   }
 
   @Override
-  public void getWidgetsContent(Udf udf) {
+  public void getWidgetsContent(UdfMeta udf) {
     udf.setName(wName.getText());
     udf.setDescription(wDescription.getText());
     udf.setSource(wExpression.getText());

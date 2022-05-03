@@ -16,66 +16,14 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.metadata.api.HopMetadata;
-import org.apache.hop.metadata.api.HopMetadataBase;
-import org.apache.hop.metadata.api.HopMetadataProperty;
-import org.apache.hop.metadata.api.IHopMetadata;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
 
-@HopMetadata(
-    key = "udf",
-    name = "User defined function",
-    description = "User defined function for expression",
-    image = "function.svg")
-public class Udf extends HopMetadataBase implements IHopMetadata {
+public class Udf extends Function {
 
-  @HopMetadataProperty
-  private String description;
-  
-  @HopMetadataProperty
-  private String source;
-  
-  @HopMetadataProperty(key = "arguments")
-  private List<Argument> arguments;
-
-  public Udf() {
-    super();
-    arguments = new ArrayList<>();
-  }
-  
-  /**
-   * Gets Udf description
-   *
-   * @return value of description
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Set the Udf description
-   *  
-   * @param description The description to set
-   */
-  public void setDescription(String description) {
-    this.description = description;
-  }
-  
-  public List<Argument> getArguments() {
-    return arguments;
-  }
-
-  public void setArguments(List<Argument> arguments) {
-    this.arguments = arguments;
-  }
-  
-  public String getSource() {
-    return source;
-  }
-
-  public void setSource(String source) {
-    this.source = source;
+  public Udf(String id, String name, boolean isDeterministic, Object instance, Method method,
+      int min, int max, String category, String documentationUrl) {
+    super(id, name, isDeterministic, instance, method, min, max, category, documentationUrl);
+    // TODO Auto-generated constructor stub
   }
 
 }

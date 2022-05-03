@@ -14,17 +14,18 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= LEVENSHTEIN
+= JAROWINKLER
 
-Returns the Levenshtein distance between the two strings.
+Returns the Jaro Winkler distance between the two strings.
 
 == Syntax
 ----
-LEVENSHTEIN( <string> , <string> ] )
+JAROWINKLER( <string> , <string> ] )
 ----
 
 Return:: Integer
 
 == Usage
 
-Information about Levenshtein distance can be found here: https://en.wikipedia.org/wiki/Levenshtein_distance.
+* The function returns an integer between 0 and 100, where 0 indicates no similarity and 100 indicates an exact match.
+* Information about Jaro Winkler distance can be found here: https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance..

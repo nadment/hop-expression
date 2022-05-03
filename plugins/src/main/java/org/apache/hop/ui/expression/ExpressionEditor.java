@@ -44,6 +44,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
@@ -318,5 +319,10 @@ public class ExpressionEditor extends Composite {
         }
       });
     }
+  }
+
+  @Override
+  public void addListener(int eventType, Listener listener) {
+    sourceViewer.getTextWidget().addListener(eventType, listener);
   }
 }

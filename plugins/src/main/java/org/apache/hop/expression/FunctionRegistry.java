@@ -36,11 +36,7 @@ public class FunctionRegistry {
   private static final ILogChannel log = new LogChannel("Expression");
 
   /** Set of functions or alias by name. */
-  private static final HashMap<String, Function> functions  = new HashMap<>(256);
-  
-//  static {
-//    init();
-//  }
+  private static final HashMap<String, Function> functions = new HashMap<>(256);
 
   public static boolean isFunction(final String name) {
     return getFunction(name) != null;
@@ -50,7 +46,7 @@ public class FunctionRegistry {
   public static Set<Function> getFunctions() {
     return Set.copyOf(functions.values());
   }
-  
+
   /**
    * Get function by name or alias (ignore case)
    * 
@@ -72,17 +68,16 @@ public class FunctionRegistry {
   /**
    * Initialize the registry, keep private to keep this a singleton
    */
-  private FunctionRegistry() {
-  }
+  private FunctionRegistry() {}
 
   /**
-   * Register functions
+   * Discovery and register functions
    */
   public static void init() {
     if (log.isDebug()) {
       log.logDebug("Init expression FunctionRegistry");
     }
-    try {    
+    try {
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
       for (Method method : methods) {
         try {
@@ -93,34 +88,23 @@ public class FunctionRegistry {
           // If method is not static, need an instance to be invoked.
           // Operator combined with function is not static.
           try {
-            instance = clazz.getDeclaredConstructor().newInstance();            
+            instance = clazz.getDeclaredConstructor().newInstance();
           } catch (Exception e) {
             // If class doesn't have constructor, method should be static
           }
 
-          if (functions.containsKey(annotation.id())) {
-            log.logError("Function '{0}' already registred", annotation.id());
-            continue;
-          }
+          // Create function and register primary name
+          Function function = new Function(annotation.id(), annotation.id(),
+              annotation.deterministic(), instance, method, annotation.minArgs(),
+              annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
+          register(function.getId(), function);
 
-          if (log.isDebug()) {
-            log.logDebug("Register function '{0}'", annotation.id());
-          }
-
-          // Create function
-          Function function = new Function(annotation.id(), annotation.id(), annotation.deterministic(),
-              instance, method, annotation.minArgs(), annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
-          functions.put(function.getId(), function);
-  
-          // Create function alias name
+          // Create function and register alias name
           for (String name : annotation.names()) {
             function = new Function(annotation.id(), name, annotation.deterministic(), instance,
-                method, annotation.minArgs(), annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
-            functions.put(name, function);
-
-            if (log.isDebug()) {
-              log.logDebug("Register alias {1} to function {0}" + function.getId(), function.getName());
-            }
+                method, annotation.minArgs(), annotation.maxArgs(), annotation.category(),
+                annotation.documentationUrl());
+            register(name, function);
           }
         } catch (Exception e) {
           log.logError("Error registring function " + method, e);
@@ -178,5 +162,33 @@ public class FunctionRegistry {
       throw new HopException("Error finding annotation " + annotationName, e);
     }
     return methods;
+  }
+
+  public static void register(final String name, final Function function) {
+    if (name == null)
+      return;
+
+    if (functions.containsKey(name)) {
+      log.logError("Function '{0}' already registred", name);
+      return;
+    }
+    
+    if (log.isDebug()) {
+      log.logDebug("Register function '{0}'", name);
+    }
+
+    functions.put(name, function);
+  }
+
+  public static Function unregister(final String name) {
+    if (name == null)
+      return null;
+    
+    Function function = functions.remove(name);
+    if (function == null) {
+      log.logError("Function '{0}' not registred", name);
+    }
+
+    return function;
   }
 }

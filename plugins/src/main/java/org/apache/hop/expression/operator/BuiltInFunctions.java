@@ -21,6 +21,7 @@ import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.core.util.HopJaroWinklerDistance;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Error;
@@ -64,7 +65,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class Functions {
+public class BuiltInFunctions {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
 
@@ -76,7 +77,7 @@ public class Functions {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
   
-  private Functions() {
+  private BuiltInFunctions() {
     // Utility class
   }
   
@@ -679,8 +680,6 @@ public class Functions {
     return UUID.randomUUID().toString();
   }
 
-
-
   private static Object getHash(Object value, String algorithm) throws ExpressionException {
     if (value == null)
       return null;
@@ -751,6 +750,25 @@ public class Functions {
         .valueOf(StringUtils.getLevenshteinDistance(DataType.toString(v0), DataType.toString(v1)));
   }
 
+  /**
+   * The function compute Jaro Winkler distance.
+   */
+  @ScalarFunction(id = "JAROWINKLER", category = "i18n::Operator.Category.String", minArgs = 2,
+      maxArgs = 2, documentationUrl = "/docs/jarowinkler.html")
+  public static Object jarowinkler(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    HopJaroWinklerDistance jaro = new HopJaroWinklerDistance();
+    jaro.apply(DataType.toString(v0), DataType.toString(v1));
+    return Long.valueOf(Math.round(100*jaro.getJaroDistance()));
+  }  
+  
   /**
    * The function return the ASCII value of the first character in a string. If the string is empty,
    * a value of 0 is returned.
