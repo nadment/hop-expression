@@ -25,6 +25,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
+import org.apache.hop.expression.util.Coerse;
 
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
@@ -34,7 +35,7 @@ public class SimplifyExtractRule implements OptimizerRule {
   public IExpression apply(IExpressionContext context, Call call) {
     try {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
-        DatePart part = DatePart.to(call.getOperand(0).eval(context));
+        DatePart part = Coerse.toDatePart(call.getOperand(0).eval(context));
 
         switch (part) {
           case YEAR:

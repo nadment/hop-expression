@@ -16,14 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -48,13 +48,13 @@ public class Extract extends Operator {
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
     // Null throw exception
-    DatePart part = DatePart.to(operands[0].eval(context));
+    DatePart part = Coerse.toDatePart(operands[0].eval(context));
 
     Object value = operands[1].eval(context);
     if (value == null)
       return null;
 
-    return extract(DataType.toDate(value), part);
+    return extract(Coerse.toDate(value), part);
   }
 
   protected Object extract(ZonedDateTime datetime, DatePart part) throws ExpressionException {
@@ -113,7 +113,7 @@ public class Extract extends Operator {
       case TIMEZONE_MINUTE:
         return (datetime.getOffset().getTotalSeconds() / 60) % 60;
       default:
-        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
     }
 
   }

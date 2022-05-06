@@ -27,11 +27,11 @@ public class ExpressionException extends HopException {
    * 
    * @param error a error message
    */
-  public ExpressionException(Error error) {
+  public ExpressionException(ExpressionError error) {
     super(error.message());
   }
 
-  public ExpressionException(Error error, Object... values) {       
+  public ExpressionException(ExpressionError error, Object... values) {       
     super(error.message(values));
   }
 }

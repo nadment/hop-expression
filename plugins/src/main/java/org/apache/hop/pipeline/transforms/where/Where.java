@@ -19,10 +19,10 @@ package org.apache.hop.pipeline.transforms.where;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineHopMeta;
@@ -122,7 +122,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       data.expressionContext.setRow(row);
       Object predicat = data.condition.eval(data.expressionContext);
 
-      if (DataType.isPredicatTrue(predicat)) {
+      if (Coerse.isTrue(predicat)) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {
           if (log.isRowLevel()) {

@@ -24,18 +24,20 @@ import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.core.util.HopJaroWinklerDistance;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.Error;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Characters;
+import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Converter;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.FirstDayOfQuarter;
 import org.apache.hop.expression.util.LastDayOfQuarter;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.RegexpUtils;
+import org.apache.hop.expression.util.Regexp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -91,9 +93,9 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double d = DataType.toNumber(value);
+    Double d = Coerse.toNumber(value);
     if (d < -1.0 || d > 1.0) {
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
     }
     return FastMath.acos(d);
   }
@@ -105,7 +107,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.acosh(DataType.toNumber(value));
+    return FastMath.acosh(Coerse.toNumber(value));
   }
 
   @ScalarFunction(id = "ASINH", category = "i18n::Operator.Category.Trigonometry",
@@ -116,7 +118,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    return FastMath.asinh(DataType.toNumber(value));
+    return FastMath.asinh(Coerse.toNumber(value));
   }
 
   @ScalarFunction(id = "ATAN", category = "i18n::Operator.Category.Trigonometry",
@@ -127,7 +129,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    return FastMath.atan(DataType.toNumber(value));
+    return FastMath.atan(Coerse.toNumber(value));
   }
 
   @ScalarFunction(id = "ATANH", category = "i18n::Operator.Category.Trigonometry",
@@ -138,7 +140,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    return FastMath.atanh(DataType.toNumber(value));
+    return FastMath.atanh(Coerse.toNumber(value));
   }
 
   @ScalarFunction(id = "ATAN2", minArgs = 2, maxArgs = 2,
@@ -152,7 +154,7 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    return FastMath.atan2(DataType.toNumber(v0), DataType.toNumber(v1));
+    return FastMath.atan2(Coerse.toNumber(v0), Coerse.toNumber(v1));
   }
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
@@ -163,7 +165,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.cos(DataType.toNumber(value));
+    return FastMath.cos(Coerse.toNumber(value));
   }
 
   /** Returns the trigonometric cosine of the specified angle in radians in the specified number. */
@@ -174,7 +176,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.cosh(DataType.toNumber(value));
+    return FastMath.cosh(Coerse.toNumber(value));
   }
 
   /** Returns the trigonometric cotangent of the angle in radians specified by float expression. */
@@ -186,9 +188,9 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    double number = DataType.toNumber(value);
+    double number = Coerse.toNumber(value);
     if (number == 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 
     return FastMath.cos(number) / FastMath.sin(number);
   }
@@ -200,7 +202,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.asin(DataType.toNumber(value));
+    return FastMath.asin(Coerse.toNumber(value));
   }
 
   /**
@@ -213,7 +215,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    return FastMath.sin(DataType.toNumber(value));
+    return FastMath.sin(Coerse.toNumber(value));
   }
 
   /**
@@ -226,7 +228,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.sinh(DataType.toNumber(value));
+    return FastMath.sinh(Coerse.toNumber(value));
   }
 
   /**
@@ -239,7 +241,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.tan(DataType.toNumber(value));
+    return FastMath.tan(Coerse.toNumber(value));
   }
 
   /**
@@ -252,7 +254,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.tanh(DataType.toNumber(value));
+    return FastMath.tanh(Coerse.toNumber(value));
   }
 
   /**
@@ -284,7 +286,7 @@ public class BuiltInFunctions {
       return FastMath.abs((long) value);
     }
 
-    return DataType.toBigNumber(value).abs();
+    return Coerse.toBigNumber(value).abs();
   }
 
   /** Returns the sign of a number. */
@@ -295,7 +297,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    Double number = DataType.toNumber(value);
+    Double number = Coerse.toNumber(value);
     if (number == 0)
       return 0L;
     return (number > 0) ? 1L : -1L;
@@ -309,7 +311,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.toDegrees(DataType.toNumber(value));
+    return FastMath.toDegrees(Coerse.toNumber(value));
   }
 
   /** The function converts degrees to radians. */
@@ -320,7 +322,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.toRadians(DataType.toNumber(value));
+    return FastMath.toRadians(Coerse.toNumber(value));
   }
 
   /** Returns the exponential value of a numeric expression. */
@@ -331,7 +333,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.exp(DataType.toNumber(value));
+    return FastMath.exp(Coerse.toNumber(value));
   }
 
 
@@ -347,36 +349,36 @@ public class BuiltInFunctions {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = DataType.toBigNumber(right);
+      BigDecimal divisor = Coerse.toBigNumber(right);
 
       // prevent a division by zero and return zero
       if (divisor.signum() == 0)
         return divisor;
 
-      return DataType.toBigNumber(left).divide(DataType.toBigNumber(right), MathContext.DECIMAL128);
+      return Coerse.toBigNumber(left).divide(Coerse.toBigNumber(right), MathContext.DECIMAL128);
     }
     if (left instanceof Double || right instanceof Double) {
-      double divisor = DataType.toNumber(right);
+      double divisor = Coerse.toNumber(right);
       // prevent a division by zero and return zero
       if (divisor == 0D)
         return 0D;
-      return DataType.toNumber(left) / divisor;
+      return Coerse.toNumber(left) / divisor;
     }
     if (left instanceof Long || right instanceof Long) {
-      long divisor = DataType.toInteger(right);
+      long divisor = Coerse.toInteger(right);
       // prevent a division by zero and return zero
       if (divisor == 0L)
         return 0L;
 
-      return DataType.toInteger(left) / divisor;
+      return Coerse.toInteger(left) / divisor;
     }
 
-    BigDecimal divisor = DataType.toBigNumber(right);
+    BigDecimal divisor = Coerse.toBigNumber(right);
     // prevent a division by zero and return zero
     if (divisor.signum() == 0)
       return divisor;
 
-    return DataType.toBigNumber(left).divide(divisor);
+    return Coerse.toBigNumber(left).divide(divisor);
   }
 
   /** Returns the values rounded to the nearest equal or larger integer. */
@@ -390,9 +392,9 @@ public class BuiltInFunctions {
     if (value instanceof Long)
       return value;
     if (value instanceof BigDecimal) {
-      return DataType.toBigNumber(value).setScale(0, RoundingMode.CEILING);
+      return Coerse.toBigNumber(value).setScale(0, RoundingMode.CEILING);
     }
-    return FastMath.ceil(DataType.toNumber(value));
+    return FastMath.ceil(Coerse.toNumber(value));
   }
 
   /** Returns the values rounded to the nearest equal or smaller integer. */
@@ -406,9 +408,9 @@ public class BuiltInFunctions {
     if (value instanceof Long)
       return value;
     if (value instanceof BigDecimal) {
-      return DataType.toBigNumber(value).setScale(0, RoundingMode.FLOOR);
+      return Coerse.toBigNumber(value).setScale(0, RoundingMode.FLOOR);
     }
-    return FastMath.floor(DataType.toNumber(value));
+    return FastMath.floor(Coerse.toNumber(value));
   }
 
   /** Returns the values rounded to the nearest integer. */
@@ -419,7 +421,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return value;
-    return FastMath.round(DataType.toNumber(value));
+    return FastMath.round(Coerse.toNumber(value));
   }
   
   /**
@@ -432,9 +434,9 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = DataType.toNumber(value);
+    Double number = Coerse.toNumber(value);
     if (number <= 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
     return FastMath.log(number);
   }
 
@@ -452,11 +454,11 @@ public class BuiltInFunctions {
     Object value = operands[1].eval(context);
     if (value == null)
       return null;
-    Double number = DataType.toNumber(value);
+    Double number = Coerse.toNumber(value);
     if (number <= 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 
-    return FastMath.log(number) / FastMath.log(DataType.toNumber(base));
+    return FastMath.log(number) / FastMath.log(Coerse.toNumber(base));
   }
 
   /**
@@ -469,9 +471,9 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = DataType.toNumber(value);
+    Double number = Coerse.toNumber(value);
     if (number <= 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
     return FastMath.log10(number);
   }
 
@@ -487,7 +489,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return FastMath.cbrt(DataType.toNumber(value));
+    return FastMath.cbrt(Coerse.toNumber(value));
   }
 
   /**
@@ -502,9 +504,9 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = DataType.toNumber(value);
+    Double number = Coerse.toNumber(value);
     if (number < 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, value);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
     return FastMath.sqrt(number);
   }
 
@@ -519,7 +521,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    Double number = DataType.toNumber(value);
+    Double number = Coerse.toNumber(value);
     return FastMath.pow(number, 2);
   }
 
@@ -532,14 +534,14 @@ public class BuiltInFunctions {
     if (left == null || right == null) {
       return null;
     }
-    Double power = DataType.toNumber(right);
+    Double power = Coerse.toNumber(right);
     if (power == 0)
       return 1L;
     // Power can not be negative
     if (power < 0)
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, power);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, power);
 
-    return FastMath.pow(DataType.toNumber(left), DataType.toNumber(right));
+    return FastMath.pow(Coerse.toNumber(left), Coerse.toNumber(right));
   }
 
   /**
@@ -652,7 +654,7 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    return (DataType.toInteger(v0) & (1L << DataType.toInteger(v1).intValue())) != 0;
+    return (Coerse.toInteger(v0) & (1L << Coerse.toInteger(v1).intValue())) != 0;
   }
 
 
@@ -666,7 +668,7 @@ public class BuiltInFunctions {
     if (operands.length == 1) {
       Object value = operands[0].eval(context);
       // FIXME: What if multi random in the same with different SEED ?
-      random.setSeed(DataType.toInteger(value));
+      random.setSeed(Coerse.toInteger(value));
     }
     return random.nextDouble();
   }
@@ -686,10 +688,10 @@ public class BuiltInFunctions {
 
     try {
       MessageDigest md = MessageDigest.getInstance(algorithm);
-      md.update(DataType.toBinary(value));
+      md.update(Coerse.toBinary(value));
       return Hex.encodeHexString(md.digest());
     } catch (NoSuchAlgorithmException e) {
-      throw new ExpressionException(Error.ILLEGAL_ARGUMENT, algorithm);
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, algorithm);
     }
   }
 
@@ -707,9 +709,9 @@ public class BuiltInFunctions {
     if (v2 == null)
       return null;
 
-    String string = DataType.toString(v0);
-    String findChars = DataType.toString(v1);
-    String replaceChars = DataType.toString(v2);
+    String string = Coerse.toString(v0);
+    String findChars = Coerse.toString(v1);
+    String replaceChars = Coerse.toString(v2);
 
     StringBuilder buffer = new StringBuilder(string.length());
     // if shorter than findChars, then characters are removed
@@ -747,7 +749,7 @@ public class BuiltInFunctions {
       return null;
 
     return Long
-        .valueOf(StringUtils.getLevenshteinDistance(DataType.toString(v0), DataType.toString(v1)));
+        .valueOf(StringUtils.getLevenshteinDistance(Coerse.toString(v0), Coerse.toString(v1)));
   }
 
   /**
@@ -765,7 +767,7 @@ public class BuiltInFunctions {
       return null;
 
     HopJaroWinklerDistance jaro = new HopJaroWinklerDistance();
-    jaro.apply(DataType.toString(v0), DataType.toString(v1));
+    jaro.apply(Coerse.toString(v0), Coerse.toString(v1));
     return Long.valueOf(Math.round(100*jaro.getJaroDistance()));
   }  
   
@@ -780,7 +782,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String string = DataType.toString(value);
+    String string = Coerse.toString(value);
     int ascii = 0;
     if (string.length() > 0) {
       ascii = string.charAt(0);
@@ -801,10 +803,10 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    int codePoint = DataType.toInteger(value).intValue();
+    int codePoint = Coerse.toInteger(value).intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
-      throw new ExpressionException(Error.ARGUMENT_OUT_OF_RANGE, codePoint);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, codePoint);
     }
     return new String(Character.toChars(codePoint));
   }
@@ -820,7 +822,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    int length = DataType.toInteger(value).intValue();
+    int length = Coerse.toInteger(value).intValue();
     if (length < 0)
       return null;
 
@@ -844,7 +846,7 @@ public class BuiltInFunctions {
       return null;
 
     if (value instanceof byte[]) {
-      byte[] data = DataType.toBinary(value);
+      byte[] data = Coerse.toBinary(value);
       byte[] result = new byte[data.length];
       for (int i = data.length - 1, j = 0; i >= 0; i--, j++) {
         result[j] = data[i];
@@ -852,7 +854,7 @@ public class BuiltInFunctions {
       return result;
     }
 
-    StringBuilder builder = new StringBuilder(DataType.toString(value)).reverse();
+    StringBuilder builder = new StringBuilder(Coerse.toString(value)).reverse();
     return builder.toString();
   }
 
@@ -866,7 +868,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return SOUNDEX.soundex(DataType.toString(value));
+    return SOUNDEX.soundex(Coerse.toString(value));
   }
 
   @ScalarFunction(id = "DIFFERENCE", category = "i18n::Operator.Category.String", minArgs = 2,
@@ -881,7 +883,7 @@ public class BuiltInFunctions {
       return null;
 
     try {
-      return Long.valueOf(SOUNDEX.difference(DataType.toString(v0), DataType.toString(v1)));
+      return Long.valueOf(SOUNDEX.difference(Coerse.toString(v0), Coerse.toString(v1)));
     } catch (EncoderException e) {
       return null;
     }
@@ -900,7 +902,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String string = DataType.toString(value);
+    String string = Coerse.toString(value);
     int codePoint = 0;
     if (string.length() > 0) {
       codePoint = string.codePointAt(0);
@@ -920,16 +922,16 @@ public class BuiltInFunctions {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
 
     Object v1 = operands[1].eval(context);
-    int length = DataType.toInteger(v1).intValue();
+    int length = Coerse.toInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      pad = DataType.toString(v2);
+      pad = Coerse.toString(v2);
     }
 
     if (length < 0) {
@@ -978,16 +980,16 @@ public class BuiltInFunctions {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
 
     Object v1 = operands[1].eval(context);
-    int length = DataType.toInteger(v1).intValue();
+    int length = Coerse.toInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      pad = DataType.toString(v2);
+      pad = Coerse.toString(v2);
     }
 
     if (length < 0) {
@@ -1038,7 +1040,7 @@ public class BuiltInFunctions {
     if (value instanceof byte[]) {
       return ((byte[]) value).length;
     }
-    return Long.valueOf(DataType.toString(value).length());
+    return Long.valueOf(Coerse.toString(value).length());
   }
 
   /**
@@ -1053,7 +1055,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return DataType.toString(value).toLowerCase(Locale.getDefault());
+    return Coerse.toString(value).toLowerCase(Locale.getDefault());
   }
 
   /**
@@ -1068,7 +1070,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return DataType.toString(value).toUpperCase(Locale.getDefault());
+    return Coerse.toString(value).toUpperCase(Locale.getDefault());
   }
 
   /**
@@ -1083,7 +1085,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    String str = DataType.toString(value);
+    String str = Coerse.toString(value);
     int length = str.length();
     StringBuilder builder = new StringBuilder(length);
     boolean capitalizeNext = true;
@@ -1116,7 +1118,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    String string = DataType.toString(value);
+    String string = Coerse.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
@@ -1124,7 +1126,7 @@ public class BuiltInFunctions {
       if (stripChars == null)
         return null;
 
-      characters = DataType.toString(stripChars);
+      characters = Coerse.toString(stripChars);
     }
 
     return StringUtils.strip(string, characters);
@@ -1143,14 +1145,14 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    String string = DataType.toString(value);
+    String string = Coerse.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
       Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
-      characters = DataType.toString(stripChars);
+      characters = Coerse.toString(stripChars);
     }
 
     return StringUtils.stripStart(string, characters);
@@ -1169,14 +1171,14 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    String string = DataType.toString(value);
+    String string = Coerse.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
       Object stripChars = operands[1].eval(context);
       if (stripChars == null)
         return null;
-      characters = DataType.toString(stripChars);
+      characters = Coerse.toString(stripChars);
     }
 
     return StringUtils.stripEnd(string, characters);
@@ -1198,7 +1200,7 @@ public class BuiltInFunctions {
     if (v0 == null)
       return null;
 
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
     char[] a = str.toCharArray();
     int n = 1;
     for (int i = 1; i < a.length; i++) {
@@ -1231,7 +1233,7 @@ public class BuiltInFunctions {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int length = DataType.toInteger(v1).intValue();
+    int length = Coerse.toInteger(v1).intValue();
     if (length < 0) {
       length = 0;
     }
@@ -1245,7 +1247,7 @@ public class BuiltInFunctions {
       return result;
     }
 
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
     if (str.length() <= length) {
       return str;
     }
@@ -1268,7 +1270,7 @@ public class BuiltInFunctions {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int length = DataType.toInteger(v1).intValue();
+    int length = Coerse.toInteger(v1).intValue();
     if (length < 0) {
       length = 0;
     }
@@ -1282,7 +1284,7 @@ public class BuiltInFunctions {
       return result;
     }
 
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
     if (str.length() <= length) {
       return str;
     }
@@ -1299,7 +1301,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String str = DataType.toString(value);
+    String str = Coerse.toString(value);
 
     return StringEscapeUtils.escapeJava(str);
   }
@@ -1315,7 +1317,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    String str = DataType.toString(value);
+    String str = Coerse.toString(value);
 
     return StringEscapeUtils.unescapeJava(str);
   }
@@ -1333,9 +1335,9 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
     try {
-      return URLEncoder.encode(DataType.toString(value), StandardCharsets.UTF_8.name());
+      return URLEncoder.encode(Coerse.toString(value), StandardCharsets.UTF_8.name());
     } catch (Exception e) {
-      throw new ExpressionException(Error.URLENCODE_ERROR, value, e.getMessage());
+      throw new ExpressionException(ExpressionError.URLENCODE_ERROR, value, e.getMessage());
     }
   }
 
@@ -1352,9 +1354,9 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
     try {
-      return URLDecoder.decode(DataType.toString(value), StandardCharsets.UTF_8.name());
+      return URLDecoder.decode(Coerse.toString(value), StandardCharsets.UTF_8.name());
     } catch (Exception e) {
-      throw new ExpressionException(Error.URLDECODE_ERROR, value, e.getMessage());
+      throw new ExpressionException(ExpressionError.URLDECODE_ERROR, value, e.getMessage());
     }
   }
 
@@ -1386,7 +1388,7 @@ public class BuiltInFunctions {
       return Boolean.FALSE;
     }
 
-    return DataType.compareTo(v0, v1) == 0;
+    return Coerse.compare(v0, v1) == 0;
   }
 
   // -------------------------------------------------------------
@@ -1408,7 +1410,7 @@ public class BuiltInFunctions {
       // null is always smaller
       if (value == null)
         continue;
-      if (result == null || DataType.compareTo(value, result) < 0) {
+      if (result == null || Coerse.compare(value, result) < 0) {
         result = value;
       }
     }
@@ -1428,7 +1430,7 @@ public class BuiltInFunctions {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.eval(context);
-      if (DataType.compareTo(result, value) < 0)
+      if (Coerse.compare(result, value) < 0)
         result = value;
     }
 
@@ -1446,7 +1448,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    return operands[DataType.toBoolean(value) ? 1 : 2].eval(context);
+    return operands[Coerse.toBoolean(value) ? 1 : 2].eval(context);
   }
 
   /**
@@ -1505,7 +1507,7 @@ public class BuiltInFunctions {
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
       Object search = operands[i].eval(context);
-      if (DataType.compareTo(value, search) == 0) {
+      if (Coerse.compare(value, search) == 0) {
         index = i + 1;
         break;
       }
@@ -1527,7 +1529,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     Object compare = operands[1].eval(context);
 
-    if (DataType.compareTo(value, compare) == 0)
+    if (Coerse.compare(value, compare) == 0)
       return null;
 
     return value;
@@ -1557,7 +1559,7 @@ public class BuiltInFunctions {
       throws ExpressionException {
     Object value = operands[0].eval(context);
 
-    if (DataType.toInteger(value) == 0L)
+    if (Coerse.toInteger(value) == 0L)
       return null;
 
     return value;
@@ -1576,7 +1578,7 @@ public class BuiltInFunctions {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    int count = DataType.toInteger(v1).intValue();
+    int count = Coerse.toInteger(v1).intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -1591,7 +1593,7 @@ public class BuiltInFunctions {
       }
     }
 
-    String value = DataType.toString(v0);
+    String value = Coerse.toString(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);
@@ -1620,37 +1622,37 @@ public class BuiltInFunctions {
     if (v3 == null)
       return null;
 
-    int position = DataType.toInteger(v1).intValue();
-    int length = DataType.toInteger(v2).intValue();
+    int position = Coerse.toInteger(v1).intValue();
+    int length = Coerse.toInteger(v2).intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
       int start = Math.min(Math.max(0, position - 1), bytes.length);
       length = Math.min(length, bytes.length);
       if (length < 0)
-        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, length);
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, length);
 
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);
-        buffer.write(DataType.toBinary(v3));
+        buffer.write(Coerse.toBinary(v3));
         buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
-        throw new ExpressionException(Error.INTERNAL_ERROR, e);
+        throw new ExpressionException(ExpressionError.INTERNAL_ERROR, e);
       }
     }
 
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
     int start = Math.min(Math.max(0, position - 1), str.length());
 
     length = Math.min(length, str.length());
     if (length < 0)
-      throw new ExpressionException(Error.ILLEGAL_ARGUMENT, length);
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, length);
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));
-    builder.append(DataType.toString(v3));
+    builder.append(Coerse.toString(v3));
     builder.append(str.substring(start + length));
     return builder.toString();
   }
@@ -1670,13 +1672,13 @@ public class BuiltInFunctions {
       return null;
     }
 
-    String str = DataType.toString(v0);
-    String substr = DataType.toString(v1);
+    String str = Coerse.toString(v0);
+    String substr = Coerse.toString(v1);
 
     // If 3 operands
     int start = 0;
     if (operands.length == 3) {
-      start = DataType.toInteger(operands[2].eval(context)).intValue();
+      start = Coerse.toInteger(operands[2].eval(context)).intValue();
 
       if (start > 0)
         start -= 1;
@@ -1703,12 +1705,12 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    String string = DataType.toString(v0);
-    String search = DataType.toString(v1);
+    String string = Coerse.toString(v0);
+    String search = Coerse.toString(v1);
 
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      String replacement = DataType.toString(v2);
+      String replacement = Coerse.toString(v2);
       return string.replace(search, replacement);
     }
 
@@ -1725,9 +1727,9 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.String", documentationUrl = "/docs/substring.html")
   public static Object substring(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    String string = DataType.toString(operands[0].eval(context));
+    String string = Coerse.toString(operands[0].eval(context));
     int length = string.length();
-    int start = DataType.toInteger(operands[1].eval(context)).intValue();
+    int start = Coerse.toInteger(operands[1].eval(context)).intValue();
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -1741,7 +1743,7 @@ public class BuiltInFunctions {
       return string.substring(start - 1);
     }
 
-    int end = start + DataType.toInteger(operands[2].eval(context)).intValue();
+    int end = start + Coerse.toInteger(operands[2].eval(context)).intValue();
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);
@@ -1762,13 +1764,13 @@ public class BuiltInFunctions {
     if (v0 == null) {
       return null;
     }
-    String input = DataType.toString(v0);
+    String input = Coerse.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = DataType.toString(v1);
+    String regexp = Coerse.toString(v1);
 
     // An empty pattern matches nothing
     if (regexp.length() == 0)
@@ -1779,7 +1781,7 @@ public class BuiltInFunctions {
     if (operands.length >= 3) {
       Object v2 = operands[2].eval(context);
       if (v2 != null) {
-        replacement = DataType.toString(v2);
+        replacement = Coerse.toString(v2);
       }
     }
 
@@ -1788,7 +1790,7 @@ public class BuiltInFunctions {
     if (operands.length >= 4) {
       Object v3 = operands[3].eval(context);
       if (v3 != null) {
-        position = DataType.toInteger(v3).intValue();
+        position = Coerse.toInteger(v3).intValue();
       }
     }
 
@@ -1797,14 +1799,14 @@ public class BuiltInFunctions {
     if (operands.length >= 5) {
       Object v4 = operands[4].eval(context);
       if (v4 != null) {
-        occurrence = DataType.toInteger(v4).intValue();
+        occurrence = Coerse.toInteger(v4).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].eval(context);
-      flags = RegexpUtils.parseFlags(DataType.toString(v5));
+      flags = Regexp.parseFlags(Coerse.toString(v5));
     }
 
     try {
@@ -1843,9 +1845,9 @@ public class BuiltInFunctions {
         return buffer.toString();
       }
     } catch (PatternSyntaxException e) {      
-      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     } catch (Exception e) {
-      throw new ExpressionException(Error.REGEXP_REPLACE_ERROR, replacement);
+      throw new ExpressionException(ExpressionError.REGEXP_REPLACE_ERROR, replacement);
     }
   }
 
@@ -1857,13 +1859,13 @@ public class BuiltInFunctions {
     if (v0 == null) {
       return null;
     }
-    String input = DataType.toString(v0);
+    String input = Coerse.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = DataType.toString(v1);
+    String regexp = Coerse.toString(v1);
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return null;
@@ -1873,7 +1875,7 @@ public class BuiltInFunctions {
     if (operands.length >= 3) {
       Object v2 = operands[2].eval(context);
       if (v2 != null) {
-        position = DataType.toInteger(v2).intValue();
+        position = Coerse.toInteger(v2).intValue();
       }
     }
 
@@ -1882,14 +1884,14 @@ public class BuiltInFunctions {
     if (operands.length >= 4) {
       Object v3 = operands[3].eval(context);
       if (v3 != null) {
-        occurrence = DataType.toInteger(v3).intValue();
+        occurrence = Coerse.toInteger(v3).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 5) {
       Object v4 = operands[5].eval(context);
-      flags = RegexpUtils.parseFlags(DataType.toString(v4));
+      flags = Regexp.parseFlags(Coerse.toString(v4));
     }
 
     try {
@@ -1906,7 +1908,7 @@ public class BuiltInFunctions {
 
       return null;
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 
@@ -1919,13 +1921,13 @@ public class BuiltInFunctions {
     if (v0 == null) {
       return null;
     }
-    String input = DataType.toString(v0);
+    String input = Coerse.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = DataType.toString(v1);
+    String regexp = Coerse.toString(v1);
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return 0L;
@@ -1935,7 +1937,7 @@ public class BuiltInFunctions {
     if (operands.length >= 3) {
       Object v2 = operands[2].eval(context);
       if (v2 != null) {
-        position = DataType.toInteger(v2).intValue();
+        position = Coerse.toInteger(v2).intValue();
       }
     }
 
@@ -1944,7 +1946,7 @@ public class BuiltInFunctions {
     if (operands.length >= 4) {
       Object v3 = operands[3].eval(context);
       if (v3 != null) {
-        occurrence = DataType.toInteger(v3).intValue();
+        occurrence = Coerse.toInteger(v3).intValue();
       }
     }
 
@@ -1953,7 +1955,7 @@ public class BuiltInFunctions {
     if (operands.length >= 5) {
       Object v4 = operands[4].eval(context);
       if (v4 != null) {
-        returnOption = DataType.toInteger(v4).intValue();
+        returnOption = Coerse.toInteger(v4).intValue();
       }
     }
 
@@ -1961,7 +1963,7 @@ public class BuiltInFunctions {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].eval(context);
-      flags = RegexpUtils.parseFlags(DataType.toString(v5));
+      flags = Regexp.parseFlags(Coerse.toString(v5));
     }
 
     try {
@@ -1979,7 +1981,7 @@ public class BuiltInFunctions {
 
       return 0L;
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 
@@ -2002,8 +2004,8 @@ public class BuiltInFunctions {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = DataType.toBinary(v0);
-      byte[] prefix = DataType.toBinary(v1);
+      byte[] data = Coerse.toBinary(v0);
+      byte[] prefix = Coerse.toBinary(v1);
       if (prefix.length > data.length) {
         return Boolean.TRUE;
       } else {
@@ -2017,7 +2019,7 @@ public class BuiltInFunctions {
       return Boolean.TRUE;
     }
 
-    return DataType.toString(v0).startsWith(DataType.toString(v1));
+    return Coerse.toString(v0).startsWith(Coerse.toString(v1));
   }
 
   /**
@@ -2038,8 +2040,8 @@ public class BuiltInFunctions {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = DataType.toBinary(v0);
-      byte[] suffix = DataType.toBinary(v1);
+      byte[] data = Coerse.toBinary(v0);
+      byte[] suffix = Coerse.toBinary(v1);
       int startOffset = data.length - suffix.length;
 
       if (startOffset < 0) {
@@ -2055,7 +2057,7 @@ public class BuiltInFunctions {
       return Boolean.TRUE;
     }
 
-    return DataType.toString(v0).endsWith(DataType.toString(v1));
+    return Coerse.toString(v0).endsWith(Coerse.toString(v1));
   }
 
 
@@ -2072,7 +2074,7 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    if (DataType.toString(v0).contains(DataType.toString(v1)))
+    if (Coerse.toString(v0).contains(Coerse.toString(v1)))
       return Boolean.TRUE;
 
     return Boolean.FALSE;
@@ -2102,9 +2104,9 @@ public class BuiltInFunctions {
     if (v2 == null)
       return null;
     
-    String str = DataType.toString(v0);
-    String delimiter = DataType.toString(v1);
-    int index = DataType.toInteger(v2).intValue();
+    String str = Coerse.toString(v0);
+    String delimiter = Coerse.toString(v1);
+    int index = Coerse.toInteger(v2).intValue();
     
     String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
     
@@ -2134,7 +2136,7 @@ public class BuiltInFunctions {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
       return null;
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
 
     // Default value
     String delimiter = " ";
@@ -2146,21 +2148,21 @@ public class BuiltInFunctions {
         return null;
     
       if ( v1 instanceof Number ) {
-        index = DataType.toInteger(v1).intValue();   
+        index = Coerse.toInteger(v1).intValue();   
       }
       else {
-        delimiter = DataType.toString(v1);
+        delimiter = Coerse.toString(v1);
       }
     }
     else if ( operands.length==3) {
       Object v1 = operands[1].eval(context);
       if (v1 == null)
         return null;
-      delimiter = DataType.toString(v1);
+      delimiter = Coerse.toString(v1);
       Object v2 = operands[2].eval(context);
       if (v2 == null)
         return null;
-      index = DataType.toInteger(v2).intValue();      
+      index = Coerse.toInteger(v2).intValue();      
     }
     
     String[] parts = StringUtils.split(str,delimiter);
@@ -2187,7 +2189,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    return DataType.convertTo(value, DataType.BOOLEAN, null);
+    return Converter.to(value, DataType.BOOLEAN, null);
   }
 
   /**
@@ -2201,7 +2203,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
     try {
-      return DataType.convertTo(value, DataType.BOOLEAN, null);
+      return Converter.to(value, DataType.BOOLEAN, null);
     } catch (Exception e) {
       return null;
     }
@@ -2221,7 +2223,7 @@ public class BuiltInFunctions {
     if (operands.length > 1) {
       Object v1 = operands[1].eval(context);
       if (v1 != null)
-        pattern = DataType.toString(v1);
+        pattern = Coerse.toString(v1);
     }
 
     if ( v0 instanceof String) {
@@ -2229,14 +2231,14 @@ public class BuiltInFunctions {
     }
     
     if ( v0 instanceof Number ) {
-      return NumberFormat.of(pattern).format(DataType.toBigNumber(v0));
+      return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
     }
     
     if ( v0 instanceof ZonedDateTime ) {
-      return DateTimeFormat.of(pattern).format(DataType.toDate(v0));
+      return DateTimeFormat.of(pattern).format(Coerse.toDate(v0));
     }
     
-    throw new ExpressionException(Error.UNEXPECTED_DATA_TYPE, "TO_CHAR", DataType.name(v0));
+    throw new ExpressionException(ExpressionError.UNEXPECTED_DATA_TYPE, "TO_CHAR", DataType.name(v0));
   }
 
   /** Converts a string expression to a number value. */
@@ -2249,16 +2251,16 @@ public class BuiltInFunctions {
       return null;
 
     try {
-      String str = DataType.toString(v0);
+      String str = Coerse.toString(v0);
       String format = null;
 
       // With format
       if (operands.length == 2) {
-        format = DataType.toString(operands[1].eval(context));
+        format = Coerse.toString(operands[1].eval(context));
       }
       return NumberFormat.of(format).parse(str);
     } catch (ParseException e) {
-      throw new ExpressionException(Error.PARSE_ERROR, e.getMessage());
+      throw new ExpressionException(ExpressionError.PARSE_ERROR, e.getMessage());
     }
   }
 
@@ -2272,12 +2274,12 @@ public class BuiltInFunctions {
       return null;
 
     try {
-      String str = DataType.toString(v0);
+      String str = Coerse.toString(v0);
       String format = null;
 
       // With format
       if (operands.length == 2) {
-        format = DataType.toString(operands[1].eval(context));
+        format = Coerse.toString(operands[1].eval(context));
       }
       return NumberFormat.of(format).parse(str);
     } catch (Exception e) {
@@ -2303,14 +2305,14 @@ public class BuiltInFunctions {
     if (operands.length > 1) {
       Object v1 = operands[1].eval(context);
       if (v1 != null)
-        format = DataType.toString(v1);
+        format = Coerse.toString(v1);
     } else {
       format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
     try {
-      return DateTimeFormat.of(format).parse(DataType.toString(v0));
+      return DateTimeFormat.of(format).parse(Coerse.toString(v0));
     } catch (ParseException e) {
-      throw new ExpressionException(Error.PARSE_ERROR, e.getMessage());
+      throw new ExpressionException(ExpressionError.PARSE_ERROR, e.getMessage());
     }
   }
 
@@ -2333,12 +2335,12 @@ public class BuiltInFunctions {
     if (operands.length > 1) {
       Object v1 = operands[1].eval(context);
       if (v1 != null)
-        format = DataType.toString(v1);
+        format = Coerse.toString(v1);
     } else {
       format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
     try {
-      return DateTimeFormat.of(format).parse(DataType.toString(v0));
+      return DateTimeFormat.of(format).parse(Coerse.toString(v0));
     } catch (ParseException | RuntimeException e) {
       // Ignore
     }
@@ -2357,13 +2359,13 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    BigDecimal number = DataType.toBigNumber(value);
+    BigDecimal number = Coerse.toBigNumber(value);
     int scale = 0;
     if (operands.length == 2) {
       Object pattern = operands[1].eval(context);
       if (pattern == null)
         return null;
-      scale = DataType.toInteger(pattern).intValue();
+      scale = Coerse.toInteger(pattern).intValue();
     }
 
     if (scale > number.scale())
@@ -2394,9 +2396,9 @@ public class BuiltInFunctions {
     if (v2 == null)
       return null;
 
-    int year = DataType.toInteger(v0).intValue();
-    int month = DataType.toInteger(v1).intValue();
-    int day = DataType.toInteger(v2).intValue();
+    int year = Coerse.toInteger(v0).intValue();
+    int month = Coerse.toInteger(v1).intValue();
+    int day = Coerse.toInteger(v2).intValue();
 
     int monthsToAdd = 0;
     if (month < 1) {
@@ -2432,13 +2434,13 @@ public class BuiltInFunctions {
   public static Object date_trunc(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
 
-    DatePart part = DatePart.to(operands[0].eval(context));
+    DatePart part = Coerse.toDatePart(operands[0].eval(context));
 
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
 
-    ZonedDateTime datetime = DataType.toDate(v1);
+    ZonedDateTime datetime = Coerse.toDate(v1);
 
     switch (part) {
       case MILLENNIUM:
@@ -2477,7 +2479,7 @@ public class BuiltInFunctions {
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
       default:        
-        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
     }
   }
 
@@ -2491,7 +2493,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getDayOfMonth());
+    return Long.valueOf(Coerse.toDate(value).getDayOfMonth());
   }
 
   /**
@@ -2504,7 +2506,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    DayOfWeek weekday = DataType.toDate(value).getDayOfWeek();
+    DayOfWeek weekday = Coerse.toDate(value).getDayOfWeek();
     return weekday.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
 
@@ -2519,7 +2521,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    DayOfWeek dow = DataType.toDate(value).getDayOfWeek();
+    DayOfWeek dow = Coerse.toDate(value).getDayOfWeek();
     int result = dow.getValue() + 1;
     if (result == 8)
       result = 1;
@@ -2537,7 +2539,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    DayOfWeek dow = DataType.toDate(value).getDayOfWeek();
+    DayOfWeek dow = Coerse.toDate(value).getDayOfWeek();
     return Long.valueOf(dow.getValue());
   }
 
@@ -2549,7 +2551,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getDayOfYear());
+    return Long.valueOf(Coerse.toDate(value).getDayOfYear());
   }
 
   /** Month of the year (number from 1-12). */
@@ -2560,7 +2562,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getMonthValue());
+    return Long.valueOf(Coerse.toDate(value).getMonthValue());
   }
 
   /** Returns the name of the month (in English). */
@@ -2572,7 +2574,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    ZonedDateTime datetime = DataType.toDate(value);
+    ZonedDateTime datetime = Coerse.toDate(value);
     Month month = datetime.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
@@ -2585,7 +2587,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).get(IsoFields.QUARTER_OF_YEAR));
+    return Long.valueOf(Coerse.toDate(value).get(IsoFields.QUARTER_OF_YEAR));
   }
 
   /** The year of a date */
@@ -2596,7 +2598,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getYear());
+    return Long.valueOf(Coerse.toDate(value).getYear());
   }
 
   /** Year of the week ISO semantics */
@@ -2607,7 +2609,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).get(IsoFields.WEEK_BASED_YEAR));
+    return Long.valueOf(Coerse.toDate(value).get(IsoFields.WEEK_BASED_YEAR));
   }
 
   /** Week of the year (number from 1-54). */
@@ -2618,7 +2620,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).get(ChronoField.ALIGNED_WEEK_OF_YEAR));
+    return Long.valueOf(Coerse.toDate(value).get(ChronoField.ALIGNED_WEEK_OF_YEAR));
   }
 
   /** Week of the year ISO semantics (number from 1-53). */
@@ -2629,7 +2631,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
+    return Long.valueOf(Coerse.toDate(value).get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
   }
 
   /** The hour (0-23). @See {@link #MINUTE}, {@link #SECOND} */
@@ -2640,7 +2642,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getHour());
+    return Long.valueOf(Coerse.toDate(value).getHour());
   }
 
   /** The minute (0-59). @See {@link #HOUR}, {@link #SECOND} */
@@ -2651,7 +2653,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getMinute());
+    return Long.valueOf(Coerse.toDate(value).getMinute());
   }
 
   /** The second (0-59). @See {@link #HOUR}, {@link #MINUTE} */
@@ -2662,7 +2664,7 @@ public class BuiltInFunctions {
     Object value = operands[0].eval(context);
     if (value == null)
       return null;
-    return Long.valueOf(DataType.toDate(value).getSecond());
+    return Long.valueOf(Coerse.toDate(value).getSecond());
   }
 
   /** Adds or subtracts a specified number of days to a date or timestamp */
@@ -2670,14 +2672,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_days.html")
   public static Object add_days(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object days = operands[1].eval(context);
     if (days == null)
       return null;
 
-    return value.plusDays(DataType.toInteger(days));
+    return value.plusDays(Coerse.toInteger(days));
   }
 
   /** Adds or subtracts a specified number of weeks to a date or timestamp */
@@ -2685,14 +2687,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_weeks.html")
   public static Object add_weeks(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object weeks = operands[1].eval(context);
     if (weeks == null)
       return null;
 
-    return value.plusWeeks(DataType.toInteger(weeks));
+    return value.plusWeeks(Coerse.toInteger(weeks));
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
@@ -2700,14 +2702,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_months.html")
   public static Object add_months(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object months = operands[1].eval(context);
     if (months == null)
       return null;
 
-    return value.plusMonths(DataType.toInteger(months));
+    return value.plusMonths(Coerse.toInteger(months));
   }
 
   /** Adds or subtracts a specified number of months to a date or timestamp */
@@ -2715,14 +2717,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_years.html")
   public static Object add_years(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object years = operands[1].eval(context);
     if (years == null)
       return null;
 
-    return value.plusYears(DataType.toInteger(years));
+    return value.plusYears(Coerse.toInteger(years));
   }
 
   /** Adds or subtracts a specified number of hours to a date or timestamp */
@@ -2730,14 +2732,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_hours.html")
   public static Object add_hours(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object hours = operands[1].eval(context);
     if (hours == null)
       return null;
 
-    return value.plusHours(DataType.toInteger(hours));
+    return value.plusHours(Coerse.toInteger(hours));
   }
 
   /** Adds or subtracts a specified number of minutes to a date or timestamp */
@@ -2745,14 +2747,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_minutes.html")
   public static Object add_minutes(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return value;
     Object minutes = operands[1].eval(context);
     if (minutes == null)
       return null;
 
-    return value.plusMinutes(DataType.toInteger(minutes));
+    return value.plusMinutes(Coerse.toInteger(minutes));
   }
 
   /**
@@ -2762,14 +2764,14 @@ public class BuiltInFunctions {
       category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_seconds.html")
   public static Object add_seconds(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    ZonedDateTime value = DataType.toDate(operands[0].eval(context));
+    ZonedDateTime value = Coerse.toDate(operands[0].eval(context));
     if (value == null)
       return null;
     Object seconds = operands[1].eval(context);
     if (seconds == null)
       return null;
 
-    return value.plusSeconds(DataType.toInteger(seconds));
+    return value.plusSeconds(Coerse.toInteger(seconds));
   }
 
   /**
@@ -2786,8 +2788,8 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = DataType.toDate(v0);
-    ZonedDateTime endDateTime = DataType.toDate(v1);
+    ZonedDateTime startDateTime = Coerse.toDate(v0);
+    ZonedDateTime endDateTime = Coerse.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.DAYS);
   }
 
@@ -2805,8 +2807,8 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = DataType.toDate(v0);
-    ZonedDateTime endDateTime = DataType.toDate(v1);
+    ZonedDateTime startDateTime = Coerse.toDate(v0);
+    ZonedDateTime endDateTime = Coerse.toDate(v1);
     long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
     return days / 31d;
   }
@@ -2823,8 +2825,8 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = DataType.toDate(v0);
-    ZonedDateTime endDateTime = DataType.toDate(v1);
+    ZonedDateTime startDateTime = Coerse.toDate(v0);
+    ZonedDateTime endDateTime = Coerse.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.YEARS);
   }
 
@@ -2840,8 +2842,8 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = DataType.toDate(v0);
-    ZonedDateTime endDateTime = DataType.toDate(v1);
+    ZonedDateTime startDateTime = Coerse.toDate(v0);
+    ZonedDateTime endDateTime = Coerse.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.HOURS);
   }
 
@@ -2857,8 +2859,8 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = DataType.toDate(v0);
-    ZonedDateTime endDateTime = DataType.toDate(v1);
+    ZonedDateTime startDateTime = Coerse.toDate(v0);
+    ZonedDateTime endDateTime = Coerse.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.MINUTES);
   }
 
@@ -2874,8 +2876,8 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = DataType.toDate(v0);
-    ZonedDateTime endDateTime = DataType.toDate(v1);
+    ZonedDateTime startDateTime = Coerse.toDate(v0);
+    ZonedDateTime endDateTime = Coerse.toDate(v1);
     return startDateTime.until(endDateTime, ChronoUnit.SECONDS);
   }
 
@@ -2894,7 +2896,7 @@ public class BuiltInFunctions {
       Object v1 = operands[1].eval(context);
       if ( v1==null)
         return null;
-      DatePart part = DatePart.to(v1);
+      DatePart part = Coerse.toDatePart(v1);
       switch(part) {
         case YEAR:
           adjuster = TemporalAdjusters.firstDayOfYear();
@@ -2909,12 +2911,12 @@ public class BuiltInFunctions {
           adjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
           break;
         default:
-          throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
+          throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
       }      
     }
     
     // Remove time and adjust
-    return DataType.toDate(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
+    return Coerse.toDate(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
   }
 
   /** Returns the last day of the date part. */
@@ -2931,7 +2933,7 @@ public class BuiltInFunctions {
       Object v1 = operands[1].eval(context);
       if ( v1==null)
         return null;
-      DatePart part = DatePart.to(v1);
+      DatePart part = Coerse.toDatePart(v1);
       switch(part) {
         case YEAR:
           adjuster = TemporalAdjusters.lastDayOfYear();
@@ -2946,12 +2948,12 @@ public class BuiltInFunctions {
           adjuster = TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
           break;
         default:
-          throw new ExpressionException(Error.ILLEGAL_ARGUMENT, part);
+          throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
       }      
     }
 
     // Remove time and adjust
-    return DataType.toDate(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
+    return Coerse.toDate(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
   }
 
   /**
@@ -2970,7 +2972,7 @@ public class BuiltInFunctions {
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
 
-    return DataType.toDate(value).with(TemporalAdjusters.next(dayofweek));
+    return Coerse.toDate(value).with(TemporalAdjusters.next(dayofweek));
   }
 
   /**
@@ -2990,7 +2992,7 @@ public class BuiltInFunctions {
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
 
-    return DataType.toDate(value).with(TemporalAdjusters.previous(dayofweek));
+    return Coerse.toDate(value).with(TemporalAdjusters.previous(dayofweek));
   }
 
 }

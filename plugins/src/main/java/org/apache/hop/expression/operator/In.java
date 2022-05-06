@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -57,7 +57,7 @@ public class In extends Operator {
     Tuple tuple = (Tuple) operands[1];
     for (IExpression expression : tuple) {
       Object value = expression.eval(context);
-      if (DataType.compareTo(left, value) == 0) {
+      if (Coerse.compare(left, value) == 0) {
         return Boolean.TRUE;
       }
     }

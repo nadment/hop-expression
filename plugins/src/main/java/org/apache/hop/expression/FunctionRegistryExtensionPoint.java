@@ -24,14 +24,16 @@ import org.apache.hop.core.extension.IExtensionPoint;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.plugins.PluginRegistry;
 import org.apache.hop.core.variables.IVariables;
-
+/**
+ *  Initialize FunctionRegistry before JarCache is cleared 
+ */
 @ExtensionPoint(id = "ExpressionFunctionRegistryExtensionPoint", extensionPointId = "HopEnvironmentAfterInit",
     description = "Register the expression functions")
 public class FunctionRegistryExtensionPoint implements IExtensionPoint<PluginRegistry> {
   @Override
   public void callExtensionPoint(ILogChannel log, IVariables variables,
       PluginRegistry pluginRegistry) throws HopException {
-    // Init FunctionRegistry before JarCache is cleared 
+
     FunctionRegistry.init();
   }
 }

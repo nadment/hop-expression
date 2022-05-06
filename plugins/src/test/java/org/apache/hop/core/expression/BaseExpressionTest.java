@@ -35,6 +35,7 @@ import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.optimizer.Optimizer;
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -178,7 +179,7 @@ public class BaseExpressionTest {
 
   protected void evalEquals(String source, double expected) throws Exception {
     Object value = eval(source);
-    assertEquals(expected, DataType.toNumber(value), 0.000000000000001);
+    assertEquals(expected, Coerse.toNumber(value), 0.000000000000001);
   }
 
   protected void evalEquals(String source, BigDecimal expected) throws Exception {

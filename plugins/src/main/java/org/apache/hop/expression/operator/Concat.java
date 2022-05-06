@@ -16,13 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -66,7 +66,7 @@ public class Concat extends Operator {
         }
         return output.toByteArray();
       } catch (IOException e) {
-         throw new ExpressionException(Error.INTERNAL_ERROR, e.getMessage());
+         throw new ExpressionException(ExpressionError.INTERNAL_ERROR, e.getMessage());
       }
     }
 
@@ -75,7 +75,7 @@ public class Concat extends Operator {
     for (IExpression operand : operands) {
       Object value = operand.eval(context);
       if (value != null)
-        builder.append(DataType.toString(value));
+        builder.append(Coerse.toString(value));
     }
 
     return builder.toString();

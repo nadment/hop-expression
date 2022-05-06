@@ -15,26 +15,26 @@
 
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import java.util.regex.Pattern;
 
-public class RegexpUtils {
-  private static final String JAVA_REGEX_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
+public class Regexp {
+  private static final String JAVA_REGEXP_SPECIALS = "\\.[]{}()<>*+-=!?^$|";
 
   /**
    * Private constructor since this is a utility class.
    */
-  private RegexpUtils() {
+  private Regexp() {
   }
   
-  /** Translates a LIKE pattern to Java regex pattern, with optional escape string. */
+  /** Translates a LIKE pattern to Java regexp pattern, with optional escape string. */
   public static String toRegexLike(String pattern, CharSequence escapeStr) throws ExpressionException {
     final char escapeChar;
     if (escapeStr != null) {
 
       if (escapeStr.length() != 1) {
-        throw new ExpressionException(Error.ILLEGAL_ARGUMENT, escapeStr.toString());
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, escapeStr.toString());
       }
 
       escapeChar = escapeStr.charAt(0);
@@ -51,23 +51,23 @@ public class RegexpUtils {
     final StringBuilder javaPattern = new StringBuilder(len + len);
     for (i = 0; i < len; i++) {
       char c = pattern.charAt(i);
-      if (JAVA_REGEX_SPECIALS.indexOf(c) >= 0) {
+      if (JAVA_REGEXP_SPECIALS.indexOf(c) >= 0) {
         javaPattern.append('\\');
       }
 
       if (c == escapeChar) {
         if (i == (pattern.length() - 1)) {
-          throw new ExpressionException(Error.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
         }
         char nextChar = pattern.charAt(i + 1);
         if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
-          if (JAVA_REGEX_SPECIALS.indexOf(nextChar) >= 0) {
+          if (JAVA_REGEXP_SPECIALS.indexOf(nextChar) >= 0) {
             javaPattern.append('\\');
           }
           javaPattern.append(nextChar);
           i++;
         } else {
-          throw new ExpressionException(Error.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
         }
       } else if (c == '_') {
         javaPattern.append('.');
@@ -101,7 +101,7 @@ public class RegexpUtils {
             flags |= Pattern.MULTILINE;
             break;
           default:
-            throw new ExpressionException(Error.ILLEGAL_ARGUMENT, str);
+            throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, str);
         }
       }
     }

@@ -19,7 +19,7 @@ import org.apache.hop.i18n.BaseMessages;
 /**
  * Enumeration of the error which can be used in expression exception.
  */
-public enum Error {
+public enum ExpressionError {
   INTERNAL_ERROR("Expression.InternalError"),
   SYNTAX_ERROR("Expression.SyntaxError"),
   DIVISION_BY_ZERO("Expression.DivisionByZero"),
@@ -63,15 +63,15 @@ public enum Error {
 
   private final String message;
 
-  Error(final String message) {
+  ExpressionError(final String message) {
     this.message = message;
   }
 
   public String message() {
-    return BaseMessages.getString(Error.class, message);
+    return BaseMessages.getString(ExpressionError.class, message);
   }
 
   public String message(Object... objects) {
-    return BaseMessages.getString(Error.class, message, objects);
+    return BaseMessages.getString(ExpressionError.class, message, objects);
   }
 }

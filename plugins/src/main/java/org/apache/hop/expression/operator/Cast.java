@@ -18,12 +18,14 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Converter;
 import java.io.StringWriter;
 
 /**
@@ -47,16 +49,16 @@ public class Cast extends Operator {
     Object v1 = operands[1].eval(context);
        
     if (!(v1 instanceof DataType)) {
-      throw new ExpressionException(Error.INVALID_DATATYPE, v1);    
+      throw new ExpressionException(ExpressionError.INVALID_DATATYPE, v1);    
     }
 
     DataType type = (DataType) v1;
     String format = null;
     if (operands.length == 3) {
-      format = DataType.toString(operands[2].eval(context));
+      format = Coerse.toString(operands[2].eval(context));
     }
 
-    return DataType.convertTo(value, type, format);
+    return Converter.to(value, type, format);
   }
 
   @Override

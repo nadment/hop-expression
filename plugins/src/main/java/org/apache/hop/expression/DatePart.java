@@ -136,19 +136,7 @@ public enum DatePart {
       }
     }
 
-    throw new IllegalArgumentException(Error.INVALID_DATEPART.message(name));
-  }
-
-  /**
-   * Coerce value to DatePart
-   * @param value the value to coerce
-   * @return DatePart
-   */
-  public static DatePart to(Object value) throws ExpressionException {
-    if (value instanceof DatePart) {
-      return (DatePart) value;
-    }
-    throw new ExpressionException(Error.INVALID_DATEPART, value);
+    throw new IllegalArgumentException(ExpressionError.INVALID_DATEPART.message(name));
   }
   
   /**

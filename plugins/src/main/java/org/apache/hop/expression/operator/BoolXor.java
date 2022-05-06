@@ -16,14 +16,16 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
-/** Logical <code>XOR</code> operator. */
+/** 
+ * Logical <code>XOR</code> operator.
+ */
 public class BoolXor extends Operator {
 
   public BoolXor() {
@@ -36,12 +38,12 @@ public class BoolXor extends Operator {
     Object left = operands[0].eval(context);
     Object right = operands[1].eval(context);
     if (left == null) {
-      return DataType.toBoolean(right);
+      return Coerse.toBoolean(right);
     }
     if (right == null) {
-      return DataType.toBoolean(left);
+      return Coerse.toBoolean(left);
     }
-    return Boolean.logicalXor(DataType.toBoolean(left), DataType.toBoolean(right));
+    return Boolean.logicalXor(Coerse.toBoolean(left), Coerse.toBoolean(right));
   }
 
   @Override

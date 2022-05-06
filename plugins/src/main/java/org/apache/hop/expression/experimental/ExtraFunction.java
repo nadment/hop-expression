@@ -20,12 +20,12 @@ import org.apache.hop.core.compress.CompressionPluginType;
 import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;
 import org.apache.hop.core.plugins.PluginRegistry;
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
@@ -48,7 +48,7 @@ public class ExtraFunction {
     if (v0 == null)
       return null;
 
-    String str = DataType.toString(v0);
+    String str = Coerse.toString(v0);
 
     final StringBuilder decomposed =
         new StringBuilder(Normalizer.normalize(str, Normalizer.Form.NFD));
@@ -75,7 +75,7 @@ public class ExtraFunction {
         try {
           return registry.loadClass(plugin, ICompressionProvider.class);
         } catch (Exception e) {
-          throw new ExpressionException(Error.ILLEGAL_ARGUMENT, id);
+          throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, id);
         }
       }
     }
@@ -161,7 +161,7 @@ public class ExtraFunction {
   // if (value == null)
   // return null;
   //
-  // ZonedDateTime datetime = DataType.toDate(value);
+  // ZonedDateTime datetime = Coerse.toDate(value);
   // return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
   // }
 }

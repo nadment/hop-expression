@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.util.RegexpUtils;
+import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Regexp;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
 
@@ -64,14 +64,14 @@ public class Like extends Operator {
       if (escapeValue == null) {
         return null;
       }
-      escape = DataType.toString(escapeValue);
+      escape = Coerse.toString(escapeValue);
     }
 
-    final String regex = RegexpUtils.toRegexLike(DataType.toString(pattern), escape);
+    final String regex = Regexp.toRegexLike(Coerse.toString(pattern), escape);
 
     Pattern p = Pattern.compile(regex, Pattern.DOTALL);
 
-    return p.matcher(DataType.toString(input)).matches();
+    return p.matcher(Coerse.toString(input)).matches();
   }
 
   @Override

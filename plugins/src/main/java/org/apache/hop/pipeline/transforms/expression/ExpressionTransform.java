@@ -24,6 +24,7 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.optimizer.Optimizer;
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -200,21 +201,21 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
       case IValueMeta.TYPE_NONE:
         return null;
       case IValueMeta.TYPE_STRING:
-        return DataType.toString(value);
+        return Coerse.toString(value);
       case IValueMeta.TYPE_NUMBER:
-        return DataType.toNumber(value);
+        return Coerse.toNumber(value);
       case IValueMeta.TYPE_INTEGER:
-        return DataType.toInteger(value);
+        return Coerse.toInteger(value);
       case IValueMeta.TYPE_DATE:
-        return Date.from(DataType.toDate(value).toInstant());
+        return Date.from(Coerse.toDate(value).toInstant());
       case IValueMeta.TYPE_TIMESTAMP:
-        return java.sql.Timestamp.from(DataType.toDate(value).toInstant());
+        return java.sql.Timestamp.from(Coerse.toDate(value).toInstant());
       case IValueMeta.TYPE_BIGNUMBER:
-        return DataType.toBigNumber(value);
+        return Coerse.toBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:
-        return DataType.toBoolean(value);
+        return Coerse.toBoolean(value);
       case IValueMeta.TYPE_BINARY:
-        return DataType.toBinary(value);
+        return Coerse.toBinary(value);
       default:
         throw new HopValueException(
             value + " : I can't convert the specified value to data type : " + meta.getType());

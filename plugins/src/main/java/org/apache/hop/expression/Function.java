@@ -56,11 +56,11 @@ public class Function extends Operator {
   public void checkNumberOfArguments(IExpression[] operands) {
 
     if (operands.length < minArgs) {      
-      throw new IllegalArgumentException(Error.NOT_ENOUGH_ARGUMENT.message(this.getId()));
+      throw new IllegalArgumentException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(this.getId()));
     }
 
     if (operands.length > maxArgs) {
-      throw new IllegalArgumentException(Error.TOO_MANY_ARGUMENT.message(this.getId()));
+      throw new IllegalArgumentException(ExpressionError.TOO_MANY_ARGUMENT.message(this.getId()));
     }
   }
 
@@ -74,7 +74,7 @@ public class Function extends Operator {
       if (throwable instanceof ExpressionException) {
         throw (ExpressionException) throwable;
       }
-      throw new ExpressionException(Error.FUNCTION_CALL_ERROR, this.getId(), throwable.getMessage());
+      throw new ExpressionException(ExpressionError.FUNCTION_CALL_ERROR, this.getId(), throwable.getMessage());
     }
   }
 

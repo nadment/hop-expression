@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -46,8 +46,8 @@ public class Position extends Operator {
       return null;
     }
 
-    String substr = DataType.toString(v0);
-    String str = DataType.toString(v1);
+    String substr = Coerse.toString(v0);
+    String str = Coerse.toString(v1);
 
     return Long.valueOf(str.indexOf(substr, 0) + 1L);
   }

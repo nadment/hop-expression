@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -49,20 +49,20 @@ public class Add extends Operator {
 // Removed because hard to optimize    
 //    if (left instanceof ZonedDateTime) {
 //      // Computes fraction of day
-//      long seconds = (long) (DataType.toNumber(right) * SECONDS_BY_DAY);
-//      return DataType.toDate(left).plusSeconds(seconds);
+//      long seconds = (long) (Coerse.toNumber(right) * SECONDS_BY_DAY);
+//      return Coerse.toDate(left).plusSeconds(seconds);
 //    }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return DataType.toBigNumber(left).add(DataType.toBigNumber(right));
+      return Coerse.toBigNumber(left).add(Coerse.toBigNumber(right));
     }
     if (left instanceof Double || right instanceof Double) {
-      return DataType.toNumber(left) + DataType.toNumber(right);
+      return Coerse.toNumber(left) + Coerse.toNumber(right);
     }
     if (left instanceof Long || right instanceof Long) {
-      return DataType.toInteger(left) + DataType.toInteger(right);
+      return Coerse.toInteger(left) + Coerse.toInteger(right);
     }
 
-    return DataType.toBigNumber(left).add(DataType.toBigNumber(right));
+    return Coerse.toBigNumber(left).add(Coerse.toBigNumber(right));
   }
 
   @Override

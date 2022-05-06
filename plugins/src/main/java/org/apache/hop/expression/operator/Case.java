@@ -17,12 +17,12 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** An operator describing the <code>CASE</code> operator. */
@@ -44,7 +44,7 @@ public class Case extends Operator {
     if (switchExpression == null) {
       for (IExpression whenOperand : whenTuple) {
         Object condition = whenOperand.eval(context);
-        if (DataType.isPredicatTrue(condition)) {
+        if (Coerse.isTrue(condition)) {
           return thenTuple.get(index).eval(context);
         }
         index++;
@@ -53,7 +53,7 @@ public class Case extends Operator {
       Object condition = switchExpression.eval(context);
       for (IExpression whenOperand : whenTuple) {
         Object value = whenOperand.eval(context);
-        if (DataType.compareTo(condition, value) == 0) {
+        if (Coerse.compare(condition, value) == 0) {
           return thenTuple.get(index).eval(context);
         }
         index++;

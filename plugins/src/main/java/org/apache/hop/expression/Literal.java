@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
@@ -171,7 +172,7 @@ public class Literal implements IExpression {
       }
       writer.append('\'');
     } else {
-      writer.append(DataType.toString(value));
+      writer.append(Coerse.toString(value));
     }
   }
 

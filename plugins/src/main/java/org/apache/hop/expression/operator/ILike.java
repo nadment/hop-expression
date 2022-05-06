@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.util.RegexpUtils;
+import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Regexp;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
 
@@ -51,14 +51,14 @@ public class ILike extends Operator {
       if (escapeValue == null) {
         return null;
       }
-      escape = DataType.toString(escapeValue);
+      escape = Coerse.toString(escapeValue);
     }
 
-    final String regex = RegexpUtils.toRegexLike(DataType.toString(v1), escape);
+    final String regex = Regexp.toRegexLike(Coerse.toString(v1), escape);
 
     Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
-    return p.matcher(DataType.toString(v0)).matches();
+    return p.matcher(Coerse.toString(v0)).matches();
   }
 
   @Override

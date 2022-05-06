@@ -76,7 +76,7 @@ public class ExpressionParser {
       } else
         column++;
     }
-    return new ExpressionException(Error.SYNTAX_ERROR, line, column, e.getMessage());
+    return new ExpressionException(ExpressionError.SYNTAX_ERROR, line, column, e.getMessage());
   }
 
   protected ExpressionParser(String source) {
@@ -139,7 +139,7 @@ public class ExpressionParser {
 
     if (hasNext()) {
       Token token = next();
-      throw new ParseException(Error.UNEXPECTED_CHARACTER.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(token.text()), token.start());
     }
 
     return expression;
@@ -208,7 +208,7 @@ public class ExpressionParser {
       
       Token token = next();
       if (token == null) {
-        throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+        throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
       }
       Operator operator;
       switch (token.id()) {
@@ -222,7 +222,7 @@ public class ExpressionParser {
           operator = (not) ? Operators.IS_NOT_NULL:Operators.IS_NULL;
           break;
         default:
-          throw new ParseException(Error.INVALID_BOOLEAN.message(token.text()), token.start());
+          throw new ParseException(ExpressionError.INVALID_BOOLEAN.message(token.text()), token.start());
       }
       expression = new Call(operator, expression);
     }
@@ -276,7 +276,7 @@ public class ExpressionParser {
       
       IExpression start = this.parseAdditive();
       if (!next(Id.AND)) {
-        throw new ParseException(Error.INVALID_OPERATOR.message(Id.BETWEEN), this.getPosition());
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.BETWEEN), this.getPosition());
       }
       IExpression end = this.parseAdditive();
 
@@ -380,7 +380,7 @@ public class ExpressionParser {
       if (next(Id.TIME) && next(Id.ZONE)) {
         return new Call(Operators.AT_TIME_ZONE, expression, this.parseTerm());
       }
-      throw new ParseException(Error.INVALID_OPERATOR.message(Id.AT), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.AT), this.getPosition());
     }
     return expression;
   }
@@ -441,12 +441,12 @@ public class ExpressionParser {
           if (token.is(Id.RPARENTHESIS)) {
             return expression;
           }
-          throw new ParseException(Error.UNBALANCE_PARENTHESIS.message(), token.start());
+          throw new ParseException(ExpressionError.UNBALANCE_PARENTHESIS.message(), token.start());
         default:
           // Syntax error
       }
     }
-    throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
@@ -533,7 +533,7 @@ public class ExpressionParser {
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
     if (token==null) {
-      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
     }
 
     try {
@@ -541,14 +541,14 @@ public class ExpressionParser {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(Error.INVALID_DATE.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_DATE.message(token.text()), token.start());
     }
   }
 
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
     if (token==null) {
-      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
     }
 
     try {
@@ -556,7 +556,7 @@ public class ExpressionParser {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(Error.INVALID_TIME.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_TIME.message(token.text()), token.start());
     }
   }
 
@@ -567,7 +567,7 @@ public class ExpressionParser {
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
     if (token==null) {
-      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
     }
     
     try {
@@ -636,7 +636,7 @@ public class ExpressionParser {
       if (is(Id.AT)) {
         next();
         if (!next(Id.TIME) || !next(Id.ZONE)) {
-          throw new ParseException(Error.INVALID_OPERATOR.message("AT TIME ZONE"), this.getPosition());
+          throw new ParseException(ExpressionError.INVALID_OPERATOR.message("AT TIME ZONE"), this.getPosition());
         }
         token = next();
         ZoneId zoneId = ZoneId.of(token.text());           
@@ -644,9 +644,9 @@ public class ExpressionParser {
       }
       return Literal.of(datetime);
     } catch (ZoneRulesException e) {
-      throw new ParseException(Error.UNKNOWN_TIMEZONE.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.UNKNOWN_TIMEZONE.message(token.text()), token.start());
     } catch (Exception e) {
-      throw new ParseException(Error.INVALID_TIMESTAMP.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_TIMESTAMP.message(token.text()), token.start());
     }
   }
 
@@ -676,7 +676,7 @@ public class ExpressionParser {
         break;
       } while (true);
     }
-    throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(),
+    throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(),
         this.getPosition());
   }
 
@@ -696,7 +696,7 @@ public class ExpressionParser {
     while (next(Id.WHEN)) {
       whenList.add(this.parseLogicalOr());
       if (!next(Id.THEN)) {
-        throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
       }
       thenList.add(this.parseLogicalOr());
     }
@@ -706,7 +706,7 @@ public class ExpressionParser {
     }
 
     if (!next(Id.END)) {
-      throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
     }
 
     return new Call(Operators.CASE, valueExpression, new Tuple(whenList),
@@ -726,13 +726,13 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     operands.add(this.parseLogicalOr());
 
     if (!next(Id.AS)) {
-      throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), token.start());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), token.start());
     }
 
     operands.add(this.parseLiteralDataType(next()));
@@ -743,13 +743,13 @@ public class ExpressionParser {
       if (token.is(Token.Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
-        throw new ParseException(Error.INVALID_OPERATOR.message(Id.CASE), token.start());
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), token.start());
     }
 
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(operator, operands);
@@ -763,13 +763,13 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     operands.add(this.parseAdditive());
 
     if (!next(Id.IN)) {
-      throw new ParseException(Error.INVALID_OPERATOR.message(Id.POSITION), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.POSITION), this.getPosition());
     }
 
     operands.add(this.parseAdditive());
@@ -777,7 +777,7 @@ public class ExpressionParser {
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(Operators.POSITION, operands);
@@ -789,7 +789,7 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -797,7 +797,7 @@ public class ExpressionParser {
     operands.add(this.parseLiteralDatePart(next()));
 
     if (!next(Id.FROM)) {
-      throw new ParseException(Error.INVALID_OPERATOR.message(Id.EXTRACT), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.EXTRACT), this.getPosition());
     }
 
     operands.add(this.parseAdditive());
@@ -805,7 +805,7 @@ public class ExpressionParser {
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(Operators.EXTRACT, operands);
@@ -820,7 +820,7 @@ public class ExpressionParser {
     if (is(Id.LPARENTHESIS))
       token = next();
     else {
-      throw new ParseException(Error.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     // No param function
@@ -839,7 +839,7 @@ public class ExpressionParser {
     if (is(Id.RPARENTHESIS)) {
       next();
     } else {
-      throw new ParseException(Error.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(function, operands);
@@ -847,27 +847,27 @@ public class ExpressionParser {
 
   private Literal parseLiteralDatePart(Token token) throws ParseException {
     if (token==null) {
-      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
     }
 
     try {
       DatePart part = DatePart.of(token.text());
       return Literal.of(part);
     } catch (RuntimeException e) {
-      throw new ParseException(Error.INVALID_DATEPART.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_DATEPART.message(token.text()), token.start());
     }
   }
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
     if (token==null) {
-      throw new ParseException(Error.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
     }
     
     try {
       DataType datatype = DataType.of(token.text());
       return Literal.of(datatype);
     } catch (RuntimeException e) {
-      throw new ParseException(Error.INVALID_DATATYPE.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()), token.start());
     }
   }
 
@@ -909,7 +909,7 @@ public class ExpressionParser {
           }
 
           if (c != '\'') {
-            throw new ParseException(Error.MISSING_END_SINGLE_QUOTED_STRING.message(), start);
+            throw new ParseException(ExpressionError.MISSING_END_SINGLE_QUOTED_STRING.message(), start);
           }
 
           return new Token(Id.LITERAL_STRING, start, position, text.toString());
@@ -987,7 +987,7 @@ public class ExpressionParser {
               return new Token(Id.NOT_EQUAL, start);
             }
           }
-          throw new ParseException(Error.UNEXPECTED_CHARACTER.message('!'), start);
+          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message('!'), start);
         }
 
 
@@ -1001,7 +1001,7 @@ public class ExpressionParser {
               return new Token(Id.CAST, start);
             }
           }
-          throw new ParseException(Error.UNEXPECTED_CHARACTER.message(':'), start);
+          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(':'), start);
         }
 
         // possible start of '/*' or '//' comment
@@ -1028,7 +1028,7 @@ public class ExpressionParser {
                   } else
                     position++;
                 } else {
-                  throw new ParseException(Error.MISSING_END_BLOCK_COMMENT.message(), start);
+                  throw new ParseException(ExpressionError.MISSING_END_BLOCK_COMMENT.message(), start);
                 }
               }
 
@@ -1083,7 +1083,7 @@ public class ExpressionParser {
               return new Token(Id.IDENTIFIER, start, position, value);
             }
           }
-          throw new ParseException(Error.UNEXPECTED_CHARACTER.message(), start);
+          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(), start);
         }
 
         case '.': // Number without zero .1

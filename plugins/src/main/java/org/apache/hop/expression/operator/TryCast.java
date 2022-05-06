@@ -22,6 +22,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Converter;
 import java.io.StringWriter;
 
 public class TryCast extends Operator {
@@ -48,10 +50,10 @@ public class TryCast extends Operator {
 
       String format = null;
       if (operands.length == 3) {
-        format = DataType.toString(operands[2].eval(context));
+        format = Coerse.toString(operands[2].eval(context));
       }
 
-      return DataType.convertTo(value, type, format);
+      return Converter.to(value, type, format);
     } catch (Exception e) {
       return null;
     }

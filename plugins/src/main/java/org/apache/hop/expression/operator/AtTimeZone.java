@@ -17,12 +17,12 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.time.ZoneId;
 
@@ -44,15 +44,15 @@ public class AtTimeZone extends Operator {
     if (value == null)
       return null;
    
-    ZoneId zone = toZoneId(DataType.toString(operands[1].eval(context)));    
-    return  DataType.toDate(value).withZoneSameInstant(zone);
+    ZoneId zone = toZoneId(Coerse.toString(operands[1].eval(context)));    
+    return Coerse.toDate(value).withZoneSameInstant(zone);
   }
 
   protected ZoneId toZoneId(String zone) throws ExpressionException {
     try {
      return ZoneId.of(zone);
     } catch (Exception e) {
-     throw new ExpressionException(Error.UNKNOWN_TIMEZONE, zone);
+     throw new ExpressionException(ExpressionError.UNKNOWN_TIMEZONE, zone);
     }    
   }
   

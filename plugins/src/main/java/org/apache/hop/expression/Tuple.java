@@ -105,7 +105,7 @@ public class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-    throw new ExpressionException(Error.INTERNAL_ERROR);
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
   }
 
   @Override

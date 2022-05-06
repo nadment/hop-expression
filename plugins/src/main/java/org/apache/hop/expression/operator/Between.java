@@ -17,11 +17,11 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 /**
  * <code>BETWEEN</code> operator that requires the lower bound and upper bound to be "in order"
@@ -44,7 +44,7 @@ public class Between extends Operator {
       return null;
     }
 
-    return DataType.compareTo(value, start) >= 0 && DataType.compareTo(value, end) <= 0;
+    return Coerse.compare(value, start) >= 0 && Coerse.compare(value, end) <= 0;
   }
 
   @Override

@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** 
@@ -42,7 +42,7 @@ public class BitNot extends Operator {
     if (value == null)
       return value;
 
-    return ~DataType.toInteger(value);
+    return ~Coerse.toInteger(value);
   }
 
   @Override

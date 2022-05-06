@@ -16,14 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
-import org.apache.hop.expression.util.RegexpUtils;
+import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Regexp;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -45,13 +45,13 @@ public class RLike extends Operator {
     if (v0 == null) {
       return null;
     }
-    String input = DataType.toString(v0);
+    String input = Coerse.toString(v0);
 
     Object v1 = operands[1].eval(context);
     if (v1 == null) {
       return null;
     }
-    String regexp = DataType.toString(v1);
+    String regexp = Coerse.toString(v1);
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return Boolean.FALSE;
@@ -59,14 +59,14 @@ public class RLike extends Operator {
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 3) {
       Object v2 = operands[2].eval(context);
-      flags = RegexpUtils.parseFlags(DataType.toString(v2));
+      flags = Regexp.parseFlags(Coerse.toString(v2));
     }
 
     try {
       Pattern pattern = Pattern.compile(regexp, flags);
       return pattern.matcher(input).find();
     } catch (PatternSyntaxException e) {      
-      throw new ExpressionException(Error.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 

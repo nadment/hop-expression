@@ -16,12 +16,11 @@
  */
 
 package org.apache.hop.expression.operator;
-
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -47,11 +46,11 @@ public class BetweenSymmetric extends Operator {
     }
 
     // If lower bound is greater than upper bound 
-    if ( DataType.compareTo(start, end) >= 0 ) {
-      return DataType.compareTo(value, end) >= 0 && DataType.compareTo(value, start) <= 0;
+    if ( Coerse.compare(start, end) >= 0 ) {
+      return Coerse.compare(value, end) >= 0 && Coerse.compare(value, start) <= 0;
     }
     
-    return DataType.compareTo(value, start) >= 0 && DataType.compareTo(value, end) <= 0;
+    return Coerse.compare(value, start) >= 0 && Coerse.compare(value, end) <= 0;
   }
 
   @Override

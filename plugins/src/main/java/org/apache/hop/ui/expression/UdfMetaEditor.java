@@ -137,7 +137,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, DataType.getDataTypeNames(), false)};
+            ColumnInfo.COLUMN_TYPE_CCOMBO, DataType.getDisplayNames(), false)};
 
     wParams = new TableView(new Variables(), parent,
         SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), null,
@@ -187,6 +187,9 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     for (int i = 0; i < udf.getArguments().size(); i++) {
       Argument argument = udf.getArguments().get(i);
       wParams.setText(Const.NVL(argument.getName(), ""), 1, i);
+      if ( argument.getType()!=null ) {
+        wParams.setText(Const.NVL(argument.getType().name(), ""), 2, i);
+      }
     }
   }
 
@@ -200,7 +203,13 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     for (int i = 0; i < nrFields; i++) {
       TableItem item = wParams.getNonEmpty(i);
       String name = item.getText(1);
-      Argument argument = new Argument(name, null);
+      DataType dataType = null;
+      try {
+        dataType = DataType.of(item.getText(2));
+      } catch (Exception e) {
+       
+      }
+      Argument argument = new Argument(name, dataType);
       udf.getArguments().add(argument);
     }
   }

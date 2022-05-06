@@ -127,11 +127,11 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public Object resolve(String name) throws ExpressionException {
 
     if (rowMeta == null)
-      throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
 
     int index = rowMeta.indexOfValue(name);
     if (index < 0)
-      throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
 
     IValueMeta valueMeta = rowMeta.getValueMeta(index);
     try {
@@ -156,10 +156,10 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
         case IValueMeta.TYPE_BINARY:
           return rowMeta.getBinary(row, index);
         default:
-          throw new ExpressionException(Error.UNSUPPORTED_IDENTIFIER_DATATYPE, name, valueMeta.getTypeDesc());
+          throw new ExpressionException(ExpressionError.UNSUPPORTED_IDENTIFIER_DATATYPE, name, valueMeta.getTypeDesc());
       }
     } catch (HopValueException e) {
-      throw new ExpressionException(Error.UNRESOLVED_IDENTIFIER, name);
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
     }
   }
 

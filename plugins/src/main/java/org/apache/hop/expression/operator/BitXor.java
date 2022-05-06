@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** 
@@ -46,7 +46,7 @@ public class BitXor extends Operator {
     if (right == null)
       return null;
 
-    return DataType.toInteger(left) ^ DataType.toInteger(right);
+    return Coerse.toInteger(left) ^ Coerse.toInteger(right);
   }
 
   @Override

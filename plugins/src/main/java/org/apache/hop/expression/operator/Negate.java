@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** 
@@ -43,7 +43,7 @@ public class Negate extends Operator {
     if (v0 instanceof Double) {
       Double value = (Double) v0;      
       if (value == Double.MIN_VALUE) {
-        throw new ExpressionException(Error.ARITHMETIC_OVERFLOW, value);
+        throw new ExpressionException(ExpressionError.ARITHMETIC_OVERFLOW, value);
       }
       return Double.valueOf(-value);
     }
@@ -51,12 +51,12 @@ public class Negate extends Operator {
     if (v0 instanceof Long) {
       Long value = (Long) v0;
       if (value == Long.MIN_VALUE) {
-        throw new ExpressionException(Error.ARITHMETIC_OVERFLOW, value);
+        throw new ExpressionException(ExpressionError.ARITHMETIC_OVERFLOW, value);
       }
       return Long.valueOf(-value);
     }
 
-    return DataType.toBigNumber(v0).negate();
+    return Coerse.toBigNumber(v0).negate();
   }
 
   @Override

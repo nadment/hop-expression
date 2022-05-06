@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** 
@@ -46,7 +46,7 @@ public class Equal extends Operator {
     if (right == null) {
       return null;
     }
-    return DataType.compareTo(left, right) == 0;
+    return Coerse.compare(left, right) == 0;
   }
 
   @Override

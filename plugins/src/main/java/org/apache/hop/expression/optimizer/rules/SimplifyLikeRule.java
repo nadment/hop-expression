@@ -17,7 +17,6 @@
 package org.apache.hop.expression.optimizer.rules;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -25,6 +24,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
+import org.apache.hop.expression.util.Coerse;
 import java.util.regex.Pattern;
 
 /**
@@ -50,14 +50,14 @@ public class SimplifyLikeRule implements OptimizerRule {
 
         IExpression v1 = call.getOperand(1);
         if (v1.is(Kind.LITERAL)) {
-          String pattern = DataType.toString(v1.eval(context));
+          String pattern = Coerse.toString(v1.eval(context));
 
           // Optimize FIELD LIKE NULL to NULL
           if (pattern == null)
             return Literal.NULL;
 
           if (call.getOperandCount() == 3) {
-            String escape = DataType.toString(call.getOperand(2).eval(context));
+            String escape = Coerse.toString(call.getOperand(2).eval(context));
             if (escape == null)
               return Literal.NULL;
 

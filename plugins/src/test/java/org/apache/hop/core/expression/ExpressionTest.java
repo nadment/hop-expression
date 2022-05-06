@@ -74,23 +74,6 @@ public class ExpressionTest extends BaseExpressionTest {
   }
   
   @Test
-  public void DatePart() throws Exception {
-    assertTrue(DatePart.exist("MONTH"));
-    assertEquals(DatePart.HOUR, DatePart.of("HOUR"));
-    assertEquals(DatePart.DECADE, DatePart.of("DECADE"));
-    assertEquals(DatePart.CENTURY, DatePart.of("CENTURY"));
-    assertEquals(DatePart.QUARTER, DatePart.of("quarter"));
-    assertEquals(DatePart.DAY, DatePart.of("d"));
-    assertEquals(DatePart.DAY, DatePart.of("dd"));
-    assertEquals(DatePart.DAY, DatePart.of("dayofmonth"));
-    assertEquals(DatePart.HOUR, DatePart.of("HOUR"));
-    assertEquals(DatePart.HOUR, DatePart.of("HH"));
-    assertNotEquals(DatePart.HOUR, DatePart.MINUTE);
-    assertNotEquals(DatePart.of("HOUR"), null);
-    assertThrows(IllegalArgumentException.class, () -> DatePart.of("NOP"));
-  }
-
-  @Test
   public void Operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
     assertEquals(Operators.CONCAT, new Concat());

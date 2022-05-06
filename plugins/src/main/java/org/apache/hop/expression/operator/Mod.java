@@ -16,13 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.Error;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -49,28 +49,28 @@ public class Mod extends Operator {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = DataType.toBigNumber(right);
+      BigDecimal divisor = Coerse.toBigNumber(right);
       // prevent a division by zero ..
       if (divisor.signum() == 0)
-        throw new ExpressionException(Error.DIVISION_BY_ZERO);
-      return DataType.toBigNumber(left).remainder(divisor);
+        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+      return Coerse.toBigNumber(left).remainder(divisor);
     }
     if (left instanceof Double || right instanceof Double) {
-      double divisor = DataType.toNumber(right);
+      double divisor = Coerse.toNumber(right);
       // prevent a division by zero ..
       if (divisor == 0L)
-        throw new ExpressionException(Error.DIVISION_BY_ZERO);
-      return DataType.toNumber(left) % divisor;
+        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+      return Coerse.toNumber(left) % divisor;
     }
     if (left instanceof Long || right instanceof Long) {
-      long divisor = DataType.toInteger(right);
+      long divisor = Coerse.toInteger(right);
       // prevent a division by zero ..
       if (divisor == 0L)
-        throw new ExpressionException(Error.DIVISION_BY_ZERO);
-      return DataType.toInteger(left) % divisor;
+        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+      return Coerse.toInteger(left) % divisor;
     }
 
-    return DataType.toBigNumber(left).remainder(DataType.toBigNumber(right));
+    return Coerse.toBigNumber(left).remainder(Coerse.toBigNumber(right));
   }
 
   @Override

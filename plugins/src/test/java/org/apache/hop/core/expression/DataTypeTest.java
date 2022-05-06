@@ -16,13 +16,8 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.ExpressionException;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -65,170 +60,14 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void javaClass() throws Exception {
-    assertEquals(Boolean.class, DataType.BOOLEAN.getDataTypeClass() );
-    assertEquals(Long.class, DataType.INTEGER.getDataTypeClass() );
-    assertEquals(Double.class, DataType.NUMBER.getDataTypeClass() );
-    assertEquals(BigDecimal.class, DataType.BIGNUMBER.getDataTypeClass() );
-    assertEquals(String.class, DataType.STRING.getDataTypeClass() );
-    assertEquals(ZonedDateTime.class, DataType.DATE.getDataTypeClass() );
-    assertEquals(byte[].class, DataType.BINARY.getDataTypeClass() );
-  }
-  
-  @Test
-  public void coerceToBoolean() throws Exception {
-    assertNull(DataType.toBoolean(null));
-    assertTrue(DataType.toBoolean(true));
-    assertTrue(DataType.toBoolean(3L));
-    assertTrue(DataType.toBoolean(1L));
-    assertFalse(DataType.toBoolean(0L));
-    assertFalse(DataType.toBoolean(false));
-    assertThrows(ExpressionException.class, () -> DataType.toBoolean(ZonedDateTime.now()));
-  }
-   
-  @Test
-  public void convertToBoolean() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo(3L, DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo(1L, DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("1", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("T", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("True", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("Y", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("Yes", DataType.BOOLEAN));
-    assertEquals(Boolean.TRUE, DataType.convertTo("ON", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo(0L, DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("0", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("F", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("False", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("N", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("No", DataType.BOOLEAN));
-    assertEquals(Boolean.FALSE, DataType.convertTo("Off", DataType.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("3", DataType.BOOLEAN) );
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("MO", DataType.BOOLEAN) );
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("BAD", DataType.BOOLEAN) );
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("TRUL", DataType.BOOLEAN) );    
-    assertThrows(ExpressionException.class, () -> DataType.convertTo("FILSE", DataType.BOOLEAN) );
-  }
-  
-  @Test
-  public void coerceToBinary() throws Exception {
-    assertNull(DataType.toBinary(null));    
-    assertThrows(ExpressionException.class, () -> DataType.toBinary(true) );
-    assertThrows(ExpressionException.class, () -> DataType.toBinary(3L) );
-    assertThrows(ExpressionException.class, () -> DataType.toBinary(3D) );
-  }
-  
-  @Test
-  public void convertToBinary() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.BINARY));
-  }
-  
-  @Test
-  public void coerceToDate() throws Exception {
-    assertNull(DataType.toDate(null));
-    assertThrows(ExpressionException.class, () -> DataType.toDate(true));
-  }
-  
-  @Test
-  public void coerceToString() throws Exception {
-    assertNull(DataType.toString(null));
-    assertEquals("-1.0", DataType.toString(-1.0D));
-    assertEquals("ABCD", DataType.toString(DataType.toBinary("ABCD")));
-    assertEquals("-1.2", DataType.toString(-1.2));    
-    assertEquals("0.1", DataType.toString(0.1D));
-    assertEquals("-0.1", DataType.toString(-0.1D));
-    assertEquals("0", DataType.toString(BigDecimal.ZERO));
-    assertEquals("1", DataType.toString(BigDecimal.ONE));
-  }
-   
-  @Test
-  public void convertToString() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.STRING));
-    assertEquals("TRUE", DataType.convertTo(true, DataType.STRING));
-    assertEquals("FALSE", DataType.convertTo(false, DataType.STRING));
-  }
-  
-  @Test
-  public void coerceToInteger() throws Exception {
-    assertNull(DataType.toInteger(null));
-    assertEquals(Long.valueOf(1), DataType.toInteger(1));
-    assertEquals(Long.valueOf(1), DataType.toInteger(1L));
-    assertEquals(Long.valueOf(1), DataType.toInteger(1.2D));
-    assertEquals(Long.valueOf(1), DataType.toInteger("1.2"));
-    assertEquals(Long.valueOf(-1), DataType.toInteger("-1.6"));
-    assertThrows(ExpressionException.class, () -> DataType.toInteger(ZonedDateTime.now()));
+    assertEquals(Boolean.class, DataType.BOOLEAN.getJavaClass() );
+    assertEquals(Long.class, DataType.INTEGER.getJavaClass() );
+    assertEquals(Double.class, DataType.NUMBER.getJavaClass() );
+    assertEquals(BigDecimal.class, DataType.BIGNUMBER.getJavaClass() );
+    assertEquals(String.class, DataType.STRING.getJavaClass() );
+    assertEquals(ZonedDateTime.class, DataType.DATE.getJavaClass() );
+    assertEquals(byte[].class, DataType.BINARY.getJavaClass() );
   }
 
-  @Test
-  public void convertToInteger() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.INTEGER));
-    assertEquals(1L, DataType.convertTo(true, DataType.INTEGER));
-    assertEquals(0L, DataType.convertTo(false, DataType.INTEGER));
-    assertEquals(0L, DataType.convertTo(0L, DataType.INTEGER));
-    assertEquals(3L, DataType.convertTo(3L, DataType.INTEGER));
-    assertEquals(0L, DataType.convertTo(0.0D, DataType.INTEGER));
-    assertEquals(3L, DataType.convertTo(3.3D, DataType.INTEGER));
-  }
-  
-  @Test
-  public void coerceToNumber() throws Exception {
-    assertNull(DataType.toNumber(null));
-    assertEquals(Double.valueOf(1D), DataType.toNumber("1"));
-    assertEquals(Double.valueOf(1.2D), DataType.toNumber("1.2"));
-    assertEquals(Double.valueOf(0.1D), DataType.toNumber(".1"));
-    assertEquals(Double.valueOf(-2.3E+2D), DataType.toNumber("-2.3E+2"));
-    assertEquals(Double.valueOf(-2.3E-2D), DataType.toNumber("-2.3E-2"));
-    assertEquals(Double.valueOf(-2.3E-2D), DataType.toNumber("-2.3e-2"));
-    assertThrows(ExpressionException.class, () -> DataType.toNumber(ZonedDateTime.now()));
-  }
-  
-  @Test
-  public void convertToNumber() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.NUMBER));
-    assertEquals(Double.valueOf(1D), DataType.convertTo(true, DataType.NUMBER));
-    assertEquals(Double.valueOf(0D), DataType.convertTo(false, DataType.NUMBER));
-    assertEquals(Double.valueOf(0D), DataType.convertTo(0L, DataType.NUMBER));
-    assertEquals(Double.valueOf(3D), DataType.convertTo(3L, DataType.NUMBER));
-    assertEquals(Double.valueOf(-2.3E+2D), DataType.convertTo(-2.3E+2D, DataType.NUMBER));    
-  }
-
-  @Test
-  public void coerceToBigNumber() throws Exception {
-    assertNull(DataType.toBigNumber(null));    
-    assertEquals(BigDecimal.ZERO, DataType.toBigNumber(0L));
-    assertEquals(BigDecimal.ZERO, DataType.toBigNumber(0D));
-    assertEquals(BigDecimal.ZERO, DataType.toBigNumber(BigDecimal.ZERO));    
-    assertEquals(BigDecimal.ONE, DataType.toBigNumber(1L));
-    assertEquals(BigDecimal.ONE, DataType.toBigNumber(1D));
-    assertEquals(BigDecimal.ONE, DataType.toBigNumber(BigDecimal.ONE) );
-    assertSame(BigDecimal.valueOf(3), DataType.toBigNumber(3L));
-    assertThrows(ExpressionException.class, () -> DataType.toBigNumber(ZonedDateTime.now()));
-  }
-  
-  @Test
-  public void convertToBigNumber() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.BIGNUMBER));    
-    assertEquals(BigDecimal.ZERO, DataType.convertTo(false, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, DataType.convertTo(0L, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, DataType.convertTo(0D, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, DataType.convertTo("0", DataType.BIGNUMBER));
-    //assertEquals(BigDecimal.ZERO, DataType.convertTo("0.000", DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, DataType.convertTo(true, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, DataType.convertTo(1L, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, DataType.convertTo(1D, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, DataType.convertTo("1", DataType.BIGNUMBER));
-    //assertEquals(BigDecimal.ONE, DataType.convertTo("1.000", DataType.BIGNUMBER));
-    assertEquals(BigDecimal.valueOf(-356L), DataType.convertTo(-356L, DataType.BIGNUMBER));
-    assertEquals(BigDecimal.valueOf(-3.56E2D), DataType.convertTo(-3.56E+2D, DataType.BIGNUMBER));
-    assertEquals(new BigDecimal("0.000"), DataType.convertTo("0.000", DataType.BIGNUMBER));
-    assertEquals(new BigDecimal("-3.56E2"), DataType.convertTo("-3.56E+2", DataType.BIGNUMBER));
-  }
-  
-  @Test
-  public void convertToNone() throws Exception {
-    assertNull(DataType.convertTo(null, DataType.UNKNOWN));
-    assertNull(DataType.convertTo(true, DataType.UNKNOWN));
-    assertNull(DataType.convertTo(BigDecimal.ZERO, DataType.UNKNOWN));
-  }
 }
 

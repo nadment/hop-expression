@@ -18,13 +18,13 @@ package org.apache.hop.expression.optimizer.rules;
 
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.optimizer.OptimizerRule;
+import org.apache.hop.expression.util.Coerse;
 
 /**
  * Simplifies boolean expressions:
@@ -87,7 +87,7 @@ public class SimplifyBooleanRule implements OptimizerRule {
       else if (call.is(Operators.BOOLOR)) {
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(0).eval(context));
           if (value == null)
             return call.getOperand(1);
           if (value == Boolean.TRUE)
@@ -95,7 +95,7 @@ public class SimplifyBooleanRule implements OptimizerRule {
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(1).eval(context));
           if (value == null)
             return call.getOperand(0);
           if (value == Boolean.TRUE)
@@ -103,13 +103,13 @@ public class SimplifyBooleanRule implements OptimizerRule {
         }
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(0).eval(context));
           if (value == Boolean.FALSE)
             return call.getOperand(1);
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(1).eval(context));
           if (value == Boolean.FALSE)
             return call.getOperand(0);
         }
@@ -126,7 +126,7 @@ public class SimplifyBooleanRule implements OptimizerRule {
         boolean right = true;
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = DataType.toBoolean(call.getOperand(0).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(0).eval(context));
           if (value == null)
             return Literal.NULL;
           if (value == Boolean.FALSE)
@@ -134,7 +134,7 @@ public class SimplifyBooleanRule implements OptimizerRule {
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = DataType.toBoolean(call.getOperand(1).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(1).eval(context));
           if (value == null)
             return Literal.NULL;
           if (value == Boolean.FALSE)

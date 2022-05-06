@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -38,7 +38,8 @@ import java.io.StringWriter;
 public class BoolNot extends Operator {
 
   public BoolNot() {
-    super("BOOLNOT", "NOT", 150, false, true, "i18n::Operator.Category.Logical", "/docs/boolnot.html");
+    super("BOOLNOT", "NOT", 150, false, true, "i18n::Operator.Category.Logical",
+        "/docs/boolnot.html");
   }
 
   @Override
@@ -48,7 +49,7 @@ public class BoolNot extends Operator {
     if (value == null) {
       return null;
     }
-    return DataType.toBoolean(value) ? Boolean.FALSE : Boolean.TRUE;
+    return Coerse.toBoolean(value) ? Boolean.FALSE : Boolean.TRUE;
   }
 
   @Override
