@@ -182,4 +182,9 @@ public class Literal implements IExpression {
     }
     return (char) ('A' - 10 + digit);
   }
+
+  @Override
+  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
+    return visitor.apply(context, this);    
+  }
 }

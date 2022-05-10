@@ -25,7 +25,7 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
-import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.ui.core.gui.GuiResource;
@@ -198,7 +198,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
   protected void computeReservedWordProposals(List<ICompletionProposal> proposals, String prefix,
       int start, int end) {
     // Keywords
-    for (String word : ExpressionParser.getReservedWords()) {
+    for (String word : ExpressionBuilder.getReservedWords()) {
       if (word.length() >= prefix.length()
           && word.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
         CompletionProposal proposal =
@@ -239,7 +239,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           String content = name;
           // If identifier name contains space, is a reserved word or a function name must be
           // quoted
-          if (quoted || name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
+          if (quoted || name.indexOf(' ') >= 0 || ExpressionBuilder.isReservedWord(name)
               || DataType.exist(name) || DatePart.exist(name)
               || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';

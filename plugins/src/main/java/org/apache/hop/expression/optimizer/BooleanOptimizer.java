@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.optimizer.rules;
+package org.apache.hop.expression.optimizer;
 
 
 import org.apache.hop.expression.Call;
@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.optimizer.OptimizerRule;
 import org.apache.hop.expression.util.Coerse;
 
 /**
@@ -33,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  * 2. Merge same expressions.
  * 3. Removes `Not` operator.
  */
-public class SimplifyBooleanRule implements OptimizerRule {
+public class BooleanOptimizer extends Optimizer {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {

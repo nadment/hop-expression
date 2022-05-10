@@ -27,10 +27,9 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -125,9 +124,7 @@ public class ExpressionBenchmark {
   }
 
   protected Object eval(String source, ExpressionContext context) throws Exception {
-    IExpression expression = ExpressionParser.parse(source);
-    Optimizer optimizer = new Optimizer();
-    expression = optimizer.optimize(context, expression);    
+    IExpression expression = ExpressionBuilder.compile(context, source);
     return expression.eval(context);
   }
 

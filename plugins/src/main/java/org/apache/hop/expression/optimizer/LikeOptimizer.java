@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.optimizer.rules;
+package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.FunctionRegistry;
@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.optimizer.OptimizerRule;
 import org.apache.hop.expression.util.Coerse;
 import java.util.regex.Pattern;
 
@@ -32,14 +31,14 @@ import java.util.regex.Pattern;
  * condition. For example, when the expression is just checking to see if a string starts with a
  * given pattern.
  */
-public class SimplifyLikeRule implements OptimizerRule {
+public class LikeOptimizer extends Optimizer {
   Pattern startsWith = Pattern.compile("^([^_%]+)%$");
   Pattern endsWith = Pattern.compile("^%([^_%]+)$");
   Pattern contains = Pattern.compile("^%([^_%]+)%$");
   Pattern equalTo = Pattern.compile("^[^_%]*$");
 
   @Override
-  public IExpression apply(IExpressionContext context, Call call) {
+  public IExpression apply(final IExpressionContext context, final Call call) {
     try {
       if (call.is(Operators.LIKE)) {
 

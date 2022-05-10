@@ -24,9 +24,9 @@ package org.apache.hop.pipeline.transforms.clonerowexpression;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowDataUtil;
 import org.apache.hop.core.util.Utils;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -53,18 +53,15 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     if (value.charAt(0) != '=') {
       return value;
     }
-
+    ExpressionContext context = new ExpressionContext(this);
     IExpression expression;
-    try {
-      expression = ExpressionParser.parse(value.substring(1));
+    try {   
+      expression = ExpressionBuilder.compile(context, value.substring(1));
     } catch (ExpressionException e) {
       throw new HopException(
           BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
-
     }
     
-    ExpressionContext context = new ExpressionContext(this);
-
     return expression.eval(context);
   }
 
@@ -102,10 +99,12 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
               BaseMessages.getString(PKG, "CloneRow.Error.CloneNumFieldMissing"));
         }
       }
+      
+      data.context = new ExpressionContext(this, getInputRowMeta());
 
       String nrclonesString = resolve(meta.getNrClones());
       try {
-        data.numberOfClones = ExpressionParser.parse(nrclonesString);
+        data.numberOfClones = ExpressionBuilder.compile(data.context, nrclonesString);
       } catch (ExpressionException e) {
         throw new HopException(
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),
@@ -137,10 +136,9 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
     putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
 
-    // TODO: Move to CloneRowData
-    ExpressionContext context = new ExpressionContext(this, getInputRowMeta());
-    context.setRow(r);
-    Object value = data.numberOfClones.eval(context);
+
+    data.context.setRow(r);
+    Object value = data.numberOfClones.eval(data.context);
 
     int nrClones = (int) value;
 

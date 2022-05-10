@@ -18,33 +18,63 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
+import org.apache.hop.core.row.value.ValueMetaBoolean;
+import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaNumber;
+import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.optimizer.Optimizer;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 
 public class OptimizerTest {
 
   @ClassRule
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
+  @ClassRule
+  public static ExternalResource getResource() {
+      return new ExternalResource() {
+          @Override
+          protected void before() throws Throwable {
+            FunctionRegistry.init();
+          }
+      };
+  }
+  
   protected IExpression optimize(String e) throws Exception {
-    ExpressionContext context = new ExpressionContext(new Variables());
+    IRowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta(new ValueMetaString("NAME"));
+    rowMeta.addValueMeta(new ValueMetaString("SEX"));
+    rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE"));
+    rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
+    rowMeta.addValueMeta(new ValueMetaDate("DN"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("VALUE_NULL"));
+    rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
+    rowMeta.addValueMeta(new ValueMetaString("FROM"));
+    rowMeta.addValueMeta(new ValueMetaNumber("PRICE"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("AMOUNT"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
-    IExpression expression = ExpressionParser.parse(e);
+    IExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
+    IExpression expression = ExpressionBuilder.compile(context, e);
 
-    Optimizer optimizer = new Optimizer();
-    IExpression optimized = optimizer.optimize(context, expression);
-
-    int gain = expression.getCost() - optimized.getCost();
-
-    System.out.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> (" + optimized + ") cost="
-        + optimized.getCost()+" reduced=" + gain  );
-    return optimized;
+    System.out.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression);
+    
+    return expression;
   }
 
   protected void optimize(String e, String expected) throws Exception {
@@ -64,12 +94,12 @@ public class OptimizerTest {
   }
 
   @Test
-  public void simplifyInRule() throws Exception {
+  public void testSimplifyInRule() throws Exception {
     optimize("FIELD in (\"FIELD\", FIELD,1,2,1,null,FIELD,null)", "FIELD IN (1,2,NULL,FIELD)");
   }
 
   @Test
-  public void simplifyLikeRule() throws Exception {
+  public void testSimplifyLikeRule() throws Exception {
     optimizeNull("FIELD LIKE NULL");
     optimizeNull("NULL LIKE FIELD");
     optimize("FIELD LIKE 'Hello'", "FIELD='Hello'");
@@ -79,7 +109,7 @@ public class OptimizerTest {
   }
 
   @Test
-  public void simplifyExtractRule() throws Exception {
+  public void testSimplifyExtractRule() throws Exception {
     optimize("EXTRACT(YEAR FROM OrderDate)", "YEAR(OrderDate)");
     optimize("EXTRACT(ISOYEAR FROM OrderDate)", "ISOYEAR(OrderDate)");
     optimize("EXTRACT(MONTH FROM OrderDate)", "MONTH(OrderDate)");
@@ -96,7 +126,7 @@ public class OptimizerTest {
   }
 
   @Test
-  public void simplifyBooleanRule() throws Exception {
+  public void testSimplifyBooleanRule() throws Exception {
     optimizeFalse("not true");
     optimizeTrue("not false");
     optimizeTrue("not not true");
@@ -114,7 +144,7 @@ public class OptimizerTest {
     optimizeTrue("null or true");
     optimizeNull("null or null");
     optimizeTrue("FIELD or true");
-    optimize("FIELD or false","FIELD");
+    optimize("FIELD or false", "FIELD");
     optimizeTrue("true or FIELD");
     optimize("FIELD or FIELD", "FIELD");
 
@@ -125,12 +155,12 @@ public class OptimizerTest {
     optimizeNull("true and null");
     optimizeNull("null and true");
     optimize("FIELD and FIELD", "FIELD");
+    
+    // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
 
   @Test
-  public void deterministicRule() throws Exception {
-
-
+  public void testDeterministicRule() throws Exception {
     optimize("CONCAT('TES','T')", "'TEST'");
 
     optimize("'A'||'B'", "'AB'");
@@ -142,20 +172,20 @@ public class OptimizerTest {
     optimize("-(10+2)", "-12");
     optimize("-(0)", "0");
 
-    optimize("NOT (FIELD IS TRUE)","FIELD IS FALSE");
-    optimize("NOT (FIELD IS NOT TRUE)","FIELD IS TRUE");
-    optimize("NOT (FIELD IS FALSE)","FIELD IS TRUE");
-    optimize("NOT (FIELD IS NOT FALSE)","FIELD IS FALSE");
-    optimize("NOT (FIELD IS NOT NULL)","FIELD IS NULL");
-    optimize("NOT (FIELD IS NULL)","FIELD IS NOT NULL");
-    
-    optimize("-(-FIELD)","FIELD");
-    optimize("false and true or FIELD","FIELD");
+    optimize("NOT (FIELD IS TRUE)", "FIELD IS FALSE");
+    optimize("NOT (FIELD IS NOT TRUE)", "FIELD IS TRUE");
+    optimize("NOT (FIELD IS FALSE)", "FIELD IS TRUE");
+    optimize("NOT (FIELD IS NOT FALSE)", "FIELD IS FALSE");
+    optimize("NOT (FIELD IS NOT NULL)", "FIELD IS NULL");
+    optimize("NOT (FIELD IS NULL)", "FIELD IS NOT NULL");
+
+    optimize("-(-FIELD)", "FIELD");
+    optimize("false and true or FIELD", "FIELD");
     optimizeFalse("false and FIELD");
 
     optimizeTrue("null is null");
     optimizeTrue("true is true");
-    optimizeTrue("false is false");    
+    optimizeTrue("false is false");
     optimizeFalse("true is false");
     optimizeTrue("false is not true");
     optimizeTrue("true is not false");
@@ -181,26 +211,31 @@ public class OptimizerTest {
   }
 
   @Test
-  public void combineConcatsRule() throws Exception {
+  public void testCombineConcatsRule() throws Exception {
     // Same syntax but cost reduced
     optimize("'A'||FIELD1||FIELD2||'C'", "'A'||FIELD1||FIELD2||'C'");
     optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')||'D'))", "'A'||FIELD1||FIELD2||'C'||'D'");
   }
 
   @Test
-  public void arithmeticRule() throws Exception {
-        
+  public void testArithmeticRule() throws Exception {
+
     optimize("AGE+0", "AGE");
     optimize("0+AGE", "AGE");
-    
+
     optimize("AGE*1", "AGE");
     optimize("1*AGE", "AGE");
-    
+
     optimize("AGE*3*2", "6*AGE");
     optimize("3*(AGE*1)*1*(2*5)", "30*AGE");
     optimize("1+AGE+3+FIELD+5*2", "14+AGE+FIELD");
     optimize("AGE+3+1", "4+AGE");
     optimize("4+AGE+1", "5+AGE");
     optimize("4*AGE*0.5", "2.0*AGE");
+  }
+
+  @Test
+  public void testChainedCast() throws Exception {
+   // optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS BIGNUMBER)", "123456");
   }
 }

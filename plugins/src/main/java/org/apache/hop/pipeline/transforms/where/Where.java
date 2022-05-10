@@ -19,9 +19,9 @@ package org.apache.hop.pipeline.transforms.where;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.util.Utils;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -66,15 +66,6 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
 
       first = false;
 
-      // Resolve variable
-      String expression = resolve(meta.getCondition());
-
-      // Parse expression
-      try {
-        data.condition = ExpressionParser.parse(expression);
-      } catch (ExpressionException e) {
-        throw new HopTransformException(meta.getCondition(), e);
-      }
 
       // clone the input row structure and place it in our data object
       data.outputRowMeta = getInputRowMeta().clone();
@@ -84,6 +75,16 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
 
       data.expressionContext = new ExpressionContext(this, getInputRowMeta());
 
+      // Resolve variable
+      String expression = resolve(meta.getCondition());
+
+      // Compile expression
+      try {
+        data.condition = ExpressionBuilder.compile(data.expressionContext, expression);
+      } catch (ExpressionException e) {
+        throw new HopTransformException(meta.getCondition(), e);
+      }
+      
       // Cache the position of the RowSet for the output.
       List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
 

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.optimizer.rules;
+package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
@@ -22,9 +22,8 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.optimizer.OptimizerRule;
 
-public class ArithmeticRule implements OptimizerRule {
+public class ArithmeticOptimizer extends Optimizer {
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
     try {

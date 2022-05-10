@@ -103,7 +103,8 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     // TransformName line
     wlTransformName = new Label(shell, SWT.RIGHT);
     wlTransformName.setText(BaseMessages.getString(PKG, "CloneRowDialog.TransformName.Label"));
-
+    props.setLook(wlTransformName);
+    
     fdlTransformName = new FormData();
     fdlTransformName.left = new FormAttachment(0, 0);
     fdlTransformName.right = new FormAttachment(middle, -margin);

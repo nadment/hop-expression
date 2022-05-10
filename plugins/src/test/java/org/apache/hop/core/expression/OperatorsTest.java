@@ -466,10 +466,9 @@ public class OperatorsTest extends BaseExpressionTest {
     // Bad data type
     evalFails("Cast(123 as Nill)");
 
-    writeEquals("CAST(NULL AS BINARY)", "CAST(NULL AS BINARY)");
-    writeEquals("CAST('1234' AS NUMBER)", "CAST('1234' AS NUMBER)");
-    writeEquals("CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
-    writeEquals("'1234'::NUMBER", "CAST('1234' AS NUMBER)");
+    writeEquals("CAST(DATA AS BINARY)", "CAST(DATA AS BINARY)");
+    writeEquals("CAST(AGE AS NUMBER)", "CAST(AGE AS NUMBER)");
+    writeEquals("AGE::NUMBER", "CAST(AGE AS NUMBER)");
   }
   
   @Test
@@ -502,9 +501,9 @@ public class OperatorsTest extends BaseExpressionTest {
     // Bad data type
     evalFails("Try_Cast(123 as Nill)");
 
-    writeEquals("TRY_CAST(NULL AS BINARY)");
-    writeEquals("TRY_CAST('1234' AS NUMBER)");
-    writeEquals("TRY_CAST('2020-12-15' AS DATE FORMAT 'YYYY-MM-DD')");
+    writeEquals("TRY_CAST(DATA AS BINARY)");
+    writeEquals("TRY_CAST(AGE AS NUMBER)");
+    writeEquals("TRY_CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD')");
   }
 
   @Test
@@ -550,7 +549,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("Extract(NULL from Date '2021-01-01')");
     evalFails("Extract(BIDON from NULL)");
 
-    writeEquals("EXTRACT(CENTURY FROM DATE '2020-12-15')");
+    writeEquals("EXTRACT(CENTURY FROM FIELD_DATE)");
     
     // Alias
     evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);    
@@ -600,7 +599,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("Mod(9,0)");
     evalFails("Mod(3)");
     
-    writeEquals("15%4");
+    writeEquals("AGE%4");
   }
   
   @Test
@@ -612,7 +611,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("1.23456::BigNumber*-2.987654", -3.68843812224);
     evalNull("null*1");
     evalNull("1*null");
-    writeEquals("15*4");
+    writeEquals("AGE*4","4*AGE");
   }
 
   @Test
@@ -628,7 +627,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("1/null");
     evalFails("40/0");
         
-    writeEquals("15/4");
+    writeEquals("AGE/4");
   }
 
   @Test
@@ -656,7 +655,7 @@ public class OperatorsTest extends BaseExpressionTest {
     // Alias
     evalEquals("BITNOT(1)", -2);
     
-    writeEquals("~15");
+    writeEquals("~AGE");
   }
 
   @Test
@@ -669,7 +668,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("100&");
     evalFails("100 & ");
     
-    writeEquals("15&4");
+    writeEquals("AGE&4");
   }
 
   @Test
@@ -682,7 +681,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("3|");
     evalFails("3 | ");
     
-    writeEquals("15|4");
+    writeEquals("AGE|4");
   }
 
   @Test
@@ -695,7 +694,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("100^");
     evalFails("100 ^ ");
     
-    writeEquals("15^4");
+    writeEquals("AGE^4");
   }
 
   @Test
@@ -820,7 +819,7 @@ public class OperatorsTest extends BaseExpressionTest {
     
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
     
-    writeEquals("FIELD1 LIKE 'ADD%'");
+    writeEquals("FIELD1 LIKE 'ADD%'","STARTSWITH(FIELD1,'ADD')");
     writeEquals("FIELD1 LIKE '%ADD!_%' ESCAPE '!'");
   }
 

@@ -36,10 +36,12 @@ public interface IExpression {
   public default boolean is(Kind kind) {
     return getKind() == kind;
   }
-  
-  /** Check if the expression is a call to this operator or an alias of this operator */
+
+  /**
+   * Check if the expression is a call to this operator or an alias of this operator.
+   */
   public default boolean is(Operator operator) {
-     return false;
+    return false;
   }
 
   /**
@@ -57,6 +59,12 @@ public interface IExpression {
    * @return The result of evaluating the expression.
    */
   public Object eval(IExpressionContext context) throws ExpressionException;
+
+  /**
+   * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
+   * method.
+   */
+  public abstract <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor);
 
   /**
    * Appends this expression statement to the specified writer. This may not always be the original

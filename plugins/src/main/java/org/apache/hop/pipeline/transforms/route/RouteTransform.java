@@ -20,8 +20,8 @@ package org.apache.hop.pipeline.transforms.route;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -97,7 +97,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       
       for (Route route : meta.getRoutes()) {
         // Resolve variable and parse expression
-        IExpression condition = ExpressionParser.parse(resolve(route.getCondition()));
+        IExpression condition = ExpressionBuilder.compile(data.context, resolve(route.getCondition()));
 
         if (StringUtils.isEmpty(route.getTransformName())) {
           throw new HopException(

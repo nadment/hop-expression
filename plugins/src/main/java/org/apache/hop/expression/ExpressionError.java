@@ -50,7 +50,7 @@ public enum ExpressionError {
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
   INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),  
   UNSUPPORTED_CONVERSION("Expression.UnsupportedConversion"),
-  UNSUPPORTED_IDENTIFIER_DATATYPE("Expression.UnsupportedIdentifierDataType"),
+  UNSUPPORTED_VALUEMETA("Expression.UnsupportedValueMeta"),
   UNKNOWN_DATATYPE("Expression.UnknownDataType"),
   UNKNOWN_TIMEZONE("Expression.UnknownTimeZone"),
   FUNCTION_CALL_ERROR("Expression.FunctionError"),

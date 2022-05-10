@@ -14,41 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.optimizer.rules;
+package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-/**
- * Simplifies IN expressions list of elements.
- * 1. Remove duplicate expression in list.
- * 2. Sort expression on cost.
- */
-public class SimplifyInRule implements OptimizerRule {
+public class CombineConcatOptimizer extends Optimizer {
+  @Override
   public IExpression apply(IExpressionContext context, Call call) {
-    if (call.is(Operators.IN)) {
 
-      List<IExpression> list = new ArrayList<>();
+    if (call.is(Operators.CONCAT)) {
+      ArrayList<IExpression> operands = new ArrayList<>();
 
-      // Remove duplicate element in list
-      for (IExpression expression : (Tuple) call.getOperand(1)) {
-        // If this element is not present in newList then add it
-        if (!list.contains(expression)) {
-          list.add(expression);
+      for (IExpression expression : call.getOperands()) {
+        if (expression.is(Operators.CONCAT)) {
+          Call childCall = (Call) expression;
+          operands.addAll(List.of(childCall.getOperands()));
+        } else {
+          operands.add(expression);
         }
       }
 
-      // Sort list on cost
-      list.sort(Comparator.comparing(IExpression::getCost));
-      
-      return new Call(call.getOperator(), call.getOperand(0), new Tuple(list));
+      return new Call(Operators.CONCAT, operands);
     }
 
     return call;

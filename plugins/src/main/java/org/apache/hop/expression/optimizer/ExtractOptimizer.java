@@ -14,43 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.optimizer.rules;
+package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.DatePart;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
-import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.optimizer.OptimizerRule;
+import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.util.Coerse;
 
-public class DeterministicRule implements OptimizerRule {
+/**
+ * Replace EXTRACT with the corresponding function only if without time zone
+ */
+public class ExtractOptimizer extends Optimizer {
+
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
     try {
-      Operator operator = call.getOperator();
-
-      if (!operator.isDeterministic())
-        return call;
-
-      for (IExpression operand : call.getOperands()) {
-        if (operand == null)
-          continue;
-
-        if (operand instanceof Tuple) {
-          for (IExpression expression : (Tuple) operand) {
-            if (!expression.is(Kind.LITERAL)) {
-              return call;
-            }
-          }
-        } else if (!operand.is(Kind.LITERAL)) {
-          return call;
+      if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
+        DatePart part = Coerse.toDatePart(call.getOperand(0).eval(context));
+        Function function = FunctionRegistry.getFunction(part.name());
+        if (function != null) {
+          return new Call(function, call.getOperand(1));
         }
       }
-
-      return Literal.of(call.eval(context));
-    } catch (Exception e) {
+      return call;
+    } catch (ExpressionException e) {
       return call;
     }
   }

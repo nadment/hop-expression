@@ -50,6 +50,11 @@ public class Call implements IExpression {
   }
   
   @Override
+  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
+    return visitor.apply(context, this);    
+  }
+  
+  @Override
   public boolean is(final Operator other) {
     if (other == null)
       return false;

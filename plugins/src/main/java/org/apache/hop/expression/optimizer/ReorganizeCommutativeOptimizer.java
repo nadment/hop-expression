@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.optimizer.rules;
+package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
@@ -23,7 +23,6 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.optimizer.OptimizerRule;
 import java.util.Set;
 
 /**
@@ -33,9 +32,9 @@ import java.util.Set;
  * 2. Go up an operand if low cost
  * 3. Order identifier by name (only useful for test)
  */
-public class ReorganizeCommutativeRule implements OptimizerRule {
+public class ReorganizeCommutativeOptimizer extends Optimizer {
 
-  static final Set<Operator> COMMUTATIVE =
+  private static final Set<Operator> COMMUTATIVE =
       Set.of(Operators.BOOLAND, Operators.BOOLOR, Operators.ADD, Operators.MULTIPLY);
 
   @Override

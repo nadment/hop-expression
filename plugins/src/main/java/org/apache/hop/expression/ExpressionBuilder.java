@@ -15,6 +15,16 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
+import org.apache.hop.expression.optimizer.ArithmeticOptimizer;
+import org.apache.hop.expression.optimizer.BooleanOptimizer;
+import org.apache.hop.expression.optimizer.CombineConcatOptimizer;
+import org.apache.hop.expression.optimizer.DeterministicOptimizer;
+import org.apache.hop.expression.optimizer.ExtractOptimizer;
+import org.apache.hop.expression.optimizer.IdentifierOptimizer;
+import org.apache.hop.expression.optimizer.InOptimizer;
+import org.apache.hop.expression.optimizer.LikeOptimizer;
+import org.apache.hop.expression.optimizer.Optimizer;
+import org.apache.hop.expression.optimizer.ReorganizeCommutativeOptimizer;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -28,13 +38,18 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 
-public class ExpressionParser {
+public class ExpressionBuilder {
+
+  private static final Set<Optimizer> OPTIMIZERS =
+      Set.of(new ReorganizeCommutativeOptimizer(), new ArithmeticOptimizer(), new LikeOptimizer(),
+          new InOptimizer(), new ExtractOptimizer(), new CombineConcatOptimizer(),
+          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer());
 
   private static final Set<String> RESERVED_WORDS =
-     Set.of("AND", "AS",  "ASYMMETRIC", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END",
-          "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE","IN", "IS", "LIKE", "NOT", "NULL", "OR",  "SYMMETRIC",
-          "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE");
-    
+      Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE",
+          "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE", "IN", "IS", "LIKE", "NOT", "NULL", "OR",
+          "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE");
+
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
@@ -44,7 +59,7 @@ public class ExpressionParser {
       return false;
     return RESERVED_WORDS.contains(name.toUpperCase());
   }
-  
+
   private final String source;
 
   // Char position in source
@@ -53,15 +68,16 @@ public class ExpressionParser {
   private int index = 0;
 
   private List<Token> tokens = new ArrayList<>();
-  
-  public static IExpression parse(final String source) throws ExpressionException {
-    ExpressionParser parser = new ExpressionParser(source);
+
+  public static IExpression compile(IExpressionContext context, final String source)
+      throws ExpressionException {
+    ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
-      return parser.parse();
+      return builder.optimize(context, builder.parse());
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);
     } catch (IllegalArgumentException e) {
-      throw createException(source, parser.getPosition(), e);
+      throw createException(source, builder.getPosition(), e);
     }
   }
 
@@ -79,7 +95,7 @@ public class ExpressionParser {
     return new ExpressionException(ExpressionError.SYNTAX_ERROR, line, column, e.getMessage());
   }
 
-  protected ExpressionParser(String source) {
+  protected ExpressionBuilder(String source) {
     super();
     this.source = source;
   }
@@ -119,9 +135,10 @@ public class ExpressionParser {
     return false;
   }
 
+  /** Parse the expression */
   private IExpression parse() throws ParseException {
 
-    // Tokenize    
+    // Tokenize
     for (Token token = tokenize(); token != null; token = tokenize()) {
 
       // Ignore comment
@@ -130,16 +147,17 @@ public class ExpressionParser {
 
       tokens.add(token);
     }
-    
+
     // Empty source return NULL
-    if ( tokens.isEmpty())
-      return Literal.NULL;   
-    
+    if (tokens.isEmpty())
+      return Literal.NULL;
+
     IExpression expression = this.parseLogicalOr();
 
     if (hasNext()) {
       Token token = next();
-      throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(token.text()),
+          token.start());
     }
 
     return expression;
@@ -205,24 +223,26 @@ public class ExpressionParser {
       if (next(Id.NOT)) {
         not = true;
       }
-      
+
       Token token = next();
       if (token == null) {
-        throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+        throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+            this.getPosition());
       }
       Operator operator;
       switch (token.id()) {
         case TRUE:
-          operator = (not) ? Operators.IS_FALSE:Operators.IS_TRUE;
+          operator = (not) ? Operators.IS_FALSE : Operators.IS_TRUE;
           break;
         case FALSE:
-          operator = (not) ? Operators.IS_TRUE:Operators.IS_FALSE;
+          operator = (not) ? Operators.IS_TRUE : Operators.IS_FALSE;
           break;
         case NULL:
-          operator = (not) ? Operators.IS_NOT_NULL:Operators.IS_NULL;
+          operator = (not) ? Operators.IS_NOT_NULL : Operators.IS_NULL;
           break;
         default:
-          throw new ParseException(ExpressionError.INVALID_BOOLEAN.message(token.text()), token.start());
+          throw new ParseException(ExpressionError.INVALID_BOOLEAN.message(token.text()),
+              token.start());
       }
       expression = new Call(operator, expression);
     }
@@ -261,7 +281,7 @@ public class ExpressionParser {
       } else
         expression = new Call(Operators.ILIKE, expression, pattern);
     } else if (next(Id.RLIKE)) {
-      IExpression pattern = this.parseAdditive();     
+      IExpression pattern = this.parseAdditive();
       expression = new Call(Operators.RLIKE, expression, pattern);
     } else if (next(Id.IN)) {
       expression = new Call(Operators.IN, expression, this.parseTuple());
@@ -269,14 +289,14 @@ public class ExpressionParser {
       Operator operator = Operators.BETWEEN;
       if (next(Id.ASYMMETRIC)) {
         // Igonre
-      }
-      else if (next(Id.SYMMETRIC)) {
+      } else if (next(Id.SYMMETRIC)) {
         operator = Operators.BETWEEN_SYMMETRIC;
       }
-      
+
       IExpression start = this.parseAdditive();
       if (!next(Id.AND)) {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.BETWEEN), this.getPosition());
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.BETWEEN),
+            this.getPosition());
       }
       IExpression end = this.parseAdditive();
 
@@ -300,8 +320,7 @@ public class ExpressionParser {
 
     while (hasNext()) {
       if (next(Id.MULTIPLY)) {
-        expression =
-            new Call(Operators.MULTIPLY, expression, this.parseBitwiseNot());
+        expression = new Call(Operators.MULTIPLY, expression, this.parseBitwiseNot());
       } else if (next(Id.DIVIDE)) {
         expression = new Call(Operators.DIVIDE, expression, this.parseBitwiseNot());
       } else if (next(Id.MODULUS)) {
@@ -384,7 +403,7 @@ public class ExpressionParser {
     }
     return expression;
   }
-  
+
   /** Term = Literal | Identifier | Function | '(' Expression ')' */
   private IExpression parseTerm() throws ParseException {
     Token token = next();
@@ -413,15 +432,18 @@ public class ExpressionParser {
           return parseLiteralDataType(token);
         case DATE:
           token = next();
-          if ( token==null) break;
+          if (token == null)
+            break;
           return parseLiteralDate(token);
         case TIME:
           token = next();
-          if ( token==null) break;
+          if (token == null)
+            break;
           return parseLiteralTime(token);
         case TIMESTAMP:
           token = next();
-          if ( token==null) break;
+          if (token == null)
+            break;
           return parseLiteralTimestamp(token);
         case CASE:
           return parseCaseWhen();
@@ -446,7 +468,8 @@ public class ExpressionParser {
           // Syntax error
       }
     }
-    throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+        this.getPosition());
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
@@ -463,15 +486,13 @@ public class ExpressionParser {
       return new Call(Operators.GREATER_THAN, expression, this.parseRelational());
     }
     if (next(Id.GTE)) {
-      return new Call(Operators.GREATER_THAN_OR_EQUAL, expression,
-          this.parseRelational());
+      return new Call(Operators.GREATER_THAN_OR_EQUAL, expression, this.parseRelational());
     }
     if (next(Id.LT)) {
       return new Call(Operators.LESS_THAN, expression, this.parseRelational());
     }
     if (next(Id.LTE)) {
-      return new Call(Operators.LESS_THAN_OR_EQUAL, expression,
-          this.parseRelational());
+      return new Call(Operators.LESS_THAN_OR_EQUAL, expression, this.parseRelational());
     }
 
     return expression;
@@ -532,8 +553,9 @@ public class ExpressionParser {
    * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
-    if (token==null) {
-      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    if (token == null) {
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+          this.getPosition());
     }
 
     try {
@@ -547,8 +569,9 @@ public class ExpressionParser {
 
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
-    if (token==null) {
-      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    if (token == null) {
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+          this.getPosition());
     }
 
     try {
@@ -566,10 +589,11 @@ public class ExpressionParser {
    * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
-    if (token==null) {
-      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    if (token == null) {
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+          this.getPosition());
     }
-    
+
     try {
       String pattern;
       String str = token.text();
@@ -577,7 +601,7 @@ public class ExpressionParser {
         case 36: // 2021-01-01 15:28:59.123456789 +02:00
         case 35: // 2021-01-01 15:28:59.123456789+02:00
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZH:TZM";
-          break;          
+          break;
         case 33: // 2021-01-01 5:28:59.123456789+0200
         case 34: // 2021-01-01 15:28:59.123456789+0200
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
@@ -585,39 +609,39 @@ public class ExpressionParser {
         case 28: // 2021-12-01 2:01:01.123456789
         case 29: // 2021-12-01 12:01:01.123456789
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9";
-          break;            
+          break;
         case 26:
-          if ( str.indexOf('.',10)>0 )
+          if (str.indexOf('.', 10) > 0)
             pattern = "YYYY-MM-DD HH24:MI:SS.FF6";
           else
             pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
           break;
         case 25: // 2021-01-01 15:28:59+02:00
           pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
-          break;          
+          break;
         case 24: // 2021-01-01 15:28:59+0200
                  // 2021-01-01 5:28:59+02:00
-          if ( str.indexOf(':',20)>0 )
+          if (str.indexOf(':', 20) > 0)
             pattern = "YYYY-MM-DD HH24:MI:SSTZH:TZM";
           else
             pattern = "YYYY-MM-DD HH24:MI:SSTZHTZM";
           break;
         case 23:
-          if ( str.indexOf('.',10)>0 )
+          if (str.indexOf('.', 10) > 0)
             pattern = "YYYY-MM-DD HH24:MI:SS.FF3";
           else
             pattern = "YYYY-MM-DD HH24:MI TZH:TZM";
-          break;          
+          break;
         case 21: // 2021-01-01 5:28+02:00
-        case 22: // 2021-01-01 15:28+02:00 or  2021-01-01 5:28 +02:00          
+        case 22: // 2021-01-01 15:28+02:00 or 2021-01-01 5:28 +02:00
           pattern = "YYYY-MM-DD HH24:MITZH:TZM";
           break;
         case 18:
         case 19: // 2021-04-28 20:57:48
-          if (str.indexOf('+') > 0 || str.indexOf('-', 15) > 0 )
+          if (str.indexOf('+') > 0 || str.indexOf('-', 15) > 0)
             pattern = "YYYY-MM-DD HH24:MITZH";
           else
-            pattern = "YYYY-MM-DD HH24:MI:SS";                    
+            pattern = "YYYY-MM-DD HH24:MI:SS";
           break;
         case 16: // 2021-02-25 03:59
           pattern = "YYYY-MM-DD HH24:MI";
@@ -631,22 +655,25 @@ public class ExpressionParser {
 
       DateTimeFormat format = DateTimeFormat.of(pattern);
       ZonedDateTime datetime = format.parse(token.text());
-      
-      // AT TIME ZONE <zoneId> 
+
+      // AT TIME ZONE <zoneId>
       if (is(Id.AT)) {
         next();
         if (!next(Id.TIME) || !next(Id.ZONE)) {
-          throw new ParseException(ExpressionError.INVALID_OPERATOR.message("AT TIME ZONE"), this.getPosition());
+          throw new ParseException(ExpressionError.INVALID_OPERATOR.message("AT TIME ZONE"),
+              this.getPosition());
         }
         token = next();
-        ZoneId zoneId = ZoneId.of(token.text());           
-        datetime =  datetime.withZoneSameLocal(zoneId);
+        ZoneId zoneId = ZoneId.of(token.text());
+        datetime = datetime.withZoneSameLocal(zoneId);
       }
       return Literal.of(datetime);
     } catch (ZoneRulesException e) {
-      throw new ParseException(ExpressionError.UNKNOWN_TIMEZONE.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.UNKNOWN_TIMEZONE.message(token.text()),
+          token.start());
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.INVALID_TIMESTAMP.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_TIMESTAMP.message(token.text()),
+          token.start());
     }
   }
 
@@ -696,7 +723,8 @@ public class ExpressionParser {
     while (next(Id.WHEN)) {
       whenList.add(this.parseLogicalOr());
       if (!next(Id.THEN)) {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE),
+            this.getPosition());
       }
       thenList.add(this.parseLogicalOr());
     }
@@ -706,11 +734,12 @@ public class ExpressionParser {
     }
 
     if (!next(Id.END)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE),
+          this.getPosition());
     }
 
-    return new Call(Operators.CASE, valueExpression, new Tuple(whenList),
-        new Tuple(thenList), elseExpression);
+    return new Call(Operators.CASE, valueExpression, new Tuple(whenList), new Tuple(thenList),
+        elseExpression);
   }
 
   /**
@@ -718,8 +747,7 @@ public class ExpressionParser {
    *
    */
   private IExpression parseCastFunction(Token token) throws ParseException {
-    Operator operator =
-        ("CAST".equals(token.text())) ? Operators.CAST : Operators.TRY_CAST;
+    Operator operator = ("CAST".equals(token.text())) ? Operators.CAST : Operators.TRY_CAST;
 
     List<IExpression> operands = new ArrayList<>();
 
@@ -769,7 +797,8 @@ public class ExpressionParser {
     operands.add(this.parseAdditive());
 
     if (!next(Id.IN)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.POSITION), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.POSITION),
+          this.getPosition());
     }
 
     operands.add(this.parseAdditive());
@@ -797,7 +826,8 @@ public class ExpressionParser {
     operands.add(this.parseLiteralDatePart(next()));
 
     if (!next(Id.FROM)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.EXTRACT), this.getPosition());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.EXTRACT),
+          this.getPosition());
     }
 
     operands.add(this.parseAdditive());
@@ -846,28 +876,32 @@ public class ExpressionParser {
   }
 
   private Literal parseLiteralDatePart(Token token) throws ParseException {
-    if (token==null) {
-      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    if (token == null) {
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+          this.getPosition());
     }
 
     try {
       DatePart part = DatePart.of(token.text());
       return Literal.of(part);
     } catch (RuntimeException e) {
-      throw new ParseException(ExpressionError.INVALID_DATEPART.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_DATEPART.message(token.text()),
+          token.start());
     }
   }
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
-    if (token==null) {
-      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    if (token == null) {
+      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+          this.getPosition());
     }
-    
+
     try {
       DataType datatype = DataType.of(token.text());
       return Literal.of(datatype);
     } catch (RuntimeException e) {
-      throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()),
+          token.start());
     }
   }
 
@@ -909,7 +943,8 @@ public class ExpressionParser {
           }
 
           if (c != '\'') {
-            throw new ParseException(ExpressionError.MISSING_END_SINGLE_QUOTED_STRING.message(), start);
+            throw new ParseException(ExpressionError.MISSING_END_SINGLE_QUOTED_STRING.message(),
+                start);
           }
 
           return new Token(Id.LITERAL_STRING, start, position, text.toString());
@@ -923,8 +958,8 @@ public class ExpressionParser {
 
         case '-': {
           // Single line comment --
-          if (position+1 < source.length()) {
-            if (source.charAt(position+1) == '-') {
+          if (position + 1 < source.length()) {
+            if (source.charAt(position + 1) == '-') {
               int start = position;
               position++;
               while (position < source.length()) {
@@ -936,11 +971,11 @@ public class ExpressionParser {
               return new Token(Id.COMMENT, start, position, source.substring(start, position));
             }
           }
-          
+
           // Minus sign
           return new Token(Id.MINUS, position++);
         }
-        
+
         case '*':
           return new Token(Id.MULTIPLY, position++);
 
@@ -1028,7 +1063,8 @@ public class ExpressionParser {
                   } else
                     position++;
                 } else {
-                  throw new ParseException(ExpressionError.MISSING_END_BLOCK_COMMENT.message(), start);
+                  throw new ParseException(ExpressionError.MISSING_END_BLOCK_COMMENT.message(),
+                      start);
                 }
               }
 
@@ -1152,7 +1188,7 @@ public class ExpressionParser {
         }
 
         default:
-          if (Characters.isSpace(c) || c=='\n' || c=='\r' ) {
+          if (Characters.isSpace(c) || c == '\n' || c == '\r') {
             ++position;
             continue;
           }
@@ -1169,16 +1205,17 @@ public class ExpressionParser {
             position++;
           }
 
-          
+
           String identifier = source.substring(start, position);
           String name = identifier.toUpperCase();
 
-          if (c == '(' ) {
+          if (c == '(') {
             // Special operator with name
-            if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name) || "POSITION".equals(name) ) {
+            if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name)
+                || "POSITION".equals(name)) {
               return new Token(Id.valueOf(name), start, position, name);
             }
-            if ( FunctionRegistry.isFunction(name)) {          
+            if (FunctionRegistry.isFunction(name)) {
               return new Token(Id.FUNCTION, start, position, name);
             }
           }
@@ -1200,5 +1237,57 @@ public class ExpressionParser {
       }
     }
     return null;
+  }
+
+  /**
+   * Optimize the expression.
+   *
+   * @param context the context
+   * @param expression the expression to optimize
+   * @return the optimized expression
+   */
+  protected IExpression optimize(IExpressionContext context, IExpression expression) {
+    if (expression == null)
+      return null;
+
+    IExpression original = expression;
+    int cycle = 20;
+    do {
+      // Optimize operands first
+      if (expression instanceof Call) {
+        expression = optimizeCall(context, (Call) expression);
+      } else if (expression instanceof Tuple) {
+        expression = optimizeTuple(context, (Tuple) expression);
+      }
+
+      // Apply optimizers 
+      for (Optimizer optimizer : OPTIMIZERS) {
+        expression = expression.visit(context, optimizer);       
+      }
+
+      if (expression.equals(original)) {
+        return expression;
+      }
+
+      original = expression;
+    } while (--cycle > 0);
+
+    return expression;
+  }
+
+  protected IExpression optimizeTuple(IExpressionContext context, Tuple tuple) {
+    List<IExpression> elements = new ArrayList<>(tuple.size());
+    for (IExpression expression : tuple) {
+      elements.add(optimize(context, expression));
+    }
+    return new Tuple(elements);
+  }
+
+  protected IExpression optimizeCall(IExpressionContext context, Call call) {
+    List<IExpression> operands = new ArrayList<>(call.getOperandCount());
+    for (IExpression expression : call.getOperands()) {
+      operands.add(optimize(context, expression));
+    }
+    return new Call(call.getOperator(), operands);
   }
 }

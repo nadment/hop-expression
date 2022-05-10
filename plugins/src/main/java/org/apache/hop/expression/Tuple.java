@@ -107,6 +107,11 @@ public class Tuple implements IExpression, Iterable<IExpression> {
   public Object eval(IExpressionContext context) throws ExpressionException {
     throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
   }
+  
+  @Override
+  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
+    return visitor.apply(context, this);    
+  }
 
   @Override
   public boolean equals(Object other) {

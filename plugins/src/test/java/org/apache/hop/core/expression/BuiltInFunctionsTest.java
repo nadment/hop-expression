@@ -689,7 +689,7 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("Abs(NULL)");
     evalFails("Abs()");
 
-    writeEquals("ABS(-2)");
+    writeEquals("ABS(-AGE)");
   }
 
   @Test
@@ -1028,6 +1028,7 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
   @Test
   public void Try_To_Boolean() throws Exception {
     evalTrue("Try_To_Boolean(1)");
+    evalTrue("Try_To_Boolean(3)");
     evalFalse("Try_To_Boolean(0)");
     evalNull("Try_To_Boolean('falsee')");
     evalNull("Try_To_Boolean('x')");

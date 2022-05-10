@@ -17,12 +17,11 @@
 package org.apache.hop.expression.experimental;
 
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import java.io.StringWriter;
 
-public class JsonObjectAccess implements IExpression {
+public class JsonObjectAccess  {
 
   private final String name;
 
@@ -32,26 +31,26 @@ public class JsonObjectAccess implements IExpression {
     this.name = name;
   }
 
-  @Override
+ // @Override
   public Kind getKind() {
-    return Kind.JSON;
+    return Kind.LITERAL;
   }
 
   public String getName() {
     return name;
   }
 
-  @Override
+//  @Override
   public int getCost() {
     return 1;
   }
 
-  @Override
+ // @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
     return null;
   }
 
-  @Override
+//  @Override
   public void unparse(StringWriter writer) {
     writer.append('{');
     writer.append(this.name);

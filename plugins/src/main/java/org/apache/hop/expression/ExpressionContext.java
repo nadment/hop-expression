@@ -14,11 +14,9 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.i18n.BaseMessages;
@@ -26,11 +24,10 @@ import java.security.SecureRandom;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Objects;
 import javax.script.SimpleScriptContext;
 
-public class ExpressionContext extends SimpleScriptContext implements IExpressionContext, IRowContext {
+public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
@@ -108,6 +105,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public void setAttribute(String name, Object value) {
     this.setAttribute(name, value, ENGINE_SCOPE);
   }
+  
   @Override
   public IRowMeta getRowMeta() {
     return rowMeta;
@@ -122,47 +120,58 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public void setRow(Object[] row) {
     this.row = row;
   }
-  
-  @Override
-  public Object resolve(String name) throws ExpressionException {
-
-    if (rowMeta == null)
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-
-    int index = rowMeta.indexOfValue(name);
-    if (index < 0)
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-
-    IValueMeta valueMeta = rowMeta.getValueMeta(index);
-    try {
-      switch (valueMeta.getType()) {
-        case IValueMeta.TYPE_BOOLEAN:
-          return rowMeta.getBoolean(row, index);
-        case IValueMeta.TYPE_DATE:
-        case IValueMeta.TYPE_TIMESTAMP:
-          // No getTimestamp from RowMeta ???
-          Date date = rowMeta.getDate(row, index);
-          if (date == null)
-            return null;
-          return date.toInstant().atZone(ZoneId.systemDefault());          
-        case IValueMeta.TYPE_STRING:
-          return rowMeta.getString(row, index);
-        case IValueMeta.TYPE_INTEGER:
-          return rowMeta.getInteger(row, index);
-        case IValueMeta.TYPE_NUMBER:
-          return rowMeta.getNumber(row, index);
-        case IValueMeta.TYPE_BIGNUMBER:
-          return rowMeta.getBigNumber(row, index);
-        case IValueMeta.TYPE_BINARY:
-          return rowMeta.getBinary(row, index);
-        default:
-          throw new ExpressionException(ExpressionError.UNSUPPORTED_IDENTIFIER_DATATYPE, name, valueMeta.getTypeDesc());
-      }
-    } catch (HopValueException e) {
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-    }
-  }
-
+//  
+//  @Override
+//  public Object resolve(final String name) throws ExpressionException {
+//    if (rowMeta == null)
+//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
+//
+//    int index = rowMeta.indexOfValue(name);
+//    if (index < 0)
+//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
+//    
+//    return this.resolve(index);
+//  }
+//
+//  @Override
+//  public Object resolve(final int index) throws ExpressionException {
+//
+//    if (rowMeta == null)
+//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, "$:"+index);
+//   
+//    IValueMeta valueMeta = rowMeta.getValueMeta(index);
+//    
+//    try {
+//      switch (valueMeta.getType()) {
+//        case IValueMeta.TYPE_BOOLEAN:
+//          return rowMeta.getBoolean(row, index);
+//        case IValueMeta.TYPE_DATE:
+//        case IValueMeta.TYPE_TIMESTAMP:
+//          // No getTimestamp from RowMeta ???
+//          Date date = rowMeta.getDate(row, index);
+//          if (date == null)
+//            return null;
+//          return date.toInstant().atZone(ZoneId.systemDefault());          
+//        case IValueMeta.TYPE_STRING:
+//          return rowMeta.getString(row, index);
+//        case IValueMeta.TYPE_INTEGER:
+//          return rowMeta.getInteger(row, index);
+//        case IValueMeta.TYPE_NUMBER:
+//          return rowMeta.getNumber(row, index);
+//        case IValueMeta.TYPE_BIGNUMBER:
+//          return rowMeta.getBigNumber(row, index);
+//        case ValueMetaJson.TYPE_JSON:
+//          return row[index];  
+//        case IValueMeta.TYPE_BINARY:
+//          return rowMeta.getBinary(row, index);
+//        default:
+//          throw new ExpressionException(ExpressionError.UNSUPPORTED_IDENTIFIER_DATATYPE, valueMeta.getName(), valueMeta.getTypeDesc());
+//      }
+//    } catch (HopValueException e) {
+//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, valueMeta.getName());
+//    }
+//  }
+//  
   public int getTwoDigitCenturyStart() {
     return twoDigitCenturyStart;
   }

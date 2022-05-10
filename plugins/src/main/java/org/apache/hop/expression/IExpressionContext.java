@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.core.row.IRowMeta;
+
 public interface IExpressionContext {
 
   /**
@@ -26,8 +28,8 @@ public interface IExpressionContext {
    * @return the resolved value.
    * @throws ExpressionException if an error occurs.
    */
-  public Object resolve(String name) throws ExpressionException;
-
+  //public Object resolve(String name) throws ExpressionException;
+  
   /**
    * Gets the value of an attribute.
    *
@@ -51,4 +53,8 @@ public interface IExpressionContext {
    * @throws NullPointerException if the name is null.
    */
   public void setAttribute(String name, Object value);
+  
+  public IRowMeta getRowMeta();
+  public Object[] getRow();
+  public void setRow(Object[] row);
 }

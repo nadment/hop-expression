@@ -25,7 +25,8 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.ExpressionParser;
+import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -163,9 +164,10 @@ public class ExpressionTransformMeta extends BaseTransformMeta<ExpressionTransfo
     }
 
     // Check expression
+    ExpressionContext context = new ExpressionContext(variables, prev);
     for (ExpressionField field : this.fields) {
-      try {
-        ExpressionParser.parse(field.getExpression());
+      try {        
+        ExpressionBuilder.compile(context, field.getExpression());
       } catch (Exception e) {
         remarks.add(
             new CheckResult(

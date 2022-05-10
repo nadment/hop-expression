@@ -14,10 +14,6 @@
  */
 package org.apache.hop.expression.experimental.jsr223;
 
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.IExpression;
 import java.io.IOException;
 import java.io.Reader;
 import javax.script.AbstractScriptEngine;
@@ -52,8 +48,9 @@ public final class ExpressionScriptEngine extends AbstractScriptEngine
   @Override
   public Object eval(String script, ScriptContext context) throws ScriptException {
     try {
-      IExpression expression = ExpressionParser.parse(script);
-      return expression.eval((ExpressionContext) context);
+    //  IExpression expression = ExpressionBuilder.compile(script);
+      //return expression.eval((ExpressionContext) context);
+      return null;
     } catch (Exception e) {
       throw new ScriptException(e);
     }
@@ -82,12 +79,13 @@ public final class ExpressionScriptEngine extends AbstractScriptEngine
 
   @Override
   public CompiledScript compile(String script) throws ScriptException {
-    try {
-      IExpression expression = ExpressionParser.parse(script);
-      return new CompiledExpression(this, expression);
-    } catch (ExpressionException e) {
-      throw new ScriptException("Unable to compile expression: " + script);
-    }
+//    try {
+//     // IExpression expression = ExpressionBuilder.compile(script);
+//      //return new CompiledExpression(this, expression);     
+//    } catch (ExpressionException e) {
+//      throw new ScriptException("Unable to compile expression: " + script);
+//    }
+    return null;
   }
 
   @Override

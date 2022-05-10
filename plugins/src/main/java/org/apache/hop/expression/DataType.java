@@ -20,6 +20,7 @@ import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Enumeration of the data type which can be used to construct a expression.
@@ -53,12 +54,14 @@ public enum DataType {
   /** Date-time value with nanosecond precision */
   DATE(ZonedDateTime.class),
 
+  JSON(JsonNode.class),
+  
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(byte[].class);
 
   private final Class<?> javaClass;
  
-  private static final String[] names = Set.of("BigNumber","Binary","Boolean","Date","Integer","Number","String").toArray(new String[0]);
+  private static final String[] names = Set.of("BigNumber","Binary","Boolean","Date","Integer","Number", "Json", "String").toArray(new String[0]);
   
   private DataType(Class<?> javaClass) {
     this.javaClass = javaClass;
@@ -92,6 +95,8 @@ public enum DataType {
       return INTEGER;
     if (value instanceof ZonedDateTime)
       return DATE;
+    if (value instanceof JsonNode)
+      return JSON;
     if (value instanceof byte[])
       return BINARY;
 
@@ -114,6 +119,8 @@ public enum DataType {
       return INTEGER.name();
     if (value instanceof ZonedDateTime)
       return DATE.name();
+    if (value instanceof JsonNode)
+      return JSON.name();
     if (value instanceof byte[])
       return BINARY.name();
 

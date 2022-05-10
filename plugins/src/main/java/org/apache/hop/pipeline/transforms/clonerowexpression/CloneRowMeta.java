@@ -33,11 +33,13 @@ import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.core.xml.XmlHandler;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -173,7 +175,8 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     }
 
     try {
-      IExpression expression = ExpressionParser.parse(value.substring(1));
+      IExpressionContext context = new ExpressionContext(new Variables());
+      IExpression expression = ExpressionBuilder.compile(context, value.substring(1));
       Object result = expression.eval(new ExpressionContext(variables));      
       return String.valueOf(result);
     } catch (ExpressionException e) {

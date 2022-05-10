@@ -19,11 +19,9 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -95,11 +93,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
           metadataProvider);
       data.expressions = new IExpression[data.outputRowMeta.size()];
 
-      ExpressionContext context = new ExpressionContext(this, data.outputRowMeta);
-      data.expressionContext = context;
-
-      Optimizer optimizer = new Optimizer();
-      
+      data.expressionContext = new ExpressionContext(this, data.outputRowMeta);
+            
       // For all fields expression
       for (ExpressionField field : meta.getFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
@@ -117,10 +112,9 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
           source = "NULL";
         }
 
-        // Parse and optimize expression
+        // Compile expression
         try {
-          IExpression expression = ExpressionParser.parse(source);
-          data.expressions[index] = optimizer.optimize(context, expression);
+          data.expressions[index] = ExpressionBuilder.compile(data.expressionContext, source);
         } catch (Exception ex) {
           String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.ParseExpressionError",
               field.getName(), field.getExpression(), ex.toString());

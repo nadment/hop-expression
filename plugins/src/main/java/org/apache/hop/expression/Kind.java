@@ -33,6 +33,5 @@ public enum Kind {
   /**
    * An object of type {@link org.apache.hop.expression.Call}
    */
-  CALL,
-  JSON;
+  CALL;
 }

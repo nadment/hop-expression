@@ -70,7 +70,7 @@ public class IdentifierTest extends BaseExpressionTest {
     writeEquals("\"YEAR\"");
     writeEquals("\"UPPER\"");
     // Contains space
-    writeEquals("\"IDENTIFIER SPACE\"+1");
+    writeEquals("\"IDENTIFIER SPACE\"+1","1+\"IDENTIFIER SPACE\"");
   }
 }
 

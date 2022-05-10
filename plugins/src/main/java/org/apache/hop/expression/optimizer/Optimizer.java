@@ -17,88 +17,31 @@ package org.apache.hop.expression.optimizer;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionVisitor;
+import org.apache.hop.expression.Identifier;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.optimizer.rules.ArithmeticRule;
-import org.apache.hop.expression.optimizer.rules.CombineConcatRule;
-import org.apache.hop.expression.optimizer.rules.DeterministicRule;
-import org.apache.hop.expression.optimizer.rules.ReorganizeCommutativeRule;
-import org.apache.hop.expression.optimizer.rules.SimplifyBooleanRule;
-import org.apache.hop.expression.optimizer.rules.SimplifyExtractRule;
-import org.apache.hop.expression.optimizer.rules.SimplifyInRule;
-import org.apache.hop.expression.optimizer.rules.SimplifyLikeRule;
-import java.util.ArrayList;
-import java.util.List;
 
-public class Optimizer {
+public class Optimizer implements IExpressionVisitor<IExpression> {
 
-  private static final List<OptimizerRule> RULES = List.of(new ReorganizeCommutativeRule(),
-      new ArithmeticRule(), new SimplifyLikeRule(), new SimplifyInRule(), new SimplifyExtractRule(),
-      new CombineConcatRule(), new SimplifyBooleanRule(), new DeterministicRule());
-
-  /**
-   * Try to optimize the expression.
-   *
-   * @param context the context
-   * @param expression the expression to optimize
-   * @return the optimized expression
-   */
-  public IExpression optimize(IExpressionContext context, IExpression expression) {
-    if ( expression  == null )
-       return null;
-    
-    IExpression original = expression;
-    int cycle = 20;
-    do {
-      switch (expression.getKind()) {
-        case LITERAL:
-        case JSON:
-        case IDENTIFIER:
-          return expression;
-        case CALL:
-          expression = optimizeCall(context, (Call) expression);
-          break;
-        case TUPLE:
-          expression = optimizeTuple(context, (Tuple) expression);
-          break;
-      }
-
-      if (expression.equals(original)) {
-        return expression;
-      }
-
-      original = expression;
-    } while (--cycle > 0);
-
-    return expression;
+  @Override
+  public IExpression apply(IExpressionContext context, Identifier identifier) {
+    return identifier;
   }
 
-  protected IExpression optimizeTuple(IExpressionContext context, Tuple list) {
-
-    List<IExpression> elements = new ArrayList<>(list.size());
-    for (IExpression element : list) {
-      elements.add(optimize(context, element));
-    }
-
-    return new Tuple(elements);
+  @Override
+  public IExpression apply(IExpressionContext context, Call call) {
+    return call;
   }
 
-  protected IExpression optimizeCall(IExpressionContext context, Call call) {
-    // Optimize operands first
-    IExpression[] operands = new IExpression[call.getOperandCount()];
-    for (int i = 0; i < call.getOperandCount(); i++) {
-      IExpression operand = optimize(context, call.getOperand(i));
-      operands[i] = operand;
-    }
-    
-    IExpression expression = new Call(call.getOperator(), operands);
-        
-    // Apply rules
-    for (OptimizerRule rule : RULES) {
-      if (expression instanceof Call) {
-        expression = rule.apply(context, (Call) expression);
-      }
-    }
-
-    return expression;
+  @Override
+  public IExpression apply(IExpressionContext context, Tuple tuple) {
+    return tuple;
   }
+
+  @Override
+  public IExpression apply(IExpressionContext context, Literal literal) {
+    return literal;
+  }
+
 }

@@ -28,13 +28,12 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.optimizer.Optimizer;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -121,19 +120,16 @@ public class BaseExpressionTest {
   protected Object eval(String source, ExpressionContext context,
       Consumer<ExpressionContext> consumer) throws Exception {
 
-    IExpression expression = ExpressionParser.parse(source);
-    Optimizer optimizer = new Optimizer();
-
     // Create default context
-    if (context == null)
+    if (context == null) {
       context = createExpressionContext();
-
-    // Optimize in context
-    expression = optimizer.optimize(context, expression);
-
+    }
+    
     // Apply context customization
     if (consumer != null)
       consumer.accept(context);
+    
+    IExpression expression = ExpressionBuilder.compile(context, source);
 
     try {
       return expression.eval(context);
@@ -222,7 +218,8 @@ public class BaseExpressionTest {
   }
 
   protected void writeEquals(String source, String result) throws Exception {
-    IExpression expression = ExpressionParser.parse(source);
+    IExpressionContext context = createExpressionContext();
+    IExpression expression = ExpressionBuilder.compile(context, source);
 
     StringWriter writer = new StringWriter();
     expression.unparse(writer);
