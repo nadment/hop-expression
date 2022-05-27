@@ -29,9 +29,9 @@ import org.apache.hop.expression.util.Coerse;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
-public class ExtraFunction {
+public class ExtraFunctions {
 
-  private ExtraFunction() {}
+  private ExtraFunctions() {}
 
   private static final Pattern DIACRITICS =
       Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");

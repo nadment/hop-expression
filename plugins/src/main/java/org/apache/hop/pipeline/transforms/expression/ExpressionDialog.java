@@ -36,7 +36,7 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.ColumnsResizer;
 import org.apache.hop.ui.core.widget.TableView;
-import org.apache.hop.ui.expression.ExpressionDialog;
+import org.apache.hop.ui.expression.ExpressionEditorDialog;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
@@ -56,17 +56,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ExpressionTransformDialog extends BaseTransformDialog implements ITransformDialog {
-  private static final Class<?> PKG = ExpressionTransformMeta.class; 
+public class ExpressionDialog extends BaseTransformDialog implements ITransformDialog {
+  private static final Class<?> PKG = ExpressionMeta.class; 
 
-  private final ExpressionTransformMeta input;
+  private final ExpressionMeta input;
   private TableView wTableFields;
   private ModifyListener lsMod;
 
-  public ExpressionTransformDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
+  public ExpressionDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
       String name) {
     super(parent, variables, (BaseTransformMeta) in, pipelineMeta, name);
-    input = (ExpressionTransformMeta) in;
+    input = (ExpressionMeta) in;
   }
 
   @Override
@@ -120,7 +120,7 @@ public class ExpressionTransformDialog extends BaseTransformDialog implements IT
     return transformName;
   }
 
-  protected void setWidgetsContent(final ExpressionTransformMeta meta) {
+  protected void setWidgetsContent(final ExpressionMeta meta) {
     int i = 0;
     for (ExpressionField value : meta.getFields()) {
 
@@ -143,7 +143,7 @@ public class ExpressionTransformDialog extends BaseTransformDialog implements IT
     this.wTransformName.setFocus();
   }
 
-  protected void getWidgetsContent(final ExpressionTransformMeta meta) {
+  protected void getWidgetsContent(final ExpressionMeta meta) {
 
     // Save step name
     this.transformName = this.wTransformName.getText();
@@ -266,7 +266,7 @@ public class ExpressionTransformDialog extends BaseTransformDialog implements IT
 
           CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
           
-          ExpressionDialog dialog = new ExpressionDialog(shell);
+          ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
           expression = dialog.open(expression, getVariables(), rowMeta);
           if (expression != null) {
             wTableFields.getActiveTableItem().setText(wTableFields.getActiveTableColumn(),

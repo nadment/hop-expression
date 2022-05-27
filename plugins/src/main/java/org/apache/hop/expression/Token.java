@@ -124,6 +124,10 @@ public class Token {
     NULL,
     /** The "IS" operator.*/
     IS,
+    /** The "JSON_OBJECT" operator.*/
+    JSON_OBJECT,
+    KEY,
+    VALUE,
     /** The literal value "TRUE".*/
     TRUE,
     /** The literal value "FALSE".*/
@@ -175,10 +179,14 @@ public class Token {
     this.text = text;
   }
 
-  public boolean is(Id id) {
+  public boolean is(final Id id) {
     return this.id == id;
   }
 
+  public boolean isNot(final Id id) {
+    return this.id != id;
+  }
+  
   public Id id() {
     return id;
   }

@@ -39,14 +39,14 @@ import java.util.concurrent.CompletableFuture;
 /**
  * This dialogs allows you to edit expression.
  */
-public class ExpressionDialog extends Dialog {
-  private static final Class<?> PKG = ExpressionDialog.class;
+public class ExpressionEditorDialog extends Dialog {
+  private static final Class<?> PKG = ExpressionEditorDialog.class;
 
   private Shell shell;
   private ExpressionEditor wEditor;
   private String expression;
 
-  public ExpressionDialog(Shell parent) {
+  public ExpressionEditorDialog(Shell parent) {
     super(parent, SWT.APPLICATION_MODAL | SWT.SHEET);
   }
 

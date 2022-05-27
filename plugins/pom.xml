@@ -27,16 +27,19 @@
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 		<maven.compiler.source>11</maven.compiler.source>
-		<!-- Third-party dependencies -->
+		<!-- Third-party Core dependencies -->
 		<commons-lang.version>2.6</commons-lang.version>
 		<commons-vfs2.version>2.9.0</commons-vfs2.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
-		<asciidoctor.version>2.2.2</asciidoctor.version>
-		<jmh.version>1.35</jmh.version>
+		<json-path.version>2.7.0</json-path.version>
+		<!-- Third-party UI dependencies -->
 		<org.eclipse.core.runtime>3.24.100</org.eclipse.core.runtime>
 		<org.eclipse.text.version>3.12.0</org.eclipse.text.version>
 		<org.eclipse.jface.version>3.25.0</org.eclipse.jface.version>
 		<org.eclipse.jface.text.version>3.20.0</org.eclipse.jface.text.version>
+		<!-- Build dependencies -->
+		<asciidoctor.version>2.2.2</asciidoctor.version>
+		<jmh.version>1.35</jmh.version>		
 	</properties>
 
 	<dependencies>
@@ -85,6 +88,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-vfs2</artifactId>
 			<version>${commons-vfs2.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>${json-path.version}</version>
 		</dependency>
 
 		<dependency>

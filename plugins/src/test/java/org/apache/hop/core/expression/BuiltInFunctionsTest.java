@@ -15,6 +15,7 @@
 package org.apache.hop.core.expression;
 
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.util.Converter;
 import org.junit.Test;
 import java.security.SecureRandom;
 import java.time.LocalDate;
@@ -26,6 +27,8 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class BuiltInFunctionsTest extends BaseExpressionTest {
 
@@ -256,7 +259,7 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("Unaccent(NULL)");
     evalFails("Unaccent()");
   }
-  
+
   @Test
   public void Upper() throws Exception {
     evalEquals("Upper('test')", "TEST");
@@ -1189,7 +1192,7 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     Locale.setDefault(new Locale("en", "EN"));
     evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
     Locale.setDefault(new Locale("fr", "BE"));
-    // evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5 ");
+    //evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5 ");
     // evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3.148,500");
 
     // Sign
@@ -1540,6 +1543,47 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("Try_To_Date('2019-13-13','YYYY-MM-DD')");
   }
 
+  @Test
+  public void Json_Value() throws Exception {
+    // Json string type
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.name')", "Smith");
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29,\"address\":{\"zip\":\"12345\",\"street\":\"Blvd des capusins\"}}','$.address.zip')", "12345");        
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"language\":[\"English\", \"French\"]}','$.language[1]')", "French");
+
+    // Json numeric type
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", 29L);
+    evalEquals("Json_Value('[0, 1, 2, 3]', '$[1]')", 1L);
+    evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]')", 15L);
+    evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$[''a''][2]')", 15L);
+    evalEquals("Json_Value('[{\"a\":100}, {\"a\":200}, {\"a\":300}]', '$[1].a')", 200L);
+    
+    // Json boolean type
+    evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]')");
+    evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]')");
+
+    // Json 'null' should return a NULL value
+    evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29, \"department\":null}','$.department')");
+    
+    // Json without field name quotes 
+    evalEquals("Json_Value('{name:\"Smith\", age:29}','$.name')", "Smith");         
+    
+    evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29}',Null)");
+    evalNull("Json_Value(Null,'$.name')");
+    
+    evalFails("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.notexist')");
+  }
+  
+  @Test
+  public void Json_Object() throws Exception {
+    evalEquals("Json_Object(KEY 'name' VALUE 'Smith')", Converter.toJson("{\"name\":\"Smith\"}"));
+    evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')", Converter.toJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
+    evalEquals("Json_Object( 'name' VALUE 'Smith')", Converter.toJson("{\"name\":\"Smith\"}"));
+
+    evalFails("Json_Object(KEY 'name' VALUE )");
+    evalFails("Json_Object(KEY VALUE 'Smith')");
+  }
+  
   @Test
   public void Reverse() throws Exception {
     evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH");

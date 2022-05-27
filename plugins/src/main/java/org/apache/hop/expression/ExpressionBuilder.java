@@ -45,10 +45,10 @@ public class ExpressionBuilder {
           new InOptimizer(), new ExtractOptimizer(), new CombineConcatOptimizer(),
           new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer());
 
-  private static final Set<String> RESERVED_WORDS =
-      Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE",
-          "FALSE", "FORMAT", "FROM", "ILIKE", "RLIKE", "IN", "IS", "LIKE", "NOT", "NULL", "OR",
-          "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "WHEN", "XOR", "ZONE");
+  private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
+      "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN",
+      "IS", "KEY", "LIKE", "NOT", "NULL", "OR", "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP",
+      "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -131,6 +131,13 @@ public class ExpressionBuilder {
   protected boolean is(Id id) {
     if (hasNext()) {
       return tokens.get(index).is(id);
+    }
+    return false;
+  }
+
+  protected boolean isNot(Id id) {
+    if (hasNext()) {
+      return tokens.get(index).isNot(id);
     }
     return false;
   }
@@ -446,14 +453,16 @@ public class ExpressionBuilder {
             break;
           return parseLiteralTimestamp(token);
         case CASE:
-          return parseCaseWhen();
+          return parseCase();
         case CAST:
         case TRY_CAST:
-          return parseCastFunction(token);
+          return parseFunctionCast(token);
         case EXTRACT:
-          return parseExtractFunction(token);
+          return parseFunctionExtract(token);
         case POSITION:
-          return parsePositionFunction(token);
+          return parseFunctionPosition(token);
+        case JSON_OBJECT:
+          return parseFunctionJsonObject(token);
         case FUNCTION:
           return parseFunction(token);
         case LPARENTHESIS:
@@ -708,7 +717,7 @@ public class ExpressionBuilder {
   }
 
   /** Case When Then Else End ) */
-  private IExpression parseCaseWhen() throws ParseException {
+  private IExpression parseCase() throws ParseException {
     IExpression valueExpression = null;
     IExpression elseExpression = Literal.NULL;
     List<IExpression> whenList = new ArrayList<>();
@@ -746,7 +755,7 @@ public class ExpressionBuilder {
    * Cast operator [TRY_]CAST(value AS type [FORMAT pattern])
    *
    */
-  private IExpression parseCastFunction(Token token) throws ParseException {
+  private IExpression parseFunctionCast(Token token) throws ParseException {
     Operator operator = ("CAST".equals(token.text())) ? Operators.CAST : Operators.TRY_CAST;
 
     List<IExpression> operands = new ArrayList<>();
@@ -768,7 +777,7 @@ public class ExpressionBuilder {
     if (is(Id.FORMAT)) {
       next();
       token = next();
-      if (token.is(Token.Id.LITERAL_STRING))
+      if (token.is(Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
         throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), token.start());
@@ -784,7 +793,7 @@ public class ExpressionBuilder {
   }
 
   /** POSITION(<expression> IN <expression>) */
-  private IExpression parsePositionFunction(Token token) throws ParseException {
+  private IExpression parseFunctionPosition(Token token) throws ParseException {
 
     List<IExpression> operands = new ArrayList<>();
 
@@ -813,7 +822,7 @@ public class ExpressionBuilder {
   }
 
   /** EXTRACT(<part> FROM <expression>) */
-  private IExpression parseExtractFunction(Token token) throws ParseException {
+  private IExpression parseFunctionExtract(Token token) throws ParseException {
 
     if (is(Id.LPARENTHESIS))
       token = next();
@@ -839,6 +848,50 @@ public class ExpressionBuilder {
     }
 
     return new Call(Operators.EXTRACT, operands);
+  }
+
+  /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
+  private IExpression parseFunctionJsonObject(Token token) throws ParseException {
+
+    if (is(Id.LPARENTHESIS))
+      token = next();
+    else {
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+    }
+
+    List<IExpression> operands = new ArrayList<>();
+    boolean comma;
+    do {
+      // KEY is optional
+      if (is(Id.KEY)) {
+        token = next();
+      }
+      token = next();
+      operands.add(this.parseLiteralString(token));
+      //token = next();
+      if (is(Id.VALUE)) {
+        token = next();
+        operands.add(this.parseTerm());
+      } else {
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.JSON_OBJECT),
+            token.start());
+      }
+
+      comma = false;
+      if (is(Id.COMMA)) {
+        comma = true;
+        token = next();
+      }
+
+    } while (comma);
+
+    if (is(Id.RPARENTHESIS)) {
+      next();
+    } else {
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+    }
+
+    return new Call(Operators.JSON_OBJECT, operands);
   }
 
   /** Function */
@@ -1212,7 +1265,7 @@ public class ExpressionBuilder {
           if (c == '(') {
             // Special operator with name
             if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name)
-                || "POSITION".equals(name)) {
+                || "POSITION".equals(name) || "JSON_OBJECT".equals(name)) {
               return new Token(Id.valueOf(name), start, position, name);
             }
             if (FunctionRegistry.isFunction(name)) {
@@ -1260,9 +1313,9 @@ public class ExpressionBuilder {
         expression = optimizeTuple(context, (Tuple) expression);
       }
 
-      // Apply optimizers 
+      // Apply optimizers
       for (Optimizer optimizer : OPTIMIZERS) {
-        expression = expression.visit(context, optimizer);       
+        expression = expression.visit(context, optimizer);
       }
 
       if (expression.equals(original)) {

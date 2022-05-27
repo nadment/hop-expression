@@ -40,6 +40,7 @@ import org.apache.hop.expression.operator.IsFalse;
 import org.apache.hop.expression.operator.IsNotNull;
 import org.apache.hop.expression.operator.IsNull;
 import org.apache.hop.expression.operator.IsTrue;
+import org.apache.hop.expression.operator.JsonObject;
 import org.apache.hop.expression.operator.LessThan;
 import org.apache.hop.expression.operator.LessThanOrEqual;
 import org.apache.hop.expression.operator.LessThanOrGreaterThan;
@@ -117,6 +118,7 @@ public class Operators {
   public static final Operator CONCAT = new Concat();
   public static final Operator EXTRACT = new Extract();
   public static final Operator POSITION = new Position();
+  public static final Operator JSON_OBJECT = new JsonObject();
 
   /** Set of operators. */
   private static final Set<Operator> SET_OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,

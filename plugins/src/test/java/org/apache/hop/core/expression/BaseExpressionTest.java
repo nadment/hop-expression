@@ -35,6 +35,7 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.Converter;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.function.Consumer;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class BaseExpressionTest {
 
@@ -155,6 +157,10 @@ public class BaseExpressionTest {
     assertArrayEquals(expected, (byte[]) eval(source));
   }
 
+  protected void evalEquals(String source, JsonNode expected) throws Exception {
+    assertEquals(expected, (JsonNode) eval(source));
+  }
+  
   protected void evalEquals(String source, String expected) throws Exception {
     assertEquals(expected, (String) eval(source));
   }

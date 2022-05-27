@@ -47,18 +47,18 @@ import java.util.List;
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     documentationUrl = "/pipeline/transforms/expresssion.html",
     keywords = "i18n::Expression.Keywords")
-public class ExpressionTransformMeta extends BaseTransformMeta<ExpressionTransform, ExpressionTransformData> {
+public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData> {
 
-  private static final Class<?> PKG = ExpressionTransformMeta.class;
+  private static final Class<?> PKG = ExpressionMeta.class;
  
   @HopMetadataProperty(groupKey = "fields", key = "field", injectionGroupDescription = "ExpressionMeta.Injection.Fields", injectionKeyDescription = "ExpressionMeta.Injection.Field")
   private List<ExpressionField> fields;
 
-  public ExpressionTransformMeta() {
+  public ExpressionMeta() {
     super();
   }
   
-  public ExpressionTransformMeta(ExpressionTransformMeta other) {
+  public ExpressionMeta(ExpressionMeta other) {
     super();
     
     this.fields = new ArrayList<>();
@@ -74,7 +74,7 @@ public class ExpressionTransformMeta extends BaseTransformMeta<ExpressionTransfo
 
   @Override
   public Object clone() {
-    return new ExpressionTransformMeta(this);
+    return new ExpressionMeta(this);
   }
 
   @Override

@@ -23,6 +23,8 @@ Returns the first day of the specified date part.
 FIRST_DAY( <date>[, <part>] )
 ----
 
+Return type:: Date
+
 == Usage
 
 * Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 

@@ -124,7 +124,7 @@ public class ExpressionText extends Composite {
 
   
   protected void openExpressionDialog() {
-    ExpressionDialog dialog = new ExpressionDialog(this.getShell());
+    ExpressionEditorDialog dialog = new ExpressionEditorDialog(this.getShell());
     CompletableFuture<IRowMeta> rowMetaProvider = new CompletableFuture<>(); 
     rowMetaProvider.complete(rowMeta);
     String expression = dialog.open(wText.getText(), variables, rowMetaProvider);

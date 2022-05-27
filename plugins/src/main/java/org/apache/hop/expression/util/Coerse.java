@@ -15,6 +15,7 @@
 
 package org.apache.hop.expression.util;
 
+import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.expression.DataType;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
@@ -22,6 +23,8 @@ import org.apache.hop.expression.ExpressionException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Coerse {
   
@@ -200,6 +203,26 @@ public class Coerse {
     throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.DATE);
   }
 
+  /**
+   * Coerce value to data type JSON
+   * 
+   * @param value the value to coerce
+   * @return String
+   */
+  public static final JsonNode toJson(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof JsonNode) {
+      return (JsonNode) value;
+    }
+    if (value instanceof String) {
+      return Converter.toJson((String) value);
+    }
+
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.JSON);
+  }
+  
   /**
    * Coerce value to DatePart.
    * 

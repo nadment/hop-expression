@@ -19,6 +19,7 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
@@ -31,10 +32,10 @@ import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.Arrays;
 import java.util.Date;
 
-public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, ExpressionTransformData> {
-  private static final Class<?> PKG = ExpressionTransformMeta.class;
+public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
+  private static final Class<?> PKG = ExpressionMeta.class;
 
-  public ExpressionTransform(TransformMeta transformMeta, ExpressionTransformMeta meta, ExpressionTransformData data,
+  public Expression(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data,
       int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
@@ -210,6 +211,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionTransformMeta, 
         return Coerse.toBoolean(value);
       case IValueMeta.TYPE_BINARY:
         return Coerse.toBinary(value);
+      case ValueMetaJson.TYPE_JSON:
+        return Coerse.toJson(value);
       default:
         throw new HopValueException(
             value + " : I can't convert the specified value to data type : " + meta.getType());

@@ -59,7 +59,9 @@ public interface IExpression {
    * @return The result of evaluating the expression.
    */
   public Object eval(IExpressionContext context) throws ExpressionException;
-
+  //public <T> T eval(IExpressionContext context) throws ExpressionException;
+  
+  
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.

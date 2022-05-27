@@ -14,20 +14,23 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= LAST_DAY
+= JSON_VALUE
 
-Returns the last day of the specified date part.
+Extracts scalar value from JSON data type or string representing a Json.
 
 == Syntax
 ----
-LAST_DAY( <date>[, <part>] )
+JSON_VALUE( <json> , <path> )
 ----
-
-Return type:: Date
 
 == Usage
 
-* Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
-* Returns NULL if one of the arguments is NULL.
 
-See also xref:first_day.adoc[FIRST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]
+path:: Use JSONPath query language for JSON, similar to XPath for XML. The path expression must begin with a dollar sign ($), which represents the context item. The dollar sign is followed by zero or more steps, each of which can be an object step or an array step. JSONPath expressions, including property names and values, are case-sensitive.
+
+== Exemple
+
+----
+JSON_VALUE('{"language":["English", "French"]}','$.language[1]') >>> French
+JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') >>> 12345
+----

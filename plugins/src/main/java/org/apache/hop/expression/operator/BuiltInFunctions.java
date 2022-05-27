@@ -75,7 +75,6 @@ public class BuiltInFunctions {
   private static final int PAD_LIMIT = 8192;
 
   private static final Soundex SOUNDEX = new Soundex();
-
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
   
@@ -276,9 +275,6 @@ public class BuiltInFunctions {
     if (value == null)
       return value;
 
-    if (value instanceof BigDecimal) {
-      return ((BigDecimal) value).abs();
-    }
     if (value instanceof Double) {
       return FastMath.abs((double) value);
     }

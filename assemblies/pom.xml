@@ -62,9 +62,9 @@
 								<echo message="Installed the plugin in HOP installation in ${hop.home}."/>
 
 								<!-- remove previous installations -->
-								<delete dir="${hop.home}/plugins/transforms/expression" />
+								<delete dir="${hop.home}/plugins/misc/expression" />
 								<!-- put fresh files in place -->
-								<mkdir dir="${hop.home}/plugins/transforms/expression" />
+								<mkdir dir="${hop.home}/plugins/misc/expression" />
 								<unzip
 									src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
 									dest="${hop.home}/plugins/" />

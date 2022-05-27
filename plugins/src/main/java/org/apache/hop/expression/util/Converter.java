@@ -23,6 +23,10 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class Converter {
   
@@ -59,7 +63,8 @@ public class Converter {
     switch (type) {
       case BOOLEAN:
         if (value instanceof Number) {
-          return ((Number) value).intValue() != 0;
+          Number number = (Number) value;          
+          return number.intValue() != 0;
         }
         if (value instanceof String) {
           return toBoolean((String) value);
@@ -67,7 +72,8 @@ public class Converter {
         break;
       case INTEGER:
         if (value instanceof Number) {
-          return ((Number) value).longValue();
+          Number number = (Number) value;
+          return number.longValue();
         }
         if (value instanceof Boolean) {
           return ((boolean) value) ? 1L : 0L;
@@ -139,6 +145,11 @@ public class Converter {
           }
         }
         break;
+      case JSON:
+        if (value instanceof String) {
+          return toJson((String) value);
+        }
+        break;        
       case BINARY:
         if (value instanceof String) {
           return ((String) value).getBytes(StandardCharsets.UTF_8);
@@ -254,4 +265,35 @@ public class Converter {
     throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, str, DataType.STRING ,DataType.BOOLEAN);
   }
    
+
+  /**
+   * Convert String value to Json.
+   * 
+   * @param str the string to convert
+   * @return JsonNode
+   */
+  public static JsonNode toJson(final String str) throws ExpressionException {
+    try {
+      ObjectMapper objectMapper = JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      return objectMapper.readTree(str);
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.INVALID_JSON, str);
+    }
+  }
+  
+  /**
+   * Convert Json value to String.
+   * 
+   * @param json the json to convert
+   * @return String
+   */
+  public static String toString(final JsonNode json) throws ExpressionException {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      return objectMapper.writeValueAsString(json);
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.INVALID_JSON, json);
+    }
+  }
+  
 }
