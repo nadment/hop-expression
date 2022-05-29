@@ -52,7 +52,7 @@ import org.apache.hop.expression.operator.NotEqual;
 import org.apache.hop.expression.operator.Position;
 import org.apache.hop.expression.operator.RLike;
 import org.apache.hop.expression.operator.Subtract;
-import org.apache.hop.expression.operator.TryCast;
+import org.apache.hop.expression.operator.Try;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -113,7 +113,7 @@ public class Operators {
   // SPECIAL OPERATORS
   // -------------------------------------------------------------
   public static final Operator CAST = new Cast();
-  public static final Operator TRY_CAST = new TryCast();
+  public static final Operator TRY = new Try();
   public static final Operator AT_TIME_ZONE = new AtTimeZone();
   public static final Operator CONCAT = new Concat();
   public static final Operator EXTRACT = new Extract();

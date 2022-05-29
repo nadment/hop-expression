@@ -472,38 +472,42 @@ public class OperatorsTest extends BaseExpressionTest {
   }
   
   @Test
-  public void Try_Cast() throws Exception {
+  public void Try() throws Exception {
 
+    // Division by zero
+    evalNull("TRY(10/0)");
+    
     // String to Boolean
-    evalTrue("TRY_CAST('Yes' as Boolean)");
-    evalFalse("TRY_CAST('False' as Boolean)");
-    evalNull("TRY_CAST('Fake' as Boolean)");
+    evalTrue("TRY(CAST('Yes' as Boolean))");
+    evalFalse("TRY(CAST('False' as Boolean))");
+    evalNull("TRY(CAST('Fake' as Boolean))");
 
     // Number to Boolean
-    evalTrue("TRY_CAST(1 as Boolean)");
-    evalTrue("TRY_CAST(-12.1 as Boolean)");
-    evalNull("TRY_CAST('test' as Boolean)");
+    evalTrue("TRY(CAST(1 as Boolean))");
+    evalTrue("TRY(CAST(-12.1 as Boolean))");
+    evalNull("TRY(CAST('test' as Boolean))");
 
     // Date to String
-    evalEquals("TRY_CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
-    evalNull("TRY_CAST('2019-99-25' AS Date)");
-    evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
-
-    evalNull("TRY_CAST(NULL AS Date)");
-
+    evalEquals("TRY(CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY'))", "25/02/2019");
+    evalNull("TRY(CAST('2019-99-25' AS Date))");
+    evalNull("TRY(CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD'))");
+    evalNull("TRY(CAST(NULL AS Date))");    
+    evalNull("Try(To_Date('2019-13-13','YYYY-MM-DD'))");    
+    evalEquals("Try(To_Date('2019-02-13','YYYY-MM-DD'))", LocalDate.of(2019, 2, 13));
+    
     // Bad syntax
-    evalFails("TRY_CAST('2020-01-021' AS NULL)");
-    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL)");
-    evalFails("TRY_CAST('bad' AS)");
-    evalFails("TRY_CAST(1234 AS STRING FORMAT )");
-    evalFails("TRY_CAST(Date '2019-02-25' AS String FORMAT )");
+    evalFails("TRY(CAST('2020-01-021' AS NULL))");
+    evalFails("TRY(CAST('2020-01-021' AS DATE FORMAT NULL))");
+    evalFails("TRY(CAST('bad' AS))");
+    evalFails("TRY(CAST(1234 AS STRING FORMAT ))");
+    evalFails("TRY(CAST(Date '2019-02-25' AS String FORMAT ))");
 
     // Bad data type
-    evalFails("Try_Cast(123 as Nill)");
+    evalFails("Try(Cast(123 as Nill))");
 
-    writeEquals("TRY_CAST(DATA AS BINARY)");
-    writeEquals("TRY_CAST(AGE AS NUMBER)");
-    writeEquals("TRY_CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD')");
+    writeEquals("TRY(CAST(DATA AS BINARY))");
+    writeEquals("TRY(CAST(AGE AS NUMBER))");
+    writeEquals("TRY(CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD'))");
   }
 
   @Test

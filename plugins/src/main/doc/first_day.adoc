@@ -30,4 +30,9 @@ Return type:: Date
 * Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
 * Returns NULL if one of the arguments is NULL.
 
+== Examples
+----
+FIRST_DAY(Date '2021-06-15', QUARTER)
+----
+
 See also xref:last_day.adoc[LAST_DAY], xref:next_day.adoc[NEXT_DAY], xref:previous_day.adoc[PREVIOUS_DAY]

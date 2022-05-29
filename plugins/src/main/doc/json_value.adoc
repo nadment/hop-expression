@@ -28,7 +28,7 @@ JSON_VALUE( <json> , <path> )
 
 path:: Use JSONPath query language for JSON, similar to XPath for XML. The path expression must begin with a dollar sign ($), which represents the context item. The dollar sign is followed by zero or more steps, each of which can be an object step or an array step. JSONPath expressions, including property names and values, are case-sensitive.
 
-== Exemple
+== Examples
 
 ----
 JSON_VALUE('{"language":["English", "French"]}','$.language[1]') >>> French

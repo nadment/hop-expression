@@ -136,6 +136,7 @@ public class Token {
     THEN, 
     END, 
     WHEN, 
+    TRY,
     /** Extract(part FROM date_time) operator */
     EXTRACT,
     /** Position(substring IN string) operator */
@@ -182,11 +183,7 @@ public class Token {
   public boolean is(final Id id) {
     return this.id == id;
   }
-
-  public boolean isNot(final Id id) {
-    return this.id != id;
-  }
-  
+ 
   public Id id() {
     return id;
   }

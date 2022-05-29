@@ -14,22 +14,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TRY_TO_NUMBER
+= TRY
 
-Converts a string into a number.
+Returns the value of expression. If an error occurs, an NULL value is returned.
 
 == Syntax
 ----
-TRY_TO_NUMBER( <text> [, <format> ] )
+TRY( <expression> )
 ----
 
 == Usage
 
 
-include::numberformat.adoc[]
 
-=== Alternate formats
-When parsing strings, it is possible to specify multiple alternative formats by separating format strings with the | character.
+== Examples
+
 ----
-TRY_TO_NUMBER(1234, 'S9999|9999S')
----- 
+TRY(CAST('-1234.56' AS INTEGER FORMAT '###0'))
+
+TRY(TO_DATE('24/05/2020 00:00:00','DD/MM/YYYY HH:mm:ss'))
+
+TRY(9/FIELD)
+----

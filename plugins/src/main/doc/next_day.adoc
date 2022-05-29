@@ -23,7 +23,7 @@ Returns the date of the first specified day of week that occurs after the input 
 NEXT_DAY( <date> , <weekday> )
 ----
 
-== Exemples
+== Examples
 ----
 NEXT_DAY(Date '2021-06-15', 'Friday')
 ----

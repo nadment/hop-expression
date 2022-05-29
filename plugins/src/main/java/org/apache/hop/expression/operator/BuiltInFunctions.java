@@ -2173,7 +2173,6 @@ public class BuiltInFunctions {
     return parts[index-1];
   }
   
-  
   /**
    * Converts a string or numeric expression to a boolean value.
    */
@@ -2186,23 +2185,6 @@ public class BuiltInFunctions {
       return null;
 
     return Converter.to(value, DataType.BOOLEAN, null);
-  }
-
-  /**
-   * Converts a string or numeric expression to a boolean value.
-   */
-  @ScalarFunction(id = "TRY_TO_BOOLEAN", category = "i18n::Operator.Category.Conversion",
-      documentationUrl = "/docs/try_to_boolean.html")
-  public static Object try_to_boolean(final IExpressionContext context,
-      final IExpression[] operands) throws ExpressionException {
-    Object value = operands[0].eval(context);
-    if (value == null)
-      return null;
-    try {
-      return Converter.to(value, DataType.BOOLEAN, null);
-    } catch (Exception e) {
-      return null;
-    }
   }
 
   /** Converts a numeric or date expression to a string value. */
@@ -2260,31 +2242,6 @@ public class BuiltInFunctions {
     }
   }
 
-  @ScalarFunction(id = "TRY_TO_NUMBER", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion",
-      documentationUrl = "/docs/try_to_number.html")
-  public static Object try_to_number(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-
-    try {
-      String str = Coerse.toString(v0);
-      String format = null;
-
-      // With format
-      if (operands.length == 2) {
-        format = Coerse.toString(operands[1].eval(context));
-      }
-      return NumberFormat.of(format).parse(str);
-    } catch (Exception e) {
-      // Ignore
-    }
-
-    return null;
-  }
-
   /** Converts a string expression to a date value. */
   @ScalarFunction(id = "TO_DATE", minArgs = 1, maxArgs = 2,
       category = "i18n::Operator.Category.Conversion", documentationUrl = "/docs/to_date.html")
@@ -2310,38 +2267,6 @@ public class BuiltInFunctions {
     } catch (ParseException e) {
       throw new ExpressionException(ExpressionError.PARSE_ERROR, e.getMessage());
     }
-  }
-
-  /**
-   * Converts a value of one data type into another data type if the cast succeeds, otherwise
-   * returns null.
-   */
-  @ScalarFunction(id = "TRY_TO_DATE", minArgs = 1, maxArgs = 2,
-      category = "i18n::Operator.Category.Conversion", documentationUrl = "/docs/try_to_date.html")
-  public static Object try_to_date(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-
-    if (v0 instanceof ZonedDateTime)
-      return v0;
-
-    String format = null;
-    if (operands.length > 1) {
-      Object v1 = operands[1].eval(context);
-      if (v1 != null)
-        format = Coerse.toString(v1);
-    } else {
-      format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
-    }
-    try {
-      return DateTimeFormat.of(format).parse(Coerse.toString(v0));
-    } catch (ParseException | RuntimeException e) {
-      // Ignore
-    }
-
-    return null;
   }
 
   /**

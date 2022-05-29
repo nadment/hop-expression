@@ -51,14 +51,20 @@ CAST( <value> AS <dataType> [ FORMAT <format> ] )
 
 If the cast is not possible, an error is raised.
 
-== Example
+== Examples
 
 ----
 CAST('yes' AS BOOLEAN)
-CAST('-1234.56' AS INTEGER FORMAT '###0')
+
+// if the cast is not possible, an NULL value is returned.
+TRY(CAST('-1234.56' AS INTEGER FORMAT '###0'))
+
 '-1234.56'::INTEGER
+
 CAST('-1234.56' AS NUMBER FORMAT '###0.00')
+
 CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss')
+
 CAST(Date(2020,5,24) AS STRING FORMAT 'yyyy-q')
 ----
 

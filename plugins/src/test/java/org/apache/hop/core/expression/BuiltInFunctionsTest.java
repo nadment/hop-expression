@@ -1024,18 +1024,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("To_Boolean(NULL)");
 
     evalFails("To_Boolean()");
-    evalFails("To_Boolean('test')");
+    evalFails("To_Boolean('falsee')");
     evalFails("To_Boolean(1,2,3)");
-  }
-
-  @Test
-  public void Try_To_Boolean() throws Exception {
-    evalTrue("Try_To_Boolean(1)");
-    evalTrue("Try_To_Boolean(3)");
-    evalFalse("Try_To_Boolean(0)");
-    evalNull("Try_To_Boolean('falsee')");
-    evalNull("Try_To_Boolean('x')");
-    evalNull("Try_To_Boolean(NULL)");
   }
 
   @Test
@@ -1136,15 +1126,6 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     // format model.
     evalFails("TO_NUMBER('-0.2','999.999G99')");
     evalFails("TO_NUMBER('-0.2','999.999,99')");
-  }
-
-  @Test
-  public void Try_To_Number() throws Exception {
-
-    // TODO: evalNull("TRY_TO_NUMBER('-0.2','99.99S')");
-
-    // bad format should fails
-    // evalFails("TRY_TO_NUMBER('123.456','9D999D9')");
   }
 
   @Test
@@ -1535,12 +1516,6 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
 
     evalNull("To_Date(NULL)");
-  }
-
-  @Test
-  public void Try_To_Date() throws Exception {
-    evalEquals("Try_To_Date('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));
-    evalNull("Try_To_Date('2019-13-13','YYYY-MM-DD')");
   }
 
   @Test
