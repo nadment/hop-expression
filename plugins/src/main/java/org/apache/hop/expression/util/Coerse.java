@@ -15,8 +15,7 @@
 
 package org.apache.hop.expression.util;
 
-import org.apache.hop.core.exception.HopValueException;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
@@ -24,7 +23,6 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Coerse {
   
@@ -51,7 +49,7 @@ public class Coerse {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value) ,DataType.BINARY);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value) ,DataTypeName.BINARY);
   }
   
   /**
@@ -71,7 +69,7 @@ public class Coerse {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.BOOLEAN);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BOOLEAN);
   }
   
   /**
@@ -97,7 +95,7 @@ public class Coerse {
       return Converter.toNumber((byte[]) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.NUMBER);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.NUMBER);
   }
   
   /**
@@ -132,7 +130,7 @@ public class Coerse {
     if (value instanceof String) {
       return Converter.toBigNumber((String) value);
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.BIGNUMBER);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BIGNUMBER);
   }
   
   /**
@@ -161,7 +159,7 @@ public class Coerse {
       return Converter.toInteger((byte[]) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.INTEGER);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.INTEGER);
   }
   
   /**
@@ -200,7 +198,7 @@ public class Coerse {
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.DATE);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
   }
 
   /**
@@ -220,7 +218,7 @@ public class Coerse {
       return Converter.toJson((String) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.JSON);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.JSON);
   }
   
   /**
@@ -253,7 +251,7 @@ public class Coerse {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value), DataType.BOOLEAN);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BOOLEAN);
   }
   
   /**

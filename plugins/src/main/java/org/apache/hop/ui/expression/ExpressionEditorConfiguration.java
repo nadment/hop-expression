@@ -18,7 +18,7 @@ package org.apache.hop.ui.expression;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.ui.core.gui.GuiResource;
@@ -214,7 +214,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     for (String word : RESERVED_LITERALS) {
       rule.addWord(word, extra);
     }
-    for (DataType type : DataType.values()) {
+    for (DataTypeName type : DataTypeName.values()) {
       rule.addWord(type.name(), extra);
     }
     for (DatePart datapart : DatePart.values()) {

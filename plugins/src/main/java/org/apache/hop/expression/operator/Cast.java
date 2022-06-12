@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
@@ -48,11 +48,11 @@ public class Cast extends Operator {
 
     Object v1 = operands[1].eval(context);
        
-    if (!(v1 instanceof DataType)) {
+    if (!(v1 instanceof DataTypeName)) {
       throw new ExpressionException(ExpressionError.INVALID_DATATYPE, v1);    
     }
 
-    DataType type = (DataType) v1;
+    DataTypeName type = (DataTypeName) v1;
     String format = null;
     if (operands.length == 3) {
       format = Coerse.toString(operands[2].eval(context));

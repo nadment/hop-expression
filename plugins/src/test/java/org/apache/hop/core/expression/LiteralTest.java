@@ -19,7 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
@@ -44,7 +44,7 @@ public class LiteralTest extends BaseExpressionTest {
     assertFalse(Literal.NULL.is((Kind)null));    
     assertFalse(Literal.NULL.is((Operator)null));
     assertNotEquals(Literal.NULL,null);
-    assertNull(Literal.NULL.eval(null));
+    assertNull(Literal.NULL.eval(createExpressionContext()));
     assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
   }
 
@@ -54,7 +54,7 @@ public class LiteralTest extends BaseExpressionTest {
   }
 
   public void DataType() throws Exception {
-    assertEquals(DataType.BIGNUMBER, Literal.of(DataType.BIGNUMBER).eval(null));
+    assertEquals(DataTypeName.BIGNUMBER, Literal.of(DataTypeName.BIGNUMBER).eval(null));
   }
 
   @Test

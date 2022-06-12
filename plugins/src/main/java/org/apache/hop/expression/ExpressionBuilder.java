@@ -827,7 +827,7 @@ public class ExpressionBuilder {
       }
       token = next();
       operands.add(this.parseLiteralString(token));
-      // token = next();
+
       if (isAndNext(Id.VALUE)) {
         operands.add(this.parseTerm());
       } else {
@@ -890,7 +890,7 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
     try {
-      DataType datatype = DataType.of(token.text());
+      DataTypeName datatype = DataTypeName.of(token.text());
       return Literal.of(datatype);
     } catch (RuntimeException e) {
       throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()),
@@ -1218,7 +1218,7 @@ public class ExpressionBuilder {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (DataType.exist(name)) {
+          if (DataTypeName.exist(name)) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 

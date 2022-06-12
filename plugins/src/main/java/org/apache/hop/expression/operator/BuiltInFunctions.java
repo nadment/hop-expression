@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.core.util.HopJaroWinklerDistance;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
@@ -378,9 +378,9 @@ public class BuiltInFunctions {
   }
 
   /** Returns the values rounded to the nearest equal or larger integer. */
-  @ScalarFunction(id = "CEIL", names = "CEILING", category = "i18n::Operator.Category.Mathematical",
-      documentationUrl = "/docs/ceil.html")
-  public static Object ceil(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "CEILING", names = "CEIL", category = "i18n::Operator.Category.Mathematical",
+      documentationUrl = "/docs/ceiling.html")
+  public static Object ceiling(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object value = operands[0].eval(context);
     if (value == null)
@@ -2184,7 +2184,7 @@ public class BuiltInFunctions {
     if (value == null)
       return null;
 
-    return Converter.to(value, DataType.BOOLEAN, null);
+    return Converter.to(value, DataTypeName.BOOLEAN, null);
   }
 
   /** Converts a numeric or date expression to a string value. */
@@ -2216,7 +2216,7 @@ public class BuiltInFunctions {
       return DateTimeFormat.of(pattern).format(Coerse.toDate(v0));
     }
     
-    throw new ExpressionException(ExpressionError.UNEXPECTED_DATA_TYPE, "TO_CHAR", DataType.name(v0));
+    throw new ExpressionException(ExpressionError.UNEXPECTED_DATA_TYPE, "TO_CHAR", DataTypeName.from(v0));
   }
 
   /** Converts a string expression to a number value. */

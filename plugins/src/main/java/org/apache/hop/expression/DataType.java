@@ -16,133 +16,108 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.i18n.BaseMessages;
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.Set;
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Objects;
 
-/**
- * Enumeration of the data type which can be used to construct a expression.
- *
- * <p>
- * The order of enum declaration is important to be usable with <code>compareTo</code> method.
- *
- * <p>
- * If values need to be converted to match the other operands data type, the value with the lower
- * order is converted to the value with the higher order.
- */
-public enum DataType {
-  /** A unknown type */
-  UNKNOWN(Void.class),
-
-  /** Unlimited length text */
-  STRING(String.class),
-
-  /** Boolean value (true or false) */
-  BOOLEAN(Boolean.class),
-
-  /** Signed long (64-bit) integer */
-  INTEGER(Long.class),
-
-  /** Double precision floating point number */
-  NUMBER(Double.class),
-
-  /** Unlimited precision number */
-  BIGNUMBER(BigDecimal.class),
-
-  /** Date-time value with nanosecond precision */
-  DATE(ZonedDateTime.class),
-
-  JSON(JsonNode.class),
+public class DataType {
   
-  /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(byte[].class);
-
-  private final Class<?> javaClass;
- 
-  private static final String[] names = Set.of("BigNumber","Binary","Boolean","Date","Integer","Number", "Json", "String").toArray(new String[0]);
+  public static final int SCALE_NOT_SPECIFIED = -1;
+  public static final int PRECISION_NOT_SPECIFIED = -1;
   
-  private DataType(Class<?> javaClass) {
-    this.javaClass = javaClass;
+  /**
+   * NULL type with parameters.
+   */
+  public static final DataType NULL;
+
+  /**
+   * BINARY type with default parameters.
+   */
+  public static final DataType BINARY;
+
+
+  /**
+   * BOOLEAN type with parameters.
+   */
+  public static final DataType BOOLEAN;
+  public static final DataType DATE;
+  public static final DataType STRING;
+  public static final DataType JSON;
+  public static final DataType INTEGER;
+  public static final DataType NUMBER;
+  public static final DataType BIGNUMBER;
+  
+  static {
+    NULL = new DataType(DataTypeName.UNKNOWN);
+    BOOLEAN = new DataType(DataTypeName.BOOLEAN, 1 ,0);
+    BINARY = new DataType(DataTypeName.BINARY);
+    DATE = new DataType(DataTypeName.DATE);
+    JSON = new DataType(DataTypeName.JSON);    
+    STRING = new DataType(DataTypeName.STRING);    
+    INTEGER = new DataType(DataTypeName.INTEGER, 10, 0);
+    NUMBER = new DataType(DataTypeName.NUMBER, 38, 0);
+    BIGNUMBER = new DataType(DataTypeName.BIGNUMBER, 38, 0);
   }
 
-  public Class<?> getJavaClass() {
-    return javaClass;
-  }
+  private DataTypeName name;
+  private int precision;
+  private int scale;
 
-  public static DataType of(final String name) {
-    for (DataType type : DataType.values()) {
-      if (type.name().equalsIgnoreCase(name)) {
-        return type;
-      }
-    }
-    throw new IllegalArgumentException(ExpressionError.INVALID_DATATYPE.message(name));
-  }
-
-  public static DataType from(final Object value) {
-    if (value == null)
-      return UNKNOWN;
-    if (value instanceof Boolean)
-      return BOOLEAN;
-    if (value instanceof String)
-      return STRING;
-    if (value instanceof BigDecimal)
-      return BIGNUMBER;
-    if (value instanceof Double)
-      return NUMBER;
-    if (value instanceof Long)
-      return INTEGER;
-    if (value instanceof ZonedDateTime)
-      return DATE;
-    if (value instanceof JsonNode)
-      return JSON;
-    if (value instanceof byte[])
-      return BINARY;
-
-    throw new IllegalArgumentException(
-        BaseMessages.getString(IExpression.class, "Expression.UnknownDataType", value.getClass()));
+  private DataType(final DataTypeName name) {
+    this.name = name;
+    this.precision = PRECISION_NOT_SPECIFIED;
+    this.scale = SCALE_NOT_SPECIFIED;
   }
   
-  public static String name(final Object value) {
-    if (value == null)
-      return UNKNOWN.name();
-    if (value instanceof Boolean)
-      return BOOLEAN.name();
-    if (value instanceof String)
-      return STRING.name();
-    if (value instanceof BigDecimal)
-      return BIGNUMBER.name();
-    if (value instanceof Double)
-      return NUMBER.name();
-    if (value instanceof Long)
-      return INTEGER.name();
-    if (value instanceof ZonedDateTime)
-      return DATE.name();
-    if (value instanceof JsonNode)
-      return JSON.name();
-    if (value instanceof byte[])
-      return BINARY.name();
+  private DataType(final DataTypeName name, final int precision, final int scale) {
+    this.name = Objects.requireNonNull(name);
+    this.precision = precision;
+    this.scale = scale;
+  }
 
-    return UNKNOWN.name();
+  /**
+   * Gets the {@link DataTypeName} of this type.
+   *
+   * @return DataTypeName, never null
+   */
+  public DataTypeName getName() {
+    return name;
   }
   
   /**
-   * Check if data type exist.
-   * 
-   * @param name the name to check
-   * @return
+   * Gets the family of this type.
+   *
+   * @return type family, never null
    */
-  public static boolean exist(final String name) {
-    for (DataType type : DataType.values()) {
-      if (type.name().equalsIgnoreCase(name)) {
-        return true;
-      }
-    }
-    return false;
-  }
+  public DataTypeFamily getFamily() {
+    return name.getFamily();
+  };
   
-  public static String[] getDisplayNames() {
-    return names;
+  /**
+   * Gets the precision of this type.
+   *
+   * <p>Returns {@link #PRECISION_NOT_SPECIFIED} (-1) if precision is not
+   * applicable for this type.</p>
+   *
+   * @return number of 
+   * decimal digits for exact numeric types; 
+   * number of decimal digits in mantissa for approximate numeric types;
+   * number of decimal digits for fractional seconds of datetime types; 
+   * length in characters for character types; 
+   * length in bytes for binary types;
+   * 1 for BOOLEAN;
+   * -1 if precision is not valid for this type
+   */
+  public int getPrecision() {
+    return precision;
+  }
+
+  /**
+   * Gets the scale of this type. Returns {@link #SCALE_NOT_SPECIFIED} (-1) if
+   * scale is not valid for this type.
+   *
+   * @return number of digits of scale
+   */
+  public int getScale() {
+    return scale;
   }
 }
+

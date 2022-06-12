@@ -14,13 +14,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CEIL, CEILING
+= JSON_OBJECT
 
-Returns the value rounded to the nearest equal or larger integer.
+Generates a JSON object by using the specified key:value pairs.
 
 == Syntax
 ----
-CEIL( <numeric> )
+JSON_OBJECT([KEY] <key1> VALUE <value2> [, [KEY] <key2> VALUE <value2>, ...])
 ----
 
-See also xref:floor.adoc[FLOOR], xref:round.adoc[ROUND]
+Return:: JSON object containing all the key-value pairs.
+
+== Usage
+
+* `KEY` is optional and is provided for semantic clarity.
+* If there are duplicate key-value pairs in the parameters, the last key-value pairs are retained in the final returned object.
+
+
+== Examples
+
+----
+VALUES JSON_OBJECT(KEY 'first' VALUE 'John', KEY 'last' VALUE 'Doe')
+----

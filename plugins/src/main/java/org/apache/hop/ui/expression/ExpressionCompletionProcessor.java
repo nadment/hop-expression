@@ -23,7 +23,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.DescribedVariable;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.Function;
@@ -240,7 +240,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           // If identifier name contains space, is a reserved word or a function name must be
           // quoted
           if (quoted || name.indexOf(' ') >= 0 || ExpressionBuilder.isReservedWord(name)
-              || DataType.exist(name) || DatePart.exist(name)
+              || DataTypeName.exist(name) || DatePart.exist(name)
               || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';
           }

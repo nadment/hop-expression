@@ -78,7 +78,7 @@ public class Literal implements IExpression {
       return new Literal(number.longValue());
     }
 
-    if (value instanceof String || value instanceof ZonedDateTime || value instanceof byte[] || value instanceof DatePart || value instanceof DataType) {
+    if (value instanceof String || value instanceof ZonedDateTime || value instanceof byte[] || value instanceof DatePart || value instanceof DataTypeName) {
       return new Literal(value);
     }
 

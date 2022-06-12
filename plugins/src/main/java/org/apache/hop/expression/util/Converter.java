@@ -16,7 +16,8 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeFamily;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import java.math.BigDecimal;
@@ -36,12 +37,12 @@ public class Converter {
   private Converter() {
   }
   
-  public static Object to(Object value, final DataType type) throws ExpressionException {
+  public static Object to(Object value, final DataTypeName type) throws ExpressionException {
     return to(value, type, null);
   }
 
   /**
-   * Convert a value to the specified type.
+   * Convert a value to the specified type {@link DataTypeName} with a pattern.
    *
    * @param value the value to convert
    * @param type the data type of the returned value
@@ -49,13 +50,20 @@ public class Converter {
    *        numeric, or null if none
    * @return the converted value
    */
-  public static final Object to(final Object value, final DataType type, String pattern)
+  public static final Object to(final Object value, final DataTypeName type, String pattern)
       throws ExpressionException {
+
+    Objects.requireNonNull(type);
+    
+    // Special date type, can't be converted to  
+    if ( type.getFamily()==DataTypeFamily.UNKNOWN ) {
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, type);
+    }
+    
     if (value == null) {
       return null;
     }
-    Objects.requireNonNull(type);
-        
+    
     if (type.getJavaClass().isInstance(value)) {
       return value;
     }
@@ -158,12 +166,10 @@ public class Converter {
           return toBinary((Long) value);
         }
         break;
-      case UNKNOWN:
-        return null;
       default:
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataType.name(value) , type);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), type);
   }
   
   public static final BigDecimal toBigNumber(final String str) throws ExpressionException {
@@ -202,7 +208,7 @@ public class Converter {
 
   public static Long toInteger(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataType.BINARY, bytes, DataType.INTEGER);
+      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes, DataTypeName.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -213,7 +219,7 @@ public class Converter {
 
   public static Double toNumber(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataType.BINARY, bytes, DataType.NUMBER);
+      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes, DataTypeName.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -262,7 +268,7 @@ public class Converter {
         break;
     }
     
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, str, DataType.STRING ,DataType.BOOLEAN);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, str, DataTypeName.STRING ,DataTypeName.BOOLEAN);
   }
    
 

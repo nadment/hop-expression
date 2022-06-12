@@ -21,7 +21,7 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Argument;
-import org.apache.hop.expression.DataType;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.UdfMeta;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
@@ -33,6 +33,8 @@ import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.hopgui.HopGui;
 import org.apache.hop.ui.hopgui.perspective.metadata.MetadataPerspective;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -61,10 +63,9 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     int margin = Const.MARGIN;
 
     // Add listener to detect change after loading data
-    Listener modifyListener =
+    Listener changedListener =
         event -> {
-          setChanged();
-          MetadataPerspective.getInstance().updateEditor(this);
+          setChanged();        
         };
     
     // The icon
@@ -94,7 +95,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     fdName.left = new FormAttachment(0, 0);
     fdName.right = new FormAttachment(wIcon, -5);
     wName.setLayoutData(fdName);
-    wName.addListener(SWT.Modify, modifyListener);
+    wName.addListener(SWT.Modify, changedListener);
 
     Label spacer = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
     FormData fdSpacer = new FormData();
@@ -121,7 +122,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     fdDescription.left = new FormAttachment(0, 0);
     fdDescription.right = new FormAttachment(100, 0);
     wDescription.setLayoutData(fdDescription);
-    wDescription.addListener(SWT.Modify, modifyListener);
+    wDescription.addListener(SWT.Modify, changedListener);
 
     // The arguments of the user function
     //
@@ -137,10 +138,10 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, DataType.getDisplayNames(), false)};
-
+            ColumnInfo.COLUMN_TYPE_CCOMBO, DataTypeName.ALL_NAMES.toArray(new String[0]), false)};
+      
     wParams = new TableView(new Variables(), parent,
-        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), null,
+        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), e -> setChanged(),
         props);
 
     FormData fdArguments = new FormData();
@@ -149,7 +150,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     fdArguments.right = new FormAttachment(100, 0);
     fdArguments.bottom = new FormAttachment(40, 0);
     wParams.setLayoutData(fdArguments);
-    wParams.addListener(SWT.Modify, modifyListener);
+    wParams.addListener(SWT.Modify, changedListener);
 
     // The expression
     //
@@ -168,7 +169,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     fdExression.right = new FormAttachment(100, 0);
     fdExression.bottom = new FormAttachment(100, -2 * margin);
     wExpression.setLayoutData(fdExression);
-    wExpression.addListener(SWT.Modify, modifyListener);
+    wExpression.addListener(SWT.Modify, changedListener);
 
     this.setWidgetsContent();
     
@@ -203,9 +204,9 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     for (int i = 0; i < nrFields; i++) {
       TableItem item = wParams.getNonEmpty(i);
       String name = item.getText(1);
-      DataType dataType = null;
+      DataTypeName dataType = null;
       try {
-        dataType = DataType.of(item.getText(2));
+        dataType = DataTypeName.of(item.getText(2));
       } catch (Exception e) {
        
       }
@@ -235,5 +236,11 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
       return false;
     }
     return wName.setFocus();
+  }
+
+  @Override
+  public void setChanged() {
+    super.setChanged();
+    MetadataPerspective.getInstance().updateEditor(this);
   }
 }

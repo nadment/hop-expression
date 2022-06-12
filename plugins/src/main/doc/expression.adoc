@@ -170,7 +170,7 @@ The operator precedence and associativity, highest to lowest.
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Set membership
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE]|Pattern matching
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/rlike.adoc[RLIKE]|Pattern matching
 |left|=, >, <, >=, <=, <>, != |Comparison operators
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is.adoc[IS]|IS [NOT] NULL, IS [NOT] FALSE, IS [NOT] TRUE
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 
@@ -213,7 +213,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/case.adoc[CASE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[CAST]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cbrt.adoc[CBRT]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ceil.adoc[CEIL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ceil.adoc[CEILING]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/chr.adoc[CHR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/coalesce.adoc[COALESCE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[CONCAT]
@@ -248,6 +248,8 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/insert.adoc[INSERT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/instr.adoc[INSTR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/isoweek.adoc[ISOWEEK]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/json_object.adoc[JSON_OBJECT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/json_value.adoc[JSON_VALUE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/last_day.adoc[LAST_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/least.adoc[LEAST]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/left.adoc[LEFT]
@@ -316,10 +318,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/translate.adoc[TRANSLATE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/trim.adoc[TRIM]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/truncate.adoc[TRUNCATE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_cast.adoc[TRY_CAST]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_boolean.adoc[TRY_TO_BOOLEAN]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_date.adoc[TRY_TO_DATE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try_to_number.adoc[TRY_TO_NUMBER]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/try.adoc[TRY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/unicode.adoc[UNICODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/upper.adoc[UPPER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urldecode.adoc[URLDECODE]

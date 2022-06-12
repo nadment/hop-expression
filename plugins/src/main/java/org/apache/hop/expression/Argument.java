@@ -22,13 +22,13 @@ public class Argument {
   private String name;
   
   @HopMetadataProperty
-  private DataType type;
+  private DataTypeName type;
   
   public Argument() {
     super();
   }
 
-  public Argument(String name, DataType type) {
+  public Argument(String name, DataTypeName type) {
     super();
     this.name = name;
     this.type = type;
@@ -42,11 +42,11 @@ public class Argument {
     this.name = name;
   } 
   
-  public DataType getType() {
+  public DataTypeName getType() {
     return type;
   }
 
-  public void setType(DataType type) {
+  public void setType(DataTypeName type) {
     this.type = type;
   }
 
