@@ -66,6 +66,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.zip.CRC32C;
 
 public class BuiltInFunctions {
 
@@ -574,6 +575,21 @@ public class BuiltInFunctions {
   // CRYPTOGRAPHIC
   // -------------------------------------------------------------
 
+  @ScalarFunction(id = "CRC32", category = "i18n::Operator.Category.Cryptographic", minArgs = 1,
+      maxArgs = 1, documentationUrl = "/docs/crc32.html")
+  public static Object crc32(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+
+    byte[] bytes = Coerse.toBinary(v0);
+    CRC32C crc = new CRC32C();
+    crc.update(bytes, 0, bytes.length);
+
+    return Long.toHexString(crc.getValue());
+  }
+  
   /**
    * The function calculate the MD5 hash of a data value. The hash will be returned as a 32
    * characters hex-encoded string.

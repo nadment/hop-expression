@@ -1971,6 +1971,16 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalFails("Radians(1,2)");
   }
 
+
+  @Test
+  public void CRC32() throws Exception {
+    evalEquals("CRC32('Apache Hop')", "dbb81b5e");
+    evalEquals("CRC32(0x123456789ABCDEF)", "2f720f20");
+    evalNull("CRC32(null)");
+    evalFails("CRC32()");
+  }
+
+  
   @Test
   public void MD5() throws Exception {
     evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b");
