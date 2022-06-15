@@ -34,7 +34,7 @@
 		<json-path.version>2.7.0</json-path.version>
 		<!-- Third-party UI dependencies -->
 		<org.eclipse.core.runtime>3.25.0</org.eclipse.core.runtime>
-		<org.eclipse.text.version>3.12.0</org.eclipse.text.version>
+		<org.eclipse.text.version>3.12.100</org.eclipse.text.version>
 		<org.eclipse.jface.version>3.25.0</org.eclipse.jface.version>
 		<org.eclipse.jface.text.version>3.20.100</org.eclipse.jface.text.version>
 		<!-- Build dependencies -->
