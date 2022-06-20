@@ -23,6 +23,9 @@ import org.apache.hop.metadata.api.IHopMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A user-defined function (UDF) is a function provided by the user 
+ */
 @HopMetadata(
     key = "udf",
     name = "User defined function",

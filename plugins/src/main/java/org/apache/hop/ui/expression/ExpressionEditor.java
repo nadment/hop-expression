@@ -22,6 +22,7 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.Udf;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -60,7 +61,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class ExpressionEditor extends Composite {
   private static final Class<?> PKG = ExpressionEditor.class;
-
+  
+  private boolean showUdf;
+  private boolean showField;
   private ExpressionLabelProvider labelProvider;
   private IVariables variables;
   private CompletableFuture<IRowMeta> rowMetaProvider;
@@ -69,10 +72,11 @@ public class ExpressionEditor extends Composite {
   private Tree tree;
   private TreeItem treeItemField;
 
-  public ExpressionEditor(Composite parent, int style, IVariables variables,
-      CompletableFuture<IRowMeta> rowMetaProvider) {
+  public ExpressionEditor(Composite parent, int style, IVariables variables, boolean showField, boolean showUdf, CompletableFuture<IRowMeta> rowMetaProvider) {
     super(parent, style);
     this.variables = variables;
+    this.showField = showField;
+    this.showUdf = showUdf;
     this.rowMetaProvider = rowMetaProvider;
     this.labelProvider = new ExpressionLabelProvider();
 
@@ -84,7 +88,7 @@ public class ExpressionEditor extends Composite {
 
     // When IRowMeta is ready   
     if ( rowMetaProvider!=null ) {
-      rowMetaProvider.thenAccept(this::initFields);
+      rowMetaProvider.thenAccept(this::setRowMeta);
     }
     
     sashForm.setWeights(25, 75);    
@@ -147,8 +151,7 @@ public class ExpressionEditor extends Composite {
       copyItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.COPY));
       pasteItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.PASTE));
     });
-        
-    
+
     Document doc = new Document("");
     ExpressionEditorConfiguration configuration =
         new ExpressionEditorConfiguration(variables, rowMetaProvider);
@@ -188,7 +191,7 @@ public class ExpressionEditor extends Composite {
       }
     });
 
-    if (this.rowMetaProvider!=null) {
+    if (this.showField) {
       treeItemField = new TreeItem(tree, SWT.NULL);
       treeItemField.setImage(GuiResource.getInstance().getImageFolder());
       treeItemField.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Fields.Label"));
@@ -207,6 +210,10 @@ public class ExpressionEditor extends Composite {
     // Inventory operator unique identifier and category
     for (Operator operator : operators) {
 
+      if ( !showUdf && operator instanceof Udf ) {
+        continue;
+      }
+      
       if (!categories.contains(operator.getCategory())) {
         categories.add(operator.getCategory());
       }
@@ -298,11 +305,12 @@ public class ExpressionEditor extends Composite {
     super.dispose();
   }
 
-  protected void initFields(final IRowMeta rowMeta) {
-    if (rowMeta != null) {
-      Display.getDefault().asyncExec(() -> {
-        treeItemField.removeAll();
-
+  public void setRowMeta(final IRowMeta rowMeta) {
+    Display.getDefault().asyncExec(() -> {
+      // Remove existing fields
+      treeItemField.removeAll();
+            
+      if (rowMeta != null) {
         for (int i = 0; i < rowMeta.size(); i++) {
           IValueMeta valueMeta = rowMeta.getValueMeta(i);
 
@@ -317,8 +325,8 @@ public class ExpressionEditor extends Composite {
           item.setText(valueMeta.getName());
           item.setData(name);
         }
-      });
-    }
+      }
+    });
   }
 
   @Override

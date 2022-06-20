@@ -19,6 +19,17 @@ package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
+import org.apache.hop.core.row.value.ValueMetaBinary;
+import org.apache.hop.core.row.value.ValueMetaBoolean;
+import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaJson;
+import org.apache.hop.core.row.value.ValueMetaNumber;
+import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.DataTypeName;
@@ -33,8 +44,6 @@ import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.hopgui.HopGui;
 import org.apache.hop.ui.hopgui.perspective.metadata.MetadataPerspective;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -48,7 +57,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
 
   private Text wName;
   private Text wDescription;
-  private TableView wParams;
+  private TableView wArguments;
   private ExpressionEditor wExpression;
 
   public UdfMetaEditor(HopGui hopGui, MetadataManager<UdfMeta> manager, UdfMeta udf) {
@@ -140,8 +149,8 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, DataTypeName.ALL_NAMES.toArray(new String[0]), false)};
       
-    wParams = new TableView(new Variables(), parent,
-        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), e -> setChanged(),
+    wArguments = new TableView(new Variables(), parent,
+        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), e -> {updateField(); setChanged();},
         props);
 
     FormData fdArguments = new FormData();
@@ -149,8 +158,8 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     fdArguments.top = new FormAttachment(wlArguments, margin);
     fdArguments.right = new FormAttachment(100, 0);
     fdArguments.bottom = new FormAttachment(40, 0);
-    wParams.setLayoutData(fdArguments);
-    wParams.addListener(SWT.Modify, changedListener);
+    wArguments.setLayoutData(fdArguments);
+    wArguments.addListener(SWT.Modify, changedListener);
 
     // The expression
     //
@@ -159,10 +168,10 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     props.setLook(wlExpression);
     FormData fdlSource = new FormData();
     fdlSource.left = new FormAttachment(0, 0);
-    fdlSource.top = new FormAttachment(wParams, margin * 2);
+    fdlSource.top = new FormAttachment(wArguments, margin * 2);
     wlExpression.setLayoutData(fdlSource);
     
-    wExpression = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), null);
+    wExpression = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), true, false, null);
     FormData fdExression = new FormData();
     fdExression.left = new FormAttachment(0, 0);
     fdExression.top = new FormAttachment(wlExpression, margin);
@@ -177,7 +186,22 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     this.resetChanged();
   }
 
+  protected void updateField() {
 
+    UdfMeta meta = new UdfMeta();
+    this.getWidgetsContent(meta);
+
+    // Convert arguments to row meta
+    IRowMeta rowMeta = new RowMeta();
+    for (Argument argument : meta.getArguments()) {
+      IValueMeta valueMeta = createValueMeta(argument.getType(), argument.getName());
+      if ( valueMeta!=null) {
+        rowMeta.addValueMeta(valueMeta);
+      }
+    }
+    wExpression.setRowMeta(rowMeta);
+  }
+  
   @Override
   public void setWidgetsContent() {
     UdfMeta udf = getMetadata();
@@ -187,11 +211,13 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     wExpression.setText(Const.NVL(udf.getSource(), ""));    
     for (int i = 0; i < udf.getArguments().size(); i++) {
       Argument argument = udf.getArguments().get(i);
-      wParams.setText(Const.NVL(argument.getName(), ""), 1, i);
+      wArguments.setText(Const.NVL(argument.getName(), ""), 1, i);
       if ( argument.getType()!=null ) {
-        wParams.setText(Const.NVL(argument.getType().name(), ""), 2, i);
+        wArguments.setText(Const.NVL(argument.getType().name(), ""), 2, i);
       }
     }
+    
+    this.updateField();
   }
 
   @Override
@@ -200,9 +226,9 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     udf.setDescription(wDescription.getText());
     udf.setSource(wExpression.getText());
     udf.getArguments().clear();
-    int nrFields = wParams.nrNonEmpty();
+    int nrFields = wArguments.nrNonEmpty();
     for (int i = 0; i < nrFields; i++) {
-      TableItem item = wParams.getNonEmpty(i);
+      TableItem item = wArguments.getNonEmpty(i);
       String name = item.getText(1);
       DataTypeName dataType = null;
       try {
@@ -227,7 +253,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
 
     getWidgetsContent(getMetadata());
 
-    super.save();;
+    super.save();
   }
 
   @Override
@@ -242,5 +268,30 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
   public void setChanged() {
     super.setChanged();
     MetadataPerspective.getInstance().updateEditor(this);
+  }
+  
+  protected IValueMeta createValueMeta(DataTypeName type, String name) {
+    if (type != null && name!=null) {
+      switch (type) {
+        case STRING:
+          return new ValueMetaString(name);
+        case BOOLEAN:
+          return new ValueMetaBoolean(name);
+        case INTEGER:
+          return new ValueMetaInteger(name);
+        case NUMBER:
+          return new ValueMetaNumber(name);
+        case BIGNUMBER:
+          return new ValueMetaBigNumber(name);
+        case DATE:
+          return new ValueMetaDate(name);
+        case BINARY:
+          return new ValueMetaBinary(name);
+        case JSON:
+          return new ValueMetaJson(name);
+        default:
+      }
+    }
+    return null;
   }
 }

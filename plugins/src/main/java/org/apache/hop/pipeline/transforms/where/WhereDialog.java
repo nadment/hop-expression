@@ -223,7 +223,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     CompletableFuture<IRowMeta> rowMetaProvider = getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
 
-    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), rowMetaProvider);
+    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(),true, true, rowMetaProvider);
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     wEditor.addListener(SWT.Modify, e -> onChanged());
         

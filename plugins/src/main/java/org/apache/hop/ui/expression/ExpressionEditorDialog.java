@@ -84,7 +84,7 @@ public class ExpressionEditorDialog extends Dialog {
         props.getMargin(), null);
 
     // The expression editor
-    wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, rowMeta);
+    wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, true, true, rowMeta);
     wEditor.setText(expression);
     wEditor.setLayoutData(
         new FormDataBuilder().top().bottom(btnOK, -props.getMargin()).left().right().result());

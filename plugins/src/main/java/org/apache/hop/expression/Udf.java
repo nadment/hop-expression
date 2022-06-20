@@ -16,14 +16,9 @@
  */
 package org.apache.hop.expression;
 
-import java.lang.reflect.Method;
-
 public class Udf extends Function {
 
-  public Udf(String id, String name, boolean isDeterministic, Object instance, Method method,
-      int min, int max, String category, String documentationUrl) {
-    super(id, name, isDeterministic, instance, method, min, max, category, documentationUrl);
-    // TODO Auto-generated constructor stub
+  public Udf(String name, int minmax) {
+    super(name, name, true, null, null, minmax, minmax, "i18n::Operator.Category.Udf", "/docs/udf.html");
   }
-
 }

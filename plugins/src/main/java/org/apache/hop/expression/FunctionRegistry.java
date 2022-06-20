@@ -18,6 +18,11 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.plugins.JarCache;
+import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.Variables;
+import org.apache.hop.metadata.api.IHopMetadataProvider;
+import org.apache.hop.metadata.api.IHopMetadataSerializer;
+import org.apache.hop.metadata.util.HopMetadataUtil;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
@@ -74,8 +79,16 @@ public class FunctionRegistry {
    * Discovery and register functions
    */
   public static void init() {
+    registerBuilInFunction();
+    //registerUserDefinedFunction();
+  }
+  
+  /**
+   * Discovery and register built-in and plugin functions
+   */
+  private static void registerBuilInFunction() {
     if (log.isDebug()) {
-      log.logDebug("Init expression FunctionRegistry");
+      log.logDebug("Register built-in functions for expression");
     }
     try {
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
@@ -112,6 +125,59 @@ public class FunctionRegistry {
       }
     } catch (Exception e) {
       log.logError("Error discovering annoted functions", e);
+    }
+  }
+
+  /**
+   * Register User Defined Functions
+   */
+  private static void registerUserDefinedFunction() {
+    if (log.isDebug()) {
+      log.logDebug("Register UDF functions for expression");
+    }
+    try {
+      IVariables variables = Variables.getADefaultVariableSpace();
+      IHopMetadataProvider metadataProvider = HopMetadataUtil.getStandardHopMetadataProvider(variables);
+      IHopMetadataSerializer<UdfMeta> serializer = metadataProvider.getSerializer(UdfMeta.class);
+
+      List<String> names = serializer.listObjectNames();
+      
+      log.logBasic("Register UDF functions for expression");
+      for (String name : serializer.listObjectNames()) {
+        try {
+          log.logBasic("Register user defined function: " + name);
+          UdfMeta udfMeta = serializer.load(name);
+          
+          // Convert arguments to row meta
+//          IRowMeta rowMeta = new RowMeta();
+//          for (Argument argument:udfMeta.getArguments() ) {
+//            IValueMeta vm = createValueMeta(argument.getType(), argument.getName());
+//            rowMeta.addValueMeta(vm);
+//          }
+//          
+//          ExpressionContext context = new ExpressionContext(variables, rowMeta);          
+//          IExpression expression = ExpressionBuilder.compile(context, udfMeta.getSource());
+//          
+          
+          Udf udf = new Udf(name, udfMeta.getArguments().size());
+          register(name, udf);
+          
+
+        } catch (Exception e) {
+          log.logError("Error registring User-defined function " + name, e);
+        }
+      }
+
+    } catch (HopException e) {
+      log.logError("Error registring User-defined functions", e);
+    }
+  }
+    
+  private static void unregisterUserDefinedFunction() {
+    for (Function function : getFunctions()) {
+      if (function instanceof Udf) {
+        unregister(function.getName());
+      }
     }
   }
 
