@@ -16,7 +16,7 @@
 	<parent>
 		<groupId>org.apache.hop</groupId>
 		<artifactId>hop-expression</artifactId>
-		<version>0.5.0-SNAPSHOT</version>
+		<version>0.6.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>hop-expression-plugins</artifactId>
@@ -33,10 +33,11 @@
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<json-path.version>2.7.0</json-path.version>
 		<!-- Third-party UI dependencies -->
-		<org.eclipse.core.runtime>3.25.0</org.eclipse.core.runtime>
-		<org.eclipse.text.version>3.12.100</org.eclipse.text.version>
-		<org.eclipse.jface.version>3.26.0</org.eclipse.jface.version>
-		<org.eclipse.jface.text.version>3.20.100</org.eclipse.jface.text.version>
+		<org.eclipse.osgi.version>3.17.200</org.eclipse.osgi.version>
+		<org.eclipse.core.runtime.version>3.24.100</org.eclipse.core.runtime.version>
+		<org.eclipse.text.version>3.12.0</org.eclipse.text.version>
+		<org.eclipse.jface.version>3.25.0</org.eclipse.jface.version>
+		<org.eclipse.jface.text.version>3.20.0</org.eclipse.jface.text.version>
 		<!-- Build dependencies -->
 		<asciidoctor.version>2.2.2</asciidoctor.version>
 		<jmh.version>1.35</jmh.version>		
@@ -95,17 +96,23 @@
 			<artifactId>json-path</artifactId>
 			<version>${json-path.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.18.0</version>
+			<version>${org.eclipse.osgi.version}</version>
+		</dependency>
+  					
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.core.runtime</artifactId>
+			<version>${org.eclipse.core.runtime.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.core.runtime</artifactId>
-			<version>${org.eclipse.core.runtime}</version>
+			<artifactId>org.eclipse.text</artifactId>
+			<version>${org.eclipse.text.version}</version>
 		</dependency>
 
 		<dependency>
@@ -113,17 +120,11 @@
 			<artifactId>org.eclipse.jface</artifactId>
 			<version>${org.eclipse.jface.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.jface.text</artifactId>
 			<version>${org.eclipse.jface.text.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.text</artifactId>
-			<version>${org.eclipse.text.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -178,7 +179,7 @@
 				<executions>
 					<execution>
 						<id>output-html</id>
-						<phase>compile</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>process-asciidoc</goal>
 						</goals>

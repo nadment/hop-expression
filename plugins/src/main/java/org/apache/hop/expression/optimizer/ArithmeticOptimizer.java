@@ -38,7 +38,7 @@ public class ArithmeticOptimizer extends Optimizer {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
         
-        // If add 0
+        // Remove add 0
         if (Literal.ZERO.equals(left)) {
           return right;
         }   
@@ -53,7 +53,27 @@ public class ArithmeticOptimizer extends Optimizer {
             return new Call(Operators.ADD, literal, child.getOperand(1));
           }
         }
-      } else if (call.is(Operators.MULTIPLY)) {
+      }
+      else if (call.is(Operators.SUBTRACT)) {
+        IExpression left = call.getOperand(0);
+        IExpression right = call.getOperand(1);
+        
+        // Remove subtract 0:  X-0=X
+        if (Literal.ZERO.equals(right)) {
+          return left;
+        }   
+        // If 0 subtract:  0-X=-X
+        if (Literal.ZERO.equals(left)) {
+          return new Call(Operators.NEGATIVE, right);
+        }   
+        
+        // X-(-Z)=X+Z
+        if (right.is(Operators.NEGATIVE)) {
+          Call negative = (Call) right;         
+          return new Call(Operators.ADD, left, negative.getOperand(0));
+        }
+      }
+      else if (call.is(Operators.MULTIPLY)) {
         IExpression left = call.getOperand(0);
         IExpression right = call.getOperand(1);
         

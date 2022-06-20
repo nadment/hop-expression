@@ -222,7 +222,9 @@ public class OptimizerTest {
 
     optimize("AGE+0", "AGE");
     optimize("0+AGE", "AGE");
-
+    optimize("AGE-0", "AGE");
+    optimize("0-AGE", "-AGE");
+    optimize("Z-(0-AGE)", "AGE+Z");
     optimize("AGE*1", "AGE");
     optimize("1*AGE", "AGE");
 

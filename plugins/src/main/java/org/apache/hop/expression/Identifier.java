@@ -28,20 +28,17 @@ import java.util.Objects;
  */
 public class Identifier implements IExpression {
   private final String name;
-  private IValueMeta valueMeta;
+  // The index in row when resolved
   private int index;
   
-  public Identifier(final String name) {
-    super();
+  public Identifier(final String name, int index) {
     this.name = Objects.requireNonNull(name, "name must not be null");
-  }
-  
-  public Identifier(final IValueMeta valueMeta, int index) {
-    this(valueMeta.getName());
-    this.valueMeta = valueMeta;
     this.index = index;
   }
-
+  
+  public Identifier(final String name) {
+    this(name, -1);
+  }
 
   @Override
   public Kind getKind() {
@@ -56,21 +53,16 @@ public class Identifier implements IExpression {
   public int getCost() {
     return 2;
   }
-
-  public IValueMeta getValueMeta() {
-    return valueMeta;
-  }
   
   @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
-    
-    if (valueMeta == null)
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-    
+        
     IRowMeta rowMeta = context.getRowMeta();
-    if (rowMeta == null)
+    if (rowMeta == null || index<0)
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
    
+    IValueMeta valueMeta = rowMeta.getValueMeta(index);
+    
     Object[] row = context.getRow();
     try {
       switch (valueMeta.getType()) {

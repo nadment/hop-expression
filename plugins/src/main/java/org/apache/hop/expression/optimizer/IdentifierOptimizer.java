@@ -17,7 +17,6 @@
 package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
@@ -28,9 +27,9 @@ public class IdentifierOptimizer extends Optimizer {
     IRowMeta rowMeta = context.getRowMeta();
     
     int index = rowMeta.indexOfValue(identifier.getName());
-    if (index < 0)
+    if (index < 0) {
       return identifier;
-    IValueMeta valueMeta = rowMeta.getValueMeta(index);
-    return new Identifier(valueMeta, index);
+    }
+    return new Identifier(identifier.getName(), index);
   }
 }
