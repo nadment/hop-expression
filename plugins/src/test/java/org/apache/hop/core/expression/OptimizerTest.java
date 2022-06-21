@@ -226,7 +226,7 @@ public class OptimizerTest {
     optimize("0-AGE", "-AGE");
     optimize("Z-(0-AGE)", "AGE+Z");
     optimize("AGE*1", "AGE");
-    optimize("1*AGE", "AGE");
+    optimize("1.0*AGE", "AGE");
 
     optimize("AGE*3*2", "6*AGE");
     optimize("3*(AGE*1)*1*(2*5)", "30*AGE");
@@ -234,6 +234,8 @@ public class OptimizerTest {
     optimize("AGE+3+1", "4+AGE");
     optimize("4+AGE+1", "5+AGE");
     optimize("4*AGE*0.5", "2.0*AGE");
+    optimize("AGE/1", "AGE");
+    optimize("AGE/1.0", "AGE");
   }
 
   @Test

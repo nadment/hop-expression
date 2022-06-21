@@ -44,9 +44,9 @@ public class Literal implements IExpression {
 
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-      if (number.equals(BigDecimal.ZERO))
+      if (BigDecimal.ZERO.compareTo(number)==0)
         return ZERO;
-      if (number.equals(BigDecimal.ONE))
+      if (BigDecimal.ONE.compareTo(number)==0)
         return ONE;
       return new Literal(number);
     }

@@ -93,11 +93,20 @@ public class ArithmeticOptimizer extends Optimizer {
           }
         }
       }
-
-      return call;
+      else if (call.is(Operators.DIVIDE)) {
+        IExpression right = call.getOperand(1);
+        
+        // If divide by 1
+        if (Literal.ONE.equals(right)) {
+          return call.getOperand(0);
+        }                  
+        return call;
+      }
     } catch (Exception e) {
-      return call;
+
     }
+    
+    return call;
   }
 
 
