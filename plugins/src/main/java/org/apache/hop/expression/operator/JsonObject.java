@@ -46,14 +46,6 @@ public class JsonObject extends Operator {
       throws ExpressionException {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
-    
-    // TODO: JSON_OBJECT(*)
-    // if ( operands.length==0) {
-    // for ( IValueMeta meta : context.getRowMeta().getValueMetaList() ) {
-    // Object value = context.getRow()
-    // node.put(meta.getName(), value);
-    // }
-    // }
 
     for (int i = 0; i < operands.length; i += 2) {
       String key = Coerse.toString(operands[i].eval(context));

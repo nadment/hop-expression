@@ -21,9 +21,9 @@ import java.util.List;
 
 public class UdfResolver implements IExpressionVisitor<IExpression> {
 
-  private final IExpression operands[];
+  private final IExpression[] operands;
 
-  public UdfResolver(IExpression operands[]) {
+  public UdfResolver(IExpression[] operands) {
     this.operands = operands;
   }
 

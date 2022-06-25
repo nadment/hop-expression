@@ -65,19 +65,17 @@ public class ExpressionEditor extends Composite {
   private ExpressionMode mode = ExpressionMode.NONE;
   private ExpressionLabelProvider labelProvider;
   private IVariables variables;
-  private CompletableFuture<IRowMeta> rowMetaProvider;
+  private CompletableFuture<IRowMeta> rowMetaFutur;
   private SourceViewer sourceViewer;
   private SashForm sashForm;
   private Tree tree;
   private TreeItem treeItemField;
 
-//  public ExpressionEditor(Composite parent, int style, IVariables variables, boolean showField, boolean showUdf, CompletableFuture<IRowMeta> rowMetaProvider) {
-
-  public ExpressionEditor(Composite parent, int style, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaProvider) {
+  public ExpressionEditor(Composite parent, int style, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaFutur) {
     super(parent, style);
     this.variables = variables;
     this.mode = mode;
-    this.rowMetaProvider = rowMetaProvider;
+    this.rowMetaFutur = rowMetaFutur;
     this.labelProvider = new ExpressionLabelProvider();
 
     this.setLayout(new FormLayout());
@@ -87,8 +85,8 @@ public class ExpressionEditor extends Composite {
     this.createEditor(sashForm);
 
     // When IRowMeta is ready   
-    if ( rowMetaProvider!=null ) {
-      rowMetaProvider.thenAccept(this::setRowMeta);
+    if ( rowMetaFutur!=null ) {
+      rowMetaFutur.thenAccept(this::setRowMeta);
     }
     
     sashForm.setWeights(25, 75);    
@@ -153,8 +151,7 @@ public class ExpressionEditor extends Composite {
     });
 
     Document doc = new Document("");
-    ExpressionEditorConfiguration configuration =
-        new ExpressionEditorConfiguration(variables, rowMetaProvider);
+    ExpressionEditorConfiguration configuration = new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
     IDocumentPartitioner partitioner = new FastPartitioner(new ExpressionPartitionScanner(),
         configuration.getConfiguredContentTypes(sourceViewer));
     partitioner.connect(doc);

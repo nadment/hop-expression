@@ -73,8 +73,6 @@ public class Udf extends Function {
   private static IValueMeta createValueMeta(DataTypeName type, String name) {
     if (type != null && name!=null) {
       switch (type) {
-        case STRING:
-          return new ValueMetaString(name);
         case BOOLEAN:
           return new ValueMetaBoolean(name);
         case INTEGER:
@@ -89,7 +87,9 @@ public class Udf extends Function {
           return new ValueMetaBinary(name);
         case JSON:
           return new ValueMetaJson(name);
-        default:
+        case UNKNOWN:
+        case STRING:
+          return new ValueMetaString(name);
       }
     }
     return null;

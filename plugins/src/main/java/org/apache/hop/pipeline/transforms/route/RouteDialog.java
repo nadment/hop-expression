@@ -226,7 +226,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
           CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
           
           ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
-          expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMeta);
+          expression = dialog.open(expression, getVariables(), rowMeta);
           if (expression != null) {
             wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(),
                 expression);

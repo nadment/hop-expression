@@ -29,13 +29,18 @@ public class UdfTest extends BaseExpressionTest {
       UdfMeta meta = new UdfMeta();
       meta.setName("UCASE");
       meta.setDescription("UDF test");
-//      meta.setSource("If(v0=null,'<null>',Upper(v0))");
       meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
       meta.getArguments().add(new Argument("v0", DataTypeName.STRING));
       meta.getArguments().add(new Argument("v1", DataTypeName.INTEGER));
+      
+      //meta.getArguments().add(new Argument("v2", DataTypeName.DATE));
+      //meta.getArguments().add(new Argument("v3", DataTypeName.BOOLEAN));
+      //meta.getArguments().add(new Argument("v4", DataTypeName.NUMBER));
+      //meta.getArguments().add(new Argument("v5", DataTypeName.BIGNUMBER));
     
       assertEquals("UCASE", meta.getName());
       assertEquals("UDF test", meta.getDescription());
+      assertEquals("v0", meta.getArguments().get(0).getName());
       
       Udf udf = new Udf(meta);      
       FunctionRegistry.register(udf.getName(), udf);

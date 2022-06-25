@@ -60,9 +60,8 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(DataTypeName.NUMBER, DataTypeName.from(1D));
     assertEquals(DataTypeName.BIGNUMBER, DataTypeName.from(BigDecimal.ONE) );
     assertEquals(DataTypeName.BINARY, DataTypeName.from(new byte[] {0x78}));
-    assertEquals(DataTypeName.DATE,
-        DataTypeName.from(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh")))
-        );
+    assertEquals(DataTypeName.DATE, DataTypeName.from(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh"))));
+    assertEquals(DataTypeName.JSON, DataTypeName.from(Converter.toJson("{\"name\":\"Smith\"}")));
     
     assertThrows(IllegalArgumentException.class, () -> DataTypeName.from(Float.class) );
     assertThrows(IllegalArgumentException.class, () -> DataTypeName.from(Date.class) );

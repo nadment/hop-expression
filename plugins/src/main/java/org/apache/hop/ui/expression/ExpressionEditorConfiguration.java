@@ -61,6 +61,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private static final int MAX_UNDO_LEVEL = 25;
 
   private IVariables variables;
+  private ExpressionMode mode;
   private CompletableFuture<IRowMeta> rowMeta;
   private static final Set<String> RESERVED_WORDS = Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "ELSE",
           "END", "ESCAPE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "OR", "SYMMETRY",
@@ -70,10 +71,11 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter presenter;
 
-  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta) {
+  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta, ExpressionMode mode) {
     super();
     this.variables = variables;
     this.rowMeta = rowMeta;
+    this.mode = mode;
 
     presenter = new DefaultInformationControl.IInformationPresenter() {
       @Override
@@ -103,7 +105,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
     ExpressionCompletionProcessor expressionProcessor =
-        new ExpressionCompletionProcessor(variables, rowMeta);
+        new ExpressionCompletionProcessor(variables, rowMeta, mode);
     ExpressionCompletionProcessor variableProcessor = new ExpressionCompletionProcessor(variables);
 
     ContentAssistant assistant = new ContentAssistant();

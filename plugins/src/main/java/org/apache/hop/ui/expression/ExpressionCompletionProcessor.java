@@ -28,6 +28,7 @@ import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Udf;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -55,15 +56,17 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
 
   private CompletableFuture<IRowMeta> rowMeta;
   private IVariables variables;
+  private ExpressionMode mode;
   private String message;
 
   public ExpressionCompletionProcessor(IVariables variables) {
-    this(variables, null);
+    this(variables, null, ExpressionMode.NONE);
   }
 
-  public ExpressionCompletionProcessor(IVariables variables, CompletableFuture<IRowMeta> rowMeta) {
+  public ExpressionCompletionProcessor(IVariables variables, CompletableFuture<IRowMeta> rowMeta, ExpressionMode mode) {
     this.variables = variables;
     this.rowMeta = rowMeta;
+    this.mode = mode;
   }
 
   @Override
@@ -214,12 +217,19 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
         Function function = FunctionRegistry.getFunction(name);
+        
+        // Skip UDF proposal in UDF mode
+        if ( mode==ExpressionMode.UDF && function instanceof Udf ) {
+          continue;
+        }
+        
         String replacement = name;
         // TODO: add function arguments to proposal
         String diplayName = name;
         CompletionProposal proposal = new CompletionProposal(replacement, start, end - start,
             replacement.length(), image, diplayName, null, function.getDescription());
         proposals.add(proposal);
+        
       }
     }
   }

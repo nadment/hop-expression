@@ -60,20 +60,22 @@ public class ExpressionText extends Composite {
 
   protected IVariables variables;
 
-  protected IRowMeta rowMeta;
-
   protected Text wText;
 
   protected ModifyListener modifyListenerTooltipText;
 
   protected ToolBar wToolBar;
 
-  protected boolean isUseField;
+  protected CompletableFuture<IRowMeta> rowMetaFutur;
 
-  public ExpressionText(IVariables variables, Composite composite, int flags, boolean isUseField) {
+  public ExpressionText(IVariables variables, Composite composite, int flags) {
+    this(variables, composite, flags, null);
+  }
+  
+  public ExpressionText(IVariables variables, Composite composite, int flags, CompletableFuture<IRowMeta> rowMetaFutur) {
     super(composite, SWT.NONE);
     initialize(variables, composite, flags, null, null, null, null);
-    this.isUseField = isUseField;
+    this.rowMetaFutur = rowMetaFutur;
   }
 
   protected void initialize(IVariables variables, Composite composite, int flags,
@@ -125,9 +127,7 @@ public class ExpressionText extends Composite {
   
   protected void openExpressionDialog() {
     ExpressionEditorDialog dialog = new ExpressionEditorDialog(this.getShell());
-    CompletableFuture<IRowMeta> rowMetaProvider = new CompletableFuture<>(); 
-    rowMetaProvider.complete(rowMeta);
-    String expression = dialog.open(wText.getText(), variables, ExpressionMode.NONE, rowMetaProvider);
+    String expression = dialog.open(wText.getText(), variables, rowMetaFutur);
     if (expression != null) {
       wText.setText(expression);
     }
@@ -186,10 +186,6 @@ public class ExpressionText extends Composite {
 
   public Text getTextWidget() {
     return wText;
-  }
-
-  public void setRowMeta(IRowMeta rowMeta) {
-    this.rowMeta = rowMeta;
   }
 
   @Override
