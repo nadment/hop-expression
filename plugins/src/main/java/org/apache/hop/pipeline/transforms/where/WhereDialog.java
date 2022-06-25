@@ -32,6 +32,7 @@ import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.expression.ExpressionEditor;
+import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.jface.fieldassist.ControlDecoration;
@@ -223,7 +224,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     CompletableFuture<IRowMeta> rowMetaProvider = getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
 
-    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(),true, true, rowMetaProvider);
+    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), ExpressionMode.ROW, rowMetaProvider);
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     wEditor.addListener(SWT.Modify, e -> onChanged());
         

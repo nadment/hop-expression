@@ -50,6 +50,7 @@ public enum ExpressionError {
   INVALID_DATEPART("Expression.InvalidDatePart"),
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
   INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),  
+  UDF_COMPILATION_ERROR("Expression.UdfCompilationError"),
   UNSUPPORTED_CONVERSION("Expression.UnsupportedConversion"),
   UNSUPPORTED_VALUEMETA("Expression.UnsupportedValueMeta"),
   UNSUPPORTED_JSON_TYPE("Expression.UnsupportedJsonType"),

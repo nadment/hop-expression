@@ -62,8 +62,7 @@ import java.util.concurrent.CompletableFuture;
 public class ExpressionEditor extends Composite {
   private static final Class<?> PKG = ExpressionEditor.class;
   
-  private boolean showUdf;
-  private boolean showField;
+  private ExpressionMode mode = ExpressionMode.NONE;
   private ExpressionLabelProvider labelProvider;
   private IVariables variables;
   private CompletableFuture<IRowMeta> rowMetaProvider;
@@ -72,11 +71,12 @@ public class ExpressionEditor extends Composite {
   private Tree tree;
   private TreeItem treeItemField;
 
-  public ExpressionEditor(Composite parent, int style, IVariables variables, boolean showField, boolean showUdf, CompletableFuture<IRowMeta> rowMetaProvider) {
+//  public ExpressionEditor(Composite parent, int style, IVariables variables, boolean showField, boolean showUdf, CompletableFuture<IRowMeta> rowMetaProvider) {
+
+  public ExpressionEditor(Composite parent, int style, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaProvider) {
     super(parent, style);
     this.variables = variables;
-    this.showField = showField;
-    this.showUdf = showUdf;
+    this.mode = mode;
     this.rowMetaProvider = rowMetaProvider;
     this.labelProvider = new ExpressionLabelProvider();
 
@@ -191,10 +191,11 @@ public class ExpressionEditor extends Composite {
       }
     });
 
-    if (this.showField) {
+    if (  mode==ExpressionMode.ROW ||  mode==ExpressionMode.UDF ) {
       treeItemField = new TreeItem(tree, SWT.NULL);
       treeItemField.setImage(GuiResource.getInstance().getImageFolder());
-      treeItemField.setText(BaseMessages.getString(PKG, "ExpressionEditor.Tree.Fields.Label"));
+      String text = (  mode==ExpressionMode.ROW ) ? "ExpressionEditor.Tree.Fields.Label":"ExpressionEditor.Tree.Arguments.Label";
+      treeItemField.setText(BaseMessages.getString(PKG, text));
     }
 
     TreeItem treeItemOperator = new TreeItem(tree, SWT.NULL);
@@ -209,8 +210,8 @@ public class ExpressionEditor extends Composite {
    
     // Inventory operator unique identifier and category
     for (Operator operator : operators) {
-
-      if ( !showUdf && operator instanceof Udf ) {
+  
+      if ( mode==ExpressionMode.UDF && operator instanceof Udf ) {
         continue;
       }
       

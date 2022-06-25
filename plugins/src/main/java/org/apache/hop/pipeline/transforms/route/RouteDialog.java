@@ -37,6 +37,7 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.expression.ExpressionEditorDialog;
+import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
@@ -225,7 +226,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
           CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
           
           ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
-          expression = dialog.open(expression, getVariables(), rowMeta);
+          expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMeta);
           if (expression != null) {
             wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(),
                 expression);

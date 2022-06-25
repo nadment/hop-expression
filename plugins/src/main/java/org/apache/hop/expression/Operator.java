@@ -24,8 +24,6 @@ import java.util.Objects;
  * operator on a lower level
  */
 public abstract class Operator implements Comparable<Operator> {
-
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
    
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;

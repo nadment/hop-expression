@@ -64,11 +64,13 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public static final String CACHED_TIMEZONE = "__TIMEZONE";
   public static final String CACHED_RANDOM = "__RANDOM";
 
+  private IVariables variables;
   private IRowMeta rowMeta;
   private Object[] row;
 
   private int twoDigitCenturyStart = 1970;
 
+  
   public ExpressionContext(IVariables variables, IRowMeta rowMeta) {
     this(variables);
 
@@ -78,10 +80,11 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public ExpressionContext(IVariables variables) {
     super();
     
+    this.variables = variables;
+    
     this.setAttribute(EXPRESSION_DATE_FORMAT, variables.getVariable(EXPRESSION_DATE_FORMAT, "YYYY-MM-DD"), ENGINE_SCOPE);
     this.setAttribute(EXPRESSION_FIRST_DAY_OF_WEEK, variables.getVariable(EXPRESSION_FIRST_DAY_OF_WEEK, "1"), ENGINE_SCOPE);           
     this.setAttribute(EXPRESSION_TWO_DIGIT_CENTURY_START, variables.getVariable(EXPRESSION_TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
-
     
 //    final Calendar calendar = Calendar.getInstance(locale);
 //    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
@@ -104,6 +107,11 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
 
   public void setAttribute(String name, Object value) {
     this.setAttribute(name, value, ENGINE_SCOPE);
+  }
+  
+  @Override
+  public IVariables getVariables() {
+    return variables;
   }
   
   @Override
@@ -175,5 +183,7 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public int getTwoDigitCenturyStart() {
     return twoDigitCenturyStart;
   }
+
+
 }
 

@@ -42,15 +42,15 @@ import java.util.concurrent.CompletableFuture;
 public class ExpressionEditorDialog extends Dialog {
   private static final Class<?> PKG = ExpressionEditorDialog.class;
 
+  private String expression;
   private Shell shell;
   private ExpressionEditor wEditor;
-  private String expression;
 
   public ExpressionEditorDialog(Shell parent) {
     super(parent, SWT.APPLICATION_MODAL | SWT.SHEET);
   }
 
-  public String open(String expression, IVariables variables, CompletableFuture<IRowMeta> rowMeta) {
+  public String open(String expression, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMeta) {
     PropsUi props = PropsUi.getInstance();
 
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
@@ -84,7 +84,7 @@ public class ExpressionEditorDialog extends Dialog {
         props.getMargin(), null);
 
     // The expression editor
-    wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, true, true, rowMeta);
+    wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, mode, rowMeta);
     wEditor.setText(expression);
     wEditor.setLayoutData(
         new FormDataBuilder().top().bottom(btnOK, -props.getMargin()).left().right().result());

@@ -47,7 +47,7 @@ public class OptimizerTest {
       return new ExternalResource() {
           @Override
           protected void before() throws Throwable {
-            FunctionRegistry.init();
+            FunctionRegistry.registerBuilInFunctions();
           }
       };
   }

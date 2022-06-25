@@ -19,7 +19,6 @@ import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.plugins.JarCache;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.core.variables.Variables;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.metadata.api.IHopMetadataSerializer;
 import org.apache.hop.metadata.util.HopMetadataUtil;
@@ -74,21 +73,13 @@ public class FunctionRegistry {
    * Initialize the registry, keep private to keep this a singleton
    */
   private FunctionRegistry() {}
-
-  /**
-   * Discovery and register functions
-   */
-  public static void init() {
-    registerBuilInFunction();
-    //registerUserDefinedFunction();
-  }
   
   /**
    * Discovery and register built-in and plugin functions
    */
-  private static void registerBuilInFunction() {
+  public static void registerBuilInFunctions() {
     if (log.isDebug()) {
-      log.logDebug("Register built-in functions for expression");
+      log.logDebug("Register built-in functions");
     }
     try {
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
@@ -128,59 +119,8 @@ public class FunctionRegistry {
     }
   }
 
-  /**
-   * Register User Defined Functions
-   */
-  private static void registerUserDefinedFunction() {
-    if (log.isDebug()) {
-      log.logDebug("Register UDF functions for expression");
-    }
-    try {
-      IVariables variables = Variables.getADefaultVariableSpace();
-      IHopMetadataProvider metadataProvider = HopMetadataUtil.getStandardHopMetadataProvider(variables);
-      IHopMetadataSerializer<UdfMeta> serializer = metadataProvider.getSerializer(UdfMeta.class);
 
-      List<String> names = serializer.listObjectNames();
-      
-      log.logBasic("Register UDF functions for expression");
-      for (String name : serializer.listObjectNames()) {
-        try {
-          log.logBasic("Register user defined function: " + name);
-          UdfMeta udfMeta = serializer.load(name);
-          
-          // Convert arguments to row meta
-//          IRowMeta rowMeta = new RowMeta();
-//          for (Argument argument:udfMeta.getArguments() ) {
-//            IValueMeta vm = createValueMeta(argument.getType(), argument.getName());
-//            rowMeta.addValueMeta(vm);
-//          }
-//          
-//          ExpressionContext context = new ExpressionContext(variables, rowMeta);          
-//          IExpression expression = ExpressionBuilder.compile(context, udfMeta.getSource());
-//          
-          
-          Udf udf = new Udf(name, udfMeta.getArguments().size());
-          register(name, udf);
-          
-
-        } catch (Exception e) {
-          log.logError("Error registring User-defined function " + name, e);
-        }
-      }
-
-    } catch (HopException e) {
-      log.logError("Error registring User-defined functions", e);
-    }
-  }
     
-  private static void unregisterUserDefinedFunction() {
-    for (Function function : getFunctions()) {
-      if (function instanceof Udf) {
-        unregister(function.getName());
-      }
-    }
-  }
-
   private static Method getAnnotatedMethod(MethodInfo methodInfo)
       throws ClassNotFoundException, NoSuchMethodException, SecurityException {
     ClassInfo classInfo = methodInfo.declaringClass();
@@ -245,7 +185,7 @@ public class FunctionRegistry {
 
     functions.put(name, function);
   }
-
+  
   public static Function unregister(final String name) {
     if (name == null)
       return null;
@@ -256,5 +196,35 @@ public class FunctionRegistry {
     }
 
     return function;
+  }
+  
+  public static void reloadUserDefinedFunctions(IVariables variables) {
+    // Unregister User Defined Functions
+    for (Function function : FunctionRegistry.getFunctions()) {
+      if (function instanceof Udf) {
+        FunctionRegistry.unregister(function.getName());
+      }
+    }
+    
+     // Register User Defined Functions
+    try {
+      IHopMetadataProvider metadataProvider = HopMetadataUtil.getStandardHopMetadataProvider(variables);
+      IHopMetadataSerializer<UdfMeta> serializer = metadataProvider.getSerializer(UdfMeta.class);
+
+      for (String name : serializer.listObjectNames()) {
+        try {
+          if (log.isDebug()) {
+            log.logBasic("Register user defined function: " + name);
+          }                   
+          UdfMeta udfMeta =serializer.load(name);
+          FunctionRegistry.register(name, new Udf(udfMeta));
+        } catch (Exception e) {
+          log.logError("Error registring User-defined function " + name, e);
+        }
+      }
+
+    } catch (HopException e) {
+      log.logError("Error registring User-defined functions", e);
+    }
   }
 }

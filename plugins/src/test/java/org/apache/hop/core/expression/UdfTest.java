@@ -15,8 +15,6 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.FunctionRegistry;
@@ -31,30 +29,18 @@ public class UdfTest extends BaseExpressionTest {
       UdfMeta meta = new UdfMeta();
       meta.setName("UCASE");
       meta.setDescription("UDF test");
-      meta.setSource("If(v0=null,'<null>',Upper(v0))");
+//      meta.setSource("If(v0=null,'<null>',Upper(v0))");
+      meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
       meta.getArguments().add(new Argument("v0", DataTypeName.STRING));
+      meta.getArguments().add(new Argument("v1", DataTypeName.INTEGER));
     
       assertEquals("UCASE", meta.getName());
       assertEquals("UDF test", meta.getDescription());
       
-      Udf udf = new Udf(meta.getName(), 1);
+      Udf udf = new Udf(meta);      
+      FunctionRegistry.register(udf.getName(), udf);
       
-      FunctionRegistry.register(meta.getName(), udf);
-      
-      
-      
-      // Convert arguments to row meta
-//      IRowMeta rowMeta = new RowMeta();
-//      for (Argument argument:udfMeta.getArguments() ) {
-//        IValueMeta vm = createValueMeta(argument.getType(), argument.getName());
-//        rowMeta.addValueMeta(vm);
-//      }
-//      
-//      ExpressionContext context = new ExpressionContext(variables, rowMeta);          
-//      IExpression expression = ExpressionBuilder.compile(context, udfMeta.getSource());
-      
-      
-     // evalEquals("UCASE('True')", "TRUE");
-      //evalEquals("UCASE(null)", "<null>");
+      evalEquals("UCASE('abcd',3)", "ABC");
+      evalEquals("UCASE(null,2)", "*");
   }
 }

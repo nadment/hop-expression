@@ -61,6 +61,7 @@ end
 * Are not case-sensitive, excepted for identifier.
 * Can be parenthesized to control the precedence order.
 * Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance.
+* User Defined Function (UDF) support has metadata
 
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
 
@@ -75,7 +76,7 @@ public static class ExperimentalFunction {
   /** 
    * The function compute Levenshtein distance.
    */
-  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2,)
+  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2)
   public Object levenshtein(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
@@ -85,7 +86,7 @@ public static class ExperimentalFunction {
     if (v1 == null)
       return null;
     
-    return Long.valueOf(Utils.getDamerauLevenshteinDistance(coerceToString(v0), coerceToString(v1)));
+    return Long.valueOf(Utils.getDamerauLevenshteinDistance(Coerce.toString(v0), Coerce.toString(v1)));
   }
 }
 ----

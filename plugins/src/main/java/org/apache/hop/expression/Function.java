@@ -21,8 +21,6 @@ import java.lang.reflect.Method;
 
 public class Function extends Operator {
 
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
   private final Object instance;
   private final Method method;
   private final int minArgs;

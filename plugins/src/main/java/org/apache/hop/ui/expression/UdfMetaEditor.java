@@ -19,30 +19,19 @@ package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.core.row.RowMeta;
-import org.apache.hop.core.row.value.ValueMetaBigNumber;
-import org.apache.hop.core.row.value.ValueMetaBinary;
-import org.apache.hop.core.row.value.ValueMetaBoolean;
-import org.apache.hop.core.row.value.ValueMetaDate;
-import org.apache.hop.core.row.value.ValueMetaInteger;
-import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.core.row.value.ValueMetaNumber;
-import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.DataTypeName;
+import org.apache.hop.expression.Udf;
 import org.apache.hop.expression.UdfMeta;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
-import org.apache.hop.ui.core.dialog.ErrorDialog;
 import org.apache.hop.ui.core.metadata.MetadataEditor;
 import org.apache.hop.ui.core.metadata.MetadataManager;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.hopgui.HopGui;
-import org.apache.hop.ui.hopgui.perspective.metadata.MetadataPerspective;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -51,7 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-
+@GuiPlugin(description = "This is the editor for User Defined Function (UDF) metadata")
 public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
   private static final Class<?> PKG = UdfMetaEditor.class; // For Translator
 
@@ -72,10 +61,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     int margin = Const.MARGIN;
 
     // Add listener to detect change after loading data
-    Listener changedListener =
-        event -> {
-          setChanged();        
-        };
+    Listener changedListener = e -> setChanged(); 
     
     // The icon
     //
@@ -171,7 +157,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     fdlSource.top = new FormAttachment(wArguments, margin * 2);
     wlExpression.setLayoutData(fdlSource);
     
-    wExpression = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), true, false, null);
+    wExpression = new ExpressionEditor(parent, SWT.BORDER, manager.getVariables(), ExpressionMode.UDF, null);
     FormData fdExression = new FormData();
     fdExression.left = new FormAttachment(0, 0);
     fdExression.top = new FormAttachment(wlExpression, margin);
@@ -191,15 +177,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
     UdfMeta meta = new UdfMeta();
     this.getWidgetsContent(meta);
 
-    // Convert arguments to row meta
-    IRowMeta rowMeta = new RowMeta();
-    for (Argument argument : meta.getArguments()) {
-      IValueMeta valueMeta = createValueMeta(argument.getType(), argument.getName());
-      if ( valueMeta!=null) {
-        rowMeta.addValueMeta(valueMeta);
-      }
-    }
-    wExpression.setRowMeta(rowMeta);
+    wExpression.setRowMeta(Udf.createRowMeta(meta.getArguments()));
   }
   
   @Override
@@ -244,14 +222,8 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
   @Override
   public void save() throws HopException {
 
-    try {
-      // verifySettings();
-    } catch (Exception e) {
-      new ErrorDialog(getShell(), "Error",
-          BaseMessages.getString(PKG, "UdfDialog.Error.ValidationError"), e);
-    }
-
-    getWidgetsContent(getMetadata());
+    UdfMeta meta = getMetadata();
+    getWidgetsContent(meta);
 
     super.save();
   }
@@ -262,36 +234,5 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
       return false;
     }
     return wName.setFocus();
-  }
-
-  @Override
-  public void setChanged() {
-    super.setChanged();
-    MetadataPerspective.getInstance().updateEditor(this);
-  }
-  
-  protected IValueMeta createValueMeta(DataTypeName type, String name) {
-    if (type != null && name!=null) {
-      switch (type) {
-        case STRING:
-          return new ValueMetaString(name);
-        case BOOLEAN:
-          return new ValueMetaBoolean(name);
-        case INTEGER:
-          return new ValueMetaInteger(name);
-        case NUMBER:
-          return new ValueMetaNumber(name);
-        case BIGNUMBER:
-          return new ValueMetaBigNumber(name);
-        case DATE:
-          return new ValueMetaDate(name);
-        case BINARY:
-          return new ValueMetaBinary(name);
-        case JSON:
-          return new ValueMetaJson(name);
-        default:
-      }
-    }
-    return null;
   }
 }

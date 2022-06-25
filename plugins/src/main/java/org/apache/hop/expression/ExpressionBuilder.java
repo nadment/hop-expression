@@ -74,7 +74,7 @@ public class ExpressionBuilder {
       throws ExpressionException {
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
-      return builder.optimize(context, builder.parse());
+      return builder.compile(context, builder.parse());
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);
     } catch (IllegalArgumentException e) {
@@ -1198,7 +1198,6 @@ public class ExpressionBuilder {
             position++;
           }
 
-
           String identifier = source.substring(start, position);
           String name = identifier.toUpperCase();
 
@@ -1233,24 +1232,25 @@ public class ExpressionBuilder {
   }
 
   /**
-   * Optimize the expression.
+   * Compile and optimize the expression.
    *
    * @param context the context
-   * @param expression the expression to optimize
+   * @param expression the expression to compile
    * @return the optimized expression
    */
-  protected IExpression optimize(IExpressionContext context, IExpression expression) {
+  protected IExpression compile(IExpressionContext context, IExpression expression) throws ExpressionException {
     if (expression == null)
       return null;
 
     IExpression original = expression;
+        
     int cycle = 20;
     do {
-      // Optimize operands first
+      // Compile operands first
       if (expression instanceof Call) {
-        expression = optimizeCall(context, (Call) expression);
+        expression = compileCall(context, (Call) expression);
       } else if (expression instanceof Tuple) {
-        expression = optimizeTuple(context, (Tuple) expression);
+        expression = compileTuple(context, (Tuple) expression);
       }
 
       // Apply optimizers
@@ -1268,19 +1268,39 @@ public class ExpressionBuilder {
     return expression;
   }
 
-  protected IExpression optimizeTuple(IExpressionContext context, Tuple tuple) {
+  
+  protected IExpression compileTuple(IExpressionContext context, Tuple tuple) throws ExpressionException {
     List<IExpression> elements = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
-      elements.add(optimize(context, expression));
+      elements.add(compile(context, expression));
     }
     return new Tuple(elements);
   }
 
-  protected IExpression optimizeCall(IExpressionContext context, Call call) {
+  protected IExpression compileCall(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Replace arguments in User Defined Function by the operands of the call.
+    if (call.getOperator() instanceof Udf) {      
+      return compile(context, call, (Udf) call.getOperator());    
+    }
+    
+    // Optimize all operands
     List<IExpression> operands = new ArrayList<>(call.getOperandCount());
     for (IExpression expression : call.getOperands()) {
-      operands.add(optimize(context, expression));
+      operands.add(compile(context, expression));
     }
+    
     return new Call(call.getOperator(), operands);
   }
+  
+  protected IExpression compile(IExpressionContext context, Call call, Udf udf) throws ExpressionException {
+    try {
+      IExpressionContext udfContext = new ExpressionContext(context.getVariables(), udf.createRowMeta());          
+      IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
+      return expression.visit(context, new UdfResolver(call.getOperands()));
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());   
+    } 
+  }
+
 }

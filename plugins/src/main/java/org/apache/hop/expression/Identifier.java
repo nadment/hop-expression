@@ -28,8 +28,7 @@ import java.util.Objects;
  */
 public class Identifier implements IExpression {
   private final String name;
-  // The index in row when resolved
-  private int index;
+  private final int index;
   
   public Identifier(final String name, int index) {
     this.name = Objects.requireNonNull(name, "name must not be null");
@@ -45,6 +44,10 @@ public class Identifier implements IExpression {
     return Kind.IDENTIFIER;
   }
   
+  /**
+   * Return the name of the identifier.
+   * @return
+   */
   public String getName() {
     return name;
   }
@@ -52,6 +55,14 @@ public class Identifier implements IExpression {
   @Override
   public int getCost() {
     return 2;
+  }
+
+  /**
+   * Return the index in IRowMeta when resolved or -1 if unresolved identifier.
+   * @return
+   */
+  public int getIndex() {
+    return index;
   }
   
   @Override

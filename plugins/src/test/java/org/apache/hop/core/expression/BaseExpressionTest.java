@@ -35,7 +35,6 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.util.Coerse;
-import org.apache.hop.expression.util.Converter;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -61,7 +60,7 @@ public class BaseExpressionTest {
       return new ExternalResource() {
           @Override
           protected void before() throws Throwable {
-            FunctionRegistry.init();
+            FunctionRegistry.registerBuilInFunctions();
           }
       };
   }
@@ -237,6 +236,6 @@ public class BaseExpressionTest {
     // ExpressionContext context = createExpressionContext();
     // context.setAttribute("TEST","");     
     //evalFails("Year)");
-
+    evalEquals("1.0*AGE", 40L);
   }
 }
