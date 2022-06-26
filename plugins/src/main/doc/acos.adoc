@@ -20,7 +20,7 @@ Calculates the arc cosine.
 
 == Syntax
 ----
-ACOS( <numeric> )
+ACOS( numeric )
 ----
 
 == Usage 

@@ -16,15 +16,15 @@ under the License.
 ////
 = MOD, %
 
-Returns the remainder of the division of <m> by <n>.
+Returns the remainder of the division.
 
 == Syntax
 ----
-MOD( <m> , <n> )
+MOD( dividend, divisor )
 ----
 The % operator provides alternative syntax.
 ----
-<m> % <n>
+dividend % divisor
 ----
 
 == Example

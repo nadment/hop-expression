@@ -20,7 +20,7 @@ Calculates the trigonometric cotangent of the angle in radians.
 
 == Syntax
 ----
-COT( <numeric> )
+COT( numeric )
 ----
 
 == Usage

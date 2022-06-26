@@ -20,10 +20,10 @@ Extracts the specified date or time part from a date, time, or timestamp.
 
 == Syntax
 ----
-EXTRACT( <part> FROM <date_or_timestamp> )
+EXTRACT( part FROM {date | timestamp} )
 ----
 ----
-DATE_PART( <part> , <date_or_timestamp> )
+DATE_PART( part, {date | timestamp} )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Determines whether the value of one expression is in an interval defined by two 
 
 == Syntax
 ----
-<expression> [NOT] BETWEEN [ASYMMETRIC|SYMMETRIC] <lower_bound> AND <upper_bound>
+expression [NOT] BETWEEN [ASYMMETRIC|SYMMETRIC] lower_bound AND upper_bound
 ----
 
 == Usage

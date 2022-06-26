@@ -20,5 +20,5 @@ Converts a Unicode code point (including 7-bit ASCII) into the character that ma
 
 == Syntax
 ----
-CHR(<integer>)
+CHR( integer )
 ----

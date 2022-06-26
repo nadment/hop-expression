@@ -20,7 +20,7 @@ Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
 
 == Syntax
 ----
-NULLIFZERO( <expression> )
+NULLIFZERO( expression )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Returns the largest value of all arguments, skipping null values.
 
 == Syntax
 ----
-GREATEST( <expression1> [, <expressionN>... ] )
+GREATEST( expression1 [, expressionN... ] )
 ----
 
 See also xref:least.adoc[LEAST]

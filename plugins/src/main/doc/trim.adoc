@@ -20,11 +20,11 @@ Returns the string with leading and trailing characters removed.
 
 == Syntax
 ----
-TRIM( <string> [, <characters> ] )
+TRIM( string [, characters ] )
 ----
 
-<string>:: The string expression to be trimmed
-<characters>::  One or more characters to remove from the both side. If the parameter is omitted, the function will remove space characters.
+string:: The string expression to be trimmed
+characters::  One or more characters to remove from the both side. If the parameter is omitted, the function will remove space characters.
 Return:: String
 
 == Usage

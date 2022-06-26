@@ -238,7 +238,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("2 in (null,null,null)");
     evalFalse("1 not in (null,1)");
     evalNull("NULL in (1,2,3)");
-    evalNull("NULL in (null)");
+    evalNull("NULL in (1,2,3,null)");
 
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");

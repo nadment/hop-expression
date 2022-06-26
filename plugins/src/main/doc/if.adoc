@@ -20,5 +20,5 @@ Single-level if-then-else expression. Similar to CASE, but only allows a single 
 
 == Syntax
 ----
-IF( <condition> , <expression_true> , <expresion_false> )
+IF( condition, expression_true, expresion_false )
 ----

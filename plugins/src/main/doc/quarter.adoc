@@ -20,7 +20,7 @@ Return the quarter of the year.
 
 == Syntax
 ----
-QUARTER( <date> )
+QUARTER( date )
 ----
 
 == Usage

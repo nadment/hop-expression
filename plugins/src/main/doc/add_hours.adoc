@@ -20,7 +20,7 @@ Adds or subtracts a specified number of hours to a date or timestamp.
 		
 == Syntax
 ----
-ADD_HOURS( <date_or_timestamp> , <integer> )
+ADD_HOURS( timestamp, integer )
 ----
 
 == Usage

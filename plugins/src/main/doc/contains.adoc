@@ -20,10 +20,10 @@ Returns true if string contains pattern.
 
 == Syntax
 ----
-CONTAINS( <expr1> , <expr2> )
+CONTAINS( string, substring )
 ----
 
 == Usage
 
-* Returns the value True if expr2 is found inside expr1. 
+* Returns the value True if substring is found inside string. 
 * Returns NULL if either input expression is NULL. Otherwise, returns False.

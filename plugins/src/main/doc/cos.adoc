@@ -20,7 +20,7 @@ Calculates the trigonometric cosine of the specified angle in radians.
 
 == Syntax
 ----
-COS( <numeric> )
+COS( numeric )
 ----
 
 == Usage

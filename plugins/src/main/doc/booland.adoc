@@ -21,5 +21,5 @@ Matches both expression.
 == Syntax
 [source,sql]
 ----
-<boolean1> AND <boolean2>
+boolean1 AND boolean2
 ----

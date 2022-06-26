@@ -20,7 +20,7 @@ Return a random number between 0 (inclusive) and 1 (exclusive).
 
 == Syntax
 ----
-RANDOM( [ <seed> ] )
+RANDOM( [ seed ] )
 ----
 
 Returns:: Number

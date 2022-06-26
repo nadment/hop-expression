@@ -20,8 +20,8 @@ Returns the values down to the nearest (or equal) integer closer to zero, or to 
 
 == Syntax
 ----
-TRUNCATE( <numeric> , <scale> )
-TRUNC( <numeric> , <scale> )
+TRUNCATE( numeric, scale )
+TRUNC( numeric, scale )
 ----
 
 == Usage

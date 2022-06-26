@@ -20,7 +20,7 @@ Returns the remainder division. Equivalent to the modulo function MOD.
 
 == Syntax
 ----
-numeric_expression % numeric_expression
+numeric1 % numeric2
 ----
 
 == Usage

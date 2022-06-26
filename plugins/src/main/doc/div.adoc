@@ -21,7 +21,7 @@ Divide 2 numeric values.
 == Syntax
 
 ----
-<dividend> / <divisor>
+dividend / divisor
 ----
 
 == Usage

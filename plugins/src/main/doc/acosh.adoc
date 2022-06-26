@@ -20,5 +20,5 @@ Calculates the inverse hyberbolic cosine (arc hyperbolic cosine).
 
 == Syntax
 ----
-ACOSH( <numeric> )
+ACOSH( numeric )
 ----

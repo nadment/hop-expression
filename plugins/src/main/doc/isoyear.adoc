@@ -20,7 +20,7 @@ Returns the integer that specifies the year following the ISO-8601 standard.
 
 == Syntax
 ----
-ISOYEAR( <date> )
+ISOYEAR( date )
 ----
 
 Return:: Integer

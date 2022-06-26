@@ -20,7 +20,7 @@ Returns the string with leading characters removed.
 
 == Syntax
 ----
-LTRIM( <string> [, <characters> ] )
+LTRIM( string [, characters ] )
 ----
 
 == Usage

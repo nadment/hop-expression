@@ -20,7 +20,7 @@ Extracts scalar value from JSON data type or string representing a Json.
 
 == Syntax
 ----
-JSON_VALUE( <json> , <path> )
+JSON_VALUE( {string | json}, path )
 ----
 
 == Usage

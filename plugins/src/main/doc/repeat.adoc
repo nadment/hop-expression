@@ -20,10 +20,10 @@ Returns a string or binary repeated some number of times.
 
 == Syntax
 ----
-REPEAT( <string_or_binary> , <n> )
+REPEAT( {string | binary} , <n> )
 ----
 
-<string_or_binary>:: The input value to repeat.
+{string | binary}:: The input value to repeat.
 
 <n>:: The number of times the input value should be repeated. The minimum valid number is 0 (which results in an empty string).
 

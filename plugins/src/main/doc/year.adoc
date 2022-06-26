@@ -20,7 +20,7 @@ Returns the integer that specifies the year of the specified date or timestamp.
 
 == Syntax
 ----
-YEAR( <date> )
+YEAR( date )
 ----
 
 Return:: Integer

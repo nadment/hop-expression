@@ -20,10 +20,10 @@ Returns the day of month of the specified date or timestamp.
 		
 == Syntax
 ----
-DAY( <date_or_timestamp> )
+DAY( {date | timestamp} )
 ----
 
 == Usage
 
 * Returns an integer between 1 and 31.
-* Equivalent to xref:extract.adoc[EXTRACT](DAY FROM <date_or_timestamp>).
+* Equivalent to xref:extract.adoc[EXTRACT](DAY FROM {date | timestamp}).

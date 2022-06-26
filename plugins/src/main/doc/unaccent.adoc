@@ -20,7 +20,7 @@ The function removes accents (diacritic marks) from a given string.
 
 == Syntax
 ----
-UNACCENT( <string> )
+UNACCENT( string )
 ----
 
 Return:: String

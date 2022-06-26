@@ -20,7 +20,7 @@ Converts radians to degrees.
 
 == Syntax
 ----
-DEGREES( <numeric> )
+DEGREES( numeric )
 ----
 
 == Usage

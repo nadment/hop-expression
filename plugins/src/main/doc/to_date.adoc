@@ -20,8 +20,8 @@ Converts a string into a date.
 
 == Syntax
 ----
-TO_DATE( <text> [, <format> ] )
-TO_DATE( <datetime> )
+TO_DATE( string [, format ] )
+TO_DATE( date )
 ----
 
 == Usage

@@ -18,12 +18,12 @@ under the License.
 
 Combines multiple strings or binaries into one.
 
-The || operator provides alternative syntax.
-
 == Syntax
 ----
-CONCAT(<string1>, <string2>[, <string3>...])
+CONCAT( string1, string2 [, string3...])
 ----
+
+The || operator provides alternative syntax.
 ----
-<string1> || <string2> [ || ... ]
+string1 || string2 [ || ... ]
 ----

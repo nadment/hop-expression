@@ -20,7 +20,7 @@ Reverses the order of characters in a string.
 
 == Syntax
 ----
-REVERSE( <string_or_binary> )
+REVERSE( {string | binary} )
 ----
 
 Returns:: String or binary

@@ -20,7 +20,7 @@ Calculates the inverse tangent (arc tangent) of the ratio of its two arguments.
 
 == Syntax
 ----
-ATAN2( <y> , <x> )
+ATAN2( y, x )
 ----
 
 Return type:: Number

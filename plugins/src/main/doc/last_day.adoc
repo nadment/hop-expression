@@ -20,7 +20,7 @@ Returns the last day of the specified date part.
 
 == Syntax
 ----
-LAST_DAY( <date>[, <part>] )
+LAST_DAY( date [, part] )
 ----
 
 Return type:: Date

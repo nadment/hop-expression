@@ -21,7 +21,7 @@ Decode a string used in a query part of a URL.
 
 == Syntax
 ----
-URLDECODE( <string> )
+URLDECODE( string )
 ----
 
 Returns:: String

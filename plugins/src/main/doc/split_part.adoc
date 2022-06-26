@@ -20,7 +20,7 @@ Splits a string on the specified string delimiter and returns the part at the sp
 
 == Syntax
 ----
-SPLIT_PART( <string> ,<delimiter> ,<part>} )
+SPLIT_PART( string, delimiter, part )
 ----
 
 Returns:: String

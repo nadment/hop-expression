@@ -20,10 +20,10 @@ Returns the day of year of the date or timestamp.
 
 == Syntax
 ----
-DAYOFYEAR( <date_or_timestamp> )
+DAYOFYEAR( {date | timestamp} )
 ----
 
 == Usage
 
 * Returns an integer between 1 and 366.
-* Equivalent to xref:extract.adoc[EXTRACT](DAYOFYEAR FROM <date_or_timestamp>).
+* Equivalent to xref:extract.adoc[EXTRACT](DAYOFYEAR FROM {date | timestamp}).

@@ -20,7 +20,7 @@ Truncate a date or datetime value to the start of a given unit of duration.
 
 == Syntax
 ----
-DATE_TRUNC( <part>, <datetime> )
+DATE_TRUNC( part, {date | timestamp} )
 ----
 
 Support part of date and time:

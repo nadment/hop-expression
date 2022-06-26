@@ -20,7 +20,7 @@ Calculates the tangent.
 
 == Syntax
 ----
-TAN( <numeric> )
+TAN( numeric )
 ----
 
 Returns:: Number

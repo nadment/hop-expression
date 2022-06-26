@@ -20,10 +20,10 @@ Calculates the MD5 hash of a value.
 
 == Syntax
 ----
-MD5( <string_or_binary> )
+MD5( {string | binary} )
 ----
 
-<string_or_binary>:: A string expression, the message to be hashed.
+{string | binary}:: A string expression, the message to be hashed.
 Returns:: String
 
 == Usage

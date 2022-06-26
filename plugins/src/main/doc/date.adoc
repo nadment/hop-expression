@@ -20,7 +20,7 @@ Returns the date from values representing the year, month, and day.
 		
 == Syntax
 ----
-DATE( <year> , <month> , <day> )
+DATE( year, month, day )
 ----
 The literal value with ISO format provides alternative syntax.
 ----

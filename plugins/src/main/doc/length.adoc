@@ -20,7 +20,7 @@ Returns the number of characters of the specified string or the length of binary
 
 == Syntax
 ----
-LENGTH( <string_or_binary> )
+LENGTH( {string | binary} )
 ----
 
 == Usage

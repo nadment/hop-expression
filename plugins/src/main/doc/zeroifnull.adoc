@@ -20,7 +20,7 @@ Returns 0 if its argument is null; otherwise, returns its argument.
 		
 == Syntax
 ----
-ZEROIFNULL( <expression> )
+ZEROIFNULL( expression )
 ----
 
 Return:: Integer

@@ -20,7 +20,7 @@ Calculates the trigonometric sine of the angle in radians.
 
 == Syntax
 ----
-SIN( <numeric> )
+SIN( numeric )
 ----
 
 Return:: Number

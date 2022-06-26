@@ -20,10 +20,10 @@ Returns the day of week of the specified date or timestamp.
 
 == Syntax
 ----
-DAYOFWEEK( <date_or_timestamp> )
+DAYOFWEEK( {date | timestamp} )
 ----
 
 == Usage
 
 * Returns an integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
-* Equivalent to xref:extract.adoc[EXTRACT](DAYOFWEEK FROM <date_or_timestamp>). 
+* Equivalent to xref:extract.adoc[EXTRACT](DAYOFWEEK FROM {date | timestamp}). 

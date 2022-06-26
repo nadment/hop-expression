@@ -20,8 +20,8 @@ Returns the portion of the string from string, starting from the character/byte 
 		
 == Syntax
 ----
-SUBSTRING( <string> , <start> [, <length> ] )
-SUBSTR( <String> , <start> [, <length> ] )
+SUBSTRING( string, start [, length ] )
+SUBSTR( String, start [, length ] )
 ----
 
 Return:: String

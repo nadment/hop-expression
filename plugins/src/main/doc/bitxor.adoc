@@ -20,9 +20,9 @@ Performs a bitwise exclusive OR operation between two integer values.
 
 == Syntax
 ----
-BITXOR( <integer> , <integer> ) 
+BITXOR( integer1, integer2 ) 
 ----
 The ^ operator provides alternative syntax.
 ----
-<integer> ^ <integer>
+integer1 ^ integer2
 ----

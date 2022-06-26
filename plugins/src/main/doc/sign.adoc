@@ -20,7 +20,7 @@ Returns the sign for the numeric expression.
 
 == Syntax
 ----
-SIGN(<numeric>)
+SIGN(numeric)
 ----
 
 Return type:: Integer

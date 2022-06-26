@@ -20,7 +20,7 @@ First expression is less than second expression.
 
 == Syntax
 ----
-<expression1> < <expression2>
+expression1 < expression2
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Calculates the SHA-384 hash of a value.
 
 == Syntax
 ----
-SHA384( <string_or_binary> )
+SHA384( {string | binary} )
 ----
 
 <string>:: A string expression, the message to be hashed.
@@ -28,4 +28,4 @@ Returns:: String
 
 == Usage
 
-* The hash will be returned as a 96 characters hex-encoded string.
+* The hash will be returned as a 96 characters hex-encoded string (384 bit).

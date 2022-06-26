@@ -20,5 +20,5 @@ Returns TRUE if the first expression ends with second expression. Both values mu
 
 == Syntax
 ----
-ENDSWITH( <string> , <string> )
+ENDSWITH( string, string )
 ----

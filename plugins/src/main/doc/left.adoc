@@ -22,7 +22,7 @@ Extracts a number of characters from a string or bytes from binary (starting
 
 == Syntax
 ----
-LEFT( <string_or_binary> [, <length> ] )
+LEFT( {string | binary} [, length ] )
 ----
 
 See also xref:right.adoc[RIGHT]

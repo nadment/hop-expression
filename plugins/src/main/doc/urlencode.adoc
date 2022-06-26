@@ -20,7 +20,7 @@ Encode a string to be used in a query part of a URL.
 
 == Syntax
 ----
-URLENCODE( <string> )
+URLENCODE( string )
 ----
 
 Return:: String

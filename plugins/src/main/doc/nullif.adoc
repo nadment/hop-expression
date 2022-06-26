@@ -20,7 +20,7 @@ Returns a null value if the two specified expressions are equal, or <expression1
 
 == Syntax
 ----
-NULLIF( <expression1> , <expression2> )
+NULLIF( expression1, expression2 )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Splits a string on the specified list of delimiter characters and returns the pa
 
 == Syntax
 ----
-STRTOK( <string> [,<delimiters>] [,<part>} )
+STRTOK( string [, delimiters ] [, part ] )
 ----
 
 Returns:: String

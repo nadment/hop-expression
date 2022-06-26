@@ -20,7 +20,7 @@ Adds or subtracts a specified number of minutes to a date or timestamp.
 		
 == Syntax
 ----
-ADD_MINUTES( <date_or_timestamp> , <integer> )
+ADD_MINUTES( timestamp, integer )
 ----
 
 == Usage

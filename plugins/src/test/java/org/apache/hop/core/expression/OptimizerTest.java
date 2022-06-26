@@ -96,6 +96,7 @@ public class OptimizerTest {
   @Test
   public void testSimplifyInRule() throws Exception {
     optimize("FIELD in (\"FIELD\", FIELD,1,2,1,null,FIELD,null)", "FIELD IN (1,2,NULL,FIELD)");
+    optimizeNull("NULL in (\"FIELD\", FIELD,1,2,1,null,FIELD,null)");
   }
 
   @Test
@@ -214,6 +215,7 @@ public class OptimizerTest {
   public void testCombineConcatsRule() throws Exception {
     // Same syntax but cost reduced
     optimize("'A'||FIELD1||FIELD2||'C'", "'A'||FIELD1||FIELD2||'C'");
+    optimize("'A'||FIELD1||NULL||'C'", "'A'||FIELD1||'C'");
     optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')||'D'))", "'A'||FIELD1||FIELD2||'C'||'D'");
   }
 

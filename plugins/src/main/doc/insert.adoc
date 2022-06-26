@@ -20,7 +20,7 @@ Replaces a substring of the specified length, starting at the specified position
 
 == Syntax
 ----
-INSERT( <source_string_or_binary>, <position>, <length>, <replacement_string_or_binary> )
+INSERT( source_string_or_binary, position, length, replacement )
 ----
 
 Returns:: String or binary

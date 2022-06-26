@@ -20,11 +20,11 @@ Match a string based on a regular expression pattern.
 
 == Syntax
 ----
-REGEXP_LIKE( <subject> , <pattern> [, <parameters> ] )
+REGEXP_LIKE( subject, pattern [, parameters ] )
 ----
 The RLIKE operator provides alternative syntax.
 ----
-<subject> RLIKE <pattern>
+subject RLIKE pattern
 ----
 <subject>:: The string to be searched for.
 <pattern>:: The regular expression pattern.

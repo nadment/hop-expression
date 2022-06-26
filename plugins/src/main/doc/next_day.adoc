@@ -20,7 +20,7 @@ Returns the date of the first specified day of week that occurs after the input 
 
 == Syntax
 ----
-NEXT_DAY( <date> , <weekday> )
+NEXT_DAY( date, weekday )
 ----
 
 == Examples

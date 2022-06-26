@@ -20,7 +20,7 @@ Compares two SOUNDEX values, and return the value of the integer.
 		
 == Syntax
 ----
-DIFFERENCE( <string1>, <string2> )
+DIFFERENCE( string1, string2 )
 ----
 
 Return:: Integer

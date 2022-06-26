@@ -20,7 +20,7 @@ Substitutes a value when a null value is encountered as well as when a non-null 
 
 == Syntax
 ----
-NVL2( <expression> , <value_if_not_null> , <value_if_null> )
+NVL2( expression, value_if_not_null, value_if_null )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Case-insensitive matching of strings based on comparison with a pattern.
 	
 == Syntax
 ----
-<string> [NOT] ILIKE <pattern> [ ESCAPE <escape> ]
+string [NOT] ILIKE pattern [ ESCAPE escape ]
 ----
 
 == Usage

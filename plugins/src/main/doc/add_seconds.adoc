@@ -20,7 +20,7 @@ Adds or subtracts a specified number of seconds to a date or timestamp.
 		
 == Syntax
 ----
-ADD_SECONDS( <date_or_timestamp> , <integer> )
+ADD_SECONDS( timestamp, integer )
 ----
 
 == Usage

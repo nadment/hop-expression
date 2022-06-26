@@ -20,7 +20,7 @@ Extracts a number of characters from a string or bytes from binary (starting fro
 		
 == Syntax
 ----
-RIGHT( <string_or_binary> [, <length> ] )
+RIGHT( {string | binary} [, <length> ] )
 ----
 == Usage
 

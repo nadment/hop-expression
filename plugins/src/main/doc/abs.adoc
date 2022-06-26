@@ -20,7 +20,7 @@ Returns the absolute (positive) value of the number.
 
 == Syntax
 ----
-ABS( <numeric> )
+ABS( numeric )
 ----
 
 == Usage

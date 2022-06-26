@@ -20,5 +20,5 @@ Reverses the sign of a numeric expression.
 
 == Syntax
 ----
-- <expression>
+- expression
 ----

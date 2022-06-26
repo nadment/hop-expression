@@ -20,12 +20,12 @@ Calculate the SHA-256 hash of a value.
 
 == Syntax
 ----
-SHA256( <string_or_binary> )
+SHA256( {string | binary} )
 ----
 
-<string_or_binary>:: A string expression, the message to be hashed.
+{string | binary}:: A string expression, the message to be hashed.
 Returns:: String
 
 == Usage
 
-* The hash will be returned as a 64 characters hex-encoded string.
+* The hash will be returned as a 64 characters hex-encoded string (256 bit).

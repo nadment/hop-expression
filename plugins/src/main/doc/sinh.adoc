@@ -20,7 +20,7 @@ Calculates the hyperbolic sine.
 
 == Syntax
 ----
-SINH( <numeric> )
+SINH( numeric )
 ----
 
 Return:: Number

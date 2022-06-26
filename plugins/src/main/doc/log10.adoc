@@ -16,11 +16,11 @@ under the License.
 ////
 = LOG10
 
-Calculates the logarithm of <number> with base 10.
+Calculates the logarithm of number with base 10.
 
 == Syntax
 ----
-LOG10( <number> )
+LOG10( numeric )
 ----
 
 == Usage

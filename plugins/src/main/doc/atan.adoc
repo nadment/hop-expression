@@ -20,7 +20,7 @@ Calculates the inverse tangent (arc tangent).
 
 == Syntax
 ----
-ATAN( <numeric> )
+ATAN( numeric )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Adds or subtracts a specified number of years to a date or timestamp.
 		
 == Syntax
 ----
-ADD_YEARS( <date_or_timestamp> , <integer> )
+ADD_YEARS( date, integer )
 ----
 
 == Usage

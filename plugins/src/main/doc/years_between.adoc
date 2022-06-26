@@ -20,7 +20,7 @@ Returns the number of years between two dates.
 
 == Syntax
 ----
-YEARS_BETWEEN( <date1> , <date2> )
+YEARS_BETWEEN( date1, date2 )
 ----
 
 == Usage

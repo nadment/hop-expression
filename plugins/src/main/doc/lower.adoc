@@ -20,7 +20,7 @@ Converts a string to lower case.
 
 == Syntax
 ----
-LOWER( <string> )
+LOWER( string )
 ----
 
 See also xref:upper.adoc[UPPER]

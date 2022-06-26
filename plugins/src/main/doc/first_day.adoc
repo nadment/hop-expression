@@ -20,7 +20,7 @@ Returns the first day of the specified date part.
 
 == Syntax
 ----
-FIRST_DAY( <date>[, <part>] )
+FIRST_DAY( date [, part ] )
 ----
 
 Return type:: Date

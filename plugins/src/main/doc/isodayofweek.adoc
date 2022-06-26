@@ -20,10 +20,10 @@ Returns the day of week following the ISO-8601 standard.
 
 == Syntax
 ----
-ISODAYOFWEEK( <date_or_timestamp> )
+ISODAYOFWEEK( {date | timestamp} )
 ----
 
 == Usage
 
 * Returns an integer between 1 and 7 (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)
-* Equivalent to xref:extract.adoc[EXTRACT](ISODAYOFWEEK FROM <date_or_timestamp>). 
+* Equivalent to xref:extract.adoc[EXTRACT](ISODAYOFWEEK FROM {date | timestamp}). 

@@ -20,7 +20,7 @@ Returns the value of expression. If an error occurs, an NULL value is returned.
 
 == Syntax
 ----
-TRY( <expression> )
+TRY( expression )
 ----
 
 == Usage

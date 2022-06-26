@@ -20,7 +20,7 @@ Adds or subtracts a specified number of months to a date or timestamp.
 		
 == Syntax
 ----
-ADD_MONTHS( <date_or_timestamp_expr> , <integer> )
+ADD_MONTHS( date, integer )
 ----
 
 == Usage

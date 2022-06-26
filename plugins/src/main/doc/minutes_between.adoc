@@ -20,9 +20,9 @@ Returns the number of minutes between two timestamps.
 
 == Syntax
 ----
-MINUTES_BETWEEN( <datetime1> , <datetime2> )
+MINUTES_BETWEEN( timestamp1, timestamp2 )
 ----
 
 == Usage
 
-If the first <datetime1> is earlier than second <datetime2>, then the result is negative. 
+* If the first timestamp is earlier than second timestamp, then the result is negative. 

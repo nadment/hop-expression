@@ -21,7 +21,7 @@ Decode string using the Java string literal encoding format.
 
 == Syntax
 ----
-STRINGDECODE( <string> )
+STRINGDECODE( string )
 ----
 
 Returns:: String

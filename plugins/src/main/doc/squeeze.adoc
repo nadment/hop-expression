@@ -20,7 +20,7 @@ Trims white space from the beginning and end of the string, and replaces all oth
 
 == Syntax
 ----
-SQUEEZE( <string> )
+SQUEEZE( string )
 ----
 
 Return:: String

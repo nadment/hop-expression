@@ -20,7 +20,7 @@ Specifies which time zone to use with a TIMESTAMP.
 
 == Syntax
 ----
-<datetime> A TIME ZONE 'timezone'
+timestamp A TIME ZONE timezone
 ----
 
 == Usage

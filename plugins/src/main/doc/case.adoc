@@ -23,21 +23,21 @@ A CASE expression consists of a set of WHEN/THEN clauses and an optional ELSE cl
 
 Simple CASE expressions
 ----
-CASE <expr>
-    WHEN <value1> THEN <result1>
-  [ WHEN <value2> THEN <result2> ]
+CASE expression
+    WHEN value1 THEN result1
+  [ WHEN value2 THEN result2 ]
   [ ... ]
-  [ ELSE <result3> ]
+  [ ELSE result3 ]
 END		
 ----
 
 Searched CASE expressions
 ----
 CASE
-    WHEN <condition1> THEN <result1>
-  [ WHEN <condition2> THEN <result2> ]
+    WHEN condition1 THEN result1
+  [ WHEN condition2 THEN result2 ]
   [ ... ]
-  [ ELSE <result3> ]
+  [ ELSE result3 ]
 END
 ----
 

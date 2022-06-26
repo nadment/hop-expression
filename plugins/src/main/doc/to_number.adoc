@@ -20,7 +20,7 @@ Converts a string into a number.
 
 == Syntax
 ----
-TO_NUMBER( <text> [, <format> ] )
+TO_NUMBER( string [, format ] )
 ----
 
 == Usage

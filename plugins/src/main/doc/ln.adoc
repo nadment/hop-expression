@@ -20,7 +20,7 @@ Calculates the natural logarithm of number.
 
 == Syntax
 ----
-LN( <number> )
+LN( numeric )
 ----
 
 == Usage

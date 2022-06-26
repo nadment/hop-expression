@@ -21,7 +21,7 @@ Divide 2 numeric values like the division operator (/), but returns 0 when the d
 == Syntax
 
 ----
-DIV0( <dividend> , <divisor> )
+DIV0( dividend, divisor )
 ----
 
 == Usage

@@ -20,7 +20,7 @@ Translates string from the characters in <findChars> to the characters in <repla
 
 == Syntax
 ----
-TRANSLATE( <string> , <findChars> , <replaceChars> )
+TRANSLATE( string, findChars, replaceChars )
 ----
 
 Return:: String

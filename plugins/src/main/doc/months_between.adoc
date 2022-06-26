@@ -20,7 +20,7 @@ Returns the number of months between two dates.
 
 == Syntax
 ----
-MONTHS_BETWEEN( <date1> , <date2> )
+MONTHS_BETWEEN( date1, date2 )
 ----
 
 == Usage

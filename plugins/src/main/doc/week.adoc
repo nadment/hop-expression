@@ -20,7 +20,7 @@ This function return the aligned week within a year where week 1 starts on the f
  
 == Syntax
 ----
-WEEK( <date> )
+WEEK( date )
 ----
 
 == Usage

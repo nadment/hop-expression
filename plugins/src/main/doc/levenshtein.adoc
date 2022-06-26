@@ -20,7 +20,7 @@ Returns the Levenshtein distance between the two strings.
 
 == Syntax
 ----
-LEVENSHTEIN( <string> , <string> ] )
+LEVENSHTEIN( string1, string2 )
 ----
 
 Return:: Integer

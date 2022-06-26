@@ -20,6 +20,6 @@ Calculates a number raised to the specified power.
 
 == Syntax
 ----
-POWER( <base> , <exponent> )
+POWER( base, exponent )
 ----
 

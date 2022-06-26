@@ -20,10 +20,10 @@ Calculates a cyclic redundancy check (CRC) value using the Castagnoli polynomial
 
 == Syntax
 ----
-CRC32( <string_or_binary> )
+CRC32( {string | binary} )
 ----
 
-<string_or_binary>:: A string or binary expression.
+{string | binary}:: A string or binary expression.
 Returns::  A hexadecimal string
 
 == Usage

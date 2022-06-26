@@ -20,7 +20,7 @@ Calculates the square of a numeric expression.
 
 == Syntax
 ----
-SQUARE( <numeric> )
+SQUARE( numeric )
 ----
 
 == Usage

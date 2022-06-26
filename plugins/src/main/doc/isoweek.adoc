@@ -20,7 +20,7 @@ This function return the week of the year based on the ISO-8601 standard.
 
 == Syntax
 ----
-ISOWEEK( <date_or_timestamp> )
+ISOWEEK( {date | timestamp} )
 ----
 
 == Usage

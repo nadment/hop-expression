@@ -21,7 +21,7 @@ position or ending position of the matched substring.
 
 == Syntax
 ----
-REGEXP_INSTR( <subject> , <pattern> [, <position> [, <occurrence> [, <return_options> [, <parameters> ]]]] )
+REGEXP_INSTR( subject, pattern [, position [, occurrence [, return_options [, parameters ]]]] )
 ----
 
 <source>:: The string to be searched for.
