@@ -92,11 +92,6 @@ public class Literal implements IExpression {
   }
 
   @Override
-  public int getCost() {
-    return 1;
-  }
-
-  @Override
   public Object eval(IExpressionContext context) throws ExpressionException {
     return value;
   }
@@ -107,13 +102,23 @@ public class Literal implements IExpression {
   }
 
   @Override
+  public int getCost() {
+    return 1;
+  }  
+  
+  @Override
   public int hashCode() {
     if (value == null)
       return 0;
 
     return value.hashCode();
   }
-
+  
+  @Override
+  public boolean isNull() {
+    return value==null;
+  }
+  
   @Override
   public boolean equals(Object other) {
     if (other == null)

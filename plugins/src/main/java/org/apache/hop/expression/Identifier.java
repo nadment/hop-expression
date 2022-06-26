@@ -146,4 +146,9 @@ public class Identifier implements IExpression {
   public String toString() {
     return this.name;
   }
+
+  @Override
+  public boolean isNull() {
+    return false;
+  }
 }

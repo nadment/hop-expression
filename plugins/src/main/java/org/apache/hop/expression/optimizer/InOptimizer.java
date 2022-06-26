@@ -39,6 +39,11 @@ public class InOptimizer extends Optimizer {
 
       // Remove duplicate element in list
       for (IExpression expression : (Tuple) call.getOperand(1)) {
+        
+        if ( expression.isNull() ) {
+          continue;
+        }
+        
         // If this element is not present in newList then add it
         if (!list.contains(expression)) {
           list.add(expression);

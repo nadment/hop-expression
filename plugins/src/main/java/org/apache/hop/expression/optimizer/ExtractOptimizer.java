@@ -24,6 +24,7 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.Udf;
 import org.apache.hop.expression.util.Coerse;
 
 /**
@@ -37,7 +38,7 @@ public class ExtractOptimizer extends Optimizer {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
         DatePart part = Coerse.toDatePart(call.getOperand(0).eval(context));
         Function function = FunctionRegistry.getFunction(part.name());
-        if (function != null) {
+        if (function != null && ! (function instanceof Udf) ) {
           return new Call(function, call.getOperand(1));
         }
       }

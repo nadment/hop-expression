@@ -43,6 +43,13 @@ public interface IExpression {
   public default boolean is(Operator operator) {
     return false;
   }
+  
+  /**
+   * Check if this expression will always return the NULL value.
+   *
+   * @return if the expression is constant NULL value
+   */
+  public boolean isNull();
 
   /**
    * Estimate the cost to process the expression, used when optimizing the expression.

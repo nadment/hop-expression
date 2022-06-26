@@ -105,6 +105,11 @@ public class Call implements IExpression {
   public int getOperandCount() {
     return operands.length;
   }
+
+  @Override
+  public boolean isNull() {
+    return false;
+  }
   
   @Override
   public boolean equals(Object other) {

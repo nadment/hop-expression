@@ -46,7 +46,6 @@ public class FunctionRegistry {
     return getFunction(name) != null;
   }
 
-
   public static Set<Function> getFunctions() {
     return Set.copyOf(functions.values());
   }
@@ -63,7 +62,6 @@ public class FunctionRegistry {
 
     return functions.get(name.toUpperCase());
   }
-
 
   public static Set<String> getFunctionNames() {
     return functions.keySet();

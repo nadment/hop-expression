@@ -91,6 +91,11 @@ public class Tuple implements IExpression, Iterable<IExpression> {
     return values[index];
   }
 
+  @Override
+  public boolean isNull() {
+    return false;
+  }
+  
   public boolean isEmpty() {
     return values.length == 0;
   }
