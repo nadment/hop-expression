@@ -594,7 +594,7 @@ public class BuiltInFunctions {
    * The function calculate the MD5 hash of a data value. The hash will be returned as a 32
    * characters hex-encoded string.
    *
-   * @see {@link #sha1}, {@link #sha256}, {@link #sha384}, {@link #sha512}
+   * @see {@link #sha1}, {@link #sha224}, {@link #sha256}, {@link #sha384}, {@link #sha512}
    */
   @ScalarFunction(id = "MD5", category = "i18n::Operator.Category.Cryptographic",
       documentationUrl = "/docs/md5.html")
@@ -617,10 +617,24 @@ public class BuiltInFunctions {
   }
 
   /**
+   * The function calculate the SHA-224 hash of a data value. The hash will be returned as a 56
+   * characters hex-encoded string.
+   *
+   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha384}, {@link #sha512}
+   */
+  @ScalarFunction(id = "SHA224", category = "i18n::Operator.Category.Cryptographic",
+      documentationUrl = "/docs/sha224.html")
+  public static Object sha224(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    return getHash(operands[0].eval(context), "SHA-224");
+  }
+  
+  
+  /**
    * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
    * characters hex-encoded string.
    *
-   * @see {@link #md5}, {@link #sha1}, {@link #sha384}, {@link #sha512}
+   * @see {@link #md5}, {@link #sha1}, {@link #sha224}, {@link #sha384}, {@link #sha512}
    */
   @ScalarFunction(id = "SHA256", category = "i18n::Operator.Category.Cryptographic",
       documentationUrl = "/docs/sha256.html")
@@ -633,7 +647,7 @@ public class BuiltInFunctions {
    * The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96
    * characters hex-encoded string.
    *
-   * @see {@link #md5}, {@link #sha1}, {@link #sha256}, {@link #sha512}
+   * @see {@link #md5}, {@link #sha1}, {@link #sha224}, {@link #sha256}, {@link #sha512}
    */
   @ScalarFunction(id = "SHA384", category = "i18n::Operator.Category.Cryptographic",
       documentationUrl = "/docs/sha384.html")

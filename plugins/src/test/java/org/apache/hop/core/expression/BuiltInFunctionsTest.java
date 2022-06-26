@@ -1998,6 +1998,14 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void SHA224() throws Exception {
+    evalEquals("SHA224('Test')",
+        "3606346815fd4d491a92649905a40da025d8cf15f095136b19f37923");
+    evalNull("SHA224(null)");
+    evalFails("SHA224()");
+  }
+  
+  @Test
   public void SHA256() throws Exception {
     evalEquals("SHA256('Test')",
         "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25");
