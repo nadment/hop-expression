@@ -513,6 +513,10 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void AtTimeZone() throws Exception {
     evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("Europe/Paris")));
+    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Singapore'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("Singapore")));
+    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'GMT+0'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("GMT+0")));
+    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'CET'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("CET")));
+    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'EET'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("EET")));
     evalEquals("Add_Days(Timestamp '2020-05-25 10:48:00' AT TIME ZONE 'UTC',1) AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));    
     evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'XYZ'");
   }
