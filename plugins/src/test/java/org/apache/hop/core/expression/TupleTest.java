@@ -20,9 +20,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.Tuple;
 import org.junit.Test;
 
 public class TupleTest extends BaseExpressionTest {

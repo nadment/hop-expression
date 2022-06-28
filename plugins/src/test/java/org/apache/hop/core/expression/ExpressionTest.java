@@ -81,12 +81,9 @@ public class ExpressionTest extends BaseExpressionTest {
     assertNotNull(Operators.CONCAT.getDescription());
     assertNotEquals(Operators.CONCAT, null);
     assertNotEquals(Operators.CONCAT, FunctionRegistry.getFunction("CONCAT"));
-
-    // FIXME: Don't work on github
-    // assertNotNull(OperatorRegistry.CONCAT.getDocumentation());
+    //assertNotNull(Operators.CONCAT.getDocumentation());
     assertNotNull(Operators.CONCAT.getDocumentationUrl());
-    assertTrue(
-        FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
+    assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
   }
 
   @Test
@@ -135,8 +132,10 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("9+(");
     evalFails("9+*(");
     evalFails("9:");
+    evalFails("*9");
     evalFails("Left||'X'");
-   // evalFails("Date ");
+    evalFails("Date ");
+    evalFails("Timestamp ");
     evalFails("Extract(");
     evalFails(")+1");
     evalFails("'missing end");
@@ -213,5 +212,3 @@ public class ExpressionTest extends BaseExpressionTest {
 
   }
 }
-
-

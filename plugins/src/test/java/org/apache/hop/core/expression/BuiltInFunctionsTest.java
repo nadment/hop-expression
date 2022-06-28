@@ -27,8 +27,6 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class BuiltInFunctionsTest extends BaseExpressionTest {
 
@@ -1055,8 +1053,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("TO_NUMBER('+0.1','99.99')", 0.1);
     evalEquals("TO_NUMBER('-0.2','99.99')", -0.2);
     evalEquals("TO_NUMBER(' -0.2','99.99')", -0.2);
-    evalEquals("TO_NUMBER(' .2','99.99')", 0.2);
-
+    evalEquals("TO_NUMBER(' .2','99.99')", 0.2);  
+    
     // Sign S_ and _S
     evalEquals("TO_NUMBER('-0.2','S99.99')", -0.2);
     evalEquals("TO_NUMBER('0.3-','99.99S')", -0.3);
@@ -1140,8 +1138,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
 
     // Format fixed length with decimal
     Locale.setDefault(new Locale("en", "EN"));
-    evalEquals("TO_CHAR(0.1,'99.99')", "  0.1 ");
-    evalEquals("TO_CHAR(-0.2,'99.90')", " -0.20");
+    evalEquals("TO_CHAR(0.1,'90.99')", "  0.1 ");
+    evalEquals("TO_CHAR(-0.2,'90.90')", " -0.20");
     evalEquals("TO_CHAR(0,'90.99')", "  0.  ");
     evalEquals("TO_CHAR(0,'90D99')", "  0.  ");
     evalEquals("TO_CHAR(0,'90d99')", "  0.  ");
@@ -1155,11 +1153,17 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(-7,'99')", " -7");
     evalEquals("TO_CHAR(12923,'99,999.00')", " 12,923.00");
     evalEquals("TO_CHAR(12,'9990999.9')", "    0012. ");
-    evalEquals("TO_CHAR(0.3,'99.00000')", "  0.30000");
+    evalEquals("TO_CHAR(0.3,'99.00000')", "   .30000");
     evalEquals("TO_CHAR(0.3,'00.00')", " 00.30");
     evalEquals("TO_CHAR(12923,'FM99999.99')", "12923.");
     evalEquals("TO_CHAR(12923,'FM9,9,9,9,9')", "1,2,9,2,3");
     evalEquals("TO_CHAR(0.3,'FM00.99')", "00.3");
+    
+    // Blanks for the integer part of a fixed-point number when the integer part is zero
+    evalEquals("TO_CHAR(-0.2,'99.90')", "  -.20");
+    evalEquals("TO_CHAR(-0.2,'99.99')", "  -.2 ");
+    
+    //evalEquals("TO_CHAR(485.8, '\"Pre:\"999\" Post:\" .999')", "Pre: 485 Post: .800");
 
     evalEquals("TO_CHAR(12345.567,'9,999')", "######");
     evalEquals("TO_CHAR(1234.94,'9999MI')", "1234 ");
@@ -1172,9 +1176,9 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     // Format fixed length with grouping
     Locale.setDefault(new Locale("en", "EN"));
     evalEquals("TO_CHAR(1485,'9,999')", " 1,485");
-    Locale.setDefault(new Locale("fr", "BE"));
-    //evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5 ");
-    // evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3.148,500");
+    Locale.setDefault(new Locale("fr", "FR"));
+   // evalEquals("TO_CHAR(3148.5, '9G999D999')", " 3.148,5 ");
+   // evalEquals("TO_CHAR(3148.5, '9g999d990')", " 3.148,500");
 
     // Sign
     evalEquals("TO_CHAR(12,'S99')", "+12");
@@ -1240,10 +1244,13 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(11,'FMRN')", "XI");
     evalEquals("TO_CHAR(11,'rn')", "             xi");
     evalEquals("TO_CHAR(5.2, 'FMRN')", "V");
+    evalEquals("TO_CHAR(485, 'FMRN')", "CDLXXXV");
     evalEquals("TO_CHAR(515, 'RN')", "            DXV");
     evalFails("TO_CHAR(0, 'RN')"); // Must be > 0
     evalFails("TO_CHAR(4000, 'RN')"); // Must be < 4000
+ 
 
+    
     // Hex
     evalEquals("TO_CHAR(123,'XX')", " 7B");
     evalEquals("TO_CHAR(123,'xx')", " 7b");
@@ -1390,10 +1397,10 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')",
         "15:34:56.123456789");
 
-
-    // evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
-    // evalEquals("To_Char(Date '2019-07-23','DL')", "07/23/2019"); // Date long
-    // evalEquals("To_Char(Date '2019-07-23','TS')", "07/23/2019"); // Time short
+    Locale.setDefault(new Locale("fr", "BE"));
+    evalEquals("To_Char(Date '2019-07-23','DS')", "07/23/2019"); // Date short
+    evalEquals("To_Char(Date '2019-07-23','DL')", "mardi 23 juillet 2019 à 0 h 00 min 00 s Temps universel coordonné"); // Date long
+   // evalEquals("To_Char(Timestamp '2019-07-23 14:52','TS')", "14:52:00 PM"); // Time short
 
     evalEquals("To_Char(Date '2019-07-23','J')", "2458688");
     evalEquals("To_Char(Date '0001-01-01','J')", "1721426");

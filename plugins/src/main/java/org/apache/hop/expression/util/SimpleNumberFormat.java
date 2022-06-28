@@ -173,7 +173,7 @@ final class SimpleNumberFormat extends NumberFormat {
 
   private boolean exactMode = false;
 
-  private boolean blank = false;
+  private boolean blank = true;
 
   // number of digits to the left of the decimal separator
   private int precision = 0;
