@@ -48,19 +48,19 @@ case
 end
 ----
 
-* Supports 7 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary`. 
+* Supports 8 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary` `Json` 
 * Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, Date '2022-4-25'
-* Logical operators `AND` `OR` `NOT`.
-* Arithmetic operators `+` `-` `*` `/` `%`.
-* Bitwise operators  `&` `|` `~` `^`.
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE` `RLIKE`.
-* Conditional operator `CASE`.
-* Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>).
+* Logical operators `NOT` `AND` `OR`
+* Arithmetic operators `+` `-` `*` `/` `%`
+* Bitwise operators  `&` `|` `~` `^`
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE` `RLIKE`
+* Conditional operator `CASE WHEN`
+* Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 * Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
-* Use of comments to facilitate reading.
-* Are not case-sensitive, excepted for identifier.
-* Can be parenthesized to control the precedence order.
-* Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance.
+* Use of comments to facilitate reading
+* Are not case-sensitive, excepted for identifier
+* Can be parenthesized to control the precedence order
+* Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance
 * User Defined Function (UDF) support has metadata
 
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
