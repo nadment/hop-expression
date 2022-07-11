@@ -26,3 +26,8 @@ The ~ operator provides alternative syntax.
 ----
 ~ integer
 ----
+Return:: Integer
+
+== Usage
+
+* Returns NULL if the argument is NULL.

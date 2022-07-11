@@ -234,8 +234,7 @@ public class BaseExpressionTest {
   @Test
   public void test() throws Exception {
     // ExpressionContext context = createExpressionContext();
-    // context.setAttribute("TEST","");     
-    //evalFails("Year)");
-    evalEquals("1.0*AGE", 40L);
+    // context.setAttribute("TEST","");        
+//  evalEquals("1.0*AGE", 40L);
   }
 }

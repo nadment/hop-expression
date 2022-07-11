@@ -14,21 +14,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BITOR, | 
+= BITGET
 
-Performs a bitwise OR operation between two integer values.
+Returns the value of a bit at a specified position.
 
 == Syntax
 ----
-BITOR( integer1, integer2 )
+BITGET( value, position )
 ----
-The | operator provides alternative syntax.
-----
-integer1 | integer2
-----
-
-Return:: Integer
+value:: This expression must evaluate to a data type that can be cast to Integer.
+Return:: Boolean
 
 == Usage
 
-* Returns NULL if one of the arguments is NULL.
+* The first position of a bit is 1. 
+* Returns NULL if position is negative or zero.
+* Returns NULL if one of the arguments is NULL. 

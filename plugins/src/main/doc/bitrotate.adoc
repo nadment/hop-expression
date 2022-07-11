@@ -14,21 +14,20 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BITOR, | 
+= BITROTATE
 
-Performs a bitwise OR operation between two integer values.
+Rotates the bits for a numeric by the specified number of bits to the left or to the right.
 
 == Syntax
 ----
-BITOR( integer1, integer2 )
+BITROTATE( value, distance )
 ----
-The | operator provides alternative syntax.
-----
-integer1 | integer2
-----
-
+value:: This expression must evaluate to a data type that can be cast to Integer.
 Return:: Integer
 
 == Usage
 
+* If distance is positive, it will rotate to the left.
+* If distance is negative, it will rotate to the right.
 * Returns NULL if one of the arguments is NULL.
+ 

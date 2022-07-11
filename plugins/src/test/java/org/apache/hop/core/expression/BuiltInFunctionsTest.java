@@ -2053,5 +2053,111 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
   public void Compress() throws Exception {
     // evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
   }
+
+  @Test
+  public void BitGet() throws Exception {
+    evalTrue("BitGet(3,1)");
+    evalTrue("BitGet(3,2)");
+    evalFalse("BitGet(3,4)");
+
+    // Overflow is always false
+    evalFalse("BitGet(3,255)");
+    
+    evalNull("BitGet(123,0)");
+    evalNull("BitGet(123,-1)");
+    evalNull("BitGet(null,3)");
+    evalNull("BitGet(123, null)");
+    
+    evalFails("BitGet()");
+    evalFails("BitGet(123)");
+  }
+  
+  @Test
+  public void BitSet() throws Exception {
+    evalEquals("BitSet(16,1)",17);
+    evalEquals("BitSet(1,4)",9);
+    evalEquals("BitSet(16,4)",24);
+    evalEquals("BitSet(32,4)",40);
+
+    // Overflow has no impact on result
+    evalEquals("BitSet(32,66)",32);
+
+    evalNull("BitSet(123,0)");
+    evalNull("BitSet(123,-1)");
+    evalNull("BitSet(null,3)");
+    evalNull("BitSet(123, null)");
+    
+    evalFails("BitSet()");    
+    evalFails("BitSet(123)");
+  }
+  
+  @Test
+  public void BitClear() throws Exception {
+    evalEquals("BitClear(3,1)",2);
+    evalEquals("BitClear(3,4)",3);
+
+    // Overflow has no impact on result
+    evalEquals("BitClear(32,66)",32);
+
+    evalNull("BitClear(123,0)");
+    evalNull("BitClear(123,-1)");
+    evalNull("BitClear(null,3)");
+    evalNull("BitClear(123, null)");
+    
+    evalFails("BitClear()");    
+    evalFails("BitClear(123)");
+  }  
+  
+  @Test
+  public void BitShift() throws Exception {
+    evalEquals("BitShift(123,0)",123);
+    evalEquals("BitShift(1,4)",16);
+    evalEquals("BitShift(2,8)",512);
+    evalEquals("BitShift(6,-2)", 1);
+    evalEquals("BitShift(16,-4)", 1);    
+    evalEquals("BitShift(10000,-3)", 1250);
+    evalEquals("BitShift(1,63)", 0x8000000000000000L);
+    evalEquals("BitShift(0x8000000000000000,-63)", 1);
+    
+    // Cast to integer
+    evalEquals("BitShift(16.3,-4)", 1);
+    evalEquals("BitShift(16.9,-4)", 1);
+    
+    // Overflow
+    evalEquals("BitShift(1,64)", 0);
+    evalEquals("BitShift(1,-64)", 0);
+    // Underflow
+    evalEquals("BitShift(1,-1)", 0);
+    
+    
+    evalNull("BitShift(null,3)");
+    evalNull("BitShift(123, null)");
+    
+    evalFails("BitShift('Bidon',3)");
+    evalFails("BitShift()");
+    evalFails("BitShift(123)");
+  }
+  
+  @Test
+  public void BitRotate() throws Exception {
+    evalEquals("BitRotate(123,0)",123);
+    evalEquals("BitRotate(1,4)",16);
+    evalEquals("BitRotate(16,-4)", 1);
+    evalEquals("BitRotate(-9223372036854775807,2)", 6L);
+    evalEquals("BitRotate(6,-2)", -9223372036854775807L);
+    evalEquals("BitRotate(10000,-3)", 1250);
+    // Full rotate 64 bits
+    evalEquals("BitRotate(123456,64)",123456);
+    evalEquals("BitRotate(123456,128)",123456);
+    evalEquals("BitRotate(123456,-64)",123456);
+    evalEquals("BitRotate(123456,-128)",123456);
+
+    
+    evalNull("BitRotate(null,3)");
+    evalNull("BitRotate(123, null)");
+    
+    evalFails("BitRotate()");
+    evalFails("BitRotate(123)");
+  } 
 }
 

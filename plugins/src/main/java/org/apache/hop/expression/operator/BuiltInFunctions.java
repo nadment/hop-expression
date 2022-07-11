@@ -669,9 +669,9 @@ public class BuiltInFunctions {
     return getHash(operands[0].eval(context), "SHA-512");
   }
 
-  @ScalarFunction(id = "GETBIT", minArgs = 2, maxArgs = 2,
-      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/getbit.html")
-  public static Object getbit(final IExpressionContext context, final IExpression[] operands)
+  @ScalarFunction(id = "BITGET", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitget.html")
+  public static Object bitget(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
@@ -680,9 +680,83 @@ public class BuiltInFunctions {
     if (v1 == null)
       return null;
 
-    return (Coerse.toInteger(v0) & (1L << Coerse.toInteger(v1).intValue())) != 0;
+    int distance = Coerse.toInteger(v1).intValue();
+    if ( distance <=0 ) return null;
+    if ( distance >64 ) return Boolean.FALSE;
+    
+    return (Coerse.toInteger(v0) & (1L << distance-1)) != 0;
   }
 
+  @ScalarFunction(id = "BITSET", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitset.html")
+  public static Object bitset(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    int position = Coerse.toInteger(v1).intValue();
+    if ( position <=0 ) return null;
+    if ( position >64 ) return v0;
+    return Coerse.toInteger(v0) | (1L << position-1);
+  }
+
+  @ScalarFunction(id = "BITCLEAR", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitclear.html")
+  public static Object bitclear(final IExpressionContext context, final IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    int position = Coerse.toInteger(v1).intValue();
+    if ( position <=0 ) return null;
+    if ( position >64 ) return v0;
+    return Coerse.toInteger(v0) & ~(1L << position-1);
+  }  
+  
+  @ScalarFunction(id = "BITSHIFT", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitshift.html")
+  public static Object bitshift(final IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    long value = Coerse.toInteger(v0);
+    int distance = Coerse.toInteger(v1).intValue();
+
+    if ( distance>= 64 || distance<=-64 ) return 0L;
+    if  (distance<0) {
+      return value >>> (-distance);
+    }
+    return value << distance;
+  }
+
+  @ScalarFunction(id = "BITROTATE", minArgs = 2, maxArgs = 2,
+      category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitrotate.html")
+  public static Object bitrotate(final IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    Object v0 = operands[0].eval(context);
+    if (v0 == null)
+      return null;
+    Object v1 = operands[1].eval(context);
+    if (v1 == null)
+      return null;
+
+    long value = Coerse.toInteger(v0);
+    int distance = Coerse.toInteger(v1).intValue();
+    return Long.rotateLeft(value, distance);
+  }
 
   @ScalarFunction(id = "RANDOM", deterministic = false, minArgs = 0, maxArgs = 1,
       category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/random.html")

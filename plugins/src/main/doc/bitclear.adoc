@@ -14,15 +14,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= GETBIT
+= BITCLEAR
 
-Returns the value of a bit at a specified position.
+Returns the result after clearing the specified bit position.
 
 == Syntax
 ----
-GETBIT( integer, position )
+BITCLEAR( value, position )
 ----
+value:: This expression must evaluate to a data type that can be cast to Integer.
+Return:: Integer
 
 == Usage
 
-The second parameter is zero-indexed; the least significant bit has position 0.
+* The first position of a bit has position 1. 
+* Returns NULL if position is negative or zero.
+* Returns NULL if one of the arguments is NULL. 
