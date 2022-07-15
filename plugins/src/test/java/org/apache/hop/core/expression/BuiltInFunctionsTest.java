@@ -1442,7 +1442,15 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("To_Date('01/02/10','DD/MM/YY')", LocalDate.of(2010, 2, 1));
     evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
     evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1));
-
+    
+    ExpressionContext context = createExpressionContext();
+    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    evalEquals("To_Date('01/02/69','DD/MM/YY')", LocalDate.of(2069, 2, 1), context);
+    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    evalEquals("To_Date('01/02/70','DD/MM/YY')", LocalDate.of(1970, 2, 1), context);
+    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1), context );       
+    
     // TO VERIFY
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
 

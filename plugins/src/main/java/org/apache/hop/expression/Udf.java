@@ -87,7 +87,7 @@ public class Udf extends Function {
           return new ValueMetaBinary(name);
         case JSON:
           return new ValueMetaJson(name);
-        case UNKNOWN:
+       // case UNKNOWN:
         case STRING:
           return new ValueMetaString(name);
       }

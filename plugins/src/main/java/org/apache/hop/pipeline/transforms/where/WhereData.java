@@ -18,8 +18,8 @@ package org.apache.hop.pipeline.transforms.where;
 
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 
 public class WhereData extends BaseTransformData {
@@ -27,7 +27,7 @@ public class WhereData extends BaseTransformData {
   protected IRowMeta outputRowMeta;
   protected IRowSet trueRowSet;
   protected IRowSet falseRowSet;
-  protected ExpressionContext expressionContext;
+  protected IExpressionContext context;
   protected IExpression condition;
 
   public WhereData() {

@@ -269,4 +269,6 @@ public abstract class DateTimeFormat extends BaseFormat {
    * @return the formatted timestamp
    */
   public abstract String format(ZonedDateTime value);
+  
+  public abstract void setTwoDigitYearStart(int year);
 }

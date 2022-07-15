@@ -37,6 +37,7 @@ public enum ExpressionError {
   UNEXPECTED_DATA_TYPE("Expression.UnexpectedDataType"),
   ARITHMETIC_OVERFLOW("Expression.ArithmeticOverflow"),
   ARGUMENT_OUT_OF_RANGE("Expression.ArgumentOutOfRange"),
+  VARIABLE_VALUE_ERROR("Expression.InvalidVariable"),
   INVALID_OPERATOR("Expression.InvalidOperator"),
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   INVALID_DATE("Expression.InvalidDate"),

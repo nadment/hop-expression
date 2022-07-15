@@ -30,11 +30,12 @@ import java.math.MathContext;
 public class ExpressionTest extends BaseExpressionTest { 
 
   @Test
-  public void Empty() throws Exception {
+  public void EmptyOrNull() throws Exception {
     evalNull("");
     evalNull(" ");
     evalNull("\t");
-    evalNull("\n");    
+    evalNull("\n");
+    evalNull(null);
   }
     
   @Test

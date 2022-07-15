@@ -20,11 +20,14 @@ package org.apache.hop.pipeline.transforms.route;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.expression.IExpression;
 
-public class RouteRow {
-  IExpression condition;
-  IRowSet rowSet;
-  public RouteRow(IExpression condition, IRowSet rowSet) {
-    this.condition = condition;
+public class RouteTarget {
+  final Route route;
+  final IExpression expression;
+  final IRowSet rowSet;
+  
+  public RouteTarget(Route route, IExpression expression, IRowSet rowSet) {
+    this.route = route;
+    this.expression = expression;
     this.rowSet = rowSet;
   }
 }

@@ -16,12 +16,12 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
@@ -38,26 +38,6 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
   public Expression(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data,
       int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
-  }
-
-  @Override
-  public boolean init() {
-
-    if (log.isDebug()) {
-      logDebug(BaseMessages.getString(PKG, "ExpressionTransform.Log.Init"));
-    }
-
-    return super.init();
-  }
-
-  @Override
-  public void initBeforeStart() throws HopTransformException {
-
-    super.initBeforeStart();
-
-    if (log.isDebug()) {
-      logDebug(BaseMessages.getString(PKG, "ExpressionTransform.Log.InitBeforeStartProcessing"));
-    }
   }
 
   @Override
@@ -81,10 +61,9 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     if (first) {
       first = false;
 
-      if (log.isDebug()) {
+      if (isDebug()) {
         logDebug(BaseMessages.getString(PKG, "ExpressionTransform.Log.StartedProcessing"));
       }
-
 
       // Clone the input row structure and place it in our data object
       data.outputRowMeta = getInputRowMeta().clone();
@@ -94,8 +73,8 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
           metadataProvider);
       data.expressions = new IExpression[data.outputRowMeta.size()];
 
-      data.expressionContext = new ExpressionContext(this, data.outputRowMeta);
-            
+      data.context = new ExpressionContext(this, data.outputRowMeta);
+
       // For all fields expression
       for (ExpressionField field : meta.getFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
@@ -103,28 +82,27 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         // Resolve variable
         String source = resolve(field.getExpression());
 
-        if (log.isDetailed()) {
-          logDetailed("field [" + field.getName() + "] has expression [" + source + "]");
-        }
-
         // Ignore expression if value meta type is NONE
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         if (valueMeta.getType() == IValueMeta.TYPE_NONE) {
-          source = "NULL";
+          source = "";
         }
 
         // Compile expression
         try {
-          data.expressions[index] = ExpressionBuilder.compile(data.expressionContext, source);
-        } catch (Exception ex) {
-          String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.ParseExpressionError",
-              field.getName(), field.getExpression(), ex.toString());
-
-          logError( BaseMessages.getString( PKG, "ExpressionTransform.Log.UnexpectedeError" ) + " : " + ex.toString() );
-          logError( BaseMessages.getString( PKG, "ExpressionTransform.Log.ErrorStackTrace" )
-            + Const.CR + Const.getSimpleStackTrace( ex ) + Const.CR + Const.getStackTracker( ex ) );
-          
-          throw new HopException(message, ex);
+          data.expressions[index] = ExpressionBuilder.compile(data.context, source);
+        } catch (ExpressionException e) {
+          String message =
+              BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
+                  field.getName(), field.getExpression(), e.getMessage());
+          logError(message);
+          if (isDebug()) {
+            logError(Const.getStackTracker(e));
+          }
+          setErrors(1);
+          stopAll();
+          setOutputDone();
+          return false;
         }
       }
     }
@@ -133,11 +111,8 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     // output values
     Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
 
-    // Evaluate expression
-    ExpressionContext context = data.expressionContext;
-
     // Use output row as context, so second expression can use result from the first
-    context.setRow(outputRowValues);
+    data.context.setRow(outputRowValues);
 
     for (ExpressionField field : meta.getFields()) {
 
@@ -145,40 +120,31 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
 
       try {
         IExpression expression = data.expressions[index];
-        Object value = expression.eval(context);
-
-        if (log.isDetailed()) {
-          logDetailed("field [" + field.getName() + "] has expression [" + value + "]");
-        }
-
+        Object value = expression.eval(data.context);
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = convertValue(valueMeta, value);
-      } catch (Exception ex) {
-        String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateExpressionError",
-            field.getName(), field.getExpression(), ex.toString());
-        logError(message);       
-        logError(Const.getStackTracker(ex));
+      } catch (HopException e) {
+        String message =
+            BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
+                field.getName(), field.getExpression(), e.getMessage());
+        logError(message, e);
+        if (isDebug()) {
+          logError(Const.getStackTracker(e));
+        }
         setErrors(1);
         stopAll();
-        setOutputDone(); // signal end to receiver(s)
-        return false;                
+        setOutputDone();
+        return false;
       }
     }
 
     // Put the row to the output row stream
     putRow(data.outputRowMeta, outputRowValues);
 
-    // Log progress if it is time to to so
-    if (checkFeedback(getLinesRead())) {
-      if (log.isBasic()) {
-        logBasic(BaseMessages.getString(PKG, "ExpressionTransform.Log.LineNumber", getLinesRead()));
-      }
-    }
-
     // indicate that processRow() should be called again
     return true;
   }
-  
+
   /**
    * We can't use valueMeta.convertData(valueMeta,value) because doesn't support ZonedDateTime
    * 

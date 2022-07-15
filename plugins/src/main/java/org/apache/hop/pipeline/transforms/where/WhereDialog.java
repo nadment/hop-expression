@@ -24,7 +24,6 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
-import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.ConstUi;
@@ -57,8 +56,8 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
   public WhereDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
       String name) {
-    super(parent, variables, (BaseTransformMeta) in, pipelineMeta, name);
-    input = (WhereMeta) in;
+    super(parent, variables, (WhereMeta) in, pipelineMeta, name);
+    this.input = (WhereMeta) in;
   }
 
   @Override

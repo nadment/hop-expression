@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,11 +18,14 @@
 package org.apache.hop.pipeline.transforms.route;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -31,17 +34,12 @@ import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/** Filters input rows base on conditions. */
+/** Route input rows base on conditions. */
 public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
   private static final Class<?> PKG = RouteMeta.class; // For Translator
 
-  public RouteTransform(
-      TransformMeta transformMeta,
-      RouteMeta meta,
-      RouteData data,
-      int copyNr,
-      PipelineMeta pipelineMeta,
-      Pipeline pipeline) {
+  public RouteTransform(TransformMeta transformMeta, RouteMeta meta, RouteData data, int copyNr,
+      PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
@@ -55,77 +53,89 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       return false;
     }
 
+    // Prepare transform for execution
     if (first) {
       first = false;
-      prepareRoute();
-    }
-  
-    Object result=Boolean.FALSE;
-    for (RouteRow route: data.targets) {
-      data.context.setRow(row);
-      result = route.condition.eval(data.context);      
-      if ( result==Boolean.TRUE) {
-        putRowTo(data.outputRowMeta, row, route.rowSet);
-        break;
-      }
-    }
-    
-    if ( result==Boolean.FALSE) {
-      putRowTo(data.outputRowMeta, row, data.defaultRowSet);
-    }
-    
-    if (checkFeedback(getLinesRead()) && log.isBasic()) {
-        logBasic(BaseMessages.getString(PKG, "Route.Log.LineNumber", getLinesRead()));      
-    }
-
-    return true;
-  }
-
-  /**
-   * This will prepare transform for execution:
-   * @throws HopException if something goes wrong during transform preparation.
-   */
-  private void prepareRoute() throws HopException {
-
-    // clone the input row structure and place it in our data object
-    data.outputRowMeta = getInputRowMeta().clone();
-
-    data.context = new ExpressionContext(this, getInputRowMeta());
-    
-    try {
-      data.targets = new ArrayList<>();
       
-      for (Route route : meta.getRoutes()) {
-        // Resolve variable and parse expression
-        IExpression condition = ExpressionBuilder.compile(data.context, resolve(route.getCondition()));
+      // clone the input row structure and place it in our data object
+      data.rowMeta = getInputRowMeta().clone();
+      data.context = new ExpressionContext(this, data.rowMeta);
+      data.targets = new ArrayList<>();
 
+      for (Route route : meta.getRoutes()) {
+       
         if (StringUtils.isEmpty(route.getTransformName())) {
-          throw new HopException(
-              BaseMessages.getString(
-                  PKG, "Route.Log.NoTargetTransformSpecified", route.getCondition()));
+          throw new HopException(BaseMessages.getString(PKG,
+              "Route.Exception.NoTargetTransformSpecified", route.getCondition()));
         }
- 
+
         IRowSet rowSet = findOutputRowSet(route.getTransformName());
         if (rowSet == null) {
-          throw new HopException(
-              BaseMessages.getString(
-                  PKG,
-                  "Route.Log.UnableToFindTargetTransform",
-                  route.getTransformName()));
+          throw new HopException(BaseMessages.getString(PKG,
+              "Route.Exception.UnableToFindTargetTransform", route.getTransformName()));
         }
         
-        data.targets.add(new RouteRow(condition, rowSet));        
+        // Resolve variable
+        String source = resolve(route.getCondition());
+
+        // Compile expression
+        try {
+          IExpression expression = ExpressionBuilder.compile(data.context, source);
+          data.targets.add(new RouteTarget(route, expression, rowSet));
+        } catch (ExpressionException e) {
+          String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
+              route.getTransformName(), route.getCondition(), e.getMessage());
+          logError(message);
+          if (isDebug()) {
+            logError(Const.getStackTracker(e));
+          }
+          setErrors(1);
+          stopAll();
+          setOutputDone();
+          return false;
+        }
       }
-      
+
       if (StringUtils.isNotEmpty(meta.getDefaultTargetTransformName())) {
         IRowSet rowSet = findOutputRowSet(meta.getDefaultTargetTransformName());
         if (rowSet != null) {
-          data.defaultRowSet=rowSet;
+          data.defaultRowSet = rowSet;
         }
       }
-    } catch (Exception e) {
-      throw new HopException(e);
     }
+
+    boolean toDefault = true;
+    data.context.setRow(row);
+
+    for (RouteTarget target : data.targets) {
+
+      try {
+        Object result = target.expression.eval(data.context);
+        
+        if ( Coerse.isTrue(result)) {
+          toDefault = false;
+          putRowTo(data.rowMeta, row, target.rowSet);
+          break;
+        }
+      } catch (HopException e) {
+        String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
+           target.route.getTransformName(), target.route.getCondition(), e.getMessage());
+        logError(message);
+        if ( isDebug() ) {
+          logError(Const.getStackTracker(e));
+        }
+        setErrors(1);
+        stopAll();
+        setOutputDone();
+        return false;
+      }
+    }
+
+    if ( toDefault ) {
+      putRowTo(data.rowMeta, row, data.defaultRowSet);
+    }
+
+    return true;
   }
 
   protected static Object prepareObjectType(Object o) {

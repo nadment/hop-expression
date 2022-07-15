@@ -19,57 +19,57 @@ import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
-import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.core.variables.Variables;
 import java.security.SecureRandom;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import javax.script.SimpleScriptContext;
 
-public class ExpressionContext extends SimpleScriptContext implements IExpressionContext {
+public class ExpressionContext extends Variables implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
   
   private static final ILogChannel log = new LogChannel("Expression");
   
   /**
-   * This parameter prevents ambiguous dates when importing or converting data with the YY date
-   * format.
-   * Control Two-digit year, when set to 1980, values of 79 and 80 parsed as 2079 and 1980
-   * respectively.
+   * This parameter prevents ambiguous dates when importing or converting data with the YY date format.
    */
-  public static final String EXPRESSION_TWO_DIGIT_CENTURY_START = "EXPRESSION_TWO_DIGIT_CENTURY_START";
+  @Variable(value = "1970", description = "Control Two-digit year format YY, when set to 1980, values of 79 and 80 parsed as 2079 and 1980 respectively")
+  public static final String EXPRESSION_TWO_DIGIT_YEAR_START = "EXPRESSION_TWO_DIGIT_YEAR_START";
 
   /**
    * The date format used for conversions between dates and strings.
    */
-  @Variable(value = "YYYY-MM-DD", description = "The default date format used by expression for conversions between dates and strings.")
+  @Variable(value = "YYYY-MM-DD", description = "The default date format used by expression for conversions between dates and strings")
   public static final String EXPRESSION_DATE_FORMAT = "EXPRESSION_DATE_FORMAT";
 
   /**
    * The timestamp format used for conversions between timestamps and strings
    */
-  @Variable(value = "YYYY-MM-DD H24:MI:SS", description = "The default timestamp format used by expression for conversions between timestamps and strings.")
+  @Variable(value = "YYYY-MM-DD H24:MI:SS", description = "The default timestamp format used by expression for conversions between timestamps and strings")
   public static final String EXPRESSION_TIMESTAMP_FORMAT = "EXPRESSION_TIMESTAMP_FORMAT";
 
   /**
    * Defines the first day of a week.
-   * The integer value follows the ISO-8601 standard, from 1 (Monday) to 7 (Sunday).
+   * The value follows the ISO-8601 standard, from 1 (Monday) to 7 (Sunday).
    */
   public static final String EXPRESSION_FIRST_DAY_OF_WEEK = "EXPRESSION_FIRST_DAY_OF_WEEK";
 
-  public static final String CACHED_TODAY = "__TODAY";
-  public static final String CACHED_NOW = "__NOW";
-  public static final String CACHED_TIMEZONE = "__TIMEZONE";
-  public static final String CACHED_RANDOM = "__RANDOM";
+  public static final String CACHED_TODAY = "__TODAY__";
+  public static final String CACHED_NOW = "__NOW__";
+  public static final String CACHED_TIMEZONE = "__TIMEZONE__";
+  public static final String CACHED_RANDOM = "__RANDOM__";
+//  public static final String CACHED_TWO_DIGIT_YEAR_START = "__YY__";
 
-  private IVariables variables;
+  /**
+   * The {@code Map} field stores the attributes.
+   */
+  private Map<String,Object> map;
   private IRowMeta rowMeta;
   private Object[] row;
-
-  private int twoDigitCenturyStart = 1970;
-
   
   public ExpressionContext(IVariables variables, IRowMeta rowMeta) {
     this(variables);
@@ -80,38 +80,32 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public ExpressionContext(IVariables variables) {
     super();
     
-    this.variables = variables;
+    this.map = new HashMap<>();
     
-    this.setAttribute(EXPRESSION_DATE_FORMAT, variables.getVariable(EXPRESSION_DATE_FORMAT, "YYYY-MM-DD"), ENGINE_SCOPE);
-    this.setAttribute(EXPRESSION_FIRST_DAY_OF_WEEK, variables.getVariable(EXPRESSION_FIRST_DAY_OF_WEEK, "1"), ENGINE_SCOPE);           
-    this.setAttribute(EXPRESSION_TWO_DIGIT_CENTURY_START, variables.getVariable(EXPRESSION_TWO_DIGIT_CENTURY_START, "1970"), ENGINE_SCOPE);
+    // Initialize variables
+    this.initializeFrom(Objects.requireNonNull(variables));
     
 //    final Calendar calendar = Calendar.getInstance(locale);
 //    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
 
 
-    try {
-      String variable = variables.getVariable(EXPRESSION_TWO_DIGIT_CENTURY_START, "1970");
-      this.twoDigitCenturyStart = Integer.parseInt(variable);
-    } catch (NumberFormatException e) {
-      log.logError(BaseMessages.getString(PKG, "Expression.InvalidVariable", EXPRESSION_TWO_DIGIT_CENTURY_START));
-    }
    
-    // Initialize
+    // Cached attributes
     ZonedDateTime now = ZonedDateTime.now();
     this.setAttribute(CACHED_TIMEZONE, ZoneId.systemDefault().getId());
-    this.setAttribute(CACHED_NOW, now, ENGINE_SCOPE);
-    this.setAttribute(CACHED_TODAY, now.truncatedTo(ChronoUnit.DAYS), ENGINE_SCOPE);
-    this.setAttribute(CACHED_RANDOM, new SecureRandom(), ENGINE_SCOPE);
+    this.setAttribute(CACHED_NOW, now);
+    this.setAttribute(CACHED_TODAY, now.truncatedTo(ChronoUnit.DAYS));
+    this.setAttribute(CACHED_RANDOM, new SecureRandom());
+   // this.setAttribute(CACHED_TWO_DIGIT_YEAR_START, twoDigitCenturyStart);
   }
 
   public void setAttribute(String name, Object value) {
-    this.setAttribute(name, value, ENGINE_SCOPE);
+    map.put(name, value);
   }
-  
+      
   @Override
-  public IVariables getVariables() {
-    return variables;
+  public Object getAttribute(String name) {
+    return map.get(name);
   }
   
   @Override
@@ -128,62 +122,5 @@ public class ExpressionContext extends SimpleScriptContext implements IExpressio
   public void setRow(Object[] row) {
     this.row = row;
   }
-//  
-//  @Override
-//  public Object resolve(final String name) throws ExpressionException {
-//    if (rowMeta == null)
-//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-//
-//    int index = rowMeta.indexOfValue(name);
-//    if (index < 0)
-//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-//    
-//    return this.resolve(index);
-//  }
-//
-//  @Override
-//  public Object resolve(final int index) throws ExpressionException {
-//
-//    if (rowMeta == null)
-//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, "$:"+index);
-//   
-//    IValueMeta valueMeta = rowMeta.getValueMeta(index);
-//    
-//    try {
-//      switch (valueMeta.getType()) {
-//        case IValueMeta.TYPE_BOOLEAN:
-//          return rowMeta.getBoolean(row, index);
-//        case IValueMeta.TYPE_DATE:
-//        case IValueMeta.TYPE_TIMESTAMP:
-//          // No getTimestamp from RowMeta ???
-//          Date date = rowMeta.getDate(row, index);
-//          if (date == null)
-//            return null;
-//          return date.toInstant().atZone(ZoneId.systemDefault());          
-//        case IValueMeta.TYPE_STRING:
-//          return rowMeta.getString(row, index);
-//        case IValueMeta.TYPE_INTEGER:
-//          return rowMeta.getInteger(row, index);
-//        case IValueMeta.TYPE_NUMBER:
-//          return rowMeta.getNumber(row, index);
-//        case IValueMeta.TYPE_BIGNUMBER:
-//          return rowMeta.getBigNumber(row, index);
-//        case ValueMetaJson.TYPE_JSON:
-//          return row[index];  
-//        case IValueMeta.TYPE_BINARY:
-//          return rowMeta.getBinary(row, index);
-//        default:
-//          throw new ExpressionException(ExpressionError.UNSUPPORTED_IDENTIFIER_DATATYPE, valueMeta.getName(), valueMeta.getTypeDesc());
-//      }
-//    } catch (HopValueException e) {
-//      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, valueMeta.getName());
-//    }
-//  }
-//  
-  public int getTwoDigitCenturyStart() {
-    return twoDigitCenturyStart;
-  }
-
-
 }
 

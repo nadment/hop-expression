@@ -19,16 +19,17 @@ package org.apache.hop.pipeline.transforms.route;
 
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 import java.util.List;
 
 public class RouteData extends BaseTransformData implements ITransformData {
-  public IRowMeta outputRowMeta;
+
+  public IRowMeta rowMeta;
   public IRowSet defaultRowSet;
-  public ExpressionContext context;
-  public List<RouteRow> targets;
+  public IExpressionContext context;
+  public List<RouteTarget> targets;
 
   public RouteData() {
     super();

@@ -34,4 +34,9 @@ public class ExpressionException extends HopException {
   public ExpressionException(ExpressionError error, Object... values) {       
     super(error.message(values));
   }
+  
+  @Override
+  public String getMessage() {
+    return getSuperMessage();
+  }
 }

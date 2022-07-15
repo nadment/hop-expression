@@ -26,27 +26,39 @@ public class DataType {
   /**
    * NULL type with parameters.
    */
-  public static final DataType NULL;
+  //public static final DataType NULL;
 
   /**
-   * BINARY type with default parameters.
+   * Default BINARY type with default parameters.
    */
   public static final DataType BINARY;
-
 
   /**
    * BOOLEAN type with parameters.
    */
   public static final DataType BOOLEAN;
+  /**
+   * Default DATE type with parameters.
+   */
   public static final DataType DATE;
+  /**
+   * Default STRING type with parameters.
+   */
   public static final DataType STRING;
+  /**
+   * JSON type with parameters.
+   */
   public static final DataType JSON;
+  
+  /**
+   * Default INTEGER type with parameters.
+   */
   public static final DataType INTEGER;
   public static final DataType NUMBER;
   public static final DataType BIGNUMBER;
   
   static {
-    NULL = new DataType(DataTypeName.UNKNOWN);
+    //NULL = new DataType(DataTypeName.UNKNOWN);
     BOOLEAN = new DataType(DataTypeName.BOOLEAN, 1 ,0);
     BINARY = new DataType(DataTypeName.BINARY);
     DATE = new DataType(DataTypeName.DATE);
@@ -101,8 +113,8 @@ public class DataType {
    * decimal digits for exact numeric types; 
    * number of decimal digits in mantissa for approximate numeric types;
    * number of decimal digits for fractional seconds of datetime types; 
-   * length in characters for character types; 
-   * length in bytes for binary types;
+   * length in characters for String types; 
+   * length in bytes for Binary types;
    * 1 for BOOLEAN;
    * -1 if precision is not valid for this type
    */

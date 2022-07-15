@@ -27,7 +27,6 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
-import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.ConstUi;
@@ -37,7 +36,6 @@ import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.expression.ExpressionEditorDialog;
-import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
@@ -67,9 +65,9 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
   private final RouteMeta input;
 
   public RouteDialog(
-      Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta, String name) {
-    super(parent, variables, (BaseTransformMeta) in, pipelineMeta, name);
-    input = (RouteMeta) in;   
+      Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta, String name) {
+    super(parent, variables, (RouteMeta) input, pipelineMeta, name);
+    this.input = (RouteMeta) input;   
   }
 
   @Override
@@ -222,11 +220,8 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
             wRoutes.getActiveTableItem().getText(wRoutes.getActiveTableColumn());
 
         if (!shell.isDisposed()) {
-
-          CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
-          
           ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
-          expression = dialog.open(expression, getVariables(), rowMeta);
+          expression = dialog.open(expression, getVariables(), rowMetaProvider);
           if (expression != null) {
             wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(),
                 expression);

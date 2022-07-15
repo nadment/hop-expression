@@ -26,6 +26,8 @@ import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -77,8 +79,8 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
   public RouteMeta(RouteMeta m) {
     this();
     this.defaultTargetTransformName = m.defaultTargetTransformName;
-    for (Route rule : this.routes) {
-      this.routes.add(new Route(rule));
+    for (Route route : this.routes) {
+      this.routes.add(new Route(route));
     }
   }
 
@@ -100,33 +102,6 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
       IVariables variables, IHopMetadataProvider metadataProvider) {
     CheckResult cr;
 
-    for (Route rule : routes) {
-
-      if (Utils.isEmpty(rule.getCondition())) {
-        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-            "RouteMeta.CheckResult.ConditionInvalid", rule.getTransformName()), transformMeta);
-        remarks.add(cr);
-      }
-
-      TransformMeta check = pipelineMeta.findTransform(rule.getTransformName());
-      if (check == null) {
-        cr = new CheckResult(
-            ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
-                "RouteMeta.CheckResult.TargetTransformInvalid", rule.getCondition()),
-            transformMeta);
-        remarks.add(cr);
-      }
-    }
-
-    TransformMeta check = pipelineMeta.findTransform(this.getDefaultTargetTransformName());
-    if (check == null) {
-      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
-          BaseMessages.getString(PKG, "RouteMeta.CheckResult.DefaultTargetTransformInvalid"),
-          transformMeta);
-      remarks.add(cr);
-    }
-
-
     // See if we have input streams leading to this transform!
     if (input.length > 0) {
       cr = new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
@@ -135,6 +110,50 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     } else {
       cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
           BaseMessages.getString(PKG, "RouteMeta.CheckResult.NoInputReceivedFromOtherTransforms"),
+          transformMeta);
+      remarks.add(cr);
+    }
+    
+    // Check expression
+    ExpressionContext context = new ExpressionContext(variables, prev);
+    int routeNumber = 1;
+    for (Route route : routes) {
+
+      if (Utils.isEmpty(route.getCondition())) {
+        cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
+            "RouteMeta.CheckResult.NoConditionExpression", routeNumber, route.getTransformName()), transformMeta);
+        remarks.add(cr);
+      } else  try {        
+        ExpressionBuilder.compile(context, route.getCondition());
+      } catch (Exception e) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_ERROR,
+                BaseMessages.getString(
+                    PKG,
+                    "RouteMeta.CheckResult.ConditionExpressionError",
+                    routeNumber,
+                    route.getTransformName(),
+                    e.getMessage()),
+                transformMeta));
+      }
+
+      TransformMeta check = pipelineMeta.findTransform(route.getTransformName());
+      if (check == null) {
+        cr = new CheckResult(
+            ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
+                "RouteMeta.CheckResult.TargetTransformInvalid", routeNumber, route.getTransformName()),
+            transformMeta);
+        remarks.add(cr);
+      }
+      
+      routeNumber++;
+    }
+
+    TransformMeta check = pipelineMeta.findTransform(this.getDefaultTargetTransformName());
+    if (check == null) {
+      cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
+          BaseMessages.getString(PKG, "RouteMeta.CheckResult.DefaultTargetTransformInvalid"),
           transformMeta);
       remarks.add(cr);
     }

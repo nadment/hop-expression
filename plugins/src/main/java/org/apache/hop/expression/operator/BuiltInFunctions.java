@@ -2364,12 +2364,18 @@ public class BuiltInFunctions {
       if (v1 != null)
         format = Coerse.toString(v1);
     } else {
-      format = (String) context.getAttribute(ExpressionContext.EXPRESSION_DATE_FORMAT);
+      format = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
+
     try {
-      return DateTimeFormat.of(format).parse(Coerse.toString(v0));
+      int twoDigitYearStart = Integer.parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));      
+      DateTimeFormat formatter = DateTimeFormat.of(format);
+      formatter.setTwoDigitYearStart(twoDigitYearStart);
+      return formatter.parse(Coerse.toString(v0));
     } catch (ParseException e) {
       throw new ExpressionException(ExpressionError.PARSE_ERROR, e.getMessage());
+    } catch (NumberFormatException e) {
+      throw new ExpressionException(ExpressionError.VARIABLE_VALUE_ERROR, ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, e.getMessage());
     }
   }
 

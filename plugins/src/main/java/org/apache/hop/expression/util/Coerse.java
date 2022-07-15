@@ -255,6 +255,26 @@ public class Coerse {
   }
   
   /**
+   * Check if predicate is false.
+   * 
+   * @param value the value to coerce
+   * @return Boolean
+   */
+
+  public static final boolean isFalse(final Object value) throws ExpressionException {
+    if (value == null) {
+      return false;
+    }
+    if (value instanceof Boolean) {
+      return !((Boolean) value).booleanValue();
+    }
+    if (value instanceof Number) {
+      return ((Number) value).intValue() == 0;
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BOOLEAN);
+  }
+  
+  /**
    * Compare this value against another value. If values need to be converted to match the other
    * operands data type, the value with the lower order is converted to the value with the higher
    * order.

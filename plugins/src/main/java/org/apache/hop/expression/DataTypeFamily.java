@@ -17,7 +17,7 @@
 package org.apache.hop.expression;
 
 public enum DataTypeFamily {
-  UNKNOWN, BINARY, NUMERIC, DATETIME, BOOLEAN, STRING, JSON;
+  BINARY, NUMERIC, DATETIME, BOOLEAN, STRING, JSON;
   
   /** Return the default {@link DataType} that belongs to this family. */
   public DataType getDefaultDataType() {

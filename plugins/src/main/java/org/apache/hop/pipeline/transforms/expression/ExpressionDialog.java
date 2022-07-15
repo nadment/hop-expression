@@ -26,7 +26,6 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
-import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.ConstUi;
@@ -37,7 +36,6 @@ import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.ColumnsResizer;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.expression.ExpressionEditorDialog;
-import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
@@ -64,10 +62,10 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
   private TableView wTableFields;
   private ModifyListener lsMod;
 
-  public ExpressionDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
+  public ExpressionDialog(Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta,
       String name) {
-    super(parent, variables, (BaseTransformMeta) in, pipelineMeta, name);
-    input = (ExpressionMeta) in;
+    super(parent, variables, (ExpressionMeta) input, pipelineMeta, name);
+    this.input = (ExpressionMeta) input;
   }
 
   @Override

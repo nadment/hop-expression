@@ -191,6 +191,9 @@ public class BaseExpressionTest {
     assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source));
   }
 
+  protected void evalEquals(String source, LocalDate expected, ExpressionContext context) throws Exception {
+    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source, context, null));
+  }
   protected void evalEquals(String source, LocalDateTime expected) throws Exception {
     assertEquals(expected.atZone(ZoneId.systemDefault()), eval(source));
   }
@@ -233,8 +236,10 @@ public class BaseExpressionTest {
 
   @Test
   public void test() throws Exception {
-    // ExpressionContext context = createExpressionContext();
-    // context.setAttribute("TEST","");        
-//  evalEquals("1.0*AGE", 40L);
+    ExpressionContext context = createExpressionContext();
+    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
+    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1), context ); 
   }
 }

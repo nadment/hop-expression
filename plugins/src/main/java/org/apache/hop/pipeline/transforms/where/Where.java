@@ -16,12 +16,11 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
+import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -55,73 +54,64 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       return false;
     }
 
-    // the "first" flag is inherited from the base Transform implementation
-    // it is used to guard some processing tasks, like figuring out field
-    // indexes
-    // in the row structure that only need to be done once
-    if (first) {
-      if (log.isDebug()) {
-        logDebug(BaseMessages.getString(PKG, "Where.Log.StartedProcessing"));
-      }
-
-      first = false;
-
-
-      // clone the input row structure and place it in our data object
-      data.outputRowMeta = getInputRowMeta().clone();
-      // use meta.getFields() to change it, so it reflects the output row
-      // structure
-      meta.getFields(data.outputRowMeta, getTransformName(), null, null, this, null);
-
-      data.expressionContext = new ExpressionContext(this, getInputRowMeta());
-
-      // Resolve variable
-      String expression = resolve(meta.getCondition());
-
-      // Compile expression
-      try {
-        data.condition = ExpressionBuilder.compile(data.expressionContext, expression);
-      } catch (ExpressionException e) {
-        throw new HopTransformException(meta.getCondition(), e);
-      }
-      
-      // Cache the position of the RowSet for the output.
-      List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
-
-      // Find TRUE output row set
-      if (!Utils.isEmpty(streams.get(0).getTransformName())) {
-        TransformMeta to = streams.get(0).getTransformMeta();
-        PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
-        if (hop != null && hop.isEnabled()) {
-          data.trueRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
-          if (data.trueRowSet == null) {
-            throw new HopTransformException(BaseMessages.getString(PKG,
-                "Where.Exception.TargetTransformInvalid", streams.get(0).getTransformName()));
-          }
-        }
-      } else {
-        data.trueRowSet = null;
-      }
-
-      // Find FALSE output row set
-      if (!Utils.isEmpty(streams.get(1).getTransformName())) {
-        TransformMeta to = streams.get(1).getTransformMeta();
-        PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
-        if (hop != null && hop.isEnabled()) {
-          data.falseRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
-          if (data.falseRowSet == null) {
-            throw new HopTransformException(BaseMessages.getString(PKG,
-                "Where.Exception.TargetTransformInvalid", streams.get(1).getTransformName()));
-          }
-        }
-      } else {
-        data.falseRowSet = null;
-      }
-    }
-
     try {
-      data.expressionContext.setRow(row);
-      Object predicat = data.condition.eval(data.expressionContext);
+      // the "first" flag is inherited from the base Transform implementation
+      // it is used to guard some processing tasks, like figuring out field
+      // indexes
+      // in the row structure that only need to be done once
+      if (first) {
+        if (log.isDebug()) {
+          logDebug(BaseMessages.getString(PKG, "Where.Log.StartedProcessing"));
+        }
+
+        first = false;
+
+        // clone the input row structure and place it in our data object
+        data.outputRowMeta = getInputRowMeta().clone();
+        data.context = new ExpressionContext(this, getInputRowMeta());
+
+        // Resolve variable
+        String expression = resolve(meta.getCondition());
+
+        // Compile expression
+        data.condition = ExpressionBuilder.compile(data.context, expression);
+
+        // Cache the position of the RowSet for the output.
+        List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
+
+        // Find TRUE output row set
+        if (!Utils.isEmpty(streams.get(0).getTransformName())) {
+          TransformMeta to = streams.get(0).getTransformMeta();
+          PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
+          if (hop != null && hop.isEnabled()) {
+            data.trueRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
+            if (data.trueRowSet == null) {
+              throw new HopException(BaseMessages.getString(PKG,
+                  "Where.Exception.TargetTransformInvalid", streams.get(0).getTransformName()));
+            }
+          }
+        } else {
+          data.trueRowSet = null;
+        }
+
+        // Find FALSE output row set
+        if (!Utils.isEmpty(streams.get(1).getTransformName())) {
+          TransformMeta to = streams.get(1).getTransformMeta();
+          PipelineHopMeta hop = getPipelineMeta().findPipelineHop(getTransformMeta(), to);
+          if (hop != null && hop.isEnabled()) {
+            data.falseRowSet = findOutputRowSet(getTransformName(), getCopy(), to.getName(), 0);
+            if (data.falseRowSet == null) {
+              throw new HopException(BaseMessages.getString(PKG,
+                  "Where.Exception.TargetTransformInvalid", streams.get(1).getTransformName()));
+            }
+          }
+        } else {
+          data.falseRowSet = null;
+        }
+      }
+
+      data.context.setRow(row);
+      Object predicat = data.condition.eval(data.context);
 
       if (Coerse.isTrue(predicat)) {
         // put the row to the TRUE output row stream
@@ -142,16 +132,15 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
           putRowTo(data.outputRowMeta, row, data.falseRowSet);
         }
       }
-    } catch (ExpressionException e) {
-      throw new HopTransformException(BaseMessages.getString(PKG,
-          "Where.Exception.FailureExpressionEvaluation", meta.getCondition()), e);
-    }
-
-    // log progress if it is time to to so
-    if (checkFeedback(getLinesRead())) {
-      if (log.isBasic()) {
-        logBasic(BaseMessages.getString(PKG, "Where.Log.LineNumber") + getLinesRead());
+    } catch (HopException e) {
+      logError(e.getMessage());
+      if ( isDebug() ) {
+        logError(Const.getStackTracker(e));
       }
+      setErrors(1);
+      stopAll();
+      setOutputDone();
+      return false;
     }
 
     // indicate that processRow() should be called again

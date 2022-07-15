@@ -16,7 +16,6 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hop.expression.DataTypeFamily;
 import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
@@ -56,9 +55,9 @@ public class Converter {
     Objects.requireNonNull(type);
     
     // Special date type, can't be converted to  
-    if ( type.getFamily()==DataTypeFamily.UNKNOWN ) {
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, type);
-    }
+  //  if ( type.getFamily()==DataTypeFamily.UNKNOWN ) {
+   //   throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, type);
+ //   }
     
     if (value == null) {
       return null;

@@ -33,8 +33,6 @@ import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.dialog.BaseDialog;
-import org.apache.hop.ui.core.dialog.ErrorDialog;
-import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.expression.ExpressionText;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.eclipse.swt.SWT;

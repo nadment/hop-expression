@@ -166,7 +166,18 @@ public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData
     // Check expression
     ExpressionContext context = new ExpressionContext(variables, prev);
     for (ExpressionField field : this.fields) {
-      try {        
+      
+      if ( Utils.isEmpty(field.getExpression())) {
+        remarks.add(
+            new CheckResult(
+                ICheckResult.TYPE_RESULT_WARNING,
+                BaseMessages.getString(
+                    PKG,
+                    "ExpressionMeta.CheckResult.ExpressionEmpty",
+                    field.getName()),                   
+                transformMeta));
+      }      
+      else try {        
         ExpressionBuilder.compile(context, field.getExpression());
       } catch (Exception e) {
         remarks.add(
@@ -174,7 +185,7 @@ public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData
                 ICheckResult.TYPE_RESULT_ERROR,
                 BaseMessages.getString(
                     PKG,
-                    "ExpressionMeta.CheckResult.InvalidExpression",
+                    "ExpressionMeta.CheckResult.ExpressionError",
                     field.getName(),
                     e.getMessage()),
                 transformMeta));

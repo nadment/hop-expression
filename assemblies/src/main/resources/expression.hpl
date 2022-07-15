@@ -80,7 +80,7 @@
     <clonenumfield>ROWNUM</clonenumfield>
     <nrclonefield>bb</nrclonefield>
     <nrcloneinfield>N</nrcloneinfield>
-    <nrclones>100000000</nrclones>
+    <nrclones>10000000</nrclones>
     <attributes/>
     <GUI>
       <xloc>240</xloc>
@@ -169,7 +169,7 @@
         <item>John</item>
         <item>123,456</item>
         <item>true</item>
-        <item>2020-04-08</item>
+        <item>2018-04-08</item>
         <item>8</item>
         <item/>
         <item/>
@@ -306,7 +306,7 @@ Left("COST CENTER",3)</expression>
       </field>
       <field>
         <expression>// Support function alias 
-UCASE('${os.name}')</expression>
+UPPER(SUBSTR('${os.name}',1,10))</expression>
         <length>-1</length>
         <name>OS_NAME</name>
         <precision>-1</precision>
@@ -451,6 +451,13 @@ End
         <precision>-1</precision>
         <type>Integer</type>
       </field>
+      <field>
+        <expression>try(10/0)</expression>
+        <length>-1</length>
+        <name>EMPTY</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
     </fields>
     <attributes/>
     <GUI>
@@ -503,25 +510,34 @@ End
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <expression>/*
- * Comment multi-lines
- * Version 123.45
- */
-
--- Comment single line with double hyphen
-
-// Comment single line with double slash
-
-ROWNUM between 1 AND 30
-OR ENDSWITH(FIELD_STRING,'A')
-AND "LITERAL_STRING" like 'TEST%'
-</expression>
-    <send_true_to>TRUE</send_true_to>
+    <condition>kuoiuyou</condition>
     <send_false_to>FALSE</send_false_to>
+    <send_true_to>TRUE</send_true_to>
     <attributes/>
     <GUI>
-      <xloc>544</xloc>
-      <yloc>96</yloc>
+      <xloc>528</xloc>
+      <yloc>80</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Abort</name>
+    <type>Abort</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <abort_option>ABORT_WITH_ERROR</abort_option>
+    <always_log_rows>Y</always_log_rows>
+    <message/>
+    <row_threshold>0</row_threshold>
+    <attributes/>
+    <GUI>
+      <xloc>1136</xloc>
+      <yloc>192</yloc>
     </GUI>
   </transform>
   <transform_error_handling>

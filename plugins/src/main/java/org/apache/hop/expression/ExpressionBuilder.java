@@ -72,6 +72,7 @@ public class ExpressionBuilder {
 
   public static IExpression compile(IExpressionContext context, final String source)
       throws ExpressionException {
+        
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
       return builder.compile(context, builder.parse());
@@ -96,7 +97,7 @@ public class ExpressionBuilder {
     return new ExpressionException(ExpressionError.SYNTAX_ERROR, line, column, e.getMessage());
   }
 
-  protected ExpressionBuilder(String source) {
+  protected ExpressionBuilder(final String source) {
     super();
     this.source = source;
   }
@@ -143,7 +144,10 @@ public class ExpressionBuilder {
 
   /** Parse the expression */
   private IExpression parse() throws ParseException {
-
+  
+    if ( source==null )
+      return Literal.NULL;
+    
     // Tokenize
     for (Token token = tokenize(); token != null; token = tokenize()) {
 
@@ -1295,7 +1299,7 @@ public class ExpressionBuilder {
   
   protected IExpression compile(IExpressionContext context, Call call, Udf udf) throws ExpressionException {
     try {
-      IExpressionContext udfContext = new ExpressionContext(context.getVariables(), udf.createRowMeta());          
+      IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());          
       IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
       return expression.visit(context, new UdfResolver(call.getOperands()));
     } catch (Exception e) {

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>expression-json</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description/>
+    <extended_description/>
+    <pipeline_version/>
+    <pipeline_type>Normal</pipeline_type>
+    <parameters>
+    </parameters>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>-</created_user>
+    <created_date>2022/05/08 11:38:45.722</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2022/05/08 11:38:45.722</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
+    <is_key_private>N</is_key_private>
+  </info>
+  <notepads>
+  </notepads>
+  <order>
+    <hop>
+      <from>Data grid</from>
+      <to>Clone row</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Clone row</from>
+      <to>Expression</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Expression</from>
+      <to>Dummy</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>Clone row</name>
+    <type>CloneRow</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <addcloneflag>N</addcloneflag>
+    <addclonenum>Y</addclonenum>
+    <clonenumfield>ROWNUM</clonenumfield>
+    <nrclonefield>bb</nrclonefield>
+    <nrcloneinfield>N</nrcloneinfield>
+    <nrclones>1</nrclones>
+    <attributes/>
+    <GUI>
+      <xloc>240</xloc>
+      <yloc>96</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Data grid</name>
+    <type>DataGrid</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>FIELD_JSON</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>FIELD_STRING</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+    </fields>
+    <data>
+      <line>
+        <item>{"firstname" : "Ann", "surname" : "Smith", "age" : 29, "gender":"Female","address":{"zipCode":"2760","street":"Blvd des capusins"}}</item>
+        <item>{"firstname" : "Ann", "surname" : "Smith", "age" : 29, "gender":"Female","address":{"zipCode":"2760","street":"Blvd des capusins"}}</item>
+      </line>
+      <line>
+        <item>{"firstname" : "Sue", "surname" : "Smith", "age" : 42,"gender":null, "address": {"zipCode":"1150","street":"Route des romains"}}</item>
+        <item>{"firstname" : "Sue", "surname" : "Smith", "age" : 42,"gender":null, "address": {"zipCode":"1150","street":"Route des romains"}}</item>
+      </line>
+      <line>
+        <item>{"firstname" : "John", "surname" : "Doe", "age" : 50, "gender":"Male","address":{"zipCode":"1223","street":"Av. des cerises"}}</item>
+        <item>{"firstname" : "John", "surname" : "Doe", "age" : 50, "gender":"Male","address":{"zipCode":"1223","street":"Av. des cerises"}}</item>
+      </line>
+      <line>
+        <item>{firstname:"Without", surname:"Quotes", age:50, gender:"Male",address:{zipCode:"1223",street:"Av. des cerises"}}</item>
+        <item>{firstname:"Without", surname:"Quotes", age:50, gender:"Male",address:{zipCode:"1223",street:"Av. des cerises"}}</item>
+      </line>
+    </data>
+    <attributes/>
+    <GUI>
+      <xloc>112</xloc>
+      <yloc>96</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Dummy</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <GUI>
+      <xloc>560</xloc>
+      <yloc>96</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Expression</name>
+    <type>Expression</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <expression>JSON_VALUE(FIELD_JSON,'$.firstname')</expression>
+        <length>-1</length>
+        <name>FirstName</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>JSON_VALUE(FIELD_JSON,'$.age')</expression>
+        <length>-1</length>
+        <name>Age</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>JSON_VALUE(FIELD_JSON,'$.gender')</expression>
+        <length>-1</length>
+        <name>Gender</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>JSON_VALUE(FIELD_STRING,'$.address.zipCode')</expression>
+        <length>-1</length>
+        <name>ZipCode</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>JSON_VALUE(FIELD_JSON,'$.*.street')</expression>
+        <length>-1</length>
+        <name>Street</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <expression>Cast(FIELD_STRING as JSON)</expression>
+        <length>-1</length>
+        <name>CAST_TO_JSON</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <expression>FIELD_STRING::JSON</expression>
+        <length>-1</length>
+        <name>CAST_TO_JSON_OPERATOR</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <expression>Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')</expression>
+        <length>-1</length>
+        <name>JSON1</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+      <field>
+        <expression>Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'Doe', KEY 'empty' VALUE null )</expression>
+        <length>-1</length>
+        <name>JSON2</name>
+        <precision>-1</precision>
+        <type>JSON</type>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>400</xloc>
+      <yloc>96</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling>
+  </transform_error_handling>
+  <attributes/>
+</pipeline>

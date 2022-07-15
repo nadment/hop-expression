@@ -37,7 +37,7 @@ public class DataTypeTest extends BaseExpressionTest {
     
   @Test
   public void of() throws Exception {
-    assertEquals(DataTypeName.UNKNOWN, DataTypeName.of("UNKNOWN") );
+    //assertEquals(DataTypeName.UNKNOWN, DataTypeName.of("UNKNOWN") );
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("BOOLEAN"));
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("Boolean"));
     assertEquals(DataTypeName.STRING, DataTypeName.of("STRING") );
@@ -53,7 +53,7 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void from() throws Exception {
-    assertEquals(DataTypeName.UNKNOWN, DataTypeName.from(null) );
+    //assertEquals(DataTypeName.UNKNOWN, DataTypeName.from(null) );
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.from(true));
     assertEquals(DataTypeName.STRING, DataTypeName.from("") );
     assertEquals(DataTypeName.INTEGER, DataTypeName.from(1L));
@@ -88,7 +88,7 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(BigDecimal.class, DataTypeName.BIGNUMBER.getJavaClass() );
     assertEquals(String.class, DataTypeName.STRING.getJavaClass() );
     assertEquals(ZonedDateTime.class, DataTypeName.DATE.getJavaClass() );
-    assertEquals(Void.class, DataTypeName.UNKNOWN.getJavaClass() );
+   // assertEquals(Void.class, DataTypeName.UNKNOWN.getJavaClass() );
     //assertEquals(Object.class, DataTypeName.ANY.getJavaClass() );
   }
   
@@ -245,10 +245,10 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void convertToUnknown() throws Exception {
-    assertThrows(ExpressionException.class, () -> Converter.to(null, DataTypeName.UNKNOWN));
-    assertThrows(ExpressionException.class, () -> Converter.to(true, DataTypeName.UNKNOWN));
-    assertThrows(ExpressionException.class, () -> Converter.to("Test", DataTypeName.UNKNOWN));
-    assertThrows(ExpressionException.class, () -> Converter.to(BigDecimal.ZERO, DataTypeName.UNKNOWN));
+   // assertThrows(ExpressionException.class, () -> Converter.to(null, DataTypeName.UNKNOWN));
+   // assertThrows(ExpressionException.class, () -> Converter.to(true, DataTypeName.UNKNOWN));
+   // assertThrows(ExpressionException.class, () -> Converter.to("Test", DataTypeName.UNKNOWN));
+   // assertThrows(ExpressionException.class, () -> Converter.to(BigDecimal.ZERO, DataTypeName.UNKNOWN));
   }
 
 }

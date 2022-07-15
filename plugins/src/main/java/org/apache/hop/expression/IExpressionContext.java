@@ -19,20 +19,8 @@ package org.apache.hop.expression;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 
-public interface IExpressionContext {
-
-  /**
-   * Resolves the given reference. How the name is interpreted by the outside system is an
-   * implementation detail. Resolve is case sensitive.
-   *
-   * @param name the name that identifies the reference.
-   * @return the resolved value.
-   * @throws ExpressionException if an error occurs.
-   */
-  //public Object resolve(String name) throws ExpressionException;
-  
-
-  
+public interface IExpressionContext extends IVariables {
+    
   /**
    * Gets the value of an attribute.
    *
@@ -57,7 +45,7 @@ public interface IExpressionContext {
    */
   public void setAttribute(String name, Object value);
 
-  public IVariables getVariables();
+  //public IVariables getVariables();
   public IRowMeta getRowMeta();
   public Object[] getRow();
   public void setRow(Object[] row);

@@ -251,10 +251,6 @@ import java.util.Locale;
  */
 /* package */ class ZonedDateTimeFormat extends DateTimeFormat {
 
-  // TODO: Specifies the “century start” year for 2-digit years. This parameter prevents
-  // ambiguous dates when importing or converting data with the YY date format
-  // component.
-  private static final int TWO_DIGIT_CENTURY_START = 1970;
 
   /** The offset from Julian to EPOCH DAY. */
   private static final long JULIAN_DAY_OFFSET = 2440588L;
@@ -279,7 +275,13 @@ import java.util.Locale;
   private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
   private final String pattern;
-
+  
+  // TODO: Specifies the “century start” year for 2-digit years. This parameter prevents
+  // ambiguous dates when importing or converting data with the YY date format
+  // component.
+  private int twoDigitYearStart = 1970;
+  
+  
   public ZonedDateTimeFormat(String pattern) {
     this.pattern = pattern;
   }
@@ -641,7 +643,7 @@ import java.util.Locale;
           // Last 2-digit year
           if (startsWithIgnoreCase(pattern, index, "YY")) {
             year = parseInt(text, position, 2);
-            year += (year < TWO_DIGIT_CENTURY_START - 1900) ? 2000 : 1900;
+            year += (year < twoDigitYearStart - 1900) ? 2000 : 1900;
             isEpochDay = false;
             index += 2;
             continue;
@@ -1355,5 +1357,9 @@ import java.util.Locale;
   public int hashCode() {
     return pattern.hashCode();
   }
-
+  
+  @Override
+  public void setTwoDigitYearStart(int year) {
+    this.twoDigitYearStart = year;
+  } 
 }

@@ -57,7 +57,7 @@ public enum DataTypeName {
   BINARY(DataTypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
 
   /** A unknown type */
-  UNKNOWN(DataTypeFamily.UNKNOWN, PrecScale.NO_NO, Void.class),
+ // UNKNOWN(DataTypeFamily.UNKNOWN, PrecScale.NO_NO, Void.class),
   //ANY(DataTypeFamily.UNKNOWN, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class)
   ;
 
@@ -132,7 +132,7 @@ public enum DataTypeName {
 
   public static DataTypeName from(final Object value) {
     if (value == null)
-      return UNKNOWN;
+      return null;
     if (value instanceof Boolean)
       return BOOLEAN;
     if (value instanceof String)
