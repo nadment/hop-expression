@@ -17,15 +17,26 @@
 package org.apache.hop.expression.experimental;
 
 public interface IAggregateFunction {
-  public void initialize(IAggregateContext context);
+  public void init(IAggregateContext context);
 
   // Removes an input value from the current group.
-  public void delete(IAggregateContext context, Object value);
+  //public void delete(IAggregateContext context, Object value);
 
   // Merges two aggregation contexts
-  public void merge(IAggregateContext context, IAggregateContext other);
-
+ // public void merge(IAggregateContext context, IAggregateContext other);
+  
+/**
+ * This method is called once for each row
+ * @param context
+ * @param value
+ * @return
+ */
   public boolean iterate(IAggregateContext context, Object value);
 
+  /**
+   * This method returns the computed aggregate value.
+   * @param context
+   * @return
+   */
   public Object terminate(IAggregateContext context);
 }

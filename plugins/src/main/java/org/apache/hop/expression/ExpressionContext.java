@@ -62,12 +62,11 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   public static final String CACHED_NOW = "__NOW__";
   public static final String CACHED_TIMEZONE = "__TIMEZONE__";
   public static final String CACHED_RANDOM = "__RANDOM__";
-//  public static final String CACHED_TWO_DIGIT_YEAR_START = "__YY__";
 
   /**
    * The {@code Map} field stores the attributes.
    */
-  private Map<String,Object> map;
+  private Map<String,Object> attributes;
   private IRowMeta rowMeta;
   private Object[] row;
   
@@ -79,33 +78,28 @@ public class ExpressionContext extends Variables implements IExpressionContext {
 
   public ExpressionContext(IVariables variables) {
     super();
-    
-    this.map = new HashMap<>();
-    
+        
     // Initialize variables
     this.initializeFrom(Objects.requireNonNull(variables));
     
-//    final Calendar calendar = Calendar.getInstance(locale);
-//    DayOfWeek dow = DayOfWeek.of(calendar.getFirstDayOfWeek());
-
-
-   
+    // Initialize attributes
+    this.attributes = new HashMap<>();
+    
     // Cached attributes
     ZonedDateTime now = ZonedDateTime.now();
     this.setAttribute(CACHED_TIMEZONE, ZoneId.systemDefault().getId());
     this.setAttribute(CACHED_NOW, now);
     this.setAttribute(CACHED_TODAY, now.truncatedTo(ChronoUnit.DAYS));
     this.setAttribute(CACHED_RANDOM, new SecureRandom());
-   // this.setAttribute(CACHED_TWO_DIGIT_YEAR_START, twoDigitCenturyStart);
   }
 
   public void setAttribute(String name, Object value) {
-    map.put(name, value);
+    attributes.put(name, value);
   }
       
   @Override
   public Object getAttribute(String name) {
-    return map.get(name);
+    return attributes.get(name);
   }
   
   @Override

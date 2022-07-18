@@ -56,9 +56,9 @@ public class Call implements IExpression {
   
   @Override
   public boolean is(final Operator other) {
-    if (other == null)
+    if (other == null) {
       return false;
-    
+    }
     return operator.is(other);
   }
 

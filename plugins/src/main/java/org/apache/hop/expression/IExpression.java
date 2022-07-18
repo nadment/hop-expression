@@ -62,12 +62,13 @@ public interface IExpression {
    * Evaluates the expression.
    *
    * @param context The context against which the expression will be evaluated.
-   *
+   * 
+   * @throws ExpressionException if an error occurs.
+   * @throws NullPointerException if context is null.
+   * 
    * @return The result of evaluating the expression.
    */
   public Object eval(IExpressionContext context) throws ExpressionException;
-  //public <T> T eval(IExpressionContext context) throws ExpressionException;
-  
   
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
