@@ -33,7 +33,7 @@ public class Abort extends Operator {
   /**
    * This function returns the value of expression. If an error occurs, null is returned.
    */
-  @ScalarFunction(id = "ABORT", minArgs = 1, maxArgs = 1, category = "i18n::Operator.Category.Special", documentationUrl="/docs/error.html")
+  @ScalarFunction(id = "ABORT", minArgs = 1, maxArgs = 1, category = "i18n::Operator.Category.Special", documentationUrl="/docs/abort.html")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
      
