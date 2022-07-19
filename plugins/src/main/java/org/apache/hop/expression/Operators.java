@@ -31,6 +31,7 @@ import org.apache.hop.expression.operator.Cast;
 import org.apache.hop.expression.operator.Concat;
 import org.apache.hop.expression.operator.Div;
 import org.apache.hop.expression.operator.Equal;
+import org.apache.hop.expression.operator.Abort;
 import org.apache.hop.expression.operator.Extract;
 import org.apache.hop.expression.operator.GreaterThan;
 import org.apache.hop.expression.operator.GreaterThanOrEqual;
@@ -113,6 +114,7 @@ public class Operators {
   // SPECIAL OPERATORS
   // -------------------------------------------------------------
   public static final Operator CAST = new Cast();
+  public static final Operator ABORT = new Abort();
   public static final Operator TRY = new Try();
   public static final Operator AT_TIME_ZONE = new AtTimeZone();
   public static final Operator CONCAT = new Concat();

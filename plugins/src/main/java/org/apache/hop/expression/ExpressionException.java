@@ -27,6 +27,15 @@ public class ExpressionException extends HopException {
    * 
    * @param error a error message
    */
+  public ExpressionException(String error) {
+    super(error);
+  }
+  
+  /**
+   * Construct a new expression exception.
+   * 
+   * @param error a error message
+   */
   public ExpressionException(ExpressionError error) {
     super(error.message());
   }

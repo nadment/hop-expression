@@ -21,31 +21,29 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
-public class Try extends Operator {
+public class Abort extends Operator {
 
-  public Try() {
-    super("TRY", 10, true, true, "i18n::Operator.Category.Special", "/docs/try.html");
+  public Abort() {
+    super("ABORT", 10, true, true, "i18n::Operator.Category.Special", "/docs/abort.html");
   }
 
   /**
    * This function returns the value of expression. If an error occurs, null is returned.
    */
-  @ScalarFunction(id = "TRY", minArgs = 1, maxArgs = 1, category = "i18n::Operator.Category.Special", documentationUrl="/docs/try.html")
+  @ScalarFunction(id = "ABORT", minArgs = 1, maxArgs = 1, category = "i18n::Operator.Category.Special", documentationUrl="/docs/error.html")
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
-
-    try {     
-      return operands[0].eval(context);    
-    } catch (Exception e) {
-      return null;
-    }
+     
+      String message = Coerse.toString(operands[0].eval(context));      
+      throw new ExpressionException(message);
   }
   
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("TRY(");
+    writer.append("ABORT(");
     operands[0].unparse(writer);
     writer.append(')');
   }
