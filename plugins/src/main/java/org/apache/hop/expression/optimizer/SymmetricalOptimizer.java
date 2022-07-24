@@ -22,25 +22,20 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.Operators;
-import java.util.Set;
 
 /**
- * Reorganize commutative operator
+ * Reorganize symmetrical operator
  * 
  * 1. Move low cost operand to the left
  * 2. Go up an operand if low cost
  * 3. Order identifier by name (only useful for test)
  */
-public class ReorganizeCommutativeOptimizer extends Optimizer {
-
-  private static final Set<Operator> COMMUTATIVE =
-      Set.of(Operators.BOOLAND, Operators.BOOLOR, Operators.ADD, Operators.MULTIPLY);
+public class SymmetricalOptimizer extends Optimizer {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
 
-    if (COMMUTATIVE.contains(call.getOperator())) {
+    if (call.getOperator().isSymmetrical()) {
       Operator operator = call.getOperator();
       IExpression left = call.getOperand(0);
       IExpression right = call.getOperand(1);

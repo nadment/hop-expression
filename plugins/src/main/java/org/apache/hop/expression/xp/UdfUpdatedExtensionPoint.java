@@ -24,8 +24,8 @@ import org.apache.hop.core.extension.IExtensionPoint;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.Udf;
-import org.apache.hop.expression.UdfMeta;
+import org.apache.hop.expression.UserDefinedFunction;
+import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.metadata.api.IHopMetadata;
 
 @ExtensionPoint(id = "UdfUpdatedExtensionPoint", extensionPointId = "HopGuiMetadataObjectUpdated",
@@ -34,11 +34,11 @@ public class UdfUpdatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override
   public void callExtensionPoint(final ILogChannel log, IVariables variables,  IHopMetadata object) throws HopException {
     
-    if ( object instanceof UdfMeta) {
-      UdfMeta meta = (UdfMeta) object;   
+    if ( object instanceof UserDefinedFunctionMeta) {
+      UserDefinedFunctionMeta meta = (UserDefinedFunctionMeta) object;   
       log.logBasic("User Defined Function updated " + meta.getName());
       FunctionRegistry.unregister(meta.getName());
-      FunctionRegistry.register(meta.getName(), new Udf(meta));
+      FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));
     }
   }
 }

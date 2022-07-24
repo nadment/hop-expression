@@ -18,9 +18,9 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
@@ -33,10 +33,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)
  */
-public class JsonObject extends Operator {
+public class JsonObject extends Function {
 
   public JsonObject() {
-    super("JSON_OBJECT", 10, true, true, "i18n::Operator.Category.Json", "/docs/json_object.html");
+    super("JSON_OBJECT", "JSON_OBJECT", true, "i18n::Operator.Category.Json", "/docs/json_object.html");
   }
 
   @ScalarFunction(id = "JSON_OBJECT", category = "i18n::Operator.Category.Json", minArgs = 2,

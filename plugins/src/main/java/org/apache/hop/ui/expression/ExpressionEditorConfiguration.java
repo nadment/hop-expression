@@ -63,7 +63,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private IVariables variables;
   private ExpressionMode mode;
   private CompletableFuture<IRowMeta> rowMeta;
-  private static final Set<String> RESERVED_WORDS = Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "ELSE",
+  private static final Set<String> RESERVED_WORDS = Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "DISTINCT", "ELSE",
           "END", "ESCAPE", "FORMAT", "FROM", "ILIKE", "IN", "IS", "LIKE", "NOT", "OR", "SYMMETRY",
           "THEN", "TIME", "TIMESTAMP", "WHEN", "XOR", "ZONE");
 

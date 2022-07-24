@@ -33,6 +33,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 public class LiteralTest extends BaseExpressionTest {
 
@@ -40,7 +41,7 @@ public class LiteralTest extends BaseExpressionTest {
   public void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Literal.NULL, Literal.of(null));
-    assertEquals(0, Literal.NULL.hashCode());
+    assertEquals(Objects.hash(null, DataTypeName.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is((Kind)null));    
     assertFalse(Literal.NULL.is((Operator)null));
     assertNotEquals(Literal.NULL,null);
@@ -73,6 +74,8 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("''", "");
 
     writeEquals("'Test ''Bla'' string'");
+    
+    returnType("NAME", DataTypeName.STRING);
   }
 
   @Test
@@ -95,6 +98,8 @@ public class LiteralTest extends BaseExpressionTest {
     evalNull("NULL");
     
     writeEquals("TRUE", "TRUE");
+    
+    returnType("TRUE and TRUE", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -136,6 +141,8 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("9223372036854775807", Long.MAX_VALUE);
 
     writeEquals("123456", "123456");
+    
+    returnType("AGE", DataTypeName.INTEGER);
   }
 
   @Test
@@ -188,8 +195,10 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
     evalEquals("Date '21-02-25'", LocalDate.of(21, 2, 25));
     evalEquals("Date '2021-Feb-25'", LocalDate.of(2021, 2, 25));
-
+    
     writeEquals("DATE '2021-02-25'");
+
+    returnType("Date '2021-Feb-25'", DataTypeName.DATE);
   }
 
 
@@ -260,6 +269,8 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("Timestamp '9999-12-31 23:59:59.999999999'", LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999999999));
 
     writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999999'");
+    
+    returnType("Timestamp '2021-12-01 12:01:01'", DataTypeName.DATE);
   }
 }
 

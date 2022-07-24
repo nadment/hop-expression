@@ -24,7 +24,8 @@ import org.apache.hop.expression.optimizer.IdentifierOptimizer;
 import org.apache.hop.expression.optimizer.InOptimizer;
 import org.apache.hop.expression.optimizer.LikeOptimizer;
 import org.apache.hop.expression.optimizer.Optimizer;
-import org.apache.hop.expression.optimizer.ReorganizeCommutativeOptimizer;
+import org.apache.hop.expression.optimizer.SymmetricalOptimizer;
+import org.apache.hop.expression.optimizer.ReturnTypeOptimizer;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -41,12 +42,12 @@ import java.util.Set;
 public class ExpressionBuilder {
 
   private static final Set<Optimizer> OPTIMIZERS =
-      Set.of(new ReorganizeCommutativeOptimizer(), new ArithmeticOptimizer(), new LikeOptimizer(),
+      Set.of(new SymmetricalOptimizer(), new ArithmeticOptimizer(), new LikeOptimizer(),
           new InOptimizer(), new ExtractOptimizer(), new CombineConcatOptimizer(),
-          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer());
+          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer(), new ReturnTypeOptimizer());
 
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
-      "BETWEEN", "CASE", "DATE", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN",
+      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN",
       "IS", "KEY", "LIKE", "NOT", "NULL", "OR", "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP",
       "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
@@ -64,7 +65,7 @@ public class ExpressionBuilder {
 
   // Char position in source
   private int position = 0;
-  
+
   // Index in tokens
   private int index = 0;
 
@@ -72,7 +73,7 @@ public class ExpressionBuilder {
 
   public static IExpression compile(IExpressionContext context, final String source)
       throws ExpressionException {
-        
+
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
       return builder.compile(context, builder.parse());
@@ -144,10 +145,10 @@ public class ExpressionBuilder {
 
   /** Parse the expression */
   private IExpression parse() throws ParseException {
-  
-    if ( source==null )
+
+    if (source == null)
       return Literal.NULL;
-    
+
     // Tokenize
     for (Token token = tokenize(); token != null; token = tokenize()) {
 
@@ -456,6 +457,8 @@ public class ExpressionBuilder {
       case CAST:
       case TRY_CAST:
         return parseFunctionCast(token);
+      case COUNT:
+        return parseFunctionCount(token);
       case EXTRACT:
         return parseFunctionExtract(token);
       case POSITION:
@@ -471,11 +474,13 @@ public class ExpressionBuilder {
         if (token.is(Id.RPARENTHESIS)) {
           return expression;
         }
-        throw new ParseException(ExpressionError.UNBALANCE_PARENTHESIS.message(), this.getPosition());
+        throw new ParseException(ExpressionError.UNBALANCE_PARENTHESIS.message(),
+            this.getPosition());
       default:
         // Syntax error
     }
-    throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(), this.getPosition());
+    throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
+        this.getPosition());
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
@@ -735,7 +740,7 @@ public class ExpressionBuilder {
    *
    */
   private IExpression parseFunctionCast(Token token) throws ParseException {
-   
+
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotAndNext(Id.LPARENTHESIS)) {
@@ -815,6 +820,37 @@ public class ExpressionBuilder {
     return new Call(Operators.EXTRACT, operands);
   }
 
+  /** 
+   * COUNT(*) | COUNT([DISTINCT] <expression>)
+   */
+  private IExpression parseFunctionCount(Token token) throws ParseException {
+
+    Aggregator aggregator = Operators.COUNT;
+    
+    if (isNotAndNext(Id.LPARENTHESIS)) {
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+    }
+
+    List<IExpression> operands = new ArrayList<>();
+    
+    if(isAndNext(Id.MULTIPLY) ) {
+      aggregator = Operators.COUNT_ROW;
+    }
+    else if(isAndNext(Id.DISTINCT) ) {
+      aggregator = Operators.COUNT_DISTINCT;
+      operands.add(this.parseTerm());
+    } else {
+      operands.add(this.parseTerm());
+    }
+      
+    if (isNotAndNext(Id.RPARENTHESIS)) {
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+    }
+
+    return new Call(aggregator, operands);
+  }
+  
+  
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
   private IExpression parseFunctionJsonObject(Token token) throws ParseException {
 
@@ -1207,7 +1243,7 @@ public class ExpressionBuilder {
 
           if (c == '(') {
             // Special operator with name
-            if ("CAST".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name)
+            if ("CAST".equals(name) || "COUNT".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name)
                 || "POSITION".equals(name) || "JSON_OBJECT".equals(name)) {
               return new Token(Id.valueOf(name), start, position, name);
             }
@@ -1242,12 +1278,13 @@ public class ExpressionBuilder {
    * @param expression the expression to compile
    * @return the optimized expression
    */
-  protected IExpression compile(IExpressionContext context, IExpression expression) throws ExpressionException {
+  protected IExpression compile(IExpressionContext context, IExpression expression)
+      throws ExpressionException {
     if (expression == null)
       return null;
 
     IExpression original = expression;
-        
+
     int cycle = 20;
     do {
       // Compile operands first
@@ -1269,11 +1306,16 @@ public class ExpressionBuilder {
       original = expression;
     } while (--cycle > 0);
 
+    
+    
     return expression;
   }
 
-  
-  protected IExpression compileTuple(IExpressionContext context, Tuple tuple) throws ExpressionException {
+
+
+
+  protected IExpression compileTuple(IExpressionContext context, Tuple tuple)
+      throws ExpressionException {
     List<IExpression> elements = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
       elements.add(compile(context, expression));
@@ -1281,13 +1323,14 @@ public class ExpressionBuilder {
     return new Tuple(elements);
   }
 
-  protected IExpression compileCall(IExpressionContext context, Call call) throws ExpressionException {
+  protected IExpression compileCall(IExpressionContext context, Call call)
+      throws ExpressionException {
 
     // Replace arguments in User Defined Function by the operands of the call.
-    if (call.getOperator() instanceof Udf) {      
-      return compile(context, call, (Udf) call.getOperator());    
+    if (call.getOperator() instanceof UserDefinedFunction) {
+      return compile(context, call, (UserDefinedFunction) call.getOperator());
     }
-    
+
     // Optimize all operands
     List<IExpression> operands = new ArrayList<>(call.getOperandCount());
     for (IExpression expression : call.getOperands()) {
@@ -1296,15 +1339,24 @@ public class ExpressionBuilder {
     
     return new Call(call.getOperator(), operands);
   }
+
+  protected IExpression inferReturnType​(IExpressionContext context, Call call) {
+    // Inference return data type    
+    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType​(context, call);    
+    return new Call(type, call.getOperator(), call.getOperands());
+
+  }
   
-  protected IExpression compile(IExpressionContext context, Call call, Udf udf) throws ExpressionException {
+  
+  protected IExpression compile(IExpressionContext context, Call call, UserDefinedFunction udf)
+      throws ExpressionException {
     try {
-      IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());          
+      IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
       IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
-      return expression.visit(context, new UdfResolver(call.getOperands()));
+      return expression.visit(context, new UserDefinedFunctionResolver(call.getOperands()));
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());   
-    } 
+      throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
+    }
   }
 
 }

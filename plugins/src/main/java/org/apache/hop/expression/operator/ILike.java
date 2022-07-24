@@ -19,7 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Regexp;
 import java.io.StringWriter;
@@ -59,6 +61,11 @@ public class ILike extends Operator {
     Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
     return p.matcher(Coerse.toString(v0)).matches();
+  }
+
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.BOOLEAN;
   }
 
   @Override

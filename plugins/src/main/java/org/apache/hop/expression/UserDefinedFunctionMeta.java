@@ -31,7 +31,7 @@ import java.util.List;
     name = "User Defined Function",
     description = "User defined function for expression",
     image = "function.svg")
-public class UdfMeta extends HopMetadataBase implements IHopMetadata {
+public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMetadata {
 
   @HopMetadataProperty
   private String description;
@@ -42,13 +42,13 @@ public class UdfMeta extends HopMetadataBase implements IHopMetadata {
   @HopMetadataProperty(key = "arguments")
   private List<Argument> arguments;
 
-  public UdfMeta() {
+  public UserDefinedFunctionMeta() {
     super();
     arguments = new ArrayList<>();
   }
   
   /**
-   * Gets Udf description
+   * Gets user-defined function description
    *
    * @return value of description
    */
@@ -57,7 +57,7 @@ public class UdfMeta extends HopMetadataBase implements IHopMetadata {
   }
 
   /**
-   * Set the Udf description
+   * Set the user-defined function description
    *  
    * @param description The description to set
    */
@@ -80,6 +80,4 @@ public class UdfMeta extends HopMetadataBase implements IHopMetadata {
   public void setSource(String source) {
     this.source = source;
   }
-
- 
 }

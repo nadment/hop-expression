@@ -21,7 +21,9 @@ import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.time.ZoneId;
@@ -54,6 +56,11 @@ public class AtTimeZone extends Operator {
     } catch (Exception e) {
      throw new ExpressionException(ExpressionError.UNKNOWN_TIMEZONE, zone);
     }    
+  }
+
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.DATE;
   }
   
   @Override

@@ -65,6 +65,26 @@
     </hop>
   </order>
   <transform>
+    <name>Abort</name>
+    <type>Abort</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <abort_option>ABORT_WITH_ERROR</abort_option>
+    <always_log_rows>Y</always_log_rows>
+    <row_threshold>0</row_threshold>
+    <attributes/>
+    <GUI>
+      <xloc>1136</xloc>
+      <yloc>192</yloc>
+    </GUI>
+  </transform>
+  <transform>
     <name>Clone row</name>
     <type>CloneRow</type>
     <description/>
@@ -458,6 +478,13 @@ End
         <precision>-1</precision>
         <type>Integer</type>
       </field>
+      <field>
+        <expression>DECODE(FIELD_INTEGER,4,'Flag 1',8,'Flag 2',ABORT('Error generated with ABORT'))</expression>
+        <length>-1</length>
+        <name>RAISE</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
     </fields>
     <attributes/>
     <GUI>
@@ -510,34 +537,13 @@ End
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <condition>kuoiuyou</condition>
+    <condition>FIELD_INTEGER>5</condition>
     <send_false_to>FALSE</send_false_to>
     <send_true_to>TRUE</send_true_to>
     <attributes/>
     <GUI>
       <xloc>528</xloc>
-      <yloc>80</yloc>
-    </GUI>
-  </transform>
-  <transform>
-    <name>Abort</name>
-    <type>Abort</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <abort_option>ABORT_WITH_ERROR</abort_option>
-    <always_log_rows>Y</always_log_rows>
-    <message/>
-    <row_threshold>0</row_threshold>
-    <attributes/>
-    <GUI>
-      <xloc>1136</xloc>
-      <yloc>192</yloc>
+      <yloc>96</yloc>
     </GUI>
   </transform>
   <transform_error_handling>

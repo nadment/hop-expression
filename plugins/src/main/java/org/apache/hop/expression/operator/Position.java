@@ -17,9 +17,9 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
@@ -28,10 +28,10 @@ import java.io.StringWriter;
  * Returns the position in the string that is the first character of a specified occurrence of the
  * substring.
  */
-public class Position extends Operator {
+public class Position extends Function {
 
   public Position() {
-    super("POSITION", 10, true, true, "i18n::Operator.Category.String", "/docs/position.html");
+    super("POSITION", "POSITION", true, "i18n::Operator.Category.String", "/docs/position.html");
   }
 
   @ScalarFunction(id = "POSITION", minArgs = 2, maxArgs = 2,

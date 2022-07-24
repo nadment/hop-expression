@@ -51,10 +51,10 @@ public class ExpressionEditorDialog extends Dialog {
   }
 
   public String open(String expression, IVariables variables) {
-    return open(expression, variables, null);
+    return open(expression, variables, ExpressionMode.NONE, null);
   }
   
-  public String open(String expression, IVariables variables, CompletableFuture<IRowMeta> rowMetaFutur) {
+  public String open(String expression, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaFutur) {
     PropsUi props = PropsUi.getInstance();
 
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
@@ -87,7 +87,7 @@ public class ExpressionEditorDialog extends Dialog {
     BaseTransformDialog.positionBottomButtons(shell, buttons.toArray(new Button[0]),
         props.getMargin(), null);
     
-    ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
+    //ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
     
     // The expression editor
     wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, mode, rowMetaFutur);

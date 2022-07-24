@@ -19,11 +19,11 @@ package org.apache.hop.expression;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UdfResolver implements IExpressionVisitor<IExpression> {
+public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpression> {
 
   private final IExpression[] operands;
 
-  public UdfResolver(IExpression[] operands) {
+  public UserDefinedFunctionResolver(IExpression[] operands) {
     this.operands = operands;
   }
 

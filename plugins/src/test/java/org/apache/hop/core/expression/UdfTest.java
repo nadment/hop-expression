@@ -18,15 +18,15 @@ import static org.junit.Assert.assertEquals;
 import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.Udf;
-import org.apache.hop.expression.UdfMeta;
+import org.apache.hop.expression.UserDefinedFunction;
+import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.junit.Test;
 
 public class UdfTest extends BaseExpressionTest {
  
   @Test
   public void test() throws Exception {
-      UdfMeta meta = new UdfMeta();
+      UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
       meta.setName("UCASE");
       meta.setDescription("UDF test");
       meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
@@ -42,7 +42,7 @@ public class UdfTest extends BaseExpressionTest {
       assertEquals("UDF test", meta.getDescription());
       assertEquals("v0", meta.getArguments().get(0).getName());
       
-      Udf udf = new Udf(meta);      
+      UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       
       evalEquals("UCASE('abcd',3)", "ABC");

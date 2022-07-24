@@ -22,3 +22,5 @@ Converts a Unicode code point (including 7-bit ASCII) into the character that ma
 ----
 CHR( integer )
 ----
+
+Return:: String

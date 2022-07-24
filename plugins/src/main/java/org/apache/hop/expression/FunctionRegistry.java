@@ -79,6 +79,12 @@ public class FunctionRegistry {
     if (log.isDebug()) {
       log.logDebug("Register built-in functions");
     }
+       
+    // Aggregators are registered as functions
+    for (Aggregator aggregator: Operators.SET_AGGREGATORS) {
+      register(aggregator);
+    }
+    
     try {
       List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
       for (Method method : methods) {
@@ -96,14 +102,14 @@ public class FunctionRegistry {
           }
 
           // Create function and register primary name
-          Function function = new Function(annotation.id(), annotation.id(),
+          Function function = new RowFunction(annotation.id(), annotation.id(),
               annotation.deterministic(), instance, method, annotation.minArgs(),
               annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
           register(function.getId(), function);
 
           // Create function and register alias name
           for (String name : annotation.names()) {
-            function = new Function(annotation.id(), name, annotation.deterministic(), instance,
+            function = new RowFunction(annotation.id(), name, annotation.deterministic(), instance,
                 method, annotation.minArgs(), annotation.maxArgs(), annotation.category(),
                 annotation.documentationUrl());
             register(name, function);
@@ -112,12 +118,12 @@ public class FunctionRegistry {
           log.logError("Error registring function " + method, e);
         }
       }
+
+      
     } catch (Exception e) {
       log.logError("Error discovering annoted functions", e);
     }
   }
-
-
     
   private static Method getAnnotatedMethod(MethodInfo methodInfo)
       throws ClassNotFoundException, NoSuchMethodException, SecurityException {
@@ -168,6 +174,10 @@ public class FunctionRegistry {
     return methods;
   }
 
+  private static void register(final Function function) {
+    register(function.getId(), function);
+  }
+  
   public static void register(final String name, final Function function) {
     if (name == null)
       return;
@@ -199,7 +209,7 @@ public class FunctionRegistry {
   public static void reloadUserDefinedFunctions(IVariables variables) {
     // Unregister User Defined Functions
     for (Function function : FunctionRegistry.getFunctions()) {
-      if (function instanceof Udf) {
+      if (function instanceof UserDefinedFunction) {
         FunctionRegistry.unregister(function.getName());
       }
     }
@@ -207,15 +217,15 @@ public class FunctionRegistry {
      // Register User Defined Functions
     try {
       IHopMetadataProvider metadataProvider = HopMetadataUtil.getStandardHopMetadataProvider(variables);
-      IHopMetadataSerializer<UdfMeta> serializer = metadataProvider.getSerializer(UdfMeta.class);
+      IHopMetadataSerializer<UserDefinedFunctionMeta> serializer = metadataProvider.getSerializer(UserDefinedFunctionMeta.class);
 
       for (String name : serializer.listObjectNames()) {
         try {
           if (log.isDebug()) {
             log.logBasic("Register user defined function: " + name);
           }                   
-          UdfMeta udfMeta =serializer.load(name);
-          FunctionRegistry.register(name, new Udf(udfMeta));
+          UserDefinedFunctionMeta udfMeta =serializer.load(name);
+          FunctionRegistry.register(name, new UserDefinedFunction(udfMeta));
         } catch (Exception e) {
           log.logError("Error registring User-defined function " + name, e);
         }

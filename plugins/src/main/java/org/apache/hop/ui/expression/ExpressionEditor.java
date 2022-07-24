@@ -18,11 +18,12 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
+import org.apache.hop.expression.Aggregator;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.Udf;
+import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
@@ -188,10 +189,10 @@ public class ExpressionEditor extends Composite {
       }
     });
 
-    if (  mode==ExpressionMode.ROW ||  mode==ExpressionMode.UDF ) {
+    if (  mode==ExpressionMode.ROW || mode==ExpressionMode.COLUMN || mode==ExpressionMode.UDF ) {
       treeItemField = new TreeItem(tree, SWT.NULL);
       treeItemField.setImage(GuiResource.getInstance().getImageFolder());
-      String text = (  mode==ExpressionMode.ROW ) ? "ExpressionEditor.Tree.Fields.Label":"ExpressionEditor.Tree.Arguments.Label";
+      String text = (  mode==ExpressionMode.UDF ) ? "ExpressionEditor.Tree.Arguments.Label":"ExpressionEditor.Tree.Fields.Label";
       treeItemField.setText(BaseMessages.getString(PKG, text));
     }
 
@@ -207,8 +208,12 @@ public class ExpressionEditor extends Composite {
    
     // Inventory operator unique identifier and category
     for (Operator operator : operators) {
-  
-      if ( mode==ExpressionMode.UDF && operator instanceof Udf ) {
+
+      if ( mode!=ExpressionMode.COLUMN && operator instanceof Aggregator ) {
+        continue;
+      }
+      
+      if ( mode==ExpressionMode.UDF && operator instanceof UserDefinedFunction ) {
         continue;
       }
       

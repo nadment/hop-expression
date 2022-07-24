@@ -17,9 +17,9 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
@@ -36,11 +36,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
  * 
  * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)
  */
-public class JsonValue extends Operator {
-
-//public static final Configuration JSONPATH_CONFIGURATION =
-//Configuration.builder().mappingProvider(new JacksonMappingProvider())
-//  .jsonProvider(new JacksonJsonProvider()).build();
+public class JsonValue extends Function {
 
 public static final Configuration JSONPATH_CONFIGURATION =
 Configuration.builder().mappingProvider(new JacksonMappingProvider(JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build()))
@@ -48,12 +44,11 @@ Configuration.builder().mappingProvider(new JacksonMappingProvider(JsonMapper.bu
 
 
   public JsonValue() {
-    super("JSON_VALUE", 10, true, true, "i18n::Operator.Category.Json", "/docs/json_value.html");
+    super("JSON_VALUE", "JSON_VALUE", true, "i18n::Operator.Category.Json", "/docs/json_value.html");
   }
 
   @ScalarFunction(id = "JSON_VALUE", category = "i18n::Operator.Category.Json", minArgs = 2,
       maxArgs = 2, documentationUrl = "/docs/json_value.html")
-
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);

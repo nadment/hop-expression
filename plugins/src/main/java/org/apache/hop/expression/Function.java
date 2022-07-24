@@ -15,67 +15,27 @@
 package org.apache.hop.expression;
 
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
 
-public class Function extends Operator {
-
-  private final Object instance;
-  private final Method method;
-  private final int minArgs;
-  private final int maxArgs;
+public abstract class Function extends Operator {
 
   /**
-   * Creates an function operator.
+   * Creates an function.
    *
-   * Note that some operator has syntax of function CAST, TRY_CAST, CONCAT, EXTRACT.
+   * Note that some function has specific syntax CAST, CONCAT, COUNT, EXTRACT, POSITION.
    * 
    * @param id The unique identifier of the function
    * @param name The name of function
    */
-  public Function(String id, String name, boolean isDeterministic, Object instance,
-      Method method, int min, int max, String category, String documentationUrl) {
+  public Function(String id, String name, boolean isDeterministic, String category, String documentationUrl) {
     super(id, name, 10, true, isDeterministic, category, documentationUrl);
-
-    this.instance = instance;
-    this.method = method;
-    this.minArgs = min;
-    this.maxArgs = max;
   }
-
-  /**
-   * Check if the number of arguments is correct.
-   *
-   * @param len the number of arguments set
-   * @throws error if not enough or too many arguments
-   */
-  @Override
-  public void checkNumberOfArguments(IExpression[] operands) {
-
-    if (operands.length < minArgs) {      
-      throw new IllegalArgumentException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(this.getId()));
-    }
-
-    if (operands.length > maxArgs) {
-      throw new IllegalArgumentException(ExpressionError.TOO_MANY_ARGUMENT.message(this.getId()));
-    }
+ 
+  public Function(String id, String name, int precedence, boolean isLeftAssociative, boolean isDeterministic, String category, String documentationUrl) {
+    super(id, name, precedence, isLeftAssociative, isDeterministic, category, documentationUrl);
   }
-
-  @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    try {
-      return method.invoke(instance, context, operands);
-    } catch (Exception e) {
-      Throwable throwable = e.getCause();
-      if (throwable instanceof ExpressionException) {
-        throw (ExpressionException) throwable;
-      }
-      throw new ExpressionException(ExpressionError.FUNCTION_CALL_ERROR, this.getId(), throwable.getMessage());
-    }
-  }
-
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());
@@ -90,6 +50,11 @@ public class Function extends Operator {
     }
     writer.append(')');
   }
+  
+  /**
+   * Returns whether this function is an aggregate function.
+   */
+  public boolean isAggregator() {
+    return false;
+  }
 }
-
-

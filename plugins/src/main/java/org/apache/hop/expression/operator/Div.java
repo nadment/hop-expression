@@ -20,7 +20,9 @@ import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -72,7 +74,12 @@ public class Div extends Operator {
 
     return Coerse.toBigNumber(left).divide(Coerse.toBigNumber(right));
   }
-
+  
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.LEAST_RESTRICTIVE;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

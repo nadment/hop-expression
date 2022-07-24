@@ -29,21 +29,36 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import java.util.List;
 
-public class Udf extends Function {
-  private UdfMeta meta;
+public class UserDefinedFunction extends Function {
+  private UserDefinedFunctionMeta meta;
 
-  public Udf(UdfMeta meta) {
-    // super(name, name, 10, true, true, "i18n::Operator.Category.Udf", "/docs/udf.html");
-    super(meta.getName(), meta.getName(), true, null, null, meta.getArguments().size(), meta.getArguments().size(),
-        "i18n::Operator.Category.Udf", "/docs/udf.html");
+  public UserDefinedFunction(UserDefinedFunctionMeta meta) {
+    super(meta.getName(), meta.getName(), true, "i18n::Operator.Category.Udf", "/docs/udf.html");
     this.meta = meta;
   }
 
+  /**
+   * Check if the number of arguments is correct.
+   *
+   * @param len the number of arguments set
+   * @throws error if not enough or too many arguments
+   */
+  @Override
+  public void checkNumberOfArguments(IExpression[] operands) {
+
+    if (operands.length < meta.getArguments().size()) {      
+      throw new IllegalArgumentException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(this.getId()));
+    }
+
+    if (operands.length > meta.getArguments().size()) {
+      throw new IllegalArgumentException(ExpressionError.TOO_MANY_ARGUMENT.message(this.getId()));
+    }
+  }
+  
   @Override
   public Object eval(IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
-
-    return null;
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
   }
 
   public String getSource() {

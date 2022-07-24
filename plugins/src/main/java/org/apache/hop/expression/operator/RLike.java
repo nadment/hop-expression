@@ -20,7 +20,9 @@ import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Regexp;
@@ -70,6 +72,11 @@ public class RLike extends Operator {
     }
   }
 
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.BOOLEAN;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

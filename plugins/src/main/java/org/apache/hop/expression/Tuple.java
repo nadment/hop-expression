@@ -73,9 +73,21 @@ public class Tuple implements IExpression, Iterable<IExpression> {
   public Tuple(Set<IExpression> expressions) {
     this.values = expressions.toArray(new IExpression[0]);
   }
-
+  
+  @Override
   public Kind getKind() {
     return Kind.TUPLE;
+  } 
+  
+  @Override
+  public DataTypeName getDataType() {
+    // Returns the first known data type of values.    
+    for (IExpression v : values  ) {
+      DataTypeName type = v.getDataType();
+      if ( type!= DataTypeName.UNKNOWN ) return type;
+    }
+    
+    return DataTypeName.UNKNOWN;
   }
 
   @Override
@@ -91,11 +103,6 @@ public class Tuple implements IExpression, Iterable<IExpression> {
     return values[index];
   }
 
-  @Override
-  public boolean isNull() {
-    return false;
-  }
-  
   public boolean isEmpty() {
     return values.length == 0;
   }

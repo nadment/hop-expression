@@ -15,13 +15,14 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.util.TranslateUtil;
-import org.apache.hop.expression.util.DocumentationUtil;
+import org.apache.hop.expression.util.ExpressionUtil;
 import java.io.StringWriter;
 import java.util.Objects;
 
 /**
- * Operators have the precedence levels. An operator on higher levels is evaluated before an
- * operator on a lower level
+ * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ... END, or even internally generated constructs like implicit type conversions.
+ * 
+ * Operators have the precedence levels. An operator on higher levels is evaluated before an operator on a lower level
  */
 public abstract class Operator implements Comparable<Operator> {
    
@@ -38,7 +39,7 @@ public abstract class Operator implements Comparable<Operator> {
   private final int leftPrecedence;
 
   /**
-   * The precedence with which this operator binds to the expression to the right. This is more than
+   * findDocumentionDescription
    * the left precedence if the operator is left-associative.
    */
   private final int rightPrecedence;
@@ -74,8 +75,8 @@ public abstract class Operator implements Comparable<Operator> {
     this.isDeterministic = isDeterministic;
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;    
-    this.documentation = DocumentationUtil.load(id, documentationUrl);
-    this.description = DocumentationUtil.findDescription(documentation);
+    this.documentation = ExpressionUtil.loadDocumention(id, documentationUrl);
+    this.description = ExpressionUtil.findDocumentionDescription(documentation);
   }
 
   protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic,
@@ -127,7 +128,23 @@ public abstract class Operator implements Comparable<Operator> {
   public boolean isDeterministic() {
     return isDeterministic;
   }
-
+  
+  /**
+   * Returns whether a call to this operator is not sensitive to the operands order.
+   * An operator is symmetrical if the call returns the same result when the operands are permuted.
+   */
+  public boolean isSymmetrical() {
+    return false;
+  }
+  
+  /**
+   * Return type inference strategy.
+   * @return
+   */
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.UNKNOWN;
+  }
+  
   public String getDocumentationUrl() {
     return this.documentationUrl;
   }
@@ -205,7 +222,7 @@ public abstract class Operator implements Comparable<Operator> {
   public String getDocumentation() {
     return this.documentation;
   }
-
+  
   @Override
   public String toString() {
     return id;

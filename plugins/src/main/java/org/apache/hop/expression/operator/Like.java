@@ -19,7 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Regexp;
 import java.io.StringWriter;
@@ -74,6 +76,11 @@ public class Like extends Operator {
     return p.matcher(Coerse.toString(input)).matches();
   }
 
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.BOOLEAN;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

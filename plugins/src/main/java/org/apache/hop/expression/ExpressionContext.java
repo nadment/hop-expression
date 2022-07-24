@@ -93,7 +93,7 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     this.setAttribute(CACHED_RANDOM, new SecureRandom());
   }
 
-  public void setAttribute(String name, Object value) {
+  protected void setAttribute(String name, Object value) {
     attributes.put(name, value);
   }
       

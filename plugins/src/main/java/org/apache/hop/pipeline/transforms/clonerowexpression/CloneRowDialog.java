@@ -33,6 +33,7 @@ import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.dialog.BaseDialog;
+import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.expression.ExpressionText;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.eclipse.swt.SWT;
@@ -134,7 +135,7 @@ public class CloneRowDialog extends BaseTransformDialog implements ITransformDia
     fdlnrClone.top = new FormAttachment(wTransformName, margin * 2);
     wlnrClone.setLayoutData(fdlnrClone);
 
-    wnrClone = new ExpressionText(this.getVariables(), shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, rowMeta);
+    wnrClone = new ExpressionText(this.getVariables(), shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, ExpressionMode.ROW, rowMeta);
     props.setLook(wnrClone);
     wnrClone.setToolTipText(BaseMessages.getString(PKG, "CloneRowDialog.nrClone.Tooltip"));
     wnrClone.addModifyListener(lsMod);

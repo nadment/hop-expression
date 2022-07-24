@@ -43,5 +43,4 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
   public IExpression apply(IExpressionContext context, Literal literal) {
     return literal;
   }
-
 }

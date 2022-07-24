@@ -28,6 +28,7 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
@@ -110,6 +111,12 @@ public class BaseExpressionTest {
     return context;
   }
 
+  protected void returnType(String source, DataTypeName expected) throws Exception {
+    ExpressionContext context = createExpressionContext();
+    IExpression expression = ExpressionBuilder.compile(context, source);
+   // assertEquals(expected, expression.getDataType());
+  }
+  
   protected Object eval(String source) throws Exception {
     return eval(source, createExpressionContext(), null);
   }
@@ -118,6 +125,8 @@ public class BaseExpressionTest {
     return eval(source, context, null);
   }
 
+  
+  
   protected Object eval(String source, ExpressionContext context,
       Consumer<ExpressionContext> consumer) throws Exception {
 
@@ -236,10 +245,15 @@ public class BaseExpressionTest {
 
   @Test
   public void test() throws Exception {
-    ExpressionContext context = createExpressionContext();
-    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
-    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
-    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1), context ); 
+//    ExpressionContext context = createExpressionContext();
+//    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+//    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
+//    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+//    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1), context ); 
+    
+    //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
+    //returnType("Coalesce(NAME, NULL, 'XYZ')", DataTypeName.STRING);    
+    returnType("MAX(NAME)", DataTypeName.STRING);
+    returnType("MAX(AGE)", DataTypeName.INTEGER);
   }
 }

@@ -23,8 +23,8 @@ import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.Argument;
 import org.apache.hop.expression.DataTypeName;
-import org.apache.hop.expression.Udf;
-import org.apache.hop.expression.UdfMeta;
+import org.apache.hop.expression.UserDefinedFunction;
+import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.metadata.MetadataEditor;
@@ -41,15 +41,15 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 @GuiPlugin(description = "This is the editor for User Defined Function (UDF) metadata")
-public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
-  private static final Class<?> PKG = UdfMetaEditor.class; // For Translator
+public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFunctionMeta> {
+  private static final Class<?> PKG = UserDefinedFunctionMetaEditor.class; // For Translator
 
   private Text wName;
   private Text wDescription;
   private TableView wArguments;
   private ExpressionEditor wExpression;
 
-  public UdfMetaEditor(HopGui hopGui, MetadataManager<UdfMeta> manager, UdfMeta udf) {
+  public UserDefinedFunctionMetaEditor(HopGui hopGui, MetadataManager<UserDefinedFunctionMeta> manager, UserDefinedFunctionMeta udf) {
     super(hopGui, manager, udf);
   }
 
@@ -174,15 +174,15 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
 
   protected void updateField() {
 
-    UdfMeta meta = new UdfMeta();
+    UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     this.getWidgetsContent(meta);
 
-    wExpression.setRowMeta(Udf.createRowMeta(meta.getArguments()));
+    wExpression.setRowMeta(UserDefinedFunction.createRowMeta(meta.getArguments()));
   }
   
   @Override
   public void setWidgetsContent() {
-    UdfMeta udf = getMetadata();
+    UserDefinedFunctionMeta udf = getMetadata();
 
     wName.setText(Const.NVL(udf.getName(), ""));
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
@@ -199,7 +199,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
   }
 
   @Override
-  public void getWidgetsContent(UdfMeta udf) {
+  public void getWidgetsContent(UserDefinedFunctionMeta udf) {
     udf.setName(wName.getText());
     udf.setDescription(wDescription.getText());
     udf.setSource(wExpression.getText());
@@ -222,7 +222,7 @@ public class UdfMetaEditor extends MetadataEditor<UdfMeta> {
   @Override
   public void save() throws HopException {
 
-    UdfMeta meta = getMetadata();
+    UserDefinedFunctionMeta meta = getMetadata();
     getWidgetsContent(meta);
 
     super.save();

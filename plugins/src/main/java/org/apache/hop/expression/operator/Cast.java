@@ -20,9 +20,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Converter;
@@ -32,10 +32,10 @@ import java.io.StringWriter;
  * Converts a value of one data type into another data type <code>::</code> or <code>
  * CAST(value AS type [FORMAT format])</code>.
  */
-public class Cast extends Operator {
+public class Cast extends Function {
 
   public Cast() {
-    super("CAST", "::", 10, true, true, "i18n::Operator.Category.Conversion", "/docs/cast.html");
+    super("CAST", "::", true, "i18n::Operator.Category.Conversion", "/docs/cast.html");
   }
 
   @ScalarFunction(id = "CAST", minArgs = 2, maxArgs = 3,

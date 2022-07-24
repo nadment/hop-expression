@@ -24,7 +24,7 @@ import org.apache.hop.core.extension.IExtensionPoint;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.UdfMeta;
+import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.metadata.api.IHopMetadata;
 
 @ExtensionPoint(id = "UdfDeletedExtensionPoint", extensionPointId = "HopGuiMetadataObjectDeleted",
@@ -35,8 +35,8 @@ public class UdfDeletedExtensionPoint implements IExtensionPoint<IHopMetadata> {
 
     log.logBasic("MetadataObjectDeleted");
     
-    if ( object instanceof UdfMeta) {
-      UdfMeta meta = (UdfMeta) object;
+    if ( object instanceof UserDefinedFunctionMeta) {
+      UserDefinedFunctionMeta meta = (UserDefinedFunctionMeta) object;
       log.logBasic("User Defined Function deleted " + meta.getName());   
       FunctionRegistry.unregister(meta.getName());
     }

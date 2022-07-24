@@ -1,0 +1,108 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.hop.pipeline.transforms.aggregate;
+
+import org.apache.hop.core.exception.HopValueException;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.expression.Aggregator;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpressionProcessor;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.pipeline.transform.BaseTransformData;
+import org.apache.hop.pipeline.transform.ITransformData;
+import java.util.HashMap;
+
+public class AggregateData extends BaseTransformData implements ITransformData {
+  public class AggregateKey {
+    private Object[] values;
+
+    public AggregateKey(Object[] groupData) {
+      this.values = groupData;
+    }
+
+    public Object[] getValues() {
+      return values;
+    }
+
+    public boolean equals(Object obj) {
+      AggregateKey entry = (AggregateKey) obj;
+
+      try {
+        return groupMeta.compare(values, entry.values) == 0;
+      } catch (HopValueException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    public int hashCode() {
+      try {
+        return groupMeta.hashCode(getHashValue());
+      } catch (HopValueException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    private Object[] getHashValue() throws HopValueException {
+      Object[] groupDataHash = new Object[groupMeta.size()];
+      for (int i = 0; i < groupMeta.size(); i++) {
+        IValueMeta valueMeta = groupMeta.getValueMeta(i);
+        groupDataHash[i] = valueMeta.convertToNormalStorageType(values[i]);
+      }
+      return groupDataHash;
+    }
+  }
+
+  public HashMap<AggregateKey, IExpressionProcessor[]> map;
+
+  protected IRowMeta groupMeta;
+  protected int[] groupIndex;
+  
+  protected IExpressionContext context;
+  protected Call[] aggregates;
+  protected Aggregator[] aggregators;
+  protected IRowMeta aggregateMeta;
+  
+  public boolean firstRead;
+
+  public boolean hasOutput;
+
+  public IRowMeta inputRowMeta;
+  public IRowMeta outputRowMeta;
+
+  public boolean newBatch;
+
+  public AggregateData() {
+    super();
+  }
+
+  public AggregateKey createAggregateKey(Object[] row) {
+    Object[] groupData = new Object[groupIndex.length];
+    for (int i = 0; i < groupIndex.length; i++) {
+      groupData[i] = row[groupIndex[i]];
+    }
+  
+    return new AggregateKey(groupData);
+  }
+
+  /** Method responsible for clearing out memory hogs */
+  public void clear() {
+    map = new HashMap<>();
+  }
+}

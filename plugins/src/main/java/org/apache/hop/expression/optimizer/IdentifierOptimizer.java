@@ -17,11 +17,16 @@
 package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
+import org.apache.hop.expression.util.ExpressionUtil;
 
 public class IdentifierOptimizer extends Optimizer {
+  
+  // Resolve index and data type of a value in row.
+ 
   @Override
   public IExpression apply(final IExpressionContext context, final Identifier identifier) {
     IRowMeta rowMeta = context.getRowMeta();
@@ -30,6 +35,10 @@ public class IdentifierOptimizer extends Optimizer {
     if (index < 0) {
       return identifier;
     }
-    return new Identifier(identifier.getName(), index);
+    
+    DataTypeName type = ExpressionUtil.createDataType(rowMeta.getValueMeta(index));
+    
+    return new Identifier(identifier.getName(), type, index);
+
   }
 }

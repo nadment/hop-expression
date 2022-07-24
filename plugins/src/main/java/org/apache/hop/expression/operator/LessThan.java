@@ -19,7 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
@@ -48,6 +50,11 @@ public class LessThan extends Operator {
     return Coerse.compare(left, right) < 0;
   }
 
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.BOOLEAN;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

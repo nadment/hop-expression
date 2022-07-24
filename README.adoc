@@ -56,19 +56,21 @@ end
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE` `RLIKE`
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Supports a variety of scalar functions (conditional, mathematical, trigonometry, conversion, ...).
+* Scalar functions (conditional, mathematical, trigonometry, conversion, ...).
+* Aggregate functions `AVG` `COUNT` `MIN` `MAX` `STDEV`	`PERCENTILE` `VARIANCE`
+* User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading
 * Are not case-sensitive, excepted for identifier
 * Can be parenthesized to control the precedence order
 * Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance
-* User Defined Function (UDF) support has metadata
+
 
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.
 
 
 ## Extends with plugins
 
-Use @ScalarFunction annotation to create custom function. 
+Use @ScalarFunction annotation to create custom function in your plugin. 
 
 ----
 public static class ExperimentalFunction {

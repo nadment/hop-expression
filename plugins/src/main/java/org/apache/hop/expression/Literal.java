@@ -20,19 +20,20 @@ import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 /**
- * Expression representing a literal value.
+ * Constant value in a expression.
  */
 public class Literal implements IExpression {
-  
+
   private static final Class<?> PKG = IExpression.class; // for i18n purposes
-  
-  public static final Literal NULL = new Literal(null);
-  public static final Literal TRUE = new Literal(Boolean.TRUE);
-  public static final Literal FALSE = new Literal(Boolean.FALSE);
-  public static final Literal ZERO = new Literal(0L);
-  public static final Literal ONE = new Literal(1L);
+
+  public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
+  public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
+  public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
+  public static final Literal ZERO = new Literal(0L, DataTypeName.INTEGER);
+  public static final Literal ONE = new Literal(1L, DataTypeName.INTEGER);
 
   public static Literal of(Object value) {
     if (value == null)
@@ -44,11 +45,11 @@ public class Literal implements IExpression {
 
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-      if (BigDecimal.ZERO.compareTo(number)==0)
+      if (BigDecimal.ZERO.compareTo(number) == 0)
         return ZERO;
-      if (BigDecimal.ONE.compareTo(number)==0)
+      if (BigDecimal.ONE.compareTo(number) == 0)
         return ONE;
-      return new Literal(number);
+      return new Literal(number, DataTypeName.BIGNUMBER);
     }
 
     if (value instanceof Double) {
@@ -57,7 +58,7 @@ public class Literal implements IExpression {
         return ZERO;
       if (number == 1D)
         return ONE;
-      return new Literal(number);
+      return new Literal(number, DataTypeName.NUMBER);
     }
 
     if (value instanceof Long) {
@@ -66,7 +67,7 @@ public class Literal implements IExpression {
         return ZERO;
       if (number == 1L)
         return ONE;
-      return new Literal(number);
+      return new Literal(number, DataTypeName.INTEGER);
     }
 
     if (value instanceof Integer) {
@@ -75,24 +76,43 @@ public class Literal implements IExpression {
         return ZERO;
       if (number == 1)
         return ONE;
-      return new Literal(number.longValue());
+      return new Literal(number.longValue(), DataTypeName.INTEGER);
     }
 
-    if (value instanceof String || value instanceof ZonedDateTime || value instanceof byte[] || value instanceof DatePart || value instanceof DataTypeName) {
-      return new Literal(value);
+    if (value instanceof String ) {
+      return new Literal(value, DataTypeName.STRING);
     }
 
-    throw new IllegalArgumentException(BaseMessages.getString(PKG, "Expression.UnsupportedLiteralType", value.getClass(), value));
+    if (value instanceof  byte[] ) {
+      return new Literal(value, DataTypeName.BINARY);
+    }
+    if (value instanceof  ZonedDateTime ) {
+      return new Literal(value, DataTypeName.DATE);
+    }
+        
+    // Special case for optimization
+    if (value instanceof DatePart || value instanceof DataTypeName) {
+      return new Literal(value, DataTypeName.UNKNOWN);
+    }
+
+    throw new IllegalArgumentException(
+        BaseMessages.getString(PKG, "Expression.UnsupportedLiteralType", value.getClass(), value));
   }
+
+  /**
+   * The data type of this literal, as reported by {@link #getDataType}.
+   */
+  private final DataTypeName type;
 
   private Object value;
 
-  private Literal(Object value) {
+  private Literal(final Object value, final DataTypeName type) {
     this.value = value;
+    this.type = type;
   }
 
   @Override
-  public Object eval(IExpressionContext context) throws ExpressionException {
+  public Object eval(final IExpressionContext context) throws ExpressionException {
     return value;
   }
 
@@ -104,21 +124,23 @@ public class Literal implements IExpression {
   @Override
   public int getCost() {
     return 1;
-  }  
+  }
   
+  @Override
+  public DataTypeName getDataType() {
+    return type;
+  }
+
   @Override
   public int hashCode() {
-    if (value == null)
-      return 0;
-
-    return value.hashCode();
+    return Objects.hash(value, type);
   }
-  
+
   @Override
   public boolean isNull() {
-    return value==null;
+    return value == null;
   }
-  
+
   @Override
   public boolean equals(Object other) {
     if (other == null)
@@ -156,11 +178,9 @@ public class Literal implements IExpression {
         }
       }
       writer.append('\'');
-    } 
-    else if (value instanceof Boolean) {
+    } else if (value instanceof Boolean) {
       writer.append(((boolean) value) ? "TRUE" : "FALSE");
-    }    
-    else if (value instanceof byte[]) {
+    } else if (value instanceof byte[]) {
       writer.append("0x");
       for (byte b : (byte[]) value) {
         writer.append(byteToHex((b >> 4) & 0xF));
@@ -190,6 +210,6 @@ public class Literal implements IExpression {
 
   @Override
   public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);    
+    return visitor.apply(context, this);
   }
 }

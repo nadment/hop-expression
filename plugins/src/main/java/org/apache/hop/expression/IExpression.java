@@ -20,13 +20,12 @@ package org.apache.hop.expression;
 import java.io.StringWriter;
 
 /**
- * An expression is a combination of one or more literal, resolvable identifiers, operators and
- * functions that evaluate to a value.
+ * An expression is a combination of one or more literal, identifiers, list of expressions or a call to an operator that evaluate to a value.
  */
 public interface IExpression {
 
   /**
-   * Returns the type of expression.
+   * Returns the kind of expression.
    *
    * @return a {@link Kind} value, never null
    * @see #is
@@ -36,7 +35,20 @@ public interface IExpression {
   public default boolean is(Kind kind) {
     return getKind() == kind;
   }
-
+  
+  /**
+   * Returns the data type of expression.
+   *
+   * @return a {@link DataTypeName} value
+   */
+  public default DataTypeName getDataType() {
+    return DataTypeName.UNKNOWN;
+  }
+  
+//  public default DataTypeFamily getTypeFamily() {
+//    return getType().getFamily();
+//  }  
+  
   /**
    * Check if the expression is a call to this operator or an alias of this operator.
    */
@@ -49,7 +61,9 @@ public interface IExpression {
    *
    * @return if the expression is constant NULL value
    */
-  public boolean isNull();
+  public default boolean isNull() {
+    return false;
+  }
 
   /**
    * Estimate the cost to process the expression, used when optimizing the expression.

@@ -19,7 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
@@ -45,6 +47,11 @@ public class BitNot extends Operator {
     return ~Coerse.toInteger(value);
   }
 
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.INTEGER;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append('~');

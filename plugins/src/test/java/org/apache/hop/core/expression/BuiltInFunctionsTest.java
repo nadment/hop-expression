@@ -14,6 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.util.Converter;
 import org.junit.Test;
@@ -37,6 +38,9 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("Coalesce(null,'TEST','BIDON')", "TEST");
     evalNull("Coalesce(null,null,null)");
     evalFails("Coalesce()");
+    
+    returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
+    returnType("Coalesce(NAME, NULL, 'XYZ')", DataTypeName.STRING);    
   }
 
   @Test
@@ -126,6 +130,7 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalEquals("Current_Date()", today, context);
 
     evalFails("Today(Null)");
+    returnType("Current_Date()", DataTypeName.DATE);
   }
 
   @Test
@@ -752,6 +757,25 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Avg() throws Exception {    
+    returnType("AVG(AGE)", DataTypeName.NUMBER);
+  }  
+  
+  @Test
+  public void Max() throws Exception {    
+    returnType("MAX(NAME)", DataTypeName.STRING);
+    returnType("MAX(AGE)", DataTypeName.INTEGER);
+    returnType("MAX(DN)", DataTypeName.DATE);
+  }  
+  
+  @Test
+  public void Min() throws Exception {    
+    returnType("MIN(NAME)", DataTypeName.STRING);
+    returnType("MIN(AGE)", DataTypeName.INTEGER);
+    returnType("MIN(DN)", DataTypeName.DATE);
+  }  
+  
+  @Test
   public void Cos() throws Exception {
     evalEquals("Cos(1)", 0.5403023058681398);
     evalEquals("Cos(Pi())", -1);
@@ -886,6 +910,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("Trim(NULL)");
     evalNull("Trim(' 01ABC012 ',NULL)");
     evalFails("Trim()");
+    
+    returnType("Trim(NAME)", DataTypeName.STRING);
   }
 
   @Test
@@ -896,6 +922,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("LTrim(NULL)");
     evalNull("LTrim('01ABC012',NULL)");
     evalFails("LTrim()");
+    
+    returnType("LTrim(NAME)", DataTypeName.STRING);
   }
 
   @Test
@@ -906,6 +934,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("RTrim(NULL)");
     evalNull("RTrim('01ABC012',NULL)");
     evalFails("RTrim()");
+    
+    returnType("RTrim(NAME)", DataTypeName.STRING);
   }
 
   @Test
@@ -942,6 +972,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
 
     evalNull("Length(null)");
     evalFails("Length()");
+    
+    returnType("RTrim(NAME)", DataTypeName.INTEGER);
   }
 
   @Test
@@ -1690,7 +1722,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
   public void Contains() throws Exception {
     evalTrue("CONTAINS(NAME,'ES')");
     evalNull("CONTAINS(NULL,'ES')");
-    evalNull("CONTAINS(NAME,NULL)");
+    evalNull("CONTAINS(NAME,NULL)");    
+    returnType("CONTAINS(NAME,'ES')", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -1699,7 +1732,8 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalFalse("StartsWith('-TEST FROM','TES')");
     evalNull("StartsWith(NULL,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL)");
-    evalFails("StartsWith()");
+    evalFails("StartsWith()");    
+    returnType("StartsWith(NAME,'ES')", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -1709,6 +1743,7 @@ public class BuiltInFunctionsTest extends BaseExpressionTest {
     evalNull("EndsWith(NULL,'ROMA')");
     evalNull("EndsWith('TEST FROM',NULL)");
     evalFails("EndsWith()");
+    returnType("EndsWith(NAME,'ES')", DataTypeName.BOOLEAN);
   }
 
   @Test

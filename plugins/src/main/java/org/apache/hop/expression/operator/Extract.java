@@ -19,9 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
@@ -36,10 +36,10 @@ import java.util.Locale;
  * 
  * Date part: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
  */
-public class Extract extends Operator {
+public class Extract extends Function {
 
   public Extract() {
-    super("EXTRACT", 10, true, true, "i18n::Operator.Category.Date", "/docs/extract.html");
+    super("EXTRACT", "EXTRACT", true, "i18n::Operator.Category.Date", "/docs/extract.html");
   }
 
   @ScalarFunction(id = "EXTRACT", minArgs = 2, maxArgs = 2,

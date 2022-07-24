@@ -22,15 +22,20 @@ import java.util.List;
 import java.util.Objects;
 
 /** 
- * A <code>Call</code> is a call to an {@link Operator}.
+ * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
  */
 public class Call implements IExpression {
 
+  protected final DataTypeName type;
   protected final Operator operator;
   protected final IExpression[] operands;
 
   public Call(Operator operator, IExpression... operands) {
-    super();
+    this(DataTypeName.UNKNOWN, operator, operands);
+  }
+
+  public Call(DataTypeName type, Operator operator, IExpression... operands) {
+    this.type = type;
     this.operator = Objects.requireNonNull(operator);
     this.operands = Objects.requireNonNull(operands);
     
@@ -38,7 +43,11 @@ public class Call implements IExpression {
   }
 
   public Call(Operator operator, List<IExpression> operands) {
-    super();
+    this(DataTypeName.UNKNOWN, operator, operands);
+  }
+  
+  public Call(DataTypeName type, Operator operator, List<IExpression> operands) {
+    this.type = type;
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
     
@@ -56,9 +65,6 @@ public class Call implements IExpression {
   
   @Override
   public boolean is(final Operator other) {
-    if (other == null) {
-      return false;
-    }
     return operator.is(other);
   }
 
@@ -75,7 +81,15 @@ public class Call implements IExpression {
     }
     return cost;
   }
-
+  
+/**
+ * Data type is unknown before optimization.
+ */  
+  @Override
+  public DataTypeName getDataType() {
+    return type;
+  }
+  
   /**
    * Get the operator
    *
@@ -105,11 +119,6 @@ public class Call implements IExpression {
   public int getOperandCount() {
     return operands.length;
   }
-
-  @Override
-  public boolean isNull() {
-    return false;
-  }
   
   @Override
   public boolean equals(Object other) {
@@ -118,14 +127,14 @@ public class Call implements IExpression {
 
     if (other instanceof Call) {
       Call call = (Call) other;
-      return this.operator.equals(call.operator) && Arrays.equals(this.operands,call.operands);
+      return this.type.equals(call.type) && this.operator.equals(call.operator) && Arrays.equals(this.operands,call.operands);
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operator,operands);
+    return Objects.hash(type, operator, operands);
   }
 
   @Override

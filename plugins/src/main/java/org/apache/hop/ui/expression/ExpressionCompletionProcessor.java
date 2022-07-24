@@ -28,7 +28,7 @@ import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.Udf;
+import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -219,7 +219,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
         Function function = FunctionRegistry.getFunction(name);
         
         // Skip UDF proposal in UDF mode
-        if ( mode==ExpressionMode.UDF && function instanceof Udf ) {
+        if ( mode==ExpressionMode.UDF && function instanceof UserDefinedFunction ) {
           continue;
         }
         

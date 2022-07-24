@@ -29,19 +29,19 @@ import java.util.List;
 @SearchableAnalyserPlugin(
     id = "UdfSearchableAnalyser",
     name = "Search in user defined function metadata")
-public class UdfSearchableAnalyser
-    extends BaseMetadataSearchableAnalyser<UdfMeta>
-    implements ISearchableAnalyser<UdfMeta> {
+public class UserDefinedFunctionSearchableAnalyser
+    extends BaseMetadataSearchableAnalyser<UserDefinedFunctionMeta>
+    implements ISearchableAnalyser<UserDefinedFunctionMeta> {
 
   @Override
-  public Class<UdfMeta> getSearchableClass() {
-    return UdfMeta.class;
+  public Class<UserDefinedFunctionMeta> getSearchableClass() {
+    return UserDefinedFunctionMeta.class;
   }
 
   @Override
   public List<ISearchResult> search(
-      ISearchable<UdfMeta> searchable, ISearchQuery searchQuery) {
-    UdfMeta meta = searchable.getSearchableObject();
+      ISearchable<UserDefinedFunctionMeta> searchable, ISearchQuery searchQuery) {
+    UserDefinedFunctionMeta meta = searchable.getSearchableObject();
     String component = getMetadataComponent();
 
     List<ISearchResult> results = new ArrayList<>();

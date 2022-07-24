@@ -16,6 +16,7 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.operator.Add;
 import org.apache.hop.expression.operator.AtTimeZone;
+import org.apache.hop.expression.operator.Avg;
 import org.apache.hop.expression.operator.Between;
 import org.apache.hop.expression.operator.BetweenSymmetric;
 import org.apache.hop.expression.operator.BitAnd;
@@ -29,9 +30,9 @@ import org.apache.hop.expression.operator.BoolXor;
 import org.apache.hop.expression.operator.Case;
 import org.apache.hop.expression.operator.Cast;
 import org.apache.hop.expression.operator.Concat;
+import org.apache.hop.expression.operator.Count;
 import org.apache.hop.expression.operator.Div;
 import org.apache.hop.expression.operator.Equal;
-import org.apache.hop.expression.operator.Abort;
 import org.apache.hop.expression.operator.Extract;
 import org.apache.hop.expression.operator.GreaterThan;
 import org.apache.hop.expression.operator.GreaterThanOrEqual;
@@ -46,14 +47,19 @@ import org.apache.hop.expression.operator.LessThan;
 import org.apache.hop.expression.operator.LessThanOrEqual;
 import org.apache.hop.expression.operator.LessThanOrGreaterThan;
 import org.apache.hop.expression.operator.Like;
+import org.apache.hop.expression.operator.Max;
+import org.apache.hop.expression.operator.Min;
 import org.apache.hop.expression.operator.Mod;
 import org.apache.hop.expression.operator.Multiply;
 import org.apache.hop.expression.operator.Negate;
 import org.apache.hop.expression.operator.NotEqual;
+import org.apache.hop.expression.operator.Percentile;
 import org.apache.hop.expression.operator.Position;
 import org.apache.hop.expression.operator.RLike;
+import org.apache.hop.expression.operator.StdDev;
 import org.apache.hop.expression.operator.Subtract;
-import org.apache.hop.expression.operator.Try;
+import org.apache.hop.expression.operator.Sum;
+import org.apache.hop.expression.operator.Variance;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -111,22 +117,41 @@ public class Operators {
   public static final Operator SUBTRACT = new Subtract();
 
   // -------------------------------------------------------------
-  // SPECIAL OPERATORS
+  // DATE OPERATORS
   // -------------------------------------------------------------
-  public static final Operator CAST = new Cast();
-  public static final Operator ABORT = new Abort();
-  public static final Operator TRY = new Try();
   public static final Operator AT_TIME_ZONE = new AtTimeZone();
-  public static final Operator CONCAT = new Concat();
-  public static final Operator EXTRACT = new Extract();
-  public static final Operator POSITION = new Position();
-  public static final Operator JSON_OBJECT = new JsonObject();
+  
+  // -------------------------------------------------------------
+  // SPECIAL OPERATORS with custom syntax
+  // -------------------------------------------------------------
+  public static final Function CAST = new Cast();  
+  public static final Function CONCAT = new Concat();
+  public static final Function EXTRACT = new Extract();
+  public static final Function POSITION = new Position();
+  public static final Function JSON_OBJECT = new JsonObject();
 
-  /** Set of operators. */
+  // -------------------------------------------------------------
+  // AGGREGATOR OPERATORS
+  // -------------------------------------------------------------
+  public static final Aggregator AVG = new Avg();
+  public static final Aggregator COUNT = new Count(false, false);
+  public static final Aggregator COUNT_DISTINCT = new Count(true, false);
+  public static final Aggregator COUNT_ROW = new Count(false, true);
+  public static final Aggregator MAX = new Max();
+  public static final Aggregator MIN = new Min();
+  public static final Aggregator PERCENTILE = new Percentile();
+  public static final Aggregator STDDEV = new StdDev();
+  public static final Aggregator SUM = new Sum();
+  public static final Aggregator VARIANCE = new Variance();
+
+  /** Set of aggregators. */
+  protected static final Set<Aggregator> SET_AGGREGATORS = Set.of(AVG, COUNT, MAX, MIN, PERCENTILE, STDDEV, SUM, VARIANCE);
+  
+  /** Set of scalar operators. */
   private static final Set<Operator> SET_OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
       BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
       LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN, CASE,
-      CONCAT, IN, IS_NULL, IS_FALSE, IS_TRUE, LIKE, RLIKE, BOOLNOT, BOOLOR );
+      CONCAT, IN, IS_NULL, IS_FALSE, IS_TRUE, LIKE, RLIKE, BOOLNOT, BOOLOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(SET_OPERATORS);

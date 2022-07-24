@@ -19,7 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import java.io.StringWriter;
 
 /**
@@ -42,5 +44,10 @@ public class IsNull extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
     writer.append(" IS NULL");
+  }
+
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.BOOLEAN;
   }
 }

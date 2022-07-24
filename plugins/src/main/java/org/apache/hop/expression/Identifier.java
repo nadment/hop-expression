@@ -28,15 +28,17 @@ import java.util.Objects;
  */
 public class Identifier implements IExpression {
   private final String name;
+  private final DataTypeName type;
   private final int index;
   
-  public Identifier(final String name, int index) {
+  public Identifier(final String name,  DataTypeName type, int index) {
     this.name = Objects.requireNonNull(name, "name must not be null");
+    this.type = Objects.requireNonNull(type, "data type must not be null");
     this.index = index;
   }
   
   public Identifier(final String name) {
-    this(name, -1);
+    this(name, DataTypeName.UNKNOWN, -1);
   }
 
   @Override
@@ -51,7 +53,12 @@ public class Identifier implements IExpression {
   public String getName() {
     return name;
   }
-
+  
+  @Override
+  public DataTypeName getDataType() {
+    return type;
+  }
+  
   @Override
   public int getCost() {
     return 2;
@@ -66,7 +73,7 @@ public class Identifier implements IExpression {
   }
   
   @Override
-  public Object eval(IExpressionContext context) throws ExpressionException {
+  public Object eval(final IExpressionContext context) throws ExpressionException {
         
     IRowMeta rowMeta = context.getRowMeta();
     if (rowMeta == null || index<0)
@@ -127,7 +134,7 @@ public class Identifier implements IExpression {
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    return Objects.hash(name, type, index);
   }
 
   @Override
@@ -145,10 +152,5 @@ public class Identifier implements IExpression {
   @Override
   public String toString() {
     return this.name;
-  }
-
-  @Override
-  public boolean isNull() {
-    return false;
   }
 }

@@ -84,6 +84,32 @@ public class BuiltInFunctions {
   }
   
   /**
+   * This function abort execution of the pipeline or workflow and log message.
+   */
+  @ScalarFunction(id = "ABORT", minArgs = 1, maxArgs = 1, category = "i18n::Operator.Category.Special", documentationUrl="/docs/abort.html")
+  public static Object abort(final IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+     
+      String message = Coerse.toString(operands[0].eval(context));      
+      throw new ExpressionException(message);
+  }
+  
+  /**
+   * This function returns the value of expression. If an error occurs, null is returned.
+   */
+  @ScalarFunction(id = "TRY", minArgs = 1, maxArgs = 1, category = "i18n::Operator.Category.Special", documentationUrl="/docs/try.html")
+  public static Object try_(final IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+
+    try {     
+      return operands[0].eval(context);    
+    } catch (Exception e) {
+      return null;
+    }
+  }
+    
+  
+  /**
    * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
    */
   @ScalarFunction(id = "ACOS", category = "i18n::Operator.Category.Trigonometry",

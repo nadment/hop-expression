@@ -20,7 +20,9 @@ import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
@@ -71,6 +73,11 @@ public class Mod extends Operator {
     }
 
     return Coerse.toBigNumber(left).remainder(Coerse.toBigNumber(right));
+  }
+  
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.LEAST_RESTRICTIVE;
   }
 
   @Override

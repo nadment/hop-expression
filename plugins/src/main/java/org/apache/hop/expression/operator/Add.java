@@ -19,7 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IReturnTypeInference;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -35,7 +37,7 @@ public class Add extends Operator {
   public Add() {
     super( "ADD", "+", 100, true, true, "i18n::Operator.Category.Mathematical", "/docs/add.html");
   }
-
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
@@ -46,7 +48,7 @@ public class Add extends Operator {
     if (right == null)
       return null;
     
-// Removed because hard to optimize    
+// Removed because it's hard to optimize    
 //    if (left instanceof ZonedDateTime) {
 //      // Computes fraction of day
 //      long seconds = (long) (Coerse.toNumber(right) * SECONDS_BY_DAY);
@@ -64,7 +66,17 @@ public class Add extends Operator {
 
     return Coerse.toBigNumber(left).add(Coerse.toBigNumber(right));
   }
-
+  
+  @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+  
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.LEAST_RESTRICTIVE;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

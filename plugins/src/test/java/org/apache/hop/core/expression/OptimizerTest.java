@@ -27,6 +27,7 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
@@ -36,6 +37,7 @@ import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
+import java.io.PrintStream;
 
 public class OptimizerTest {
 
@@ -72,7 +74,12 @@ public class OptimizerTest {
     IExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
     IExpression expression = ExpressionBuilder.compile(context, e);
 
-    System.out.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression);
+    PrintStream console = System.out;
+    if ( expression.getDataType()==DataTypeName.UNKNOWN) {
+      console = System.err;
+    }
+    
+    console.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression +" return type " + expression.getDataType());
     
     return expression;
   }
@@ -101,12 +108,12 @@ public class OptimizerTest {
 
   @Test
   public void testSimplifyLikeRule() throws Exception {
-    optimizeNull("FIELD LIKE NULL");
-    optimizeNull("NULL LIKE FIELD");
-    optimize("FIELD LIKE 'Hello'", "FIELD='Hello'");
-    optimize("FIELD LIKE 'H%'", "STARTSWITH(FIELD,'H')");
-    optimize("FIELD LIKE '%o'", "ENDSWITH(FIELD,'o')");
-    optimize("FIELD LIKE '%Hello%'", "CONTAINS(FIELD,'Hello')");
+    optimizeNull("NAME LIKE NULL");
+    optimizeNull("NULL LIKE NAME");
+    optimize("NAME LIKE 'Hello'", "NAME='Hello'");
+    optimize("NAME LIKE 'H%'", "STARTSWITH(NAME,'H')");
+    optimize("NAME LIKE '%o'", "ENDSWITH(NAME,'o')");
+    optimize("NAME LIKE '%Hello%'", "CONTAINS(NAME,'Hello')");
   }
 
   @Test
@@ -132,10 +139,10 @@ public class OptimizerTest {
     optimizeTrue("not false");
     optimizeTrue("not not true");
     optimizeFalse("not not false");
-    optimize("not(FIELD>5)", "FIELD<=5");
-    optimize("not(FIELD>=5)", "FIELD<5");
-    optimize("not(FIELD<5)", "FIELD>=5");
-    optimize("not(FIELD<=5)", "FIELD>5");
+    optimize("not(AGE>5)", "AGE<=5");
+    optimize("not(AGE>=5)", "AGE<5");
+    optimize("not(AGE<5)", "AGE>=5");
+    optimize("not(AGE<=5)", "AGE>5");
 
     optimizeTrue("true or true");
     optimizeTrue("true or false");
@@ -145,9 +152,9 @@ public class OptimizerTest {
     optimizeTrue("null or true");
     optimizeNull("null or null");
     optimizeTrue("FIELD or true");
-    optimize("FIELD or false", "FIELD");
-    optimizeTrue("true or FIELD");
-    optimize("FIELD or FIELD", "FIELD");
+    optimize("NAME or false", "NAME");
+    optimizeTrue("true or NAME");
+    optimize("NAME or NAME", "NAME");
 
     optimizeTrue("true and true");
     optimizeFalse("true and false");
@@ -155,7 +162,7 @@ public class OptimizerTest {
     optimizeFalse("false and false");
     optimizeNull("true and null");
     optimizeNull("null and true");
-    optimize("FIELD and FIELD", "FIELD");
+    optimize("NAME and NAME", "NAME");
     
     // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
@@ -180,7 +187,7 @@ public class OptimizerTest {
     optimize("NOT (FIELD IS NOT NULL)", "FIELD IS NULL");
     optimize("NOT (FIELD IS NULL)", "FIELD IS NOT NULL");
 
-    optimize("-(-FIELD)", "FIELD");
+    optimize("-(-AGE)", "AGE");
     optimize("false and true or FIELD", "FIELD");
     optimizeFalse("false and FIELD");
 
@@ -214,10 +221,10 @@ public class OptimizerTest {
   @Test
   public void testCombineConcatsRule() throws Exception {
     // Same syntax but cost reduced
-    optimize("'A'||FIELD1||FIELD2||'C'", "'A'||FIELD1||FIELD2||'C'");
-    optimize("'A'||FIELD1||NULL||'C'", "'A'||FIELD1||'C'");
-    optimize("CONCAT('A',CONCAT(FIELD1,CONCAT(FIELD2,'C')||'D'))", "'A'||FIELD1||FIELD2||'C'||'D'");
-    optimize("NULL||CONCAT(FIELD1,NULL)","FIELD1");
+    optimize("'A'||NAME||NAME||'C'", "'A'||NAME||NAME||'C'");
+    optimize("'A'||NAME||NULL||'C'", "'A'||NAME||'C'");
+    optimize("CONCAT('A',CONCAT(NAME,CONCAT(NAME,'C')||'D'))", "'A'||NAME||NAME||'C'||'D'");
+    optimize("NULL||CONCAT(NAME,NULL)","NAME");
   }
 
   @Test

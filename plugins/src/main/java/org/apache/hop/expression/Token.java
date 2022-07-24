@@ -137,6 +137,9 @@ public class Token {
     END, 
     WHEN, 
     TRY,
+    /** COUNT(*) or COUNT([DISTINCT] numeric) operator */
+    COUNT,
+    DISTINCT,
     /** Extract(part FROM date_time) operator */
     EXTRACT,
     /** Position(substring IN string) operator */

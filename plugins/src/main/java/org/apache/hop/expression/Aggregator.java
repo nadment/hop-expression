@@ -14,7 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.experimental;
+package org.apache.hop.expression;
 
-public interface IAggregateContext {
+public abstract class Aggregator extends Function {
+
+  public Aggregator(String id, String documentationUrl) {
+    super(id, id, false, "i18n::Operator.Category.Aggregation", documentationUrl);
+  }
+  
+  @Override
+  public boolean isAggregator() {
+    return true;
+  } 
+  
+  public abstract IExpressionProcessor createProcessor();
+
+  @Override
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  }
 }

@@ -43,9 +43,8 @@ public interface IExpressionContext extends IVariables {
    *         if the name is empty or if the scope is invalid.
    * @throws NullPointerException if the name is null.
    */
-  public void setAttribute(String name, Object value);
+  //public void setAttribute(String name, Object value);
 
-  //public IVariables getVariables();
   public IRowMeta getRowMeta();
   public Object[] getRow();
   public void setRow(Object[] row);

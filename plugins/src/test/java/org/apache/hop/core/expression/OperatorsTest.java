@@ -472,6 +472,11 @@ public class OperatorsTest extends BaseExpressionTest {
   }
   
   @Test
+  public void Abort() throws Exception {
+    evalFails("Abort('Custom error message')");
+  }
+  
+  @Test
   public void Try() throws Exception {
 
     // Division by zero

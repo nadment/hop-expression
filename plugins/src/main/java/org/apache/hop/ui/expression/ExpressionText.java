@@ -66,15 +66,17 @@ public class ExpressionText extends Composite {
 
   protected ToolBar wToolBar;
 
+  protected ExpressionMode mode; 
   protected CompletableFuture<IRowMeta> rowMetaFutur;
 
   public ExpressionText(IVariables variables, Composite composite, int flags) {
-    this(variables, composite, flags, null);
+    this(variables, composite, flags, ExpressionMode.NONE, null);
   }
   
-  public ExpressionText(IVariables variables, Composite composite, int flags, CompletableFuture<IRowMeta> rowMetaFutur) {
+  public ExpressionText(IVariables variables, Composite composite, int flags, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaFutur) {
     super(composite, SWT.NONE);
     initialize(variables, composite, flags, null, null, null, null);
+    this.mode = mode;
     this.rowMetaFutur = rowMetaFutur;
   }
 
@@ -127,7 +129,7 @@ public class ExpressionText extends Composite {
   
   protected void openExpressionDialog() {
     ExpressionEditorDialog dialog = new ExpressionEditorDialog(this.getShell());
-    String expression = dialog.open(wText.getText(), variables, rowMetaFutur);
+    String expression = dialog.open(wText.getText(), variables, mode, rowMetaFutur);
     if (expression != null) {
       wText.setText(expression);
     }

@@ -23,6 +23,8 @@ Returns the numeric value of the first character in a string that is the numeric
 ASCII( char )
 ----
 
+Return:: Integer
+
 == Usage
 
 * If the string is empty, a value of 0 is returned.

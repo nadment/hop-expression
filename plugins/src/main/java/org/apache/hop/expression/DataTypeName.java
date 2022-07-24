@@ -57,7 +57,7 @@ public enum DataTypeName {
   BINARY(DataTypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
 
   /** A unknown type */
- // UNKNOWN(DataTypeFamily.UNKNOWN, PrecScale.NO_NO, Void.class),
+  UNKNOWN(DataTypeFamily.BINARY, PrecScale.NO_NO, Void.class),
   //ANY(DataTypeFamily.UNKNOWN, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class)
   ;
 

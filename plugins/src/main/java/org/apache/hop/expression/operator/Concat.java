@@ -18,9 +18,11 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.IReturnTypeInference;
+import org.apache.hop.expression.ReturnTypes;
 import org.apache.hop.expression.ScalarFunction;
 import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
@@ -31,7 +33,7 @@ import java.io.StringWriter;
 /** 
  * String concatenation operator '<code>||</code>'
  */
-public class Concat extends Operator {
+public class Concat extends Function {
 
   public Concat() {
     super("CONCAT", "||", 110, true, true, "i18n::Operator.Category.String", "/docs/concat.html");
@@ -81,6 +83,11 @@ public class Concat extends Operator {
     return builder.toString();
   }
 
+  @Override
+  public IReturnTypeInference getReturnTypeInference() {
+    return ReturnTypes.FIRST_KNOWN;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     boolean concatFirst = true;
