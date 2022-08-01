@@ -22,3 +22,5 @@ Calculates the inverse (arc) hyperbolic sine.
 ----
 ASINH( numeric )
 ----
+
+Return:: Number

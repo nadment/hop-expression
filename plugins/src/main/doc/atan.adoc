@@ -23,6 +23,8 @@ Calculates the inverse tangent (arc tangent).
 ATAN( numeric )
 ----
 
+Return:: Number
+
 == Usage
 
 The result is a number in the interval [-pi, pi].

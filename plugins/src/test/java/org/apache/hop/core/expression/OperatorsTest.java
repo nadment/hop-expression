@@ -14,6 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -73,6 +74,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("NOM = ");
 
     writeEquals("AGE=40");
+    
+    returnType("AGE=40", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -108,6 +111,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("NOM <> ");
     evalFails("NOM!");
     evalFails("NOM ! ");
+    
+    returnType("AGE<>40", DataTypeName.BOOLEAN);  
   }
 
   @Test
@@ -136,6 +141,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM>");
     evalFails("NOM > ");
+    
+    returnType("'bar' > 'foo'", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -164,6 +171,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM>=");
     evalFails("NOM >=");
+    
+    returnType("'bar' >= 'foo'", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -192,6 +201,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM<");
     evalFails("NOM < ");
+    
+    returnType("'bar' < 'foo'", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -220,6 +231,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM<=");
     evalFails("NOM <=");
+    
+    returnType("'bar' <= 'foo'", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -244,6 +257,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("2 in ()");
 
     writeEquals("AGE IN (10,20,30,40)");
+    
+    returnType("AGE IN (10,20,30,40)", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -265,7 +280,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Null IS NULL");
     evalTrue("VALUE_NULL IS NULL");
 
-    writeEquals("FIELD IS TRUE");
+    writeEquals("FLAG IS TRUE");
+    
+    returnType("FLAG IS TRUE", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -336,7 +353,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("Age between and 10");
     evalFails("Age between and ");
 
-    writeEquals("FIELD BETWEEN 10 AND 20");
+    writeEquals("AGE BETWEEN 10 AND 20");
+    
+    returnType("5 between 3 and 5", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -513,6 +532,10 @@ public class OperatorsTest extends BaseExpressionTest {
     writeEquals("TRY(CAST(DATA AS BINARY))");
     writeEquals("TRY(CAST(AGE AS NUMBER))");
     writeEquals("TRY(CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD'))");
+    
+    returnType("Try(TRUE)", DataTypeName.BOOLEAN);
+    returnType("Try('String')", DataTypeName.STRING);
+    returnType("Try(Date '2020-07-01')", DataTypeName.DATE);
   }
 
   @Test
@@ -566,6 +589,8 @@ public class OperatorsTest extends BaseExpressionTest {
     
     // Alias
     evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);    
+    
+    returnType("EXTRACT(CENTURY FROM FIELD_DATE)", DataTypeName.INTEGER);
   }
   
   @Test
@@ -669,6 +694,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("BITNOT(1)", -2);
     
     writeEquals("~AGE");
+    
+    returnType("~AGE", DataTypeName.INTEGER);
   }
 
   @Test
@@ -682,6 +709,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("100 & ");
     
     writeEquals("AGE&4");
+    
+    returnType("AGE&4", DataTypeName.INTEGER);
   }
 
   @Test
@@ -695,6 +724,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("3 | ");
     
     writeEquals("AGE|4");
+    
+    returnType("AGE|4", DataTypeName.INTEGER);
   }
 
   @Test
@@ -708,6 +739,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("100 ^ ");
     
     writeEquals("AGE^4");
+    
+    returnType("AGE^4", DataTypeName.INTEGER);
   }
 
   @Test
@@ -722,7 +755,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("FLAG is ");
     evalFails("NOT");
     
-    writeEquals("FIELD IS NOT TRUE", "FIELD IS FALSE");
+    writeEquals("FLAG IS NOT TRUE", "FLAG IS FALSE");
+    
+    returnType("NOT FLAG", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -739,7 +774,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("null OR null");
     evalFails("false OR");
 
-    writeEquals("FIELD1 OR FIELD2");
+    //evalFails("true OR NAME");
+    
+    writeEquals("FLAG OR VALUE_NULL");
+    
+    returnType("false OR FLAG", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -755,7 +794,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("null AND false");
     evalNull("null AND null");
     
-    writeEquals("FIELD1 AND FIELD2");
+    writeEquals("FLAG AND VALUE_NULL");
+    
+    returnType("false AND FLAG", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -829,11 +870,12 @@ public class OperatorsTest extends BaseExpressionTest {
     // NULL does not match NULL
     evalNull("NULL like NULL");
 
-    
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
     
-    writeEquals("FIELD1 LIKE 'ADD%'","STARTSWITH(FIELD1,'ADD')");
-    writeEquals("FIELD1 LIKE '%ADD!_%' ESCAPE '!'");
+    writeEquals("NAME LIKE 'ADD%'","STARTSWITH(NAME,'ADD')");
+    writeEquals("NAME LIKE '%ADD!_%' ESCAPE '!'");
+    
+    returnType("'amigo' like 'a%o'", DataTypeName.BOOLEAN);
   }
 
   @Test

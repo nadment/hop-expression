@@ -23,6 +23,8 @@ Calculates the arc cosine.
 ACOS( numeric )
 ----
 
+Return:: Number
+
 == Usage 
 
 * Argument must be in the interval [-1;1].

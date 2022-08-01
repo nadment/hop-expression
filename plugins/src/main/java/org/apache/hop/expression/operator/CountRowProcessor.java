@@ -23,17 +23,18 @@ import org.apache.hop.expression.IExpressionProcessor;
 public class CountRowProcessor implements IExpressionProcessor {
 
   private long count = 0L;
-  
-  public CountRowProcessor() {    
+
+  public CountRowProcessor() {}
+
+  @Override
+  public void process(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    count++;
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws ExpressionException {
-    count++;   
-  }
-
-  @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
     return Long.valueOf(count);
   }
 }

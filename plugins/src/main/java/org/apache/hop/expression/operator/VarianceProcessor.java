@@ -23,25 +23,30 @@ import org.apache.hop.expression.util.Coerse;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Returns the variance of all values in the expression over a group of rows. Null values are ignored. */
+/**
+ * Returns the variance of all values in the expression over a group of rows. Null values are
+ * ignored.
+ */
 public class VarianceProcessor implements IExpressionProcessor {
-  
+
   private List<Double> values;
-  
+
   public VarianceProcessor() {
     values = new ArrayList<>();
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws ExpressionException {   
-    Object value = operands[0].eval(context);    
-    if ( value!= null ) {
+  public void process(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].getValue(context);
+    if (value != null) {
       values.add(Coerse.toNumber(value));
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);

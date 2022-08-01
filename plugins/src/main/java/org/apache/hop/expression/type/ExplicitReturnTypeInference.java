@@ -17,18 +17,19 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IReturnTypeInference;
 
+/**
+ * Inference rule which returns a explicit data type.
+ */
 public class ExplicitReturnTypeInference implements IReturnTypeInference {
   
   private final DataTypeName type;
-  public ExplicitReturnTypeInference(DataTypeName type) {
-    assert type != null;    
+  public ExplicitReturnTypeInference(DataTypeName type) { 
     this.type = type;
   }
   
+  @Override
   public DataTypeName getReturnType​(IExpressionContext context, Call call) {
     return type;
   }

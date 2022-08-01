@@ -16,9 +16,9 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.type.DataTypeName;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;

@@ -24,23 +24,25 @@ import org.apache.hop.expression.util.Coerse;
 public class SumProcessor implements IExpressionProcessor {
 
   private double sum;
-  
+
   public SumProcessor() {
     sum = 0D;
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws ExpressionException {
-    
-    Object value = operands[0].eval(context);
-    
-    if ( value!= null ) {
+  public void process(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+
+    Object value = operands[0].getValue(context);
+
+    if (value != null) {
       sum += Coerse.toNumber(value);
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
     return sum;
   }
 }

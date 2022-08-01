@@ -22,3 +22,5 @@ Calculates the inverse hyberbolic cosine (arc hyperbolic cosine).
 ----
 ACOSH( numeric )
 ----
+
+Return:: Number

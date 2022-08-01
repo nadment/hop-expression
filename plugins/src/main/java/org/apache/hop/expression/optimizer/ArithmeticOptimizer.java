@@ -23,7 +23,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 
-public class ArithmeticOptimizer extends Optimizer {
+public class ArithmeticOptimizer extends ExpressionCompiler {
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
     try {
@@ -47,9 +47,9 @@ public class ArithmeticOptimizer extends Optimizer {
         if (left.is(Kind.LITERAL) && right.is(Operators.ADD)) {
           Call child = (Call) right;
           if (child.getOperand(0).is(Kind.LITERAL)) {
-            IExpression operation =
+            IExpression expression =
                 new Call(Operators.ADD, left, child.getOperand(0));
-            Literal literal = Literal.of(operation.eval(context));
+            Literal literal = Literal.of(expression.getValue(context));
             return new Call(Operators.ADD, literal, child.getOperand(1));
           }
         }
@@ -88,7 +88,7 @@ public class ArithmeticOptimizer extends Optimizer {
           if (child.getOperand(0).is(Kind.LITERAL)) {
             IExpression operation =
                 new Call(Operators.MULTIPLY, left, child.getOperand(0));
-            Literal literal = Literal.of(operation.eval(context));
+            Literal literal = Literal.of(operation.getValue(context));
             return new Call(Operators.MULTIPLY, literal, child.getOperand(1));
           }
         }

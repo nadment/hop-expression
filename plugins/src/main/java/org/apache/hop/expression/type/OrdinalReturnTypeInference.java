@@ -17,18 +17,18 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IReturnTypeInference;
 
 public class OrdinalReturnTypeInference implements IReturnTypeInference {
   
   private final int ordinal;
+
   public OrdinalReturnTypeInference(int ordinal) {    
     this.ordinal = ordinal;
   }
   
+  @Override
   public DataTypeName getReturnType​(IExpressionContext context, Call call) {
-    return call.getOperand(ordinal).getDataType();
+    return call.getOperand(ordinal).getType();
   }
 }

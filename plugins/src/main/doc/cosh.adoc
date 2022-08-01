@@ -22,3 +22,5 @@ Calculates the hyperbolic cosine.
 ----
 COSH( numeric )
 ----
+
+Return:: Number

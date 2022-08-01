@@ -20,11 +20,10 @@ package org.apache.hop.pipeline.transforms.aggregate;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
-import org.apache.hop.expression.Aggregator;
+import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 import java.util.HashMap;
@@ -41,7 +40,14 @@ public class AggregateData extends BaseTransformData implements ITransformData {
       return values;
     }
 
+    @Override
     public boolean equals(Object obj) {
+      if (obj == null)
+        return false;
+
+      if (this.getClass() != obj.getClass())
+        return false;
+      
       AggregateKey entry = (AggregateKey) obj;
 
       try {
@@ -51,6 +57,7 @@ public class AggregateData extends BaseTransformData implements ITransformData {
       }
     }
 
+    @Override
     public int hashCode() {
       try {
         return groupMeta.hashCode(getHashValue());
@@ -76,7 +83,7 @@ public class AggregateData extends BaseTransformData implements ITransformData {
   
   protected IExpressionContext context;
   protected Call[] aggregates;
-  protected Aggregator[] aggregators;
+  protected AggregateFunction[] functions;
   protected IRowMeta aggregateMeta;
   
   public boolean firstRead;

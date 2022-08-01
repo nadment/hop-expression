@@ -17,23 +17,23 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IReturnTypeInference;
 
 public class FirstKnownReturnTypeInference implements IReturnTypeInference {
 
-  public FirstKnownReturnTypeInference() {      
+  public FirstKnownReturnTypeInference() {  
+    super();
   }
   
+  @Override
   public DataTypeName getReturnType​(IExpressionContext context, Call call) {
     for(IExpression operand: call.getOperands() ) {
-      DataTypeName type = operand.getDataType();
+      DataTypeName type = operand.getType();
       if ( type!=DataTypeName.UNKNOWN )
         return type;
     }
     
-    return call.getDataType();
+    return call.getType();
   }
 }

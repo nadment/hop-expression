@@ -27,4 +27,4 @@ Return:: Integer
 
 == Usage
 
-Information about Levenshtein distance can be found here: https://en.wikipedia.org/wiki/Levenshtein_distance.
+* Information about Levenshtein distance can be found here: https://en.wikipedia.org/wiki/Levenshtein_distance.

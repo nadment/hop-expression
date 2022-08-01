@@ -22,3 +22,5 @@ Computes the exponential value of a numeric expression.
 ----
 EXP( numeric )
 ----
+
+Returns:: Number

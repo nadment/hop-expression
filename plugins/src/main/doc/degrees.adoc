@@ -23,10 +23,9 @@ Converts radians to degrees.
 DEGREES( numeric )
 ----
 
+Returns:: Number
+
 == Usage
 
 
 
-Returns::
-
-Number

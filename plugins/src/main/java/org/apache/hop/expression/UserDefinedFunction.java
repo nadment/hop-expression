@@ -19,42 +19,19 @@ package org.apache.hop.expression;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
-import org.apache.hop.core.row.value.ValueMetaBigNumber;
-import org.apache.hop.core.row.value.ValueMetaBinary;
-import org.apache.hop.core.row.value.ValueMetaBoolean;
-import org.apache.hop.core.row.value.ValueMetaDate;
-import org.apache.hop.core.row.value.ValueMetaInteger;
-import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.core.row.value.ValueMetaNumber;
-import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
+import org.apache.hop.expression.util.Utilities;
 import java.util.List;
 
 public class UserDefinedFunction extends Function {
   private UserDefinedFunctionMeta meta;
 
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
-    super(meta.getName(), meta.getName(), true, "i18n::Operator.Category.Udf", "/docs/udf.html");
+    super(meta.getName(), true, ReturnTypes.UNKNOWN, new UserDefinedFunctionOperandTypeChecker(meta), "i18n::Operator.Category.Udf", "/docs/udf.html");
     this.meta = meta;
   }
 
-  /**
-   * Check if the number of arguments is correct.
-   *
-   * @param len the number of arguments set
-   * @throws error if not enough or too many arguments
-   */
-  @Override
-  public void checkNumberOfArguments(IExpression[] operands) {
-
-    if (operands.length < meta.getArguments().size()) {      
-      throw new IllegalArgumentException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(this.getId()));
-    }
-
-    if (operands.length > meta.getArguments().size()) {
-      throw new IllegalArgumentException(ExpressionError.TOO_MANY_ARGUMENT.message(this.getId()));
-    }
-  }
-  
   @Override
   public Object eval(IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
@@ -78,35 +55,10 @@ public class UserDefinedFunction extends Function {
     // Convert arguments to row meta
     IRowMeta rowMeta = new RowMeta();
     for (Argument argument:arguments ) {
-      IValueMeta vm = createValueMeta(argument.getType(), argument.getName());
+      IValueMeta vm = Utilities.createValueMeta(argument.getName(), argument.getType());
       rowMeta.addValueMeta(vm);
     }
     
     return rowMeta;
-  }
-
-  private static IValueMeta createValueMeta(DataTypeName type, String name) {
-    if (type != null && name!=null) {
-      switch (type) {
-        case BOOLEAN:
-          return new ValueMetaBoolean(name);
-        case INTEGER:
-          return new ValueMetaInteger(name);
-        case NUMBER:
-          return new ValueMetaNumber(name);
-        case BIGNUMBER:
-          return new ValueMetaBigNumber(name);
-        case DATE:
-          return new ValueMetaDate(name);
-        case BINARY:
-          return new ValueMetaBinary(name);
-        case JSON:
-          return new ValueMetaJson(name);
-       // case UNKNOWN:
-        case STRING:
-          return new ValueMetaString(name);
-      }
-    }
-    return null;
   }
 }

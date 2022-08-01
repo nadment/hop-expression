@@ -23,7 +23,8 @@ Returns the day of week of the specified date or timestamp.
 DAYOFWEEK( {date | timestamp} )
 ----
 
+Returns:: Integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
+
 == Usage
 
-* Returns an integer between 1 and 7 (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
 * Equivalent to xref:extract.adoc[EXTRACT](DAYOFWEEK FROM {date | timestamp}). 

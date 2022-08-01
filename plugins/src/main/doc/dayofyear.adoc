@@ -23,7 +23,8 @@ Returns the day of year of the date or timestamp.
 DAYOFYEAR( {date | timestamp} )
 ----
 
+Returns:: Integer between 1 and 366.
+
 == Usage
 
-* Returns an integer between 1 and 366.
 * Equivalent to xref:extract.adoc[EXTRACT](DAYOFYEAR FROM {date | timestamp}).

@@ -23,12 +23,16 @@ Splits a string on the specified list of delimiter characters and returns the pa
 STRTOK( string [, delimiters ] [, part ] )
 ----
 
+string:: A string expression to be tokenized.
+delimiters:: Each character in the string is considered a delimiter character. If not specified, the default is a space character.
+part:: The ordinal token to return. If not specified, the default value is 1. The maximum limit of any token returned is 256.
+
 Returns:: String
 
 == Usage
 
-* If the requested part does not exist, then NULL is returned. 
+* If the string starts or is terminated with the delimiter, the function considers empty space before or after the delimiter, respectively, as a valid token.
+* Adjacent delimiters are treated as delimiters for empty tokens.
 * If any parameter is NULL, then NULL is returned.
-* If delimiters is not specified, the default delimiter character is a space character.
-* If part number is not specified, the default value is 1.
- 
+
+TIP: Use SQUEEZE function to remove start, end or adjacent delimiters.

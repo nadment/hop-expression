@@ -20,28 +20,33 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.util.Coerse;
 
-/** Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null values are ignored. */
+/**
+ * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
+ * values are ignored.
+ */
 public class AvgProcessor implements IExpressionProcessor {
 
   private double sum;
   private long count;
-  
+
   public AvgProcessor() {
     sum = 0;
     count = 0;
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws ExpressionException { 
-    Object value = operands[0].eval(context);
-    if ( value!= null ) {
+  public void process(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].getValue(context);
+    if (value != null) {
       sum += Coerse.toNumber(value);
       count++;
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws ExpressionException {
-    return Double.valueOf(sum/count);
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    return Double.valueOf(sum / count);
   }
 }

@@ -19,11 +19,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -45,22 +45,22 @@ public class LiteralTest extends BaseExpressionTest {
     assertFalse(Literal.NULL.is((Kind)null));    
     assertFalse(Literal.NULL.is((Operator)null));
     assertNotEquals(Literal.NULL,null);
-    assertNull(Literal.NULL.eval(createExpressionContext()));
+    assertNull(Literal.NULL.getValue(createExpressionContext()));
     assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
   }
 
   @Test
   public void DatePart() throws Exception {
-    assertEquals(DatePart.HOUR, Literal.of(DatePart.HOUR).eval(null));
+    assertEquals(DatePart.HOUR, Literal.of(DatePart.HOUR).getValue(null));
   }
 
   public void DataType() throws Exception {
-    assertEquals(DataTypeName.BIGNUMBER, Literal.of(DataTypeName.BIGNUMBER).eval(null));
+    assertEquals(DataTypeName.BIGNUMBER, Literal.of(DataTypeName.BIGNUMBER).getValue(null));
   }
 
   @Test
   public void String() throws Exception {
-    assertEquals("Test", Literal.of("Test").eval(null));
+    assertEquals("Test", Literal.of("Test").getValue(null));
     assertEquals(Literal.of("Test"), Literal.of("Test"));
 
     // Single quote
@@ -80,8 +80,8 @@ public class LiteralTest extends BaseExpressionTest {
 
   @Test
   public void Boolean() throws Exception {
-    assertEquals(Boolean.TRUE, Literal.TRUE.eval(null));
-    assertEquals(Boolean.FALSE, Literal.FALSE.eval(null));
+    assertEquals(Boolean.TRUE, Literal.TRUE.getValue(null));
+    assertEquals(Boolean.FALSE, Literal.FALSE.getValue(null));
     assertEquals(Literal.TRUE, Literal.of(true));
     assertEquals(Literal.FALSE, Literal.of(false));
     assertEquals(Literal.FALSE.hashCode(), Literal.of(false).hashCode());
@@ -149,7 +149,7 @@ public class LiteralTest extends BaseExpressionTest {
   public void Number() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0D));  
     assertEquals(Literal.ONE, Literal.of(1D));   
-    assertEquals(Double.valueOf(2.2), Literal.of(2.2D).eval(null));
+    assertEquals(Double.valueOf(2.2), Literal.of(2.2D).getValue(null));
     assertEquals("-123456.789", Literal.of(-123456.789D).toString());
 
     // Number
@@ -189,7 +189,7 @@ public class LiteralTest extends BaseExpressionTest {
     ZonedDateTime datetime = ZonedDateTime.of(LocalDate.of(2021, 2, 25), LocalTime.of(2, 59, 00),
         ZoneId.systemDefault());
 
-    assertEquals(datetime, Literal.of(datetime).eval(createExpressionContext() ));
+    assertEquals(datetime, Literal.of(datetime).getValue(createExpressionContext() ));
     assertEquals(Literal.of(datetime), Literal.of(datetime));
 
     evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));

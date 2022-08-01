@@ -23,3 +23,4 @@ Calculates the inverse (arc) hyperbolic tangent.
 ATANH( numeric )
 ----
 
+Return:: Number

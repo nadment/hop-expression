@@ -18,12 +18,11 @@ under the License.
 
 Converts a value of one data type into another data type:
 
-The :: operator provides alternative syntax.
-
 == Syntax
 ----
 CAST( value AS dataType [ FORMAT format ] )
 ----
+The `::` operator provides alternative syntax.
 ----
 value::dataType
 ----

@@ -14,8 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.logging.ILogChannel;
-import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
@@ -31,8 +29,6 @@ import java.util.Objects;
 public class ExpressionContext extends Variables implements IExpressionContext {
 
   protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-  
-  private static final ILogChannel log = new LogChannel("Expression");
   
   /**
    * This parameter prevents ambiguous dates when importing or converting data with the YY date format.
@@ -58,11 +54,6 @@ public class ExpressionContext extends Variables implements IExpressionContext {
    */
   public static final String EXPRESSION_FIRST_DAY_OF_WEEK = "EXPRESSION_FIRST_DAY_OF_WEEK";
 
-  public static final String CACHED_TODAY = "__TODAY__";
-  public static final String CACHED_NOW = "__NOW__";
-  public static final String CACHED_TIMEZONE = "__TIMEZONE__";
-  public static final String CACHED_RANDOM = "__RANDOM__";
-
   /**
    * The {@code Map} field stores the attributes.
    */
@@ -85,21 +76,25 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     // Initialize attributes
     this.attributes = new HashMap<>();
     
-    // Cached attributes
+    // Set cached attributes
     ZonedDateTime now = ZonedDateTime.now();
-    this.setAttribute(CACHED_TIMEZONE, ZoneId.systemDefault().getId());
-    this.setAttribute(CACHED_NOW, now);
-    this.setAttribute(CACHED_TODAY, now.truncatedTo(ChronoUnit.DAYS));
-    this.setAttribute(CACHED_RANDOM, new SecureRandom());
+    this.setAttribute(Attribute.CURRENT_TIMEZONE, ZoneId.systemDefault().getId());
+    this.setAttribute(Attribute.CURRENT_TIMESTAMP, now);
+    this.setAttribute(Attribute.CURRENT_DATE, now.truncatedTo(ChronoUnit.DAYS));
+    this.setAttribute(Attribute.RANDOM, new SecureRandom());
   }
 
-  protected void setAttribute(String name, Object value) {
-    attributes.put(name, value);
+  protected void setAttribute(Attribute attribute, Object value) {
+    attributes.put(attribute.id, value);
+  }
+  
+  protected void setAttribute(String id, Object value) {
+    attributes.put(id, value);
   }
       
   @Override
-  public Object getAttribute(String name) {
-    return attributes.get(name);
+  public Object getAttribute(String id) {
+    return attributes.get(id);
   }
   
   @Override

@@ -65,26 +65,6 @@
     </hop>
   </order>
   <transform>
-    <name>Abort</name>
-    <type>Abort</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <abort_option>ABORT_WITH_ERROR</abort_option>
-    <always_log_rows>Y</always_log_rows>
-    <row_threshold>0</row_threshold>
-    <attributes/>
-    <GUI>
-      <xloc>1136</xloc>
-      <yloc>192</yloc>
-    </GUI>
-  </transform>
-  <transform>
     <name>Clone row</name>
     <type>CloneRow</type>
     <description/>
@@ -446,7 +426,7 @@ UPPER(SUBSTR('${os.name}',1,10))</expression>
         <type>Integer</type>
       </field>
       <field>
-        <expression>Regexp_Replace(LITERAL_STRING, 's+','s')</expression>
+        <expression>Regexp_Replace(FIELD_STRING, 's+','s')</expression>
         <length>-1</length>
         <name>TEST</name>
         <precision>-1</precision>
@@ -481,7 +461,7 @@ End
       <field>
         <expression>DECODE(FIELD_INTEGER,4,'Flag 1',8,'Flag 2',ABORT('Error generated with ABORT'))</expression>
         <length>-1</length>
-        <name>RAISE</name>
+        <name>ABORT</name>
         <precision>-1</precision>
         <type>String</type>
       </field>

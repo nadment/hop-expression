@@ -19,13 +19,16 @@ import org.apache.hop.expression.optimizer.ArithmeticOptimizer;
 import org.apache.hop.expression.optimizer.BooleanOptimizer;
 import org.apache.hop.expression.optimizer.CombineConcatOptimizer;
 import org.apache.hop.expression.optimizer.DeterministicOptimizer;
+import org.apache.hop.expression.optimizer.ExpressionCompiler;
 import org.apache.hop.expression.optimizer.ExtractOptimizer;
 import org.apache.hop.expression.optimizer.IdentifierOptimizer;
 import org.apache.hop.expression.optimizer.InOptimizer;
 import org.apache.hop.expression.optimizer.LikeOptimizer;
-import org.apache.hop.expression.optimizer.Optimizer;
-import org.apache.hop.expression.optimizer.SymmetricalOptimizer;
 import org.apache.hop.expression.optimizer.ReturnTypeOptimizer;
+import org.apache.hop.expression.optimizer.SymmetricalOptimizer;
+import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.IOperandCountRange;
+import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -41,15 +44,17 @@ import java.util.Set;
 
 public class ExpressionBuilder {
 
-  private static final Set<Optimizer> OPTIMIZERS =
+  private static final Set<ExpressionCompiler> OPTIMIZERS =
       Set.of(new SymmetricalOptimizer(), new ArithmeticOptimizer(), new LikeOptimizer(),
           new InOptimizer(), new ExtractOptimizer(), new CombineConcatOptimizer(),
-          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer(), new ReturnTypeOptimizer());
+          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer());
+
+  private static final ExpressionCompiler RETURN_TYPE = new ReturnTypeOptimizer();
 
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
-      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "ILIKE", "IN",
-      "IS", "KEY", "LIKE", "NOT", "NULL", "OR", "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP",
-      "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
+      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM",
+      "ILIKE", "IN", "IS", "KEY", "LIKE", "NOT", "NULL", "OR", "RLIKE", "SYMMETRIC", "THEN", "TIME",
+      "TIMESTAMP", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -73,7 +78,6 @@ public class ExpressionBuilder {
 
   public static IExpression compile(IExpressionContext context, final String source)
       throws ExpressionException {
-
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
       return builder.compile(context, builder.parse());
@@ -289,13 +293,10 @@ public class ExpressionBuilder {
       } else {
         expression = new Call(Operators.ILIKE, expression, pattern);
       }
-    } else if (isAndNext(Id.RLIKE)) {
-      IExpression pattern = this.parseAdditive();
-      expression = new Call(Operators.RLIKE, expression, pattern);
     } else if (isAndNext(Id.IN)) {
       expression = new Call(Operators.IN, expression, this.parseTuple());
     } else if (isAndNext(Id.BETWEEN)) {
-      Operator operator = Operators.BETWEEN;
+      Operator operator = Operators.BETWEEN_ASYMMETRIC;
       if (isAndNext(Id.ASYMMETRIC)) {
         // Ignore
       } else if (isAndNext(Id.SYMMETRIC)) {
@@ -528,6 +529,12 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralNumber(Token token) throws ParseException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
+
+    // if ( number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 &&
+    // number.precision()<17 ) {
+    // return Literal.of(number.longValue());
+    // }
+
     return Literal.of(number);
   }
 
@@ -820,37 +827,38 @@ public class ExpressionBuilder {
     return new Call(Operators.EXTRACT, operands);
   }
 
-  /** 
+  /**
    * COUNT(*) | COUNT([DISTINCT] <expression>)
    */
   private IExpression parseFunctionCount(Token token) throws ParseException {
 
-    Aggregator aggregator = Operators.COUNT;
-    
+    AggregateFunction aggregator = Operators.COUNT_VALUE;
+
     if (isNotAndNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
     }
 
     List<IExpression> operands = new ArrayList<>();
-    
-    if(isAndNext(Id.MULTIPLY) ) {
+
+    // COUNT(*) no operand
+    if (isAndNext(Id.MULTIPLY)) {
+      operands.add(Literal.of("*"));
       aggregator = Operators.COUNT_ROW;
-    }
-    else if(isAndNext(Id.DISTINCT) ) {
-      aggregator = Operators.COUNT_DISTINCT;
+    } else if (isAndNext(Id.DISTINCT)) {
       operands.add(this.parseTerm());
+      aggregator = Operators.COUNT_DISTICNT_VALUE;
     } else {
       operands.add(this.parseTerm());
     }
-      
+
     if (isNotAndNext(Id.RPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(aggregator, operands);
   }
-  
-  
+
+
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
   private IExpression parseFunctionJsonObject(Token token) throws ParseException {
 
@@ -1243,8 +1251,9 @@ public class ExpressionBuilder {
 
           if (c == '(') {
             // Special operator with name
-            if ("CAST".equals(name) || "COUNT".equals(name) || "TRY_CAST".equals(name) || "EXTRACT".equals(name)
-                || "POSITION".equals(name) || "JSON_OBJECT".equals(name)) {
+            if ("CAST".equals(name) || "COUNT".equals(name) || "TRY_CAST".equals(name)
+                || "EXTRACT".equals(name) || "POSITION".equals(name)
+                || "JSON_OBJECT".equals(name)) {
               return new Token(Id.valueOf(name), start, position, name);
             }
             if (FunctionRegistry.isFunction(name)) {
@@ -1295,24 +1304,34 @@ public class ExpressionBuilder {
       }
 
       // Apply optimizers
-      for (Optimizer optimizer : OPTIMIZERS) {
-        expression = expression.visit(context, optimizer);
+      for (ExpressionCompiler optimizer : OPTIMIZERS) {
+        expression = expression.accept(context, optimizer);
       }
 
       if (expression.equals(original)) {
+
+        // Return type inference
+        expression = expression.accept(context, RETURN_TYPE);
+
+        // Check operand types expected
+        if (expression instanceof Call) {
+          Call call = (Call) expression;
+          Operator operator = call.getOperator();
+          IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
+          if (!operandTypeChecker.checkOperandTypes(call)) {
+            throw new ExpressionException(
+                ExpressionError.ILLEGAL_ARGUMENT.message(operator.getName()));
+          }
+        }
+
         return expression;
       }
 
       original = expression;
     } while (--cycle > 0);
 
-    
-    
     return expression;
   }
-
-
-
 
   protected IExpression compileTuple(IExpressionContext context, Tuple tuple)
       throws ExpressionException {
@@ -1326,6 +1345,19 @@ public class ExpressionBuilder {
   protected IExpression compileCall(IExpressionContext context, Call call)
       throws ExpressionException {
 
+    // Check the number of operands expected
+    Operator operator = call.getOperator();
+    IOperandCountRange operandCountRange = operator.getOperandCountRange();
+    if (!operandCountRange.isValidCount(call.getOperandCount())) {
+      if (call.getOperandCount() < operandCountRange.getMin()) {
+        throw new ExpressionException(
+            ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator.getId()));
+      }
+      if (call.getOperandCount() > operandCountRange.getMax()) {
+        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator.getId()));
+      }
+    }
+
     // Replace arguments in User Defined Function by the operands of the call.
     if (call.getOperator() instanceof UserDefinedFunction) {
       return compile(context, call, (UserDefinedFunction) call.getOperator());
@@ -1336,24 +1368,22 @@ public class ExpressionBuilder {
     for (IExpression expression : call.getOperands()) {
       operands.add(compile(context, expression));
     }
-    
-    return new Call(call.getOperator(), operands);
+
+    return new Call(operator, operands);
   }
 
   protected IExpression inferReturnType​(IExpressionContext context, Call call) {
-    // Inference return data type    
-    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType​(context, call);    
+    // Inference return data type
+    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType​(context, call);
     return new Call(type, call.getOperator(), call.getOperands());
-
   }
-  
-  
+
   protected IExpression compile(IExpressionContext context, Call call, UserDefinedFunction udf)
       throws ExpressionException {
     try {
       IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
       IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
-      return expression.visit(context, new UserDefinedFunctionResolver(call.getOperands()));
+      return expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
     }

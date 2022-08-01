@@ -15,13 +15,14 @@
 
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.type.DataTypeName;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Coerse {
@@ -191,7 +192,7 @@ public class Coerse {
    * @param value the value to coerce
    * @return ZonedDateTime
    */
-  public static final ZonedDateTime toDate(final Object value) throws ExpressionException {
+  public static final ZonedDateTime toDateTime(final Object value) throws ExpressionException {
     if (value == null) {
       return null;
     }
@@ -200,6 +201,28 @@ public class Coerse {
     }
     throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
   }
+  
+  public static final Date toDate(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof ZonedDateTime) {
+      return Date.from(((ZonedDateTime) value).toInstant());
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
+  }
+
+  
+  public static final java.sql.Timestamp toTimestamp(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof ZonedDateTime) {
+      return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
+  }
+ 
 
   /**
    * Coerce value to data type JSON
@@ -297,8 +320,8 @@ public class Coerse {
       return compareTo(Coerse.toBinary(left), Coerse.toBinary(right));
     }
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      ZonedDateTime dt1 = Coerse.toDate(left);
-      ZonedDateTime dt2 = Coerse.toDate(right);
+      ZonedDateTime dt1 = Coerse.toDateTime(left);
+      ZonedDateTime dt2 = Coerse.toDateTime(right);
       // Two timestamp are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       if (dt1.isEqual(dt2)) {

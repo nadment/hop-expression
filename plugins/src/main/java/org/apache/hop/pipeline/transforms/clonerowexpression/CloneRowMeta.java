@@ -177,7 +177,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     try {
       IExpressionContext context = new ExpressionContext(new Variables());
       IExpression expression = ExpressionBuilder.compile(context, value.substring(1));
-      Object result = expression.eval(new ExpressionContext(variables));      
+      Object result = expression.getValue(new ExpressionContext(variables));      
       return String.valueOf(result);
     } catch (ExpressionException e) {
       throw new HopTransformException(BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);

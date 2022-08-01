@@ -35,6 +35,11 @@ public class FunctionRegistryExtensionPoint implements IExtensionPoint<PluginReg
   public void callExtensionPoint(ILogChannel log, IVariables variables,
       PluginRegistry pluginRegistry) throws HopException {
 
+    // BUG with PluginRegistry annotation are null
+    // PluginRegistry.addPluginType(FunctionPluginType.getInstance());   
+    // PluginRegistry.init();
+       
+    
     FunctionRegistry.registerBuilInFunctions();
   }
 }

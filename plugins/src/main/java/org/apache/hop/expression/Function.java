@@ -14,6 +14,8 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.IOperandTypeChecker;
+import org.apache.hop.expression.type.IReturnTypeInference;
 import java.io.StringWriter;
 
 /** A <code>Function</code> is a type of operator which has conventional function-call syntax. */
@@ -23,17 +25,21 @@ public abstract class Function extends Operator {
   /**
    * Creates an function.
    *
-   * Note that some function has specific syntax CAST, CONCAT, COUNT, EXTRACT, POSITION.
+   * Note that some function has specific syntax CAST, COUNT, EXTRACT, POSITION.
    * 
    * @param id The unique identifier of the function
    * @param name The name of function
    */
-  public Function(String id, String name, boolean isDeterministic, String category, String documentationUrl) {
-    super(id, name, 10, true, isDeterministic, category, documentationUrl);
+  protected Function(String id, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+    super(id, id, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
+  }
+  
+  protected Function(String id, String name, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+    super(id, name, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
   }
  
-  public Function(String id, String name, int precedence, boolean isLeftAssociative, boolean isDeterministic, String category, String documentationUrl) {
-    super(id, name, precedence, isLeftAssociative, isDeterministic, category, documentationUrl);
+  protected Function(String id, String name, int precedence, boolean isLeftAssociative, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+    super(id, name, precedence, isLeftAssociative, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
   }
   
   @Override
@@ -51,10 +57,5 @@ public abstract class Function extends Operator {
     writer.append(')');
   }
   
-  /**
-   * Returns whether this function is an aggregate function.
-   */
-  public boolean isAggregator() {
-    return false;
-  }
+
 }

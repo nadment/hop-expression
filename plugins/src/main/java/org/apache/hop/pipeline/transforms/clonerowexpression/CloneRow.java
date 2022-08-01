@@ -62,7 +62,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
           BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
     }
     
-    return expression.eval(context);
+    return expression.getValue(context);
   }
 
   @Override
@@ -138,7 +138,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
 
     data.context.setRow(r);
-    Object value = data.numberOfClones.eval(data.context);
+    Object value = data.numberOfClones.getValue(data.context);
 
     int nrClones = (int) value;
 

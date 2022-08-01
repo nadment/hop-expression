@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SearchableAnalyserPlugin(
-    id = "UdfSearchableAnalyser",
+    id = "UserDefinedFunctionSearchableAnalyser",
     name = "Search in user defined function metadata")
 public class UserDefinedFunctionSearchableAnalyser
     extends BaseMetadataSearchableAnalyser<UserDefinedFunctionMeta>

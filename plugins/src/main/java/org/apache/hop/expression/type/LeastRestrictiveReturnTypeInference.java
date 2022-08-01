@@ -17,22 +17,22 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IReturnTypeInference;
 
 public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference {
 
-  public LeastRestrictiveReturnTypeInference() {      
+  public LeastRestrictiveReturnTypeInference() {
+    super();
   }
   
+  @Override
   public DataTypeName getReturnType​(IExpressionContext context, Call call) {
     
-    DataTypeName result = call.getDataType(); 
+    DataTypeName result = call.getType(); 
     
     for(IExpression operand: call.getOperands() ) {
-      DataTypeName type = operand.getDataType();
+      DataTypeName type = operand.getType();
       if ( type.ordinal()<result.ordinal() ) {
         result = type;
       }

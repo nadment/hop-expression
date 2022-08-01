@@ -20,25 +20,27 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.util.Coerse;
 
-/** Returns the maximum of an expression across all input rows.*/
+/** Returns the maximum of an expression across all input rows. */
 public class MinProcessor implements IExpressionProcessor {
 
   private Object min = null;
-  
-  public MinProcessor() {
-  }
+
+  public MinProcessor() {}
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws ExpressionException {
+  public void process(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+
+    Object value = operands[0].getValue(context);
     
-    Object value = operands[0].eval(context);    
-    if ( min==null || Coerse.compare(value, min) < 0 ) {
+    if (min == null || ( value!=null && Coerse.compare(value, min) < 0 )) {
       min = value;
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
     return min;
   }
 }

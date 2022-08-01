@@ -23,14 +23,15 @@ import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.ValueDataUtil;
-import org.apache.hop.expression.Aggregator;
+import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -86,7 +87,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       //
       data.groupIndex = new int[meta.getGroupFields().size()];
       data.aggregates = new Call[meta.getAggregateFields().size()];
-      data.aggregators = new Aggregator[meta.getAggregateFields().size()];
+      data.functions = new AggregateFunction[meta.getAggregateFields().size()];
       data.context = new ExpressionContext(this, data.inputRowMeta);
 
       // If the transform does not receive any rows, we can not lookup field position indexes
@@ -102,7 +103,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           stopAll();
           return false;
         }
-        
+
         IValueMeta valueMeta = data.inputRowMeta.getValueMeta(data.groupIndex[index]);
         data.groupMeta.addValueMeta(valueMeta);
       }
@@ -118,25 +119,24 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         try {
           IValueMeta valueMeta = data.outputRowMeta.searchValueMeta(field.getName());
           data.aggregateMeta.addValueMeta(valueMeta);
-          
+
           IExpression expression = ExpressionBuilder.compile(data.context, source);
           Call call = null;
-          Aggregator aggregator = null;
-          if ( expression.is(Kind.CALL) ) {
+          AggregateFunction function = null;
+          if (expression.is(Kind.CALL)) {
             call = (Call) expression;
-            if ( call.getOperator() instanceof Aggregator ) {
-              aggregator = (Aggregator) call.getOperator();
+            if (call.getOperator() instanceof AggregateFunction) {
+              function = (AggregateFunction) call.getOperator();
             }
           }
-          if ( aggregator==null ) {
+          if (function == null) {
             throw new ExpressionException("Not an aggregate expression");
           }
           data.aggregates[index] = call;
-          data.aggregators[index] = aggregator;
+          data.functions[index] = function;
         } catch (ExpressionException e) {
-          String message =
-              BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
-                  field.getName(), field.getExpression(), e.getMessage());
+          String message = BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
+              field.getName(), field.getExpression(), e.getMessage());
           logError(message);
           if (isDebug()) {
             logError(Const.getStackTracker(e));
@@ -181,7 +181,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     //
     for (AggregateKey key : data.map.keySet()) {
 
-      Object[] outputRow = new Object[data.outputRowMeta.size()]; 
+      Object[] outputRow = new Object[data.outputRowMeta.size()];
 
       int index = 0;
       for (int i = 0; i < data.groupMeta.size(); i++) {
@@ -192,10 +192,22 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       IExpressionProcessor[] aggregators = data.map.get(key);
       Object[] results = getAggregateResult(aggregators);
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
-        outputRow[index++] =
-            data.aggregateMeta.getValueMeta(i).convertToNormalStorageType(results[i]);
+        Object value = results[i];
+
+        // Value meta doesn't support ZonedDateTime
+        switch (data.aggregateMeta.getValueMeta(i).getType()) {
+          case IValueMeta.TYPE_DATE:
+            value = Coerse.toDate(value);
+            break;
+          case IValueMeta.TYPE_TIMESTAMP:
+            value = Coerse.toTimestamp(value);
+            break;
+          default:
+        }
+
+        outputRow[index++] = data.aggregateMeta.getValueMeta(i).convertToNormalStorageType(value);
       }
-      
+
       putRow(data.outputRowMeta, outputRow);
     }
 
@@ -203,7 +215,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     // This means we give back 0 for count all, count distinct, null for everything else
     //
     if (data.map.isEmpty() && meta.isAlwaysGivingBackOneRow()) {
-      Object[] outputRow = new Object[data.outputRowMeta.size()]; 
+      Object[] outputRow = new Object[data.outputRowMeta.size()];
       int index = 0;
       for (int i = 0; i < data.groupMeta.size(); i++) {
         outputRow[index++] = null;
@@ -211,13 +223,13 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
         outputRow[index++] = null;
       }
-      
+
       putRow(data.outputRowMeta, outputRow);
     }
   }
 
   /**
-   * Used for junits in MemoryGroupByAggregationNullsTest
+   * Process each row
    *
    * @param row
    * @throws HopException
@@ -230,7 +242,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (aggregators == null) {
 
       // Create a new processors...
-      aggregators = newAggregate();
+      aggregators = createAggregate();
 
       // Store it in the map!
       data.map.put(key, aggregators);
@@ -243,24 +255,22 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
   }
 
   /**
-   * Used for junits in MemoryGroupByNewAggregateTest
+   * Create new aggregate
    *
    * @param r
    * @param aggregate
    * @throws HopException
    */
-  protected IExpressionProcessor[] newAggregate() throws HopException {
+  protected IExpressionProcessor[] createAggregate() throws HopException {
 
-    IExpressionProcessor[] aggregators = new IExpressionProcessor[data.aggregators.length];
+    IExpressionProcessor[] processors = new IExpressionProcessor[data.functions.length];
 
-    for (int i = 0; i < data.aggregators.length; i++) {
-      IExpressionProcessor processor = data.aggregators[i].createProcessor();
-      
-      //Processor aggregator = new CountProcessor();
-      aggregators[i] = processor;
+    for (int i = 0; i < data.functions.length; i++) {
+      processors[i] =
+          data.functions[i].createProcessor(data.context, data.aggregates[i].getOperands());
     }
 
-    return aggregators;
+    return processors;
   }
 
   /**

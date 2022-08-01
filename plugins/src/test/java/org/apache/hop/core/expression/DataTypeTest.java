@@ -21,9 +21,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.DataTypeFamily;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.type.DataTypeFamily;
+import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Converter;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class DataTypeTest extends BaseExpressionTest {
   public void family() throws Exception {
     assertEquals(DataTypeFamily.BINARY, DataTypeName.BINARY.getFamily());
     assertEquals(DataTypeFamily.BOOLEAN, DataTypeName.BOOLEAN.getFamily());
-    assertEquals(DataTypeFamily.DATETIME, DataTypeName.DATE.getFamily());
+    assertEquals(DataTypeFamily.DATE, DataTypeName.DATE.getFamily());
     assertEquals(DataTypeFamily.JSON, DataTypeName.JSON.getFamily());
     assertEquals(DataTypeFamily.NUMERIC, DataTypeName.INTEGER.getFamily());
     assertEquals(DataTypeFamily.NUMERIC, DataTypeName.NUMBER.getFamily());
@@ -144,8 +144,8 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void coerceToDate() throws Exception {
-    assertNull(Coerse.toDate(null));
-    assertThrows(ExpressionException.class, () -> Coerse.toDate(true));
+    assertNull(Coerse.toDateTime(null));
+    assertThrows(ExpressionException.class, () -> Coerse.toDateTime(true));
   }
   
   @Test

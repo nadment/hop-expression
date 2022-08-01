@@ -22,7 +22,7 @@ Performs a bitwise NOT operation on an integer value.
 ----
 BITNOT( integer )
 ----
-The ~ operator provides alternative syntax.
+The `~` operator provides alternative syntax.
 ----
 ~ integer
 ----

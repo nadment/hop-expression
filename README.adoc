@@ -21,7 +21,7 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 ## Overview
 
-This plugin provides 3 transformations that use the power of an expression language.
+This plugin provides 4 transformations that use the power of an expression language.
 
 * The `Expression` transformation calculate fields with expression 
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression]
@@ -31,6 +31,9 @@ image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/sr
 
 * The `Where` transformation filter rows with expression condition
 image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/where.svg[Where]
+
+* The `Aggregate` transformation uses aggregation functions to calculate values on groups of rows.
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/aggregate.svg[Where]
 
 ## Expression language
 
@@ -53,7 +56,7 @@ end
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE` `RLIKE`
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE`
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 * Scalar functions (conditional, mathematical, trigonometry, conversion, ...).
@@ -70,16 +73,21 @@ https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expre
 
 ## Extends with plugins
 
-Use @ScalarFunction annotation to create custom function in your plugin. 
+Use @FunctionPlugin annotation to create custom function in your plugin. 
 
 ----
-public static class ExperimentalFunction {
+/** 
+ * The function compute Levenshtein distance.
+ */
+@FunctionPlugin
+public class Levenshtein extends Function {
 
-  /** 
-   * The function compute Levenshtein distance.
-   */
-  @ScalarFunction(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", minArgs = 2, maxArgs = 2)
-  public Object levenshtein(final IExpressionContext context, final IExpression[] operands)
+  public Levenshtein() {
+    super("LEVENSHTEIN", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING, "i18n::Operator.Category.String", "/docs/levenshtein.html");
+  }
+  
+  @Override
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].eval(context);
     if (v0 == null)
@@ -87,8 +95,9 @@ public static class ExperimentalFunction {
     Object v1 = operands[1].eval(context);
     if (v1 == null)
       return null;
-    
-    return Long.valueOf(Utils.getDamerauLevenshteinDistance(Coerce.toString(v0), Coerce.toString(v1)));
+
+    return Long
+        .valueOf(StringUtils.getLevenshteinDistance(Coerse.toString(v0), Coerse.toString(v1)));
   }
 }
 ----

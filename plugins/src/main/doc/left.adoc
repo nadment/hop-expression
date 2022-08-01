@@ -16,8 +16,7 @@ under the License.
 ////
 = LEFT
 
-Extracts a number of characters from a string or bytes from binary (starting
-			from left).
+Extracts a number of characters from a string or bytes from binary (starting from left).
 		
 
 == Syntax

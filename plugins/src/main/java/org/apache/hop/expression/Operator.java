@@ -15,7 +15,10 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.util.TranslateUtil;
-import org.apache.hop.expression.util.ExpressionUtil;
+import org.apache.hop.expression.type.IOperandCountRange;
+import org.apache.hop.expression.type.IOperandTypeChecker;
+import org.apache.hop.expression.type.IReturnTypeInference;
+import org.apache.hop.expression.util.Utilities;
 import java.io.StringWriter;
 import java.util.Objects;
 
@@ -25,7 +28,7 @@ import java.util.Objects;
  * Operators have the precedence levels. An operator on higher levels is evaluated before an operator on a lower level
  */
 public abstract class Operator implements Comparable<Operator> {
-   
+      
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;
 
@@ -46,6 +49,12 @@ public abstract class Operator implements Comparable<Operator> {
 
   private final boolean isDeterministic;
 
+  /** Used to infer the return type of a call to this operator. */
+  private final IReturnTypeInference returnTypeInference;
+  
+  /** Used to validate operand types. */
+  private final IOperandTypeChecker operandTypeChecker;
+  
   private final String category;
 
   private final String documentationUrl;
@@ -67,21 +76,23 @@ public abstract class Operator implements Comparable<Operator> {
    * @param category The category to group operator
    */
   protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
-      boolean isDeterministic, String category, String documentationUrl) {
+      boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
     this.id = Objects.requireNonNull(id);
     this.name = Objects.requireNonNull(name);
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
     this.isDeterministic = isDeterministic;
+    this.returnTypeInference = returnTypeInference;
+    this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;    
-    this.documentation = ExpressionUtil.loadDocumention(id, documentationUrl);
-    this.description = ExpressionUtil.findDocumentionDescription(documentation);
+    this.documentation = Utilities.loadDocumention(id, documentationUrl);
+    this.description = Utilities.findDocumentionDescription(documentation);
   }
 
-  protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic,
+  protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
       String category, String documentationUrl) {
-    this(id, id, precedence, isLeftAssociative, isDeterministic, category, documentationUrl);
+    this(id, id, precedence, isLeftAssociative, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
   }
 
   private static int leftPrecedence(int precedence, boolean isLeftAssociative) {
@@ -104,7 +115,7 @@ public abstract class Operator implements Comparable<Operator> {
   public String getId() {
     return id;
   }
-
+ 
   /**
    * The name of the operator
    */
@@ -138,11 +149,33 @@ public abstract class Operator implements Comparable<Operator> {
   }
   
   /**
+   * Returns whether this function is an aggregate function.
+   */
+  public boolean isAggregate() {
+    return false;
+  }
+  
+  /**
    * Return type inference strategy.
    * @return
    */
-  public IReturnTypeInference getReturnTypeInference() {
-    return ReturnTypes.UNKNOWN;
+  public final IReturnTypeInference getReturnTypeInference() {
+    return this.returnTypeInference;
+  }
+  
+  /** 
+   * Returns a strategy to validate operand types expected by this operator.
+   */
+  public IOperandTypeChecker getOperandTypeChecker() {
+    return operandTypeChecker;
+  }
+  
+  /**
+   * Returns a constraint on the number of operands expected by this operator.
+   * @return acceptable range
+   */
+  public IOperandCountRange getOperandCountRange() {
+     return operandTypeChecker.getOperandCountRange();
   }
   
   public String getDocumentationUrl() {
@@ -175,7 +208,7 @@ public abstract class Operator implements Comparable<Operator> {
   }
 
   /**
-   * Get the category of operator
+   * Get the category of this operator.
    * 
    * @return
    */
@@ -184,21 +217,12 @@ public abstract class Operator implements Comparable<Operator> {
   }
 
   /**
-   * Get the description of operator
+   * Get the description of this operator.
    * 
    * @return
    */
   public String getDescription() {
     return description;
-  }
-
-  /**
-   * Check if the number of arguments is correct.
-   *
-   * @param len the number of arguments set
-   * @throws error if not enough or too many arguments
-   */
-  protected void checkNumberOfArguments(IExpression[] operands) {    
   }
 
   public abstract Object eval(final IExpressionContext context, final IExpression[] operands)

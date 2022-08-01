@@ -110,7 +110,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     for (RouteTarget target : data.targets) {
 
       try {
-        Object result = target.expression.eval(data.context);
+        Object result = target.expression.getValue(data.context);
         
         if ( Coerse.isTrue(result)) {
           toDefault = false;

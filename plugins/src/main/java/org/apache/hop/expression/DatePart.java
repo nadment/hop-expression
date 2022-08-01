@@ -15,8 +15,8 @@
 package org.apache.hop.expression;
 
 /**
- * A date part can be used with expression functions such as extract(). It describes a
- * part of a date / datetime value
+ * A date part can be used with functions such as EXTRACT, FIRST_DAY...
+ * It describes a part of a date / datetime value
  */
 public enum DatePart {
   /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */

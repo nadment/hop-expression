@@ -28,13 +28,13 @@ import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -114,7 +114,7 @@ public class BaseExpressionTest {
   protected void returnType(String source, DataTypeName expected) throws Exception {
     ExpressionContext context = createExpressionContext();
     IExpression expression = ExpressionBuilder.compile(context, source);
-   // assertEquals(expected, expression.getDataType());
+    assertEquals(expected, expression.getType());
   }
   
   protected Object eval(String source) throws Exception {
@@ -124,8 +124,6 @@ public class BaseExpressionTest {
   protected Object eval(String source, ExpressionContext context) throws Exception {
     return eval(source, context, null);
   }
-
-  
   
   protected Object eval(String source, ExpressionContext context,
       Consumer<ExpressionContext> consumer) throws Exception {
@@ -142,7 +140,7 @@ public class BaseExpressionTest {
     IExpression expression = ExpressionBuilder.compile(context, source);
 
     try {
-      return expression.eval(context);
+      return expression.getValue(context);
     } catch (ExpressionException ex) {
       System.out.println(source + " > " + ex.getMessage());
       throw ex;
@@ -249,11 +247,8 @@ public class BaseExpressionTest {
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
 //    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-//    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1), context ); 
-    
     //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
-    //returnType("Coalesce(NAME, NULL, 'XYZ')", DataTypeName.STRING);    
-    returnType("MAX(NAME)", DataTypeName.STRING);
-    returnType("MAX(AGE)", DataTypeName.INTEGER);
+    evalFails("'str'+2");
+    //returnType("AGE IN (10,20,30,40)", DataTypeName.BOOLEAN);
   }
 }

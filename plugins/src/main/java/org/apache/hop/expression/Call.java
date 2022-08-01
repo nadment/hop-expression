@@ -16,12 +16,13 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/** 
+/**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
  */
 public class Call implements IExpression {
@@ -38,34 +39,16 @@ public class Call implements IExpression {
     this.type = type;
     this.operator = Objects.requireNonNull(operator);
     this.operands = Objects.requireNonNull(operands);
-    
-    operator.checkNumberOfArguments(operands);
   }
 
   public Call(Operator operator, List<IExpression> operands) {
     this(DataTypeName.UNKNOWN, operator, operands);
   }
-  
+
   public Call(DataTypeName type, Operator operator, List<IExpression> operands) {
     this.type = type;
     this.operator = Objects.requireNonNull(operator);
     this.operands = operands.toArray(new IExpression[0]);
-    
-    operator.checkNumberOfArguments(this.operands);
-  }
-
-  public Object eval(IExpressionContext context) throws ExpressionException {
-    return operator.eval(context, operands);
-  }
-  
-  @Override
-  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);    
-  }
-  
-  @Override
-  public boolean is(final Operator other) {
-    return operator.is(other);
   }
 
   @Override
@@ -81,15 +64,15 @@ public class Call implements IExpression {
     }
     return cost;
   }
-  
-/**
- * Data type is unknown before optimization.
- */  
+
+  /**
+   * Data type is unknown before optimization.
+   */
   @Override
-  public DataTypeName getDataType() {
+  public DataTypeName getType() {
     return type;
   }
-  
+
   /**
    * Get the operator
    *
@@ -98,7 +81,7 @@ public class Call implements IExpression {
   public Operator getOperator() {
     return operator;
   }
-  
+
   /**
    * Get array of operands.
    * An empty array is returned if no operands
@@ -121,13 +104,29 @@ public class Call implements IExpression {
   }
   
   @Override
+  public Object getValue(IExpressionContext context) throws ExpressionException {
+    return operator.eval(context, operands);
+  }
+
+  @Override
+  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
+    return visitor.apply(context, this);
+  }
+
+  @Override
+  public boolean is(final Operator other) {
+    return operator.is(other);
+  }
+
+  @Override
   public boolean equals(Object other) {
     if (other == null)
       return false;
 
     if (other instanceof Call) {
       Call call = (Call) other;
-      return this.type.equals(call.type) && this.operator.equals(call.operator) && Arrays.equals(this.operands,call.operands);
+      return this.type.equals(call.type) && this.operator.equals(call.operator)
+          && Arrays.equals(this.operands, call.operands);
     }
     return false;
   }

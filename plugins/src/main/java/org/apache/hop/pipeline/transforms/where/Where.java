@@ -111,7 +111,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       }
 
       data.context.setRow(row);
-      Object predicat = data.condition.eval(data.context);
+      Object predicat = data.condition.getValue(data.context);
 
       if (Coerse.isTrue(predicat)) {
         // put the row to the TRUE output row stream

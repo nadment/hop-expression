@@ -21,5 +21,7 @@ Check if the value is true.
 == Syntax
 [source,sql]
 ----
-boolean IS [NOT] TRUE
+expression IS [NOT] TRUE
 ----
+
+Returns:: Boolean

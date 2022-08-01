@@ -18,7 +18,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
-import org.apache.hop.expression.Aggregator;
+import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
@@ -209,7 +209,7 @@ public class ExpressionEditor extends Composite {
     // Inventory operator unique identifier and category
     for (Operator operator : operators) {
 
-      if ( mode!=ExpressionMode.COLUMN && operator instanceof Aggregator ) {
+      if ( mode!=ExpressionMode.COLUMN && operator instanceof AggregateFunction ) {
         continue;
       }
       

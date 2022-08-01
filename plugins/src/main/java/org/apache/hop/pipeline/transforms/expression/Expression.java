@@ -30,7 +30,6 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.Arrays;
-import java.util.Date;
 
 public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
   private static final Class<?> PKG = ExpressionMeta.class;
@@ -120,7 +119,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
 
       try {
         IExpression expression = data.expressions[index];
-        Object value = expression.eval(data.context);
+        Object value = expression.getValue(data.context);
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = convertValue(valueMeta, value);
       } catch (HopException e) {
@@ -168,9 +167,9 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       case IValueMeta.TYPE_INTEGER:
         return Coerse.toInteger(value);
       case IValueMeta.TYPE_DATE:
-        return Date.from(Coerse.toDate(value).toInstant());
+        return Coerse.toDate(value);
       case IValueMeta.TYPE_TIMESTAMP:
-        return java.sql.Timestamp.from(Coerse.toDate(value).toInstant());
+        return Coerse.toTimestamp(value);
       case IValueMeta.TYPE_BIGNUMBER:
         return Coerse.toBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:

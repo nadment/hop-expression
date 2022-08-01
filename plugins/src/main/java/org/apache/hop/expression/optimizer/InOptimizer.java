@@ -27,10 +27,10 @@ import java.util.List;
 
 /**
  * Simplifies IN expressions list of elements.
- * 1. Remove duplicate expression in list.
- * 2. Sort expression on cost.
+ * 1. Remove duplicate expressions in list.
+ * 2. Sort expressions on cost.
  */
-public class InOptimizer extends Optimizer {
+public class InOptimizer extends ExpressionCompiler {
   @Override
   public IExpression apply(final IExpressionContext context, final Call call) {
     if (call.is(Operators.IN)) {
@@ -44,7 +44,7 @@ public class InOptimizer extends Optimizer {
           continue;
         }
         
-        // If this element is not present in newList then add it
+        // If this element is not present in new list then add it
         if (!list.contains(expression)) {
           list.add(expression);
         }

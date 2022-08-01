@@ -24,10 +24,8 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.Aggregator;
+import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataType;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
@@ -35,7 +33,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.util.ExpressionUtil;
+import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.util.Utilities;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -133,13 +132,13 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
           throw new ExpressionException("Not an aggregation expression");
         }
         Operator operator = ((Call) expression).getOperator();
-        if (! (operator instanceof Aggregator)) {
+        if (! (operator instanceof AggregateFunction)) {
           throw new ExpressionException("Not an aggregation expression");
         }
         
-        DataTypeName type = expression.getDataType();
+        DataTypeName type = expression.getType();
         
-        IValueMeta valueMeta = ExpressionUtil.createValueMeta(field.getName(), type);
+        IValueMeta valueMeta = Utilities.createValueMeta(field.getName(), type);
         valueMeta.setOrigin(transformName);
         valueMeta.setStorageType(IValueMeta.STORAGE_TYPE_NORMAL);
         fields.addValueMeta(valueMeta);

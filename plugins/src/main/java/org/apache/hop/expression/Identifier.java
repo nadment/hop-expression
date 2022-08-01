@@ -18,6 +18,7 @@ import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
+import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 import java.time.ZoneId;
 import java.util.Date;
@@ -55,7 +56,7 @@ public class Identifier implements IExpression {
   }
   
   @Override
-  public DataTypeName getDataType() {
+  public DataTypeName getType() {
     return type;
   }
   
@@ -73,7 +74,7 @@ public class Identifier implements IExpression {
   }
   
   @Override
-  public Object eval(final IExpressionContext context) throws ExpressionException {
+  public Object getValue(final IExpressionContext context) throws ExpressionException {
         
     IRowMeta rowMeta = context.getRowMeta();
     if (rowMeta == null || index<0)
@@ -114,7 +115,7 @@ public class Identifier implements IExpression {
   }
   
   @Override
-  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
+  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);    
   }
 

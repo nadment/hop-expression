@@ -23,6 +23,8 @@ Calculates the trigonometric cotangent of the angle in radians.
 COT( numeric )
 ----
 
+Return:: Number
+
 == Usage
 
 * The argument should be expressed in radians.

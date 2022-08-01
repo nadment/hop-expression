@@ -17,6 +17,7 @@
 package org.apache.hop.expression;
 
 
+import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 
 /**
@@ -41,14 +42,10 @@ public interface IExpression {
    *
    * @return a {@link DataTypeName} value
    */
-  public default DataTypeName getDataType() {
+  public default DataTypeName getType() {
     return DataTypeName.UNKNOWN;
   }
-  
-//  public default DataTypeFamily getTypeFamily() {
-//    return getType().getFamily();
-//  }  
-  
+    
   /**
    * Check if the expression is a call to this operator or an alias of this operator.
    */
@@ -82,13 +79,14 @@ public interface IExpression {
    * 
    * @return The result of evaluating the expression.
    */
-  public Object eval(IExpressionContext context) throws ExpressionException;
+  public Object getValue(IExpressionContext context) throws ExpressionException;
+  // public Object getValue(IExpressionContext context, Class<?> clazz) throws ExpressionException;
   
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.
    */
-  public abstract <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor);
+  public abstract <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor);
 
   /**
    * Appends this expression statement to the specified writer. This may not always be the original

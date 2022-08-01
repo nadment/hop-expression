@@ -23,28 +23,33 @@ import org.apache.hop.expression.util.Coerse;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null values are ignored. */
+/**
+ * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
+ * values are ignored.
+ */
 public class PercentileProcessor implements IExpressionProcessor {
-  
+
   private List<Double> values;
-  
+
   public PercentileProcessor() {
     values = new ArrayList<>();
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws ExpressionException {   
-    Object value = operands[0].eval(context);    
-    if ( value!= null ) {
+  public void process(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+    Object value = operands[0].getValue(context);
+    if (value != null) {
       values.add(Coerse.toNumber(value));
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws ExpressionException {
-    
-    Object percentile = operands[1].eval(context);
-    
+  public Object eval(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
+
+    Object percentile = operands[1].getValue(context);
+
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);

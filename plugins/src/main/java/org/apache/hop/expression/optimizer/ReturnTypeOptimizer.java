@@ -17,11 +17,11 @@
 package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.DataTypeName;
 
-public class ReturnTypeOptimizer extends Optimizer {
+public class ReturnTypeOptimizer extends ExpressionCompiler {
   @Override
   public IExpression apply(final IExpressionContext context, final Call call) {
     

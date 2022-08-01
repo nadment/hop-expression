@@ -66,7 +66,7 @@ public class PerformanceTest {
     try {
       for (long i = cycle; i > 0; i--) {
         @SuppressWarnings("unused")
-        Object result = expression.eval(context);
+        Object result = expression.getValue(context);
       }
     } catch (ExpressionException e) {
       e.printStackTrace();

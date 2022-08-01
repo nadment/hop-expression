@@ -27,12 +27,12 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.DataTypeName;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -75,11 +75,11 @@ public class OptimizerTest {
     IExpression expression = ExpressionBuilder.compile(context, e);
 
     PrintStream console = System.out;
-    if ( expression.getDataType()==DataTypeName.UNKNOWN) {
+    if ( expression.getType()==DataTypeName.UNKNOWN) {
       console = System.err;
     }
     
-    console.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression +" return type " + expression.getDataType());
+    console.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression +" return type " + expression.getType());
     
     return expression;
   }
@@ -89,15 +89,15 @@ public class OptimizerTest {
   }
 
   protected void optimizeTrue(String e) throws Exception {
-    assertTrue((Boolean) optimize(e).eval(null));
+    assertTrue((Boolean) optimize(e).getValue(null));
   }
 
   protected void optimizeFalse(String e) throws Exception {
-    assertFalse((Boolean) optimize(e).eval(null));
+    assertFalse((Boolean) optimize(e).getValue(null));
   }
 
   protected void optimizeNull(String e) throws Exception {
-    assertNull(optimize(e).eval(null));
+    assertNull(optimize(e).getValue(null));
   }
 
   @Test
@@ -180,12 +180,12 @@ public class OptimizerTest {
     optimize("-(10+2)", "-12");
     optimize("-(0)", "0");
 
-    optimize("NOT (FIELD IS TRUE)", "FIELD IS FALSE");
-    optimize("NOT (FIELD IS NOT TRUE)", "FIELD IS TRUE");
-    optimize("NOT (FIELD IS FALSE)", "FIELD IS TRUE");
-    optimize("NOT (FIELD IS NOT FALSE)", "FIELD IS FALSE");
-    optimize("NOT (FIELD IS NOT NULL)", "FIELD IS NULL");
-    optimize("NOT (FIELD IS NULL)", "FIELD IS NOT NULL");
+    optimize("NOT (FLAG IS TRUE)", "FLAG IS FALSE");
+    optimize("NOT (FLAG IS NOT TRUE)", "FLAG IS TRUE");
+    optimize("NOT (FLAG IS FALSE)", "FLAG IS TRUE");
+    optimize("NOT (FLAG IS NOT FALSE)", "FLAG IS FALSE");
+    optimize("NOT (FLAG IS NOT NULL)", "FLAG IS NULL");
+    optimize("NOT (FLAG IS NULL)", "FLAG IS NOT NULL");
 
     optimize("-(-AGE)", "AGE");
     optimize("false and true or FIELD", "FIELD");
@@ -234,7 +234,7 @@ public class OptimizerTest {
     optimize("0+AGE", "AGE");
     optimize("AGE-0", "AGE");
     optimize("0-AGE", "-AGE");
-    optimize("Z-(0-AGE)", "AGE+Z");
+    optimize("YEAR-(0-AGE)", "YEAR+AGE");
     optimize("AGE*1", "AGE");
     optimize("1.0*AGE", "AGE");
 

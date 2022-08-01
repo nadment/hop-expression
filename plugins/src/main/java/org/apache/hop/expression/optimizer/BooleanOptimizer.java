@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  * 2. Merge same expressions.
  * 3. Removes `Not` operator.
  */
-public class BooleanOptimizer extends Optimizer {
+public class BooleanOptimizer extends ExpressionCompiler {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
@@ -86,7 +86,7 @@ public class BooleanOptimizer extends Optimizer {
       else if (call.is(Operators.BOOLOR)) {
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(0).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(0).getValue(context));
           if (value == null)
             return call.getOperand(1);
           if (value == Boolean.TRUE)
@@ -94,7 +94,7 @@ public class BooleanOptimizer extends Optimizer {
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(1).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(1).getValue(context));
           if (value == null)
             return call.getOperand(0);
           if (value == Boolean.TRUE)
@@ -102,13 +102,13 @@ public class BooleanOptimizer extends Optimizer {
         }
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(0).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(0).getValue(context));
           if (value == Boolean.FALSE)
             return call.getOperand(1);
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(1).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(1).getValue(context));
           if (value == Boolean.FALSE)
             return call.getOperand(0);
         }
@@ -125,7 +125,7 @@ public class BooleanOptimizer extends Optimizer {
         boolean right = true;
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(0).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(0).getValue(context));
           if (value == null)
             return Literal.NULL;
           if (value == Boolean.FALSE)
@@ -133,7 +133,7 @@ public class BooleanOptimizer extends Optimizer {
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(1).eval(context));
+          Boolean value = Coerse.toBoolean(call.getOperand(1).getValue(context));
           if (value == null)
             return Literal.NULL;
           if (value == Boolean.FALSE)

@@ -23,6 +23,8 @@ Calculates the trigonometric cosine of the specified angle in radians.
 COS( numeric )
 ----
 
+Return:: Number
+
 == Usage
 
 * The argument should be expressed in radians.

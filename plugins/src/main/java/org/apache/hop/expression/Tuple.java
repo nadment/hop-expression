@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -80,10 +81,10 @@ public class Tuple implements IExpression, Iterable<IExpression> {
   } 
   
   @Override
-  public DataTypeName getDataType() {
+  public DataTypeName getType() {
     // Returns the first known data type of values.    
     for (IExpression v : values  ) {
-      DataTypeName type = v.getDataType();
+      DataTypeName type = v.getType();
       if ( type!= DataTypeName.UNKNOWN ) return type;
     }
     
@@ -116,12 +117,12 @@ public class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public Object eval(IExpressionContext context) throws ExpressionException {
+  public Object getValue(IExpressionContext context) throws ExpressionException {
     throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
   }
   
   @Override
-  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
+  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);    
   }
 

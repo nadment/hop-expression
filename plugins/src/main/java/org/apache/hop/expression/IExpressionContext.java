@@ -20,7 +20,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 
 public interface IExpressionContext extends IVariables {
-    
+ 
   /**
    * Gets the value of an attribute.
    *

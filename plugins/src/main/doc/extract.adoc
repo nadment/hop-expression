@@ -19,9 +19,11 @@ under the License.
 Extracts the specified date or time part from a date, time, or timestamp.
 
 == Syntax
+[source,sql]
 ----
 EXTRACT( part FROM {date | timestamp} )
 ----
+[source,sql]
 ----
 DATE_PART( part, {date | timestamp} )
 ----

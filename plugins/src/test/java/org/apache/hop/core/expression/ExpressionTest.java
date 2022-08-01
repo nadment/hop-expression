@@ -22,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.operator.Concat;
+import org.apache.hop.expression.operator.ConcatFunction;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -75,13 +75,12 @@ public class ExpressionTest extends BaseExpressionTest {
   @Test
   public void Operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
-    assertEquals(Operators.CONCAT, new Concat());
+    assertEquals(Operators.CONCAT, new ConcatFunction("||"));
     assertNotEquals(Operators.CONCAT, Operators.EQUAL);
     assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
     assertFalse(Operators.CONCAT.is(null));
     assertNotNull(Operators.CONCAT.getDescription());
     assertNotEquals(Operators.CONCAT, null);
-    assertNotEquals(Operators.CONCAT, FunctionRegistry.getFunction("CONCAT"));
     //assertNotNull(Operators.CONCAT.getDocumentation());
     assertNotNull(Operators.CONCAT.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));

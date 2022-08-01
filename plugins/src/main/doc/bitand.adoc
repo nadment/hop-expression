@@ -23,7 +23,7 @@ Performs a bitwise AND operation between two integer values.
 BITAND( integer1, integer2 ) 
 ----
 
-The & operator provides alternative syntax.
+The `&` operator provides alternative syntax.
 ----
 integer1 & integer2
 ----

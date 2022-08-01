@@ -22,7 +22,7 @@ Performs a bitwise OR operation between two integer values.
 ----
 BITOR( integer1, integer2 )
 ----
-The | operator provides alternative syntax.
+The `|` operator provides alternative syntax.
 ----
 integer1 | integer2
 ----

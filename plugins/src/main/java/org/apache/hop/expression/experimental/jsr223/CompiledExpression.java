@@ -37,7 +37,7 @@ public class CompiledExpression extends CompiledScript {
   @Override
   public Object eval(ScriptContext context) throws ScriptException {
     try {
-      return expression.eval((ExpressionContext) context);
+      return expression.getValue((ExpressionContext) context);
     } catch (ExpressionException e) {
       throw new ScriptException(e.getMessage());
     }

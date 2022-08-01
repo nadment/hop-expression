@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= REGEXP_LIKE, RLIKE
+= REGEXP_LIKE
 
 Match a string based on a regular expression pattern.
 
@@ -22,13 +22,9 @@ Match a string based on a regular expression pattern.
 ----
 REGEXP_LIKE( subject, pattern [, parameters ] )
 ----
-The RLIKE operator provides alternative syntax.
-----
-subject RLIKE pattern
-----
-<subject>:: The string to be searched for.
-<pattern>:: The regular expression pattern.
-<parameters>:: One or more string literals that indicate how the function matches the pattern.
+subject:: The string to be searched for.
+pattern:: The regular expression pattern.
+parameters:: One or more string literals that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 

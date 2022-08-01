@@ -125,7 +125,7 @@ public class ExpressionBenchmark {
 
   protected Object eval(String source, ExpressionContext context) throws Exception {
     IExpression expression = ExpressionBuilder.compile(context, source);
-    return expression.eval(context);
+    return expression.getValue(context);
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime)

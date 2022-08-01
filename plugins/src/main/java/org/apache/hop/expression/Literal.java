@@ -1,5 +1,5 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+' * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
  * agreements. See the NOTICE file distributed with this work for additional information regarding
  * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License. You may obtain a
@@ -14,8 +14,10 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -91,7 +93,7 @@ public class Literal implements IExpression {
     }
         
     // Special case for optimization
-    if (value instanceof DatePart || value instanceof DataTypeName) {
+    if (value instanceof DatePart || value instanceof DataTypeName || value instanceof NumberFormat || value instanceof DateTimeFormat) {
       return new Literal(value, DataTypeName.UNKNOWN);
     }
 
@@ -112,10 +114,10 @@ public class Literal implements IExpression {
   }
 
   @Override
-  public Object eval(final IExpressionContext context) throws ExpressionException {
+  public Object getValue(final IExpressionContext context) throws ExpressionException {
     return value;
   }
-
+  
   @Override
   public Kind getKind() {
     return Kind.LITERAL;
@@ -127,7 +129,7 @@ public class Literal implements IExpression {
   }
   
   @Override
-  public DataTypeName getDataType() {
+  public DataTypeName getType() {
     return type;
   }
 
@@ -209,7 +211,7 @@ public class Literal implements IExpression {
   }
 
   @Override
-  public <E> E visit(IExpressionContext context, IExpressionVisitor<E> visitor) {
+  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
   }
 }

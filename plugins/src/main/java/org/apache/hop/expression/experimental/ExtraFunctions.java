@@ -22,51 +22,12 @@ import org.apache.hop.core.plugins.IPlugin;
 import org.apache.hop.core.plugins.PluginRegistry;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.ScalarFunction;
-import org.apache.hop.expression.util.Coerse;
-import java.text.Normalizer;
-import java.util.regex.Pattern;
 
 public class ExtraFunctions {
 
   private ExtraFunctions() {}
 
-  private static final Pattern DIACRITICS =
-      Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
-
-  /**
-   * The function removes accents (diacritic marks) from a given string.
-   * Note that ligatures will be left as is.
-   */
-  @ScalarFunction(id = "UNACCENT", category = "i18n::Operator.Category.String", minArgs = 1,
-      maxArgs = 1, documentationUrl = "/docs/unaccent.html")
-  public static Object unaccent(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
-      return null;
-
-    String str = Coerse.toString(v0);
-
-    final StringBuilder decomposed =
-        new StringBuilder(Normalizer.normalize(str, Normalizer.Form.NFD));
-
-    for (int i = 0; i < decomposed.length(); i++) {
-      if (decomposed.charAt(i) == '\u0141') {
-        decomposed.deleteCharAt(i);
-        decomposed.insert(i, 'L');
-      } else if (decomposed.charAt(i) == '\u0142') {
-        decomposed.deleteCharAt(i);
-        decomposed.insert(i, 'l');
-      }
-    }
-
-    // Note that this doesn't correctly remove ligatures...
-    return DIACRITICS.matcher(decomposed).replaceAll("");
-  }
-
+  
   // TODO: Use a cache
   private static ICompressionProvider getCompressionProvider(String id) throws ExpressionException {
     PluginRegistry registry = PluginRegistry.getInstance();

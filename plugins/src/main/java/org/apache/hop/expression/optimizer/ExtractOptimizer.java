@@ -30,13 +30,13 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
  */
-public class ExtractOptimizer extends Optimizer {
+public class ExtractOptimizer extends ExpressionCompiler {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
     try {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
-        DatePart part = Coerse.toDatePart(call.getOperand(0).eval(context));
+        DatePart part = Coerse.toDatePart(call.getOperand(0).getValue(context));
         Function function = FunctionRegistry.getFunction(part.name());
         if (function != null && ! (function instanceof UserDefinedFunction) ) {
           return new Call(function, call.getOperand(1));

@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class Argument {

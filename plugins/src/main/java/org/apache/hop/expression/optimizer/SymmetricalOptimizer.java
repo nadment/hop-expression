@@ -30,7 +30,7 @@ import org.apache.hop.expression.Operator;
  * 2. Go up an operand if low cost
  * 3. Order identifier by name (only useful for test)
  */
-public class SymmetricalOptimizer extends Optimizer {
+public class SymmetricalOptimizer extends ExpressionCompiler {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {

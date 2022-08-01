@@ -18,19 +18,17 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.plugins.JarCache;
+import org.apache.hop.core.plugins.PluginClassFile;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.metadata.api.IHopMetadataSerializer;
 import org.apache.hop.metadata.util.HopMetadataUtil;
 import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
-import org.jboss.jandex.MethodInfo;
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +69,7 @@ public class FunctionRegistry {
    * Initialize the registry, keep private to keep this a singleton
    */
   private FunctionRegistry() {}
-  
+
   /**
    * Discovery and register built-in and plugin functions
    */
@@ -79,105 +77,71 @@ public class FunctionRegistry {
     if (log.isDebug()) {
       log.logDebug("Register built-in functions");
     }
-       
-    // Aggregators are registered as functions
-    for (Aggregator aggregator: Operators.SET_AGGREGATORS) {
-      register(aggregator);
-    }
-    
+
     try {
-      List<Method> methods = findAnnotatedMethods(ScalarFunction.class);
-      for (Method method : methods) {
+      for (ClassInfo classInfo : findAnnotatedFunctions(FunctionPlugin.class)) {
         try {
-          ScalarFunction annotation = method.getAnnotation(ScalarFunction.class);
-          Class<?> clazz = method.getDeclaringClass();
-          Object instance = null;
+          String className = classInfo.name().toString();
+          Class<?> clazz = FunctionRegistry.class.getClassLoader().loadClass(className);
+          Function function = (Function) clazz.getDeclaredConstructor().newInstance();
 
-          // If method is not static, need an instance to be invoked.
-          // Operator combined with function is not static.
-          try {
-            instance = clazz.getDeclaredConstructor().newInstance();
-          } catch (Exception e) {
-            // If class doesn't have constructor, method should be static
-          }
+          // Register function with it's unique name
+          register(function);
 
-          // Create function and register primary name
-          Function function = new RowFunction(annotation.id(), annotation.id(),
-              annotation.deterministic(), instance, method, annotation.minArgs(),
-              annotation.maxArgs(), annotation.category(), annotation.documentationUrl());
-          register(function.getId(), function);
-
-          // Create function and register alias name
+          // Register functions with alias names
+          FunctionPlugin annotation = (FunctionPlugin) clazz.getAnnotation(FunctionPlugin.class);
           for (String name : annotation.names()) {
-            function = new RowFunction(annotation.id(), name, annotation.deterministic(), instance,
-                method, annotation.minArgs(), annotation.maxArgs(), annotation.category(),
-                annotation.documentationUrl());
-            register(name, function);
-          }
+             register(name, function);
+           }
         } catch (Exception e) {
-          log.logError("Error registring function " + method, e);
+          log.logError("Error registring function " + classInfo.simpleName(), e);
         }
       }
-
-      
     } catch (Exception e) {
       log.logError("Error discovering annoted functions", e);
     }
   }
-    
-  private static Method getAnnotatedMethod(MethodInfo methodInfo)
-      throws ClassNotFoundException, NoSuchMethodException, SecurityException {
-    ClassInfo classInfo = methodInfo.declaringClass();
-    Class<?> clazz = Class.forName(classInfo.name().toString());
-    return clazz.getMethod(methodInfo.name(), IExpressionContext.class, IExpression[].class);
-  }
 
-  protected static List<Method> findAnnotatedMethods(Class<? extends Annotation> annotationClass)
-      throws HopException {
-    List<Method> methods = new ArrayList<>();
+  protected static List<ClassInfo> findAnnotatedFunctions(
+      Class<? extends Annotation> annotationClass) throws HopException {
+    List<ClassInfo> results = new ArrayList<>();
+    List<PluginClassFile> classFiles = new ArrayList<>();
+
     JarCache cache = JarCache.getInstance();
     DotName annotationName = DotName.createSimple(annotationClass.getName());
 
     try {
-
       // Search native jar
       for (File jarFile : cache.getNativeJars()) {
         IndexView index = cache.getIndex(jarFile);
 
         // find annotations
-        for (AnnotationInstance instance : index.getAnnotations(annotationName)) {
-          if (instance.target().kind() != AnnotationTarget.Kind.METHOD) {
-            continue;
-          }
-          MethodInfo methodInfo = instance.target().asMethod();
-          methods.add(getAnnotatedMethod(methodInfo));
+        for (AnnotationInstance info : index.getAnnotations(annotationName)) {
+          results.add(info.target().asClass());
         }
       }
 
       // Search in plugins
       for (File jarFile : cache.getPluginJars()) {
         IndexView index = cache.getIndex(jarFile);
-
-        // find annotations
-        for (AnnotationInstance instance : index.getAnnotations(annotationName)) {
-          if (instance.target().kind() != AnnotationTarget.Kind.METHOD) {
-            continue;
-          }
-          MethodInfo methodInfo = instance.target().asMethod();
-          methods.add(getAnnotatedMethod(methodInfo));
+        for (AnnotationInstance info : index.getAnnotations(annotationName)) {
+          results.add(info.target().asClass());
         }
       }
 
     } catch (Exception e) {
       throw new HopException("Error finding annotation " + annotationName, e);
     }
-    return methods;
+    return results;
   }
+
+
+
 
   private static void register(final Function function) {
     register(function.getId(), function);
   }
-  
+
   public static void register(final String name, final Function function) {
     if (name == null)
       return;
@@ -186,18 +150,18 @@ public class FunctionRegistry {
       log.logError("Function '{0}' already registred", name);
       return;
     }
-    
+
     if (log.isDebug()) {
       log.logDebug("Register function '{0}'", name);
     }
 
     functions.put(name, function);
   }
-  
+
   public static Function unregister(final String name) {
     if (name == null)
       return null;
-    
+
     Function function = functions.remove(name);
     if (function == null) {
       log.logError("Function '{0}' not registred", name);
@@ -205,7 +169,7 @@ public class FunctionRegistry {
 
     return function;
   }
-  
+
   public static void reloadUserDefinedFunctions(IVariables variables) {
     // Unregister User Defined Functions
     for (Function function : FunctionRegistry.getFunctions()) {
@@ -213,18 +177,20 @@ public class FunctionRegistry {
         FunctionRegistry.unregister(function.getName());
       }
     }
-    
-     // Register User Defined Functions
+
+    // Register User Defined Functions
     try {
-      IHopMetadataProvider metadataProvider = HopMetadataUtil.getStandardHopMetadataProvider(variables);
-      IHopMetadataSerializer<UserDefinedFunctionMeta> serializer = metadataProvider.getSerializer(UserDefinedFunctionMeta.class);
+      IHopMetadataProvider metadataProvider =
+          HopMetadataUtil.getStandardHopMetadataProvider(variables);
+      IHopMetadataSerializer<UserDefinedFunctionMeta> serializer =
+          metadataProvider.getSerializer(UserDefinedFunctionMeta.class);
 
       for (String name : serializer.listObjectNames()) {
         try {
           if (log.isDebug()) {
             log.logBasic("Register user defined function: " + name);
-          }                   
-          UserDefinedFunctionMeta udfMeta =serializer.load(name);
+          }
+          UserDefinedFunctionMeta udfMeta = serializer.load(name);
           FunctionRegistry.register(name, new UserDefinedFunction(udfMeta));
         } catch (Exception e) {
           log.logError("Error registring User-defined function " + name, e);
