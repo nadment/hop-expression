@@ -60,7 +60,7 @@ end
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 * Scalar functions (conditional, mathematical, trigonometry, conversion, ...).
-* Aggregate functions `AVG` `COUNT` `MIN` `MAX` `STDEV`	`PERCENTILE` `VARIANCE`
+* Aggregate functions `AVG` `COUNT` `MIN` `MAX` `FIRST_VALUE` `LAST_VALUE` `STDEV` `PERCENTILE` `VARIANCE_POP` `VARIANCE_SAMP`
 * User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading
 * Are not case-sensitive, excepted for identifier

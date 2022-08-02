@@ -22,10 +22,10 @@ import org.apache.hop.expression.IExpressionProcessor;
 /** Returns the number of input values. Null values are not counted. */
 public class CountValueProcessor implements IExpressionProcessor {
 
-  private long count = 0L;
+  private long count;
 
   public CountValueProcessor() {
-
+    count = 0L;
   }
 
   @Override

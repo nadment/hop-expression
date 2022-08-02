@@ -23,9 +23,11 @@ import org.apache.hop.expression.util.Coerse;
 /** Returns the maximum of an expression across all input rows. */
 public class MaxProcessor implements IExpressionProcessor {
 
-  private Object max = null;
+  private Object max;
 
-  public MaxProcessor() {}
+  public MaxProcessor() {
+    max = null;
+  }
 
   @Override
   public void process(IExpressionContext context, IExpression[] operands)

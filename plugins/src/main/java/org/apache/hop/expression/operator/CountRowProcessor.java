@@ -22,9 +22,11 @@ import org.apache.hop.expression.IExpressionProcessor;
 /** Returns the number of rows. */
 public class CountRowProcessor implements IExpressionProcessor {
 
-  private long count = 0L;
+  private long count;
 
-  public CountRowProcessor() {}
+  public CountRowProcessor() {
+    count = 0L;
+  }
 
   @Override
   public void process(IExpressionContext context, IExpression[] operands)

@@ -20,7 +20,7 @@ package org.apache.hop.pipeline.transforms.aggregate;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import java.util.Objects;
 
-public class GroupField implements Cloneable {
+public class GroupField {
 
     @HopMetadataProperty(injectionKey = "GROUP_FIELD", injectionKeyDescription = "AggregateMeta.Injection.GROUP_FIELD")
     private String name;

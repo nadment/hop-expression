@@ -19,7 +19,7 @@ package org.apache.hop.pipeline.transforms.aggregate;
 
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
-public class AggregateField implements Cloneable {
+public class AggregateField {
   /** The aggregate expression */
   @HopMetadataProperty(
       key = "expression",
@@ -39,11 +39,6 @@ public class AggregateField implements Cloneable {
   public AggregateField(AggregateField t) {
     this.expression = t.expression;
     this.name = t.name;
-  }
-
-  @Override
-  public AggregateField clone() {
-    return new AggregateField(this);
   }
 
   /**

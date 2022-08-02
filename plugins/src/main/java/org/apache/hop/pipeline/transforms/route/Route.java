@@ -22,7 +22,7 @@ import org.apache.hop.metadata.api.HopMetadataProperty;
 /**
  * Utility class that contains the routing condition and the target transform name
  */
-public class Route implements Cloneable {
+public class Route {
   /** The condition expression for routing to */
   @HopMetadataProperty(
       key = "condition",
@@ -42,11 +42,6 @@ public class Route implements Cloneable {
   public Route(Route t) {
     this.condition = t.condition;
     this.transformName = t.transformName;
-  }
-
-  @Override
-  public Route clone() {
-    return new Route(this);
   }
 
   /**
