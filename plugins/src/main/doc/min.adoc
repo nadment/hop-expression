@@ -14,17 +14,27 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SIN
+= MIN [aggregate]
 
-Calculates the trigonometric sine of the angle in radians.
+Returns the minimum value over a group of rows.
 
 == Syntax
 ----
-SIN( numeric )
+MIN( expression )
 ----
 
-Return:: Number
+Return:: The data type of the returned value is the same as the data type of the input values.
+
 
 == Usage
 
-* The argument should be expressed in radians.
+* This is an analytic function that should only be used in the Aggregate transformation. 
+* Input expressions with a NULL value are ignored.
+* Return NULL if all rows in the group contain a NULL value for the expression.
+
+== Example
+
+----
+MIN( Age )
+----
+

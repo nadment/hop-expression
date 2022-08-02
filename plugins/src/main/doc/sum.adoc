@@ -16,7 +16,7 @@ under the License.
 ////
 = SUM [aggregate]
 
-Returns the sum of all values in the expression over a group of rows.
+Returns the sum of the values over a group of rows.
 
 == Syntax
 ----

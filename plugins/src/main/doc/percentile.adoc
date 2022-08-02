@@ -16,7 +16,7 @@ under the License.
 ////
 = PERCENTILE [aggregate]
 
-Returns the percentile of expression at the specified percentage over a group of rows.
+Returns the percentile of values at the specified percentage over a group of rows.
 
 == Syntax
 ----

@@ -15,22 +15,37 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Coerse;
 
+/**
+ * Returns the first value over a group of rows.
+ */
 @FunctionPlugin
-public class VarianceFunction extends AggregateFunction {
+public class FirstValueFunction extends AggregateFunction {
 
-  public VarianceFunction() {
-    super("VARIANCE", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/variance.html");
+  public FirstValueFunction() {
+    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN, "/docs/first_value.html");
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    return new VarianceProcessor();
+    boolean ignoreNull = false;
+    
+    if ( operands.length==2 ) {
+      try {
+        ignoreNull = Coerse.toBoolean(operands[1].getValue(context));
+      } catch (ExpressionException e) {
+        // Ignore
+      }
+    }
+    
+    return new FirstValueProcessor(ignoreNull);
   }
 }

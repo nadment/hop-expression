@@ -170,7 +170,7 @@ The operator precedence and associativity, highest to lowest.
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Set membership
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/rlike.adoc[RLIKE]|Pattern matching
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE]|Pattern matching
 |left|=, >, <, >=, <=, <>, != |Comparison operators
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is.adoc[IS]|IS [NOT] NULL, IS [NOT] FALSE, IS [NOT] TRUE
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 

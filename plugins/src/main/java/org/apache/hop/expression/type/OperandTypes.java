@@ -91,6 +91,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker LITERAL = new LiteralOperandTypeChecker(false);
 
   public static final IOperandTypeChecker ANY = family(DataTypeFamily.ANY);
+  public static final IOperandTypeChecker ANY_OPTIONAL_BOOLEAN = family(List.of(DataTypeFamily.ANY, DataTypeFamily.BOOLEAN), i -> i == 1);
   public static final IOperandTypeChecker ANY_ANY = family(DataTypeFamily.ANY,DataTypeFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY = family(DataTypeFamily.ANY,DataTypeFamily.ANY,DataTypeFamily.ANY);
   

@@ -16,7 +16,7 @@ under the License.
 ////
 = AVG [aggregate]
 
-Returns the average (arithmetic mean) of all non-null values in the expression over a group of rows.
+Returns the average (arithmetic mean) of all non-null values over a group of rows.
  
 == Syntax
 ----
@@ -25,5 +25,6 @@ AVG( numeric )
 
 == Usage
 
+* This is an analytic function that should only be used in the Aggregate transformation.
 * Null values are ignored.
 

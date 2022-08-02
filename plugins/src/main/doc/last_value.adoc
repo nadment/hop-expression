@@ -14,17 +14,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SIN
+= LAST_VALUE [aggregate]
 
-Calculates the trigonometric sine of the angle in radians.
+Returns the last value in an ordered set of values over a group of rows.
 
 == Syntax
 ----
-SIN( numeric )
+LAST_VALUE( expression [ IGNORE NULLS | RESPECT NULLS ] )
 ----
 
-Return:: Number
+Return:: The data type of the returned value is the same as the data type of the input values.
 
 == Usage
 
-* The argument should be expressed in radians.
+* This is an analytic function that should only be used in the Aggregate transformation.
+* If the first value in the set is null, then the function returns NULL unless you specify IGNORE NULLS.
+
+== Example
+
+----
+LAST_VALUE( City IGNORE NULLS )
+----
+

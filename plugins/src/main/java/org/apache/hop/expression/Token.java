@@ -120,6 +120,12 @@ public class Token {
     NOT,
     /** The literal value "NULL".*/
     NULL,
+    /** For IGNORE NULLS or RESPECT NULLS */
+    NULLS,
+    /** For IGNORE NULLS or RESPECT NULLS */
+    IGNORE,
+    /** For IGNORE NULLS or RESPECT NULLS */
+    RESPECT,
     /** The "IS" operator.*/
     IS,
     /** The "JSON_OBJECT" operator.*/
@@ -143,6 +149,10 @@ public class Token {
     /** Position(substring IN string) operator */
     POSITION,
     /** Data type element NUMBER, BOOLEAN,... */
+    FIRST_VALUE,
+    /** First_Value(expression [IGNORE NULLS | RESPECT NULLS]) */
+    LAST_VALUE,
+    /** Last_Value(expression [IGNORE NULLS | RESPECT NULLS]) */
     LITERAL_DATATYPE,
     /** Date part element DAY, MONTH,... */
     LITERAL_DATEPART;

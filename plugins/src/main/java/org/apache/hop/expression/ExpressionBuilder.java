@@ -52,10 +52,13 @@ public class ExpressionBuilder {
   private static final ExpressionCompiler RETURN_TYPE = new ReturnTypeOptimizer();
 
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
-      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM",
-      "ILIKE", "IN", "IS", "KEY", "LIKE", "NOT", "NULL", "OR", "RLIKE", "SYMMETRIC", "THEN", "TIME",
+      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE",
+      "ILIKE", "IN", "IS", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN", "TIME",
       "TIMESTAMP", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
+  private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT", "POSITION", "FIRST_VALUE","LAST_VALUE","JSON_OBJECT");
+  
+  
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
@@ -466,6 +469,9 @@ public class ExpressionBuilder {
         return parseFunctionPosition(token);
       case JSON_OBJECT:
         return parseFunctionJsonObject(token);
+      case FIRST_VALUE:
+      case LAST_VALUE:
+        return parseFunctionFirstLastValue(token);
       case FUNCTION:
         return parseFunction(token);
       case LPARENTHESIS:
@@ -751,7 +757,7 @@ public class ExpressionBuilder {
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotAndNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
     }
 
     operands.add(this.parseLogicalOr());
@@ -771,7 +777,7 @@ public class ExpressionBuilder {
     }
 
     if (isNotAndNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.end());
     }
 
     return new Call(Operators.CAST, operands);
@@ -783,7 +789,7 @@ public class ExpressionBuilder {
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotAndNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
     }
 
     operands.add(this.parseAdditive());
@@ -796,17 +802,57 @@ public class ExpressionBuilder {
     operands.add(this.parseAdditive());
 
     if (isNotAndNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
     }
 
     return new Call(Operators.POSITION, operands);
+  }
+  
+  /** 
+   * FIRST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] ) 
+   * LAST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
+   */
+  private IExpression parseFunctionFirstLastValue(Token token) throws ParseException {
+
+    Function function = FunctionRegistry.getFunction(token.text());  
+
+    if (isNotAndNext(Id.LPARENTHESIS)) {
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+    }
+    List<IExpression> operands = new ArrayList<>();
+    operands.add(this.parseLogicalOr());
+
+
+    if (isAndNext(Id.IGNORE)) {
+      if (isAndNext(Id.NULLS)) {
+        operands.add(Literal.TRUE);
+      }
+      else 
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
+            this.getPosition());
+    }
+    else if (isAndNext(Id.RESPECT)) {
+      
+      // Default respect null, no operand
+      
+      if (isNotAndNext(Id.NULLS)) {
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
+            this.getPosition());
+      }
+    }
+    
+    if (isNotAndNext(Id.RPARENTHESIS)) {
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+    }
+
+    return new Call(function, operands);
   }
 
   /** EXTRACT(<part> FROM <expression>) */
   private IExpression parseFunctionExtract(Token token) throws ParseException {
 
     if (isNotAndNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -821,7 +867,7 @@ public class ExpressionBuilder {
     operands.add(this.parseAdditive());
 
     if (isNotAndNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.end());
     }
 
     return new Call(Operators.EXTRACT, operands);
@@ -1250,10 +1296,8 @@ public class ExpressionBuilder {
           String name = identifier.toUpperCase();
 
           if (c == '(') {
-            // Special operator with name
-            if ("CAST".equals(name) || "COUNT".equals(name) || "TRY_CAST".equals(name)
-                || "EXTRACT".equals(name) || "POSITION".equals(name)
-                || "JSON_OBJECT".equals(name)) {
+            // Special function with custom syntax
+            if (FUNCTION_WITH_CUSTOM_SYNTAX.contains(name)) {
               return new Token(Id.valueOf(name), start, position, name);
             }
             if (FunctionRegistry.isFunction(name)) {

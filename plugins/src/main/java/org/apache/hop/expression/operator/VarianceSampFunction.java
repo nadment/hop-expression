@@ -14,43 +14,25 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.stat.StatUtils;
-import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.AggregateFunction;
+import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 /**
- * Returns the variance of all values in the expression over a group of rows. Null values are
- * ignored.
+ * Returns the sample variance calculated from values of a group of row.
  */
-public class VarianceProcessor implements IExpressionProcessor {
+@FunctionPlugin(names="VAR_SAMP")
+public class VarianceSampFunction extends AggregateFunction {
 
-  private List<Double> values;
-
-  public VarianceProcessor() {
-    values = new ArrayList<>();
+  public VarianceSampFunction() {
+    super("VARIANCE_SAMP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/variance_samp.html");
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
-    Object value = operands[0].getValue(context);
-    if (value != null) {
-      values.add(Coerse.toNumber(value));
-    }
-  }
-
-  @Override
-  public Object eval(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
-    final double[] array = new double[values.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = values.get(i);
-    }
-    return StatUtils.variance(array);
+  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
+    return new VarianceSampProcessor();
   }
 }
