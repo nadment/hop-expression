@@ -25,13 +25,16 @@
 			<outputDirectory>.</outputDirectory>
 			<filtered>true</filtered>
 		</file>
-		<file>
-			<source>${project.basedir}/src/main/resources/expression.hpl</source>
-			<outputDirectory>demo</outputDirectory>
-			<filtered>true</filtered>
-		</file>
+
 	</files>
 	<fileSets>
+			<fileSet>
+			<outputDirectory>demo</outputDirectory>
+			<directory>/src/main/resources</directory>			
+			<includes>
+				<include>*.hpl</include>
+			</includes>
+		</fileSet>
 		<fileSet>
 			<outputDirectory>lib</outputDirectory>
 			<excludes>

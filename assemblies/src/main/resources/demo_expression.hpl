@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>expression</name>
+    <name>demo_expression</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
@@ -80,7 +80,7 @@
     <clonenumfield>ROWNUM</clonenumfield>
     <nrclonefield>bb</nrclonefield>
     <nrcloneinfield>N</nrcloneinfield>
-    <nrclones>10000000</nrclones>
+    <nrclones>100000</nrclones>
     <attributes/>
     <GUI>
       <xloc>240</xloc>
@@ -100,64 +100,99 @@
     </partitioning>
     <fields>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>FIELD_STRING</name>
         <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>FIELD_NUMBER</name>
         <precision>-1</precision>
         <type>Number</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>FIELD_BOOLEAN</name>
         <precision>-1</precision>
         <type>Boolean</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
         <format>yyyy-MM-dd</format>
+        <group/>
         <length>-1</length>
         <name>FIELD_DATE</name>
         <precision>-1</precision>
         <type>Date</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>FIELD_INTEGER</name>
         <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>FIELD_JSON</name>
         <precision>-1</precision>
         <type>JSON</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>FIELD_BINARY</name>
         <precision>-1</precision>
         <type>Binary</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>YEAR</name>
         <precision>-1</precision>
         <type>Integer</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
         <set_empty_string>N</set_empty_string>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>COST CENTER</name>
         <precision>-1</precision>
@@ -180,12 +215,23 @@
         <item>Mike</item>
         <item>789,5</item>
         <item>False</item>
-        <item>2020-01-24</item>
+        <item>2020-01-25</item>
         <item>4</item>
         <item/>
         <item/>
         <item>2020</item>
         <item>15204</item>
+      </line>
+      <line>
+        <item>Dan</item>
+        <item>158</item>
+        <item>False</item>
+        <item>2020-06-13</item>
+        <item>4</item>
+        <item/>
+        <item/>
+        <item>2020</item>
+        <item>85500</item>
       </line>
     </data>
     <attributes/>
@@ -517,7 +563,8 @@ End
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <condition>FIELD_INTEGER>5</condition>
+    <condition>-- Odd-numbered day
+Day(FIELD_DATE)%2 = 1</condition>
     <send_false_to>FALSE</send_false_to>
     <send_true_to>TRUE</send_true_to>
     <attributes/>
