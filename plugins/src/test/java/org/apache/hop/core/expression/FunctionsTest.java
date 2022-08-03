@@ -1622,7 +1622,9 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith')", Converter.toJson("{\"name\":\"Smith\"}"));
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')", Converter.toJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
     evalEquals("Json_Object( 'name' VALUE 'Smith')", Converter.toJson("{\"name\":\"Smith\"}"));
-
+    evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'empty' VALUE null)", Converter.toJson("{\"name\":\"Smith\",\"empty\":null}"));
+     
+    
     evalFails("Json_Object(KEY 'name' VALUE )");
     evalFails("Json_Object(KEY VALUE 'Smith')");
   }

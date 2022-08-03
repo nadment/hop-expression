@@ -59,7 +59,10 @@ public class JsonObjectFunction extends Function {
        if ( call.getOperand(i++).getType().getFamily()!=DataTypeFamily.STRING ) {
            return false;
         }
-        if ( !VALUE_TYPES.contains(call.getOperand(i++).getType().getFamily()) ) {
+        
+        IExpression value = call.getOperand(i++);
+        if ( value.isNull() ) continue;
+        if ( !VALUE_TYPES.contains(value.getType().getFamily()) ) {
           return false;
         }
       }
@@ -88,7 +91,7 @@ public class JsonObjectFunction extends Function {
       String key = Coerse.toString(operands[i].getValue(context));
       Object value = operands[i + 1].getValue(context);
       if (value == null) {
-        node.put(key, "null");
+        node.putNull(key);
       } else if (value instanceof String) {
         node.put(key, (String) value);
       } else if (value instanceof Boolean) {
