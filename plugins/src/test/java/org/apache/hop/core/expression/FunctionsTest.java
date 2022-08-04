@@ -95,6 +95,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void ZeroIfNull() throws Exception {
     evalEquals("ZeroIfNull(1)", 1);
     evalEquals("ZeroIfNull(null)", 0);
+    
     evalFails("ZeroIfNull()");
     evalFails("ZeroIfNull(1,2)");
   }
@@ -105,6 +106,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("NullIfZero(0)");
     evalNull("NullIfZero(0.000)");
     evalNull("NullIfZero(-0.0)");
+    
+    evalFails("NullIfZero()");
   }
 
   @Test
@@ -114,9 +117,11 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Decode(NULL,1,'one',2,'two',Null,'<NULL>','other')", "<NULL>");
     evalEquals("Decode(9,1,'one',2,'two',Null,'<NULL>','other')", "other");
     
+    // Support ABORT as default
     evalEquals("Decode(AGE,4,'Flag 1',40,'Flag 2',ABORT('Error generated with ABORT'))","Flag 2");
     
-    evalNull("Decode(9,1,'one',2,'two',Null,'<NULL>')");    
+    evalNull("Decode(9,1,'one',2,'two',Null,'<NULL>')");
+    
     evalFails("Decode()");
     evalFails("Decodo(1)");
     evalFails("Decode(1,2)");
@@ -137,6 +142,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Current_Date()", today, context);
 
     evalFails("Today(Null)");
+    
     returnType("Current_Date()", DataTypeName.DATE);
   }
 
@@ -148,6 +154,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Current_Timestamp()", today, context);
 
     evalFails("Now(Null)");
+    
+    returnType("Current_Timestamp()", DataTypeName.DATE);
   }
 
   @Test
@@ -157,6 +165,8 @@ public class FunctionsTest extends BaseExpressionTest {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     evalEquals("Current_Timezone()", "UTC");
     evalFails("Current_Timezone(Null)");
+    
+    returnType("Current_Timezone()", DataTypeName.STRING);
   }
 
   @Test
@@ -613,6 +623,8 @@ public class FunctionsTest extends BaseExpressionTest {
 
     // Alias
     // evalEquals("LCase('TesT')", "test");
+    
+    returnType("Lower('TesT')", DataTypeName.STRING);
   }
 
   @Test
@@ -628,6 +640,8 @@ public class FunctionsTest extends BaseExpressionTest {
 
     // Alias
     evalEquals("Substr('TEST',5)", "");
+    
+    returnType("Substring('ABCDEFG',0,1)", DataTypeName.STRING);
   }
 
   @Test
@@ -804,6 +818,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Cos(NULL)");
     evalFails("Cos()");
     evalFails("Cos(0,1)");
+    
   }
 
   @Test
@@ -1879,6 +1894,14 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Concat(0x1F,0x2A3B)", new byte[]{0x1F, 0x2A, 0x3B});
 
     evalNull("Concat(NULL,NULL)");
+
+    evalFails("Concat()");
+    
+    // Mix String and Binary
+    evalFails("Concat(NOM,0x2A3B)");
+    
+    returnType("NOM||'t'", DataTypeName.STRING);
+    returnType("Concat(0x1F,0x2A3B)", DataTypeName.BINARY);
   }
 
   @Test
@@ -1890,9 +1913,11 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Chr(8364)", "€");
     evalEquals("Chr(33288)", "興");
     evalNull("Chr(NULL)");
+    
     evalFails("Chr()");
     evalFails("Chr(-1)");
     evalFails("Chr(999999999999)");
+    
     returnType("Chr(233)", DataTypeName.STRING);
   }
 

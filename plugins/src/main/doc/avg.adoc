@@ -25,6 +25,6 @@ AVG( numeric )
 
 == Usage
 
-* This is an analytic function that should only be used in the Aggregate transformation.
 * Null values are ignored.
 
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.

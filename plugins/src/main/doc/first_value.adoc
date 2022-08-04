@@ -27,9 +27,9 @@ Return:: The data type of the returned value is the same as the data type of the
 
 == Usage
 
-* This is an analytic function that should only be used in the Aggregate transformation.
 * If the first value in the set is null, then the function returns NULL unless you specify IGNORE NULLS.
 
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 == Example
 
 ----

@@ -56,7 +56,7 @@ public class ExpressionBuilder {
       "ILIKE", "IN", "IS", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN", "TIME",
       "TIMESTAMP", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
-  private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT", "POSITION", "FIRST_VALUE","LAST_VALUE","JSON_OBJECT");
+  private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT", "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
   
   
   public static Set<String> getReservedWords() {
@@ -469,6 +469,8 @@ public class ExpressionBuilder {
         return parseFunctionPosition(token);
       case JSON_OBJECT:
         return parseFunctionJsonObject(token);
+      case LISTAGG:
+        return parseFunctionListAgg(token);
       case FIRST_VALUE:
       case LAST_VALUE:
         return parseFunctionFirstLastValue(token);
@@ -889,10 +891,10 @@ public class ExpressionBuilder {
     // COUNT(*) no operand
     if (isAndNext(Id.MULTIPLY)) {
       operands.add(Literal.of("*"));
-      aggregator = Operators.COUNT_ROW;
+      aggregator = Operators.COUNT_ALL;
     } else if (isAndNext(Id.DISTINCT)) {
       operands.add(this.parseTerm());
-      aggregator = Operators.COUNT_DISTICNT_VALUE;
+      aggregator = Operators.COUNT_DISTINCT;
     } else {
       operands.add(this.parseTerm());
     }
@@ -904,7 +906,38 @@ public class ExpressionBuilder {
     return new Call(aggregator, operands);
   }
 
+  /**
+   * LISTAGG([DISTINCT] <expression> [, delimiter] )
+   */
+  private IExpression parseFunctionListAgg(Token token) throws ParseException {
 
+    AggregateFunction aggregator = Operators.LISTAGG_ALL;
+
+    if (isNotAndNext(Id.LPARENTHESIS)) {
+      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+    }
+
+    List<IExpression> operands = new ArrayList<>();
+
+    if (isAndNext(Id.DISTINCT)) {
+      operands.add(this.parseTerm());
+      aggregator = Operators.LISTAGG_DISTINCT;
+    } else {
+      operands.add(this.parseTerm());
+    }
+
+    // Optional delimiter
+    if (isAndNext(Id.COMMA)) {
+      operands.add(this.parseTerm());
+    }
+    
+    if (isNotAndNext(Id.RPARENTHESIS)) {
+      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+    }
+
+    return new Call(aggregator, operands);
+  }
+  
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
   private IExpression parseFunctionJsonObject(Token token) throws ParseException {
 

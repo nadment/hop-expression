@@ -14,17 +14,23 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SUM [aggregate]
+= LISTAGG [aggregate]
 
-Returns the sum of the values over a group of rows.
+Returns the concatenated input values over a group of rows, separated by the delimiter string.
 
 == Syntax
+
 ----
-SUM( numeric )
+LISTAGG( [DISTINCT] expression [, delimiter] )
 ----
+
+
+Return:: String
 
 == Usage
 
-* Null values are ignored.
+* Use the `DISTINCT` clause to return only unique values.
+* If the input is empty, an empty string is returned.
+* If all input expressions evaluate to null, the output is null.
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.

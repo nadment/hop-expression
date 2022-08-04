@@ -31,7 +31,8 @@ Return:: Integer
 
 == Usage
 
-* This is an analytic function that should only be used in the Aggregate transformation.
-* COUNT(*) returns the number of items in a group. This includes NULL values and duplicates.
-* COUNT(expression) evaluates expression for each row in a group, and returns the number of nonnull values.
-* COUNT(DISTINCT expression) evaluates expression for each row in a group, and returns the number of unique, nonnull values.
+* COUNT(`*`) returns the number of items in a group. This includes NULL values and duplicates.
+* COUNT(`expression`) evaluates expression for each row in a group, and returns the number of nonnull values.
+* COUNT(`DISTINCT` expression) evaluates expression for each row in a group, and returns the number of unique, nonnull values.
+
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.

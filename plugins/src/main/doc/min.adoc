@@ -27,10 +27,11 @@ Return:: The data type of the returned value is the same as the data type of the
 
 
 == Usage
-
-* This is an analytic function that should only be used in the Aggregate transformation. 
+ 
 * Input expressions with a NULL value are ignored.
 * Return NULL if all rows in the group contain a NULL value for the expression.
+
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 
 == Example
 

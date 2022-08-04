@@ -128,7 +128,7 @@ public class Token {
     RESPECT,
     /** The "IS" operator.*/
     IS,
-    /** The "JSON_OBJECT" operator.*/
+    /** The "JSON_OBJECT" function.*/
     JSON_OBJECT,
     KEY,
     VALUE,
@@ -141,18 +141,20 @@ public class Token {
     END, 
     WHEN, 
     TRY,
-    /** COUNT(*) or COUNT([DISTINCT] numeric) operator */
+    /** Function COUNT(*) or COUNT([DISTINCT] numeric) operator */
     COUNT,
     DISTINCT,
-    /** Extract(part FROM date_time) operator */
+    /** Function EXTRACT(part FROM date_time) operator */
     EXTRACT,
-    /** Position(substring IN string) operator */
+    /** Function POSITION(substring IN string) operator */
     POSITION,
-    /** Data type element NUMBER, BOOLEAN,... */
+    /** Function FIRST_VALUE(expression [IGNORE NULLS | RESPECT NULLS]) */
     FIRST_VALUE,
-    /** First_Value(expression [IGNORE NULLS | RESPECT NULLS]) */
+    /** Function LAST_VALUE(expression [IGNORE NULLS | RESPECT NULLS]) */
     LAST_VALUE,
-    /** Last_Value(expression [IGNORE NULLS | RESPECT NULLS]) */
+    /** Function LISTAGG( [DISTINCT] string [, delimiter]) */
+    LISTAGG,    
+    /** Data type element NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
     /** Date part element DAY, MONTH,... */
     LITERAL_DATEPART;

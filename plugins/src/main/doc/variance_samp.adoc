@@ -16,7 +16,7 @@ under the License.
 ////
 = VARIANCE_SAMP [aggregate]
 
-Todo
+Returns the sample variance of non-null values over a group of rows.
 
 == Syntax
 ----
@@ -27,5 +27,5 @@ Return:: Number
 
 == Usage
 
-* This is an analytic function that should only be used in the Aggregate transformation. 
+NOTE: This is an analytic function that should only be used in the Aggregate transformation.
 

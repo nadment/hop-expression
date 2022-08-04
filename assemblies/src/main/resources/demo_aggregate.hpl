@@ -124,6 +124,14 @@
         <expression>LAST_VALUE(City IGNORE NULLS)</expression>
         <name>LAST_CITY</name>
       </field>
+      <field>
+        <expression>LISTAGG(DISTINCT City)</expression>
+        <name>CITIES</name>
+      </field>
+      <field>
+        <expression>LISTAGG(City,'->')</expression>
+        <name>CITIES_ALL</name>
+      </field>
     </aggregates>
     <ALWAYSGIVINGBACKONEROW>N</ALWAYSGIVINGBACKONEROW>
     <groups>
@@ -150,44 +158,29 @@
     </partitioning>
     <fields>
       <field>
-        <currency/>
-        <decimal/>
         <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>Country</name>
         <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
         <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>City</name>
         <precision>-1</precision>
         <type>String</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
         <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>Amount</name>
         <precision>-1</precision>
         <type>Number</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
         <set_empty_string>N</set_empty_string>
         <format>yyyy-MM-dd</format>
-        <group/>
         <length>-1</length>
         <name>Period</name>
         <precision>-1</precision>

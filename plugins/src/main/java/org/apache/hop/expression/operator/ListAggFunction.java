@@ -23,34 +23,33 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
-public class CountFunction extends AggregateFunction {
+public class ListAggFunction extends AggregateFunction {
 
-  public enum Count {
-    VALUE, DISTINCT, ALL
+  public enum ListAgg {
+    ALL, DISTINCT
   }
 
-  private Count count;
+  private ListAgg option;
 
   /**
    * Default constructor to register function but not used.
-   * The different count mode are detected by parser. 
+   * The different options are detected by parser. 
    */
-  public CountFunction() {
-    this(Count.VALUE);
+  public ListAggFunction() {
+    this(ListAgg.ALL);
   }
   
-  public CountFunction(Count count) {
-    super("COUNT", ReturnTypes.INTEGER, OperandTypes.ANY, "/docs/count.html");
-    this.count = count;
+  public ListAggFunction(ListAgg option) {
+    super("LISTAGG", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, "/docs/listagg.html");
+    this.option = option;
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    switch(count) {    
-      case DISTINCT: return new CountDistinctValueProcessor();
-      case ALL: return new CountRowProcessor();
-      case VALUE: 
+
+    if (option==ListAgg.DISTINCT) {    
+      return new ListAggDistinctProcessor();       
     }
-    return new CountValueProcessor();
+    return new ListAggProcessor();
   }
 }

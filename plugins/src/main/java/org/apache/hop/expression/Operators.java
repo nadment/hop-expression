@@ -47,6 +47,8 @@ import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
 import org.apache.hop.expression.operator.LessThanOrGreaterThanOperator;
 import org.apache.hop.expression.operator.LikeOperator;
+import org.apache.hop.expression.operator.ListAggFunction;
+import org.apache.hop.expression.operator.ListAggFunction.ListAgg;
 import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegateOperator;
@@ -129,21 +131,11 @@ public class Operators {
   // -------------------------------------------------------------
   // AGGREGATE FUNCTIONS with custom syntax 
   // -------------------------------------------------------------
-  public static final AggregateFunction COUNT_DISTICNT_VALUE = new CountFunction(Count.DISTINCT_VALUE);
+  public static final AggregateFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
   public static final AggregateFunction COUNT_VALUE = new CountFunction(Count.VALUE);
-  public static final AggregateFunction COUNT_ROW = new CountFunction(Count.ROW);
-  
-//  public static final AggregateFunction AVG = new AvgFunction();
-  
-//  public static final AggregateFunction MAX = new MaxFunction();
-//  public static final AggregateFunction MIN = new MinFunction();
-//  public static final AggregateFunction PERCENTILE = new PercentileFunction();
-//  public static final AggregateFunction STDDEV = new StdDevFunction();
-//  public static final AggregateFunction SUM = new SumFunction();
-//  public static final AggregateFunction VARIANCE = new VarianceFunction();
-//
-//  /** Set of aggregators. */
-//  protected static final Set<AggregateFunction> SET_AGGREGATORS = Set.of(AVG, COUNT, MAX, MIN, PERCENTILE, STDDEV, SUM, VARIANCE);
+  public static final AggregateFunction COUNT_ALL = new CountFunction(Count.ALL);
+  public static final AggregateFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
+  public static final AggregateFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);
   
   /** Set of scalar operators. */
   private static final Set<Operator> SET_OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
