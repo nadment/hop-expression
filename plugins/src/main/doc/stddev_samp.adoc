@@ -14,24 +14,23 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= VARIANCE_POP [aggregate]
+= STDDEV_SAMP [aggregate]
 
-Returns the population variance of non-null values over a group of rows.
+Returns the sample standard deviation (square root of sample variance) of non-null values.
 
 == Syntax
 ----
-VARIANCE_POP( expression )
+STDDEV_SAMP( expression )
 ----
 
 Return:: Number 
 
 == Usage
 
-This is defined as the sum of squares of the difference of expression from the mean of expression, divided by the number of remaining rows.
+This is defined as the square root of VARIANCE_SAMP
 ----
-(SUM( expression * expression ) - SUM( expression ) * SUM( expression ) / COUNT( expression )) / COUNT( expression ) 
+STDDEV_SAMP( expression ) = SQRT( VARIANCE_SAMP( expression ) )
 ----
-
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation. 
 

@@ -73,36 +73,12 @@
         <name>COUNT_ALL</name>
       </field>
       <field>
-        <expression>PERCENTILE(Amount,25)</expression>
-        <name>PERCENTILE25</name>
-      </field>
-      <field>
-        <expression>PERCENTILE(Amount,50)</expression>
-        <name>PERCENTILE50</name>
-      </field>
-      <field>
-        <expression>PERCENTILE(Amount,75)</expression>
-        <name>PERCENTILE75</name>
-      </field>
-      <field>
-        <expression>STDDEV(Amount)</expression>
-        <name>STDDEV</name>
-      </field>
-      <field>
         <expression>SUM(Amount)</expression>
         <name>TOTAL</name>
       </field>
       <field>
         <expression>SUM(CASE WHEN Amount>10 THEN Amount END)</expression>
         <name>TOTAL_OVER_10</name>
-      </field>
-      <field>
-        <expression>VARIANCE_POP(Amount)</expression>
-        <name>VARIANCE_POP</name>
-      </field>
-      <field>
-        <expression>VARIANCE_SAMP(Amount)</expression>
-        <name>VARIANCE_SAMP</name>
       </field>
       <field>
         <expression>MAX(Period)</expression>
@@ -123,6 +99,34 @@
       <field>
         <expression>LAST_VALUE(City IGNORE NULLS)</expression>
         <name>LAST_CITY</name>
+      </field>
+      <field>
+        <expression>PERCENTILE(Amount,25)</expression>
+        <name>PERCENTILE25</name>
+      </field>
+      <field>
+        <expression>PERCENTILE(Amount,50)</expression>
+        <name>PERCENTILE50</name>
+      </field>
+      <field>
+        <expression>PERCENTILE(Amount,75)</expression>
+        <name>PERCENTILE75</name>
+      </field>
+      <field>
+        <expression>STDDEV_SAMP(Amount)</expression>
+        <name>STDDEV_SAMP</name>
+      </field>
+      <field>
+        <expression>STDDEV_POP(Amount)</expression>
+        <name>STDDEV_POP</name>
+      </field>
+      <field>
+        <expression>VARIANCE_POP(Amount)</expression>
+        <name>VARIANCE_POP</name>
+      </field>
+      <field>
+        <expression>VARIANCE_SAMP(Amount)</expression>
+        <name>VARIANCE_SAMP</name>
       </field>
       <field>
         <expression>LISTAGG(DISTINCT City)</expression>

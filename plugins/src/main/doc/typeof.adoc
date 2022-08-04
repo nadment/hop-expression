@@ -14,24 +14,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= VARIANCE_POP [aggregate]
+= TYPEOF
 
-Returns the population variance of non-null values over a group of rows.
+Returns the data type of the input expression.
 
 == Syntax
 ----
-VARIANCE_POP( expression )
+TYPEOF( expression )
 ----
 
-Return:: Number 
+Returns: String, for example, `BOOLEAN`, `STRING`, `INTEGER`, `NUMBER`, etc.
 
-== Usage
+== Examples
 
-This is defined as the sum of squares of the difference of expression from the mean of expression, divided by the number of remaining rows.
 ----
-(SUM( expression * expression ) - SUM( expression ) * SUM( expression ) / COUNT( expression )) / COUNT( expression ) 
+TYPEOF('str') >>> STRING
 ----
-
-
-NOTE: This is an analytic function that should only be used in the Aggregate transformation. 
-

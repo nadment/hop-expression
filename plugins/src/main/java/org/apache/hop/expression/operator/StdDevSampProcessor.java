@@ -28,11 +28,11 @@ import java.util.List;
  * Returns the standard deviation of all values in the expression over a group of rows. Null values
  * are ignored.
  */
-public class StdDevProcessor implements IExpressionProcessor {
+public class StdDevSampProcessor implements IExpressionProcessor {
 
   private List<Double> values;
 
-  public StdDevProcessor() {
+  public StdDevSampProcessor() {
     values = new ArrayList<>();
   }
 

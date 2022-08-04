@@ -2251,6 +2251,19 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("BitRotate()");
     evalFails("BitRotate(123)");
   } 
+
+  
+  @Test
+  public void Try() throws Exception {
+    // TODO:
+  }
+
+  @Test
+  public void TypeOf() throws Exception {
+    evalEquals("TypeOf('str')","STRING");
+    evalEquals("TypeOf(BitRotate(1,4))","INTEGER");
+    evalEquals("TypeOf(TRUE)","BOOLEAN");
+  }
   
   @Test
   public void Count() throws Exception {

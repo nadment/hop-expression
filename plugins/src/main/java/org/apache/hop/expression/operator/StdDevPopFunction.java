@@ -23,14 +23,14 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
-public class StdDevFunction extends AggregateFunction {
+public class StdDevPopFunction extends AggregateFunction {
 
-  public StdDevFunction() {
-    super("STDDEV", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/stddev.html");
+  public StdDevPopFunction() {
+    super("STDDEV_POP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/stddev_pop.html");
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    return new StdDevProcessor();
+    return new StdDevPopProcessor();
   }
 }

@@ -14,18 +14,23 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= STDDEV [aggregate]
+= STDDEV_POP [aggregate]
 
-Todo
+Returns the population standard deviation (square root of population variance) of non-null values.
 
 == Syntax
 ----
-STDDEV( expression )
+STDDEV_POP( expression )
 ----
 
 Return:: Number 
 
 == Usage
+
+This is defined as the square root of VARIANCE_POP
+----
+STDDEV_POP( expression ) = SQRT( VARIANCE_POP( expression ) )
+----
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation. 
 
