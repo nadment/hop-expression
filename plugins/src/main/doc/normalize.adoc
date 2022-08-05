@@ -14,23 +14,29 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= VARIANCE_SAMP [aggregate]
+= NORMALIZE
 
-Returns the sample variance of non-null values over a group of rows.
+Returns a string as a normalized string, allowing for easier  sorting and searching of text.
 
 == Syntax
 ----
-VARIANCE_SAMP( expression )
+NORMALIZE( string [, mode] )
 ----
 
-Return:: Number 
+mode:: 
+[options="header"]
+|===
+|Mode|Description
+|NFD|Canonical decomposition
+|NFC|Canonical decomposition, followed by canonical composition
+|NFKD|Compatibility decomposition
+|NFKC|Compatibility decomposition, followed by canonical composition
+|===
+
+Returns:: STRING
+
 
 == Usage
 
-This is defined as the sum of squares of the difference of expression from the mean of expression divided by the number of remaining rows minus 1.
-----
-(SUM( expression * expression ) - SUM( expression ) * SUM( expression ) / COUNT( expression )) / (COUNT( expression ) -1)
-----
-
-NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+* Normalization is often used in situations in which two strings render the same on the screen but have different Unicode code points.
 

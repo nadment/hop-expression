@@ -24,10 +24,7 @@ import org.apache.hop.expression.util.Coerse;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Returns the standard deviation of all values in the expression over a group of rows. Null values
- * are ignored.
- */
+
 public class StdDevPopProcessor implements IExpressionProcessor {
 
   private List<Double> values;

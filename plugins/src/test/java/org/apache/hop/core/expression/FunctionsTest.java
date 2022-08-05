@@ -258,6 +258,22 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Normalize() throws Exception {
+    evalEquals("Normalize('\u00ea')", "ê");
+    evalEquals("Normalize('\u0065\u0302')", "ê");
+    evalEquals("Normalize('Jane\u2004Doe', 'NFKC')", "Jane Doe");
+    evalEquals("Normalize('Jane\u2006Doe', 'NFKC')", "Jane Doe");
+    evalEquals("Normalize('¼', 'NFKC')", "1⁄4");
+    evalEquals("Normalize('i⁹', 'NFKC')", "i9");    
+    evalNull("Normalize(NULL)");
+    
+    evalFails("Normalize()");
+    evalFails("Normalize('\u00ea','BAD')");
+    
+    returnType("Normalize('\u00ea')", DataTypeName.STRING);
+  }
+  
+  @Test
   public void Unaccent() throws Exception {
     evalEquals("Unaccent('ÁÀÂÃÄÅĀĄàáâãäåāą')", "AAAAAAAAaaaaaaaa");
     evalEquals("Unaccent('ÇĆČçćč')", "CCCccc");
