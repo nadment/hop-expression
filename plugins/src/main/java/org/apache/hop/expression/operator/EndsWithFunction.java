@@ -57,9 +57,8 @@ public class EndsWithFunction extends Function {
       if (startOffset < 0) {
         return Boolean.FALSE;
       } else {
-        int end = startOffset + suffix.length;
-        for (int i = startOffset; i < end; i++) {
-          if (data[i] != suffix[i]) {
+        for (int i = 0; i < suffix.length; i++) {
+          if (data[startOffset + i] != suffix[i]) {
             return Boolean.FALSE;
           }
         }

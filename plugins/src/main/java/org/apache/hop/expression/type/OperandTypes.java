@@ -23,6 +23,11 @@ import java.util.function.Predicate;
  * Strategies for checking operand types.
  */
 public final class OperandTypes {
+  
+  private OperandTypes() {
+    // Utility class
+  }
+  
   /**
    * Creates a checker that passes if each operand is a member of a
    * corresponding family.

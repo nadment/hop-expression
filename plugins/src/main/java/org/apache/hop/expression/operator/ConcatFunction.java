@@ -65,7 +65,6 @@ public class ConcatFunction extends Function {
 
     // Concat Binary
     if (firstNotNull instanceof byte[]) {
-      // int lenth = 0;
       try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
         for (Object value : values) {
           if (value != null) {

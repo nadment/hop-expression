@@ -80,7 +80,6 @@ public interface IExpression {
    * @return The result of evaluating the expression.
    */
   public Object getValue(IExpressionContext context) throws ExpressionException;
-  // public Object getValue(IExpressionContext context, Class<?> clazz) throws ExpressionException;
   
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}

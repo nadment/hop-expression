@@ -27,6 +27,7 @@ import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 import java.util.HashMap;
+import java.util.Map;
 
 public class AggregateData extends BaseTransformData implements ITransformData {
   public class AggregateKey {
@@ -76,7 +77,7 @@ public class AggregateData extends BaseTransformData implements ITransformData {
     }
   }
 
-  public HashMap<AggregateKey, IExpressionProcessor[]> map;
+  public Map<AggregateKey, IExpressionProcessor[]> map;
 
   protected IRowMeta groupMeta;
   protected int[] groupIndex;

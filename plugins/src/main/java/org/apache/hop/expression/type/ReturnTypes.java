@@ -21,6 +21,10 @@ package org.apache.hop.expression.type;
  */
 public final class ReturnTypes {
 
+  private ReturnTypes() {
+    // Utility class
+  }
+  
   public static final IReturnTypeInference UNKNOWN =
       new ExplicitReturnTypeInference(DataTypeName.UNKNOWN);
 

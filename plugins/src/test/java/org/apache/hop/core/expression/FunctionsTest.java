@@ -1782,8 +1782,15 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void StartsWith() throws Exception {
+    // String
     evalTrue("StartsWith('TEST FROM','TES')");
     evalFalse("StartsWith('-TEST FROM','TES')");
+    
+    
+    // Binary
+    evalTrue("StartsWith(0xFAA12345,0xFA)");;
+    evalFalse("StartsWith(0xFAA12345,0xEE)");
+    
     evalNull("StartsWith(NULL,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL)");
     evalFails("StartsWith()");    
@@ -1792,8 +1799,14 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void EndsWith() throws Exception {
+    // String
     evalTrue("EndsWith('TEST FROM','ROM')");
     evalFalse("EndsWith('TEST FROM','ROMA')");
+   
+    // Binary
+    evalTrue("EndsWith(0xFAA12345,0x2345)");
+    evalFalse("EndsWith(0xFAA12345,0x88)");
+    
     evalNull("EndsWith(NULL,'ROMA')");
     evalNull("EndsWith('TEST FROM',NULL)");
     evalFails("EndsWith()");

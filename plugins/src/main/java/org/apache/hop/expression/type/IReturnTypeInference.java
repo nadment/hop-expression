@@ -26,6 +26,7 @@ import org.apache.hop.expression.Operator;
 public interface IReturnTypeInference {
   /**
    * Infers the return data type of a call to an {@link Operator}.
+   * 
    * @param call
    * @return
    */

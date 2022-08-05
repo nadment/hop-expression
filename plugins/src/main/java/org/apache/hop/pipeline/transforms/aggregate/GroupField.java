@@ -52,9 +52,4 @@ public class GroupField {
     public int hashCode() {
         return Objects.hash(name);
     }
-
-    @Override
-    public GroupField clone() {
-        return new GroupField(name);
-    }
 }

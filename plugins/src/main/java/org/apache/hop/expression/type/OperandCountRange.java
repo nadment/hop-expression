@@ -42,8 +42,6 @@ public class OperandCountRange implements IOperandCountRange {
   OperandCountRange(int min, int max) {
     this.min = min;
     this.max = max;
-    // Preconditions.checkArgument(min <= max || max == -1);
-    // Preconditions.checkArgument(min >= 0);
   }
 
   @Override

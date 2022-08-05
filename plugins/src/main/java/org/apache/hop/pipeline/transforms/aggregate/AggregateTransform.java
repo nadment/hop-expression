@@ -261,7 +261,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
    * @param aggregate
    * @throws HopException
    */
-  protected IExpressionProcessor[] createAggregate() throws HopException {
+  protected IExpressionProcessor[] createAggregate() {
 
     IExpressionProcessor[] processors = new IExpressionProcessor[data.functions.length];
 

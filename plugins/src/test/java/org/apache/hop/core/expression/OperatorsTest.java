@@ -112,6 +112,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("NOM!");
     evalFails("NOM ! ");
     
+    writeEquals("10!=AGE");
+    
     returnType("AGE<>40", DataTypeName.BOOLEAN);  
   }
 
@@ -141,6 +143,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM>");
     evalFails("NOM > ");
+    
+    writeEquals("10>AGE");
     
     returnType("'bar' > 'foo'", DataTypeName.BOOLEAN);
   }
@@ -172,6 +176,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("NOM>=");
     evalFails("NOM >=");
     
+    writeEquals("AGE>=80");
+    
     returnType("'bar' >= 'foo'", DataTypeName.BOOLEAN);
   }
 
@@ -201,6 +207,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM<");
     evalFails("NOM < ");
+    
+    writeEquals("AGE<80");
     
     returnType("'bar' < 'foo'", DataTypeName.BOOLEAN);
   }
@@ -302,6 +310,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("+NULL+5");
     evalFails("5+");
     evalFails("TRUE+FALSE");
+    
+    writeEquals("10+AGE");
   }
 
   @Test
@@ -324,6 +334,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("5-");
     evalFails("TRUE-FALSE");
+    
+    writeEquals("10-AGE");
   }
 
   @Test
