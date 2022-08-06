@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.stat.descriptive.rank.Percentile;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -24,16 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
- * values are ignored.
+ * Returns the median of all values in the expression over a group of rows.
  */
-public class PercentileProcessor implements IExpressionProcessor {
+public class MedianProcessor implements IExpressionProcessor {
   
-  private static final Percentile PERCENTILE = new Percentile();
+  private static final Median MEDIAN = new Median();
   
   private List<Double> values;
 
-  public PercentileProcessor() {
+  public MedianProcessor() {
     values = new ArrayList<>();
   }
 
@@ -50,13 +49,10 @@ public class PercentileProcessor implements IExpressionProcessor {
   public Object eval(IExpressionContext context, IExpression[] operands)
       throws ExpressionException {
 
-    Object percentile = operands[1].getValue(context);
-
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);
-    }
-    
-    return PERCENTILE.evaluate(array, Coerse.toNumber(percentile));
+    }    
+    return MEDIAN.evaluate(array);
   }
 }

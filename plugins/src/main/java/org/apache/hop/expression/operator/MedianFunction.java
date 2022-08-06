@@ -23,34 +23,14 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
-public class CountFunction extends AggregateFunction {
-
-  public enum Count {
-    VALUE, DISTINCT, ALL
-  }
-
-  private Count count;
-
-  /**
-   * Default constructor to register function but not used.
-   * The different count mode are detected by parser. 
-   */
-  public CountFunction() {
-    this(Count.VALUE);
-  }
-  
-  public CountFunction(Count count) {
-    super("COUNT", ReturnTypes.INTEGER, OperandTypes.OPTIONAL_ANY, "/docs/count.html");
-    this.count = count;
+public class MedianFunction extends AggregateFunction {
+ 
+  public MedianFunction() {
+    super("MEDIAN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/median.html");
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    switch(count) {    
-      case DISTINCT: return new CountDistinctValueProcessor();
-      case ALL: return new CountRowProcessor();
-      case VALUE: 
-    }
-    return new CountValueProcessor();
+    return new MedianProcessor();
   }
 }

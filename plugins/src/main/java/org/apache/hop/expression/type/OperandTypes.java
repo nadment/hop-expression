@@ -99,6 +99,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ANY_OPTIONAL_BOOLEAN = family(List.of(DataTypeFamily.ANY, DataTypeFamily.BOOLEAN), i -> i == 1);
   public static final IOperandTypeChecker ANY_ANY = family(DataTypeFamily.ANY,DataTypeFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY = family(DataTypeFamily.ANY,DataTypeFamily.ANY,DataTypeFamily.ANY);
+  public static final IOperandTypeChecker OPTIONAL_ANY = family(List.of(DataTypeFamily.ANY), i -> i == 0);
   
   /**
    * Operand type-checking strategy where two operands must both be in the

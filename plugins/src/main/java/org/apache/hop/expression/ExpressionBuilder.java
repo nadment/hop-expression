@@ -889,8 +889,7 @@ public class ExpressionBuilder {
     List<IExpression> operands = new ArrayList<>();
 
     // COUNT(*) no operand
-    if (isAndNext(Id.MULTIPLY)) {
-      operands.add(Literal.of("*"));
+    if (isAndNext(Id.MULTIPLY)) {      
       aggregator = Operators.COUNT_ALL;
     } else if (isAndNext(Id.DISTINCT)) {
       operands.add(this.parseTerm());
@@ -967,7 +966,6 @@ public class ExpressionBuilder {
         comma = true;
         token = next();
       }
-
     } while (comma);
 
     if (isNotAndNext(Id.RPARENTHESIS)) {
