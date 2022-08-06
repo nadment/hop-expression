@@ -69,6 +69,11 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void family() throws Exception {
+    assertTrue(DataTypeFamily.ANY.is(DataTypeFamily.BINARY));
+    assertTrue(DataTypeFamily.BINARY.is(DataTypeFamily.ANY));
+    assertTrue(DataTypeFamily.BINARY.is(DataTypeFamily.BINARY));
+    assertFalse(DataTypeFamily.BINARY.is(DataTypeFamily.NUMERIC));
+    assertFalse(DataTypeFamily.BINARY.is(null));
     assertEquals(DataTypeFamily.BINARY, DataTypeName.BINARY.getFamily());
     assertEquals(DataTypeFamily.BOOLEAN, DataTypeName.BOOLEAN.getFamily());
     assertEquals(DataTypeFamily.DATE, DataTypeName.DATE.getFamily());

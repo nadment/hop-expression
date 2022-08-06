@@ -1000,6 +1000,12 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDate.of(2021, 12, 6));
     evalTrue("Greatest(false,true,false)");
     evalFalse("Greatest(false,false,false)");
+
+    // Datatype mixte
+    evalFails("Greatest(123,'str',123)");
+        
+    returnType("Greatest(NAME,'st','bf')", DataTypeName.STRING);
+    returnType("Greatest(123,456,789)", DataTypeName.BIGNUMBER);
   }
 
   @Test
@@ -1011,6 +1017,9 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDate.of(1990, 12, 8));
     evalFalse("Least(false,true,false)");
     evalTrue("Least(true,true,true)");
+    
+    // Datatype mixte
+    evalFails("Least(123,'str',123)");
   }
 
   @Test
@@ -1786,10 +1795,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalTrue("StartsWith('TEST FROM','TES')");
     evalFalse("StartsWith('-TEST FROM','TES')");
     
-    
     // Binary
-    evalTrue("StartsWith(0xFAA12345,0xFA)");;
+    evalTrue("StartsWith(0xFAA12345,0xfA)");;
     evalFalse("StartsWith(0xFAA12345,0xEE)");
+    evalFalse("StartsWith(0x12345,0x123456)");
     
     evalNull("StartsWith(NULL,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL)");
@@ -1806,6 +1815,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // Binary
     evalTrue("EndsWith(0xFAA12345,0x2345)");
     evalFalse("EndsWith(0xFAA12345,0x88)");
+    evalFalse("EndsWith(0x12345,0xFFFF12345)");
     
     evalNull("EndsWith(NULL,'ROMA')");
     evalNull("EndsWith('TEST FROM',NULL)");
