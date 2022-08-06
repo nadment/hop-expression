@@ -51,7 +51,7 @@ public class BoolNotOperator extends Operator {
     if (value == null) {
       return null;
     }
-    return Coerse.toBoolean(value) ? Boolean.FALSE : Boolean.TRUE;
+    return !Coerse.toBoolean(value);
   }
 
   @Override

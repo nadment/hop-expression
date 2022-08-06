@@ -124,7 +124,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("(4+2)>10-9");
     evalTrue("Age>10");
     evalFalse("5>5");
-
+    evalFalse("0xF5>0xFE");
+    
     evalFalse("false > true");
     evalFalse("false > false");
     evalFalse("true > true");
@@ -143,6 +144,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM>");
     evalFails("NOM > ");
+    evalFails("NOM>5");
     
     writeEquals("10>AGE");
     
@@ -175,6 +177,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM>=");
     evalFails("NOM >=");
+    evalFails("NOM>=5");
     
     writeEquals("AGE>=80");
     
@@ -207,6 +210,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM<");
     evalFails("NOM < ");
+    evalFails("NOM < 5");
     
     writeEquals("AGE<80");
     
@@ -239,6 +243,9 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("NOM<=");
     evalFails("NOM <=");
+    evalFails("NOM <=5");
+    
+    writeEquals("AGE<=5");
     
     returnType("'bar' <= 'foo'", DataTypeName.BOOLEAN);
   }
@@ -344,7 +351,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
     evalFalse("5 between 5 and 3");
-    evalTrue("5 between symmetric 5 and 3");
+    evalTrue("AGE between symmetric 50 and 30");
     evalTrue("-1 between -3+1 and 5");
     evalTrue("'the' between 'that' and 'then'");
     evalFalse("1 between 3 and 5");
@@ -366,6 +373,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("Age between and ");
 
     writeEquals("AGE BETWEEN 10 AND 20");
+    writeEquals("AGE BETWEEN SYMMETRIC 50 AND 20");
+    writeEquals("NAME BETWEEN 'AZE' AND 'KLM'");
+    
     
     returnType("5 between 3 and 5", DataTypeName.BOOLEAN);
   }
@@ -500,54 +510,10 @@ public class OperatorsTest extends BaseExpressionTest {
     writeEquals("CAST(DATA AS BINARY)", "CAST(DATA AS BINARY)");
     writeEquals("CAST(AGE AS NUMBER)", "CAST(AGE AS NUMBER)");
     writeEquals("AGE::NUMBER", "CAST(AGE AS NUMBER)");
-  }
-  
-  @Test
-  public void Abort() throws Exception {
-    evalFails("Abort('Custom error message')");
-  }
-  
-  @Test
-  public void Try() throws Exception {
-
-    // Division by zero
-    evalNull("TRY(10/0)");
     
-    // String to Boolean
-    evalTrue("TRY(CAST('Yes' as Boolean))");
-    evalFalse("TRY(CAST('False' as Boolean))");
-    evalNull("TRY(CAST('Fake' as Boolean))");
-
-    // Number to Boolean
-    evalTrue("TRY(CAST(1 as Boolean))");
-    evalTrue("TRY(CAST(-12.1 as Boolean))");
-    evalNull("TRY(CAST('test' as Boolean))");
-
-    // Date to String
-    evalEquals("TRY(CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY'))", "25/02/2019");
-    evalNull("TRY(CAST('2019-99-25' AS Date))");
-    evalNull("TRY(CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD'))");
-    evalNull("TRY(CAST(NULL AS Date))");    
-    evalNull("Try(To_Date('2019-13-13','YYYY-MM-DD'))");    
-    evalEquals("Try(To_Date('2019-02-13','YYYY-MM-DD'))", LocalDate.of(2019, 2, 13));
-    
-    // Bad syntax
-    evalFails("TRY(CAST('2020-01-021' AS NULL))");
-    evalFails("TRY(CAST('2020-01-021' AS DATE FORMAT NULL))");
-    evalFails("TRY(CAST('bad' AS))");
-    evalFails("TRY(CAST(1234 AS STRING FORMAT ))");
-    evalFails("TRY(CAST(Date '2019-02-25' AS String FORMAT ))");
-
-    // Bad data type
-    evalFails("Try(Cast(123 as Nill))");
-
-    writeEquals("TRY(CAST(DATA AS BINARY))");
-    writeEquals("TRY(CAST(AGE AS NUMBER))");
-    writeEquals("TRY(CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD'))");
-    
-    returnType("Try(TRUE)", DataTypeName.BOOLEAN);
-    returnType("Try('String')", DataTypeName.STRING);
-    returnType("Try(Date '2020-07-01')", DataTypeName.DATE);
+    returnType("CAST(3 as BOOLEAN)", DataTypeName.BOOLEAN);
+    returnType("CAST('3' as INTEGER)", DataTypeName.INTEGER);  
+    returnType("CAST(Date '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataTypeName.DATE);
   }
 
   @Test
@@ -559,63 +525,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'EET'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("EET")));
     evalEquals("Add_Days(Timestamp '2020-05-25 10:48:00' AT TIME ZONE 'UTC',1) AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));    
     evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'XYZ'");
+ 
+   // writeEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
   
-  @Test
-  public void Extract() throws Exception {
-    evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
-    evalEquals("Extract(CENTURY from Timestamp '2000-12-25 23:48:59')", 20);
-    evalEquals("Extract(CENTURY from Timestamp '2020-05-25 23:48:59')", 21);
-    evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
-    evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
-    evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
-    evalEquals("Extract(ISOYEAR from Date '2017-01-01')", 2016);
-    evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
-    evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
-    evalEquals("Extract(WEEK from Timestamp '2020-01-01 23:48:59')", 1);
-    evalEquals("Extract(ISOWEEK from Date '2016-01-03')", 53);
-    evalEquals("Extract(ISOWEEK from Date '2016-01-04')", 1);
-    evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
-    evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
-    evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(ISODAYOFWEEK from Date '2003-12-28')", 7);
-    evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
-    evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
-    evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
-    evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
-    evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
-    evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
-    evalEquals("Extract(TIMEZONE_ABBR from Timestamp '2021-01-01 15:28:59')", "UTC");
-    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "UTC");
-    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
-    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
-    evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
-    
-    evalNull("Extract(SECOND from NULL)");
 
-    evalFails("Extract(NULL from Date '2021-01-01')");
-    evalFails("Extract(BIDON from NULL)");
-
-    writeEquals("EXTRACT(CENTURY FROM FIELD_DATE)");
-    
-    // Alias
-    evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);    
-    
-    returnType("EXTRACT(CENTURY FROM FIELD_DATE)", DataTypeName.INTEGER);
-  }
-  
-  @Test
-  public void Position() throws Exception {   
-    evalEquals("Position('abc' IN 'abcdefgh')", 1);
-    evalEquals("Position('XYZ' IN 'abcdefgh')", 0);
-    evalEquals("Position('def' IN 'abcdefgh')", 4);
-    
-    evalNull("Position(NULL IN 'abcdefgh')");
-    evalNull("Position('abc' IN NULL)");
-    evalFails("Position('abc' IN ");
-    evalFails("Position( IN 'fsd'");
-  }
   
   @Test
   public void Positive() throws Exception {
@@ -624,6 +538,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("+40", 40);
     evalEquals("1+ +2", 3);
     evalNull("+null");
+    
+    writeEquals("+AGE","AGE");
   }
 
   @Test
@@ -634,6 +550,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("+40", 40);
     evalEquals("1+ -2", -1);
     evalNull("-null");
+    writeEquals("-AGE","-AGE");
   }
 
   @Test
@@ -683,8 +600,8 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void Div0() throws Exception {
     evalEquals("Div0(10,4)", 2.5D);
-    evalEquals("Div0(40,-10)", -4D);    
-    evalEquals("Div0(5,0)", 0);
+    evalEquals("Div0(AGE,-10)", -4D);    
+    evalEquals("Div0(AGE,0)", 0);
     evalNull("Div0(null,1)");
     evalNull("Div0(null,0)");
     evalNull("Div0(1,null)");
@@ -767,7 +684,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("FLAG is ");
     evalFails("NOT");
     
-    writeEquals("FLAG IS NOT TRUE", "FLAG IS FALSE");
+    writeEquals("NOT FLAG");
     
     returnType("NOT FLAG", DataTypeName.BOOLEAN);
   }
@@ -781,6 +698,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("true OR null");
     evalTrue("true OR FIELD");
     evalTrue("null OR true");
+    evalTrue("FLAG OR false");
     evalFalse("false OR null");
     evalFalse("null OR false");
     evalNull("null OR null");
@@ -800,8 +718,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("false AND true");
     evalFalse("false AND false");
     evalFalse("false AND FIELD");
-    evalNull("true AND null");
-    evalNull("null AND true");
+    evalNull("FLAG AND null");
+    evalNull("null AND FLAG");
     evalNull("false AND null");
     evalNull("null AND false");
     evalNull("null AND null");
@@ -822,6 +740,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("'test' ILIKE NULL");
     evalNull("'test' ILIKE 'TEST' escape NULL");
     evalNull("NULL ILIKE '%T%'");
+    
+    returnType("'amigo' ILIKE 'a%o' ESCAPE '@'", DataTypeName.BOOLEAN);
   }
 
   @Test

@@ -41,6 +41,7 @@ import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
+import java.util.ArrayList;
 import java.util.List;
 
 @Transform(id = "Aggregate", image = "aggregate.svg", name = "i18n::Aggregate.Name",
@@ -65,6 +66,22 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
 
   public AggregateMeta() {
     super();
+  }
+
+  public AggregateMeta(AggregateMeta other) {
+    super();
+    
+    this.aggregateFields = other.aggregateFields;
+    
+    this.groupFields = new ArrayList<>();
+    for (GroupField field : other.getGroupFields()) {
+      groupFields.add(new GroupField(field.getName()));
+    }
+    
+    this.aggregateFields = new ArrayList<>();
+    for (AggregateField field : other.getAggregateFields()) {
+      aggregateFields.add(new AggregateField(field));
+    }
   }
 
   /**
@@ -95,11 +112,9 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     this.groupFields = groups;
   }
 
-
   @Override
   public Object clone() {
-    AggregateMeta retval = (AggregateMeta) super.clone();
-    return retval;
+    return new AggregateMeta(this);
   }
 
   @Override

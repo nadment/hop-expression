@@ -25,7 +25,6 @@ import org.apache.hop.expression.operator.BitXorFunction;
 import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
-import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.CaseOperator;
 import org.apache.hop.expression.operator.CastFunction;
 import org.apache.hop.expression.operator.ConcatFunction;
@@ -75,7 +74,6 @@ public class Operators {
   public static final Operator BOOLNOT = new BoolNotOperator();
   public static final Operator BOOLOR = new BoolOrOperator();
   public static final Operator BOOLAND = new BoolAndOperator();
-  public static final Operator BOOLXOR = new BoolXorOperator();
 
   // -------------------------------------------------------------
   // CONDITIONAL OPERATORS

@@ -101,6 +101,10 @@
         <name>LAST_CITY</name>
       </field>
       <field>
+        <expression>MEDIAN(Amount)</expression>
+        <name>MEDIAN</name>
+      </field>
+      <field>
         <expression>PERCENTILE(Amount,25)</expression>
         <name>PERCENTILE25</name>
       </field>

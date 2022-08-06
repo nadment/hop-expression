@@ -39,7 +39,6 @@ public class BetweenOperator extends Operator {
   }
   
   public final Between between;
-
   
   public BetweenOperator(Between between) {
     super("BETWEEN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.SAME_SAME_SAME, "i18n::Operator.Category.Comparison", "/docs/between.html");

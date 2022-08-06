@@ -33,6 +33,54 @@ import java.util.TimeZone;
 public class FunctionsTest extends BaseExpressionTest {
 
   @Test
+  public void Abort() throws Exception {
+    evalFails("Abort('Custom error message')");
+  }
+  
+  @Test
+  public void Try() throws Exception {
+
+    // Division by zero
+    evalNull("TRY(10/0)");
+    
+    // String to Boolean
+    evalTrue("TRY(CAST('Yes' as Boolean))");
+    evalFalse("TRY(CAST('False' as Boolean))");
+    evalNull("TRY(CAST('Fake' as Boolean))");
+
+    // Number to Boolean
+    evalTrue("TRY(CAST(1 as Boolean))");
+    evalTrue("TRY(CAST(-12.1 as Boolean))");
+    evalNull("TRY(CAST('test' as Boolean))");
+
+    // Date to String
+    evalEquals("TRY(CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY'))", "25/02/2019");
+    evalNull("TRY(CAST('2019-99-25' AS Date))");
+    evalNull("TRY(CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD'))");
+    evalNull("TRY(CAST(NULL AS Date))");    
+    evalNull("Try(To_Date('2019-13-13','YYYY-MM-DD'))");    
+    evalEquals("Try(To_Date('2019-02-13','YYYY-MM-DD'))", LocalDate.of(2019, 2, 13));
+    
+    // Bad syntax
+    evalFails("TRY(CAST('2020-01-021' AS NULL))");
+    evalFails("TRY(CAST('2020-01-021' AS DATE FORMAT NULL))");
+    evalFails("TRY(CAST('bad' AS))");
+    evalFails("TRY(CAST(1234 AS STRING FORMAT ))");
+    evalFails("TRY(CAST(Date '2019-02-25' AS String FORMAT ))");
+
+    // Bad data type
+    evalFails("Try(Cast(123 as Nill))");
+
+    writeEquals("TRY(CAST(DATA AS BINARY))");
+    writeEquals("TRY(CAST(AGE AS NUMBER))");
+    writeEquals("TRY(CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD'))");
+    
+    returnType("Try(TRUE)", DataTypeName.BOOLEAN);
+    returnType("Try('String')", DataTypeName.STRING);
+    returnType("Try(Date '2020-07-01')", DataTypeName.DATE);
+  }
+  
+  @Test
   public void Coalesce() throws Exception {
     evalEquals("Coalesce(1,2,3)", 1);
     evalEquals("Coalesce(null,1,2)", 1);
@@ -513,7 +561,15 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Week(NULL)");
     evalFails("Week()");
   }
+  
+  @Test
+  public void IsoDayOfWeek() throws Exception {
+    evalEquals("IsoDayOfWeek(Date '2003-12-28')", 7);
+    evalNull("IsoDayOfWeek(NULL)");
+    evalFails("IsoDayOfWeek()");
 
+  }
+  
   @Test
   public void IsoWeek() throws Exception {
     evalEquals("IsoWeek(Date '2015-12-31')", 53);
@@ -738,6 +794,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Abs(0)", 0);
     evalEquals("Abs(1)", 1);
     evalEquals("Abs(-1)", 1);
+    evalEquals("Abs(Price)", 5.12);
     evalEquals("Abs(-1::INTEGER)", 1);
     evalEquals("Abs(-1.12345679)", 1.12345679);
     evalEquals("Abs(-1.1234567912345679123456791234567912345679)",
@@ -1784,6 +1841,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Contains() throws Exception {
     evalTrue("CONTAINS(NAME,'ES')");
+    evalFalse("CONTAINS(NAME,'YZ')");
     evalNull("CONTAINS(NULL,'ES')");
     evalNull("CONTAINS(NAME,NULL)");    
     returnType("CONTAINS(NAME,'ES')", DataTypeName.BOOLEAN);
@@ -2043,6 +2101,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Floor(125.9)", 125);
     evalEquals("Floor(0.4873)", 0.0);
     evalEquals("Floor(-0.65)", -1);
+    evalEquals("Floor(Price)", -6);
+    evalEquals("Floor(Amount)", 123456);
     evalNull("Floor(null)");
     evalFails("Floor()");
     evalFails("Floor(1,2,3)");
@@ -2291,12 +2351,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("BitRotate(123)");
   } 
 
-  
-  @Test
-  public void Try() throws Exception {
-    // TODO:
-  }
-
   @Test
   public void TypeOf() throws Exception {
     evalEquals("TypeOf('str')","STRING");
@@ -2312,6 +2366,64 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Count()");
     evalFails("Count(DISTINCT )");
     evalFails("Count(1,2)");
+  }
+  
+  @Test
+  public void Extract() throws Exception {
+    evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
+    evalEquals("Extract(CENTURY from Timestamp '2000-12-25 23:48:59')", 20);
+    evalEquals("Extract(CENTURY from Timestamp '2020-05-25 23:48:59')", 21);
+    evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
+    evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
+    evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
+    evalEquals("Extract(ISOYEAR from Date '2017-01-01')", 2016);
+    evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
+    evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
+    evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
+    evalEquals("Extract(WEEK from Timestamp '2020-01-01 23:48:59')", 1);
+    evalEquals("Extract(ISOWEEK from Date '2016-01-03')", 53);
+    evalEquals("Extract(ISOWEEK from Date '2016-01-04')", 1);
+    evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
+    evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
+    evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
+    evalEquals("Extract(ISODAYOFWEEK from Date '2003-12-28')", 7);    
+    evalEquals("Extract(EPOCH from Timestamp '1970-01-01 00:00:00')", 0);
+    evalEquals("Extract(EPOCH from Timestamp '1970-01-02 00:00:00')", 86400);
+    evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
+    evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
+    evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);
+    evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
+    evalEquals("Extract(MICROSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456);
+    evalEquals("Extract(NANOSECOND from Timestamp '2020-05-25 00:00:01.123456')", 123456000);   
+    evalEquals("Extract(TIMEZONE_ABBR from Timestamp '2021-01-01 15:28:59')", "UTC");
+    evalEquals("Extract(TIMEZONE_REGION from Timestamp '2021-01-01 15:28:59')", "UTC");
+    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 +02:00')", 2);
+    evalEquals("Extract(TIMEZONE_HOUR from Timestamp '2021-01-01 15:28:59 -04:00')", -4);
+    evalEquals("Extract(TIMEZONE_MINUTE from Timestamp '2021-01-01 15:28:59 +01:28')", 28);
+    
+    evalNull("Extract(SECOND from NULL)");
+
+    evalFails("Extract(NULL from Date '2021-01-01')");
+    evalFails("Extract(BIDON from NULL)");
+
+    writeEquals("EXTRACT(CENTURY FROM FIELD_DATE)");
+    
+    // Alias
+    evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);    
+    
+    returnType("EXTRACT(CENTURY FROM FIELD_DATE)", DataTypeName.INTEGER);
+  }
+  
+  @Test
+  public void Position() throws Exception {   
+    evalEquals("Position('abc' IN 'abcdefgh')", 1);
+    evalEquals("Position('XYZ' IN 'abcdefgh')", 0);
+    evalEquals("Position('def' IN 'abcdefgh')", 4);
+    
+    evalNull("Position(NULL IN 'abcdefgh')");
+    evalNull("Position('abc' IN NULL)");
+    evalFails("Position('abc' IN ");
+    evalFails("Position( IN 'fsd'");
   }
 }
 
