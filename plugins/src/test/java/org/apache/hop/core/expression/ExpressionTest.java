@@ -76,14 +76,22 @@ public class ExpressionTest extends BaseExpressionTest {
   public void Operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
     assertEquals(Operators.CONCAT, new ConcatFunction("||"));
+    
+    // Primary operator first and alias last
+    assertTrue(Operators.CONCAT.compareTo(new ConcatFunction())>0);
+    
+    assertEquals("CONCAT", Operators.CONCAT.toString());
     assertNotEquals(Operators.CONCAT, Operators.EQUAL);
     assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
     assertFalse(Operators.CONCAT.is(null));
+    assertFalse(Operators.CONCAT.isAggregate());
     assertNotNull(Operators.CONCAT.getDescription());
     assertNotEquals(Operators.CONCAT, null);
     //assertNotNull(Operators.CONCAT.getDocumentation());
     assertNotNull(Operators.CONCAT.getDocumentationUrl());
+    
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
+    assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
   }
 
   @Test

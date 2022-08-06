@@ -17,9 +17,8 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /** 
@@ -67,11 +66,7 @@ public class Tuple implements IExpression, Iterable<IExpression> {
     this.values = expressions;
   }
 
-  public Tuple(List<IExpression> expressions) {
-    this.values = expressions.toArray(new IExpression[0]);
-  }
-
-  public Tuple(Set<IExpression> expressions) {
+  public Tuple(Collection<IExpression> expressions) {
     this.values = expressions.toArray(new IExpression[0]);
   }
   
@@ -164,7 +159,7 @@ public class Tuple implements IExpression, Iterable<IExpression> {
     writer.append(')');
   }
 
-  Stream<IExpression> stream() {
+  public Stream<IExpression> stream() {
     return Stream.of(values);
   }
 

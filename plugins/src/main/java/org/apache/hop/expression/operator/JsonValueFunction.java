@@ -25,7 +25,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
-import java.io.StringWriter;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -35,11 +34,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
-/**
- * Build a JSON object from a list of key=values pairs.
- * 
- * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)
- */
+
 @FunctionPlugin(id = "JSON_VALUE", category = "i18n::Operator.Category.Json", documentationUrl = "/docs/json_value.html")
 public class JsonValueFunction extends Function {
 
@@ -86,20 +81,5 @@ public class JsonValueFunction extends Function {
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.INVALID_JSON_PATH,path);
     }
-  }
-
-  @Override
-  public void unparse(final StringWriter writer, IExpression[] operands) {
-    writer.append(this.getName());
-    writer.append('(');
-    boolean first = true;
-    for (IExpression operand : operands) {
-      if (!first)
-        writer.append(',');
-      else
-        first = false;
-      operand.unparse(writer);
-    }
-    writer.append(')');
   }
 }

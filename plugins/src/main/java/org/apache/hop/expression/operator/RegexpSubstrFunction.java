@@ -91,7 +91,7 @@ public class RegexpSubstrFunction extends Function {
       }
 
       if (found) {
-        return matcher.group(0); // subexpression);
+        return matcher.group(0);
       }
 
       return null;

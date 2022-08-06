@@ -45,6 +45,7 @@ public class LiteralTest extends BaseExpressionTest {
     assertFalse(Literal.NULL.is((Kind)null));    
     assertFalse(Literal.NULL.is((Operator)null));
     assertNotEquals(Literal.NULL,null);
+    assertNotEquals(Literal.NULL,Literal.ZERO);
     assertNull(Literal.NULL.getValue(createExpressionContext()));
     assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
   }

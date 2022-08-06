@@ -19,7 +19,7 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -34,21 +34,20 @@ public class Call implements IExpression {
   public Call(Operator operator, IExpression... operands) {
     this(DataTypeName.UNKNOWN, operator, operands);
   }
+  public Call(Operator operator, Collection<IExpression> operands) {
+    this(DataTypeName.UNKNOWN, operator, operands);
+  }
 
   public Call(DataTypeName type, Operator operator, IExpression... operands) {
     this.type = type;
     this.operator = Objects.requireNonNull(operator);
     this.operands = Objects.requireNonNull(operands);
   }
-
-  public Call(Operator operator, List<IExpression> operands) {
-    this(DataTypeName.UNKNOWN, operator, operands);
-  }
-
-  public Call(DataTypeName type, Operator operator, List<IExpression> operands) {
+  
+  public Call(DataTypeName type, Operator operator, Collection<IExpression> operands) {
     this.type = type;
     this.operator = Objects.requireNonNull(operator);
-    this.operands = operands.toArray(new IExpression[0]);
+    this.operands = Objects.requireNonNull(operands).toArray(new IExpression[0]);
   }
 
   @Override

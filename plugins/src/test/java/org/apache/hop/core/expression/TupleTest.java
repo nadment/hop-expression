@@ -23,24 +23,31 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
 
 public class TupleTest extends BaseExpressionTest {
- 
+  
   @Test
   public void test() throws Exception {
     Tuple tuple0 = new Tuple();
-    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
+    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);    
     Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
-
+    Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
+    Tuple tuple4 = new Tuple(Literal.NULL, Literal.ZERO, Literal.NULL);
+    
     assertEquals(Kind.TUPLE, tuple1.getKind());
+    assertEquals(DataTypeName.INTEGER, tuple1.getType());
+    assertEquals(DataTypeName.INTEGER, tuple4.getType());
+    assertEquals(DataTypeName.UNKNOWN, tuple3.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
     assertEquals(tuple1, tuple2);
     assertNotEquals(tuple1, null);
+    assertNotEquals(tuple1, tuple3);
     assertEquals(tuple1.hashCode(), tuple2.hashCode());    
     assertEquals("(1,0,NULL)", tuple1.toString());
-    
+
     // Not evaluable alone
     assertThrows(ExpressionException.class, () -> tuple1.getValue(createExpressionContext()));      
   }

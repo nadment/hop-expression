@@ -46,21 +46,20 @@ public class DecodeFunction extends Function {
     public boolean checkOperandTypes(Call call) {
       DataTypeName search = call.getOperand(0).getType();      
       DataTypeName result = call.getOperand(2).getType();
+      
       int count = ((call.getOperandCount()-1)/2)*2;
-      for (int i=1 ; i<count; ) {
-        if ( !search.isSameFamily(call.getOperand(i++).getType()) ) {
+      for (int i=1 ; i<count; i+=2) {
+        if ( !search.isSameFamily(call.getOperand(i).getType()) ) {
            return false;
         }
-        if ( !result.isSameFamily(call.getOperand(i++).getType()) ) {
+        if ( !result.isSameFamily(call.getOperand(i+1).getType()) ) {
           return false;
        }
       }
 
-      // Check default
-      if ( (call.getOperandCount()-1)>count ) {
-        if ( !result.isSameFamily(call.getOperand(count+1).getType()) ) {
+      // Check type if function has a default value
+      if ( (call.getOperandCount()-1)>count && !result.isSameFamily(call.getOperand(count+1).getType()) ) {
           return false;
-       }
       }
       
       return true;
@@ -97,5 +96,4 @@ public class DecodeFunction extends Function {
 
     return operands[index].getValue(context);
   }
-
 }

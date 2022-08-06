@@ -77,13 +77,11 @@ public class Identifier implements IExpression {
   public Object getValue(final IExpressionContext context) throws ExpressionException {
         
     IRowMeta rowMeta = context.getRowMeta();
-    if (rowMeta == null || index<0)
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
-   
-    IValueMeta valueMeta = rowMeta.getValueMeta(index);
     
     Object[] row = context.getRow();
     try {
+      IValueMeta valueMeta = rowMeta.getValueMeta(index);
+      
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
           return rowMeta.getBoolean(row, index);
@@ -109,7 +107,7 @@ public class Identifier implements IExpression {
         default:
           throw new ExpressionException(ExpressionError.UNSUPPORTED_VALUEMETA, name, valueMeta.getTypeDesc());
       }
-    } catch (HopValueException e) {
+    } catch (Exception e) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
     }
   }

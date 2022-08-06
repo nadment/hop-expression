@@ -305,7 +305,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
   
   protected void getWidgetsContent(final RouteMeta meta) {
     int nrValues = wRoutes.nrNonEmpty();
-    input.getRoutes().clear();
+    meta.getRoutes().clear();
 
     for (int i = 0; i < nrValues; i++) {
       TableItem item = wRoutes.getNonEmpty(i);
@@ -313,17 +313,17 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
       Route target = new Route();
       target.setCondition(item.getText(1));
       target.setTransformName(item.getText(2));
-      input.getRoutes().add(target);
+      meta.getRoutes().add(target);
     }
 
-    input.setDefaultTargetTransformName(wDefaultTarget.getText());
+    meta.setDefaultTargetTransformName(wDefaultTarget.getText());
   }
   
   /** Copy information from the meta-data input to the dialog fields. */
   protected void setWidgetsContent(final RouteMeta meta) {
-    for (int i = 0; i < input.getRoutes().size(); i++) {
+    for (int i = 0; i < meta.getRoutes().size(); i++) {
       TableItem item = wRoutes.table.getItem(i);
-      Route target = input.getRoutes().get(i);
+      Route target = meta.getRoutes().get(i);
       if (target != null) {
         item.setText(1, Const.NVL(target.getCondition(), "")); // The value
         item.setText(2, Const.NVL(target.getTransformName(), ""));
@@ -333,7 +333,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wRoutes.setRowNums();
     wRoutes.optWidth(true);
 
-    wDefaultTarget.setText(Const.NVL(input.getDefaultTargetTransformName(), ""));
+    wDefaultTarget.setText(Const.NVL(meta.getDefaultTargetTransformName(), ""));
 
     wTransformName.selectAll();
     wTransformName.setFocus();
