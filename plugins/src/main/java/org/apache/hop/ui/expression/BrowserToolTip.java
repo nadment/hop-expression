@@ -21,7 +21,6 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Menu;
@@ -32,7 +31,13 @@ import org.eclipse.swt.widgets.TreeItem;
  * Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget.
  */
 public class BrowserToolTip extends ToolTip {
+  /**
+   * Minimal size constraints.
+  */
+  private static final int MIN_WIDTH= 500;
 
+  private static final int MIN_HEIGHT= 500;
+  
   private IToolTipProvider tooltipProvider;
 
   public BrowserToolTip(Tree control, IToolTipProvider provider) {
@@ -52,13 +57,8 @@ public class BrowserToolTip extends ToolTip {
   protected Composite createToolTipContentArea(Event event, Composite parent) {
 
     Browser browser = new Browser(parent, SWT.NONE);
-    browser.setSize(500, 500);
-    
-    GridData gridData = new GridData();
-    gridData.widthHint = 500;
-    gridData.heightHint = 500;
-    browser.setLayoutData(gridData);
-    
+    browser.setSize(MIN_WIDTH, MIN_HEIGHT);
+        
     // Cancel opening of new windows
     browser.addOpenWindowListener(e -> e.required=true);
 

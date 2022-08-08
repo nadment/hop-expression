@@ -19,7 +19,6 @@ package org.apache.hop.pipeline.transforms.aggregate;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.ValueDataUtil;
@@ -47,7 +46,6 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
   private static final Class<?> PKG = AggregateMeta.class; // For Translator
 
   private boolean allNullsAreZero = false;
-  private boolean minNullIsValued = false;
 
   public AggregateTransform(TransformMeta transformMeta, AggregateMeta meta, AggregateData data,
       int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
@@ -273,16 +271,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     return processors;
   }
 
-  /**
-   * Used for junits in MemoryGroupByAggregationNullsTest
-   *
-   * @param aggregate
-   * @return
-   * @throws HopValueException
-   */
   protected Object[] getAggregateResult(IExpressionProcessor[] aggregators) throws HopException {
     Object[] result = new Object[aggregators.length];
-
 
     for (int i = 0; i < aggregators.length; i++) {
       Object value = aggregators[i].eval(data.context, data.aggregates[i].getOperands());
@@ -304,7 +294,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (super.init()) {
 
       allNullsAreZero = this.getVariableBoolean(Const.HOP_AGGREGATION_ALL_NULLS_ARE_ZERO, false);
-      minNullIsValued = this.getVariableBoolean(Const.HOP_AGGREGATION_MIN_NULL_IS_VALUED, false);
+      //minNullIsValued = this.getVariableBoolean(Const.HOP_AGGREGATION_MIN_NULL_IS_VALUED, false);
       data.map = new HashMap<>(5000);
       return true;
     }

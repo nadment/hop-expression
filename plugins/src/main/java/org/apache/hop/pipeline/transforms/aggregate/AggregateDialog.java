@@ -19,6 +19,9 @@ package org.apache.hop.pipeline.transforms.aggregate;
 
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
+import org.apache.hop.core.plugins.IPlugin;
+import org.apache.hop.core.plugins.PluginRegistry;
+import org.apache.hop.core.plugins.TransformPluginType;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
@@ -26,23 +29,30 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
+import org.apache.hop.ui.core.ConstUi;
+import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.dialog.ErrorDialog;
+import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.ColumnInfo;
 import org.apache.hop.ui.core.widget.ColumnsResizer;
 import org.apache.hop.ui.core.widget.TableView;
 import org.apache.hop.ui.expression.ExpressionEditorDialog;
 import org.apache.hop.ui.expression.ExpressionMode;
 import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
+import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
@@ -54,19 +64,18 @@ import java.util.concurrent.CompletableFuture;
 public class AggregateDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = AggregateMeta.class; // For Translator
 
+  private SashForm wSashForm;
   private TableView wGroup;
   private TableView wAggregate;
   private Button wAlwaysAddResult;
+  private ColumnInfo[] columnInfoGroup;
 
   private final AggregateMeta input;
-
-  private ColumnInfo[] ciGroup;
-
-
+  
   public AggregateDialog(
-      Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta, String sname) {
-    super(parent, variables, (AggregateMeta) in, pipelineMeta, sname);
-    input = (AggregateMeta) in;
+      Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta, String transformName) {
+    super(parent, variables, (AggregateMeta) in, pipelineMeta, transformName);
+    this.input = (AggregateMeta) in;
   }
 
   @Override
@@ -77,14 +86,6 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     props.setLook(shell);
     setShellImage(shell, input);
 
-    ModifyListener lsMod = e -> input.setChanged();
-    SelectionListener lsSel =
-        new SelectionAdapter() {
-          @Override
-          public void widgetSelected(SelectionEvent arg0) {
-            input.setChanged();
-          }
-        };
     backupChanged = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -94,149 +95,28 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     shell.setLayout(formLayout);
     shell.setText(BaseMessages.getString(PKG, "AggregateDialog.Shell.Title"));
 
-    int middle = props.getMiddlePct();
-    int margin = props.getMargin();
+    Control titleArea = this.createTitleArea(shell);
 
-    // TransformName line
-    wlTransformName = new Label(shell, SWT.RIGHT);
-    wlTransformName.setText(BaseMessages.getString(PKG, "AggregateDialog.TransformName.Label"));
-    props.setLook(wlTransformName);
-    fdlTransformName = new FormData();
-    fdlTransformName.left = new FormAttachment(0, 0);
-    fdlTransformName.right = new FormAttachment(middle, -margin);
-    fdlTransformName.top = new FormAttachment(0, margin);
-    wlTransformName.setLayoutData(fdlTransformName);
-    wTransformName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wTransformName.setText(transformName);
-    props.setLook(wTransformName);
-    wTransformName.addModifyListener(lsMod);
-    fdTransformName = new FormData();
-    fdTransformName.left = new FormAttachment(middle, 0);
-    fdTransformName.top = new FormAttachment(0, margin);
-    fdTransformName.right = new FormAttachment(100, 0);
-    wTransformName.setLayoutData(fdTransformName);
+    // The title separator line
+    Label titleSeparator = new Label(shell, SWT.HORIZONTAL | SWT.SEPARATOR);
+    titleSeparator.setLayoutData(
+        new FormDataBuilder().top(titleArea, Const.FORM_MARGIN).fullWidth().result());
+    props.setLook(titleSeparator);
 
-    // Always pass a result rows as output
-    //
-    Label wlAlwaysAddResult = new Label(shell, SWT.RIGHT);
-    wlAlwaysAddResult.setText(
-        BaseMessages.getString(PKG, "AggregateDialog.AlwaysAddResult.Label"));
-    wlAlwaysAddResult.setToolTipText(
-        BaseMessages.getString(PKG, "AggregateDialog.AlwaysAddResult.ToolTip"));
-    props.setLook(wlAlwaysAddResult);
-    FormData fdlAlwaysAddResult = new FormData();
-    fdlAlwaysAddResult.left = new FormAttachment(0, 0);
-    fdlAlwaysAddResult.top = new FormAttachment(wTransformName, margin);
-    fdlAlwaysAddResult.right = new FormAttachment(middle, -margin);
-    wlAlwaysAddResult.setLayoutData(fdlAlwaysAddResult);
-    wAlwaysAddResult = new Button(shell, SWT.CHECK);
-    wAlwaysAddResult.setToolTipText(
-        BaseMessages.getString(PKG, "AggregateDialog.AlwaysAddResult.ToolTip"));
-    props.setLook(wAlwaysAddResult);
-    FormData fdAlwaysAddResult = new FormData();
-    fdAlwaysAddResult.left = new FormAttachment(middle, 0);
-    fdAlwaysAddResult.top = new FormAttachment(wlAlwaysAddResult, 0, SWT.CENTER);
-    fdAlwaysAddResult.right = new FormAttachment(100, 0);
-    wAlwaysAddResult.setLayoutData(fdAlwaysAddResult);
-    wAlwaysAddResult.addSelectionListener(lsSel);
 
-    Label wlGroup = new Label(shell, SWT.NONE);
-    wlGroup.setText(BaseMessages.getString(PKG, "AggregateDialog.Group.Label"));
-    props.setLook(wlGroup);
-    FormData fdlGroup = new FormData();
-    fdlGroup.left = new FormAttachment(0, 0);
-    fdlGroup.top = new FormAttachment(wlAlwaysAddResult, 2 * margin);
-    wlGroup.setLayoutData(fdlGroup);
 
-    int nrKeyCols = 1;
-    int nrKeyRows = (input.getGroupFields() != null ? input.getGroupFields().size() : 1);
-
-    ciGroup = new ColumnInfo[nrKeyCols];
-    ciGroup[0] =
-        new ColumnInfo(
-            BaseMessages.getString(PKG, "AggregateDialog.ColumnInfo.GroupField"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] {""},
-            false);
-
-    wGroup =
-        new TableView(
-            variables,
-            shell,
-            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciGroup,
-            nrKeyRows,
-            lsMod,
-            props);
-
-    Button wGet = new Button(shell, SWT.PUSH);
-    wGet.setText(BaseMessages.getString(PKG, "AggregateDialog.GetFields.Button"));
-    wGet.addListener(SWT.Selection, e -> getGroupField());
-    FormData fdGet = new FormData();
-    fdGet.top = new FormAttachment(wlGroup, margin);
-    fdGet.right = new FormAttachment(100, 0);
-    wGet.setLayoutData(fdGet);
-
-    FormData fdGroup = new FormData();
-    fdGroup.left = new FormAttachment(0, 0);
-    fdGroup.top = new FormAttachment(wlGroup, margin);
-    fdGroup.right = new FormAttachment(wGet, -margin);
-    fdGroup.bottom = new FormAttachment(45, 0);
-    wGroup.setLayoutData(fdGroup);
-
-    // THE Aggregate fields
-    Label wlAgg = new Label(shell, SWT.NONE);
-    wlAgg.setText(BaseMessages.getString(PKG, "AggregateDialog.Aggregates.Label"));
-    props.setLook(wlAgg);
-    FormData fdlAgg = new FormData();
-    fdlAgg.left = new FormAttachment(0, 0);
-    fdlAgg.top = new FormAttachment(wGroup, margin);
-    wlAgg.setLayoutData(fdlAgg);
-
-    CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
-    rowMeta.thenAccept(this::setComboBoxes);
+    wSashForm = new SashForm(shell, SWT.VERTICAL);
+    props.setLook(wSashForm);
+   
+    Composite wGroupComposite = new Composite(wSashForm, SWT.NONE);
+    wGroupComposite.setLayout(new FormLayout());
+    props.setLook(wGroupComposite);
+    this.createGroupFields(wGroupComposite);
     
-    int upInsRows = (input.getAggregateFields() != null ? input.getAggregateFields().size() : 1);
-
-    ColumnInfo[] ciReturn = new ColumnInfo[2];
-    ciReturn[0] =
-        new ColumnInfo(
-            BaseMessages.getString(PKG, "AggregateDialog.ColumnInfo.Name"),
-            ColumnInfo.COLUMN_TYPE_TEXT,
-            false);
-    ciReturn[1] =
-        new ColumnInfo(
-            BaseMessages.getString(PKG, "AggregateDialog.ColumnInfo.Expression"),
-            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
-            false);
-    ciReturn[1].setUsingVariables(true);
-    ciReturn[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-
-        String expression =
-            wAggregate.getActiveTableItem().getText(wAggregate.getActiveTableColumn());
-
-        if (!shell.isDisposed()) {
-          ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
-          expression = dialog.open(expression, getVariables(), ExpressionMode.COLUMN, rowMeta);
-          if (expression != null) {
-            wAggregate.getActiveTableItem().setText(wAggregate.getActiveTableColumn(),
-                expression);
-          }
-        }
-      }
-    });
-    
-    wAggregate =
-        new TableView(
-            variables,
-            shell,
-            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn,
-            upInsRows,
-            lsMod,
-            props);   
+    Composite wAggregateComposite = new Composite(wSashForm, SWT.NONE);
+    wAggregateComposite.setLayout(new FormLayout());
+    props.setLook(wAggregateComposite);
+    this.createAggregateFields(wAggregateComposite);
     
     // THE BUTTONS
     wOk = new Button(shell, SWT.PUSH);
@@ -246,15 +126,31 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
     wCancel.addListener(SWT.Selection, e -> cancel());
 
-    setButtonPositions(new Button[] {wOk, wCancel}, margin, null);
+    setButtonPositions(new Button[] {wOk, wCancel}, props.getMargin(), null);
 
-    FormData fdAgg = new FormData();
-    fdAgg.left = new FormAttachment(0, 0);
-    fdAgg.top = new FormAttachment(wlAgg, margin);
-    fdAgg.right = new FormAttachment(100, 0);
-    fdAgg.bottom = new FormAttachment(wOk, -margin);
-    wAggregate.setLayoutData(fdAgg);
-    wAggregate.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 76));
+    // Always pass a result rows as output
+    //  
+    wAlwaysAddResult = new Button(shell, SWT.CHECK);
+    wAlwaysAddResult.setText(
+        BaseMessages.getString(PKG, "AggregateDialog.AlwaysAddResult.Label"));
+    wAlwaysAddResult.setToolTipText(
+        BaseMessages.getString(PKG, "AggregateDialog.AlwaysAddResult.ToolTip"));
+    props.setLook(wAlwaysAddResult);
+    FormData fdAlwaysAddResult = new FormData();
+    fdAlwaysAddResult.left = new FormAttachment(0, 0);
+    fdAlwaysAddResult.bottom = new FormAttachment(wOk, -props.getMargin());
+    fdAlwaysAddResult.right = new FormAttachment(100, 0);
+    wAlwaysAddResult.setLayoutData(fdAlwaysAddResult);
+    wAlwaysAddResult.addListener(SWT.Selection, e -> input.setChanged());
+    
+    
+    FormData fdlGroupComposite = new FormData();
+    fdlGroupComposite.left = new FormAttachment(0, 0);
+    fdlGroupComposite.top = new FormAttachment(titleSeparator, props.getMargin());
+    fdlGroupComposite.right = new FormAttachment(100, 0);
+    fdlGroupComposite.bottom = new FormAttachment(wAlwaysAddResult, -props.getMargin());
+    wSashForm.setLayoutData(fdlGroupComposite);
+    wSashForm.setWeights(30, 70);   
     
     getData();
     input.setChanged(backupChanged);
@@ -280,6 +176,145 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     });
   }
   
+  protected final Control createTitleArea(final Composite parent) {
+
+    Composite composite = new Composite(parent, SWT.NONE);
+    composite.setLayout(new FormLayout());
+    composite.setLayoutData(new FormDataBuilder().top().fullWidth().result());
+    props.setLook(composite);
+
+    Label icon = new Label(composite, SWT.CENTER);
+    icon.setImage(getImage());
+    icon.setLayoutData(
+        new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
+    props.setLook(icon);
+
+    Label label = new Label(composite, SWT.NONE);
+    label.setText(BaseMessages.getString("System.Label.TransformName"));
+    label.setLayoutData(new FormDataBuilder().top().left().right(icon, 100).result());
+    props.setLook(label);
+
+    // Widget Transform name
+    wTransformName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wTransformName.setLayoutData(new FormDataBuilder().top(label).left().right(icon, -props.getMargin()).result());
+    wTransformName.addListener(SWT.Modify, event -> input.setChanged());
+
+    return composite;
+  }
+  
+  protected void createGroupFields(final Composite parent) {
+   
+    Label wlGroup = new Label(parent, SWT.NONE);
+    wlGroup.setText(BaseMessages.getString(PKG, "AggregateDialog.Group.Label"));
+    props.setLook(wlGroup);
+    FormData fdlGroup = new FormData();
+    fdlGroup.left = new FormAttachment(0, 0);
+    fdlGroup.top = new FormAttachment(0, 0);
+    wlGroup.setLayoutData(fdlGroup);
+
+    int nrKeyCols = 1;
+    int nrKeyRows = (input.getGroupFields() != null ? input.getGroupFields().size() : 1);
+
+    columnInfoGroup = new ColumnInfo[nrKeyCols];
+    columnInfoGroup[0] =
+        new ColumnInfo(
+            BaseMessages.getString(PKG, "AggregateDialog.ColumnInfo.GroupField"),
+            ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {""},
+            false);
+
+    wGroup =
+        new TableView(
+            variables,
+            parent,
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            columnInfoGroup,
+            nrKeyRows,
+            e -> input.setChanged(),
+            props);
+
+    Button wGet = new Button(parent, SWT.PUSH);
+    wGet.setText(BaseMessages.getString(PKG, "AggregateDialog.GetFields.Button"));
+    wGet.addListener(SWT.Selection, e -> getGroupField());
+    FormData fdGet = new FormData();
+    fdGet.top = new FormAttachment(wlGroup, props.getMargin());
+    fdGet.right = new FormAttachment(100, 0);
+    wGet.setLayoutData(fdGet);
+
+    FormData fdGroup = new FormData();
+    fdGroup.left = new FormAttachment(0, 0);
+    fdGroup.top = new FormAttachment(wlGroup, props.getMargin());
+    fdGroup.right = new FormAttachment(wGet, -props.getMargin());
+    fdGroup.bottom = new FormAttachment(100, 0);
+    wGroup.setLayoutData(fdGroup);
+  }
+
+  protected void createAggregateFields(final Composite parent) {
+    // THE Aggregate fields
+    Label wlAgg = new Label(parent, SWT.NONE);
+    wlAgg.setText(BaseMessages.getString(PKG, "AggregateDialog.Aggregates.Label"));
+    props.setLook(wlAgg);
+    FormData fdlAgg = new FormData();
+    fdlAgg.left = new FormAttachment(0, 0);
+    fdlAgg.top = new FormAttachment(wGroup, props.getMargin());
+    wlAgg.setLayoutData(fdlAgg);
+
+    CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
+    rowMeta.thenAccept(this::setComboBoxes);
+    
+    int upInsRows = (input.getAggregateFields() != null ? input.getAggregateFields().size() : 1);
+
+    ColumnInfo[] columnInfoAggregate = new ColumnInfo[2];
+    columnInfoAggregate[0] =
+        new ColumnInfo(
+            BaseMessages.getString(PKG, "AggregateDialog.ColumnInfo.Name"),
+            ColumnInfo.COLUMN_TYPE_TEXT,
+            false);
+    columnInfoAggregate[1] =
+        new ColumnInfo(
+            BaseMessages.getString(PKG, "AggregateDialog.ColumnInfo.Expression"),
+            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
+            false);
+    columnInfoAggregate[1].setUsingVariables(true);
+    columnInfoAggregate[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+
+        String expression =
+            wAggregate.getActiveTableItem().getText(wAggregate.getActiveTableColumn());
+
+        if (!shell.isDisposed()) {
+          ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
+          expression = dialog.open(expression, getVariables(), ExpressionMode.COLUMN, rowMeta);
+          if (expression != null) {
+            wAggregate.getActiveTableItem().setText(wAggregate.getActiveTableColumn(),
+                expression);
+          }
+        }
+      }
+    });
+    
+    wAggregate =
+        new TableView(
+            variables,
+            parent,
+            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            columnInfoAggregate,
+            upInsRows,
+            e -> input.setChanged(),
+            props);   
+
+    
+    FormData fdAgg = new FormData();
+    fdAgg.left = new FormAttachment(0, 0);
+    fdAgg.top = new FormAttachment(wlAgg, props.getMargin());
+    fdAgg.right = new FormAttachment(100, 0);
+    fdAgg.bottom = new FormAttachment(100, 0);
+    wAggregate.setLayoutData(fdAgg);
+    wAggregate.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 76));
+  }
+
+  
   protected void setComboBoxes(final IRowMeta rowMeta) {
     
     List<String> fields = new ArrayList<>();
@@ -290,8 +325,22 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     String[] fieldNames = fields.toArray(new String[fields.size()]);
 
     Const.sortStrings(fieldNames);
-    ciGroup[0].setComboValues(fieldNames);
+    columnInfoGroup[0].setComboValues(fieldNames);
   }
+  
+  public Image getImage() {
+
+    IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
+        this.transformMeta.getPluginId());
+
+    if (plugin.getImageFile() != null) {
+      return SwtSvgImageUtil.getImage(shell.getDisplay(), getClass().getClassLoader(),
+          plugin.getImageFile(), ConstUi.LARGE_ICON_SIZE, ConstUi.LARGE_ICON_SIZE);
+    }
+
+    return GuiResource.getInstance().getImageError();
+  }
+  
 
   /** Copy information from the meta-data input to the dialog fields. */
   public void getData() {
@@ -309,7 +358,9 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
         }
       }
     }
-
+    wGroup.setRowNums();
+    wGroup.optWidth(true);
+    
     List<AggregateField> aggregates =  input.getAggregateFields();
     if (aggregates != null) {
       for (int i = 0; i < aggregates.size(); i++) {
@@ -323,12 +374,10 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
         }
       }
     }
-
-    wGroup.setRowNums();
-    wGroup.optWidth(true);
     wAggregate.setRowNums();
     wAggregate.optWidth(true);
 
+    wTransformName.setText(transformName);
     wTransformName.selectAll();
     wTransformName.setFocus();
   }

@@ -40,12 +40,12 @@
   <order>
     <hop>
       <from>Data grid</from>
-      <to>Aggregate</to>
+      <to>Aggregation</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <transform>
-    <name>Aggregate</name>
+    <name>Aggregation</name>
     <type>Aggregate</type>
     <description/>
     <distribute>Y</distribute>

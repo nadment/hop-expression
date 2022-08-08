@@ -55,8 +55,8 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
   private ExpressionEditor wEditor;
 
   public WhereDialog(Shell parent, IVariables variables, Object in, PipelineMeta pipelineMeta,
-      String name) {
-    super(parent, variables, (WhereMeta) in, pipelineMeta, name);
+      String transformName) {
+    super(parent, variables, (WhereMeta) in, pipelineMeta, transformName);
     this.input = (WhereMeta) in;
   }
 

@@ -71,7 +71,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
   public AggregateMeta(AggregateMeta other) {
     super();
     
-    this.aggregateFields = other.aggregateFields;
+    this.alwaysGivingBackOneRow = other.alwaysGivingBackOneRow;
     
     this.groupFields = new ArrayList<>();
     for (GroupField field : other.getGroupFields()) {

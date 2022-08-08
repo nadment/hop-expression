@@ -28,28 +28,13 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.Shell;
 
-/**
- * Displays HTML information in a {@link org.eclipse.swt.browser.Browser} widget.
- */
 public class ExpressionEditorTextHover implements ITextHover, ITextHoverExtension {
 
   public ExpressionEditorTextHover() {
     super();
   }
-
-  /**
-   * Minimal size constraints.
-   */
-  private static final int MIN_WIDTH = 80;
-
-  private static final int MIN_HEIGHT = 50;
-
-  /** The control's browser widget */
-  private Browser fBrowser;
-
 
   @Override
   public String getHoverInfo(ITextViewer textViewer, IRegion region) {
