@@ -23,7 +23,8 @@ Returns the month of the specified date or timestamp.
 MONTH( date )
 ----
 
+Returns:: Integer between 1 and 12.
+
 == Usage
 
-* The result is an integer between 1 and 12.
 * Equivalent to xref:extract.adoc[EXTRACT](MONTH FROM <date>)

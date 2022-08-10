@@ -23,4 +23,6 @@ Converts a string to upper case.
 UPPER( string> )
 ----
 
+Returns:: String
+
 See also xref:lower.adoc[LOWER]

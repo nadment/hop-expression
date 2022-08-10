@@ -22,8 +22,8 @@ Returns the second of the specified timestamp.
 ----
 SECOND( <timestamp> )
 ----
+Returns:: Integer between 0 and 59.
 
 == Usage
 
-* Returns an integer between 0 and 59.
 * Equivalent to xref:extract.adoc[EXTRACT](SECOND FROM date)

@@ -23,7 +23,8 @@ This function return the aligned week within a year where week 1 starts on the f
 WEEK( date )
 ----
 
+Returns:: Integer between 1 and 54.
+
 == Usage
 
-* Returns an integer between 1 and 54.
 * Equivalent to xref:extract.adoc[EXTRACT](WEEK FROM <date>). 

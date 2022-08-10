@@ -22,3 +22,5 @@ Returns a string with the first letter of each word in	uppercase and the subsequ
 ----
 INITCAP( string )
 ----
+
+Returns:: String

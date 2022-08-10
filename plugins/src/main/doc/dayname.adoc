@@ -22,3 +22,5 @@ Returns the name of the day of week (in English).
 ----
 DAYNAME( {date | timestamp} )
 ----
+
+Returns: String

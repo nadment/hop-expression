@@ -23,12 +23,13 @@ Shifts the bits for a numeric by the specified number of bits to the left or to 
 BITSHIFT( value, distance )
 ----
 value:: This expression must evaluate to a data type that can be cast to Integer.
+distance::
+If distance is positive, it will shift to the left.
+If distance is negative, it will shift to the right.
+
 Return:: Integer
 
+== Usage4
 
-== Usage
-
-* If distance is positive, it will shift to the left.
-* If distance is negative, it will shift to the right.
 * If absolute value of distance is larger than 64, there will be no error but will result in overflow/underflow.
 * Returns NULL if one of the arguments is NULL. 
