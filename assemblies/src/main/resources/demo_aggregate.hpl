@@ -43,6 +43,11 @@
       <to>Aggregation</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>Data grid 2</from>
+      <to>Aggregation 2</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <transform>
     <name>Aggregation</name>
@@ -151,6 +156,115 @@
     <GUI>
       <xloc>272</xloc>
       <yloc>80</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Aggregation 2</name>
+    <type>Aggregate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <aggregates>
+      <field>
+        <expression>AVG(Amount)</expression>
+        <name>AVG</name>
+      </field>
+      <field>
+        <expression>COUNT(CITY)</expression>
+        <name>COUNT</name>
+      </field>
+      <field>
+        <expression>COUNT(DISTINCT CITY)</expression>
+        <name>COUNT_DISTINCT</name>
+      </field>
+      <field>
+        <expression>COUNT(*)</expression>
+        <name>COUNT_ALL</name>
+      </field>
+      <field>
+        <expression>SUM(Amount)</expression>
+        <name>TOTAL</name>
+      </field>
+      <field>
+        <expression>SUM(CASE WHEN Amount>10 THEN Amount END)</expression>
+        <name>TOTAL_OVER_10</name>
+      </field>
+      <field>
+        <expression>MAX(Period)</expression>
+        <name>MAX_PERIOD</name>
+      </field>
+      <field>
+        <expression>MIN(Period)</expression>
+        <name>MIN_PERIOD</name>
+      </field>
+      <field>
+        <expression>MAX(Upper(CITY))</expression>
+        <name>MAX_CITY</name>
+      </field>
+      <field>
+        <expression>FIRST_VALUE(City RESPECT NULLS)</expression>
+        <name>FIRST_CITY</name>
+      </field>
+      <field>
+        <expression>LAST_VALUE(City IGNORE NULLS)</expression>
+        <name>LAST_CITY</name>
+      </field>
+      <field>
+        <expression>MEDIAN(Amount)</expression>
+        <name>MEDIAN</name>
+      </field>
+      <field>
+        <expression>PERCENTILE(Amount,25)</expression>
+        <name>PERCENTILE25</name>
+      </field>
+      <field>
+        <expression>PERCENTILE(Amount,50)</expression>
+        <name>PERCENTILE50</name>
+      </field>
+      <field>
+        <expression>PERCENTILE(Amount,75)</expression>
+        <name>PERCENTILE75</name>
+      </field>
+      <field>
+        <expression>STDDEV_SAMP(Amount)</expression>
+        <name>STDDEV_SAMP</name>
+      </field>
+      <field>
+        <expression>STDDEV_POP(Amount)</expression>
+        <name>STDDEV_POP</name>
+      </field>
+      <field>
+        <expression>VARIANCE_POP(Amount)</expression>
+        <name>VARIANCE_POP</name>
+      </field>
+      <field>
+        <expression>VARIANCE_SAMP(Amount)</expression>
+        <name>VARIANCE_SAMP</name>
+      </field>
+      <field>
+        <expression>LISTAGG(DISTINCT City)</expression>
+        <name>CITIES</name>
+      </field>
+      <field>
+        <expression>LISTAGG(City,'->')</expression>
+        <name>CITIES_ALL</name>
+      </field>
+    </aggregates>
+    <ALWAYSGIVINGBACKONEROW>Y</ALWAYSGIVINGBACKONEROW>
+    <groups>
+      <field>
+        <name>Country</name>
+      </field>
+    </groups>
+    <attributes/>
+    <GUI>
+      <xloc>592</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform>
@@ -279,6 +393,62 @@
     <GUI>
       <xloc>128</xloc>
       <yloc>80</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Data grid 2</name>
+    <type>DataGrid</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>Country</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>City</name>
+        <precision>-1</precision>
+        <type>String</type>
+      </field>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <length>-1</length>
+        <name>Amount</name>
+        <precision>-1</precision>
+        <type>Number</type>
+      </field>
+      <field>
+        <set_empty_string>N</set_empty_string>
+        <format>yyyy-MM-dd</format>
+        <length>-1</length>
+        <name>Period</name>
+        <precision>-1</precision>
+        <type>Date</type>
+      </field>
+    </fields>
+    <data>
+      <line>
+        <item/>
+        <item/>
+        <item/>
+        <item/>
+      </line>
+    </data>
+    <attributes/>
+    <GUI>
+      <xloc>448</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform_error_handling>

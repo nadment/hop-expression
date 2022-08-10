@@ -23,7 +23,7 @@ Returns the sign for the numeric expression.
 SIGN(numeric)
 ----
 
-Return type:: Integer
+Returns:: Integer
 
 == Usage
 

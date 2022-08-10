@@ -69,9 +69,10 @@ public class InsertFunction extends Function {
       byte[] bytes = (byte[]) v0;
       int start = Math.min(Math.max(0, position - 1), bytes.length);
       length = Math.min(length, bytes.length);
-      if (length < 0)
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, length);
-
+      if (length < 0) {
+        throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, length);
+      }
+      
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);
@@ -88,7 +89,7 @@ public class InsertFunction extends Function {
 
     length = Math.min(length, str.length());
     if (length < 0)
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, length);
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, length);
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));

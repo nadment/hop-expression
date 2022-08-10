@@ -368,15 +368,33 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Instr() throws Exception {
-    evalEquals("Instr('abcdefgh','abc')", 1);
-    evalEquals("Instr('abcdefgh','ABC')", 0);
-    evalEquals("Instr('abcdefgh','ef')", 5);
-    evalEquals("Instr('abcdefgh','efa')", 0);
-    evalEquals("Instr('abecdefgh','e',5)", 6);
+    evalEquals("Instr('CORPORATE FLOOR','OR')", 2);
+    evalEquals("Instr('CORPORATE FLOOR','or')", 0);
+    evalEquals("Instr('CORPORATE FLOOR','ORA')", 5);
+    evalEquals("Instr('CORPORATE FLOOR','ORA',6)", 0);
+    evalEquals("Instr('CORPORATE FLOOR','OR',5)", 5);
+    evalEquals("Instr('CORPORATE FLOOR','OR',6)", 14);
+    evalEquals("Instr('CORPORATE FLOOR','OR',3)", 5);
+    evalEquals("Instr('CORPORATE FLOOR','OR',3, 1)", 5);
+    evalEquals("Instr('CORPORATE FLOOR','OR',3, 2)", 14);
+    evalEquals("Instr('CORPORATE FLOOR','OR',3, 3)", 0);
 
+    evalEquals("Instr('CORPORATE FLOOR','O',-1)", 14);
+    evalEquals("Instr('CORPORATE FLOOR','O',-2)", 14);
+    evalEquals("Instr('CORPORATE FLOOR','O',-3)", 13);
+    evalEquals("Instr('CORPORATE FLOOR','O',-4)", 5);
+    evalEquals("Instr('CORPORATE FLOOR','OR',-1)", 14);
+    evalEquals("Instr('CORPORATE FLOOR','OR',-3)", 5);
+    evalEquals("Instr('CORPORATE FLOOR','OR',-12)", 2);
+    evalEquals("Instr('CORPORATE FLOOR','OR',-3, 1)", 5);
+    evalEquals("Instr('CORPORATE FLOOR','OR',-3, 2)", 2);
+    evalEquals("Instr('CORPORATE FLOOR','OR',-3, 3)", 0);
+     
     evalNull("Instr(NULL,'test')");
     evalNull("Instr('test',NULL)");
     evalNull("Instr(NULL,NULL)");
+    
+    evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)");
     evalFails("Instr()");
   }
 

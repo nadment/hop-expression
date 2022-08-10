@@ -209,8 +209,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       putRow(data.outputRowMeta, outputRow);
     }
 
-    // What if we always need to give back one row?
-    // This means we give back 0 for count all, count distinct, null for everything else
+    // If we need to give back one row ?
+    // This means we give back 0 for COUNT function, null for everything else
     //
     if (data.map.isEmpty() && meta.isAlwaysGivingBackOneRow()) {
       Object[] outputRow = new Object[data.outputRowMeta.size()];
@@ -219,7 +219,12 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         outputRow[index++] = null;
       }
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
-        outputRow[index++] = null;
+        Object value = null;
+        
+        if ( data.aggregates[i].getOperator().getId()=="COUNT" ) {
+          value = 0L;
+        }        
+        outputRow[index++] = value;
       }
 
       putRow(data.outputRowMeta, outputRow);

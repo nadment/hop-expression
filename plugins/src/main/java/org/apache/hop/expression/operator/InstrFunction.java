@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -29,39 +30,64 @@ import org.apache.hop.expression.util.Coerse;
  * Returns the position in the string that is the first character of a specified occurrence of the
  * substring.
  */
-@FunctionPlugin(id = "INSTR", category = "i18n::Operator.Category.String", documentationUrl = "/docs/instr.html")
+@FunctionPlugin(id = "INSTR", category = "i18n::Operator.Category.String",
+    documentationUrl = "/docs/instr.html")
 public class InstrFunction extends Function {
-
+ 
   public InstrFunction() {
-    super("INSTR", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC, "i18n::Operator.Category.String", "/docs/instr.html");
+    super("INSTR", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC,
+        "i18n::Operator.Category.String", "/docs/instr.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].getValue(context);
+    if (v0 == null) {
+      return null;
+    }
     Object v1 = operands[1].getValue(context);
-
-    if (v0 == null || v1 == null) {
+    if (v1 == null) {
       return null;
     }
 
     String str = Coerse.toString(v0);
     String substr = Coerse.toString(v1);
-
-    // If 3 operands
     int start = 0;
-    if (operands.length == 3) {
+    int occurence = 1;
+    int result = 0;
+
+    // If 3 operands, indicate the position to start
+    if (operands.length >= 3) {
       start = Coerse.toInteger(operands[2].getValue(context)).intValue();
 
-      if (start > 0)
+      if (start > 0) {
         start -= 1;
-      else if (start < 0) {
-        return Long.valueOf(str.lastIndexOf(substr, str.length() + start) + 1L);
+      }
+      
+      // The occurence to find, must be positive
+      if (operands.length == 4) {
+        occurence = Coerse.toInteger(operands[3].getValue(context)).intValue();
+        if (occurence < 1) {
+          throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);
+        }
       }
     }
 
-    return Long.valueOf(str.indexOf(substr, start) + 1L);
+    if (start >= 0) {
+      while ((result = str.indexOf(substr, start)) > 0) {
+        if ( --occurence <=0) break;  
+        start = result+substr.length();
+      }
+    } else if (start < 0) {
+      start = str.length() + start;
+      while ((result = str.lastIndexOf(substr, start)) > 0) {
+        if ( --occurence <=0) break;
+        start = result-substr.length();
+      }
+    }
+
+    return Long.valueOf(result + 1);
   }
 
 }

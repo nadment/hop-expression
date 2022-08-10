@@ -43,7 +43,6 @@ import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.apache.hop.ui.util.SwtSvgImageUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -64,7 +63,6 @@ import java.util.concurrent.CompletableFuture;
 public class AggregateDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = AggregateMeta.class; // For Translator
 
-  private SashForm wSashForm;
   private TableView wGroup;
   private TableView wAggregate;
   private Button wAlwaysAddResult;
@@ -103,9 +101,7 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
         new FormDataBuilder().top(titleArea, Const.FORM_MARGIN).fullWidth().result());
     props.setLook(titleSeparator);
 
-
-
-    wSashForm = new SashForm(shell, SWT.VERTICAL);
+    SashForm wSashForm = new SashForm(shell, SWT.VERTICAL);
     props.setLook(wSashForm);
    
     Composite wGroupComposite = new Composite(wSashForm, SWT.NONE);

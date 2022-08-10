@@ -173,6 +173,8 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING_NUMERIC_OR_BINARY_NUMERIC = or(STRING_NUMERIC, BINARY_NUMERIC);  
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING), i -> i == 2);  
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC), i -> i == 2);
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i >= 2);
+  
   public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING), i -> i == 2);
   public static final IOperandTypeChecker STRING_STRING_OR_BINARY_BINARY = or(STRING_STRING, BINARY_BINARY);
   
