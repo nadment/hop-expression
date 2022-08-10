@@ -47,7 +47,7 @@ public class AtTimeZoneOperator extends Operator {
     if (value == null)
       return null;
 
-    ZoneId zone = toZoneId(Coerse.toString(operands[1].getValue(context)));
+    ZoneId zone = toZoneId(Coerse.toString(operands[1].getValue(context)));  
     return Coerse.toDateTime(value).withZoneSameInstant(zone);
   }
 

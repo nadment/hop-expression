@@ -1297,7 +1297,6 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void To_Char() throws Exception {
     // Text
-    evalEquals("TO_CHAR('abc')", "abc");
     evalNull("TO_CHAR(NULL)");
 
     // Default format
@@ -1416,9 +1415,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("TO_CHAR(515, 'RN')", "            DXV");
     evalFails("TO_CHAR(0, 'RN')"); // Must be > 0
     evalFails("TO_CHAR(4000, 'RN')"); // Must be < 4000
- 
-
-    
+     
     // Hex
     evalEquals("TO_CHAR(123,'XX')", " 7B");
     evalEquals("TO_CHAR(123,'xx')", " 7b");
@@ -1537,8 +1534,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','Dy')", "Tue"); // Day name
     evalEquals("To_Char(Date '2019-07-23','dy')", "tue"); // Day name
 
-
-
     // evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456789','yyyy-mm-dd hh:mi:ss.FF')",
     // "2020-12-03 01:02:03.123456789");
 
@@ -1549,7 +1544,6 @@ public class FunctionsTest extends BaseExpressionTest {
 
     // Time Zone Hour:Minute
     evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");
-
 
     // Time
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56");
@@ -1580,6 +1574,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("To_Char(Date '2019-07-23','*')");
     evalFails("To_Char(Date '2019-07-23','£')");
     evalFails("To_Char(Date '2019-07-23','{}[]')");
+    
+    evalFails("TO_CHAR('abc')");
   }
 
   @Test
@@ -1742,6 +1738,8 @@ public class FunctionsTest extends BaseExpressionTest {
     
     evalFails("Json_Object(KEY 'name' VALUE )");
     evalFails("Json_Object(KEY VALUE 'Smith')");
+    
+    returnType("Json_Object( 'name' VALUE 'Smith')", DataTypeName.JSON);
   }
   
   @Test

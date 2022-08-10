@@ -39,11 +39,14 @@ import java.io.IOException;
 public class InsertFunction extends Function {
 
   public static final IOperandTypeChecker OTC = OperandTypes.or(
-      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING),
-      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING));
+      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC,
+          DataTypeFamily.STRING),
+      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC,
+          DataTypeFamily.STRING));
 
   public InsertFunction() {
-    super("INSERT", true, ReturnTypes.ARG0, OTC, "i18n::Operator.Category.String", "/docs/insert.html");
+    super("INSERT", true, ReturnTypes.ARG0, OTC, "i18n::Operator.Category.String",
+        "/docs/insert.html");
   }
 
   @Override
@@ -72,7 +75,7 @@ public class InsertFunction extends Function {
       if (length < 0) {
         throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, length);
       }
-      
+
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);

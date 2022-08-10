@@ -45,6 +45,4 @@ public class HourFunction extends Function {
       return null;
     return Long.valueOf(Coerse.toDateTime(value).getHour());
   }
-
-
 }

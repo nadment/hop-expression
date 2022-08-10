@@ -276,12 +276,8 @@ import java.util.Locale;
 
   private final String pattern;
   
-  // TODO: Specifies the “century start” year for 2-digit years. This parameter prevents
-  // ambiguous dates when importing or converting data with the YY date format
-  // component.
   private int twoDigitYearStart = 1970;
-  
-  
+    
   public ZonedDateTimeFormat(String pattern) {
     this.pattern = pattern;
   }

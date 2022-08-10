@@ -22,6 +22,7 @@ import org.apache.hop.i18n.BaseMessages;
 public enum ExpressionError {
   INTERNAL_ERROR("Expression.InternalError"),
   SYNTAX_ERROR("Expression.SyntaxError"),
+  OPERATOR_ERROR("Expression.OperatorError"),
   DIVISION_BY_ZERO("Expression.DivisionByZero"),
   ILLEGAL_ARGUMENT("Expression.IllegalArgument"), 
   UNRESOLVED_IDENTIFIER("Expression.UnresolvedIdentifier"),
@@ -59,13 +60,9 @@ public enum ExpressionError {
   UNSUPPORTED_JSON_TYPE("Expression.UnsupportedJsonType"),
   UNKNOWN_DATATYPE("Expression.UnknownDataType"),
   UNKNOWN_TIMEZONE("Expression.UnknownTimeZone"),
-  FUNCTION_CALL_ERROR("Expression.FunctionError"),
-  PARSE_ERROR("Expression.ParseError"),
   BAD_FORMAT_PATTERN("Bad format {0} at position {1}"),
   CONVERSION_ERROR("Expression.ConversionError"),
-  REGEXP_REPLACE_ERROR("Expression.RegexpReplaceError"), 
-  URLENCODE_ERROR("Expression.UrlEncodeError"),
-  URLDECODE_ERROR("Expression.UrlDecodeError");
+  REGEXP_REPLACE_ERROR("Expression.RegexpReplaceError");
 
   private final String message;
 

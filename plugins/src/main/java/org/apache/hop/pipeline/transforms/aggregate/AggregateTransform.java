@@ -30,6 +30,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -221,7 +222,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
         Object value = null;
         
-        if ( data.aggregates[i].getOperator().getId()=="COUNT" ) {
+        if ( data.aggregates[i].getOperator().is(Operators.COUNT_VALUE) ) {
           value = 0L;
         }        
         outputRow[index++] = value;

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -46,10 +45,7 @@ public class UrlDecodeFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    try {
-      return URLDecoder.decode(Coerse.toString(value), StandardCharsets.UTF_8.name());
-    } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.URLDECODE_ERROR, value, e.getMessage());
-    }
+    
+    return URLDecoder.decode(Coerse.toString(value), StandardCharsets.UTF_8);
   }
 }

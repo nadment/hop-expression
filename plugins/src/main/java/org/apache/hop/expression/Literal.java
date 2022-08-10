@@ -1,5 +1,5 @@
 /*
-' * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * ' * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
  * agreements. See the NOTICE file distributed with this work for additional information regarding
  * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License. You may obtain a
@@ -81,19 +81,20 @@ public class Literal implements IExpression {
       return new Literal(number.longValue(), DataTypeName.INTEGER);
     }
 
-    if (value instanceof String ) {
+    if (value instanceof String) {
       return new Literal(value, DataTypeName.STRING);
     }
 
-    if (value instanceof  byte[] ) {
+    if (value instanceof byte[]) {
       return new Literal(value, DataTypeName.BINARY);
     }
-    if (value instanceof  ZonedDateTime ) {
+    if (value instanceof ZonedDateTime) {
       return new Literal(value, DataTypeName.DATE);
     }
-        
+
     // Special case for optimization
-    if (value instanceof DatePart || value instanceof DataTypeName || value instanceof NumberFormat || value instanceof DateTimeFormat) {
+    if (value instanceof DatePart || value instanceof DataTypeName || value instanceof NumberFormat
+        || value instanceof DateTimeFormat) {
       return new Literal(value, DataTypeName.UNKNOWN);
     }
 
@@ -117,7 +118,7 @@ public class Literal implements IExpression {
   public Object getValue(final IExpressionContext context) throws ExpressionException {
     return value;
   }
-  
+
   @Override
   public Kind getKind() {
     return Kind.LITERAL;
@@ -127,7 +128,7 @@ public class Literal implements IExpression {
   public int getCost() {
     return 1;
   }
-  
+
   @Override
   public DataTypeName getType() {
     return type;
@@ -167,39 +168,49 @@ public class Literal implements IExpression {
 
   @Override
   public void unparse(StringWriter writer) {
-    if (value == null) {
-      writer.append("NULL");
-    } else if (value instanceof String) {
-      writer.append('\'');
-      String str = (String) value;
-      for (int i = 0; i < str.length(); i++) {
-        char ch = str.charAt(i);
-        writer.append(ch);
-        if (ch == '\'') {
+    switch (type) {
+      case STRING:
+        writer.append('\'');
+        String str = (String) value;
+        for (int i = 0; i < str.length(); i++) {
+          char ch = str.charAt(i);
           writer.append(ch);
+          if (ch == '\'') {
+            writer.append(ch);
+          }
         }
-      }
-      writer.append('\'');
-    } else if (value instanceof Boolean) {
-      writer.append(((boolean) value) ? "TRUE" : "FALSE");
-    } else if (value instanceof byte[]) {
-      writer.append("0x");
-      for (byte b : (byte[]) value) {
-        writer.append(byteToHex((b >> 4) & 0xF));
-        writer.append(byteToHex(b & 0xF));
-      }
-    } else if (value instanceof ZonedDateTime) {
-      ZonedDateTime datetime = (ZonedDateTime) value;
-      if (datetime.getNano() > 0) {
-        writer.append("TIMESTAMP '");
-        writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
-      } else {
-        writer.append("DATE '");
-        writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
-      }
-      writer.append('\'');
-    } else {
-      writer.append(Coerse.toString(value));
+        writer.append('\'');
+        break;
+      case BOOLEAN:
+        writer.append(((boolean) value) ? "TRUE" : "FALSE");
+        break;
+      case BINARY:
+        writer.append("0x");
+        for (byte b : (byte[]) value) {
+          writer.append(byteToHex((b >> 4) & 0xF));
+          writer.append(byteToHex(b & 0xF));
+        }
+        break;
+      case DATE:
+        ZonedDateTime datetime = (ZonedDateTime) value;
+        if (datetime.getNano() > 0) {
+          writer.append("TIMESTAMP '");
+          writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
+        } else {
+          writer.append("DATE '");
+          writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
+        }
+        writer.append('\'');
+        break;
+      case UNKNOWN:
+        if (value == null) {
+          writer.append("NULL");
+        } else {
+          writer.append(String.valueOf(value));
+        }
+        break;
+      default:
+        writer.append(Coerse.toString(value));
     }
   }
 

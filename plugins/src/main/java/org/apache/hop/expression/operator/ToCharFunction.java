@@ -16,19 +16,16 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
-import java.time.ZonedDateTime;
 
 /**
  * Converts a numeric or date expression to a string value.
@@ -58,22 +55,10 @@ public class ToCharFunction extends Function {
         pattern = Coerse.toString(v1);
     }
 
-    if (v0 instanceof String) {
-      return v0;
-    }
-    try {
-      if (v0 instanceof Number) {
-        return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
-      }
-
-      if (v0 instanceof ZonedDateTime) {
-        return DateTimeFormat.of(pattern).format(Coerse.toDateTime(v0));
-      }
-    } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.PARSE_ERROR, e.getMessage());
+    if (v0 instanceof Number) {
+       return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
     }
 
-    throw new ExpressionException(ExpressionError.UNEXPECTED_DATA_TYPE, "TO_CHAR",
-        DataTypeName.from(v0));
+    return DateTimeFormat.of(pattern).format(Coerse.toDateTime(v0));
   }
 }

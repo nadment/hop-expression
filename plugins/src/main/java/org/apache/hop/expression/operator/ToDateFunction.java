@@ -27,8 +27,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.text.ParseException;
-import java.time.ZonedDateTime;
 
 /**
  * Converts a string expression to a date value.
@@ -47,9 +45,6 @@ public class ToDateFunction extends Function {
     if (v0 == null)
       return null;
 
-    if (v0 instanceof ZonedDateTime)
-      return v0;
-
     String format = null;
     if (operands.length > 1) {
       Object v1 = operands[1].getValue(context);
@@ -60,16 +55,13 @@ public class ToDateFunction extends Function {
     }
 
     try {
-      int twoDigitYearStart = Integer
-          .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+      int twoDigitYearStart = Integer.parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
       DateTimeFormat formatter = DateTimeFormat.of(format);
       formatter.setTwoDigitYearStart(twoDigitYearStart);
       return formatter.parse(Coerse.toString(v0));
-    } catch (ParseException e) {
-      throw new ExpressionException(ExpressionError.PARSE_ERROR, e.getMessage());
-    } catch (NumberFormatException e) {
-      throw new ExpressionException(ExpressionError.VARIABLE_VALUE_ERROR,
-          ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, e.getMessage());
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, this.getName(),
+          e.getMessage());
     }
   }
 }

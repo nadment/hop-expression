@@ -87,7 +87,7 @@ public class InstrFunction extends Function {
       }
     }
 
-    return Long.valueOf(result + 1);
+    return Long.valueOf(result + 1L);
   }
 
 }
