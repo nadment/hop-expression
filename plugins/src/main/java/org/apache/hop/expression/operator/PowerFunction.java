@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -40,18 +39,18 @@ public class PowerFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object left = operands[0].getValue(context);
-    Object right = operands[1].getValue(context);
-    if (left == null || right == null) {
+    Object v0 = operands[0].getValue(context);
+    Object v1 = operands[1].getValue(context);
+    if (v0 == null || v1 == null) {
       return null;
     }
-    Double power = Coerse.toNumber(right);
-    if (power == 0)
+    
+    Double number = Coerse.toNumber(v0);
+    Double exponent = Coerse.toNumber(v1);
+        
+    if (exponent == 0)
       return 1L;
-    // Power can not be negative
-    if (power < 0)
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, power);
 
-    return FastMath.pow(Coerse.toNumber(left), Coerse.toNumber(right));
+    return FastMath.pow(number, exponent);
   }
 }

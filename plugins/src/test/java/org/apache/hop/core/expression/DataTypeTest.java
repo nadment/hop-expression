@@ -37,7 +37,7 @@ public class DataTypeTest extends BaseExpressionTest {
     
   @Test
   public void of() throws Exception {
-    //assertEquals(DataTypeName.UNKNOWN, DataTypeName.of("UNKNOWN") );
+    assertEquals(DataTypeName.UNKNOWN, DataTypeName.of("UNKNOWN") );
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("BOOLEAN"));
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("Boolean"));
     assertEquals(DataTypeName.STRING, DataTypeName.of("STRING") );
@@ -53,7 +53,7 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void from() throws Exception {
-    //assertEquals(DataTypeName.UNKNOWN, DataTypeName.from(null) );
+    assertEquals(DataTypeName.UNKNOWN, DataTypeName.from(null) );
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.from(true));
     assertEquals(DataTypeName.STRING, DataTypeName.from("") );
     assertEquals(DataTypeName.INTEGER, DataTypeName.from(1L));
@@ -157,12 +157,10 @@ public class DataTypeTest extends BaseExpressionTest {
   public void coerceToString() throws Exception {
     assertNull(Coerse.toString(null));
     assertEquals("-1.0", Coerse.toString(-1.0D));
-    assertEquals("ABCD", Coerse.toString(Coerse.toBinary("ABCD")));
     assertEquals("-1.2", Coerse.toString(-1.2));    
     assertEquals("0.1", Coerse.toString(0.1D));
     assertEquals("-0.1", Coerse.toString(-0.1D));
-    assertEquals("0", Coerse.toString(BigDecimal.ZERO));
-    assertEquals("1", Coerse.toString(BigDecimal.ONE));
+
   }
    
   @Test
@@ -170,6 +168,9 @@ public class DataTypeTest extends BaseExpressionTest {
     assertNull(Converter.to(null, DataTypeName.STRING));
     assertEquals("TRUE", Converter.to(true, DataTypeName.STRING));
     assertEquals("FALSE", Converter.to(false, DataTypeName.STRING));
+    assertEquals("0", Converter.to(BigDecimal.ZERO, DataTypeName.STRING));
+    assertEquals("1", Converter.to(BigDecimal.ONE, DataTypeName.STRING));
+    assertEquals("ABCD", Converter.to(Converter.to("ABCD", DataTypeName.BINARY), DataTypeName.STRING));
   }
   
   @Test

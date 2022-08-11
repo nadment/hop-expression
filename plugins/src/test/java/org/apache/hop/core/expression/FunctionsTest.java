@@ -984,14 +984,15 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Power(-4,2)", 16D);
     evalEquals("Power(0,0)", 1D);
     evalEquals("Power(999,0)", 1D);
+    evalEquals("Power(2,2.5)", 5.656854249492381D);
+    evalEquals("Power(2,-3)", 0.125D);   
     evalNull("Power(NULL,2)");
     evalNull("Power(3,NULL)");
-    evalFails("Power(3, -2)");
     evalFails("Power()");
     evalFails("Power(3)");
     evalFails("Power(1,2,3)");
   }
-
+  
   @Test
   public void Sign() throws Exception {
     evalEquals("Sign(0.3)", 1L);

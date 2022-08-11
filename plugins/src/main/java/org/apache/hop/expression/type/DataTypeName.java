@@ -149,7 +149,7 @@ public enum DataTypeName {
 
   public static DataTypeName from(final Object value) {
     if (value == null)
-      return null;
+      return UNKNOWN;
     if (value instanceof Boolean)
       return BOOLEAN;
     if (value instanceof String)

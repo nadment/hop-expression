@@ -127,8 +127,6 @@ public class LiteralTest extends BaseExpressionTest {
     writeEquals("0x12AF", "0x12AF");
   }
 
-
-
   @Test
   public void Integer() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0));

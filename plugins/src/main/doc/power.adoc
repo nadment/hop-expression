@@ -23,3 +23,6 @@ Calculates a number raised to the specified power.
 POWER( base, exponent )
 ----
 
+== Usage
+
+* If the value of `exponent` is zero, then 1 will be returned.
