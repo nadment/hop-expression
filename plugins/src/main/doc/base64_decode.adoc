@@ -14,14 +14,14 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= URLDECODE
+= BASE64_DECODE
 
-Decode a string used in a query part of a URL.
-
+Decodes a Base64-encoded string to a string.
 
 == Syntax
 ----
-URLDECODE( string )
+BASE64_DECODE( string )
 ----
 
+input:: A Base64-encoded string expression.
 Returns:: String

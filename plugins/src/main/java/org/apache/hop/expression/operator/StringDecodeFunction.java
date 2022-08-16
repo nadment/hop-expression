@@ -31,11 +31,11 @@ import org.apache.hop.expression.util.Coerse;
  * Converts an encoded string using the Java string literal encoding format. Special characters
  * are \b, \t, \n, \f, \r, \", \\, \\000, \\u0000
  */
-@FunctionPlugin(id = "STRINGDECODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/stringdecode.html")
+@FunctionPlugin(id = "STRING_DECODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/string_decode.html")
 public class StringDecodeFunction extends Function {
 
   public StringDecodeFunction() {
-    super("STRINGDECODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/stringdecode.html");
+    super("STRING_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/string_decode.html");
   }
 
   @Override

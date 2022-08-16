@@ -309,6 +309,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("PRICE+PRICE", -10.24);
     evalEquals("AMOUNT+1", 123456.789 + 1);
 
+    
+    
+    
     //evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
     //evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
     //evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
@@ -526,7 +529,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Add_Days(Timestamp '2020-05-25 10:48:00' AT TIME ZONE 'UTC',1) AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));    
     evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'XYZ'");
  
-   // writeEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
+    //writeEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
   
 
@@ -575,6 +578,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("4*10", 40D);
     evalEquals("-4*-1", 4D);
     evalEquals("2*-2", -4D);
+    evalEquals("100 * .5", 50D);    
     evalEquals("1.23456::BigNumber*-2.987654", -3.68843812224);
     evalNull("null*1");
     evalNull("1*null");
@@ -823,6 +827,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("0x1F || null || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
     evalEquals("null || 0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
     evalEquals("0x1F || 0x2A3B || null", new byte[]{0x1F, 0x2A, 0x3B});
+    
+    // Integer
+    evalEquals("4 || 2", "42");
     
     evalNull("null||null");
 

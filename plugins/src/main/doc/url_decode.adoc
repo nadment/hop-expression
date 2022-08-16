@@ -14,13 +14,14 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= URLENCODE
+= URL_DECODE
 
-Encode a string to be used in a query part of a URL.
+Decode a string used in a query part of a URL.
+
 
 == Syntax
 ----
-URLENCODE( string )
+URL_DECODE( string )
 ----
 
-Return:: String
+Returns:: String

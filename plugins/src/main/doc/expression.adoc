@@ -204,6 +204,8 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atan2.adoc[ATAN2]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atanh.adoc[ATANH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/avg.adoc[AVG aggregate]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base64_decode.adoc[BASE64_DECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base64_encode.adoc[BASE64_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitand.adoc[BITAND]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitget.adoc[BITGET]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitnot.adoc[BITNOT]
@@ -316,8 +318,8 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sqrt.adoc[SQRT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/square.adoc[SQUARE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/startswith.adoc[STARTSWITH]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringdecode.adoc[STRINGDECODE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/stringencode.adoc[STRINGENCODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/string_decode.adoc[STRING_DECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/string_encode.adoc[STRING_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/substring.adoc[SUBSTRING]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sum.adoc[SUM aggregate]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tan.adoc[TAN]
@@ -334,8 +336,8 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/typeof.adoc[TYPEOF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/unicode.adoc[UNICODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/upper.adoc[UPPER]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urldecode.adoc[URLDECODE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/urlencode.adoc[URLENCODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/url_decode.adoc[URL_DECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/url_encode.adoc[URL_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/uuid.adoc[UUID]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/variance_pop.adoc[VARIANCE_POP aggregate]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/variance_samp.adoc[VARIANCE_SAMP aggregate]
@@ -346,7 +348,9 @@ Expression support most of the standard scalar functions.
 
 == Coercion rules
 
-Expression supports both implicit and explicit conversion between data types. Explicit conversion is supported by using the `CAST` function.
+Expression supports both implicit and explicit conversion between data types. 
+Explicit conversion is supported by using the `CAST` function.
+When there is no ambiguity about the data type of an expression value, it is implicitly coerced to match the expected data type.
 
 * Numeric types can be coerced to a wider numeric type. For example, an INTEGER expression can be coerced to a NUMBER, which can be coerced to a BIGNUMBER.
 * A STRING containing a number can be coerced to a numeric type.

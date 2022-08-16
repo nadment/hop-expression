@@ -185,14 +185,16 @@ public class ExpressionTest extends BaseExpressionTest {
     
     // String to Number
     evalEquals("2*'1.23'", 2.46);
-        
+    evalEquals("2+'2'", 4);
+    evalEquals("'2'+2", 4);
+    evalEquals("2 + 2 || 2", 42);
+    evalEquals(" 4 + 4 || '2' ", "82");    
+    evalEquals(" '8' || 1 + 1", 82);
+    
     // Integer to BigNumber
     evalEquals("'-1e-3'::BigNumber * 2", new BigDecimal("-2e-3", MathContext.DECIMAL128));    
     // Number to BigNumber
     evalEquals("'-1e-3'::BigNumber * 0.5", new BigDecimal("-5e-4", MathContext.DECIMAL128));
-    
-    evalEquals(" 4 + 4 || '2' ", "82");    
-    evalEquals(" '8' || 1 + 1", 82);
   }
 
   @Test

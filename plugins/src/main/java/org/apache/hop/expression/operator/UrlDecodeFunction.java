@@ -32,11 +32,11 @@ import java.nio.charset.StandardCharsets;
  *
  * @see {@link UrlEncodeFunction}
  */
-@FunctionPlugin(id = "URLDECODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/urldecode.html")
+@FunctionPlugin(id = "URL_DECODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/url_decode.html")
 public class UrlDecodeFunction extends Function {
 
   public UrlDecodeFunction() {
-    super("URLDECODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/urldecode.html");
+    super("URL_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/url_decode.html");
   }
 
   @Override

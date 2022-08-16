@@ -2058,44 +2058,62 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void StringEncode() throws Exception {
-    evalEquals("StringEncode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"");
+  public void String_Encode() throws Exception {
+    evalEquals("String_Encode('\t\r\n\f\b\"')", "\\t\\r\\n\\f\\b\\\"");
     // Encode 16 bit unicode
-    evalEquals("StringEncode('€')", "\\u20AC");
-    evalNull("StringEncode(NULL)");
+    evalEquals("String_Encode('€')", "\\u20AC");
+    evalNull("String_Encode(NULL)");
   }
 
   @Test
-  public void StringDecode() throws Exception {
-    evalEquals("StringDecode('\\t\\r\\n\\f\\b\\\"')", "\t\r\n\f\b\"");
+  public void String_Decode() throws Exception {
+    evalEquals("String_Decode('\\t\\r\\n\\f\\b\\\"')", "\t\r\n\f\b\"");
     // Decode 16 bits unicode
-    evalEquals("StringDecode('\\u20AC')", "€");
+    evalEquals("String_Decode('\\u20AC')", "€");
     // Decode octal
-    evalEquals("StringDecode('\366\344\374')", "öäü");
-    evalNull("StringDecode(NULL)");
+    evalEquals("String_Decode('\366\344\374')", "öäü");
+    evalNull("String_Decode(NULL)");
   }
 
   @Test
-  public void UrlEncode() throws Exception {
-    evalEquals("UrlEncode('a b')", "a+b");
-    evalEquals("UrlEncode('a+b')", "a%2Bb");
-    evalEquals("UrlEncode('âéè')", "%C3%A2%C3%A9%C3%A8");
-    evalNull("UrlEncode(NULL)");
-    evalFails("UrlEncode()");
-    evalFails("UrlEncode('x','y')");
+  public void Url_Encode() throws Exception {
+    evalEquals("Url_Encode('a b')", "a+b");
+    evalEquals("Url_Encode('a+b')", "a%2Bb");
+    evalEquals("Url_Encode('âéè')", "%C3%A2%C3%A9%C3%A8");
+    evalNull("Url_Encode(NULL)");
+    evalFails("Url_Encode()");
+    evalFails("Url_Encode('x','y')");
   }
 
   @Test
-  public void UrlDecode() throws Exception {
-    evalEquals("UrlDecode('a+b')", "a b");
-    evalEquals("UrlDecode('a%2Bb')", "a+b");
-    evalEquals("UrlDecode('%C3%A2%C3%A9%C3%A8')", "âéè");
-    evalNull("UrlDecode(NULL)");
-    evalFails("UrlDecode('a%%2Bb')");
-    evalFails("UrlDecode()");
-    evalFails("UrlDecode('x','y')");
+  public void Url_Decode() throws Exception {
+    evalEquals("Url_Decode('a+b')", "a b");
+    evalEquals("Url_Decode('a%2Bb')", "a+b");
+    evalEquals("Url_Decode('%C3%A2%C3%A9%C3%A8')", "âéè");
+    evalNull("Url_Decode(NULL)");
+    evalFails("Url_Decode('a%%2Bb')");
+    evalFails("Url_Decode()");
+    evalFails("Url_Decode('x','y')");
   }
 
+  
+  @Test
+  public void Base64_Encode() throws Exception {
+    evalEquals("Base64_Encode('Apache Hop')", "QXBhY2hlIEhvcA==");
+    evalEquals("Base64_Encode('Apache Hop'::Binary)", "QXBhY2hlIEhvcA==");
+    evalFails("Base64_Encode()");
+    returnType("Base64_Encode('QXBhY2hlIEhvcA==')", DataTypeName.STRING);   
+  }  
+  
+  @Test
+  public void Base64_Decode() throws Exception {
+    evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop");
+    evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop");
+    evalFails("Base64_Decode()");
+    
+    returnType("Base64_Decode('QXBhY2hlIEhvcA==')", DataTypeName.STRING);   
+  }
+  
   @Test
   public void Ceil() throws Exception {
     evalEquals("Ceil(1)", 1);

@@ -24,19 +24,20 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 
 /**
- * The function encode the string as a URL.
+ * The function encode the input (string or binary) using Base64 encoding.
  *
- * @see {@link UrlDecodeFunction}
+ * @see {@link Base64DecodeFunction}
  */
-@FunctionPlugin(id = "URL_ENCODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/url_encode.html")
-public class UrlEncodeFunction extends Function {
+@FunctionPlugin(id = "BASE64_DECODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/base64_decode.html")
+public class Base64DecodeFunction extends Function {
 
-  public UrlEncodeFunction() {
-    super("URL_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/url_encode.html");
+  public Base64DecodeFunction() {
+    super("BASE64_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY, "i18n::Operator.Category.String", "/docs/base64_decode.html");
   }
 
   @Override
@@ -45,6 +46,13 @@ public class UrlEncodeFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    return URLEncoder.encode(Coerse.toString(value), StandardCharsets.UTF_8);
+    
+    Decoder decoder = Base64.getDecoder();
+    if ( value instanceof String ) {
+      String str = (String) value;
+      return new String(decoder.decode(str), StandardCharsets.UTF_8);
+    }
+    
+    return new String(decoder.decode(Coerse.toBinary(value)), StandardCharsets.UTF_8);   
   }
 }

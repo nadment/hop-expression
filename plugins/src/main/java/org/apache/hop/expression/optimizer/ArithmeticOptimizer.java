@@ -108,6 +108,4 @@ public class ArithmeticOptimizer extends ExpressionCompiler {
     
     return call;
   }
-
-
 }
