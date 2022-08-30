@@ -2089,6 +2089,22 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void Html_Encode() throws Exception {
+    evalEquals("Html_Encode('18€ & <test> ™')", "18&euro; &amp; &lt;test&gt; &trade;");
+    evalNull("Html_Encode(NULL)");
+    evalFails("UrHtml_Encodel_Encode()");
+    evalFails("Html_Encode('x','y')");
+  }
+  
+  @Test
+  public void Html_Decode() throws Exception {
+    evalEquals("Html_Decode('18&euro; &amp; &lt;test&gt; &#8482;')", "18€ & <test> ™");
+    evalNull("Html_Decode(NULL)");
+    evalFails("Html_Decode()");
+    evalFails("Html_Decode('x','y')");
+  }
+  
+  @Test
   public void Url_Encode() throws Exception {
     evalEquals("Url_Encode('a b')", "a+b");
     evalEquals("Url_Encode('a+b')", "a%2Bb");
@@ -2108,7 +2124,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Url_Decode()");
     evalFails("Url_Decode('x','y')");
   }
-
   
   @Test
   public void Base64_Encode() throws Exception {
@@ -2217,15 +2232,13 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Radians(1,2)");
   }
 
-
   @Test
-  public void CRC32() throws Exception {
+  public void Crc32() throws Exception {
     evalEquals("CRC32('Apache Hop')", "dbb81b5e");
     evalEquals("CRC32(0x123456789ABCDEF)", "2f720f20");
     evalNull("CRC32(null)");
     evalFails("CRC32()");
   }
-
   
   @Test
   public void MD5() throws Exception {
@@ -2237,14 +2250,14 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void SHA1() throws Exception {
+  public void Sha1() throws Exception {
     evalEquals("SHA1('Test')", "640ab2bae07bedc4c163f679a746f7ab7fb5d1fa");
     evalNull("SHA1(null)");
     evalFails("SHA1()");
   }
 
   @Test
-  public void SHA224() throws Exception {
+  public void Sha224() throws Exception {
     evalEquals("SHA224('Test')",
         "c696f08d2858549cfe0929bb7b098cfa9b64d51bec94aa68471688e4");
     evalNull("SHA224(null)");
@@ -2252,7 +2265,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
   
   @Test
-  public void SHA256() throws Exception {
+  public void Sha256() throws Exception {
     evalEquals("SHA256('Test')",
         "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25");
     evalNull("SHA256(null)");
@@ -2260,7 +2273,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void SHA384() throws Exception {
+  public void Sha384() throws Exception {
     evalEquals("SHA384('Test')",
         "7b8f4654076b80eb963911f19cfad1aaf4285ed48e826f6cde1b01a79aa73fadb5446e667fc4f90417782c91270540f3");
     evalNull("SHA384(null)");
@@ -2268,7 +2281,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void SHA512() throws Exception {
+  public void Sha512() throws Exception {
     evalEquals("SHA512('Test')",
         "c6ee9e33cf5c6715a1d148fd73f7318884b41adcb916021e2bc0e800a5c5dd97f5142178f6ae88c8fdd98e1afb0ce4c8d2c54b5f37b30b7da1997bb33b0b8a31");
     evalNull("SHA512(null)");
@@ -2293,6 +2306,11 @@ public class FunctionsTest extends BaseExpressionTest {
     // evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
   }
 
+  @Test
+  public void Decompress() throws Exception {
+    // evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+  }
+  
   @Test
   public void BitGet() throws Exception {
     evalTrue("BitGet(3,1)");

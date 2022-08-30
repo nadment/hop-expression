@@ -252,6 +252,8 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greatest.adoc[GREATEST]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hour.adoc[HOUR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hours_between.adoc[HOURS_BETWEEN]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/html_encode.adoc[HTML_ENCODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/html_decode.adoc[HTML_DECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/if.adoc[IF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ifnull.adoc[IFNULL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/initcap.adoc[INITCAP]

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,26 +24,26 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Coerse;
 
 /**
- * Returns the second argument when the first argument is not NULL. If the first argument is NULL, the third argument is returned.
+ * The function encode special characters in a strings using HTML entities.
+ * 
+ * https://www.w3.org/TR/html401/charset.html#h-5.3
+ * 
+ * @see {@link HtmlDecodeFunction}
  */
 @FunctionPlugin
-public class Nvl2Function extends Function {
+public class HtmlEncodeFunction extends Function {
 
-  public Nvl2Function() {
-    super("NVL2", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.SAME_SAME_SAME, "i18n::Operator.Category.Conditional", "/docs/nvl2.html");
+  public HtmlEncodeFunction() {
+    super("HTML_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/html_encode.html");
   }
- 
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
-    Object condition = operands[0].getValue(context);
-
-    if (condition == null) {
-      return operands[2].getValue(context);
-    }
-
-    return operands[1].getValue(context);
+    Object value = operands[0].getValue(context);
+    return StringEscapeUtils.escapeHtml(Coerse.toString(value));    
   }
 }
