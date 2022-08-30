@@ -230,6 +230,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cot.adoc[COT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/count.adoc[COUNT aggregate]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/crc32.adoc[CRC32]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/csc.adoc[CSC]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date.adoc[DATE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_trunc.adoc[DATE_TRUNC]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/day.adoc[DAY]

@@ -937,6 +937,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Sinh(0)", 0);
     evalNull("Sinh(NULL)");
     evalFails("Sinh()");
+    evalFails("Sinh('test')");
     evalFails("Sinh(0,1)");
   }
 
@@ -947,9 +948,21 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Cot(NULL)");
     evalFails("Cot(0)");
     evalFails("Cot()");
+    evalFails("Cot('test')");
     evalFails("Cot(1,0)");
   }
 
+  @Test
+  public void Csc() throws Exception {
+    evalEquals("Csc(Pi()/2)", 1);
+    
+    evalNull("Csc(NULL)");
+    evalFails("Csc(0)");
+    evalFails("Csc()");
+    evalFails("Csc('test')");
+    evalFails("Csc(1,0)");
+  }
+  
   @Test
   public void Tan() throws Exception {
     evalEquals("Tan(84.4)", -0.45017764606194366D);
