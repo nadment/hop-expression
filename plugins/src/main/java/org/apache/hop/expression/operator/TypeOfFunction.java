@@ -27,8 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * This function returns the data type of an expression.
  */
-@FunctionPlugin(id = "TYPEOF", category = "i18n::Operator.Category.Special",
-    documentationUrl = "/docs/typeof.html")
+@FunctionPlugin
 public class TypeOfFunction extends Function {
 
   public TypeOfFunction() {

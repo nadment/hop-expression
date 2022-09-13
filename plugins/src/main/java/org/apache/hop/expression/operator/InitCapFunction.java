@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  * 
  * @See {@link LowerFunction}, {@link UpperFunction}
  */
-@FunctionPlugin(id = "INITCAP", category = "i18n::Operator.Category.String", documentationUrl = "/docs/initcap.html")
+@FunctionPlugin
 public class InitCapFunction extends Function {
 
   public InitCapFunction() {

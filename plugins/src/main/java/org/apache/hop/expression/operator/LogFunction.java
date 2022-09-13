@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the specified base logarithm of a numeric value.
  */
-@FunctionPlugin(id = "LOG", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/log.html")
+@FunctionPlugin
 public class LogFunction extends Function {
 
   public LogFunction() {

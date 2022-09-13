@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link GreatestFunction}
  */
-@FunctionPlugin(id = "LEAST", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/least.html")
+@FunctionPlugin
 public class LeastFunction extends Function {
 
   public LeastFunction() {

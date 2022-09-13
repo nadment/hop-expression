@@ -30,7 +30,7 @@ import java.math.MathContext;
 /**
  * 
  */
-@FunctionPlugin(id = "DIV0", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/div0.html")
+@FunctionPlugin
 public class Div0Function extends Function {
 
   public Div0Function() {

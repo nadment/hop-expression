@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link AsciiFunction}
  */
-@FunctionPlugin(id = "CHR", category = "i18n::Operator.Category.String", documentationUrl = "/docs/chr.html")
+@FunctionPlugin
 public class ChrFunction extends Function {
 
   public ChrFunction() {

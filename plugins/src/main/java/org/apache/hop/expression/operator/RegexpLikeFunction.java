@@ -32,7 +32,7 @@ import java.util.regex.PatternSyntaxException;
 /** 
  * The REGEXP_LIKE function and RLIKE operator.
  */
-@FunctionPlugin(id = "REGEXP_LIKE", category = "i18n::Operator.Category.Comparison", documentationUrl = "/docs/regexp_like.html")
+@FunctionPlugin
 public class RegexpLikeFunction extends Function {
 
   public RegexpLikeFunction() {

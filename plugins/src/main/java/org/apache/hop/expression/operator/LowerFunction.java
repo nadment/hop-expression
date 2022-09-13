@@ -31,7 +31,7 @@ import java.util.Locale;
  * 
  * @See {@link InitCapFunction}, {@link UpperFunction}
  */
-@FunctionPlugin(id = "LOWER", category = "i18n::Operator.Category.String", documentationUrl = "/docs/lower.html")
+@FunctionPlugin
 public class LowerFunction extends Function {
 
   public LowerFunction() {

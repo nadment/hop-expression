@@ -34,8 +34,7 @@ import java.io.IOException;
  * Replaces a substring of the specified length, starting at the specified position, with a new
  * string or binary value.
  */
-@FunctionPlugin(id = "INSERT", category = "i18n::Operator.Category.String",
-    documentationUrl = "/docs/insert.html")
+@FunctionPlugin
 public class InsertFunction extends Function {
 
   public static final IOperandTypeChecker OTC = OperandTypes.or(

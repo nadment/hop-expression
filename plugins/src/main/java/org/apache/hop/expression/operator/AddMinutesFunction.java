@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 /**
  * Adds or subtracts a specified number of minutes to a date or timestamp
  */
-@FunctionPlugin(id = "ADD_MINUTES", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_minutes.html")
+@FunctionPlugin
 public class AddMinutesFunction extends Function {
 
   public AddMinutesFunction() {

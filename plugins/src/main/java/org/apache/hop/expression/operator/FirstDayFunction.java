@@ -35,7 +35,7 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Returns the first day of the date part.
  */
-@FunctionPlugin(id = "FIRST_DAY", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/first_day.html")
+@FunctionPlugin
 public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
 

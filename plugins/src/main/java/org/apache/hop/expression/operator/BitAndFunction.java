@@ -32,7 +32,7 @@ import java.io.StringWriter;
  * <br>
  * <strong>Syntax:</strong> <code>x &amp; y</code>
  */
-@FunctionPlugin(id = "BITAND", category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitand.html")
+@FunctionPlugin
 public class BitAndFunction extends Function {
 
   public BitAndFunction() {

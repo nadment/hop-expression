@@ -35,7 +35,7 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Returns the last day of the date part.
  */
-@FunctionPlugin(id = "LAST_DAY", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/last_day.html")
+@FunctionPlugin
 public class LastDayFunction extends Function {
 
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();

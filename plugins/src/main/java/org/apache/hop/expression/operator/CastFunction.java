@@ -34,7 +34,7 @@ import java.io.StringWriter;
  * Converts a value of one data type into another data type <code>::</code> or <code>
  * CAST(value AS type [FORMAT format])</code>.
  */
-@FunctionPlugin(id = "CAST", category = "i18n::Operator.Category.Conversion", documentationUrl = "/docs/cast.html")
+@FunctionPlugin
 public class CastFunction extends Function {
 
   // Function

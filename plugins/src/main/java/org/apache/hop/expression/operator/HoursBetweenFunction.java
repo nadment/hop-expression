@@ -30,7 +30,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Return the number of hours between two timestamps
  */
-@FunctionPlugin(id = "HOURS_BETWEEN", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/hours_between.html")
+@FunctionPlugin
 public class HoursBetweenFunction extends Function {
 
   public HoursBetweenFunction() {

@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 /**
  * Adds or subtracts a specified number of weeks to a date or timestamp
  */
-@FunctionPlugin(id = "ADD_WEEKS", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_weeks.html")
+@FunctionPlugin
 public class AddWeeksFunction extends Function {
 
   public AddWeeksFunction() {

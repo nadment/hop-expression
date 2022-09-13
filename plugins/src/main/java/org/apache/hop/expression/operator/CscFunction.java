@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the trigonometric cosecant of the specified angle in radians.
  */
-@FunctionPlugin(id = "CSC", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/csc.html")
+@FunctionPlugin
 public class CscFunction extends Function {
 
   public CscFunction() {

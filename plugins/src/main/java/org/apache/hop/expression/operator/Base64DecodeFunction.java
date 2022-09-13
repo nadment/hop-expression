@@ -33,7 +33,7 @@ import java.util.Base64.Decoder;
  *
  * @see {@link Base64DecodeFunction}
  */
-@FunctionPlugin(id = "BASE64_DECODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/base64_decode.html")
+@FunctionPlugin
 public class Base64DecodeFunction extends Function {
 
   public Base64DecodeFunction() {

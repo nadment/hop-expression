@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * The function compute Jaro Winkler distance.
  */
-@FunctionPlugin(id = "JAROWINKLER", category = "i18n::Operator.Category.String", documentationUrl = "/docs/jarowinkler.html")
+@FunctionPlugin
 public class JaroWinklerFunction extends Function {
 
   public JaroWinklerFunction() {

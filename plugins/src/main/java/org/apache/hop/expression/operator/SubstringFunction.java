@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
  * Returns the portion of the string from string, starting from the character/byte specified by
  * start, with optionally limited length.
  */
-@FunctionPlugin(id = "SUBSTRING", names = {"SUBSTR"},  category = "i18n::Operator.Category.String", documentationUrl = "/docs/substring.html")
+@FunctionPlugin(names = {"SUBSTR"})
 public class SubstringFunction extends Function {
 
   public SubstringFunction() {

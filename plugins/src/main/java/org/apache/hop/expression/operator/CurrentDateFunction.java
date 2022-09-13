@@ -28,8 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function return the current date at time 00:00
  */
-@FunctionPlugin(id = "CURRENT_DATE", names = "TODAY", category = "i18n::Operator.Category.Date",
-    documentationUrl = "/docs/current_date.html")
+@FunctionPlugin(names = "TODAY")
 public class CurrentDateFunction extends Function {
 
   public CurrentDateFunction() {

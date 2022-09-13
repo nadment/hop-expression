@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * Returns 0 if its argument is null; otherwise, returns its argument.
  */
-@FunctionPlugin(id = "ZEROIFNULL", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/zeroifnull.html")
+@FunctionPlugin
 public class ZeroIfNullFunction extends Function {
 
   public ZeroIfNullFunction() {

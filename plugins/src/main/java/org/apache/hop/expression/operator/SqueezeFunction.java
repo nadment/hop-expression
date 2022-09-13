@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  * White space is defined as any sequence of blanks, null characters, newlines (line feeds),
  * carriage returns, horizontal tabs and form feeds (vertical tabs).
  */
-@FunctionPlugin(id = "SQUEEZE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/squeeze.html")
+@FunctionPlugin
 public class SqueezeFunction extends Function {
 
   public SqueezeFunction() {

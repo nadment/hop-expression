@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * This function abort execution of the pipeline or workflow and log message.
  */
-@FunctionPlugin(id = "ABORT", category = "i18n::Operator.Category.Special", documentationUrl = "/docs/abort.html")
+@FunctionPlugin
 public class AbortFunction extends Function {
 
   public AbortFunction() {

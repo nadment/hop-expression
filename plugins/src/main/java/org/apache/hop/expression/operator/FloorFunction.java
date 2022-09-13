@@ -31,7 +31,7 @@ import java.math.RoundingMode;
 /**
  * Returns the values rounded to the nearest equal or smaller integer.
  */
-@FunctionPlugin(id = "FLOOR", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/floor.html")
+@FunctionPlugin
 public class FloorFunction extends Function {
 
   public FloorFunction() {

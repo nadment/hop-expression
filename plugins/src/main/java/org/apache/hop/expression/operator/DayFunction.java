@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Day of the month (number from 1-31).
  */
-@FunctionPlugin(id = "DAY", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/day.html")
+@FunctionPlugin
 public class DayFunction extends Function {
 
   public DayFunction() {

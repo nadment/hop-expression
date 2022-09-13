@@ -29,7 +29,7 @@ import java.util.zip.CRC32C;
 /**
  * 
  */
-@FunctionPlugin(id = "CRC32", category = "i18n::Operator.Category.Cryptographic", documentationUrl = "/docs/crc32.html")
+@FunctionPlugin
 public class Crc32Function extends Function {
 
   public Crc32Function() {

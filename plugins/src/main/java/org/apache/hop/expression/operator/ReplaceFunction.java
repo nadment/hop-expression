@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
  * Removes all occurrences of a specified substring, and optionally replaces them with another
  * string.
  */
-@FunctionPlugin(id = "REPLACE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/replace.html")
+@FunctionPlugin
 public class ReplaceFunction extends Function {
 
   public ReplaceFunction() {

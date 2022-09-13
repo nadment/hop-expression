@@ -40,10 +40,14 @@ public class BoolOrOperator extends Operator {
     Object left = operands[0].getValue(context);
     Object right = operands[1].getValue(context);
     if (left == null) {
-      return Coerse.toBoolean(right);
+      Boolean result = Coerse.toBoolean(right);
+      if ( !result ) return null;
+      return result;
     }
     if (right == null) {
-      return Coerse.toBoolean(left);
+      Boolean result = Coerse.toBoolean(left);
+      if ( !result ) return null;
+      return result;      
     }
     return Boolean.logicalOr(Coerse.toBoolean(left), Coerse.toBoolean(right));
   }

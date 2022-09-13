@@ -32,7 +32,7 @@ import java.util.Locale;
 /**
  * Returns the name of the month (in English).
  */
-@FunctionPlugin(id = "MONTHNAME", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/monthname.html")
+@FunctionPlugin
 public class MonthName extends Function {
 
   public MonthName() {

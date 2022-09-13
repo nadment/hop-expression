@@ -29,7 +29,7 @@ import java.time.DayOfWeek;
 /**
  * Day of the week (Sunday=1 to Saturday=7).
  */
-@FunctionPlugin(id = "DAYOFWEEK", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/dayofweek.html")
+@FunctionPlugin
 public class DayOfWeekFunction extends Function {
 
   public DayOfWeekFunction() {

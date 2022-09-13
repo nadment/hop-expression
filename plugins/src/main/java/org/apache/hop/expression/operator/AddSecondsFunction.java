@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 /**
  * Adds or subtracts a specified number of seconds to a date or timestamp
  */
-@FunctionPlugin(id = "ADD_SECONDS", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_seconds.html")
+@FunctionPlugin
 public class AddSecondsFunction extends Function {
 
   public AddSecondsFunction() {

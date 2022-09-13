@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns a string consisting of a the specified number of blank spaces.
  */
-@FunctionPlugin(id = "SPACE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/space.html")
+@FunctionPlugin
 public class SpaceFunction extends Function {
 
   public SpaceFunction() {

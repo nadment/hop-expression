@@ -33,7 +33,7 @@ import org.apache.hop.expression.util.Coerse;
  * 
  * @See {@link CbrtFunction}
  */
-@FunctionPlugin(id = "SQRT", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/sqrt.html")
+@FunctionPlugin
 public class SqrtFunction extends Function {
 
   public SqrtFunction() {

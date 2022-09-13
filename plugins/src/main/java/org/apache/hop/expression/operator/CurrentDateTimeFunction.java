@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function return the current date and time
  */
-@FunctionPlugin(id = "CURRENT_TIMESTAMP", names = {"NOW"}, category = "i18n::Operator.Category.Date", documentationUrl = "/docs/current_timestamp.html")
+@FunctionPlugin(names = {"NOW"})
 public class CurrentDateTimeFunction extends Function {
 
   public CurrentDateTimeFunction() {

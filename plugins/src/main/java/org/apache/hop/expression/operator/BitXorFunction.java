@@ -31,7 +31,7 @@ import java.io.StringWriter;
  * <br>
  * <strong>Syntax:</strong> <code>x ^ y</code>
  */
-@FunctionPlugin(id = "BITXOR", category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitxor.html")
+@FunctionPlugin
 public class BitXorFunction extends Function {
 
   public BitXorFunction() {

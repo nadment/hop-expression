@@ -34,7 +34,7 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Truncates a date or timestamp to the specified part.
  */
-@FunctionPlugin(id = "DATE_TRUNC", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/date_trunc.html")
+@FunctionPlugin
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {

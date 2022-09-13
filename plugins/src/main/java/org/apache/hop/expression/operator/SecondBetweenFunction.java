@@ -30,7 +30,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Return the number of seconds between two timestamps
  */
-@FunctionPlugin(id = "SECONDS_BETWEEN", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/seconds_between.html")
+@FunctionPlugin
 public class SecondBetweenFunction extends Function {
 
   public SecondBetweenFunction() {

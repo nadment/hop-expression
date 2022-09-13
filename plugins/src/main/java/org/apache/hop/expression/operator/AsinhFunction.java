@@ -27,9 +27,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 
 /**
- * 
+ * Compute the inverse hyperbolic sine of a number.
  */
-@FunctionPlugin(id = "ASINH", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/asinh.html")
+@FunctionPlugin
 public class AsinhFunction extends Function {
 
   public AsinhFunction() {

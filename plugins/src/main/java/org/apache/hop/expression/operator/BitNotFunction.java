@@ -31,7 +31,7 @@ import java.io.StringWriter;
  * <br>
  * <strong>Syntax:</strong> <code>~x</code>
  */
-@FunctionPlugin(id = "BITNOT", category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitnot.html")
+@FunctionPlugin
 public class BitNotFunction extends Function {
 
   public BitNotFunction() {

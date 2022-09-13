@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "DIFFERENCE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/difference.html")
+@FunctionPlugin
 public class DifferenceFunction extends Function {
   private static final Soundex SOUNDEX = new Soundex();
   private static final int SOUNDEX_LENGTH = 4;

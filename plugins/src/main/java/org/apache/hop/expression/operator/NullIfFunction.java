@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * The function NULLIF
  */
-@FunctionPlugin(id = "NULLIF", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/nullif.html")
+@FunctionPlugin
 public class NullIfFunction extends Function {
 
   public NullIfFunction() {

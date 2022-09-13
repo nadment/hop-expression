@@ -31,7 +31,7 @@ import java.util.Locale;
 /**
  * Returns the name of the weekday (in English).
  */
-@FunctionPlugin(id = "DAYNAME", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/dayname.html")
+@FunctionPlugin
 public class DayNameFunction extends Function {
 
   public DayNameFunction() {

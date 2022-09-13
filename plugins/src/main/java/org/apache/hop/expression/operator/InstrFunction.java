@@ -30,8 +30,7 @@ import org.apache.hop.expression.util.Coerse;
  * Returns the position in the string that is the first character of a specified occurrence of the
  * substring.
  */
-@FunctionPlugin(id = "INSTR", category = "i18n::Operator.Category.String",
-    documentationUrl = "/docs/instr.html")
+@FunctionPlugin
 public class InstrFunction extends Function {
  
   public InstrFunction() {

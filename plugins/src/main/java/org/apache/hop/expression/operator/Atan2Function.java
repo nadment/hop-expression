@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "ATAN2", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/atan2.html")
+@FunctionPlugin
 public class Atan2Function extends Function {
 
   public Atan2Function() {

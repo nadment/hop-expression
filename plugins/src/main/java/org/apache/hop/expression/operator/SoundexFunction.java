@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns a string that contains a phonetic representation of the input string.
  */
-@FunctionPlugin(id = "SOUNDEX", category = "i18n::Operator.Category.String", documentationUrl = "/docs/soundex.html")
+@FunctionPlugin
 public class SoundexFunction extends Function {
 
   private static final Soundex SOUNDEX = new Soundex();

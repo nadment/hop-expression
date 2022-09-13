@@ -30,7 +30,7 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Returns the date of the first specified day of week that occurs before the input date.
  */
-@FunctionPlugin(id = "PREVIOUS_DAY", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/previous_day.html")
+@FunctionPlugin
 public class PreviousDayFunction extends Function {
 
   public PreviousDayFunction() {

@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Day of the year (number from 1-366).
  */
-@FunctionPlugin(id = "DAYOFYEAR", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/dayofyear.html")
+@FunctionPlugin
 public class DayOfYearFunction extends Function {
 
   public DayOfYearFunction() {

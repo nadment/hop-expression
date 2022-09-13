@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Calculates the trigonometric sine of the angle in radians.
  */
-@FunctionPlugin(id = "SIN", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/sin.html")
+@FunctionPlugin
 public class SinFunction extends Function {
 
   public SinFunction() {

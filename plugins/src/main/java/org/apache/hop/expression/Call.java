@@ -34,6 +34,7 @@ public class Call implements IExpression {
   public Call(Operator operator, IExpression... operands) {
     this(DataTypeName.UNKNOWN, operator, operands);
   }
+
   public Call(Operator operator, Collection<IExpression> operands) {
     this(DataTypeName.UNKNOWN, operator, operands);
   }

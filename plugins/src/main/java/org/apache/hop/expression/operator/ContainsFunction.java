@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Contains function
  */
-@FunctionPlugin(id = "CONTAINS", category = "i18n::Operator.Category.Comparison", documentationUrl = "/docs/contains.html")
+@FunctionPlugin
 public class ContainsFunction extends Function {
 
   public ContainsFunction() {

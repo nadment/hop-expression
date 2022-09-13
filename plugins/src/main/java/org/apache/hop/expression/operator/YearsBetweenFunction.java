@@ -30,7 +30,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Returns number of years between two date.
  */
-@FunctionPlugin(id = "YEARS_BETWEEN", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/years_between.html")
+@FunctionPlugin
 public class YearsBetweenFunction extends Function {
 
   public YearsBetweenFunction() {

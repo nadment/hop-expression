@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Converter;
 /**
  * Converts a string or numeric expression to a boolean value.
  */
-@FunctionPlugin(id = "TO_BOOLEAN", category = "i18n::Operator.Category.Conversion", documentationUrl = "/docs/to_boolean.html")
+@FunctionPlugin
 public class ToBooleanFunction extends Function {
 
   public ToBooleanFunction() {

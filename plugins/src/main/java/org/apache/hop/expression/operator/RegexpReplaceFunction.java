@@ -33,7 +33,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * 
  */
-@FunctionPlugin(id = "REGEXP_REPLACE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/regexp_replace.html")
+@FunctionPlugin
 public class RegexpReplaceFunction extends Function {
 
   public RegexpReplaceFunction() {

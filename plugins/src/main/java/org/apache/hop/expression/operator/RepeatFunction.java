@@ -31,7 +31,7 @@ import java.io.IOException;
 /**
  * The function repeats a string as many times as specified.
  */
-@FunctionPlugin(id = "REPEAT", category = "i18n::Operator.Category.String", documentationUrl = "/docs/repeat.html")
+@FunctionPlugin
 public class RepeatFunction extends Function {
 
   public RepeatFunction() {

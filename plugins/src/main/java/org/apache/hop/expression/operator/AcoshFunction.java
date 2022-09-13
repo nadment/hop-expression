@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "ACOSH", category = "i18n::Operator.Category.Trigonometry",  documentationUrl = "/docs/acosh.html")
+@FunctionPlugin
 public class AcoshFunction extends Function {
 
   public AcoshFunction() {

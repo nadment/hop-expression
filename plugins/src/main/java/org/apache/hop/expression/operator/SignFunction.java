@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the sign of a number.
  */
-@FunctionPlugin(id = "SIGN", category = "i18n::Operator.Category.Mathematical",  documentationUrl = "/docs/sign.html")
+@FunctionPlugin
 public class SignFunction extends Function {
 
   public SignFunction() {

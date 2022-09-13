@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the trigonometric cotangent of the angle in radians specified by float expression.
  */
-@FunctionPlugin(id = "COT", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/cot.html")
+@FunctionPlugin
 public class CotFunction extends Function {
 
   public CotFunction() {

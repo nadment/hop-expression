@@ -33,7 +33,7 @@ import org.apache.hop.expression.util.Coerse;
  * Compares the select expression to each search expression in order. As soon as a search
  * expression matches the selection expression, the corresponding result expression is returned.
  */
-@FunctionPlugin(id = "DECODE", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/decode.html")
+@FunctionPlugin
 public class DecodeFunction extends Function {
   public static final IOperandTypeChecker OTC = new DecodeOperandTypeChecker();
   

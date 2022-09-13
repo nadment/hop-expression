@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * The function compute Levenshtein distance.
  */
-@FunctionPlugin(id = "LEVENSHTEIN", category = "i18n::Operator.Category.String", documentationUrl = "/docs/levenshtein.html")
+@FunctionPlugin
 public class Levenshtein extends Function {
 
   public Levenshtein() {

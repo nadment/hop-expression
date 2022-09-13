@@ -27,9 +27,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 
 /**
- * 
+ * Compute the arc sine of a number.
  */
-@FunctionPlugin(id = "ASIN", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/asin.html")
+@FunctionPlugin
 public class AsinFunction extends Function {
 
   public AsinFunction() {

@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
  */
-@FunctionPlugin(id = "ACOS", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/acos.html")
+@FunctionPlugin
 public class AcosFunction extends Function {
 
   public AcosFunction() {

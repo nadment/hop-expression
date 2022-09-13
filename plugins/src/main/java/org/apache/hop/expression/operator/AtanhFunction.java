@@ -27,9 +27,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 
 /**
- * 
+ * Compute the inverse hyperbolic tangent of a number.
  */
-@FunctionPlugin(id = "ATANH", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/atanh.html")
+@FunctionPlugin
 public class AtanhFunction extends Function {
 
   public AtanhFunction() {

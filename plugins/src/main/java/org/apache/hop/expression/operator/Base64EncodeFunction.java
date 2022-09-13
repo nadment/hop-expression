@@ -32,8 +32,7 @@ import java.util.Base64;
  *
  * @see {@link Base64DecodeFunction}
  */
-@FunctionPlugin(id = "BASE64_ENCODE", category = "i18n::Operator.Category.String",
-    documentationUrl = "/docs/base64_encode.html")
+@FunctionPlugin
 public class Base64EncodeFunction extends Function {
 
   public Base64EncodeFunction() {

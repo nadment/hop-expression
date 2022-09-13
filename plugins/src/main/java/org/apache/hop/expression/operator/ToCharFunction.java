@@ -30,8 +30,7 @@ import org.apache.hop.expression.util.NumberFormat;
 /**
  * Converts a numeric or date expression to a string value.
  */
-@FunctionPlugin(id = "TO_CHAR", category = "i18n::Operator.Category.Conversion",
-    documentationUrl = "/docs/to_char.html")
+@FunctionPlugin
 public class ToCharFunction extends Function {
 
   public ToCharFunction() {

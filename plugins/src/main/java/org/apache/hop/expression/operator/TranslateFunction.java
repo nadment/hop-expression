@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "TRANSLATE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/translate.html")
+@FunctionPlugin
 public class TranslateFunction extends Function {
 
   public TranslateFunction() {

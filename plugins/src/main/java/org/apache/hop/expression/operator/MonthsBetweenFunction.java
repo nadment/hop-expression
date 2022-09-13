@@ -30,7 +30,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Returns number of months between two date.
  */
-@FunctionPlugin(id = "MONTHS_BETWEEN", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/months_between.html")
+@FunctionPlugin
 public class MonthsBetweenFunction extends Function {
 
   public MonthsBetweenFunction() {

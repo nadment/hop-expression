@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the exponential value of a numeric expression.
  */
-@FunctionPlugin(id = "EXP", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/exp.html")
+@FunctionPlugin
 public class ExpFunction extends Function {
 
   public ExpFunction() {

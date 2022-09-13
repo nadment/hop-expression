@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the values rounded to the nearest integer.
  */
-@FunctionPlugin(id = "ROUND", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/round.html")
+@FunctionPlugin
 public class RoundFunctionFunction extends Function {
 
   public RoundFunctionFunction() {

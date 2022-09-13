@@ -27,9 +27,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 
 /**
- * 
+ * Compute the arctangent of a number.
  */
-@FunctionPlugin(id = "ATAN", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/atan.html")
+@FunctionPlugin
 public class AtanFunction extends Function {
 
   public AtanFunction() {

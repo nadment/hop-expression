@@ -30,7 +30,7 @@ import java.math.RoundingMode;
 /**
  * Round down numeric expressions or truncates a date or timestamp to the specified part.
  */
-@FunctionPlugin(id = "TRUNCATE", names = "TRUNC", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/truncate.html")
+@FunctionPlugin(names = "TRUNC")
 public class TruncateFunction extends Function {
 
   public TruncateFunction() {

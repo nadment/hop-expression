@@ -29,8 +29,7 @@ import org.apache.hop.expression.util.NumberFormat;
 /**
  * Converts a string expression to a number value.
  */
-@FunctionPlugin(id = "TO_NUMBER", category = "i18n::Operator.Category.Conversion",
-    documentationUrl = "/docs/to_number.html")
+@FunctionPlugin
 public class ToNumberFunction extends Function {
 
   public ToNumberFunction() {

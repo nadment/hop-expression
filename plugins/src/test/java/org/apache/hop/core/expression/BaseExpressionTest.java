@@ -248,7 +248,7 @@ public class BaseExpressionTest {
 //    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
-    
+    evalNull("false OR VALUE_NULL");
     //returnType("AGE IN (10,20,30,40)", DataTypeName.BOOLEAN);
   }
 }

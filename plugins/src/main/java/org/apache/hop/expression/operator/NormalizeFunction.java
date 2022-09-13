@@ -31,7 +31,7 @@ import java.text.Normalizer.Form;
 /**
  * The function returns a string as a normalized string.
  */
-@FunctionPlugin(id = "NORMALIZE")
+@FunctionPlugin
 public class NormalizeFunction extends Function {
 
  

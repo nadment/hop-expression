@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
  * 
  * @See {@link HourFunction}, {@link MinueFunction}
  */
-@FunctionPlugin(id = "SECOND", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/second.html")
+@FunctionPlugin
 public class SecondFunction extends Function {
 
   public SecondFunction() {

@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "POWER", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/power.html")
+@FunctionPlugin
 public class PowerFunction extends Function {
 
   public PowerFunction() {

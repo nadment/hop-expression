@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 /**
  * Adds or subtracts a specified number of months to a date or timestamp
  */
-@FunctionPlugin(id = "ADD_MONTHS", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_months.html")
+@FunctionPlugin
 public class AddMonthsFunction extends Function {
 
   public AddMonthsFunction() {

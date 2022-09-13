@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Function to converts radians to degrees.
  */
-@FunctionPlugin(id = "DEGREES", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/degrees.html")
+@FunctionPlugin
 public class DegreesFunction extends Function {
 
   public DegreesFunction() {

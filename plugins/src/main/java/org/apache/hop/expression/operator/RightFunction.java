@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
  * 
  * @See {@link LeftFunction}
  */
-@FunctionPlugin(id = "RIGHT", category = "i18n::Operator.Category.String", documentationUrl = "/docs/right.html")
+@FunctionPlugin
 public class RightFunction extends Function {
 
   public RightFunction() {

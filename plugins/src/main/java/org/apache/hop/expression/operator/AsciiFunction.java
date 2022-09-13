@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
  * The function return the ASCII value of the first character in a string.
  * If the string is empty, a value of 0 is returned.
  */
-@FunctionPlugin(id = "ASCII", category = "i18n::Operator.Category.String", documentationUrl = "/docs/ascii.html")
+@FunctionPlugin
 public class AsciiFunction extends Function {
 
   public AsciiFunction() {

@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)
  */
-@FunctionPlugin(id = "JSON_OBJECT", category = "i18n::Operator.Category.Json", documentationUrl = "/docs/json_object.html")
+@FunctionPlugin
 public class JsonObjectFunction extends Function {
 
  public static final IOperandTypeChecker OTC = new JsonObjectOperandTypeChecker();

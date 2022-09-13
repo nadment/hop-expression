@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Calculates the hyperbolic tangent of its argument.
  */
-@FunctionPlugin(id = "TANH", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/tanh.html")
+@FunctionPlugin
 public class TanhFunction extends Function {
 
   public TanhFunction() {

@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
  */
-@FunctionPlugin(id = "REVERSE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/reverse.html")
+@FunctionPlugin
 public class ReverseFunction extends Function {
 
   public ReverseFunction() {

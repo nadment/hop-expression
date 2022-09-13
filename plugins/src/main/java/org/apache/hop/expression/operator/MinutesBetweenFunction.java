@@ -30,7 +30,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Return the number of minutes between two timestamps
  */
-@FunctionPlugin(id = "MINUTES_BETWEEN", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/minutes_between.html")
+@FunctionPlugin
 public class MinutesBetweenFunction extends Function {
 
   public MinutesBetweenFunction() {

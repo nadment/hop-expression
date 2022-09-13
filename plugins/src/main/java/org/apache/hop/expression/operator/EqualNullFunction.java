@@ -33,7 +33,7 @@ import org.apache.hop.expression.util.Coerse;
  * that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown
  * values.
  */
-@FunctionPlugin(id = "EQUAL_NULL", category = "i18n::Operator.Category.Comparison", documentationUrl = "/docs/equal_null.html")
+@FunctionPlugin
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {

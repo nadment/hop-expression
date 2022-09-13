@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link StartWith}
  */
-@FunctionPlugin(id = "ENDSWITH", category = "i18n::Operator.Category.Comparison", documentationUrl = "/docs/endswith.html")
+@FunctionPlugin
 public class EndsWithFunction extends Function {
 
   public EndsWithFunction() {

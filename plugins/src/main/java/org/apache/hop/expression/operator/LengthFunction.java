@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * The function returns the number of characters of the specified string.
  */
-@FunctionPlugin(id = "LENGTH", category = "i18n::Operator.Category.String", documentationUrl = "/docs/length.html")
+@FunctionPlugin
 public class LengthFunction extends Function {
 
   public LengthFunction() {

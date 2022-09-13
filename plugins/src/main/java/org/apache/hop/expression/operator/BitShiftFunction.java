@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "BITSHIFT", category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitshift.html")
+@FunctionPlugin
 public class BitShiftFunction extends Function {
 
   public BitShiftFunction() {

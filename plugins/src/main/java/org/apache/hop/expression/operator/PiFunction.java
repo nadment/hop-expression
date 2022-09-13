@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * Returns the number of PI.
  */
-@FunctionPlugin(id = "PI", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/pi.html")
+@FunctionPlugin
 public class PiFunction extends Function {
 
   public PiFunction() {

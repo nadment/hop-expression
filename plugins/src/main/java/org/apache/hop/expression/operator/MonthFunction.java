@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Month of the year (number from 1-12).
  */
-@FunctionPlugin(id = "MONTH", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/month.html")
+@FunctionPlugin
 public class MonthFunction extends Function {
 
   public MonthFunction() {

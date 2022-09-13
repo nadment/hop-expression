@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the trigonometric cosine of the specified angle in radians in the specified number.
  */
-@FunctionPlugin(id = "COSH", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/cosh.html")
+@FunctionPlugin
 public class CoshFunction extends Function {
 
   public CoshFunction() {

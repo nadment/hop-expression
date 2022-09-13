@@ -37,7 +37,7 @@ import org.apache.hop.expression.util.Coerse;
  * @throws ExpressionException
  * @See {@link StrtokFunction}
  */
-@FunctionPlugin(id = "SPLIT_PART", category = "i18n::Operator.Category.String", documentationUrl = "/docs/split_part.html")
+@FunctionPlugin
 public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {

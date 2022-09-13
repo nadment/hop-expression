@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link Md5Function}, {@link Sha256Function}, {@link Sha384Function}, {@link Sha512Function}
  */
-@FunctionPlugin(id = "SHA1", category = "i18n::Operator.Category.Cryptographic",  documentationUrl = "/docs/sha1.html")
+@FunctionPlugin
 public class Sha1Function extends Function {
 
   public Sha1Function() {

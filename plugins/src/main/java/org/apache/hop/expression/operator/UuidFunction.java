@@ -28,7 +28,7 @@ import java.util.UUID;
 /**
  * Returns a randomly generated UUID (Universal Unique Identifier defined by RFC 4122)
  */
-@FunctionPlugin(id = "UUID", category = "i18n::Operator.Category.String", documentationUrl = "/docs/uuid.html")
+@FunctionPlugin
 public class UuidFunction extends Function {
 
   public UuidFunction() {

@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
  */
-@FunctionPlugin(id = "NULLIFZERO", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/nullifzero.html")
+@FunctionPlugin
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {

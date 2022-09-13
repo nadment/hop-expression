@@ -30,7 +30,7 @@ import java.time.ZoneId;
 /**
  * Build DATE(YYYY,MM,DD) function
  */
-@FunctionPlugin(id = "DATE", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/date.html")
+@FunctionPlugin
 public class DateFunction extends Function {
 
   public DateFunction() {

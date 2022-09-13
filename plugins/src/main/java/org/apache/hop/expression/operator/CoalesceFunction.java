@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.ReturnTypes;
  * The COALESCE function returns the first of its arguments that is not null. Null is returned
  * only if all arguments are null.
  */
-@FunctionPlugin(id = "COALESCE", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/coalesce.html")
+@FunctionPlugin
 public class CoalesceFunction extends Function {
 
   public CoalesceFunction() {

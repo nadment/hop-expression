@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Encodes special characters in a string using the Java string literal encoding format.
  */
-@FunctionPlugin(id = "STRING_ENCODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/string_encode.html")
+@FunctionPlugin
 public class StringEncodeFunction extends Function {
 
   public StringEncodeFunction() {

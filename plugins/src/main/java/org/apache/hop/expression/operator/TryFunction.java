@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * This function returns the value of expression. If an error occurs, null is returned.
  */
-@FunctionPlugin(id = "TRY", category = "i18n::Operator.Category.Special", documentationUrl = "/docs/try.html")
+@FunctionPlugin
 public class TryFunction extends Function {
 
   public TryFunction() {

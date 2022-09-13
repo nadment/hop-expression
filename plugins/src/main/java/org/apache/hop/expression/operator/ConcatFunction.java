@@ -33,7 +33,7 @@ import java.io.StringWriter;
 /**
  * String concatenation operator '<code>||</code>'
  */
-@FunctionPlugin(id = "CONCAT", category = "i18n::Operator.Category.String", documentationUrl = "/docs/concat.html")
+@FunctionPlugin
 public class ConcatFunction extends Function {
 
   // Function

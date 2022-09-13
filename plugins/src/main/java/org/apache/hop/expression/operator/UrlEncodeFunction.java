@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @see {@link UrlDecodeFunction}
  */
-@FunctionPlugin(id = "URL_ENCODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/url_encode.html")
+@FunctionPlugin
 public class UrlEncodeFunction extends Function {
 
   public UrlEncodeFunction() {

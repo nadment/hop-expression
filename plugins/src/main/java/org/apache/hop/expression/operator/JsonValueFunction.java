@@ -35,7 +35,7 @@ import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 
-@FunctionPlugin(id = "JSON_VALUE", category = "i18n::Operator.Category.Json", documentationUrl = "/docs/json_value.html")
+@FunctionPlugin
 public class JsonValueFunction extends Function {
 
   public static final Configuration JSONPATH_CONFIGURATION = Configuration.builder()

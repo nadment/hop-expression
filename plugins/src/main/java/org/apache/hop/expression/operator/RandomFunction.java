@@ -30,7 +30,7 @@ import java.util.Random;
 /**
  * 
  */
-@FunctionPlugin(id = "RANDOM", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/random.html")
+@FunctionPlugin
 public class RandomFunction extends Function {
 
   public RandomFunction() {

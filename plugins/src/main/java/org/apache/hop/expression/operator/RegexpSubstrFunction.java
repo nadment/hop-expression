@@ -33,7 +33,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * 
  */
-@FunctionPlugin(id = "REGEXP_SUBSTR", category = "i18n::Operator.Category.String", documentationUrl = "/docs/regexp_substr.html")
+@FunctionPlugin
 public class RegexpSubstrFunction extends Function {
 
   public RegexpSubstrFunction() {

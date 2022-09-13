@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * The function removes accents (diacritic marks) from a given string.
  * Note that ligatures will be left as is.
  */
-@FunctionPlugin(id = "UNACCENT")
+@FunctionPlugin
 public class UnaccentFunction extends Function {
 
   private static final Pattern DIACRITICS =

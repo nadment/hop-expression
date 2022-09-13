@@ -31,7 +31,7 @@ import java.math.RoundingMode;
 /**
  * Returns the values rounded to the nearest equal or larger integer.
  */
-@FunctionPlugin(id = "CEILING", names="CEIL", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/ceiling.html")
+@FunctionPlugin(names="CEIL")
 public class CeilingFunction extends Function {
 
   public CeilingFunction() {

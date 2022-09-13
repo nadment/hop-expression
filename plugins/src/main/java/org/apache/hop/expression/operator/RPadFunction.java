@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link LPadFunction}
  */
-@FunctionPlugin(id = "RPAD", category = "i18n::Operator.Category.String", documentationUrl = "/docs/rpad.html")
+@FunctionPlugin
 public class RPadFunction extends Function {
   /** The maximum size to which the padding can expand. */
   private static final int PAD_LIMIT = 8192;

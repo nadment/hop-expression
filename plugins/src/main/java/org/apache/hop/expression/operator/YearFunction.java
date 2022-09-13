@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * The year of a date
  */
-@FunctionPlugin(id = "YEAR", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/year.html")
+@FunctionPlugin
 public class YearFunction extends Function {
 
   public YearFunction() {

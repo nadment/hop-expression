@@ -31,7 +31,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link ChrFunction}, {@link AsciiFunction},
  */
-@FunctionPlugin(id = "UNICODE", category = "i18n::Operator.Category.String", documentationUrl = "/docs/unicode.html")
+@FunctionPlugin
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {

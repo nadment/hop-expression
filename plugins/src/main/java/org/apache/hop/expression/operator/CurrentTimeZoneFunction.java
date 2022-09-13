@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The function return the current time zone
  */
-@FunctionPlugin(id = "CURRENT_TIMEZONE", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/current_timezone.html")
+@FunctionPlugin
 public class CurrentTimeZoneFunction extends Function {
 
   public CurrentTimeZoneFunction() {

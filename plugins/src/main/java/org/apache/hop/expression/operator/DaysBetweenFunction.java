@@ -30,7 +30,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * Returns number of days between two date values.
  */
-@FunctionPlugin(id = "DAYS_BETWEEN", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/days_between.html")
+@FunctionPlugin
 public class DaysBetweenFunction extends Function {
 
   public DaysBetweenFunction() {

@@ -31,7 +31,7 @@ import org.apache.hop.expression.util.Coerse;
  *
  * @see {@link TrimFunction}, {@link RTrimFunction}
  */
-@FunctionPlugin(id = "LTRIM", category = "i18n::Operator.Category.String", documentationUrl = "/docs/ltrim.html")
+@FunctionPlugin
 public class LTrimFunction extends Function {
 
   public LTrimFunction() {

@@ -31,7 +31,7 @@ import org.apache.hop.expression.util.DateTimeFormat;
 /**
  * Converts a string expression to a date value.
  */
-@FunctionPlugin(id = "TO_DATE", category = "i18n::Operator.Category.Conversion", documentationUrl = "/docs/to_date.html")
+@FunctionPlugin
 public class ToDateFunction extends Function {
 
   public ToDateFunction() {

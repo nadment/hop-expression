@@ -27,20 +27,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface FunctionPlugin {
-  String id() default "";
-
   /**
-   * The name of the plugin
+   * The alias name of the plugin
    *
    * @return
    */
   String[] names() default {};
-  
-  String category() default "";
-  
-  /** @return The description of the plugin */
-  String description() default "";
-
-  /** @return The documentation url */
-  String documentationUrl() default "";
 }

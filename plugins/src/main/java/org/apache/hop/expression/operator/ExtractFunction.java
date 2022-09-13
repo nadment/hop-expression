@@ -39,7 +39,7 @@ import java.util.Locale;
  * 
  * Date part: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
  */
-@FunctionPlugin(id = "EXTRACT", names = "DATE_PART", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/extract.html")
+@FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
 
   public ExtractFunction() {

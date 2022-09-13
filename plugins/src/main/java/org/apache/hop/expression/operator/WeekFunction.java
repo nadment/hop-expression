@@ -29,7 +29,7 @@ import java.time.temporal.ChronoField;
 /**
  * Week of the year (number from 1-54).
  */
-@FunctionPlugin(id = "WEEK", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/week.html")
+@FunctionPlugin
 public class WeekFunction extends Function {
 
   public WeekFunction() {

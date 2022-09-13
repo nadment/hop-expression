@@ -28,9 +28,8 @@ import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the square of a numeric expression.
- * 
  */
-@FunctionPlugin(id = "SQUARE", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/square.html")
+@FunctionPlugin
 public class SquareFunction extends Function {
 
   public SquareFunction() {

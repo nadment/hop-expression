@@ -29,7 +29,7 @@ import java.time.temporal.IsoFields;
 /**
  * Week of the year ISO semantics (number from 1-53).
  */
-@FunctionPlugin(id = "ISOWEEK", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/isoweek.html")
+@FunctionPlugin
 public class IsoWeekFunction extends Function {
 
   public IsoWeekFunction() {

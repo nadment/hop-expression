@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the natural logarithm of a numeric value.
  */
-@FunctionPlugin(id = "LN", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/ln.html")
+@FunctionPlugin
 public class LnFunction extends Function {
 
   public LnFunction() {

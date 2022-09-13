@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "BITSET", category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitset.html")
+@FunctionPlugin
 public class BitSetFunction extends Function {
 
   public BitSetFunction() {

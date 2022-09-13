@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
  */
-@FunctionPlugin(id = "IF", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/if.html")
+@FunctionPlugin
 public class IfFunction extends Function {
 
   public IfFunction() {

@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the base 10 logarithm of a numeric value.
  */
-@FunctionPlugin(id = "LOG10", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/log10.html")
+@FunctionPlugin
 public class Log10Function extends Function {
 
   public Log10Function() {

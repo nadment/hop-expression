@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 /**
  * Adds or subtracts a specified number of days to a date or timestamp
  */
-@FunctionPlugin(id = "ADD_DAYS", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_days.html")
+@FunctionPlugin
 public class AddDaysFunction extends Function {
 
   public AddDaysFunction() {

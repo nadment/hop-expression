@@ -28,7 +28,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(id = "BITCLEAR",  category = "i18n::Operator.Category.Bitwise", documentationUrl = "/docs/bitclear.html")
+@FunctionPlugin
 public class BitClearFunction extends Function {
 
   public BitClearFunction() {

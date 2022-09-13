@@ -699,14 +699,16 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("true OR false");
     evalTrue("false OR true");
     evalFalse("false OR false");
-    evalTrue("true OR null");
+    evalTrue("true OR VALUE_NULL");
     evalTrue("true OR FIELD");
-    evalTrue("null OR true");
+    evalTrue("VALUE_NULL OR true");
     evalTrue("FLAG OR false");
-    evalFalse("false OR null");
-    evalFalse("null OR false");
-    evalNull("null OR null");
+    evalNull("false OR VALUE_NULL");
+    evalNull("VALUE_NULL OR false");
+    evalNull("VALUE_NULL OR VALUE_NULL");
+    
     evalFails("false OR");
+    evalFails("OR false");
 
     //evalFails("true OR NAME");
     
@@ -723,11 +725,16 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("false AND false");
     evalFalse("false AND FIELD");
     evalNull("FLAG AND null");
-    evalNull("null AND FLAG");
-    evalNull("false AND null");
-    evalNull("null AND false");
-    evalNull("null AND null");
+    evalNull("VALUE_NULL AND FLAG");
+    evalFalse("false AND VALUE_NULL");
+    evalFalse("VALUE_NULL AND false");
+    evalNull("true AND VALUE_NULL");
+    evalNull("VALUE_NULL AND true");
+    evalNull("VALUE_NULL AND VALUE_NULL");
     
+    evalFails("false AND");
+    evalFails("AND false");
+
     writeEquals("FLAG AND VALUE_NULL");
     
     returnType("false AND FLAG", DataTypeName.BOOLEAN);

@@ -100,19 +100,6 @@ public class BooleanOptimizer extends ExpressionCompiler {
           if (value == Boolean.TRUE)
             return Literal.TRUE;
         }
-
-        if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(0).getValue(context));
-          if (value == Boolean.FALSE)
-            return call.getOperand(1);
-        }
-
-        if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = Coerse.toBoolean(call.getOperand(1).getValue(context));
-          if (value == Boolean.FALSE)
-            return call.getOperand(0);
-        }
-
         
         // [field] OR [field] => [field]
         if (call.getOperand(0).equals(call.getOperand(1))) {

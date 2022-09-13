@@ -29,7 +29,7 @@ import java.time.temporal.IsoFields;
 /**
  * Quarter of the year (number from 1-4).
  */
-@FunctionPlugin(id = "QUARTER", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/quarter.html")
+@FunctionPlugin
 public class QuarterFunction extends Function {
 
   public QuarterFunction() {

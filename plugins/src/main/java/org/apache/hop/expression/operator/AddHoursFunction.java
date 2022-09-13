@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 /**
  * Adds or subtracts a specified number of hours to a date or timestamp
  */
-@FunctionPlugin(id = "ADD_HOURS", category = "i18n::Operator.Category.Date", documentationUrl = "/docs/add_hours.html")
+@FunctionPlugin
 public class AddHoursFunction extends Function {
 
   public AddHoursFunction() {

@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Calculates the tangent of its argument, the argument should be expressed in radians.
  */
-@FunctionPlugin(id = "TAN", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/tan.html")
+@FunctionPlugin
 public class TanFunction extends Function {
 
   public TanFunction() {

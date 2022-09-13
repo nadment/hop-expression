@@ -30,7 +30,7 @@ import java.io.StringWriter;
  * Returns the position in the string that is the first character of a specified occurrence of the
  * substring.
  */
-@FunctionPlugin(id = "POSITION", category = "i18n::Operator.Category.String", documentationUrl = "/docs/position.html")
+@FunctionPlugin
 public class PositionFunction extends Function {
 
   public PositionFunction() {

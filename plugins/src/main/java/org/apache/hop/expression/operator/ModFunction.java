@@ -33,7 +33,7 @@ import java.math.BigDecimal;
  * <br>
  * <strong>Syntax:</strong> <code>x % y</code>
  */
-@FunctionPlugin(id = "MOD", category = "i18n::Operator.Category.Mathematical", documentationUrl = "/docs/mod.html")
+@FunctionPlugin
 public class ModFunction extends Function {
 
   public ModFunction() {

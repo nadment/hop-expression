@@ -152,17 +152,26 @@ public class OptimizerTest {
     optimizeTrue("null or true");
     optimizeNull("null or null");
     optimizeTrue("FIELD or true");
-    optimize("NAME or false", "NAME");
     optimizeTrue("true or NAME");
-    optimize("NAME or NAME", "NAME");
+    optimizeTrue("true or FLAG");
+    optimizeTrue("FLAG or true");
+    optimize("null or FLAG", "FLAG");
+    optimize("FLAG or null", "FLAG");
+    optimize("false or FLAG", "FALSE OR FLAG");
+    optimize("FLAG or false", "FALSE OR FLAG");
+    optimize("FLAG or FLAG", "FLAG");
 
     optimizeTrue("true and true");
     optimizeFalse("true and false");
     optimizeFalse("false and true");
     optimizeFalse("false and false");
-    optimizeNull("true and null");
-    optimizeNull("null and true");
-    optimize("NAME and NAME", "NAME");
+    optimizeNull("FLAG and null");
+    optimizeNull("null and FLAG");
+    optimizeFalse("false and FLAG");
+    optimizeFalse("FLAG and false");
+    optimize("FLAG and FLAG", "FLAG");
+
+    optimize("FLAG and FLAG", "FLAG");
     
     // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
@@ -188,7 +197,7 @@ public class OptimizerTest {
     optimize("NOT (FLAG IS NULL)", "FLAG IS NOT NULL");
 
     optimize("-(-AGE)", "AGE");
-    optimize("false and true or FIELD", "FIELD");
+    optimize("false and true or FIELD", "FALSE OR FIELD");
     optimizeFalse("false and FIELD");
 
     optimizeTrue("null is null");

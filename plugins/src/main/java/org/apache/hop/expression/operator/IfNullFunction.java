@@ -27,7 +27,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 /**
  * The IFNULL function replace the null with value (Alias NVL).
  */
-@FunctionPlugin(id = "IFNULL", names = "NVL", category = "i18n::Operator.Category.Conditional", documentationUrl = "/docs/ifnull.html")
+@FunctionPlugin(names = "NVL")
 public class IfNullFunction extends Function {
 
   public IfNullFunction() {

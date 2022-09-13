@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Returns the absolute (positive) value of the numeric value.
  */
-@FunctionPlugin(id = "ABS", category = "i18n::Operator.Category.Mathematical",  documentationUrl = "/docs/abs.html")
+@FunctionPlugin
 public class AbsFunction extends Function {
 
   public AbsFunction() {

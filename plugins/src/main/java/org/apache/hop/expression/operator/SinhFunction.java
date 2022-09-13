@@ -29,7 +29,7 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * Calculates the hyperbolic sine of its argument.
  */
-@FunctionPlugin(id = "SINH", category = "i18n::Operator.Category.Trigonometry", documentationUrl = "/docs/sinh.html")
+@FunctionPlugin
 public class SinhFunction extends Function {
 
   public SinhFunction() {
