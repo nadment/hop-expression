@@ -2432,6 +2432,22 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Count()");
     evalFails("Count(DISTINCT )");
     evalFails("Count(1,2)");
+    returnType("Count(*)", DataTypeName.INTEGER);
+    writeEquals("COUNT(AGE)");
+    writeEquals("COUNT(*)");
+    writeEquals("COUNT(DISTINCT AGE)");
+  }
+  
+  @Test
+  public void CountIf() throws Exception {
+    //evalEquals("Exp(1)", Math.E);
+    //evalEquals("Exp(2)", Math.E * Math.E);
+    //evalNull("COUNT(NULL)");
+    evalFails("CountIf()");
+    evalFails("CountIf(FIELD_DATE)");
+    evalFails("CountIf(1,2)");
+    returnType("CountIf(AGE>=10)", DataTypeName.INTEGER);
+    writeEquals("COUNTIF(AGE>=10)");
   }
   
   @Test

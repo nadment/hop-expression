@@ -145,9 +145,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           setOutputDone();
           return false;
         }
-        // }
       }
-
     }
 
     // Here is where we start to do the real work...

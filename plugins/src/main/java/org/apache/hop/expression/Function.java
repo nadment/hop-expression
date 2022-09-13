@@ -56,6 +56,4 @@ public abstract class Function extends Operator {
     }
     writer.append(')');
   }
-  
-
 }

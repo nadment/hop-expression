@@ -990,10 +990,10 @@ public class ExpressionBuilder {
       return new Call(function, operands);
     }
 
-    operands.add(this.parseAdditive());
+    operands.add(this.parseLogicalOr());
 
     while (isAndNext(Id.COMMA)) {
-      operands.add(this.parseAdditive());
+      operands.add(this.parseLogicalOr());
     }
 
     if (isNotAndNext(Id.RPARENTHESIS)) {
