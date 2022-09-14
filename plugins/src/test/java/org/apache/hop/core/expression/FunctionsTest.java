@@ -173,6 +173,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Decode()");
     evalFails("Decodo(1)");
     evalFails("Decode(1,2)");
+    // Mixed type
+    evalFails("Decode(AGE,1,'baby',20,false,true)");
   }
 
   @Test

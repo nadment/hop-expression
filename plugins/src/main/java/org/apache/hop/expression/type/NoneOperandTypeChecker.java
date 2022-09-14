@@ -27,7 +27,7 @@ public class NoneOperandTypeChecker implements IOperandTypeChecker {
   public class NoneOperandCountRange implements IOperandCountRange {
 
     @Override
-    public boolean isValidCount(int count) {    
+    public boolean isValid(int count) {    
       return true;
     }
 

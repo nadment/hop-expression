@@ -33,13 +33,7 @@ import org.apache.hop.expression.FunctionRegistry;
 public class FunctionRegistryExtensionPoint implements IExtensionPoint<PluginRegistry> {
   @Override
   public void callExtensionPoint(ILogChannel log, IVariables variables,
-      PluginRegistry pluginRegistry) throws HopException {
-
-    // BUG with PluginRegistry annotation are null
-    // PluginRegistry.addPluginType(FunctionPluginType.getInstance());   
-    // PluginRegistry.init();
-       
-    
+      PluginRegistry pluginRegistry) throws HopException {   
     FunctionRegistry.registerBuilInFunctions();
   }
 }

@@ -61,12 +61,15 @@ public class CountFunction extends AggregateFunction {
     writer.append('(');
     switch(count) {
       case ALL:
-          writer.append('*');
-          break;
+        writer.append('*');
+        break;
       case DISTINCT:
-        writer.append("DISTINCT ");        
+        writer.append("DISTINCT ");
+        operands[0].unparse(writer);
+        break;
       case VALUE: 
         operands[0].unparse(writer);
+        break;
     }    
     writer.append(')');
   }

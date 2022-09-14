@@ -23,7 +23,7 @@ public interface IOperandCountRange {
   /**
    * Returns whether {@code count} is a valid number of operands.
    */
-  boolean isValidCount(int count);
+  boolean isValid(int count);
 
   /**
    * Returns an lower bound. -1 if there is no lower bound.

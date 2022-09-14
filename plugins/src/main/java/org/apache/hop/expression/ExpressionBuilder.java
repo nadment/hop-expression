@@ -1423,7 +1423,7 @@ public class ExpressionBuilder {
     // Check the number of operands expected
     Operator operator = call.getOperator();
     IOperandCountRange operandCountRange = operator.getOperandCountRange();
-    if (!operandCountRange.isValidCount(call.getOperandCount())) {
+    if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
         throw new ExpressionException(
             ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator.getId()));

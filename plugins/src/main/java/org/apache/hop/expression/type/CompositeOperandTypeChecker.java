@@ -57,15 +57,15 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
         }
       };
           
-      final int min = minMin(ranges);
-      final int max = maxMax(ranges);
+      final int min = min(ranges);
+      final int max = max(ranges);
       
       IOperandCountRange composite = new IOperandCountRange() {
-            @Override public boolean isValidCount(int count) {
+            @Override public boolean isValid(int count) {
               switch (composition) {
               case AND:
                 for (IOperandCountRange range : ranges) {
-                  if (!range.isValidCount(count)) {
+                  if (!range.isValid(count)) {
                     return false;
                   }
                 }
@@ -73,7 +73,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
               case OR:
               default:
                 for (IOperandCountRange range : ranges) {
-                  if (range.isValidCount(count)) {
+                  if (range.isValid(count)) {
                     return true;
                   }
                 }
@@ -93,7 +93,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
           
       if (max >= 0) {
         for (int i = min; i <= max; i++) {
-          if (!composite.isValidCount(i)) {
+          if (!composite.isValid(i)) {
             // Composite is not a simple range. Can't simplify,
             // so return the composite.
             return composite;
@@ -106,7 +106,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
     }
   }
   
-  private static int minMin(List<IOperandCountRange> ranges) {
+  private static int min(List<IOperandCountRange> ranges) {
     int min = Integer.MAX_VALUE;
     for (IOperandCountRange range : ranges) {
       min = Math.min(min, range.getMin());
@@ -114,7 +114,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
     return min;
   }
 
-  private int maxMax(List<IOperandCountRange> ranges) {
+  private int max(List<IOperandCountRange> ranges) {
     int max = Integer.MIN_VALUE;
     for (IOperandCountRange range : ranges) {
       if (range.getMax() < 0) {

@@ -45,7 +45,7 @@ public class OperandCountRange implements IOperandCountRange {
   }
 
   @Override
-  public boolean isValidCount(int count) {
+  public boolean isValid(int count) {
     return count >= min && (max == -1 || count <= max);
   }
 
