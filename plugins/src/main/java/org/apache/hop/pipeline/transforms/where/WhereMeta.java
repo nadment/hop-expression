@@ -155,29 +155,45 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
   }
 
   @Override
-  public void searchInfoAndTargetTransforms(List<TransformMeta> transforms) {
-    for (IStream stream : getTransformIOMeta().getTargetStreams()) {
-      stream.setTransformMeta(TransformMeta.findTransform(transforms, stream.getSubject()));
-    }
+  public void convertIOMetaToTransformNames() {
+    List<IStream> streams = getTransformIOMeta().getTargetStreams();
+    trueTransformName = Const.NVL(streams.get(0).getTransformName(), "");
+    falseTransformName = Const.NVL(streams.get(1).getTransformName(), "");
   }
 
   @Override
+  public void searchInfoAndTargetTransforms(List<TransformMeta> transforms) {
+    List<IStream> streams = getTransformIOMeta().getTargetStreams();
+    streams.get(0).setTransformMeta(TransformMeta.findTransform(transforms, trueTransformName));
+    streams.get(1).setTransformMeta(TransformMeta.findTransform(transforms, falseTransformName));
+  }
+
+  /** Returns the Input/Output metadata for this transform. */
+  @Override
   public ITransformIOMeta getTransformIOMeta() {
+    ITransformIOMeta ioMeta = super.getTransformIOMeta(false);
+    if (ioMeta == null) {
 
-    ITransformIOMeta transformIOMeta = super.getTransformIOMeta();
-    if (transformIOMeta.isInputOptional()) {
+      ioMeta = new TransformIOMeta(true, true, false, false, false, false);
 
-      ((TransformIOMeta) transformIOMeta).setInputOptional(false);
-
-      transformIOMeta.addStream(new Stream(StreamType.TARGET, null,
-          BaseMessages.getString(PKG, "WhereMeta.TargetStream.True.Description"), StreamIcon.TRUE,
-          trueTransformName));
-      transformIOMeta.addStream(new Stream(StreamType.TARGET, null,
-          BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"), StreamIcon.FALSE,
-          falseTransformName));
+      ioMeta.addStream(
+          new Stream(
+              StreamType.TARGET,
+              null,
+              BaseMessages.getString(PKG, "WhereMeta.TargetStream.True.Description"),
+              StreamIcon.TRUE,
+              null));
+      ioMeta.addStream(
+          new Stream(
+              StreamType.TARGET,
+              null,
+              BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"),
+              StreamIcon.FALSE,
+              null));
+      setTransformIOMeta(ioMeta);
     }
 
-    return transformIOMeta;
+    return ioMeta;
   }
 
   public String getTrueTransformName() {
