@@ -14,16 +14,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= POW[ER]
+= BITCOUNT
 
-Calculates a number raised to the specified power.
+Returns the number of bits that are set
 
 == Syntax
 ----
-POWER( base, exponent )
-POW( base, exponent )
+BITCOUNT( value )
 ----
+value:: This expression must evaluate to a data type that can be cast to Integer.
+Return:: Integer
 
 == Usage
 
-* If the value of `exponent` is zero, then 1 will be returned.
+* Returns NULL if the argument is NULL. 

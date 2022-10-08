@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -27,30 +26,22 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 
 /**
- * 
+ * Returns the number of bits that are set
  */
-@FunctionPlugin(names="POW")
-public class PowerFunction extends Function {
+@FunctionPlugin
+public class BitCountFunction extends Function {
 
-  public PowerFunction() {
-    super("POWER", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/power.html");
+  public BitCountFunction() {
+    super("BITCOUNT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC, "i18n::Operator.Category.Bitwise", "/docs/bitcount.html");
   }
   
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws ExpressionException {
     Object v0 = operands[0].getValue(context);
-    Object v1 = operands[1].getValue(context);
-    if (v0 == null || v1 == null) {
+    if (v0 == null)
       return null;
-    }
-    
-    Double number = Coerse.toNumber(v0);
-    Double exponent = Coerse.toNumber(v1);
-        
-    if (exponent == 0)
-      return 1L;
 
-    return FastMath.pow(number, exponent);
+    return Long.bitCount(Coerse.toInteger(v0));
   }
 }

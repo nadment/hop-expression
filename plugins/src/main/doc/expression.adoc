@@ -207,6 +207,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base64_decode.adoc[BASE64_DECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base64_encode.adoc[BASE64_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitand.adoc[BITAND]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitcount.adoc[BITCOUNT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitget.adoc[BITGET]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitnot.adoc[BITNOT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bitshift.adoc[BITSHIFT]

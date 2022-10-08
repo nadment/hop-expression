@@ -1006,6 +1006,9 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Power()");
     evalFails("Power(3)");
     evalFails("Power(1,2,3)");
+    
+    // Alias
+    evalEquals("Pow(3,2)", 9D);
   }
   
   @Test
@@ -1949,7 +1952,11 @@ public class FunctionsTest extends BaseExpressionTest {
         "This line contains more than one spacing between words");
     evalEquals("Regexp_Replace('ABCEFG', 'A..','WXYZ')", "WXYZEFG");
     evalEquals("Regexp_Replace('ABCEFG', '[A-Z]','',1,1)", "BCEFG");
-
+    evalEquals("Regexp_Replace('abc', '(b|c)', 'X')", "aXX");   
+    evalEquals("Regexp_Replace('abc', '(.*)c', '\\1e')", "abe");
+    evalEquals("Regexp_Replace('abc', '(a)(b)', '\\2\\1')", "bac");
+    
+    
     // An empty pattern matches nothing
     evalEquals("Regexp_Replace('ABCDEEEEEEFG', '','E')", "ABCDEEEEEEFG");
 
@@ -1988,6 +1995,12 @@ public class FunctionsTest extends BaseExpressionTest {
         "regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 2)",
         "the worst");
 
+    //evalEquals("regexp_substr('abc', '.b.')", "abc");
+    //evalEquals("regexp_substr('abc', '.b.', 0)", "abc");
+    //evalNull("regexp_substr('abc', '.b.', 1)");
+    //evalEquals("regexp_substr('abc', '([a-z])(b)', 1)", "a");
+    //evalEquals("regexp_substr('abc', '([a-z])(b)', 2)", "b");
+    
     // [[:alnum:]] >>> \p{Alnum}
     // evalEquals("regexp_substr('http://www.apache.org/products',
     // 'http://([a-zA-Z0-9]+\\.?){3,4}/?')", "http://www.apache.org/");
@@ -1997,7 +2010,6 @@ public class FunctionsTest extends BaseExpressionTest {
 
     evalNull("regexp_substr(null,  '@[^.]*')");
     evalNull("regexp_substr('email@apache.org', null)");
-
   }
 
   @Test
@@ -2199,6 +2211,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Log() throws Exception {
     evalEquals("Log(10,100)", 2);
+    evalEquals("Log(10,1000)", 3);
     evalNull("Log(10,null)");
     evalNull("Log(null,1)");
     evalFails("Log(10,0)");
@@ -2210,6 +2223,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Log10() throws Exception {
     evalEquals("Log10(10)", 1);
+    evalEquals("Log10(1000)", 3);
     evalNull("Log10(null)");
     evalFails("Log10(-1)");
     evalFails("Log10()");
@@ -2329,6 +2343,16 @@ public class FunctionsTest extends BaseExpressionTest {
     
     evalFails("BitGet()");
     evalFails("BitGet(123)");
+  }
+
+  @Test
+  public void BitCount() throws Exception {
+    evalEquals("BitCount(31)", 5);
+    
+    evalNull("BitCount(null)");
+    
+    evalFails("BitCount()");
+    evalFails("BitCount(1,2)");
   }
   
   @Test
