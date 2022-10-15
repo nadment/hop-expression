@@ -226,6 +226,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/coalesce.adoc[COALESCE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/compress.adoc[COMPRESS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[CONCAT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat_ws.adoc[CONCAT_WS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/contains.adoc[CONTAINS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cos.adoc[COS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cosh.adoc[COSH]

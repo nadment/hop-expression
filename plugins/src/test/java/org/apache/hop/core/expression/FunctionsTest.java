@@ -2045,6 +2045,32 @@ public class FunctionsTest extends BaseExpressionTest {
     returnType("NOM||'t'", DataTypeName.STRING);
     returnType("Concat(0x1F,0x2A3B)", DataTypeName.BINARY);
   }
+  
+  @Test
+  public void ConcatWs() throws Exception {
+
+    // String
+    evalEquals("CONCAT_WS(',','ONE','TWO','THREE')", "ONE,TWO,THREE");
+    evalEquals("CONCAT_WS('---','b','c')", "b---c");
+    evalEquals("CONCAT_WS('--','one')", "one");
+    evalEquals("CONCAT_WS(',','a',NULL,'b')", "a,b");
+
+    // Binary
+    evalEquals("CONCAT_WS(0x1F,0x2A3B,0x4D,0x5E)", new byte[]{ 0x2A,0x3B,0x1F,0x4D,0x1F,0x5E});
+
+    evalNull("CONCAT_WS(NULL,'FIRST')");
+    evalNull("CONCAT_WS('a',NULL)");
+    evalNull("CONCAT_WS(0x1F,NULL,NULL)");
+    
+    evalFails("CONCAT_WS()");
+    evalFails("CONCAT_WS(',')");
+    
+    // Mix String and Binary
+    evalFails("CONCAT_WS(NOM,0x2A3B)");
+    
+    returnType("CONCAT_WS(',','A','B')", DataTypeName.STRING);
+    returnType("CONCAT_WS(0x1F,0x2A3B)", DataTypeName.BINARY);
+  }
 
   @Test
   public void Chr() throws Exception {

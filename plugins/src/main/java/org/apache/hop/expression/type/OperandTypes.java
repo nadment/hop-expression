@@ -85,11 +85,11 @@ public final class OperandTypes {
         List.of(rules));
   }
 
-
   /**
    * Operand type-checking strategy for an operator which takes no operands.
    */
   public static final IOperandTypeChecker NILADIC = family();
+  
   /**
    * Operand type-checking strategy type must be a non-NULL literal.
    */
@@ -133,6 +133,7 @@ public final class OperandTypes {
   
   public static final IOperandTypeChecker BINARY = family(DataTypeFamily.BINARY);
   public static final IOperandTypeChecker BINARY_VARIADIC =family(DataTypeFamily.BINARY, OperandCountRange.between(1, -1));  
+  public static final IOperandTypeChecker BINARY_BINARY_VARIADIC =family(DataTypeFamily.BINARY, OperandCountRange.between(2, -1));    
   public static final IOperandTypeChecker BINARY_BINARY = family(DataTypeFamily.BINARY, DataTypeFamily.BINARY);
   public static final IOperandTypeChecker BINARY_NUMERIC = family(DataTypeFamily.BINARY, DataTypeFamily.NUMERIC);
   
@@ -159,7 +160,8 @@ public final class OperandTypes {
  // public static final IOperandTypeChecker OPTIONAL_INTEGER = family(List.of(DataTypeFamily.INTEGER), i -> i == 0);
   
   public static final IOperandTypeChecker STRING = family(DataTypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(1, -1));  
+  public static final IOperandTypeChecker STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(1, -1));
+  public static final IOperandTypeChecker STRING_STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(2, -1));  
   public static final IOperandTypeChecker STRING_OR_BINARY = or(family(DataTypeFamily.STRING), family(DataTypeFamily.BINARY));
   public static final IOperandTypeChecker STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING);
