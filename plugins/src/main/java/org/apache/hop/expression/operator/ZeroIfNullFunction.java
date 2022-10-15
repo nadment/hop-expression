@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,12 +30,13 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ZeroIfNullFunction extends Function {
 
   public ZeroIfNullFunction() {
-    super("ZEROIFNULL", true, ReturnTypes.ARG0, OperandTypes.NUMERIC, "i18n::Operator.Category.Conditional", "/docs/zeroifnull.html");
+    super("ZEROIFNULL", true, ReturnTypes.ARG0, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Conditional", "/docs/zeroifnull.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
 
     if (value == null)

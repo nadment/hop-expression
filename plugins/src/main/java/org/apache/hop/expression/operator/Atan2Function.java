@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,12 +32,13 @@ import org.apache.hop.expression.util.Coerse;
 public class Atan2Function extends Function {
 
   public Atan2Function() {
-    super("ATAN2", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Trigonometry", "/docs/atan2.html");
+    super("ATAN2", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Trigonometry", "/docs/atan2.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

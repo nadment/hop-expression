@@ -38,12 +38,13 @@ import java.time.temporal.TemporalAdjusters;
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {
-    super("DATE_TRUNC", true, ReturnTypes.DATE, OperandTypes.DATE_DATEPART, "i18n::Operator.Category.Date", "/docs/date_trunc.html");
+    super("DATE_TRUNC", true, ReturnTypes.DATE, OperandTypes.DATE_DATEPART,
+        "i18n::Operator.Category.Date", "/docs/date_trunc.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     DatePart part = Coerse.toDatePart(operands[0].getValue(context));
 

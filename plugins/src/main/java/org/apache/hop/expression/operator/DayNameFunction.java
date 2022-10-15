@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,12 +34,13 @@ import java.util.Locale;
 public class DayNameFunction extends Function {
 
   public DayNameFunction() {
-    super("DAYNAME", true, ReturnTypes.STRING, OperandTypes.DATE, "i18n::Operator.Category.Date", "/docs/dayname.html");
+    super("DAYNAME", true, ReturnTypes.STRING, OperandTypes.DATE, "i18n::Operator.Category.Date",
+        "/docs/dayname.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

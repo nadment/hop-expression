@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -45,12 +44,12 @@ import java.util.regex.Pattern;
 public class LikeOperator extends Operator {
 
   public LikeOperator() {
-    super("LIKE", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING, "i18n::Operator.Category.Comparison", "/docs/like.html");
+    super("LIKE", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
+        "i18n::Operator.Category.Comparison", "/docs/like.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object input = operands[0].getValue(context);
     if (input == null) {
       return null;

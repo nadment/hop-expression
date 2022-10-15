@@ -26,6 +26,7 @@ import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
@@ -219,10 +220,10 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       }
       for (int i = 0; i < data.aggregateMeta.size(); i++) {
         Object value = null;
-        
-        if ( data.aggregates[i].getOperator().is(Operators.COUNT_VALUE) ) {
+
+        if (data.aggregates[i].getOperator().is(Operators.COUNT_VALUE)) {
           value = 0L;
-        }        
+        }
         outputRow[index++] = value;
       }
 
@@ -250,9 +251,13 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       data.map.put(key, aggregators);
     }
 
-    data.context.setRow(row);
-    for (int i = 0; i < aggregators.length; i++) {
-      aggregators[i].process(data.context, data.aggregates[i].getOperands());
+    try {
+      data.context.setRow(row);
+      for (int i = 0; i < aggregators.length; i++) {
+        aggregators[i].process(data.context, data.aggregates[i].getOperands());
+      }
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, e.getMessage());
     }
   }
 
@@ -277,18 +282,20 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
 
   protected Object[] getAggregateResult(IExpressionProcessor[] aggregators) throws HopException {
     Object[] result = new Object[aggregators.length];
+    try {
+      for (int i = 0; i < aggregators.length; i++) {
+        Object value = aggregators[i].eval(data.context, data.aggregates[i].getOperands());
 
-    for (int i = 0; i < aggregators.length; i++) {
-      Object value = aggregators[i].eval(data.context, data.aggregates[i].getOperands());
-
-      if (value == null && allNullsAreZero) {
-        // seems all rows for min function was nulls...
-        IValueMeta valueMeta = data.aggregateMeta.getValueMeta(i);
-        value = ValueDataUtil.getZeroForValueMetaType(valueMeta);
+        if (value == null && allNullsAreZero) {
+          // seems all rows for min function was nulls...
+          IValueMeta valueMeta = data.aggregateMeta.getValueMeta(i);
+          value = ValueDataUtil.getZeroForValueMetaType(valueMeta);
+        }
+        result[i] = value;
       }
-      result[i] = value;
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, e.getMessage());
     }
-
     return result;
   }
 
@@ -298,7 +305,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (super.init()) {
 
       allNullsAreZero = this.getVariableBoolean(Const.HOP_AGGREGATION_ALL_NULLS_ARE_ZERO, false);
-      //minNullIsValued = this.getVariableBoolean(Const.HOP_AGGREGATION_MIN_NULL_IS_VALUED, false);
+      // minNullIsValued = this.getVariableBoolean(Const.HOP_AGGREGATION_MIN_NULL_IS_VALUED, false);
       data.map = new HashMap<>(5000);
       return true;
     }

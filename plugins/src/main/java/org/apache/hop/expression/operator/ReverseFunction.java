@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.util.Coerse;
 public class ReverseFunction extends Function {
 
   public ReverseFunction() {
-    super("REVERSE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY, "i18n::Operator.Category.String", "/docs/reverse.html");
+    super("REVERSE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY,
+        "i18n::Operator.Category.String", "/docs/reverse.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

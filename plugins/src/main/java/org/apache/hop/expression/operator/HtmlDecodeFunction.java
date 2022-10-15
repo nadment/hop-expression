@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,13 +34,14 @@ import org.apache.hop.expression.util.Coerse;
 public class HtmlDecodeFunction extends Function {
 
   public HtmlDecodeFunction() {
-    super("HTML_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/html_decode.html");
+    super("HTML_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING,
+        "i18n::Operator.Category.String", "/docs/html_decode.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
-    return StringEscapeUtils.unescapeHtml(Coerse.toString(value));    
+    return StringEscapeUtils.unescapeHtml(Coerse.toString(value));
   }
 }

@@ -43,47 +43,49 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @FunctionPlugin
 public class JsonObjectFunction extends Function {
 
- public static final IOperandTypeChecker OTC = new JsonObjectOperandTypeChecker();
-  
- private static final EnumSet<DataTypeFamily> VALUE_TYPES = EnumSet.of(DataTypeFamily.STRING, DataTypeFamily.BOOLEAN, DataTypeFamily.NUMERIC);
- 
-  public static class JsonObjectOperandTypeChecker implements IOperandTypeChecker {   
-    
-    public JsonObjectOperandTypeChecker() {
-    }
-    
+  public static final IOperandTypeChecker OTC = new JsonObjectOperandTypeChecker();
+
+  private static final EnumSet<DataTypeFamily> VALUE_TYPES =
+      EnumSet.of(DataTypeFamily.STRING, DataTypeFamily.BOOLEAN, DataTypeFamily.NUMERIC);
+
+  public static class JsonObjectOperandTypeChecker implements IOperandTypeChecker {
+
+    public JsonObjectOperandTypeChecker() {}
+
     @Override
     public boolean checkOperandTypes(Call call) {
-      for (int i=0 ; i<call.getOperandCount(); ) {
-       // Key should be string
-       if ( call.getOperand(i++).getType().getFamily()!=DataTypeFamily.STRING ) {
-           return false;
+      for (int i = 0; i < call.getOperandCount();) {
+        // Key should be string
+        if (call.getOperand(i++).getType().getFamily() != DataTypeFamily.STRING) {
+          return false;
         }
-        
+
         IExpression value = call.getOperand(i++);
-        if ( value.isNull() ) continue;
-        if ( !VALUE_TYPES.contains(value.getType().getFamily()) ) {
+        if (value.isNull())
+          continue;
+        if (!VALUE_TYPES.contains(value.getType().getFamily())) {
           return false;
         }
       }
-      
+
       return true;
     }
-    
+
     @Override
     public IOperandCountRange getOperandCountRange() {
-     return OperandCountRange.between(2, Integer.MAX_VALUE);
+      return OperandCountRange.between(2, Integer.MAX_VALUE);
     }
   }
-  
-  
+
+
   public JsonObjectFunction() {
-    super("JSON_OBJECT", true, ReturnTypes.JSON, OTC, "i18n::Operator.Category.Json", "/docs/json_object.html");
+    super("JSON_OBJECT", true, ReturnTypes.JSON, OTC, "i18n::Operator.Category.Json",
+        "/docs/json_object.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 

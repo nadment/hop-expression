@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,12 +32,13 @@ import org.apache.hop.expression.util.Coerse;
 public class SubstringFunction extends Function {
 
   public SubstringFunction() {
-    super("SUBSTRING", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING, "i18n::Operator.Category.String", "/docs/substring.html");
+    super("SUBSTRING", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+        "i18n::Operator.Category.String", "/docs/substring.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     String string = Coerse.toString(operands[0].getValue(context));
     int length = string.length();
     int start = Coerse.toInteger(operands[1].getValue(context)).intValue();

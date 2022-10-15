@@ -36,7 +36,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
-import org.apache.hop.junit.rules.RestoreHopEnvironment;
+import org.apache.hop.junit.rules.RestoreHopEngineEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -52,10 +52,12 @@ import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class BaseExpressionTest {
-
+  
+  // Use the Engine environment to make the compression plugins available.
   @ClassRule
-  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-
+  public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
+  //public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  
   @ClassRule
   public static ExternalResource getResource() {
       return new ExternalResource() {

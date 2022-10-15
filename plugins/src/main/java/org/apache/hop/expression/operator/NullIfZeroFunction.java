@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.util.Coerse;
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {
-    super("NULLIFZERO", true, ReturnTypes.ARG0, OperandTypes.NUMERIC, "i18n::Operator.Category.Conditional", "/docs/nullifzero.html");
+    super("NULLIFZERO", true, ReturnTypes.ARG0, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Conditional", "/docs/nullifzero.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
 
     if (Coerse.toInteger(value) == 0L)

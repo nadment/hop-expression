@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -31,13 +30,12 @@ import java.io.StringWriter;
 public class BoolAndOperator extends Operator {
 
   public BoolAndOperator() {
-    super("BOOLAND", "AND", 160, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN, "i18n::Operator.Category.Logical",
-        "/docs/booland.html");
+    super("BOOLAND", "AND", 160, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
+        "i18n::Operator.Category.Logical", "/docs/booland.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);
     if (left == null) {
       return null;

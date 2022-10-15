@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,48 +35,49 @@ import org.apache.hop.expression.util.Coerse;
 @FunctionPlugin
 public class DecodeFunction extends Function {
   public static final IOperandTypeChecker OTC = new DecodeOperandTypeChecker();
-  
-  public static class DecodeOperandTypeChecker implements IOperandTypeChecker {   
-    
-    public DecodeOperandTypeChecker() {
-    }
-    
+
+  public static class DecodeOperandTypeChecker implements IOperandTypeChecker {
+
+    public DecodeOperandTypeChecker() {}
+
     @Override
     public boolean checkOperandTypes(Call call) {
-      DataTypeName search = call.getOperand(0).getType();      
+      DataTypeName search = call.getOperand(0).getType();
       DataTypeName result = call.getOperand(2).getType();
-      
-      int count = ((call.getOperandCount()-1)/2)*2;
-      for (int i=1 ; i<count; i+=2) {
-        if ( !search.isSameFamily(call.getOperand(i).getType()) ) {
-           return false;
-        }
-        if ( !result.isSameFamily(call.getOperand(i+1).getType()) ) {
+
+      int count = ((call.getOperandCount() - 1) / 2) * 2;
+      for (int i = 1; i < count; i += 2) {
+        if (!search.isSameFamily(call.getOperand(i).getType())) {
           return false;
-       }
+        }
+        if (!result.isSameFamily(call.getOperand(i + 1).getType())) {
+          return false;
+        }
       }
 
       // Check type if function has a default value
-      if ( (call.getOperandCount()-1)>count && !result.isSameFamily(call.getOperand(count+1).getType()) ) {
-          return false;
+      if ((call.getOperandCount() - 1) > count
+          && !result.isSameFamily(call.getOperand(count + 1).getType())) {
+        return false;
       }
-      
+
       return true;
     }
-    
+
     @Override
     public IOperandCountRange getOperandCountRange() {
-     return OperandCountRange.between(3, Integer.MAX_VALUE);
+      return OperandCountRange.between(3, Integer.MAX_VALUE);
     }
-  } 
-  
-  public DecodeFunction() {
-    super("DECODE", true, ReturnTypes.ARG2, OTC, "i18n::Operator.Category.Conditional", "/docs/decode.html");
   }
-  
-  @Override  
+
+  public DecodeFunction() {
+    super("DECODE", true, ReturnTypes.ARG2, OTC, "i18n::Operator.Category.Conditional",
+        "/docs/decode.html");
+  }
+
+  @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
 
     int index = -1;

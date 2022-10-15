@@ -34,12 +34,13 @@ import org.apache.hop.expression.util.Coerse;
 public class Log10Function extends Function {
 
   public Log10Function() {
-    super("LOG10", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, "i18n::Operator.Category.Trigonometry", "/docs/log10.html");
+    super("LOG10", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Trigonometry", "/docs/log10.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

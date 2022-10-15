@@ -37,12 +37,13 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpSubstrFunction extends Function {
 
   public RegexpSubstrFunction() {
-    super("REGEXP_SUBSTR", true, ReturnTypes.STRING, OperandTypes.NO_CHECK, "i18n::Operator.Category.String", "/docs/regexp_substr.html");
+    super("REGEXP_SUBSTR", true, ReturnTypes.STRING, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.String", "/docs/regexp_substr.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;
@@ -99,7 +100,6 @@ public class RegexpSubstrFunction extends Function {
       throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     }
   }
-
 
 
 

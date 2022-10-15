@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,18 +30,20 @@ import org.apache.hop.expression.util.Coerse;
  * The function calculate the SHA-256 hash of a data value. The hash will be returned as a 64
  * characters hex-encoded string.
  *
- * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha224Function}, {@link Sha384Function}, {@link Sha512Function}
+ * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha224Function}, {@link Sha384Function},
+ *      {@link Sha512Function}
  */
 @FunctionPlugin
 public class Sha256Function extends Function {
 
   public Sha256Function() {
-    super("SHA256", true, ReturnTypes.STRING, OperandTypes.BINARY, "i18n::Operator.Category.Cryptographic", "/docs/sha256.html");
+    super("SHA256", true, ReturnTypes.STRING, OperandTypes.BINARY,
+        "i18n::Operator.Category.Cryptographic", "/docs/sha256.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;

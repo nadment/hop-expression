@@ -36,12 +36,13 @@ import org.apache.hop.expression.util.Coerse;
 public class ChrFunction extends Function {
 
   public ChrFunction() {
-    super("CHR", true, ReturnTypes.STRING, OperandTypes.NUMERIC, "i18n::Operator.Category.String", "/docs/chr.html");
+    super("CHR", true, ReturnTypes.STRING, OperandTypes.NUMERIC, "i18n::Operator.Category.String",
+        "/docs/chr.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,12 +36,13 @@ import org.apache.hop.expression.util.Coerse;
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {
-    super("EQUAL_NULL", true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY, "i18n::Operator.Category.Comparison", "/docs/equal_null.html");
+    super("EQUAL_NULL", true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+        "i18n::Operator.Category.Comparison", "/docs/equal_null.html");
   }
 
-  @Override  
+  @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     Object v1 = operands[1].getValue(context);
 

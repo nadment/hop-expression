@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -31,23 +30,25 @@ import java.io.StringWriter;
 public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
-    super("BOOLOR", "OR", 180, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN, "i18n::Operator.Category.Logical", "/docs/boolor.html");
+    super("BOOLOR", "OR", 180, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
+        "i18n::Operator.Category.Logical", "/docs/boolor.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);
     Object right = operands[1].getValue(context);
     if (left == null) {
       Boolean result = Coerse.toBoolean(right);
-      if ( !result ) return null;
+      if (!result)
+        return null;
       return result;
     }
     if (right == null) {
       Boolean result = Coerse.toBoolean(left);
-      if ( !result ) return null;
-      return result;      
+      if (!result)
+        return null;
+      return result;
     }
     return Boolean.logicalOr(Coerse.toBoolean(left), Coerse.toBoolean(right));
   }

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -30,13 +29,13 @@ import java.io.StringWriter;
 public class IsNotNullOperator extends Operator {
 
   public IsNotNullOperator() {
-    super("IS NOT NULL", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY, "i18n::Operator.Category.Comparison",
-        "/docs/isNull.html");
+    super("IS NOT NULL", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
+        "i18n::Operator.Category.Comparison", "/docs/isNull.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     return value != null;
   }

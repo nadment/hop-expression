@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,16 +32,17 @@ import org.apache.hop.expression.util.Coerse;
 public class AsciiFunction extends Function {
 
   public AsciiFunction() {
-    super("ASCII", true, ReturnTypes.INTEGER, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/ascii.html");
+    super("ASCII", true, ReturnTypes.INTEGER, OperandTypes.STRING, "i18n::Operator.Category.String",
+        "/docs/ascii.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
     String str = Coerse.toString(value);
-    return (str.isEmpty() ? 0L: Long.valueOf(str.charAt(0)));
+    return (str.isEmpty() ? 0L : Long.valueOf(str.charAt(0)));
   }
 }

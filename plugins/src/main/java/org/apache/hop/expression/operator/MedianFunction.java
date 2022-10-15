@@ -24,7 +24,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
 public class MedianFunction extends AggregateFunction {
- 
+
   public MedianFunction() {
     super("MEDIAN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/median.html");
   }

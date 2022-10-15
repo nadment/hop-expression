@@ -40,12 +40,13 @@ public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
 
   public FirstDayFunction() {
-    super("FIRST_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_DATEPART, "i18n::Operator.Category.Date", "/docs/first_day.html");
+    super("FIRST_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_DATEPART,
+        "i18n::Operator.Category.Date", "/docs/first_day.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

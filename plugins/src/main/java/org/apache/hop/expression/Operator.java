@@ -225,8 +225,7 @@ public abstract class Operator implements Comparable<Operator> {
     return description;
   }
 
-  public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException;
+  public abstract Object eval(final IExpressionContext context, final IExpression[] operands) throws Exception;
 
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 

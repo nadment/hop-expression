@@ -31,13 +31,12 @@ import java.io.StringWriter;
  */
 public class NegateOperator extends Operator {
   public NegateOperator() {
-    super("NEGATE", "-", 30, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC, "i18n::Operator.Category.Mathematical",
-        "/docs/negate.html");
+    super("NEGATE", "-", 30, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/negate.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object v0 = operands[0].getValue(context);
 
     if (v0 == null)

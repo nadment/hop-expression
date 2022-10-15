@@ -31,21 +31,22 @@ import org.apache.hop.expression.util.Coerse;
 public class FirstValueFunction extends AggregateFunction {
 
   public FirstValueFunction() {
-    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN, "/docs/first_value.html");
+    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN,
+        "/docs/first_value.html");
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     boolean ignoreNull = false;
-    
-    if ( operands.length==2 ) {
+
+    if (operands.length == 2) {
       try {
         ignoreNull = Coerse.toBoolean(operands[1].getValue(context));
       } catch (ExpressionException e) {
         // Ignore
       }
     }
-    
+
     return new FirstValueProcessor(ignoreNull);
   }
 }

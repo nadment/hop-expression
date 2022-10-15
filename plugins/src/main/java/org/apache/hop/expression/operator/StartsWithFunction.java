@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,12 +34,13 @@ import org.apache.hop.expression.util.Coerse;
 public class StartsWithFunction extends Function {
 
   public StartsWithFunction() {
-    super("STARTSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OR_BINARY_BINARY, "i18n::Operator.Category.Comparison", "/docs/startswith.html");
+    super("STARTSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OR_BINARY_BINARY,
+        "i18n::Operator.Category.Comparison", "/docs/startswith.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     Object v0 = operands[0].getValue(context);
     if (v0 == null)

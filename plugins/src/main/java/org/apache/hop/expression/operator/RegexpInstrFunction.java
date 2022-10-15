@@ -37,11 +37,12 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpInstrFunction extends Function {
 
   public RegexpInstrFunction() {
-    super("REGEXP_INSTR", true, ReturnTypes.INTEGER, OperandTypes.NO_CHECK, "i18n::Operator.Category.String", "/docs/regexp_instr.html");
+    super("REGEXP_INSTR", true, ReturnTypes.INTEGER, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.String", "/docs/regexp_instr.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;
@@ -109,7 +110,6 @@ public class RegexpInstrFunction extends Function {
       throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     }
   }
-
 
 
 

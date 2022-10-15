@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -30,12 +29,13 @@ import java.io.StringWriter;
 public class IsTrueOperator extends Operator {
 
   public IsTrueOperator() {
-    super("IS TRUE", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, "i18n::Operator.Category.Comparison", "/docs/isTrue.html");
+    super("IS TRUE", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
+        "i18n::Operator.Category.Comparison", "/docs/isTrue.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
 
     if (value == Boolean.TRUE) {

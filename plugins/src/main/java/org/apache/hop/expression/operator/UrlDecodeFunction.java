@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,16 +35,17 @@ import java.nio.charset.StandardCharsets;
 public class UrlDecodeFunction extends Function {
 
   public UrlDecodeFunction() {
-    super("URL_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/url_decode.html");
+    super("URL_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING,
+        "i18n::Operator.Category.String", "/docs/url_decode.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    
+
     return URLDecoder.decode(Coerse.toString(value), StandardCharsets.UTF_8);
   }
 }

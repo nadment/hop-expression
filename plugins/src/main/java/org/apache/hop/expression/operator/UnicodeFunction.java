@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,12 +34,13 @@ import org.apache.hop.expression.util.Coerse;
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {
-    super("UNICODE", true, ReturnTypes.INTEGER, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/unicode.html");
+    super("UNICODE", true, ReturnTypes.INTEGER, OperandTypes.STRING,
+        "i18n::Operator.Category.String", "/docs/unicode.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

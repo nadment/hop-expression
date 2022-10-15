@@ -34,8 +34,8 @@ public class UserDefinedFunction extends Function {
 
   @Override
   public Object eval(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
-    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.toString());
   }
 
   public String getSource() {

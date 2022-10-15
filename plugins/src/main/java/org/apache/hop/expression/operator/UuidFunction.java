@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import java.util.UUID;
 public class UuidFunction extends Function {
 
   public UuidFunction() {
-    super("UUID", false, ReturnTypes.STRING, OperandTypes.NILADIC, "i18n::Operator.Category.String", "/docs/uuid.html");
+    super("UUID", false, ReturnTypes.STRING, OperandTypes.NILADIC, "i18n::Operator.Category.String",
+        "/docs/uuid.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     return UUID.randomUUID().toString();
   }

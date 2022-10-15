@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,22 +36,23 @@ import java.util.Base64.Decoder;
 public class Base64DecodeFunction extends Function {
 
   public Base64DecodeFunction() {
-    super("BASE64_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY, "i18n::Operator.Category.String", "/docs/base64_decode.html");
+    super("BASE64_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY,
+        "i18n::Operator.Category.String", "/docs/base64_decode.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    
+
     Decoder decoder = Base64.getDecoder();
-    if ( value instanceof String ) {
+    if (value instanceof String) {
       String str = (String) value;
       return new String(decoder.decode(str), StandardCharsets.UTF_8);
     }
-    
-    return new String(decoder.decode(Coerse.toBinary(value)), StandardCharsets.UTF_8);   
+
+    return new String(decoder.decode(Coerse.toBinary(value)), StandardCharsets.UTF_8);
   }
 }

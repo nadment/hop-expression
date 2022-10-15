@@ -1,5 +1,6 @@
 /*
-StdDevSampFunction.java * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * StdDevSampFunction.java * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license
  * agreements. See the NOTICE file distributed with this work for additional information regarding
  * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License. You may obtain a
@@ -15,7 +16,6 @@ StdDevSampFunction.java * Licensed to the Apache Software Foundation (ASF) under
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.stat.StatUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
@@ -26,7 +26,8 @@ import java.util.List;
 /**
  * Returns the variance of a sample of all values in the expression over a group of rows.
  * 
- * The variance (s2) of numeric-expression (x) is computed according to the following formula, which assumes a normal distribution:
+ * The variance (s2) of numeric-expression (x) is computed according to the following formula, which
+ * assumes a normal distribution:
  * s2 = (1/( N - 1 )) * SUM( xI - mean( x ) )2
  * 
  * Null values are ignored.
@@ -40,8 +41,7 @@ public class VarianceSampProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value != null) {
       values.add(Coerse.toNumber(value));
@@ -49,8 +49,7 @@ public class VarianceSampProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);

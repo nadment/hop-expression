@@ -17,7 +17,6 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -31,12 +30,12 @@ import java.io.StringWriter;
 public class CaseOperator extends Operator {
 
   public CaseOperator() {
-    super("CASE", 120, true, true, ReturnTypes.UNKNOWN, OperandTypes.NO_CHECK, "i18n::Operator.Category.Conditional", "/docs/case.html");
+    super("CASE", 120, true, true, ReturnTypes.UNKNOWN, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.Conditional", "/docs/case.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     int index = 0;
     IExpression switchExpression = operands[0];
     Tuple whenTuple = (Tuple) operands[1];

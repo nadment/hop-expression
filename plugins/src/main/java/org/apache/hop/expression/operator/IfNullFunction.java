@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,12 +30,13 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class IfNullFunction extends Function {
 
   public IfNullFunction() {
-    super("IFNULL", true, ReturnTypes.FIRST_KNOWN, OperandTypes.ANY_ANY, "i18n::Operator.Category.Conditional", "/docs/ifnull.html");
+    super("IFNULL", true, ReturnTypes.FIRST_KNOWN, OperandTypes.ANY_ANY,
+        "i18n::Operator.Category.Conditional", "/docs/ifnull.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return operands[1].getValue(context);

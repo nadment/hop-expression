@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,12 +33,13 @@ import org.apache.hop.expression.util.Coerse;
 public class GreatestFunction extends Function {
 
   public GreatestFunction() {
-    super("GREATEST", true, ReturnTypes.FIRST_KNOWN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC, "i18n::Operator.Category.Conditional", "/docs/greatest.html");
+    super("GREATEST", true, ReturnTypes.FIRST_KNOWN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+        "i18n::Operator.Category.Conditional", "/docs/greatest.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.getValue(context);

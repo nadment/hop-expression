@@ -1,5 +1,5 @@
 /*
-
+ * 
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -43,12 +43,12 @@ import java.util.Locale;
 public class ExtractFunction extends Function {
 
   public ExtractFunction() {
-    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.NO_CHECK, "i18n::Operator.Category.Date", "/docs/extract.html");
+    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.Date", "/docs/extract.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     // Null throw exception
     DatePart part = Coerse.toDatePart(operands[0].getValue(context));
 
@@ -59,7 +59,7 @@ public class ExtractFunction extends Function {
     return extract(Coerse.toDateTime(value), part);
   }
 
-  protected Object extract(ZonedDateTime datetime, DatePart part) throws ExpressionException {
+  protected Object extract(ZonedDateTime datetime, DatePart part) throws Exception {
     switch (part) {
       case DAY:
         return datetime.getDayOfMonth();

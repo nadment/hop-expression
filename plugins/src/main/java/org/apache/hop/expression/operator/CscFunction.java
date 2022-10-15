@@ -34,20 +34,21 @@ import org.apache.hop.expression.util.Coerse;
 public class CscFunction extends Function {
 
   public CscFunction() {
-    super("CSC", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, "i18n::Operator.Category.Trigonometry", "/docs/csc.html");
+    super("CSC", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Trigonometry", "/docs/csc.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-   
+
     Double number = Coerse.toNumber(v0);
     if (number == 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, number);
 
-    return 1D/FastMath.sin(number);
+    return 1D / FastMath.sin(number);
   }
 }

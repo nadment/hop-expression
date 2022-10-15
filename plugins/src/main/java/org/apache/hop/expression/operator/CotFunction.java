@@ -34,12 +34,13 @@ import org.apache.hop.expression.util.Coerse;
 public class CotFunction extends Function {
 
   public CotFunction() {
-    super("COT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, "i18n::Operator.Category.Trigonometry", "/docs/cot.html");
+    super("COT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Trigonometry", "/docs/cot.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

@@ -37,12 +37,13 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpReplaceFunction extends Function {
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OperandTypes.CUSTOM_REGEXP_REPLACE, "i18n::Operator.Category.String", "/docs/regexp_replace.html");
+    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OperandTypes.CUSTOM_REGEXP_REPLACE,
+        "i18n::Operator.Category.String", "/docs/regexp_replace.html");
   }
-  
-  @Override  
-  public Object eval(final IExpressionContext context,
-      final IExpression[] operands) throws ExpressionException {
+
+  @Override
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;

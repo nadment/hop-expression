@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,12 +32,13 @@ import java.time.DayOfWeek;
 public class IsoDayOfWeekFunction extends Function {
 
   public IsoDayOfWeekFunction() {
-    super("ISODAYOFWEEK", true, ReturnTypes.INTEGER, OperandTypes.DATE, "i18n::Operator.Category.Date", "/docs/isodayofweek.html");
+    super("ISODAYOFWEEK", true, ReturnTypes.INTEGER, OperandTypes.DATE,
+        "i18n::Operator.Category.Date", "/docs/isodayofweek.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

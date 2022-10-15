@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.util.Coerse;
 public class ContainsFunction extends Function {
 
   public ContainsFunction() {
-    super("CONTAINS", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING, "i18n::Operator.Category.Comparison", "/docs/contains.html");
+    super("CONTAINS", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING,
+        "i18n::Operator.Category.Comparison", "/docs/contains.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CoalesceFunction extends Function {
 
   public CoalesceFunction() {
-    super("COALESCE", true, ReturnTypes.FIRST_KNOWN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC, "i18n::Operator.Category.Conditional", "/docs/coalesce.html");
+    super("COALESCE", true, ReturnTypes.FIRST_KNOWN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+        "i18n::Operator.Category.Conditional", "/docs/coalesce.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     for (IExpression operand : operands) {
       Object value = operand.getValue(context);
       if (value != null)

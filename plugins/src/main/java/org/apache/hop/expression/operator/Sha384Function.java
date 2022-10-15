@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -30,18 +29,20 @@ import org.apache.hop.expression.util.Coerse;
  * The function calculate the SHA-384 hash of a data value. The hash will be returned as a 96
  * characters hex-encoded string.
  *
- * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha224Function}, {@link Sha256Function}, {@link Sha512Function}
+ * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha224Function}, {@link Sha256Function},
+ *      {@link Sha512Function}
  */
 @FunctionPlugin
 public class Sha384Function extends Function {
 
   public Sha384Function() {
-    super("SHA384", true, ReturnTypes.STRING, OperandTypes.BINARY, "i18n::Operator.Category.Cryptographic", "/docs/sha384.html");
+    super("SHA384", true, ReturnTypes.STRING, OperandTypes.BINARY,
+        "i18n::Operator.Category.Cryptographic", "/docs/sha384.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;

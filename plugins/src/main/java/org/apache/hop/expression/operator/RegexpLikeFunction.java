@@ -29,19 +29,20 @@ import org.apache.hop.expression.util.Regexp;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-/** 
+/**
  * The REGEXP_LIKE function and RLIKE operator.
  */
 @FunctionPlugin
 public class RegexpLikeFunction extends Function {
 
   public RegexpLikeFunction() {
-    super("REGEXP_LIKE", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING, "i18n::Operator.Category.Comparison", "/docs/regexp_like.html");
+    super("REGEXP_LIKE", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
+        "i18n::Operator.Category.Comparison", "/docs/regexp_like.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {

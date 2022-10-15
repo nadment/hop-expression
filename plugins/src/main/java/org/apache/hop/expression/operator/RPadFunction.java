@@ -36,12 +36,13 @@ public class RPadFunction extends Function {
   private static final int PAD_LIMIT = 8192;
 
   public RPadFunction() {
-    super("RPAD", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING, "i18n::Operator.Category.String", "/docs/rpad.html");
+    super("RPAD", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+        "i18n::Operator.Category.String", "/docs/rpad.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

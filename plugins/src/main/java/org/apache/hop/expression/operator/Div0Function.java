@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,12 +33,12 @@ import java.math.MathContext;
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", true, ReturnTypes.ARG0, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/div0.html");
+    super("DIV0", true, ReturnTypes.ARG0, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/div0.html");
   }
-  
+
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);
     if (left == null)
       return null;

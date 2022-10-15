@@ -17,7 +17,6 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -34,20 +33,20 @@ public class BetweenOperator extends Operator {
   public enum Between {
     /** The lower bound and upper bound must be in order */
     ASYMMETRIC,
-    /**  The lower bound and upper bound order is irrelevant */
+    /** The lower bound and upper bound order is irrelevant */
     SYMMETRIC
   }
-  
+
   public final Between between;
-  
+
   public BetweenOperator(Between between) {
-    super("BETWEEN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.SAME_SAME_SAME, "i18n::Operator.Category.Comparison", "/docs/between.html");
+    super("BETWEEN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.SAME_SAME_SAME,
+        "i18n::Operator.Category.Comparison", "/docs/between.html");
     this.between = between;
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     Object start = operands[1].getValue(context);
     Object end = operands[2].getValue(context);
@@ -55,12 +54,12 @@ public class BetweenOperator extends Operator {
     if (value == null || start == null || end == null) {
       return null;
     }
-    
+
     // If lower bound is greater than upper bound
-    if (between==Between.SYMMETRIC && Coerse.compare(start, end) >= 0) {
+    if (between == Between.SYMMETRIC && Coerse.compare(start, end) >= 0) {
       return Coerse.compare(value, end) >= 0 && Coerse.compare(value, start) <= 0;
-    }    
-    
+    }
+
     return Coerse.compare(value, start) >= 0 && Coerse.compare(value, end) <= 0;
   }
 
@@ -68,8 +67,8 @@ public class BetweenOperator extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
     writer.append(" BETWEEN ");
-    if ( between==Between.SYMMETRIC ) {
-      writer.append("SYMMETRIC ");       
+    if (between == Between.SYMMETRIC) {
+      writer.append("SYMMETRIC ");
     }
     operands[1].unparse(writer);
     writer.append(" AND ");

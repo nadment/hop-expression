@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -29,25 +28,26 @@ import org.apache.hop.expression.util.Coerse;
 /**
  * 
  */
-@FunctionPlugin(names="POW")
+@FunctionPlugin(names = "POW")
 public class PowerFunction extends Function {
 
   public PowerFunction() {
-    super("POWER", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/power.html");
+    super("POWER", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/power.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     Object v1 = operands[1].getValue(context);
     if (v0 == null || v1 == null) {
       return null;
     }
-    
+
     Double number = Coerse.toNumber(v0);
     Double exponent = Coerse.toNumber(v1);
-        
+
     if (exponent == 0)
       return 1L;
 

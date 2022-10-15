@@ -36,22 +36,21 @@ import java.time.ZoneId;
 public class AtTimeZoneOperator extends Operator {
 
   public AtTimeZoneOperator() {
-    super("TIMEZONE", "AT TIME ZONE", 10, true, true, ReturnTypes.DATE, OperandTypes.DATE_STRING, "i18n::Operator.Category.Conversion",
-        "/docs/attimezone.html");
+    super("TIMEZONE", "AT TIME ZONE", 10, true, true, ReturnTypes.DATE, OperandTypes.DATE_STRING,
+        "i18n::Operator.Category.Conversion", "/docs/attimezone.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
 
-    ZoneId zone = toZoneId(Coerse.toString(operands[1].getValue(context)));  
+    ZoneId zone = toZoneId(Coerse.toString(operands[1].getValue(context)));
     return Coerse.toDateTime(value).withZoneSameInstant(zone);
   }
 
-  protected ZoneId toZoneId(String zone) throws ExpressionException {
+  protected ZoneId toZoneId(String zone) throws Exception {
     try {
       return ZoneId.of(zone);
     } catch (Exception e) {

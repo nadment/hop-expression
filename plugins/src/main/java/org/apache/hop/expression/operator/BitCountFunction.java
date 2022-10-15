@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.util.Coerse;
 public class BitCountFunction extends Function {
 
   public BitCountFunction() {
-    super("BITCOUNT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC, "i18n::Operator.Category.Bitwise", "/docs/bitcount.html");
+    super("BITCOUNT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bitcount.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

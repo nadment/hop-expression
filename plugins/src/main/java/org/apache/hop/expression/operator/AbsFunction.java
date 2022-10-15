@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,12 +32,13 @@ import org.apache.hop.expression.util.Coerse;
 public class AbsFunction extends Function {
 
   public AbsFunction() {
-    super("ABS", true, ReturnTypes.ARG0, OperandTypes.NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/abs.html");
+    super("ABS", true, ReturnTypes.ARG0, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/abs.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return value;

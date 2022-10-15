@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,14 +32,15 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentTimeZoneFunction extends Function {
 
   public CurrentTimeZoneFunction() {
-    super("CURRENT_TIMEZONE", true, ReturnTypes.STRING, OperandTypes.NILADIC, "i18n::Operator.Category.Date", "/docs/current_timezone.html");
+    super("CURRENT_TIMEZONE", true, ReturnTypes.STRING, OperandTypes.NILADIC,
+        "i18n::Operator.Category.Date", "/docs/current_timezone.html");
     // TODO: is deterministic ?
   }
 
   @Override
-  public Object eval(final IExpressionContext context,
-      final IExpression[] operands) throws ExpressionException {
-    
+  public Object eval(final IExpressionContext context, final IExpression[] operands)
+      throws Exception {
+
     return Attribute.CURRENT_TIMEZONE.get(context);
   }
 

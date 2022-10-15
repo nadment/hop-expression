@@ -35,12 +35,13 @@ import org.apache.hop.expression.util.DateTimeFormat;
 public class ToDateFunction extends Function {
 
   public ToDateFunction() {
-    super("TO_DATE", true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_STRING, "i18n::Operator.Category.Conversion", "/docs/to_date.html");
+    super("TO_DATE", true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_STRING,
+        "i18n::Operator.Category.Conversion", "/docs/to_date.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
@@ -55,13 +56,13 @@ public class ToDateFunction extends Function {
     }
 
     try {
-      int twoDigitYearStart = Integer.parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+      int twoDigitYearStart = Integer
+          .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
       DateTimeFormat formatter = DateTimeFormat.of(format);
       formatter.setTwoDigitYearStart(twoDigitYearStart);
       return formatter.parse(Coerse.toString(v0));
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, this.getName(),
-          e.getMessage());
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, this.getName(), e.getMessage());
     }
   }
 }

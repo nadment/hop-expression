@@ -41,12 +41,13 @@ public class LastDayFunction extends Function {
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
   public LastDayFunction() {
-    super("LAST_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_DATEPART, "i18n::Operator.Category.Date", "/docs/last_day.html");
+    super("LAST_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_DATEPART,
+        "i18n::Operator.Category.Date", "/docs/last_day.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

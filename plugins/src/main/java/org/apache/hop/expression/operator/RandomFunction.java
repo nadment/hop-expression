@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,12 +33,13 @@ import java.util.Random;
 public class RandomFunction extends Function {
 
   public RandomFunction() {
-    super("RANDOM", false, ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/random.html");
+    super("RANDOM", false, ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/random.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     Random random = Attribute.RANDOM.get(context);
 

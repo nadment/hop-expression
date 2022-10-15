@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
@@ -31,23 +30,22 @@ public class ListAggProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
 
     Object value = operands[0].getValue(context);
-    
+
     if (value == null)
       return;
-    
+
     values.add(Coerse.toString(value));
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
-    
-    if ( values.isEmpty() ) return null;
-    
+  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+
+    if (values.isEmpty())
+      return null;
+
     String delimiter = ",";
     if (operands.length == 2) {
       delimiter = Coerse.toString(operands[1].getValue(context));
@@ -56,12 +54,12 @@ public class ListAggProcessor implements IExpressionProcessor {
     StringBuilder builder = new StringBuilder();
 
     for (String str : values) {
-      if ( builder.length()>0) {
+      if (builder.length() > 0) {
         builder.append(delimiter);
       }
-      builder.append(str);      
+      builder.append(str);
     }
-    
+
     return builder.toString();
   }
 }

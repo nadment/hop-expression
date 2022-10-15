@@ -21,11 +21,12 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+
 /**
  * Returns the standard deviation of all values in the expression over a group of rows. Null values
  * are ignored.
  */
-@FunctionPlugin(names="STDDEV")
+@FunctionPlugin(names = "STDDEV")
 public class StdDevSampFunction extends AggregateFunction {
 
   public StdDevSampFunction() {

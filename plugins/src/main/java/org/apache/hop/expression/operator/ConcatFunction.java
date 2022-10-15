@@ -38,17 +38,20 @@ public class ConcatFunction extends Function {
 
   // Function
   public ConcatFunction() {
-    super("CONCAT", true, ReturnTypes.FIRST_KNOWN, OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC), "i18n::Operator.Category.String", "/docs/concat.html");
+    super("CONCAT", true, ReturnTypes.FIRST_KNOWN,
+        OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
+        "i18n::Operator.Category.String", "/docs/concat.html");
   }
 
   // Operator
   public ConcatFunction(String name) {
-    super("CONCAT", name, 110, true, true, ReturnTypes.FIRST_KNOWN, OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC), "i18n::Operator.Category.String", "/docs/concat.html");
+    super("CONCAT", name, 110, true, true, ReturnTypes.FIRST_KNOWN,
+        OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
+        "i18n::Operator.Category.String", "/docs/concat.html");
   }
-  
+
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
 
     Object firstNotNull = null;
     Object[] values = new Object[operands.length];

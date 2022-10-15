@@ -31,21 +31,22 @@ import org.apache.hop.expression.util.Coerse;
 public class LastValueFunction extends AggregateFunction {
 
   public LastValueFunction() {
-    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN, "/docs/last_value.html");
+    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN,
+        "/docs/last_value.html");
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     boolean ignoreNull = false;
-    
-    if ( operands.length==2 ) {
+
+    if (operands.length == 2) {
       try {
         ignoreNull = Coerse.toBoolean(operands[1].getValue(context));
       } catch (ExpressionException e) {
         // Ignore
       }
     }
-    
+
     return new LastValueProcessor(ignoreNull);
   }
 }

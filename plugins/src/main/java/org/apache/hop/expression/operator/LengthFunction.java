@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.util.Coerse;
 public class LengthFunction extends Function {
 
   public LengthFunction() {
-    super("LENGTH", true, ReturnTypes.INTEGER, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/length.html");
+    super("LENGTH", true, ReturnTypes.INTEGER, OperandTypes.STRING,
+        "i18n::Operator.Category.String", "/docs/length.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return value;

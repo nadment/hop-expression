@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,12 +32,13 @@ import java.time.ZonedDateTime;
 public class AddSecondsFunction extends Function {
 
   public AddSecondsFunction() {
-    super("ADD_SECONDS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, "i18n::Operator.Category.Date", "/docs/add_seconds.html");
+    super("ADD_SECONDS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC,
+        "i18n::Operator.Category.Date", "/docs/add_seconds.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     ZonedDateTime value = Coerse.toDateTime(operands[0].getValue(context));
     if (value == null)
       return null;

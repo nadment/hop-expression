@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,19 +33,20 @@ import org.apache.hop.expression.util.Coerse;
  * @param context
  * @param operands
  * @return
- * @throws ExpressionException
+ * @throws Exception
  * @See {@link StrtokFunction}
  */
 @FunctionPlugin
 public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {
-    super("SPLIT_PART", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC, "i18n::Operator.Category.String", "/docs/split_part.html");
+    super("SPLIT_PART", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC,
+        "i18n::Operator.Category.String", "/docs/split_part.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

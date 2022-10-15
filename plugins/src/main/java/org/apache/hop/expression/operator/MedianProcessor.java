@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.stat.descriptive.rank.Median;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
@@ -27,9 +26,9 @@ import java.util.List;
  * Returns the median of all values in the expression over a group of rows.
  */
 public class MedianProcessor implements IExpressionProcessor {
-  
+
   private static final Median MEDIAN = new Median();
-  
+
   private List<Double> values;
 
   public MedianProcessor() {
@@ -37,8 +36,7 @@ public class MedianProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value != null) {
       values.add(Coerse.toNumber(value));
@@ -46,13 +44,12 @@ public class MedianProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
 
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);
-    }    
+    }
     return MEDIAN.evaluate(array);
   }
 }

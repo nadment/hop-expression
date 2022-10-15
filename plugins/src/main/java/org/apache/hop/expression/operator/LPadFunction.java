@@ -37,12 +37,13 @@ public class LPadFunction extends Function {
   private static final int PAD_LIMIT = 8192;
 
   public LPadFunction() {
-    super("LPAD", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING, "i18n::Operator.Category.String", "/docs/lpad.html");
+    super("LPAD", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+        "i18n::Operator.Category.String", "/docs/lpad.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

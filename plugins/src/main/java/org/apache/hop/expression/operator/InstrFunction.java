@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  */
 @FunctionPlugin
 public class InstrFunction extends Function {
- 
+
   public InstrFunction() {
     super("INSTR", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC,
         "i18n::Operator.Category.String", "/docs/instr.html");
@@ -40,7 +40,7 @@ public class InstrFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;
@@ -63,7 +63,7 @@ public class InstrFunction extends Function {
       if (start > 0) {
         start -= 1;
       }
-      
+
       // The occurence to find, must be positive
       if (operands.length == 4) {
         occurence = Coerse.toInteger(operands[3].getValue(context)).intValue();
@@ -75,14 +75,16 @@ public class InstrFunction extends Function {
 
     if (start >= 0) {
       while ((result = str.indexOf(substr, start)) > 0) {
-        if ( --occurence <=0) break;  
-        start = result+substr.length();
+        if (--occurence <= 0)
+          break;
+        start = result + substr.length();
       }
     } else if (start < 0) {
       start = str.length() + start;
       while ((result = str.lastIndexOf(substr, start)) > 0) {
-        if ( --occurence <=0) break;
-        start = result-substr.length();
+        if (--occurence <= 0)
+          break;
+        start = result - substr.length();
       }
     }
 

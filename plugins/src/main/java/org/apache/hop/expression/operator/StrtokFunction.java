@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,19 +32,20 @@ import org.apache.hop.expression.util.Coerse;
  * @param context The expression context
  * @param operands The operands
  * @return value
- * @throws ExpressionException
+ * @throws Exception
  * @See {@link SplitPartFunction}
  */
 @FunctionPlugin
 public class StrtokFunction extends Function {
 
   public StrtokFunction() {
-    super("STRTOK", true, ReturnTypes.STRING, OperandTypes.CUSTOM_STRTOK, "i18n::Operator.Category.String", "/docs/strtok.html");
+    super("STRTOK", true, ReturnTypes.STRING, OperandTypes.CUSTOM_STRTOK,
+        "i18n::Operator.Category.String", "/docs/strtok.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
@@ -76,7 +76,7 @@ public class StrtokFunction extends Function {
       index = Coerse.toInteger(v2).intValue();
     }
 
-    String[] parts = StringUtils.splitPreserveAllTokens(str, delimiter,256);
+    String[] parts = StringUtils.splitPreserveAllTokens(str, delimiter, 256);
 
     if (index < 0)
       index += parts.length + 1;

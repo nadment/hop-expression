@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.stat.StatUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
@@ -26,7 +25,8 @@ import java.util.List;
 /**
  * Computes the statistical variance of a population of all values over a group of rows.
  * 
- * The population-based variance (s2) of numeric-expression (x) is computed according to the following formula:
+ * The population-based variance (s2) of numeric-expression (x) is computed according to the
+ * following formula:
  * s2 = (1/N) * SUM( xI - mean( x ) )2
  * 
  * Null values are ignored.
@@ -40,8 +40,7 @@ public class VariancePopProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value != null) {
       values.add(Coerse.toNumber(value));
@@ -49,8 +48,7 @@ public class VariancePopProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);

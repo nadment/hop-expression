@@ -17,12 +17,11 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.i18n.BaseMessages;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Constant value in a expression.
@@ -88,18 +87,17 @@ public class Literal implements IExpression {
     if (value instanceof byte[]) {
       return new Literal(value, DataTypeName.BINARY);
     }
+    
     if (value instanceof ZonedDateTime) {
       return new Literal(value, DataTypeName.DATE);
     }
-
-    // Special case for optimization
-    if (value instanceof DatePart || value instanceof DataTypeName || value instanceof NumberFormat
-        || value instanceof DateTimeFormat) {
-      return new Literal(value, DataTypeName.UNKNOWN);
+    
+    if (value instanceof ObjectNode) {
+      return new Literal(value, DataTypeName.JSON);
     }
-
-    throw new IllegalArgumentException(
-        BaseMessages.getString(PKG, "Expression.UnsupportedLiteralType", value.getClass(), value));
+    
+    // Special case for optimization
+    return new Literal(value, DataTypeName.UNKNOWN);
   }
 
   /**

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,13 @@ import org.apache.hop.expression.util.Coerse;
 public class NullIfFunction extends Function {
 
   public NullIfFunction() {
-    super("NULLIF", true, ReturnTypes.ARG0, OperandTypes.SAME_SAME, "i18n::Operator.Category.Conditional", "/docs/nullif.html");
+    super("NULLIF", true, ReturnTypes.ARG0, OperandTypes.SAME_SAME,
+        "i18n::Operator.Category.Conditional", "/docs/nullif.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     Object compare = operands[1].getValue(context);
 

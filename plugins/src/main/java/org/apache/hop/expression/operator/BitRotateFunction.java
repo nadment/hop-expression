@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,12 +31,12 @@ import org.apache.hop.expression.util.Coerse;
 public class BitRotateFunction extends Function {
 
   public BitRotateFunction() {
-    super("BITROTATE", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Bitwise", "/docs/bitrotate.html");
+    super("BITROTATE", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bitrotate.html");
   }
-  
+
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

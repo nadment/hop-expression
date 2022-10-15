@@ -39,17 +39,18 @@ public class CastFunction extends Function {
 
   // Function
   public CastFunction() {
-    super("CAST", true, ReturnTypes.CAST, OperandTypes.NO_CHECK, "i18n::Operator.Category.Conversion", "/docs/cast.html");
+    super("CAST", true, ReturnTypes.CAST, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.Conversion", "/docs/cast.html");
   }
 
   // Operator
   public CastFunction(String name) {
-    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.NO_CHECK, "i18n::Operator.Category.Conversion", "/docs/cast.html");
+    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.Conversion", "/docs/cast.html");
   }
-  
+
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

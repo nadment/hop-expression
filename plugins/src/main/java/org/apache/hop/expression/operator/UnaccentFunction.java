@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,14 +35,15 @@ public class UnaccentFunction extends Function {
 
   private static final Pattern DIACRITICS =
       Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
-  
+
   public UnaccentFunction() {
-    super("UNACCENT", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/unaccent.html");
+    super("UNACCENT", true, ReturnTypes.STRING, OperandTypes.STRING,
+        "i18n::Operator.Category.String", "/docs/unaccent.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

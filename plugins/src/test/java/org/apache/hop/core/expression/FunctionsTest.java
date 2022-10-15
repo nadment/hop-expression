@@ -1798,6 +1798,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void JaroWinkler() throws Exception {
     evalEquals("JaroWinkler('Superman', 'Superman')", 100);
     evalEquals("JaroWinkler('Peter Parker', 'Pete Parker')", 88);
+    evalEquals("JaroWinkler('elephant', 'hippo')", 44);    
     evalEquals("JaroWinkler('święta', 'swieta')", 78);
     evalEquals("JaroWinkler('Ich weiß nicht', 'Ich weiss nicht')", 93);
     
@@ -2319,12 +2320,12 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Compress() throws Exception {
-    // evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+    evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
   }
 
   @Test
   public void Decompress() throws Exception {
-    // evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+    evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
   }
   
   @Test
@@ -2348,6 +2349,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void BitCount() throws Exception {
     evalEquals("BitCount(31)", 5);
+    evalEquals("BitCount(True)", 1);
     
     evalNull("BitCount(null)");
     

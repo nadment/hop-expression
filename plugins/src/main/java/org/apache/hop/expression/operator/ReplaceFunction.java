@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,12 +33,13 @@ import org.apache.hop.expression.util.Coerse;
 public class ReplaceFunction extends Function {
 
   public ReplaceFunction() {
-    super("REPLACE", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_OPTIONAL_STRING, "i18n::Operator.Category.String", "/docs/replace.html");
+    super("REPLACE", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_OPTIONAL_STRING,
+        "i18n::Operator.Category.String", "/docs/replace.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

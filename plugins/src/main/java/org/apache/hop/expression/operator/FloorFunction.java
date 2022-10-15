@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,11 +34,12 @@ import java.math.RoundingMode;
 public class FloorFunction extends Function {
 
   public FloorFunction() {
-    super("FLOOR", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/floor.html");
+    super("FLOOR", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/floor.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

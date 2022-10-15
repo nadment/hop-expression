@@ -24,7 +24,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 
 @FunctionPlugin
 public class PercentileFunction extends AggregateFunction {
- 
+
   public PercentileFunction() {
     super("PERCENTILE", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, "/docs/percentile.html");
   }

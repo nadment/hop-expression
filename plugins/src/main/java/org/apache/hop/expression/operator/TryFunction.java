@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,12 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TryFunction extends Function {
 
   public TryFunction() {
-    super("TRY", true, ReturnTypes.ARG0, OperandTypes.ANY, "i18n::Operator.Category.Special", "/docs/try.html");
+    super("TRY", true, ReturnTypes.ARG0, OperandTypes.ANY, "i18n::Operator.Category.Special",
+        "/docs/try.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
 
     try {
       return operands[0].getValue(context);

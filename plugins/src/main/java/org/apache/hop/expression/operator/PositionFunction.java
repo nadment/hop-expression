@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,12 +33,12 @@ import java.io.StringWriter;
 public class PositionFunction extends Function {
 
   public PositionFunction() {
-    super("POSITION", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING, "i18n::Operator.Category.String", "/docs/position.html");
+    super("POSITION", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
+        "i18n::Operator.Category.String", "/docs/position.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object v0 = operands[0].getValue(context);
     Object v1 = operands[1].getValue(context);
 

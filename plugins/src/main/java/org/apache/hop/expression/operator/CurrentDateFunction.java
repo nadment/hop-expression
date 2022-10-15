@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,10 +34,10 @@ public class CurrentDateFunction extends Function {
     super("CURRENT_DATE", false, ReturnTypes.DATE, OperandTypes.NILADIC,
         "i18n::Operator.Category.Date", "/docs/current_date.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
 
     return Attribute.CURRENT_DATE.get(context);
   }

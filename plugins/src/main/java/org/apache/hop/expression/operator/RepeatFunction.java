@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,12 +34,13 @@ import java.io.IOException;
 public class RepeatFunction extends Function {
 
   public RepeatFunction() {
-    super("REPEAT", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OR_BINARY_NUMERIC, "i18n::Operator.Category.String", "/docs/repeat.html");
+    super("REPEAT", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OR_BINARY_NUMERIC,
+        "i18n::Operator.Category.String", "/docs/repeat.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

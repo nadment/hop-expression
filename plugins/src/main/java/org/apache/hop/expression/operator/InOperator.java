@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -45,12 +44,13 @@ import java.io.StringWriter;
 public class InOperator extends Operator {
 
   public InOperator() {
-    super("IN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.NO_CHECK, "i18n::Operator.Category.Comparison", "/docs/in.html");
+    super("IN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.NO_CHECK,
+        "i18n::Operator.Category.Comparison", "/docs/in.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object left = operands[0].getValue(context);
     if (left == null) {
       return null;

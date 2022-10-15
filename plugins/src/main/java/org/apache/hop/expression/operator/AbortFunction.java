@@ -32,13 +32,12 @@ import org.apache.hop.expression.util.Coerse;
 public class AbortFunction extends Function {
 
   public AbortFunction() {
-    super("ABORT", true, ReturnTypes.UNKNOWN, OperandTypes.STRING, "i18n::Operator.Category.Special", "/docs/abort.html");
+    super("ABORT", true, ReturnTypes.UNKNOWN, OperandTypes.STRING,
+        "i18n::Operator.Category.Special", "/docs/abort.html");
   }
-  
-  @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
 
+  @Override
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     String message = Coerse.toString(operands[0].getValue(context));
     throw new ExpressionException(message);
   }

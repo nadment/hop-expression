@@ -34,14 +34,15 @@ import java.text.Normalizer.Form;
 @FunctionPlugin
 public class NormalizeFunction extends Function {
 
- 
+
   public NormalizeFunction() {
-    super("NORMALIZE", true, ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, "i18n::Operator.Category.String", "/docs/normalize.html");
+    super("NORMALIZE", true, ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
+        "i18n::Operator.Category.String", "/docs/normalize.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
@@ -49,15 +50,15 @@ public class NormalizeFunction extends Function {
     String str = Coerse.toString(v0);
 
     Form form = Form.NFD;
-    
-    if ( operands.length==2 ) {
+
+    if (operands.length == 2) {
       try {
         form = Form.valueOf(Coerse.toString(operands[1].getValue(context)));
       } catch (Exception e) {
         throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, this.getName());
       }
     }
-    
+
     return Normalizer.normalize(str, form);
   }
 }

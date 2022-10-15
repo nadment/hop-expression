@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.language.Soundex;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,14 +32,15 @@ import org.apache.hop.expression.util.Coerse;
 public class SoundexFunction extends Function {
 
   private static final Soundex SOUNDEX = new Soundex();
-    
+
   public SoundexFunction() {
-    super("SOUNDEX", true, ReturnTypes.STRING, OperandTypes.STRING, "i18n::Operator.Category.String", "/docs/soundex.html");
+    super("SOUNDEX", true, ReturnTypes.STRING, OperandTypes.STRING,
+        "i18n::Operator.Category.String", "/docs/soundex.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

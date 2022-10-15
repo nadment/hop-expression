@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,12 +33,13 @@ import java.time.temporal.TemporalAdjusters;
 public class NextDayFunction extends Function {
 
   public NextDayFunction() {
-    super("NEXT_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_STRING, "i18n::Operator.Category.Date", "/docs/next_day.html");
+    super("NEXT_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_STRING,
+        "i18n::Operator.Category.Date", "/docs/next_day.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

@@ -37,16 +37,17 @@ import java.math.BigDecimal;
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD",  true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/mod.html");
+    super("MOD", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/mod.html");
   }
 
   public ModFunction(String name) {
-    super("MOD", name, 50, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC, "i18n::Operator.Category.Mathematical", "/docs/mod.html");
+    super("MOD", name, 50, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Mathematical", "/docs/mod.html");
   }
-  
+
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);
     if (left == null)
       return null;

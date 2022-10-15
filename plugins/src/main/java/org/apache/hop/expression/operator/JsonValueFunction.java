@@ -45,12 +45,13 @@ public class JsonValueFunction extends Function {
 
 
   public JsonValueFunction() {
-    super("JSON_VALUE", true, ReturnTypes.STRING, OperandTypes.JSON_STRING_OR_STRING_STRING, "i18n::Operator.Category.Json", "/docs/json_value.html");
+    super("JSON_VALUE", true, ReturnTypes.STRING, OperandTypes.JSON_STRING_OR_STRING_STRING,
+        "i18n::Operator.Category.Json", "/docs/json_value.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
@@ -77,9 +78,9 @@ public class JsonValueFunction extends Function {
         return result.textValue();
       return result;
     } catch (PathNotFoundException e) {
-      throw new ExpressionException(ExpressionError.JSON_PATH_NOT_FOUND,path);
+      throw new ExpressionException(ExpressionError.JSON_PATH_NOT_FOUND, path);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.INVALID_JSON_PATH,path);
+      throw new ExpressionException(ExpressionError.INVALID_JSON_PATH, path);
     }
   }
 }

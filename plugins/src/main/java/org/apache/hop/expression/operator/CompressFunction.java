@@ -14,9 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.experimental;
+package org.apache.hop.expression.operator;
 
-import org.apache.hop.core.compress.CompressionOutputStream;
 import org.apache.hop.core.compress.CompressionPluginType;
 import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;
@@ -31,45 +30,50 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Compress the data using the specified algorithm. If no algorithm is supplied, GZIP is used.
  * 
  * The function returns a byte array of type.
  */
-//@FunctionPlugin
+@FunctionPlugin
 public class CompressFunction extends Function {
 
   public CompressFunction() {
     super("COMPRESS", true, ReturnTypes.BINARY, OperandTypes.BINARY,
         "i18n::Operator.Category.String", "/docs/compress.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
 
-    String algorithm = "SNAPPY";
-    ICompressionProvider provider = getCompressionProvider(algorithm);
-    try {
-      byte[] bytes = Coerse.toBinary(v0);
-      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
-      CompressionOutputStream compression = provider.createOutputStream(output);
-      compression.write(bytes);
-      compression.flush();
-      return output.toByteArray();
-    } catch (IOException e) {
-      //throw new ExpressionException("Compress {0} error {1}", algorithm, e.getMessage());
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, algorithm, e.getMessage());
-    }
+    // String algorithm = "SNAPPY";
+    // CompressionProviderFactory factory = CompressionProviderFactory.getInstance();
+    // ICompressionProvider provider_test = factory.getCompressionProviderByName(algorithm);
+    // ICompressionProvider provider = getCompressionProviderByName(algorithm);
+
+    byte[] bytes = Coerse.toBinary(v0);
+    ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
+    // CompressionOutputStream compression = provider.createOutputStream(output);
+    GZIPOutputStream compression = new GZIPOutputStream(output);
+    compression.write(bytes);
+    compression.flush();
+    compression.close();
+
+    byte[] result = output.toByteArray();
+    System.out.printf("Compress %1d >>> %2d", bytes.length, result.length);
+
+    return result;
   }
-  
-  // TODO: Use a cache
-  private static ICompressionProvider getCompressionProvider(String id) throws ExpressionException {
+
+  // // TODO: Use a cache
+  private static ICompressionProvider getCompressionProviderByName(String id)
+      throws ExpressionException {
     PluginRegistry registry = PluginRegistry.getInstance();
     for (IPlugin plugin : registry.getPlugins(CompressionPluginType.class)) {
       if (id.equalsIgnoreCase(plugin.getIds()[0])) {

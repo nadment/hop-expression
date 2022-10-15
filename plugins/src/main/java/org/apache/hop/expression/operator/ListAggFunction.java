@@ -33,12 +33,12 @@ public class ListAggFunction extends AggregateFunction {
 
   /**
    * Default constructor to register function but not used.
-   * The different options are detected by parser. 
+   * The different options are detected by parser.
    */
   public ListAggFunction() {
     this(ListAgg.ALL);
   }
-  
+
   public ListAggFunction(ListAgg option) {
     super("LISTAGG", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, "/docs/listagg.html");
     this.option = option;
@@ -47,8 +47,8 @@ public class ListAggFunction extends AggregateFunction {
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
 
-    if (option==ListAgg.DISTINCT) {    
-      return new ListAggDistinctProcessor();       
+    if (option == ListAgg.DISTINCT) {
+      return new ListAggDistinctProcessor();
     }
     return new ListAggProcessor();
   }

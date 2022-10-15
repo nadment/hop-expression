@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,13 +31,14 @@ import org.apache.hop.expression.util.Coerse;
 public class IfFunction extends Function {
 
   public IfFunction() {
-    super("IF", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_ANY_ANY, "i18n::Operator.Category.Conditional", "/docs/if.html");
+    super("IF", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_ANY_ANY,
+        "i18n::Operator.Category.Conditional", "/docs/if.html");
     // TODO: OperandTypes.BOOLEAN_SAME_SAME
   }
-  
-  @Override  
+
+  @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,12 +30,13 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class PiFunction extends Function {
 
   public PiFunction() {
-    super("PI", true, ReturnTypes.NUMBER, OperandTypes.NILADIC, "i18n::Operator.Category.Mathematical", "/docs/pi.html");
+    super("PI", true, ReturnTypes.NUMBER, OperandTypes.NILADIC,
+        "i18n::Operator.Category.Mathematical", "/docs/pi.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     return Math.PI;
   }
 }

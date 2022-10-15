@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -25,18 +24,20 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Returns the second argument when the first argument is not NULL. If the first argument is NULL, the third argument is returned.
+ * Returns the second argument when the first argument is not NULL. If the first argument is NULL,
+ * the third argument is returned.
  */
 @FunctionPlugin
 public class Nvl2Function extends Function {
 
   public Nvl2Function() {
-    super("NVL2", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.SAME_SAME_SAME, "i18n::Operator.Category.Conditional", "/docs/nvl2.html");
+    super("NVL2", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.SAME_SAME_SAME,
+        "i18n::Operator.Category.Conditional", "/docs/nvl2.html");
   }
- 
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object condition = operands[0].getValue(context);
 
     if (condition == null) {

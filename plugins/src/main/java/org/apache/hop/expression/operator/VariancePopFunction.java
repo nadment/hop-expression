@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
-@FunctionPlugin(names="VAR_POP")
+@FunctionPlugin(names = "VAR_POP")
 public class VariancePopFunction extends AggregateFunction {
 
   public VariancePopFunction() {

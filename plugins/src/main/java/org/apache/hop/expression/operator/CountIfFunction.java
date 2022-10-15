@@ -28,7 +28,7 @@ public class CountIfFunction extends AggregateFunction {
   public CountIfFunction() {
     super("COUNTIF", ReturnTypes.INTEGER, OperandTypes.BOOLEAN, "/docs/countif.html");
   }
-  
+
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
     return new CountIfProcessor();

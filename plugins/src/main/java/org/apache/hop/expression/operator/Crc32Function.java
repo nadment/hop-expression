@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,12 +32,13 @@ import java.util.zip.CRC32C;
 public class Crc32Function extends Function {
 
   public Crc32Function() {
-    super("CRC32", true, ReturnTypes.INTEGER, OperandTypes.BINARY, "i18n::Operator.Category.Cryptographic", "/docs/crc32.html");
+    super("CRC32", true, ReturnTypes.INTEGER, OperandTypes.BINARY,
+        "i18n::Operator.Category.Cryptographic", "/docs/crc32.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;

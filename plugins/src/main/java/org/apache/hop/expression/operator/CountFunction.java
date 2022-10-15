@@ -34,12 +34,12 @@ public class CountFunction extends AggregateFunction {
 
   /**
    * Default constructor to register function but not used.
-   * The different count mode are detected by parser. 
+   * The different count mode are detected by parser.
    */
   public CountFunction() {
     this(Count.VALUE);
   }
-  
+
   public CountFunction(Count count) {
     super("COUNT", ReturnTypes.INTEGER, OperandTypes.OPTIONAL_ANY, "/docs/count.html");
     this.count = count;
@@ -47,19 +47,21 @@ public class CountFunction extends AggregateFunction {
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    switch(count) {    
-      case DISTINCT: return new CountDistinctValueProcessor();
-      case ALL: return new CountRowProcessor();
-      case VALUE: 
+    switch (count) {
+      case DISTINCT:
+        return new CountDistinctValueProcessor();
+      case ALL:
+        return new CountRowProcessor();
+      case VALUE:
     }
     return new CountValueProcessor();
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());
     writer.append('(');
-    switch(count) {
+    switch (count) {
       case ALL:
         writer.append('*');
         break;
@@ -67,10 +69,10 @@ public class CountFunction extends AggregateFunction {
         writer.append("DISTINCT ");
         operands[0].unparse(writer);
         break;
-      case VALUE: 
+      case VALUE:
         operands[0].unparse(writer);
         break;
-    }    
+    }
     writer.append(')');
   }
 }

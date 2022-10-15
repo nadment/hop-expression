@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.experimental;
+package org.apache.hop.expression.operator;
 
-import org.apache.hop.core.compress.CompressionInputStream;
-import org.apache.hop.core.compress.CompressionOutputStream;
 import org.apache.hop.core.compress.CompressionPluginType;
 import org.apache.hop.core.compress.ICompressionProvider;
 import org.apache.hop.core.plugins.IPlugin;
@@ -33,50 +31,46 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.zip.GZIPInputStream;
 
 /**
- * Decompress an input value, using the GZIP algorithm. 
+ * Decompress an input value, using the GZIP algorithm.
  * The function returns a byte array of type.
  */
-//@FunctionPlugin
+@FunctionPlugin
 public class DecompressFunction extends Function {
 
   public DecompressFunction() {
     super("DECOMPRESS", true, ReturnTypes.BINARY, OperandTypes.BINARY,
         "i18n::Operator.Category.String", "/docs/decompress.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
 
     String algorithm = "SNAPPY";
-    ICompressionProvider provider = getCompressionProvider(algorithm);
-   
-    try {
     byte[] bytes = Coerse.toBinary(v0);
-    ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length+100);
-    CompressionInputStream decompression = provider.createInputStream(new
-    ByteArrayInputStream(bytes));
+
+
+    int size = bytes.length;
+    ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);
+    // CompressionInputStream cis = provider.createInputStream(new ByteArrayInputStream(bytes));
+    GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));
+
     final byte[] buffer = new byte[8024];
     int n = 0;
-    while (-1 != (n = decompression.read(buffer))) {
-    output.write(buffer, 0, n);
+    while ((n = cis.read(buffer)) != -1) {
+      output.write(buffer, 0, n);
     }
     return output.toByteArray();
-    } catch (IOException e) {
-    //throw new ExpressionException("Decompress {0} error {1}", algorithm, e.getMessage());
-    throw new ExpressionException(ExpressionError.OPERATOR_ERROR, algorithm, e.getMessage());
-    }
   }
 
-  
-  // TODO: Use a cache
-  private static ICompressionProvider getCompressionProvider(String id) throws ExpressionException {
+  private static ICompressionProvider getCompressionProviderByName(String id)
+      throws ExpressionException {
     PluginRegistry registry = PluginRegistry.getInstance();
     for (IPlugin plugin : registry.getPlugins(CompressionPluginType.class)) {
       if (id.equalsIgnoreCase(plugin.getIds()[0])) {

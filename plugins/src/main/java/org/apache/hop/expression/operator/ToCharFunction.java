@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -41,7 +40,7 @@ public class ToCharFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;
@@ -55,7 +54,7 @@ public class ToCharFunction extends Function {
     }
 
     if (v0 instanceof Number) {
-       return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
+      return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
     }
 
     return DateTimeFormat.of(pattern).format(Coerse.toDateTime(v0));

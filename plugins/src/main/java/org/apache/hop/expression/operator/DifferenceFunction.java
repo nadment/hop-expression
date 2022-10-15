@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.language.Soundex;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,14 +32,15 @@ import org.apache.hop.expression.util.Coerse;
 public class DifferenceFunction extends Function {
   private static final Soundex SOUNDEX = new Soundex();
   private static final int SOUNDEX_LENGTH = 4;
-  
+
   public DifferenceFunction() {
-    super("DIFFERENCE", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING, "i18n::Operator.Category.String", "/docs/difference.html");
+    super("DIFFERENCE", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
+        "i18n::Operator.Category.String", "/docs/difference.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
@@ -50,7 +50,7 @@ public class DifferenceFunction extends Function {
 
     return Long.valueOf(difference(Coerse.toString(v0), Coerse.toString(v1)));
   }
-  
+
   public static int difference(String s0, String s1) {
     String result0 = SOUNDEX.soundex(s0);
     String result1 = SOUNDEX.soundex(s1);

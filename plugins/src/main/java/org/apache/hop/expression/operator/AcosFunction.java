@@ -34,12 +34,13 @@ import org.apache.hop.expression.util.Coerse;
 public class AcosFunction extends Function {
 
   public AcosFunction() {
-    super("ACOS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, "i18n::Operator.Category.Trigonometry", "/docs/acos.html");
+    super("ACOS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Trigonometry", "/docs/acos.html");
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
+      throws Exception {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;

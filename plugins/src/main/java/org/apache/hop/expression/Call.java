@@ -107,7 +107,7 @@ public class Call implements IExpression {
   public Object getValue(IExpressionContext context) throws ExpressionException {
     try {
       return operator.eval(context, operands);
-    } catch (RuntimeException e) {      
+    } catch (Exception e) {      
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());
     }

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -25,19 +24,18 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
-/** 
+/**
  * Comparison greater than operator '<code>&gt;</code>'.
  */
 public class GreaterThanOperator extends Operator {
 
   public GreaterThanOperator() {
-    super("GREATER_THAN", ">", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY, "i18n::Operator.Category.Comparison",
-        "/docs/greater_than.html");
+    super("GREATER_THAN", ">", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+        "i18n::Operator.Category.Comparison", "/docs/greater_than.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands)
-      throws ExpressionException {
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);
     if (left == null) {
       return null;
