@@ -102,8 +102,8 @@ public class OptimizerTest {
 
   @Test
   public void testSimplifyInRule() throws Exception {
-    optimize("FIELD in (\"FIELD\", FIELD,1,2,1,null,FIELD,null)", "FIELD IN (1,2,FIELD)");
-    optimizeNull("NULL in (\"FIELD\", FIELD,1,2,1,null,FIELD,null)");
+    optimize("FIELD in (1,2,1,null,null,3,4)", "FIELD IN (1,2,3,4)");
+    optimizeNull("NULL in (1,2,1,null,null)");
   }
 
   @Test

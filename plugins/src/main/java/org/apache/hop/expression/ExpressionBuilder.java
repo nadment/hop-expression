@@ -698,7 +698,14 @@ public class ExpressionBuilder {
     if (isAndNext(Id.LPARENTHESIS)) {
 
       do {
-        list.add(parsePrimary());
+        IExpression value = parsePrimary();
+        
+        // Only literal in values list
+        if ( value.is(Kind.LITERAL) ) {
+          list.add(value);
+        } else {
+          throw new ParseException(ExpressionError.INVALID_VALUES.message(), this.getPosition());
+        }
 
         if (isAndNext(Id.COMMA)) {
           continue;

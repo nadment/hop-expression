@@ -125,9 +125,6 @@ public class Call implements IExpression {
 
   @Override
   public boolean equals(Object other) {
-    if (other == null)
-      return false;
-
     if (other instanceof Call) {
       Call call = (Call) other;
       return this.type.equals(call.type) && this.operator.equals(call.operator)

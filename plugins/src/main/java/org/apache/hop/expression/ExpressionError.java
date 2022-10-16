@@ -51,6 +51,7 @@ public enum ExpressionError {
   INVALID_JSON_PATH("Expression.InvalidJsonPath"),
   INVALID_DATATYPE("Expression.InvalidDataType"),
   INVALID_DATEPART("Expression.InvalidDatePart"),
+  INVALID_VALUES("Expression.InvalidValues"),
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
   INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),
   JSON_PATH_NOT_FOUND("Expression.JsonPathNotFound"),

@@ -270,6 +270,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
+    evalFails("FIELD in (1,2,FIELD)");
 
     writeEquals("AGE IN (10,20,30,40)");
     
