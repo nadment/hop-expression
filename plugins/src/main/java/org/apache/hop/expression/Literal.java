@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class Literal implements IExpression {
 
-  private static final Class<?> PKG = IExpression.class; // for i18n purposes
-
   public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
   public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);

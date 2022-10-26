@@ -23,32 +23,40 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.nio.charset.StandardCharsets;
 
 /**
- * Returns number of days between two date values.
+ * Converts a string, number or binary value to a hexadecimal string.
  */
 @FunctionPlugin
-public class DaysBetweenFunction extends Function {
+public class ToHexFunction extends Function {
 
-  public DaysBetweenFunction() {
-    super("DAYS_BETWEEN", true, ReturnTypes.INTEGER, OperandTypes.DATE_DATETIME,
-        "i18n::Operator.Category.Date", "/docs/days_between.html");
+  private static final byte[] HEX = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
+
+  public ToHexFunction() {
+    super("TO_HEX", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY_OR_NUMERIC,
+        "i18n::Operator.Category.Conversion", "/docs/to_hex.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    if (v0 == null) {
       return null;
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null)
-      return null;
+    }
 
-    ZonedDateTime startDateTime = Coerse.toDateTime(v0);
-    ZonedDateTime endDateTime = Coerse.toDateTime(v1);
-    return startDateTime.until(endDateTime, ChronoUnit.DAYS);
+    if ( v0 instanceof Number ) {
+      return Long.toHexString(Coerse.toInteger(v0));
+    }
+    
+    byte[] bytes = Coerse.toBinary(v0);
+    byte[] hexChars = new byte[bytes.length * 2];
+    for (int j = 0; j < bytes.length; j++) {
+      int v = bytes[j] & 0xFF;
+      hexChars[j * 2] = HEX[v >>> 4];
+      hexChars[j * 2 + 1] = HEX[v & 0x0F];
+    }
+    return new String(hexChars, StandardCharsets.UTF_8);
   }
 }

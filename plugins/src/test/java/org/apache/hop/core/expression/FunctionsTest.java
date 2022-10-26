@@ -1214,6 +1214,20 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
+  public void To_Hex() throws Exception {
+    evalEquals("To_Hex('hello')","68656c6c6f");
+    evalEquals("To_Hex(0x00010203AAeeeFFF)","00010203aaeeefff");
+    evalEquals("To_Hex(1234)","4d2");
+    evalEquals("To_Hex(1234.567)","4d2");
+    
+    evalNull("To_Hex(NULL)");
+
+    evalFails("To_Hex()");
+
+    evalFails("To_Hex(0x01,0x02)");
+  }
+  
+  @Test
   public void To_Number() throws Exception {
 
     // No precision/scale and no format

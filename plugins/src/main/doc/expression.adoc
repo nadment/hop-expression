@@ -335,6 +335,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_hex.adoc[TO_HEX]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/today.adoc[TODAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/translate.adoc[TRANSLATE]

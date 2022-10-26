@@ -20,10 +20,7 @@ Converts a number, date or timestamp to a string.
 
 == Syntax
 ----
-TO_CHAR( numeric [, format ] )
-----
-----
-TO_CHAR( {date | timestamp} [, format ] )
+TO_CHAR( {numeric | date | timestamp} [, format ] )
 ----
 
 == Usage

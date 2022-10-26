@@ -23,8 +23,8 @@ Calculate the square-root of a non-negative numeric value.
 SQRT( numeric )
 ----
 
+Return:: Number
+
 == Usage
 
 If the input expression is negative, an error will be reported.
-
-Return:: Number

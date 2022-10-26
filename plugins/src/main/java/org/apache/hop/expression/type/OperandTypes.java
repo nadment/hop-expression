@@ -163,6 +163,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker STRING_STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(2, -1));  
   public static final IOperandTypeChecker STRING_OR_BINARY = or(family(DataTypeFamily.STRING), family(DataTypeFamily.BINARY));
+  public static final IOperandTypeChecker STRING_OR_BINARY_OR_NUMERIC = or(family(DataTypeFamily.STRING), family(DataTypeFamily.BINARY), family(DataTypeFamily.NUMERIC));
   public static final IOperandTypeChecker STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC);

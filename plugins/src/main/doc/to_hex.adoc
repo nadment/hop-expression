@@ -14,28 +14,18 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_DATE
+= TO_HEX
 
-Converts a string into a date.
+Converts a string, number or binary value to a hexadecimal string.
 
 == Syntax
 ----
-TO_DATE( string [, format ] )
+TO_HEX( {string | numeric | binary} )
 ----
+
+Return:: String
 
 == Usage
 
-include::dateformat.adoc[]
-
-* An element in the date format model can only appear once. However, elements such as separators, padding characters can appear more than once.
-* If no format is specified, the standard format YYYY-MM-DD is used to interpret string.
-* If single elements are omitted, then their minimum values are assumed (for example, TO_DATE('1999-12', 'YYYY-MM') is interpreted as December 1st, 1999).
-* If a match fails between a format element and the corresponding characters in the string, then expression attempts alternative format.
-[cols="<2,<5", options="header"]
-|===
-|Original format|Try alternative format elements
-|MM|MON and MONTH
-|MON|MONTH  
-|MONTH|MON 
-|===
+* Returns NULL if argument is NULL. 
 
