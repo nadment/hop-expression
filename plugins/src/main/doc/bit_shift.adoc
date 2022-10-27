@@ -14,20 +14,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BITROTATE
+= BIT_SHIFT 
 
-Rotates the bits for a numeric by the specified number of bits to the left or to the right.
+Shifts the bits for a numeric by the specified number of bits to the left or to the right.
 
 == Syntax
 ----
-BITROTATE( value, distance )
+BIT_SHIFT( value, distance )
 ----
 value:: This expression must evaluate to a data type that can be cast to Integer.
+distance::
+If distance is positive, it will shift to the left.
+If distance is negative, it will shift to the right.
+
 Return:: Integer
 
-== Usage
+== Usage4
 
-* If distance is positive, it will rotate to the left.
-* If distance is negative, it will rotate to the right.
-* Returns NULL if one of the arguments is NULL.
- 
+* If absolute value of distance is larger than 64, there will be no error but will result in overflow/underflow.
+* Returns NULL if one of the arguments is NULL. 

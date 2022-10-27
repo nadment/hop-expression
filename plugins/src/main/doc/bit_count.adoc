@@ -14,13 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BITCOUNT
+= BIT_COUNT
 
 Returns the number of bits that are set
 
 == Syntax
 ----
-BITCOUNT( value )
+BIT_COUNT( value )
 ----
 value:: This expression must evaluate to a data type that can be cast to Integer.
 Return:: Integer

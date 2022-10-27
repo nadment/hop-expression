@@ -625,7 +625,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("~ ");
 
     // Alias
-    evalEquals("BITNOT(1)", -2);
+    evalEquals("BIT_NOT(1)", -2);
     
     writeEquals("~AGE");
     
@@ -634,7 +634,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void BitAnd() throws Exception {
-    evalEquals("BITAND(3,2)", 2);
+    evalEquals("BIT_AND(3,2)", 2);
     evalEquals("3 & 2", 2);
     evalEquals("100 & 2", 0);
     evalNull("100 & null");
@@ -649,7 +649,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void BitOr() throws Exception {
-    evalEquals("BITOR(100,2)", 102);
+    evalEquals("BIT_OR(100,2)", 102);
     evalEquals("100 | 2", 102);
     evalEquals("3 | 2", 3);
     evalNull("100 | null");
@@ -664,7 +664,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void BitXor() throws Exception {
-    evalEquals("BITXOR(2,2)", 0);
+    evalEquals("BIT_XOR(2,2)", 0);
     evalEquals("2 ^ 1", 3);
     evalEquals("100 ^ 2", 102);
     evalNull("100 ^ null");

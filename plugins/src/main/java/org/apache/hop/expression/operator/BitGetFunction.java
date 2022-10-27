@@ -31,8 +31,8 @@ import org.apache.hop.expression.util.Coerse;
 public class BitGetFunction extends Function {
 
   public BitGetFunction() {
-    super("BITGET", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bitget.html");
+    super("BIT_GET", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_get.html");
   }
 
   @Override

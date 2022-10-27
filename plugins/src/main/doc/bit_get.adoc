@@ -14,20 +14,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BITNOT, ~
+= BIT_GET
 
-Performs a bitwise NOT operation on an integer value.
+Returns the value of a bit at a specified position.
 
 == Syntax
 ----
-BITNOT( integer )
+BIT_GET( value, position )
 ----
-The `~` operator provides alternative syntax.
-----
-~ integer
-----
-Return:: Integer
+value:: This expression must evaluate to a data type that can be cast to Integer.
+Return:: Boolean
 
 == Usage
 
-* Returns NULL if the argument is NULL.
+* The first position of a bit is 1. 
+* Returns NULL if position is negative or zero.
+* Returns NULL if one of the arguments is NULL. 

@@ -31,8 +31,8 @@ import org.apache.hop.expression.util.Coerse;
 public class BitCountFunction extends Function {
 
   public BitCountFunction() {
-    super("BITCOUNT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bitcount.html");
+    super("BIT_COUNT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_count.html");
   }
 
   @Override

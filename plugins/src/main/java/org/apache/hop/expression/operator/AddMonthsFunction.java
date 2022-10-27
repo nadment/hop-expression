@@ -38,13 +38,17 @@ public class AddMonthsFunction extends Function {
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    ZonedDateTime value = Coerse.toDateTime(operands[0].getValue(context));
-    if (value == null)
+    Object v0 = operands[0].getValue(context);
+    if (v0 == null)
       return null;
-    Object months = operands[1].getValue(context);
-    if (months == null)
+    
+    Object v1= operands[1].getValue(context);
+    if (v1 == null)
       return null;
 
-    return value.plusMonths(Coerse.toInteger(months));
+    ZonedDateTime datetime = Coerse.toDateTime(v0);
+    long months = Coerse.toInteger(v1);
+
+    return datetime.plusMonths(months);
   }
 }

@@ -35,8 +35,13 @@ import java.io.StringWriter;
 public class BitAndFunction extends Function {
 
   public BitAndFunction() {
-    super("BITAND", "&", 70, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bitand.html");
+    super("BIT_AND", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_and.html");
+  }
+  
+  public BitAndFunction(String name) {
+    super("BIT_AND", name, 70, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_and.html");
   }
 
   @Override

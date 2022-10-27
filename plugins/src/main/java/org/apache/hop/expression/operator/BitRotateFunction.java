@@ -31,8 +31,8 @@ import org.apache.hop.expression.util.Coerse;
 public class BitRotateFunction extends Function {
 
   public BitRotateFunction() {
-    super("BITROTATE", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bitrotate.html");
+    super("BIT_ROTATE", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_rotate.html");
   }
 
   @Override

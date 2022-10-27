@@ -14,21 +14,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= BITAND, &
+= BIT_SET
 
-Performs a bitwise AND operation between two integer values.
+Returns the result after setting the specified bit position.
 
 == Syntax
 ----
-BITAND( integer1, integer2 ) 
+BIT_SET( value, position )
 ----
-
-The `&` operator provides alternative syntax.
-----
-integer1 & integer2
-----
+value:: This expression must evaluate to a data type that can be cast to Integer.
 Return:: Integer
 
 == Usage
 
-* Returns NULL if one of the arguments is NULL.
+* The first position of a bit is 1. 
+* Returns NULL if position is negative or zero.
+* Returns NULL if one of the arguments is NULL. 

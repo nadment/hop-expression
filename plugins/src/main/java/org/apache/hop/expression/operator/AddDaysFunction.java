@@ -39,13 +39,17 @@ public class AddDaysFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    ZonedDateTime value = Coerse.toDateTime(operands[0].getValue(context));
-    if (value == null)
-      return value;
-    Object days = operands[1].getValue(context);
-    if (days == null)
+    Object v0 = operands[0].getValue(context);
+    if (v0 == null)
+      return null;
+    
+    Object v1= operands[1].getValue(context);
+    if (v1 == null)
       return null;
 
-    return value.plusDays(Coerse.toInteger(days));
+    ZonedDateTime datetime = Coerse.toDateTime(v0);
+    long days = Coerse.toInteger(v1);
+    
+    return datetime.plusDays(days);
   }
 }

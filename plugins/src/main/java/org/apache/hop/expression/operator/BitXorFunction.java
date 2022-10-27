@@ -34,10 +34,15 @@ import java.io.StringWriter;
 public class BitXorFunction extends Function {
 
   public BitXorFunction() {
-    super("BITXOR", "^", 80, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bitxor.html");
+    super("BIT_XOR", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_xor.html");
   }
-
+  
+  public BitXorFunction(String name) {
+    super("BIT_XOR", name, 80, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_xor.html");
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);

@@ -31,8 +31,8 @@ import org.apache.hop.expression.util.Coerse;
 public class BitShiftFunction extends Function {
 
   public BitShiftFunction() {
-    super("BITSHIFT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bitshift.html");
+    super("BIT_SHIFT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+        "i18n::Operator.Category.Bitwise", "/docs/bit_shift.html");
   }
 
   @Override

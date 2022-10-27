@@ -63,10 +63,10 @@ public class Operators {
   // -------------------------------------------------------------
   // BITWISE OPERATORS
   // -------------------------------------------------------------
-  public static final Operator BITAND = new BitAndFunction();
-  public static final Operator BITOR = new BitOrFunction();
-  public static final Operator BITNOT = new BitNotFunction();
-  public static final Operator BITXOR = new BitXorFunction();
+  public static final Operator BITAND = new BitAndFunction("&");
+  public static final Operator BITOR = new BitOrFunction("|");
+  public static final Operator BITNOT = new BitNotFunction("~");
+  public static final Operator BITXOR = new BitXorFunction("^");
 
   // -------------------------------------------------------------
   // LOGICAL OPERATORS
