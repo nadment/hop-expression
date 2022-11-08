@@ -84,6 +84,13 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     }
   }
 
+
+  @Override
+  public void setDefault() {
+    this.groupFields = new ArrayList<>();
+    this.aggregateFields = new ArrayList<>();
+  }
+  
   /**
    * @return Returns the list of aggregates.
    */

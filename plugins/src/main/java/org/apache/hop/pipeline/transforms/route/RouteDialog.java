@@ -31,6 +31,7 @@ import org.apache.hop.pipeline.transform.ITransformDialog;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
+import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.dialog.BaseDialog;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.widget.ColumnInfo;
@@ -81,12 +82,12 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     setShellImage(shell, input);
 
     FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = Const.FORM_MARGIN;
-    formLayout.marginHeight = Const.FORM_MARGIN;
+    formLayout.marginWidth = PropsUi.getFormMargin();
+    formLayout.marginHeight = PropsUi.getFormMargin();
     shell.setLayout(formLayout);
     shell.setMinimumSize(500, 300);
 
-    props.setLook(shell);
+    PropsUi.setLook(shell);
 
     this.createContents(shell);
 
@@ -121,8 +122,8 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     // The title separator line
     Label titleSeparator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
     titleSeparator.setLayoutData(
-        new FormDataBuilder().top(titleArea, Const.FORM_MARGIN).fullWidth().result());
-    props.setLook(titleSeparator);
+        new FormDataBuilder().top(titleArea, PropsUi.getFormMargin()).fullWidth().result());
+    PropsUi.setLook(titleSeparator);
 
     // Buttons
     wOk = new Button(shell, SWT.PUSH);
@@ -132,13 +133,13 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
     wCancel.addListener(SWT.Selection, e -> cancel());
 
-    setButtonPositions(new Button[] {wOk, wCancel}, props.getMargin(), null);
+    setButtonPositions(new Button[] {wOk, wCancel}, PropsUi.getMargin(), null);
 
     Composite area = new Composite(parent, SWT.NONE);
     area.setLayout(new FormLayout());
-    area.setLayoutData(new FormDataBuilder().top(titleSeparator, Const.FORM_MARGIN)
-        .bottom(wOk, -Const.FORM_MARGIN).fullWidth().result());
-    props.setLook(area);
+    area.setLayoutData(new FormDataBuilder().top(titleSeparator, PropsUi.getFormMargin())
+        .bottom(wOk, -PropsUi.getFormMargin()).fullWidth().result());
+    PropsUi.setLook(area);
 
     this.createDialogArea(area);
 
@@ -150,29 +151,29 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     Composite composite = new Composite(parent, SWT.NONE);
     composite.setLayout(new FormLayout());
     composite.setLayoutData(new FormDataBuilder().top().fullWidth().result());
-    props.setLook(composite);
+    PropsUi.setLook(composite);
 
     Label icon = new Label(composite, SWT.CENTER);
     icon.setImage(getImage());
     icon.setLayoutData(
         new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
-    props.setLook(icon);
+    PropsUi.setLook(icon);
 
     Label label = new Label(composite, SWT.NONE);
     label.setText(BaseMessages.getString("System.Label.TransformName"));
     label.setLayoutData(new FormDataBuilder().top().left().right(icon, 100).result());
-    props.setLook(label);
+    PropsUi.setLook(label);
 
     // Widget Transform name
     wTransformName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wTransformName.setLayoutData(new FormDataBuilder().top(label).left().right(icon, -props.getMargin()).result());
+    wTransformName.setLayoutData(new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, event -> onChanged());
 
     return composite;
   }
   
   protected Control createDialogArea(final Composite parent) {
-    int margin = props.getMargin();
+    int margin = PropsUi.getMargin();
     
     CompletableFuture<IRowMeta> rowMetaProvider = getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
 
@@ -187,7 +188,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     fdlRoutes.top = new FormAttachment(0, 0);
     fdlRoutes.right = new FormAttachment(100, 0);
     wlRoutes.setLayoutData(fdlRoutes);
-    props.setLook(wlRoutes);
+    PropsUi.setLook(wlRoutes);
     
     ColumnInfo[] columns =
         new ColumnInfo[] {
@@ -211,7 +212,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
             input.getRoutes().size(),
             null,
             props);
-    props.setLook(wRoutes);
+    PropsUi.setLook(wRoutes);
     columns[0].setUsingVariables(true);
     columns[0].setTextVarButtonSelectionListener(new SelectionAdapter() {
       @Override
@@ -242,7 +243,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wDefaultTarget.setLayoutData(fdDefaultTarget);
     wDefaultTarget.setItems(nextTransformNames);
     wDefaultTarget.addListener(SWT.Modify, e -> onChanged());
-    props.setLook(wDefaultTarget);
+    PropsUi.setLook(wDefaultTarget);
     
     Label wlDefaultTarget = new Label(parent, SWT.LEFT);
     wlDefaultTarget.setText(BaseMessages.getString(PKG, "RouteDialog.DefaultTarget.Label"));
@@ -251,7 +252,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     fdlDefaultTarget.right = new FormAttachment(100, 0);
     fdlDefaultTarget.bottom = new FormAttachment(wDefaultTarget, -margin);
     wlDefaultTarget.setLayoutData(fdlDefaultTarget);
-    props.setLook(wlDefaultTarget);
+    PropsUi.setLook(wlDefaultTarget);
         
     FormData fdRoutes = new FormData();
     fdRoutes.left = new FormAttachment(0, 0);

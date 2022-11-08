@@ -106,7 +106,7 @@ public class Levenshtein extends Function {
 
 ### System Requirements
 
-https://hop.apache.org[Apache Hop] 2.0 or above.
+https://hop.apache.org[Apache Hop] 2.2 or above.
 Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
