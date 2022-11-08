@@ -152,7 +152,7 @@ public final class OperandTypes {
   
   // TODO: enforce check to DatePart, not only to literal
   public static final IOperandTypeChecker DATE_DATEPART = sequence(DATE,LITERAL);
-  public static final IOperandTypeChecker DATE_OPTIONAL_DATEPART = or(DATE_DATEPART,DATE);
+  public static final IOperandTypeChecker DATE_OPTIONAL_DATEPART = DATE_DATEPART.or(DATE);
     
  // public static final IOperandTypeChecker INTEGER = family(DataTypeFamily.INTEGER);
  // public static final IOperandTypeChecker INTEGER_INTEGER = family(DataTypeFamily.INTEGER, DataTypeFamily.INTEGER);
@@ -162,7 +162,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING = family(DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker STRING_STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(2, -1));  
-  public static final IOperandTypeChecker STRING_OR_BINARY = or(family(DataTypeFamily.STRING), family(DataTypeFamily.BINARY));
+  public static final IOperandTypeChecker STRING_OR_BINARY = STRING.or(BINARY);
   public static final IOperandTypeChecker STRING_OR_BINARY_OR_NUMERIC = or(family(DataTypeFamily.STRING), family(DataTypeFamily.BINARY), family(DataTypeFamily.NUMERIC));
   public static final IOperandTypeChecker STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING);
@@ -173,19 +173,18 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC), i -> i == 1);
   public static final IOperandTypeChecker STRING_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING), i -> i == 1);
   public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i == 2); 
-  public static final IOperandTypeChecker STRING_NUMERIC_OR_BINARY_NUMERIC = or(STRING_NUMERIC, BINARY_NUMERIC);  
+  public static final IOperandTypeChecker STRING_NUMERIC_OR_BINARY_NUMERIC = STRING_NUMERIC.or(BINARY_NUMERIC);  
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING), i -> i == 2);  
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC), i -> i == 2);
-  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i >= 2);
-  
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i >= 2);  
   public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING), i -> i == 2);
-  public static final IOperandTypeChecker STRING_STRING_OR_BINARY_BINARY = or(STRING_STRING, BINARY_BINARY);
+  public static final IOperandTypeChecker STRING_STRING_OR_BINARY_BINARY = STRING_STRING.or(BINARY_BINARY);
   
   // TO_CHAR
-  public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING_OR_DATETIME_OPTIONAL_STRING = or(NUMERIC_OPTIONAL_STRING, DATE_OPTIONAL_STRING);
+  public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING_OR_DATETIME_OPTIONAL_STRING = NUMERIC_OPTIONAL_STRING.or(DATE_OPTIONAL_STRING);
 
   // STRTOK
-  public static final IOperandTypeChecker CUSTOM_STRTOK = or(STRING, STRING_STRING, STRING_NUMERIC, STRING_STRING_NUMERIC);
+  public static final IOperandTypeChecker CUSTOM_STRTOK = STRING.or(STRING_STRING).or(STRING_NUMERIC).or(STRING_STRING_NUMERIC);
 
   // REGEXP_REPLACE
   public static final IOperandTypeChecker CUSTOM_REGEXP_REPLACE = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING), i -> i >= 2);
@@ -193,7 +192,7 @@ public final class OperandTypes {
   
   public static final IOperandTypeChecker JSON = family(DataTypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(DataTypeFamily.JSON, DataTypeFamily.STRING);
-  public static final IOperandTypeChecker JSON_STRING_OR_STRING_STRING = or(JSON_STRING, STRING_STRING);
+  public static final IOperandTypeChecker JSON_STRING_OR_STRING_STRING = JSON_STRING.or(STRING_STRING);
   
   
   public static final IOperandTypeChecker NO_CHECK = new NoneOperandTypeChecker();

@@ -41,4 +41,14 @@ public interface IOperandTypeChecker {
   default boolean isOptional(int i) {
     return false;
   }
+  
+  /** Composes this with another checker using AND. */
+  default IOperandTypeChecker and(IOperandTypeChecker checker) {
+    return OperandTypes.and(this, checker);
+  }
+
+  /** Composes this with another checker using OR. */
+  default IOperandTypeChecker or(IOperandTypeChecker checker) {
+    return OperandTypes.or(this, checker);
+  }
 }

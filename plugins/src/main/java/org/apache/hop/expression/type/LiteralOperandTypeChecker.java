@@ -23,7 +23,6 @@ import org.apache.hop.expression.Call;
  */
 public class LiteralOperandTypeChecker implements IOperandTypeChecker {
   private boolean allowNull;
- 
   
   public LiteralOperandTypeChecker(boolean allowNull) {
     this.allowNull = allowNull;
