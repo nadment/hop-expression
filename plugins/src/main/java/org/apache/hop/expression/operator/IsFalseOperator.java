@@ -30,7 +30,7 @@ public class IsFalseOperator extends Operator {
 
   public IsFalseOperator() {
     super("IS FALSE", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        "i18n::Operator.Category.Comparison", "/docs/isFalse.html");
+        "i18n::Operator.Category.Comparison", "/docs/is-false.html");
   }
 
   @Override

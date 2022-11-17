@@ -30,7 +30,7 @@ public class IsNullOperator extends Operator {
 
   public IsNullOperator() {
     super("IS NULL", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        "i18n::Operator.Category.Comparison", "/docs/isNull.html");
+        "i18n::Operator.Category.Comparison", "/docs/is-null.html");
   }
 
   @Override

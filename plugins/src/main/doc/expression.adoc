@@ -172,7 +172,11 @@ The operator precedence and associativity, highest to lowest.
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE]|Pattern matching
 |left|=, >, <, >=, <=, <>, != |Comparison operators
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is.adoc[IS]|IS [NOT] NULL, IS [NOT] FALSE, IS [NOT] TRUE
+|left|
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-null.adoc[IS [NOT\] NULL],
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-true.adoc[IS [NOT\] TRUE],
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-false.adoc[IS [NOT\] FALSE],
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-distinct-from.adoc[IS [NOT\] DISTINCT FROM]|Conditional operators
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[AND]|Conjunction
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Inclusion 

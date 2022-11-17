@@ -56,16 +56,16 @@ end
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS` `BETWEEN` `LIKE` `ILIKE`
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` `LIKE` `ILIKE`
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Scalar functions (conditional, mathematical, trigonometry, conversion, ...).
+* Scalar functions (conditional, mathematical, trigonometry, conversion, bitwise...).
 * Aggregate functions `AVG` `COUNT` `MIN` `MAX` `FIRST_VALUE` `LAST_VALUE` `STDDEV_SAMP` `STDDEV_POP` `PERCENTILE` `VARIANCE_POP` `VARIANCE_SAMP`
 * User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading
 * Are not case-sensitive, excepted for identifier
 * Can be parenthesized to control the precedence order
-* Optimized immediately after parsing, so the `XYZ+24*60+5` is optimized to `XYZ+1445` and has no impact on performance
+* Optimized immediately after parsing, so the `5+XYZ+4*2+5` is optimized to `XYZ+18` and has no impact on performance
 
 
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/expression.adoc[Documentation] are work in progress.

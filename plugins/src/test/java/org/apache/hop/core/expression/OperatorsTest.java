@@ -278,29 +278,88 @@ public class OperatorsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void Is() throws Exception {
+  public void IsTrue() throws Exception {
     evalTrue("True IS True");
     evalTrue("True IS NOT False");
     evalTrue("FLAG is True");
     evalFalse("VALUE_NULL IS True");  
-    evalFalse("True IS False");
-    evalFalse("True IS Null");
-    evalTrue("False IS False");
-    evalTrue("False IS NOT TRUE");   
-    evalFalse("VALUE_NULL IS False");
+    evalTrue("False IS NOT TRUE");      
+    evalFalse("Null is True");
     
+    evalFails("NOM IS ");
+    evalFails("IS TRUE");
+    evalFails("IS NOT TRUE");
+    
+    writeEquals("FLAG IS TRUE");
+    writeEquals("FLAG IS NOT TRUE","FLAG IS FALSE");
+    
+    returnType("FLAG IS TRUE", DataTypeName.BOOLEAN);
+    returnType("FLAG IS NOT TRUE", DataTypeName.BOOLEAN);
+  }
+
+  @Test
+  public void IsFalse() throws Exception {
+    evalTrue("True IS NOT False");
+    evalFalse("True IS False");
+    evalTrue("False IS False");
+    evalFalse("VALUE_NULL IS False");
+    evalFalse("VALUE_NULL IS NOT False");    
+    evalFalse("Null IS False");
+    evalFalse("Null IS NOT False");
+
+    evalFails("IS FALSE");
+    evalFails("IS NOT FALSE");
+    
+    writeEquals("FLAG IS FALSE");
+    writeEquals("FLAG IS NOT FALSE","FLAG IS TRUE");
+    
+    returnType("FLAG IS FALSE", DataTypeName.BOOLEAN);
+    returnType("FLAG IS NOT FALSE", DataTypeName.BOOLEAN);
+  }
+
+  @Test
+  public void IsNull() throws Exception {
+    evalFalse("True IS Null");
     evalFalse("False IS Null");
     evalFalse("VALUE_NULL IS NOT NULL");
-    evalFalse("Null is True");
-    evalFalse("Null IS False");
     evalTrue("Null IS NULL");
     evalTrue("VALUE_NULL IS NULL");
 
-    writeEquals("FLAG IS TRUE");
+    evalFails("IS NULL");
+    evalFails("IS NOT NULL");
     
-    returnType("FLAG IS TRUE", DataTypeName.BOOLEAN);
+    writeEquals("FLAG IS NULL");
+    writeEquals("FLAG IS NOT NULL");
+    
+    returnType("FLAG IS NULL", DataTypeName.BOOLEAN);
+    returnType("FLAG IS NOT NULL", DataTypeName.BOOLEAN);
   }
+  
+  @Test
+  public void IsDistinctFrom() throws Exception {
+    evalTrue("1 IS DISTINCT FROM null");
+    evalFalse("1 IS DISTINCT FROM 1");
+    evalTrue("1 IS DISTINCT FROM null");
+    evalTrue("1 IS NOT DISTINCT FROM 1");
+    
+    evalFalse("VALUE_NULL IS NOT DISTINCT FROM true");
+    evalTrue("VALUE_NULL  IS NOT DISTINCT FROM null");
+    
+    evalFalse("Date '2019-01-01' IS DISTINCT FROM Date '2019-01-01'");
+    evalTrue("Date '2019-01-01' IS NOT DISTINCT FROM Date '2019-01-01'");
+    
+    evalTrue("Date '2019-01-01' IS DISTINCT FROM Date '2018-01-01'");
+    evalFalse("Date '2019-01-01' IS NOT DISTINCT FROM Date '2018-01-01'");
 
+    evalFails("NOM  IS NOT DISTINCT FROM ");
+
+    writeEquals("FLAG IS DISTINCT FROM TRUE");
+    writeEquals("FLAG IS NOT DISTINCT FROM TRUE");
+    
+    returnType("FLAG IS DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
+    returnType("FLAG IS NOT DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
+  }
+  
   @Test
   public void Add() throws Exception {
     evalEquals("10+(-0.5)", 9.5);
@@ -874,5 +933,6 @@ public class OperatorsTest extends BaseExpressionTest {
     writeEquals("CASE AGE WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
   }
 }
+
 
 

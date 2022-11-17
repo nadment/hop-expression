@@ -46,14 +46,6 @@ public class EqualNullFunction extends Function {
     Object v0 = operands[0].getValue(context);
     Object v1 = operands[1].getValue(context);
 
-    // Treats NULLs as known values
-    if (v0 == null && v1 == null) {
-      return Boolean.TRUE;
-    }
-    if (v0 == null || v1 == null) {
-      return Boolean.FALSE;
-    }
-
     return Coerse.compare(v0, v1) == 0;
   }
 }

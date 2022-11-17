@@ -14,17 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= EQUAL_NULL
+= IS DISTINCT FROM
 
-Compares whether two expressions are equal. The function is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator (=), which treats NULLs as unknown values.
+Compares whether two expressions are equal or not equal. The function is NULL-safe, meaning it treats NULLs as known values for comparing equality. Note that this is different from the EQUAL comparison	operator (=), which treats NULLs as unknown values.
 
 == Syntax
 ----
-EQUAL_NULL( expression, expression )
+expression1 IS [NOT] DISTINCT FROM expression2
 ----
 
-TIP: Note that this is different from the EQUAL comparison operator (=), which treats NULLs as unknown values.
 
 == See also
 
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-distinct-from.adoc[IS NOT DISTINCT FORM]
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal_null.adoc[EQUAL_NULL]

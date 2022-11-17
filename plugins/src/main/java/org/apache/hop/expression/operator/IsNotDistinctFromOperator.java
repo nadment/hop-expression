@@ -21,32 +21,33 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
- * An operator describing the <code>IS TRUE</code> operator.
+ * Comparison IS NOT DISTINCT FROM operator.
+ * <br>
+ * <strong>Syntax:</strong> <code>x IS NOT DISTINCT FROM y</code>
  */
-public class IsTrueOperator extends Operator {
+public class IsNotDistinctFromOperator extends Operator {
 
-  public IsTrueOperator() {
-    super("IS TRUE", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        "i18n::Operator.Category.Comparison", "/docs/is-true.html");
+  public IsNotDistinctFromOperator() {
+    super("IS NOT DISTINCT FROM", 10, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+        "i18n::Operator.Category.Comparison", "/docs/is-distinct-from.html");
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws Exception {
-    Object value = operands[0].getValue(context);
+  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+    Object v0 = operands[0].getValue(context);
+    Object v1 = operands[1].getValue(context);
 
-    if (value == Boolean.TRUE) {
-      return Boolean.TRUE;
-    }
-    return Boolean.FALSE;
+    return Coerse.compare(v0, v1) == 0;
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append(" IS TRUE");
+    writer.append(" IS NOT DISTINCT FROM ");
+    operands[1].unparse(writer);
   }
 }
