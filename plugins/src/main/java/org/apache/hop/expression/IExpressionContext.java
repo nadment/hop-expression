@@ -25,8 +25,7 @@ public interface IExpressionContext extends IVariables {
    * Gets the value of an attribute.
    *
    * @param name The name of the attribute to retrieve.
-   * @return The value of the attribute. Returns <code>null</code> is the name
-   *         does not exist.
+   * @return The value of the given attribute or <code>null</code>.
    *
    * @throws IllegalArgumentException if the name is empty.
    * @throws NullPointerException if the name is null.
