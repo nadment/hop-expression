@@ -29,7 +29,7 @@
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 		<hop.home>C:\hop</hop.home>
-		<hop.version>2.2.0-SNAPSHOT</hop.version>
+		<hop.version>2.2.0</hop.version>
 		<jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
 		<sonar.projectKey>${project.artifactId}</sonar.projectKey>
 		<sonar.organization>nadment</sonar.organization>
