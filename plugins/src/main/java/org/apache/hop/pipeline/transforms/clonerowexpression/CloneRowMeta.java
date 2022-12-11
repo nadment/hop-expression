@@ -26,7 +26,6 @@ import org.apache.hop.core.CheckResult;
 import org.apache.hop.core.ICheckResult;
 import org.apache.hop.core.annotations.Transform;
 import org.apache.hop.core.exception.HopTransformException;
-import org.apache.hop.core.exception.HopXmlException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
@@ -34,24 +33,19 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.core.xml.XmlHandler;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransformMeta;
 import org.apache.hop.pipeline.transform.TransformMeta;
-import org.w3c.dom.Node;
 import java.util.List;
 
-/*
- * Created on 27-06-2008
- *
- */
 @Transform(
     id = "CloneRowExpression",
     name = "CloneRow.Name",
@@ -64,37 +58,35 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
   private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator!!
 
   /** nr of clone rows */
-  private String nrclones;
+  @HopMetadataProperty(
+      key = "nrclones",
+      injectionKeyDescription = "CloneRowMeta.Injection.NrClones")
+  private String nrClones;
 
   /** Flag: add clone flag */
-  private boolean addcloneflag;
+  @HopMetadataProperty(
+      key = "addcloneflag",
+      injectionKeyDescription = "CloneRowMeta.Injection.AddCloneFlag")
+  private boolean addCloneFlag;
 
   /** clone flag field */
-  private String cloneflagfield;
+  @HopMetadataProperty(
+      key = "cloneflagfield",
+      injectionKeyDescription = "CloneRowMeta.Injection.CloneFlagField")
+  private String cloneFlagField;
+  
+  @HopMetadataProperty(
+      key = "addclonenum",
+      injectionKeyDescription = "CloneRowMeta.Injection.AddCloneNum")
+  private boolean addCloneNum;
 
-  private boolean addclonenum;
-  private String clonenumfield;
+  @HopMetadataProperty(
+      key = "clonenumfield",
+      injectionKeyDescription = "CloneRowMeta.Injection.CloneNumField")
+  private String cloneNumField;
 
   public CloneRowMeta() {
     super(); // allocate BaseTransformMeta
-  }
-
-  @Override
-  public String getXml() {
-    StringBuilder retval = new StringBuilder();
-    retval.append("    " + XmlHandler.addTagValue("nrclones", nrclones));
-    retval.append("    " + XmlHandler.addTagValue("addcloneflag", addcloneflag));
-    retval.append("    " + XmlHandler.addTagValue("cloneflagfield", cloneflagfield));
-    retval.append("    " + XmlHandler.addTagValue("addclonenum", addclonenum));
-    retval.append("    " + XmlHandler.addTagValue("clonenumfield", clonenumfield));
-
-    return retval.toString();
-  }
-
-  @Override
-  public void loadXml(Node transformNode, IHopMetadataProvider metadataProvider)
-      throws HopXmlException {
-    readData(transformNode);
   }
 
   @Override
@@ -104,66 +96,52 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
   }
 
   public String getNrClones() {
-    return nrclones;
+    return nrClones;
   }
 
   public void setNrClones(String nrclones) {
-    this.nrclones = nrclones;
+    this.nrClones = nrclones;
   }
 
   public boolean isAddCloneFlag() {
-    return addcloneflag;
+    return addCloneFlag;
   }
 
   public void setAddCloneFlag(boolean addcloneflag) {
-    this.addcloneflag = addcloneflag;
+    this.addCloneFlag = addcloneflag;
   }
 
   public boolean isAddCloneNum() {
-    return addclonenum;
+    return addCloneNum;
   }
 
   public void setAddCloneNum(boolean addclonenum) {
-    this.addclonenum = addclonenum;
+    this.addCloneNum = addclonenum;
   }
 
   public String getCloneNumField() {
-    return clonenumfield;
+    return cloneNumField;
   }
 
   public void setCloneNumField(String clonenumfield) {
-    this.clonenumfield = clonenumfield;
+    this.cloneNumField = clonenumfield;
   }
 
   public String getCloneFlagField() {
-    return cloneflagfield;
+    return cloneFlagField;
   }
 
   public void setCloneFlagField(String cloneflagfield) {
-    this.cloneflagfield = cloneflagfield;
-  }
-
-  private void readData(Node transformNode) throws HopXmlException {
-    try {
-      nrclones = XmlHandler.getTagValue(transformNode, "nrclones");
-      addcloneflag = "Y".equalsIgnoreCase(XmlHandler.getTagValue(transformNode, "addcloneflag"));
-      cloneflagfield = XmlHandler.getTagValue(transformNode, "cloneflagfield");
-      addclonenum = "Y".equalsIgnoreCase(XmlHandler.getTagValue(transformNode, "addclonenum"));
-      clonenumfield = XmlHandler.getTagValue(transformNode, "clonenumfield");
-
-    } catch (Exception e) {
-      throw new HopXmlException(
-          BaseMessages.getString(PKG, "CloneRowMeta.Exception.UnableToReadTransformMeta"), e);
-    }
+    this.cloneFlagField = cloneflagfield;
   }
 
   @Override
   public void setDefault() {
-    nrclones = "0";
-    cloneflagfield = null;
-    addcloneflag = false;
-    addclonenum = false;
-    clonenumfield = null;
+    nrClones = "0";
+    cloneFlagField = null;
+    addCloneFlag = false;
+    addCloneNum = false;
+    cloneNumField = null;
   }
 
   public String evaluate(String source, IVariables variables) throws HopTransformException {
@@ -194,8 +172,8 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
       IHopMetadataProvider metadataProvider)
       throws HopTransformException {
     // Output field (boolean) ?
-    if (addcloneflag) {
-      String realfieldValue = String.valueOf(evaluate(cloneflagfield, variables));
+    if (addCloneFlag) {
+      String realfieldValue = String.valueOf(evaluate(cloneFlagField, variables));
       if (!Utils.isEmpty(realfieldValue)) {
         IValueMeta v = new ValueMetaBoolean(realfieldValue);
         v.setOrigin(origin);
@@ -203,8 +181,8 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
       }
     }
     // Output clone row number
-    if (addclonenum) {
-      String realfieldValue = evaluate(clonenumfield, variables);
+    if (addCloneNum) {
+      String realfieldValue = evaluate(cloneNumField, variables);
       if (!Utils.isEmpty(realfieldValue)) {
         IValueMeta v = new ValueMetaInteger(realfieldValue);
         v.setOrigin(origin);
@@ -227,7 +205,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     CheckResult cr;
     String error_message = "";
 
-    if (Utils.isEmpty(nrclones)) {
+    if (Utils.isEmpty(nrClones)) {
       error_message = BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.NrClonesdMissing");
       cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
     } else {
@@ -237,8 +215,8 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     }
     remarks.add(cr);
 
-    if (addcloneflag) {
-      if (Utils.isEmpty(cloneflagfield)) {
+    if (addCloneFlag) {
+      if (Utils.isEmpty(cloneFlagField)) {
         error_message =
             BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneFlagFieldMissing");
         cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);
@@ -250,8 +228,8 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
       remarks.add(cr);
     }
 
-    if (addclonenum) {
-      if (Utils.isEmpty(clonenumfield)) {
+    if (addCloneNum) {
+      if (Utils.isEmpty(cloneNumField)) {
         error_message =
             BaseMessages.getString(PKG, "CloneRowMeta.CheckResult.CloneNumFieldMissing");
         cr = new CheckResult(ICheckResult.TYPE_RESULT_ERROR, error_message, transformMeta);

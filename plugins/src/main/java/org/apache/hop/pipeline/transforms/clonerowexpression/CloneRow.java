@@ -28,6 +28,7 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -136,12 +137,9 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
     putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
 
-
     data.context.setRow(r);
-    Object value = data.numberOfClones.getValue(data.context);
-
-    int nrClones = (int) value;
-
+    long nrClones = Coerse.toInteger(data.numberOfClones.getValue(data.context));
+    
     for (int i = 0; i < nrClones && !isStopped(); i++) {
       // Output now all clones row
       outputRowData = r.clone();
@@ -169,14 +167,5 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     }
 
     return true;
-  }
-
-  @Override
-  public boolean init() {
-    if (super.init()) {
-      // Add init code here.
-      return true;
-    }
-    return false;
   }
 }

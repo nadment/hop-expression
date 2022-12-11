@@ -31,11 +31,11 @@ import org.apache.hop.pipeline.transform.ITransformData;
 
 public class CloneRowData extends BaseTransformData implements ITransformData {
 
-  public IExpressionContext context;
-  public IExpression numberOfClones;
-  public IRowMeta outputRowMeta;
-  public boolean addInfosToRow;
-  public int NrPrevFields;
+  protected IExpressionContext context;
+  protected IExpression numberOfClones;
+  protected IRowMeta outputRowMeta;
+  protected boolean addInfosToRow;
+  protected int NrPrevFields;
 
   public CloneRowData() {
     super();
