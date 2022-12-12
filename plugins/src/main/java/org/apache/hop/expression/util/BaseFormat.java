@@ -179,22 +179,4 @@ public abstract class BaseFormat {
     }
     return null;
   }
-
-  /**
-   * Append a zero-padded number to a string builder.
-   *
-   * @param builder the string builder
-   * @param positiveValue the number to append
-   * @param length the number of characters to append
-   * @return the specified string builder
-   */
-  protected static StringBuilder appendZeroPadded(StringBuilder builder, int positiveValue,
-      int length) {
-    String s = Integer.toString(positiveValue);
-    length -= s.length();
-    for (; length > 0; length--) {
-      builder.append('0');
-    }
-    return builder.append(s);
-  }
 }

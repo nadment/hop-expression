@@ -275,9 +275,9 @@ import java.util.Locale;
   private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
   private final String pattern;
-  
+
   private int twoDigitYearStart = 1970;
-    
+
   public ZonedDateTimeFormat(String pattern) {
     this.pattern = pattern;
   }
@@ -316,7 +316,7 @@ import java.util.Locale;
     boolean isDayOfYear = false;
     boolean isTimeZoneOffset = false;
     ZoneId zoneId = null;
-    
+
     int length = pattern.length();
     int index = 0;
     while (index < length) {
@@ -443,13 +443,13 @@ import java.util.Locale;
 
         // TODO: Day of week (1-7)
         {
-          //day = parseInt(text, position, "D".length());
-          //isDayOfYear = false;
-          //isEpochDay = false;
-          //index += 1;
+          // day = parseInt(text, position, "D".length());
+          // isDayOfYear = false;
+          // isEpochDay = false;
+          // index += 1;
           /* NOT supported yet */
           throw new ParseException("Parsing format D not supported yet", index);
-          //continue;
+          // continue;
         }
 
         // Fractional seconds FF[0-9]
@@ -597,7 +597,8 @@ import java.util.Locale;
           if (startsWithIgnoreCase(pattern, index, "TZH")) {
             // Skip space
             int i = position.getIndex();
-            if ( Characters.isSpace(text.charAt(i)) ) position.setIndex(++i);
+            if (Characters.isSpace(text.charAt(i)))
+              position.setIndex(++i);
             isTimeZoneOffset = true;
             timeZoneHour = parseSignedInt(text, position, 3);
             index += 3;
@@ -609,18 +610,19 @@ import java.util.Locale;
             timeZoneMinute = parseInt(text, position, 2);
             index += 3;
           }
-          
+
           // Time zone region
           if (startsWithIgnoreCase(pattern, index, "TZR")) {
             int i = position.getIndex();
             char ch;
-            while ( i<text.length() ) {
+            while (i < text.length()) {
               ch = text.charAt(i);
-              if ( ! (Character.isLetter(ch) || ch=='/') ) break;
-              i++;            
+              if (!(Character.isLetter(ch) || ch == '/'))
+                break;
+              i++;
             }
-            
-            String zone = text.substring(position.getIndex(),i);
+
+            String zone = text.substring(position.getIndex(), i);
             zoneId = ZoneId.of(zone);
             position.setIndex(i);
             index += 3;
@@ -689,12 +691,11 @@ import java.util.Locale;
     }
     LocalTime time = LocalTime.of(hour, minute, second, nanos);
     LocalDateTime localDatetime = LocalDateTime.of(date, time);
-    if ( zoneId==null ) {
-      if ( isTimeZoneOffset ) {
+    if (zoneId == null) {
+      if (isTimeZoneOffset) {
         zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
-      }
-      else {
-        zoneId = ZoneId.systemDefault();        
+      } else {
+        zoneId = ZoneId.systemDefault();
       }
     }
     return ZonedDateTime.of(localDatetime, zoneId);
@@ -795,7 +796,7 @@ import java.util.Locale;
             if ((year % 100) != 0) {
               century += 1;
             }
-            appendZeroPadded(output, century, "CC".length());
+            appendDigits(output, century);
             index += 2;
             continue;
           }
@@ -817,7 +818,7 @@ import java.util.Locale;
           if (startsWithIgnoreCase(pattern, index, "DD")) {
 
             if (fillMode) {
-              appendZeroPadded(output, value.getDayOfMonth(), "DD".length());
+              appendDigits(output, value.getDayOfMonth());
             } else {
               output.append(value.getDayOfMonth());
             }
@@ -835,9 +836,9 @@ import java.util.Locale;
 
           // Short date format 'MM/DD/RRRR'.
           if (startsWithIgnoreCase(pattern, index, "DS")) {
-            appendZeroPadded(output, value.getMonthValue(), "DD".length());
+            appendDigits(output, value.getMonthValue());
             output.append('/');
-            appendZeroPadded(output, value.getDayOfMonth(), "MM".length());
+            appendDigits(output, value.getDayOfMonth());
             output.append('/');
             appendZeroPadded(output, FastMath.abs(value.getYear()), "YYYY".length());
             index += 2;
@@ -910,21 +911,21 @@ import java.util.Locale;
         case 'H':
           // Hour of day in 24 hour format (0-23)
           if (startsWithIgnoreCase(pattern, index, "HH24")) {
-            appendZeroPadded(output, value.getHour(), 2);
+            appendDigits(output, value.getHour());
             index += 4;
             continue;
           }
           // Hour of day in 12 hour format (1-12)
           if (startsWithIgnoreCase(pattern, index, "HH12")) {
             int h12 = (value.getHour() + 11) % 12 + 1;
-            appendZeroPadded(output, h12, 2);
+            appendDigits(output, h12);
             index += 4;
             continue;
           }
           // Hour of day in 12 hour format (1-12)
           if (startsWithIgnoreCase(pattern, index, "HH")) {
             int h12 = (value.getHour() + 11) % 12 + 1;
-            appendZeroPadded(output, h12, "HH".length());
+            appendDigits(output, h12);
             index += 2;
             continue;
           }
@@ -950,16 +951,16 @@ import java.util.Locale;
           // Last 2 digits of ISO year.
           if (startsWithIgnoreCase(pattern, index, "IY")) {
             int weekYear = FastMath.abs(value.get(IsoFields.WEEK_BASED_YEAR));
-            appendZeroPadded(output, weekYear % 100, 2);
+            appendDigits(output, weekYear % 100);
             index += 2;
             continue;
           }
 
           // Week of year (1-52 or 1-53) based on the ISO standard
           if (startsWithIgnoreCase(pattern, index, "IW")) {
-            int week = value.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);                       
+            int week = value.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
             if (fillMode) {
-              appendZeroPadded(output,week,2);
+              appendDigits(output, week);
             } else {
               output.append(week);
             }
@@ -988,7 +989,7 @@ import java.util.Locale;
         case 'M':
           // Minute (0-59)
           if (startsWithIgnoreCase(pattern, index, "MI")) {
-            appendZeroPadded(output, value.getMinute(), "MI".length());
+            appendDigits(output, value.getMinute());
             index += 2;
             continue;
           }
@@ -996,7 +997,7 @@ import java.util.Locale;
           // Month (01-12; January = 01)
           if (startsWithIgnoreCase(pattern, index, "MM")) {
             if (fillMode) {
-              appendZeroPadded(output, value.getMonthValue(), "MM".length());
+              appendDigits(output, value.getMonthValue());
             } else {
               output.append(value.getMonthValue());
             }
@@ -1072,7 +1073,7 @@ import java.util.Locale;
 
           // Second (0-59)
           if (startsWithIgnoreCase(pattern, index, "SS")) {
-            appendZeroPadded(output, value.getSecond(), "SS".length());
+            appendDigits(output, value.getSecond());
             index += 2;
             continue;
           }
@@ -1087,7 +1088,7 @@ import java.util.Locale;
 
             if (fillMode) {
               output.append(year < 0 ? '-' : ' ');
-              appendZeroPadded(output, FastMath.abs(century), "CC".length());
+              appendDigits(output, FastMath.abs(century));
             } else {
               output.append(century);
             }
@@ -1111,11 +1112,10 @@ import java.util.Locale;
 
           if ((cap = match(pattern, index, "SYEAR")) != null) {
             int year = value.getYear();
-            if ( year <0 ) {
+            if (year < 0) {
               output.append('-');
               year = FastMath.abs(year);
-            }
-            else if (fillMode) {
+            } else if (fillMode) {
               output.append(' ');
             }
             output.append(cap.apply(NumberWords.convertYear(year)));
@@ -1134,7 +1134,8 @@ import java.util.Locale;
 
           // Time zone region abbreviated with Daylight Saving Time information included
           if (startsWithIgnoreCase(pattern, index, "TZD")) {
-            output.append(value.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH));            
+            output
+                .append(value.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH));
             index += 3;
             continue;
           }
@@ -1153,7 +1154,7 @@ import java.util.Locale;
           if (startsWithIgnoreCase(pattern, index, "TZM")) {
             ZoneOffset offset = value.getOffset();
             int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
-            appendZeroPadded(output, FastMath.abs(minutes), "MM".length());
+            appendDigits(output, FastMath.abs(minutes));
             index += 3;
             continue;
           }
@@ -1162,9 +1163,9 @@ import java.util.Locale;
           if ((cap = match(pattern, index, "TS")) != null) {
             int h12 = (value.getHour() + 11) % 12 + 1;
             output.append(h12).append(':');
-            appendZeroPadded(output, value.getMinute(), "MI".length());
+            appendDigits(output, value.getMinute());
             output.append(':');
-            appendZeroPadded(output, value.getSecond(), "SS".length());
+            appendDigits(output, value.getSecond());
             output.append(' ');
             String am = (value.getHour() < 12) ? "AM" : "PM";
             output.append(cap.apply(am));
@@ -1177,9 +1178,9 @@ import java.util.Locale;
           // Week of year (1-53) where week 1 starts on the first day of the year and
           // continues to the seventh day of the year.
           if (startsWithIgnoreCase(pattern, index, "WW")) {
-            int weekOfYear = value.get(ChronoField.ALIGNED_WEEK_OF_YEAR);            
+            int weekOfYear = value.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
             if (fillMode) {
-              appendZeroPadded(output,weekOfYear,2);
+              appendDigits(output, weekOfYear);
             } else {
               output.append(weekOfYear);
             }
@@ -1220,7 +1221,7 @@ import java.util.Locale;
           // Last 2 digits of year.
           if (startsWithIgnoreCase(pattern, index, "YY", "RR")) {
             int year = FastMath.abs(value.getYear());
-            appendZeroPadded(output, year % 100, 2);
+            appendDigits(output, year % 100);
             index += 2;
             continue;
           }
@@ -1298,8 +1299,9 @@ import java.util.Locale;
     }
 
     position.setErrorIndex(index);
-    
-    throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"), position.getIndex());
+
+    throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"),
+        position.getIndex());
   }
 
   protected static int parseMonthRoman(String value, ParsePosition position) throws ParseException {
@@ -1328,7 +1330,7 @@ import java.util.Locale;
     return new IllegalArgumentException(
         BaseMessages.getString(PKG, "Expression.InvalidDateFormat", error));
   }
-  
+
   protected final ParseException createUnparsableDate(final String text, int index) {
     return new ParseException(
         BaseMessages.getString(PKG, "Expression.UnparsableDateWithFormat", text, pattern), index);
@@ -1353,9 +1355,36 @@ import java.util.Locale;
   public int hashCode() {
     return pattern.hashCode();
   }
-  
+
   @Override
   public void setTwoDigitYearStart(int year) {
     this.twoDigitYearStart = year;
-  } 
+  }
+
+  /**
+   * Appends two digits to the given buffer.
+   *
+   * @param buffer the buffer to append to.
+   * @param value the value to append digits from.
+   */
+  private static void appendDigits(final StringBuilder buffer, final int value) {
+    buffer.append((char) (value / 10 + '0'));
+    buffer.append((char) (value % 10 + '0'));
+  }
+
+  /**
+   * Append a zero-padded number to a string builder.
+   *
+   * @param buffer the string builder
+   * @param value the positive number to append
+   * @param length the number of characters to append
+   */
+  private static void appendZeroPadded(final StringBuilder buffer, int value, int length) {
+    String s = Integer.toString(value);
+    length -= s.length();
+    for (; length > 0; length--) {
+      buffer.append('0');
+    }
+    buffer.append(s);
+  }
 }
