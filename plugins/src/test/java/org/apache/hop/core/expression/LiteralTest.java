@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
@@ -267,7 +266,7 @@ public class LiteralTest extends BaseExpressionTest {
     evalEquals("Timestamp '0001-01-1 00:00:00'", LocalDateTime.of(1, 1, 1, 0, 0, 0, 0));
     evalEquals("Timestamp '9999-12-31 23:59:59.999999999'", LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999999999));
 
-    writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999999'");
+    writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999'");
     
     returnType("Timestamp '2021-12-01 12:01:01'", DataTypeName.DATE);
   }

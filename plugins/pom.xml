@@ -40,7 +40,7 @@
 		<org.eclipse.jface.text.version>3.21.0</org.eclipse.jface.text.version>
 		<!-- Build dependencies -->
 		<asciidoctor.version>2.2.2</asciidoctor.version>
-		<jmh.version>1.35</jmh.version>		
+		<jmh.version>1.35</jmh.version>
 	</properties>
 
 	<dependencies>
@@ -96,13 +96,13 @@
 			<artifactId>json-path</artifactId>
 			<version>${json-path.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
 			<version>${org.eclipse.osgi.version}</version>
 		</dependency>
-  					
+
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.core.runtime</artifactId>
@@ -120,7 +120,7 @@
 			<artifactId>org.eclipse.jface</artifactId>
 			<version>${org.eclipse.jface.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.jface.text</artifactId>
@@ -167,6 +167,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-generator-annprocess</artifactId>
+			<version>${jmh.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -199,7 +206,7 @@
 			</plugin>
 
 			<plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>

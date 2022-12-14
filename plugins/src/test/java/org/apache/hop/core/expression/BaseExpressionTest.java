@@ -48,6 +48,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -250,7 +251,8 @@ public class BaseExpressionTest {
 //    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
-    evalNull("false OR VALUE_NULL");
-    //returnType("AGE IN (10,20,30,40)", DataTypeName.BOOLEAN);
+    Locale.setDefault(new Locale("fr", "BE"));
+    // Local radix character
+    evalEquals("To_Char(Timestamp '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
   }
 }

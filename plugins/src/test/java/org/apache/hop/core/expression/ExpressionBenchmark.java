@@ -33,49 +33,58 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.runner.options.TimeValue;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class ExpressionBenchmark {  
+  
+   static ExpressionContext context;
+  
   /**
    * @param args
    * @throws InterruptedException
    * @throws RunnerException
    */
-  public static void main(String[] args) throws InterruptedException, RunnerException {
+  public static void main(String[] args) throws RunnerException {
     RestoreHopEnvironment env = new RestoreHopEnvironment();
+    
+    context = createExpressionContext();
+    
     Options opt = new OptionsBuilder()
             .include(ExpressionBenchmark.class.getSimpleName())
-            .forks(2)
-            .build();
+    .warmupIterations(2)
+    .warmupTime(TimeValue.seconds(5))
+    .measurementIterations(5)
+    .measurementTime(TimeValue.seconds(10))
+    .mode(Mode.SampleTime)
+    .timeUnit(TimeUnit.NANOSECONDS)
+    .forks(1)
+    .build();
     new Runner(opt).run();       
 }
   
-  @State(Scope.Thread)
-  public static class MyState {
-      @Setup(Level.Trial)
-      public void doSetup() {
-
-      }
-
-      @TearDown(Level.Trial)
-      public void doTearDown() {
-          System.out.println("Do TearDown");
-      }
-
-      public ExpressionContext context = createExpressionContext();
-  }
+//  @State(Scope.Thread)
+//  public static class MyState {
+//      @Setup(Level.Trial)
+//      public void doSetup() {
+//
+//      }
+//
+//      @TearDown(Level.Trial)
+//      public void doTearDown() {
+//          System.out.println("Do TearDown");
+//      }
+//
+//      public ExpressionContext context = createExpressionContext();
+//  }
   
   protected static ExpressionContext createExpressionContext()  {
 
@@ -123,13 +132,13 @@ public class ExpressionBenchmark {
     return context;
   }
 
-  protected Object eval(String source, ExpressionContext context) throws Exception {
+  protected Object eval(String source) throws Exception {
     IExpression expression = ExpressionBuilder.compile(context, source);
     return expression.getValue(context);
   }
 
   @Benchmark @BenchmarkMode(Mode.AverageTime)
-  public void performance(MyState state) throws Exception {
-    eval("AGE>10 or AMOUNT between 123000 and 200200", state.context);
+  public void performance() throws Exception {
+    eval("AGE>10 or AMOUNT between 123000 and 200200");
   }
 }
