@@ -84,10 +84,10 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     }
   }
 
-  @Override
-  public RouteMeta clone() {
-    return new RouteMeta(this);
-  }
+//  @Override
+//  public RouteMeta clone() {
+//    return new RouteMeta(this);
+//  }
 
   @Override
   public void getFields(IRowMeta rowMeta, String origin, IRowMeta[] info,

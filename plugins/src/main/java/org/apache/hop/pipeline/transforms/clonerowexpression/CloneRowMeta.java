@@ -89,12 +89,6 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
     super(); // allocate BaseTransformMeta
   }
 
-  @Override
-  public Object clone() {
-    Object retval = super.clone();
-    return retval;
-  }
-
   public String getNrClones() {
     return nrClones;
   }

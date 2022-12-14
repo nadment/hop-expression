@@ -576,24 +576,25 @@ import java.util.Locale;
     private final boolean fillMode;
     private final int length;
 
-    public FieldFormat(TemporalField field, boolean fillMode) {
-      this(field, fillMode, 2);
-    }
-
     public FieldFormat(TemporalField field, boolean fillMode, int length) {
       this.field = field;
       this.fillMode = fillMode;
       this.length = length;
     }
 
-
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       int value = datetime.get(field);
       if (fillMode) {
-        if (length == 2)
-          appendDigits(output, value);
-        else
-          appendZeroPadded(output, value, length);
+        switch (length) {
+          case 1:
+            output.append((char) (value + '0'));
+            break;
+          case 2:
+            appendDigits(output, value);
+            break;
+          default:
+            appendZeroPadded(output, value, length);
+        }
       } else {
         output.append(value);
       }
@@ -805,7 +806,7 @@ import java.util.Locale;
 
       // Week of year (1-52 or 1-53) based on the ISO standard
       if (startsWithIgnoreCase(pattern, index, "IW")) {
-        list.add(new FieldFormat(IsoFields.WEEK_OF_WEEK_BASED_YEAR, fillMode));
+        list.add(new FieldFormat(IsoFields.WEEK_OF_WEEK_BASED_YEAR, fillMode, 2));
         index += 2;
         continue;
       }
@@ -840,21 +841,21 @@ import java.util.Locale;
 
       // Minute (0-59)
       if (startsWithIgnoreCase(pattern, index, "MI")) {
-        list.add(new FieldFormat(ChronoField.MINUTE_OF_HOUR, true));
+        list.add(new FieldFormat(ChronoField.MINUTE_OF_HOUR, true, 2));
         index += 2;
         continue;
       }
 
       // Quarter of year (1, 2, 3, 4; January - March = 1)
       if (startsWithIgnoreCase(pattern, index, "Q")) {
-        list.add(new FieldFormat(IsoFields.QUARTER_OF_YEAR, false));
+        list.add(new FieldFormat(IsoFields.QUARTER_OF_YEAR, false, 1));
         index += 1;
         continue;
       }
 
       // Month (01-12; January = 01)
       if (startsWithIgnoreCase(pattern, index, "MM")) {
-        list.add(new FieldFormat(ChronoField.MONTH_OF_YEAR, fillMode));
+        list.add(new FieldFormat(ChronoField.MONTH_OF_YEAR, fillMode, 2));
         index += 2;
         continue;
       }
@@ -889,7 +890,7 @@ import java.util.Locale;
 
       // Second of minute (0-59)
       if (startsWithIgnoreCase(pattern, index, "SS")) {
-        list.add(new FieldFormat(ChronoField.SECOND_OF_MINUTE, true));
+        list.add(new FieldFormat(ChronoField.SECOND_OF_MINUTE, true, 2));
         index += 2;
         continue;
       }
@@ -958,7 +959,7 @@ import java.util.Locale;
 
       // Day of month (1-31)
       if (startsWithIgnoreCase(pattern, index, "DD")) {
-        list.add(new FieldFormat(ChronoField.DAY_OF_MONTH, fillMode));
+        list.add(new FieldFormat(ChronoField.DAY_OF_MONTH, fillMode, 2));
         index += 2;
         continue;
       }
@@ -1014,7 +1015,7 @@ import java.util.Locale;
       // Aligned week of year (1-53) where week 1 starts on the first day of the year and
       // continues to the seventh day of the year.
       if (startsWithIgnoreCase(pattern, index, "WW")) {
-        list.add(new FieldFormat(ChronoField.ALIGNED_WEEK_OF_YEAR, fillMode));
+        list.add(new FieldFormat(ChronoField.ALIGNED_WEEK_OF_YEAR, fillMode, 2));
         index += 2;
         continue;
       }
@@ -1022,7 +1023,7 @@ import java.util.Locale;
       // Aligned week of month (1-5) where week 1 starts on the first day of the month and ends on
       // the seventh.
       if (startsWithIgnoreCase(pattern, index, "W")) {
-        list.add(new FieldFormat(ChronoField.ALIGNED_WEEK_OF_MONTH, false));
+        list.add(new FieldFormat(ChronoField.ALIGNED_WEEK_OF_MONTH, false, 1));
         index += 2;
         continue;
       }

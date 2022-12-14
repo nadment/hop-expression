@@ -119,10 +119,10 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     this.groupFields = groups;
   }
 
-  @Override
-  public Object clone() {
-    return new AggregateMeta(this);
-  }
+//  @Override
+//  public Object clone() {
+//    return new AggregateMeta(this);
+//  }
 
   @Override
   public void getFields(IRowMeta rowMeta, String transformName, IRowMeta[] info,
