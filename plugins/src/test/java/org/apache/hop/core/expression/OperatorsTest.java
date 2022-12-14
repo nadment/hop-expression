@@ -352,6 +352,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("Date '2019-01-01' IS NOT DISTINCT FROM Date '2018-01-01'");
 
     evalFails("NOM  IS NOT DISTINCT FROM ");
+    evalFails("NOM  IS DISTINCT 'TEST' ");
 
     writeEquals("FLAG IS DISTINCT FROM TRUE");
     writeEquals("FLAG IS NOT DISTINCT FROM TRUE");

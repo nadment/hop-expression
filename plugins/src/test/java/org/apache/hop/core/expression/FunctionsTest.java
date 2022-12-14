@@ -1331,7 +1331,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void To_Char() throws Exception {
+  public void v() throws Exception {
     // Text
     evalNull("TO_CHAR(NULL)");
 
@@ -1516,6 +1516,16 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-01-01','YY')", "19");
     evalEquals("To_Char(Date '2019-01-01','Y')", "9");
 
+     // ISO Year
+    evalEquals("To_Char(Date '2019-12-28','IYYY')", "2019");
+    evalEquals("To_Char(Date '2019-12-28','IYY')", "019");
+    evalEquals("To_Char(Date '2019-12-28','IY')", "19");
+    evalEquals("To_Char(Date '2019-12-28','I')", "9");
+    evalEquals("To_Char(Date '2019-12-31','IYYY')", "2020");
+    evalEquals("To_Char(Date '2019-12-31','IYY')", "020");
+    evalEquals("To_Char(Date '2019-12-31','IY')", "20");
+    evalEquals("To_Char(Date '2019-12-31','I')", "0");
+    
     // Quarter
     evalEquals("To_Char(Date '2019-07-23','Q')", "3");
 
@@ -1534,13 +1544,16 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-09-23','Mon')", "Sep");
     evalEquals("To_Char(Date '2019-09-23','mon')", "sep");
 
+    // Roman numeral month
+    evalEquals("To_Char(Date '2019-09-23','RM')", "IX");
+    evalEquals("To_Char(Date '2019-06-23','rm')", "vi");
+    
     // Aligned week of month
     evalEquals("To_Char(Date '2015-12-31','\"W=\"W')", "W=5");
     evalEquals("To_Char(Date '2015-02-05','\"W=\"W')", "W=1");
 
     // Aligned week of year and ISO Week of year (The first week of the ISO year is the week that
-    // contains
-    // January 4.)
+    // contains January 4.)
     evalEquals("To_Char(Date '2015-12-31','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
         "2015-12-31 thu IYYY=2015 IW=53 WW=53");
     evalEquals("To_Char(Date '2016-01-01','YYYY-MM-DD dy \"IYYY=\"IYYY \"IW=\"IW \"WW=\"WW')",
@@ -1598,8 +1611,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(Date '2019-07-23','TZD')", "UTC");
 
     // Time Zone Hour:Minute
-    evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");
-
+    evalEquals("To_Char(Date '2019-07-23','TZH:TZM')", "+00:00");    
+    evalEquals("To_Char(To_Date('2019-02-13 15:34:56 -06:00','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')", "-06:00");
+    evalEquals("To_Char(To_Date('2019-02-13 15:34:56 +8:00','YYYY-MM-DD HH24:MI:SS TZH:TZM'),'TZH:TZM')", "+08:00");
+    
     // Time
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH:MI:SS')", "03:34:56");
     
@@ -1616,6 +1631,15 @@ public class FunctionsTest extends BaseExpressionTest {
         "15:34:56.123456");
     evalEquals("To_Char(Timestamp '2019-02-13 15:34:56.123456789','HH24:MI:SS.FF9')",
         "15:34:56.123456789");   
+
+    // Seconds of day
+    evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','SSSSS')", "12896");
+    
+    // AM PM
+    evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','HH12:MI:SS Am')", "03:34:56 Am");
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH12:MI:SS Pm')", "03:34:56 Pm");
+    evalEquals("To_Char(Timestamp '2019-02-13 03:34:56','HH12:MI:SS A.M.')", "03:34:56 A.M.");
+    evalEquals("To_Char(Timestamp '2019-02-13 15:34:56','HH12:MI:SS p.m.')", "03:34:56 p.m.");
     
     // Short date and time
     Locale.setDefault(new Locale("en", "US"));

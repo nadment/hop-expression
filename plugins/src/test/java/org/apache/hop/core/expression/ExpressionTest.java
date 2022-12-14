@@ -145,6 +145,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalFails("Date ");
     evalFails("Timestamp ");
     evalFails("Extract(");
+    evalFails("3*(1+2");
     evalFails(")+1");
     evalFails("'missing end");
     evalFails("Year(");
