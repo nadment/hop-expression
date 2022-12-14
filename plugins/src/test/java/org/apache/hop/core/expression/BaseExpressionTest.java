@@ -253,6 +253,6 @@ public class BaseExpressionTest {
     //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
     Locale.setDefault(new Locale("fr", "BE"));
     // Local radix character
-    evalEquals("To_Char(Timestamp '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
+    //evalEquals("To_Char(Timestamp '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
   }
 }
