@@ -18,7 +18,6 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.logging.ILogChannel;
 import org.apache.hop.core.logging.LogChannel;
 import org.apache.hop.core.plugins.JarCache;
-import org.apache.hop.core.plugins.PluginClassFile;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
 import org.apache.hop.metadata.api.IHopMetadataSerializer;
@@ -28,10 +27,7 @@ import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 public class FunctionRegistry {
@@ -70,76 +66,51 @@ public class FunctionRegistry {
    */
   private FunctionRegistry() {}
 
+  private static void register(ClassInfo classInfo) {
+    try {
+      String className = classInfo.name().toString();
+      Class<?> clazz = FunctionRegistry.class.getClassLoader().loadClass(className);
+      Function function = (Function) clazz.getDeclaredConstructor().newInstance();
+
+      // Register function with it's unique name
+      register(function.getId(), function);
+
+      // Register functions with alias names
+      FunctionPlugin annotation = clazz.getAnnotation(FunctionPlugin.class);
+      for (String name : annotation.names()) {
+        register(name, function);
+      }
+    } catch (Exception e) {
+      log.logError("Error registring function " + classInfo.simpleName(), e);
+    }
+  }
+  
   /**
    * Discovery and register built-in and plugin functions
    */
-  public static void registerBuilInFunctions() {
-    if (log.isDebug()) {
-      log.logDebug("Register built-in functions");
-    }
-
-    try {
-      for (ClassInfo classInfo : findAnnotatedFunctions(FunctionPlugin.class)) {
-        try {
-          String className = classInfo.name().toString();
-          Class<?> clazz = FunctionRegistry.class.getClassLoader().loadClass(className);
-          Function function = (Function) clazz.getDeclaredConstructor().newInstance();
-
-          // Register function with it's unique name
-          register(function);
-
-          // Register functions with alias names
-          FunctionPlugin annotation = (FunctionPlugin) clazz.getAnnotation(FunctionPlugin.class);
-          for (String name : annotation.names()) {
-             register(name, function);
-           }
-        } catch (Exception e) {
-          log.logError("Error registring function " + classInfo.simpleName(), e);
-        }
-      }
-    } catch (Exception e) {
-      log.logError("Error discovering annoted functions", e);
-    }
-  }
-
-  protected static List<ClassInfo> findAnnotatedFunctions(
-      Class<? extends Annotation> annotationClass) throws HopException {
-    List<ClassInfo> results = new ArrayList<>();
-    List<PluginClassFile> classFiles = new ArrayList<>();
-
+  public static void registerBuilInFunctions() throws HopException {
     JarCache cache = JarCache.getInstance();
-    DotName annotationName = DotName.createSimple(annotationClass.getName());
+    DotName annotationName = DotName.createSimple(FunctionPlugin.class.getName());
 
     try {
-      // Search native jar
+      // Search annotation in native jar
       for (File jarFile : cache.getNativeJars()) {
         IndexView index = cache.getIndex(jarFile);
-
-        // find annotations
         for (AnnotationInstance info : index.getAnnotations(annotationName)) {
-          results.add(info.target().asClass());
+          register(info.target().asClass());
         }
       }
 
-      // Search in plugins
+      // Search annotation in plugins
       for (File jarFile : cache.getPluginJars()) {
         IndexView index = cache.getIndex(jarFile);
         for (AnnotationInstance info : index.getAnnotations(annotationName)) {
-          results.add(info.target().asClass());
+          register(info.target().asClass());
         }
       }
-
     } catch (Exception e) {
-      throw new HopException("Error finding annotation " + annotationName, e);
+      throw new HopException("Error discovering annoted functions", e);
     }
-    return results;
-  }
-
-
-
-
-  private static void register(final Function function) {
-    register(function.getId(), function);
   }
 
   public static void register(final String name, final Function function) {
@@ -170,7 +141,7 @@ public class FunctionRegistry {
     return function;
   }
 
-  public static void reloadUserDefinedFunctions(IVariables variables) {
+  public static void registerUserDefinedFunctions(IVariables variables) {
     // Unregister User Defined Functions
     for (Function function : FunctionRegistry.getFunctions()) {
       if (function instanceof UserDefinedFunction) {

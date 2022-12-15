@@ -34,6 +34,6 @@ public class UdfProjectChangedExtensionPoint implements IExtensionPoint<Object> 
   public void callExtensionPoint(ILogChannel log, IVariables variables,
       Object project) throws HopException {
     
-    FunctionRegistry.reloadUserDefinedFunctions(variables);
+    FunctionRegistry.registerUserDefinedFunctions(variables);
   }
 }
