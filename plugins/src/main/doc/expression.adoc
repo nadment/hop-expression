@@ -306,6 +306,7 @@ Expression support most of the standard scalar functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/quarter.adoc[QUARTER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/radians.adoc[RADIANS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/random.adoc[RANDOM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_count.adoc[REGEXP_COUNT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_instr.adoc[REGEXP_INSTR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_like.adoc[REGEXP_LIKE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/regexp_replace.adoc[REGEXP_REPLACE]

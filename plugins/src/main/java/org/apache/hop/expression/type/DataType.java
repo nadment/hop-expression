@@ -101,7 +101,7 @@ public class DataType {
    */
   public DataTypeFamily getFamily() {
     return name.getFamily();
-  };
+  }
   
   /**
    * Gets the precision of this type.

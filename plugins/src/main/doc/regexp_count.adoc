@@ -14,13 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= REGEXP_SUBSTR
+= REGEXP_COUNT
 
-Returns the substring that matches a regular expression within a string.
+Searches a string for a regular expression pattern and returns an integer that indicates the number of times the pattern occurs in the string.
 
 == Syntax
 ----
-REGEXP_SUBSTR( source, pattern [, position [, occurrence [, parameters ]]] )
+REGEXP_COUNT( source, pattern [, position [, parameters ]] )
 ----
 
 
@@ -29,16 +29,16 @@ REGEXP_SUBSTR( source, pattern [, position [, occurrence [, parameters ]]] )
 <source>:: The string to be searched for.
 <pattern>:: The regular expression pattern.
 <position>:: The position in the source string where the search starts. This argument is also optional. Default value is 1. 
-<occurrence>:: Specifies which occurrence of the pattern to match. This argument is also optional.
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
 * `m` Multi-line mode.
-Return type:: String
+Return type:: Integer
 
 == Usage
 
-* If no match is found, then the function returns NULL.
+* If no matches are found, then the function returns 0.
+
 
 
 

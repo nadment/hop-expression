@@ -54,10 +54,10 @@ public class RegexpReplaceFunction extends Function {
     if (v1 == null) {
       return null;
     }
-    String regexp = Coerse.toString(v1);
+    String pattern = Coerse.toString(v1);
 
     // An empty pattern matches nothing
-    if (regexp.length() == 0)
+    if (pattern.length() == 0)
       return input;
 
     // Default empty string
@@ -112,7 +112,7 @@ public class RegexpReplaceFunction extends Function {
       }
 
       Matcher matcher =
-          Pattern.compile(regexp, flags).matcher(input).region(position - 1, input.length());
+          Pattern.compile(pattern, flags).matcher(input).region(position - 1, input.length());
       if (occurrence == 0) {
         return matcher.replaceAll(replacement);
       } else {
@@ -129,7 +129,7 @@ public class RegexpReplaceFunction extends Function {
         return buffer.toString();
       }
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.REGEXP_REPLACE_ERROR, replacement);
     }

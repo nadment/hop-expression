@@ -2051,7 +2051,13 @@ public class FunctionsTest extends BaseExpressionTest {
 
     evalFails("Regexp_Replace()");
   }
-
+  @Test
+  public void Regexp_Count() throws Exception {
+    evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+')", 2);
+    evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', '\\d+', 20)", 1);
+    evalEquals("Regexp_Count('An apple costs 50 cents, a banana costs 10 cents.', 'CENTS', 1, 'i')", 2);    
+  }
+  
   @Test
   public void Regexp_Instr() throws Exception {
     evalEquals("Regexp_Instr('email@apache.org', '@[^.]*')", 6);
@@ -2077,7 +2083,7 @@ public class FunctionsTest extends BaseExpressionTest {
         "regexp_substr('It was the best of times, it was the worst of times.', 'the\\W+\\w+', 1, 2)",
         "the worst");
 
-    // evalEquals("regexp_substr('abc', '.b.')", "abc");
+    evalNull("regexp_substr('abc', 'z')");
     // evalEquals("regexp_substr('abc', '.b.', 0)", "abc");
     // evalNull("regexp_substr('abc', '.b.', 1)");
     // evalEquals("regexp_substr('abc', '([a-z])(b)', 1)", "a");

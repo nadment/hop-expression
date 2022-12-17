@@ -26,6 +26,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Regexp;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -54,9 +55,9 @@ public class RegexpLikeFunction extends Function {
     if (v1 == null) {
       return null;
     }
-    String regexp = Coerse.toString(v1);
+    String pattern = Coerse.toString(v1);
     // An empty pattern matches nothing
-    if (regexp.length() == 0)
+    if (pattern.length() == 0)
       return Boolean.FALSE;
 
     int flags = Pattern.UNICODE_CASE;
@@ -66,10 +67,10 @@ public class RegexpLikeFunction extends Function {
     }
 
     try {
-      Pattern pattern = Pattern.compile(regexp, flags);
-      return pattern.matcher(input).find();
+      Matcher matcher = Pattern.compile(pattern, flags).matcher(input);
+      return matcher.find();
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern);
     }
   }
 }
