@@ -55,19 +55,17 @@ public class ExpressionEditorDialog extends Dialog {
   }
   
   public String open(String expression, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaFutur) {
-    PropsUi props = PropsUi.getInstance();
-
     shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
-    props.setLook(shell);
+    PropsUi.setLook(shell);
     shell.setText(BaseMessages.getString(PKG, "ExpressionEditorDialog.Shell.Title"));
     shell.setImage(SwtSvgImageUtil.getImage(Display.getCurrent(), getClass().getClassLoader(),
         "expression.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE));
 
     FormLayout layout = new FormLayout();
-    layout.marginTop = props.getMargin();
-    layout.marginBottom = props.getMargin();
-    layout.marginLeft = props.getMargin();
-    layout.marginRight = props.getMargin();
+    layout.marginTop = PropsUi.getFormMargin();
+    layout.marginBottom = PropsUi.getFormMargin();
+    layout.marginLeft = PropsUi.getFormMargin();
+    layout.marginRight = PropsUi.getFormMargin();
     shell.setLayout(layout);
 
     Button btnCancel = new Button(shell, SWT.PUSH);
@@ -85,7 +83,7 @@ public class ExpressionEditorDialog extends Dialog {
     buttons.add(btnOK);
     buttons.add(btnCancel);
     BaseTransformDialog.positionBottomButtons(shell, buttons.toArray(new Button[0]),
-        props.getMargin(), null);
+        PropsUi.getMargin(), null);
     
     //ExpressionMode mode = (rowMetaFutur==null) ? ExpressionMode.NONE:ExpressionMode.ROW;
     
@@ -93,7 +91,7 @@ public class ExpressionEditorDialog extends Dialog {
     wEditor = new ExpressionEditor(shell, SWT.BORDER, variables, mode, rowMetaFutur);
     wEditor.setText(expression);
     wEditor.setLayoutData(
-        new FormDataBuilder().top().bottom(btnOK, -props.getMargin()).left().right().result());
+        new FormDataBuilder().top().bottom(btnOK, -PropsUi.getMargin()).left().right().result());
 
     BaseTransformDialog.setSize(shell);
 

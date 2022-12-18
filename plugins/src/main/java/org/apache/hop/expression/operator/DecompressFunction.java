@@ -56,7 +56,6 @@ public class DecompressFunction extends Function {
     byte[] bytes = Coerse.toBinary(v0);
 
 
-    int size = bytes.length;
     ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);
     // CompressionInputStream cis = provider.createInputStream(new ByteArrayInputStream(bytes));
     GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));

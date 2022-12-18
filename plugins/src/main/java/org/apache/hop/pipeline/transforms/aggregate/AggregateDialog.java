@@ -193,7 +193,7 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
 
     // Widget Transform name
     wTransformName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wTransformName.setLayoutData(new FormDataBuilder().top(label).left().right(icon, -props.getMargin()).result());
+    wTransformName.setLayoutData(new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, event -> input.setChanged());
 
     return composite;
@@ -304,7 +304,7 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     
     FormData fdAgg = new FormData();
     fdAgg.left = new FormAttachment(0, 0);
-    fdAgg.top = new FormAttachment(wlAgg, props.getMargin());
+    fdAgg.top = new FormAttachment(wlAgg, PropsUi.getMargin());
     fdAgg.right = new FormAttachment(100, 0);
     fdAgg.bottom = new FormAttachment(100, 0);
     wAggregate.setLayoutData(fdAgg);

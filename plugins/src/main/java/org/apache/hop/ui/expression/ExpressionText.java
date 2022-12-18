@@ -89,7 +89,7 @@ public class ExpressionText extends Composite {
     this.insertTextInterface = insertTextInterface;
     this.variables = variables;
 
-    PropsUi.getInstance().setLook(this);
+    PropsUi.setLook(this);
 
     final GridLayout layout = new GridLayout(2, false);
     layout.marginHeight = 0;

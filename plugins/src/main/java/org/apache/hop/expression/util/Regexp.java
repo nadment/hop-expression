@@ -94,9 +94,11 @@ public class Regexp {
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
+          // Enables dotall mode, that allows the period (.) to match the newline character. 
           case 'n':
             flags |= Pattern.DOTALL;
             break;
+          // Enables multiline mode.
           case 'm':
             flags |= Pattern.MULTILINE;
             break;

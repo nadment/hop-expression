@@ -95,7 +95,7 @@ public class ExpressionEditor extends Composite {
 
   protected void createEditor(final Composite parent) {
 
-    PropsUi.getInstance().setLook(this);
+    PropsUi.setLook(this);
     
     CompositeRuler ruler = new CompositeRuler(24);
     ruler.addDecorator(0, new LineNumberRulerColumn());
@@ -117,7 +117,7 @@ public class ExpressionEditor extends Composite {
         event.doit = false;
       }
     });
-    PropsUi.getInstance().setLook(sourceViewer.getTextWidget());
+    PropsUi.setLook(sourceViewer.getTextWidget());
     
     
     Menu menu = new Menu(getShell(), SWT.POP_UP);
@@ -166,7 +166,7 @@ public class ExpressionEditor extends Composite {
     // Tree
     tree = new Tree(parent, SWT.H_SCROLL | SWT.V_SCROLL);
     tree.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
-    PropsUi.getInstance().setLook(tree);
+    PropsUi.setLook(tree);
 
     // Create the drag source on the tree
     DragSource ds = new DragSource(tree, DND.DROP_MOVE);

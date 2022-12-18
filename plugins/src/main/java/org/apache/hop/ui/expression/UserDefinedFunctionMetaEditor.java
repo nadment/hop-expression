@@ -58,7 +58,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
 
     PropsUi props = PropsUi.getInstance();
 
-    int margin = Const.MARGIN;
+    int margin = PropsUi.getMargin();
 
     // Add listener to detect change after loading data
     Listener changedListener = e -> setChanged(); 
@@ -71,12 +71,12 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     fdlicon.top = new FormAttachment(0, 0);
     fdlicon.right = new FormAttachment(100, 0);
     wIcon.setLayoutData(fdlicon);
-    props.setLook(wIcon);
+    PropsUi.setLook(wIcon);
 
     // The name
     //
     Label wlName = new Label(parent, SWT.RIGHT);
-    props.setLook(wlName);
+    PropsUi.setLook(wlName);
     wlName.setText(BaseMessages.getString(PKG, "UdfDialog.Name.Label"));
     FormData fdlName = new FormData();
     fdlName.top = new FormAttachment(0, 0);
@@ -84,7 +84,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     wlName.setLayoutData(fdlName);
 
     wName = new Text(parent, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    props.setLook(wName);
+    PropsUi.setLook(wName);
     FormData fdName = new FormData();
     fdName.top = new FormAttachment(wlName, 5);
     fdName.left = new FormAttachment(0, 0);
@@ -102,7 +102,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     // The description of the user function...
     //
     Label wlDescription = new Label(parent, SWT.LEFT);
-    props.setLook(wlDescription);
+    PropsUi.setLook(wlDescription);
     wlDescription.setText(BaseMessages.getString(PKG, "UdfDialog.Description.Label"));
     FormData fdlDescription = new FormData();
     fdlDescription.top = new FormAttachment(spacer, margin);
@@ -110,7 +110,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     fdlDescription.right = new FormAttachment(100, 0);
     wlDescription.setLayoutData(fdlDescription);
     wDescription = new Text(parent, SWT.MULTI | SWT.LEFT | SWT.V_SCROLL | SWT.BORDER);
-    props.setLook(wDescription);
+    PropsUi.setLook(wDescription);
     FormData fdDescription = new FormData();
     fdDescription.height = 50;
     fdDescription.top = new FormAttachment(wlDescription, margin);
@@ -123,7 +123,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     //
     Label wlArguments = new Label(parent, SWT.NONE);
     wlArguments.setText(BaseMessages.getString(PKG, "UdfDialog.Arguments.Label"));
-    props.setLook(wlArguments);
+    PropsUi.setLook(wlArguments);
     FormData fdlParams = new FormData();
     fdlParams.left = new FormAttachment(0, 0);
     fdlParams.top = new FormAttachment(wDescription, margin * 2);
@@ -151,7 +151,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     //
     Label wlExpression = new Label(parent, SWT.NONE);
     wlExpression.setText(BaseMessages.getString(PKG, "UdfDialog.Expression.Label"));
-    props.setLook(wlExpression);
+    PropsUi.setLook(wlExpression);
     FormData fdlSource = new FormData();
     fdlSource.left = new FormAttachment(0, 0);
     fdlSource.top = new FormAttachment(wArguments, margin * 2);

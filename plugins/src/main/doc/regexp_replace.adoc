@@ -33,6 +33,8 @@ REGEXP_REPLACE( source, pattern [, replacement [, position [, occurrence [, para
 <parameters>:: One or more string literals that indicate how the function matches the pattern.
 * `c` Case-sensitive matching.
 * `i` Case-insensitive matching.
+* `m` Multi-line mode.
+* `n` allows the period (.) which is the match-any-character character, to match the newline character. 
 
 Return type:: String
 

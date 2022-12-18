@@ -34,9 +34,6 @@ import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -120,8 +117,8 @@ public class ExpressionBenchmark {
     return expression.getValue(context);
   }
 
-  //@Benchmark
- // @BenchmarkMode(Mode.AverageTime)
+  @Benchmark
+  @BenchmarkMode(Mode.AverageTime)
   public void performance() throws Exception {
     eval("AGE>10 or AMOUNT between 123000 and 200200");
   }
