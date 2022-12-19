@@ -24,7 +24,6 @@ import org.apache.hop.metadata.api.IHopMetadataSerializer;
 import org.apache.hop.metadata.util.HopMetadataUtil;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import java.io.File;
 import java.util.HashMap;
@@ -66,7 +65,7 @@ public class FunctionRegistry {
    */
   private FunctionRegistry() {}
 
-  private static void register(ClassInfo classInfo) {
+  private static void register(final ClassInfo classInfo) {
     try {
       String className = classInfo.name().toString();
       Class<?> clazz = FunctionRegistry.class.getClassLoader().loadClass(className);
@@ -90,13 +89,12 @@ public class FunctionRegistry {
    */
   public static void registerBuilInFunctions() throws HopException {
     JarCache cache = JarCache.getInstance();
-    DotName annotationName = DotName.createSimple(FunctionPlugin.class.getName());
 
     try {
       // Search annotation in native jar
       for (File jarFile : cache.getNativeJars()) {
         IndexView index = cache.getIndex(jarFile);
-        for (AnnotationInstance info : index.getAnnotations(annotationName)) {
+        for (AnnotationInstance info : index.getAnnotations(FunctionPlugin.class)) {
           register(info.target().asClass());
         }
       }
@@ -104,7 +102,7 @@ public class FunctionRegistry {
       // Search annotation in plugins
       for (File jarFile : cache.getPluginJars()) {
         IndexView index = cache.getIndex(jarFile);
-        for (AnnotationInstance info : index.getAnnotations(annotationName)) {
+        for (AnnotationInstance info : index.getAnnotations(FunctionPlugin.class)) {
           register(info.target().asClass());
         }
       }
