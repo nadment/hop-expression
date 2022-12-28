@@ -162,6 +162,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       } catch (ExpressionException e) {
         String message = BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
             field.getName(), field.getExpression(), e.getMessage());
+        this.logError(message);        
       }
     }
 

@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.operator.AddDaysFunction;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenOperator;
@@ -129,6 +130,7 @@ public class Operators {
   public static final Function TO_CHAR = new ToCharFunction();
   public static final Function TO_NUMBER = new ToNumberFunction();
   public static final Function JSON_OBJECT = new JsonObjectFunction();
+  public static final Function ADD_DAYS = new AddDaysFunction();
 
   // -------------------------------------------------------------
   // AGGREGATE FUNCTIONS with custom syntax 

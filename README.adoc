@@ -59,7 +59,7 @@ end
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` `LIKE` `ILIKE`
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Scalar functions (conditional, mathematical, trigonometry, conversion, bitwise...).
+* Over 150 scalar functions (conditional, mathematical, trigonometry, conversion, bitwise...).
 * Aggregate functions `AVG` `COUNT` `MIN` `MAX` `FIRST_VALUE` `LAST_VALUE` `STDDEV_SAMP` `STDDEV_POP` `PERCENTILE` `VARIANCE_POP` `VARIANCE_SAMP`
 * User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading

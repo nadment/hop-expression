@@ -101,12 +101,13 @@ public class ExpressionTest extends BaseExpressionTest {
     assertEquals(50, Operators.MULTIPLY.getRightPrecedence());
 
     // Arithmetic
-    evalEquals("3*5/2", ((3 * 5) / 2d));
-    evalEquals("9/3*3", (9 / 3) * 3);
-    evalEquals("1 + 2 * 3 * 4 + 5", ((1 + ((2 * 3) * 4)) + 5));
+    evalEquals("3*5/2",  3*5/2d);
+    evalEquals("9/3*3", 9d/3*3);
+    evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5);
     evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
     evalEquals("10*2+1", 21);
-    evalEquals("1+10*2", 21);
+    evalEquals("8+5-2*8", 8+5-2*8);
+    evalEquals("1+10*2", 1+10*2);
     evalEquals("10*(2+1)", 30);
     evalEquals("30/(5+5)", 3);
     evalEquals("42%(3+2)", 2);

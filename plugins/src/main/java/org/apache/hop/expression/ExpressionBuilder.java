@@ -518,14 +518,25 @@ public class ExpressionBuilder {
     return expression;
   }
 
-  /** BitwiseOrExpression ( (+ | - | ||) BitwiseOrExpression )* */
+  /** 
+   * BitwiseOrExpression ( (+ | - | ||) BitwiseOrExpression )*
+   **/
   private IExpression parseAdditive() throws ParseException {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
-      if (isThenNext(Id.PLUS)) {
-        expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
-      } else if (isThenNext(Id.MINUS)) {
-        expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
+      if (isThenNext(Id.PLUS)) {      
+       // Supports the basic addition and subtraction of days to DATE values, in the form of { + | - } <integer>        
+        if ( expression.getType()==DataTypeName.DATE ) {         
+          expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
+        } else {   
+          expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
+        }
+      } else if (isThenNext(Id.MINUS)) {        
+        if ( expression.getType()==DataTypeName.DATE ) {         
+          expression = new Call(Operators.ADD_DAYS, expression, new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
+        } else {   
+          expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
+        }
       } else if (isThenNext(Id.CONCAT)) {
         expression = new Call(Operators.CONCAT, expression, this.parseBitwiseOr());
       } else

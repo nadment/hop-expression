@@ -28,3 +28,10 @@ ADD_DAYS( date, integer )
 * Decimals are rounded before adding that number.
 * The number of days, can be a positive or negative integer to either add or subtract days, respectively.
 * Returns NULL if one of the arguments is NULL.
+* Expression also supports the addition and subtraction of days to DATE values, in the form of { + | - } <integer>.
+
+== Example
+----
+ADD_DAYS( Date '2022-05-24', -4 )
+Date '2022-05-24' - 4
+----

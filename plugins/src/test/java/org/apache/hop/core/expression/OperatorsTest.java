@@ -370,12 +370,13 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("PRICE+PRICE", -10.24);
     evalEquals("AMOUNT+1", 123456.789 + 1);
 
-    
-    
-    
-    //evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));
-    //evalEquals("Date '2019-02-25'+1.5", LocalDateTime.of(2019, 2, 26, 12, 0, 0));
-    //evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 5, 0));
+    // Addition and subtraction of days to DATE
+    evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
+    evalEquals("Date '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    // Only integer, round number
+    evalEquals("Date '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
+    evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
 
     evalNull("5+NULL+5");
     evalNull("+NULL+5");
