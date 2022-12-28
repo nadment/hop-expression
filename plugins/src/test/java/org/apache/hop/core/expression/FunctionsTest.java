@@ -1694,7 +1694,8 @@ public class FunctionsTest extends BaseExpressionTest {
 
     evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
-
+    evalEquals("To_Date('01/VII/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.JULY, 1));
+    
     evalEquals("To_Date('01/02/-100','DD/MM/SYYYY')", LocalDate.of(-100, 2, 1));
 
     evalEquals("To_Date('01/02/10','DD/MM/YY')", LocalDate.of(2010, 2, 1));
@@ -1728,7 +1729,8 @@ public class FunctionsTest extends BaseExpressionTest {
 
     // Trailing space
     evalEquals("To_Date('  2020-08','YYYY-MM')", LocalDate.of(2020, 8, 1));
-
+    evalEquals("To_Date(' 08- 2020','MM-SYYYY')", LocalDate.of(2020, 8, 1));
+    
     evalEquals("To_Date('01/2/0001','DD/MM/RRRR')", LocalDate.of(2001, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/2/52','DD/MM/RRRR')", LocalDate.of(1952, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/2/0923','DD/MM/RRRR')", LocalDate.of(923, Month.FEBRUARY, 1));
@@ -1743,7 +1745,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Date('2019-02-13','YYYY-MM-DD HH24:MI:SS')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 0, 0));
 
-    // Fractional seconds. FF0 (seconds), FF3 (milliseconds), FF6 (microseconds), FF9 (nanoseconds).
+    // Fractional seconds FF3 (milliseconds), FF or FF6 (microseconds), FF9 (nanoseconds).
     evalEquals("To_Date('2019-02-13 19:34:56.123456','YYYY-MM-DD HH24:MI:SS.FF')",
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 19, 34, 56, 123456000));
     evalEquals("To_Date('2019-02-13 19:34:56.123','YYYY-MM-DD HH24:MI:SS.FF3')",
@@ -1768,7 +1770,14 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Date('1721426','J')", LocalDate.of(1, 1, 1));
     evalEquals("To_Date('1001426','J')", LocalDate.of(-1971, 9, 16));
 
-
+    
+    // FX    
+    //evalEquals("To_Date('15/ 02 /2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    //evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')");
+    evalFails("To_Date('01-02-2020','FXDD/MM/YYYY')");
+    //evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
+    //evalEquals("To_Date('1/02/2020','FXFMDD-MON-YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    
     // Is interpreted as 10 February 2003
     // evalEquals("To_Date('06-2003-MON','WW-YYYY-DY')", LocalDate.of(2003, 2, 10));
 
@@ -1782,9 +1791,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Date('2009-12-24 11:00:00 PM','YYYY-MM-DD HH12:MI:SS AM')",
         LocalDateTime.of(2009, 12, 24, 23, 0, 0));
 
-
     // Is interpreted as 12 May 2003, 00:00:10.123
-    // evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3');
+    evalEquals("To_Date('2000_MAY_12 10.123','YYYY_MONTH_DD SS.FF3')", LocalDateTime.of(2000, 5, 12, 0, 0, 10, 123000000));
 
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
 
@@ -2566,9 +2574,6 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Count() throws Exception {
-    // evalEquals("Exp(1)", Math.E);
-    // evalEquals("Exp(2)", Math.E * Math.E);
-    // evalNull("COUNT(NULL)");
     evalFails("Count()");
     evalFails("Count(DISTINCT )");
     evalFails("Count(1,2)");
@@ -2580,9 +2585,6 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void CountIf() throws Exception {
-    // evalEquals("Exp(1)", Math.E);
-    // evalEquals("Exp(2)", Math.E * Math.E);
-    // evalNull("COUNT(NULL)");
     evalFails("CountIf()");
     evalFails("CountIf(FIELD_DATE)");
     evalFails("CountIf(1,2)");

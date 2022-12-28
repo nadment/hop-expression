@@ -33,7 +33,6 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.JulianFields;
-import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -253,6 +252,11 @@ import java.util.Locale;
  */
 /* package */ class ZonedDateTimeFormat extends DateTimeFormat {
 
+  private static final String[] SHORT_MONTHS =
+      {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+  private static final String[] MONTHS = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+      "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
+
   private interface Format {
     /**
      * Appends the value of the specified calendar to the output buffer based on the rule
@@ -262,13 +266,17 @@ import java.util.Locale;
      * @param calendar calendar to be appended
      * @throws Exception if an error occurs.
      */
-    void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception;
+    public void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception;
+
+    public default void parse(DateTimeParser parser) throws ParseException {
+
+    }
   }
 
   private static class StringFormat implements Format {
     private final String value;
 
-    StringFormat(final String value) {
+    public StringFormat(final String value) {
       this.value = value;
     }
 
@@ -276,12 +284,19 @@ import java.util.Locale;
     public void append(final StringBuilder buffer, final ZonedDateTime datetime) throws Exception {
       buffer.append(value);
     }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      parser.index += value.length();
+    }
   }
 
   private static class CharFormat implements Format {
+    private boolean exactMode;
     private final char ch;
 
-    CharFormat(final char ch) {
+    public CharFormat(boolean exactMode, final char ch) {
+      this.exactMode = exactMode;
       this.ch = ch;
     }
 
@@ -289,9 +304,20 @@ import java.util.Locale;
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       output.append(ch);
     }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      char c = parser.parseChar();
+      if (exactMode && ch != c) {
+        // TODO: Translate
+        throw new ParseException("Parse date error", parser.index);
+      }
+    }
   }
 
   private static class AdBcFormat implements Format {
+    private static final String[] AD_BC = {"AD", "A.D.", "BC", "B.C."};
+    
     private String ad;
     private String bc;
 
@@ -300,8 +326,21 @@ import java.util.Locale;
       this.bc = cap.apply(bc);
     }
 
+    @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append((datetime.getYear() > 0) ? ad : bc);
+    }
+
+    @Override
+    public void parse(DateTimeParser parser) throws ParseException {
+      String str = parser.parseString(AD_BC);
+      if (str != null) {
+        if (str.charAt(0) == 'B') {
+          parser.bc = true;
+        }
+        parser.isDayOfYear = false;
+        parser.isEpochDay = false;
+      }
     }
   }
 
@@ -314,6 +353,7 @@ import java.util.Locale;
       this.signed = signed;
     }
 
+    @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       int year = datetime.getYear();
       int century = FastMath.abs(year) / 100;
@@ -337,17 +377,18 @@ import java.util.Locale;
     }
   }
 
-  private static class YearWordFormat implements Format {
+  private static class WordYearFormat implements Format {
     private final Capitalization cap;
     private final boolean fillMode;
     private final boolean signed;
 
-    public YearWordFormat(Capitalization cap, boolean fillMode, boolean signed) {
+    public WordYearFormat(Capitalization cap, boolean fillMode, boolean signed) {
       this.cap = cap;
       this.fillMode = fillMode;
       this.signed = signed;
     }
 
+    @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       int year = datetime.getYear();
       int absyear = FastMath.abs(year);
@@ -364,18 +405,48 @@ import java.util.Locale;
   }
 
   private static class RomanMonthFormat implements Format {
+    private static final String[] ROMAN_MONTHS =
+      {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
+    
     private final Capitalization cap;
 
     public RomanMonthFormat(Capitalization cap) {
       this.cap = cap;
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       output.append(cap.apply(RomanNumeral.format(datetime.getMonthValue())));
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      int index = parser.index;
+
+      int len = 0;
+      while (len < 4) {
+        char c = Character.toUpperCase(parser.text.charAt(index + len));
+        if (c != 'I' && c != 'V' && c != 'X') {
+          break;
+        }
+        len++;
+      }
+
+      for (int i = 0; i < ROMAN_MONTHS.length; i++) {
+        if (parser.text.regionMatches(true, index, ROMAN_MONTHS[i], 0, len)) {
+          parser.index += len;
+          parser.month = i + 1;
+          return;
+        }
+      }
+
+      throw new ParseException("Invalid roman month when parsing date with format RM", index);
     }
   }
 
   private static class MeridianFormat implements Format {
+    private static final String[] AM_PM = {"AM", "A.M.", "PM", "P.M."};
+
     private final String am;
     private final String pm;
 
@@ -384,14 +455,42 @@ import java.util.Locale;
       this.pm = cap.apply(pm);
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       output.append((datetime.getHour() < 12) ? am : pm);
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      String str = parser.parseString(AM_PM);
+      if (str != null) {
+        if (str.charAt(0) == 'P')
+          parser.isPM = true;
+        parser.isHourFormat12 = true;
+      }
     }
   }
 
   private static class TimeZoneRegionFormat implements Format {
+    @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append(datetime.getZone().toString());
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      int i = parser.index;
+      char ch;
+      while (i < parser.text.length()) {
+        ch = parser.text.charAt(i);
+        if (!(Character.isLetter(ch) || ch == '/'))
+          break;
+        i++;
+      }
+
+      String zone = parser.text.substring(parser.index, i);
+      parser.zoneId = ZoneId.of(zone);
+      parser.index = i;
     }
   }
 
@@ -401,20 +500,42 @@ import java.util.Locale;
     }
   }
 
+  // Time zone hour [+-][0]0
   private static class TimeZoneHourFormat implements Format {
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       ZoneOffset offset = datetime.getOffset();
       int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
       output.append(hours < 0 ? '-' : '+');
       appendDigits(output, FastMath.abs(hours));
     }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+
+      // Skip space
+      // int i = parser.position.getIndex();
+      // if (Characters.isSpace(text.charAt(i)))
+      // position.setIndex(++i);
+
+      parser.timeZoneHour = parser.parseSignedInt(3);
+      parser.isTimeZoneOffset = true;
+    }
   }
 
   private static class TimeZoneMinuteFormat implements Format {
-    public void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder buffer, final ZonedDateTime datetime) throws Exception {
       ZoneOffset offset = datetime.getOffset();
       int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
       appendDigits(buffer, FastMath.abs(minutes));
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      parser.timeZoneMinute = parser.parseInt(2);
+      parser.isTimeZoneOffset = true;
     }
   }
 
@@ -425,7 +546,8 @@ import java.util.Locale;
       this.formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       output.append(datetime.format(formatter));
     }
   }
@@ -437,7 +559,8 @@ import java.util.Locale;
       formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       output.append(datetime.format(formatter));
     }
   }
@@ -451,15 +574,27 @@ import java.util.Locale;
       this.formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
     }
 
+    @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append(cap.apply(datetime.format(formatter)));
     }
   }
 
   private static class JulianDayFormat implements Format {
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    /** The offset from Julian to EPOCH DAY. */
+    private static final long JULIAN_DAY_OFFSET = 2440588L;
+    
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       long julianDay = datetime.getLong(JulianFields.JULIAN_DAY);
       output.append(julianDay);
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      parser.epochDay = parser.parseInt(7) - JULIAN_DAY_OFFSET;
+      parser.isDayOfYear = false;
+      parser.isEpochDay = true;
     }
   }
 
@@ -467,18 +602,157 @@ import java.util.Locale;
    * Inner class to output the twelve hour field.
    */
   private static class Hour12Format implements Format {
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int h12 = (datetime.getHour() + 11) % 12 + 1;
       appendDigits(output, h12);
     }
-  }
 
-  private static class Hour24Format implements Format {
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
-      appendDigits(output, datetime.getHour());
+    @Override
+    public void parse(final DateTimeParser parser) {
+      parser.hour = parser.parseInt(2);
+      parser.isHourFormat12 = true;
     }
   }
 
+  // Hour of day (1-23)
+  private static class Hour24Format implements Format {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      appendDigits(output, datetime.getHour());
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      parser.hour = parser.parseInt(2);
+      parser.isHourFormat12 = false;
+    }
+  }
+
+  private static class MinuteFormat implements Format {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      appendDigits(output, datetime.getMinute());
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      parser.minute = parser.parseInt(2);
+    }
+  }
+
+  private static class DayOfMonthFormat implements Format {
+    private final boolean fillMode;
+    private final boolean exactMode;
+    
+    public DayOfMonthFormat(boolean fillMode, boolean exactMode) {
+      this.fillMode = fillMode;
+      this.exactMode = exactMode;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int day = datetime.getDayOfMonth();
+      if (fillMode) {
+        appendDigits(output, day);
+      } else {
+        output.append(day);
+      }
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      parser.day = parser.parseInt(2);
+      parser.isDayOfYear = false;
+      parser.isEpochDay = false;
+    }
+  }
+
+  private static class MonthFormat implements Format {
+    protected final boolean fillMode;
+    protected final boolean exactMode;
+
+    public MonthFormat(boolean fillMode, boolean exactMode) {
+      this.fillMode = fillMode;
+      this.exactMode = exactMode;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int month = datetime.getMonthValue();
+      if (fillMode) {
+        appendDigits(output, month);
+      } else {
+        output.append(month);
+      }
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      try {
+        parser.month = parser.parseInt(2);
+      } catch (NumberFormatException e) {
+        if ( exactMode ) {
+          // TODO: Translate
+          throw new ParseException("Parse date error", parser.index);
+        }
+        
+        // Rule to try alternate format MONTH and MON
+        parseNameOfMonth(parser);
+      }
+      parser.isDayOfYear = false;
+      parser.isEpochDay = false;
+    }
+
+    public void parseNameOfMonth(final DateTimeParser parser) throws ParseException {
+      // Rule to try alternate format MONTH
+      int index = parser.index;
+      int month = 1;
+      for (String name : MONTHS) {
+        if (parser.text.regionMatches(true, index, name, 0, name.length())) {
+          parser.index += name.length();
+          parser.month = month;
+          return;
+        }
+        month++;
+      }
+
+      // Rule to try alternate format MON
+      month = 1;
+      for (String name : SHORT_MONTHS) {
+        if (parser.text.regionMatches(true, index, name, 0, name.length())) {
+          parser.index += name.length();
+          parser.month = month;
+          return;
+        }
+        month++;
+      }
+
+      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"), index);
+    }
+  }
+
+  private static class SecondOfDayFormat implements Format {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int seconds = datetime.get(ChronoField.SECOND_OF_DAY);
+      appendZeroPadded(output, seconds, 5);
+    }
+  }
+
+  private static class SecondOfMinuteFormat implements Format {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      appendDigits(output, datetime.getSecond());
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      parser.second = parser.parseInt(2);
+    }
+  }
+
+  // Day of year (1-366)
   private static class DayOfYearFormat implements Format {
     private final boolean fillMode;
 
@@ -486,7 +760,8 @@ import java.util.Locale;
       this.fillMode = fillMode;
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int doy = datetime.getDayOfYear();
       if (fillMode) {
         appendZeroPadded(output, doy, 3);
@@ -494,39 +769,102 @@ import java.util.Locale;
         output.append(doy);
       }
     }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      parser.dayOfYear = parser.parseInt(3);
+      parser.isDayOfYear = true;
+      parser.isEpochDay = false;
+    }
   }
 
   private static class DayOfWeekFormat implements Format {
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int dof = (datetime.getDayOfWeek().getValue() + 1) % 7;
       output.append((char) (dof + '0'));
     }
   }
 
-  private static class YearFormat implements Format {
-    private final TemporalField field;
+  private static class WeekOfMonthFormat implements Format {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int week = datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+      output.append((char) (week + '0'));
+    }
+  }
+
+  private static class WeekOfYearFormat implements Format {
     private final boolean fillMode;
-    private final boolean signed;
+
+    public WeekOfYearFormat(boolean fillMode) {
+      this.fillMode = fillMode;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int week = datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+      if (fillMode) {
+        appendDigits(output, week);
+      } else {
+        output.append((char) (week + '0'));
+      }
+    }
+  }
+
+  private static class QuarterFormat implements Format {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int quarter = datetime.get(IsoFields.QUARTER_OF_YEAR);
+      output.append((char) (quarter + '0'));
+    }
+  }
+
+  private static class SignedYearFormat implements Format {
+    private final boolean fillMode;
+
+    public SignedYearFormat(boolean fillMode) {
+      this.fillMode = fillMode;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int year = datetime.getYear();
+      int value = FastMath.abs(year);
+
+      if (year < 0) {
+        output.append('-');
+      } else if (fillMode) {
+        output.append(' ');
+      }
+
+      if (fillMode) {
+        appendZeroPadded(output, value, 4);
+      } else {
+        output.append(value);
+      }
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      parser.year = parser.parseSignedInt(5);
+      parser.isEpochDay = false;
+    }
+  }
+
+  private class YearFormat implements Format {
+    private final boolean fillMode;
     private final int length;
 
-    public YearFormat(TemporalField field, boolean fillMode, boolean signed, int length) {
-      this.field = field;
+    public YearFormat(boolean fillMode, int length) {
       this.fillMode = fillMode;
-      this.signed = signed;
       this.length = length;
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
-      int year = datetime.get(field);
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int year = datetime.getYear();
       int value = FastMath.abs(year);
-
-      if (signed) {
-        if (year < 0) {
-          output.append('-');
-        } else if (fillMode) {
-          output.append(' ');
-        }
-      }
 
       switch (length) {
         case 4:
@@ -555,49 +893,150 @@ import java.util.Locale;
           break;
       }
     }
-  }
 
-  private static class NanoFormat implements Format {
-    private final int length;
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      if (length == 4) {
+        parser.year = parser.parseInt(4);
+      } else {
+        int year = parser.parseInt(2);
+        year += (year < twoDigitYearStart - 1900) ? 2000 : 1900;
+        parser.year = year;
 
-    public NanoFormat(int length) {
-      this.length = length;
+      }
+
+      parser.isEpochDay = false;
     }
-
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
-      int nanos = datetime.getNano();
-      int scale = (int) (nanos * FastMath.pow(10d, length - 9d));
-      appendZeroPadded(output, scale, length);
-    }
   }
-
-  private static class FieldFormat implements Format {
-    private final TemporalField field;
+  private class RoundYearFormat implements Format {
     private final boolean fillMode;
     private final int length;
 
-    public FieldFormat(TemporalField field, boolean fillMode, int length) {
-      this.field = field;
+    public RoundYearFormat(boolean fillMode, int length) {
       this.fillMode = fillMode;
       this.length = length;
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
-      int value = datetime.get(field);
-      if (fillMode) {
-        switch (length) {
-          case 1:
-            output.append((char) (value + '0'));
-            break;
-          case 2:
-            appendDigits(output, value);
-            break;
-          default:
-            appendZeroPadded(output, value, length);
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int year = datetime.getYear();
+      int value = FastMath.abs(year);
+
+      if (length == 4) {
+        if (fillMode) {
+          appendZeroPadded(output, value, 4);
+        } else {
+          output.append(value);
         }
       } else {
-        output.append(value);
+        if (fillMode) {
+          appendDigits(output, value % 100);
+        } else {
+          output.append(value % 100);
+        }
       }
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+
+      int year = parser.parseInt(length);
+
+      // Years between 00-49 will be given the 21st century (the year 2000)
+      if (year >= 0 && year <= 49)
+        year += 2000;
+      // Years between 50-99 will be given the 20th century (the year 1900).
+      else if (year >= 50 && year <= 99)
+        year += 1900;
+
+      parser.year = year;
+      parser.isEpochDay = false;
+    }
+  }
+
+  private static class IsoYearFormat implements Format {
+    private final boolean fillMode;
+    private final int length;
+
+    public IsoYearFormat(boolean fillMode, int length) {
+      this.fillMode = fillMode;
+      this.length = length;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int year = FastMath.abs(datetime.get(IsoFields.WEEK_BASED_YEAR));
+
+      switch (length) {
+        case 4:
+          if (fillMode) {
+            appendZeroPadded(output, year, 4);
+          } else {
+            output.append(year);
+          }
+          break;
+        case 3:
+          if (fillMode) {
+            appendZeroPadded(output, year % 1000, 3);
+          } else {
+            output.append(year % 1000);
+          }
+          break;
+        case 2:
+          if (fillMode) {
+            appendDigits(output, year % 100);
+          } else {
+            output.append(year % 100);
+          }
+          break;
+        case 1:
+          output.append(year % 10);
+          break;
+      }
+    }
+  }
+
+  private static class IsoWeekFormat implements Format {
+    private final boolean fillMode;
+
+    public IsoWeekFormat(boolean fillMode) {
+      this.fillMode = fillMode;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int week = datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+      if (fillMode) {
+        appendDigits(output, week);
+      } else {
+        output.append((char) (week + '0'));
+      }
+    }
+  }
+
+  private static class NanoFormat implements Format {
+    private final int scale;
+
+    public NanoFormat(int scale) {
+      this.scale = scale;
+    }
+
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
+      int nano = datetime.getNano();
+      if (scale < 9) {
+        nano /= (int) FastMath.pow(10d, 9 - scale);
+      }
+      appendZeroPadded(output, nano, scale);
+    }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      int nano = parser.parseInt(scale);
+      if (scale < 9) {
+        nano *= (int) FastMath.pow(10d, 9 - scale);
+      }
+      parser.nano = nano;
     }
   }
 
@@ -606,13 +1045,14 @@ import java.util.Locale;
     private final boolean fillMode;
     private final TextStyle style;
 
-    public NameOfDayFormat(Capitalization cap, boolean fillMode, boolean abbreviated) {
+    public NameOfDayFormat(Capitalization cap, boolean fillMode, TextStyle style) {
       this.cap = cap;
       this.fillMode = fillMode;
-      this.style = (abbreviated) ? TextStyle.SHORT : TextStyle.FULL;
+      this.style = style;
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       String name = cap.apply(datetime.getDayOfWeek().getDisplayName(style, Locale.ENGLISH));
       if (fillMode) {
         name = StringUtils.rightPad(name, "Wednesday".length(), ' ');
@@ -622,18 +1062,18 @@ import java.util.Locale;
     }
   }
 
-  private static class NameOfMonthFormat implements Format {
+  private static class NameOfMonthFormat extends MonthFormat {
     private final Capitalization cap;
-    private final boolean fillMode;
     private final TextStyle style;
 
-    public NameOfMonthFormat(Capitalization cap, boolean fillMode, boolean abbreviated) {
+    public NameOfMonthFormat(Capitalization cap, boolean fillMode, boolean exactMode, TextStyle style) {
+      super(fillMode, exactMode);
       this.cap = cap;
-      this.fillMode = fillMode;
-      this.style = (abbreviated) ? TextStyle.SHORT : TextStyle.FULL;
+      this.style = style;
     }
 
-    public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
+    @Override
+    public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       String name = datetime.getMonth().getDisplayName(style, Locale.ENGLISH);
       name = cap.apply(name);
       // Abbreviated mode doesn't use fillMode
@@ -642,22 +1082,12 @@ import java.util.Locale;
       }
       output.append(name);
     }
+
+    @Override
+    public void parse(final DateTimeParser parser) throws ParseException {
+      super.parseNameOfMonth(parser);
+    }
   }
-
-  /** The offset from Julian to EPOCH DAY. */
-  private static final long JULIAN_DAY_OFFSET = 2440588L;
-
-  private static final String[] ROMAN_MONTHS =
-      {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
-
-  private static final String[] SHORT_MONTHS =
-      {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-  private static final String[] MONTHS = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
-      "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
-
-  private static final String[] AM_PM = {"AM", "A.M.", "PM", "P.M."};
-
-  private static final String[] AD_BC = {"AD", "A.D.", "BC", "B.C."};
 
   /** Minutes per hour. */
   private static final int MINUTES_PER_HOUR = 60;
@@ -699,7 +1129,7 @@ import java.util.Locale;
     int length = pattern.length();
     int index = 0;
     boolean fillMode = true;
-    boolean laxMode = true;
+    boolean exactMode = false;
     Capitalization cap;
 
     while (index < length) {
@@ -715,7 +1145,7 @@ import java.util.Locale;
       // Exact match modifier; toggles between lax and exact match modes for any
       // elements following the modifier in the model
       if (startsWithIgnoreCase(pattern, index, "FX")) {
-        laxMode = !laxMode;
+        exactMode = !exactMode;
         index += 2;
         continue;
       }
@@ -723,7 +1153,7 @@ import java.util.Locale;
       // Special characters
       char ch = pattern.charAt(index);
       if (" =/\\\\-_:,.;()".indexOf(ch) >= 0) {
-        list.add(new CharFormat(ch));
+        list.add(new CharFormat(exactMode, ch));
         index++;
         continue;
       }
@@ -806,70 +1236,70 @@ import java.util.Locale;
 
       // Week of year (1-52 or 1-53) based on the ISO standard
       if (startsWithIgnoreCase(pattern, index, "IW")) {
-        list.add(new FieldFormat(IsoFields.WEEK_OF_WEEK_BASED_YEAR, fillMode, 2));
+        list.add(new IsoWeekFormat(fillMode));
         index += 2;
         continue;
       }
 
       // 4-digit year based on the ISO standard
       if (startsWithIgnoreCase(pattern, index, "IYYY")) {
-        list.add(new YearFormat(IsoFields.WEEK_BASED_YEAR, fillMode, false, 4));
+        list.add(new IsoYearFormat(fillMode, 4));
         index += 4;
         continue;
       }
 
       // Last 3 digits of ISO year
       if (startsWithIgnoreCase(pattern, index, "IYY")) {
-        list.add(new YearFormat(IsoFields.WEEK_BASED_YEAR, fillMode, false, 3));
+        list.add(new IsoYearFormat(fillMode, 3));
         index += 3;
         continue;
       }
 
       // Last 2 digits of ISO year
       if (startsWithIgnoreCase(pattern, index, "IY")) {
-        list.add(new YearFormat(IsoFields.WEEK_BASED_YEAR, fillMode, false, 2));
+        list.add(new IsoYearFormat(fillMode, 2));
         index += 2;
         continue;
       }
 
       // Last 1 digits of ISO year
       if (startsWithIgnoreCase(pattern, index, "I")) {
-        list.add(new YearFormat(IsoFields.WEEK_BASED_YEAR, fillMode, false, 1));
+        list.add(new IsoYearFormat(fillMode, 1));
         index += 2;
         continue;
       }
 
       // Minute (0-59)
       if (startsWithIgnoreCase(pattern, index, "MI")) {
-        list.add(new FieldFormat(ChronoField.MINUTE_OF_HOUR, true, 2));
+        list.add(new MinuteFormat());
         index += 2;
         continue;
       }
 
       // Quarter of year (1, 2, 3, 4; January - March = 1)
       if (startsWithIgnoreCase(pattern, index, "Q")) {
-        list.add(new FieldFormat(IsoFields.QUARTER_OF_YEAR, false, 1));
+        list.add(new QuarterFormat());
         index += 1;
         continue;
       }
 
       // Month (01-12; January = 01)
       if (startsWithIgnoreCase(pattern, index, "MM")) {
-        list.add(new FieldFormat(ChronoField.MONTH_OF_YEAR, fillMode, 2));
+        list.add(new MonthFormat(fillMode, exactMode));
         index += 2;
         continue;
       }
 
       // Full name of month, padded with blanks
       if ((cap = match(pattern, index, "MONTH")) != null) {
-        list.add(new NameOfMonthFormat(cap, fillMode, false));
+        list.add(new NameOfMonthFormat(cap, fillMode, exactMode, TextStyle.FULL));
         index += 5;
         continue;
       }
 
       // Abbreviated name of month
       if ((cap = match(pattern, index, "MON")) != null) {
-        list.add(new NameOfMonthFormat(cap, false, true));
+        list.add(new NameOfMonthFormat(cap, false, exactMode, TextStyle.SHORT));
         index += 3;
         continue;
       }
@@ -881,16 +1311,30 @@ import java.util.Locale;
         continue;
       }
 
+      // Rounded 4-digit year
+      if (startsWithIgnoreCase(pattern, index, "RRRR")) {
+        list.add(new RoundYearFormat(fillMode, 4));
+        index += 4;
+        continue;
+      }
+
+      // Rounded 2-digit year
+      if (startsWithIgnoreCase(pattern, index, "RR")) {
+        list.add(new RoundYearFormat(fillMode, 2));
+        index += 2;
+        continue;
+      }
+
       // Seconds of day (0-86399)
       if (startsWithIgnoreCase(pattern, index, "SSSSS")) {
-        list.add(new FieldFormat(ChronoField.SECOND_OF_DAY, true, 5));
+        list.add(new SecondOfDayFormat());
         index += 5;
         continue;
       }
 
       // Second of minute (0-59)
       if (startsWithIgnoreCase(pattern, index, "SS")) {
-        list.add(new FieldFormat(ChronoField.SECOND_OF_MINUTE, true, 2));
+        list.add(new SecondOfMinuteFormat());
         index += 2;
         continue;
       }
@@ -904,13 +1348,13 @@ import java.util.Locale;
 
       // 4-digit year; S prefixes BC dates with a minus sign.
       if (startsWithIgnoreCase(pattern, index, "SYYYY")) {
-        list.add(new YearFormat(ChronoField.YEAR, fillMode, true, 4));
+        list.add(new SignedYearFormat(fillMode));
         index += 5;
         continue;
       }
 
       if ((cap = match(pattern, index, "SYEAR")) != null) {
-        list.add(new YearWordFormat(cap, fillMode, true));
+        list.add(new WordYearFormat(cap, fillMode, true));
         index += 5;
         continue;
       }
@@ -924,14 +1368,14 @@ import java.util.Locale;
 
       // Abbreviated name of day
       if ((cap = match(pattern, index, "DY")) != null) {
-        list.add(new NameOfDayFormat(cap, false, true));
+        list.add(new NameOfDayFormat(cap, false, TextStyle.SHORT));
         index += 2;
         continue;
       }
 
       // Full name of day
       if ((cap = match(pattern, index, "DAY")) != null) {
-        list.add(new NameOfDayFormat(cap, fillMode, false));
+        list.add(new NameOfDayFormat(cap, fillMode, TextStyle.FULL));
         index += 3;
         continue;
       }
@@ -959,7 +1403,7 @@ import java.util.Locale;
 
       // Day of month (1-31)
       if (startsWithIgnoreCase(pattern, index, "DD")) {
-        list.add(new FieldFormat(ChronoField.DAY_OF_MONTH, fillMode, 2));
+        list.add(new DayOfMonthFormat(fillMode, exactMode));
         index += 2;
         continue;
       }
@@ -980,34 +1424,34 @@ import java.util.Locale;
 
       // Year
       if ((cap = match(pattern, index, "YEAR")) != null) {
-        list.add(new YearWordFormat(cap, fillMode, false));
+        list.add(new WordYearFormat(cap, fillMode, false));
         index += 4;
         continue;
       }
 
       // 4-digit year
-      if (startsWithIgnoreCase(pattern, index, "YYYY", "RRRR")) {
-        list.add(new YearFormat(ChronoField.YEAR, fillMode, false, 4));
+      if (startsWithIgnoreCase(pattern, index, "YYYY")) {
+        list.add(new YearFormat(fillMode, 4));
         index += 4;
         continue;
       }
 
       // Last 3 digits of year.
       if (startsWithIgnoreCase(pattern, index, "YYY")) {
-        list.add(new YearFormat(ChronoField.YEAR, fillMode, false, 3));
+        list.add(new YearFormat(fillMode, 3));
         index += 3;
         continue;
       }
       // Last 2 digits of year.
       if (startsWithIgnoreCase(pattern, index, "YY", "RR")) {
-        list.add(new YearFormat(ChronoField.YEAR, fillMode, false, 2));
+        list.add(new YearFormat(fillMode, 2));
         index += 2;
         continue;
       }
 
       // Last 1 digit of year.
       if (startsWithIgnoreCase(pattern, index, "Y", "R")) {
-        list.add(new YearFormat(ChronoField.YEAR, fillMode, false, 1));
+        list.add(new YearFormat(fillMode, 1));
         index += 1;
         continue;
       }
@@ -1015,7 +1459,7 @@ import java.util.Locale;
       // Aligned week of year (1-53) where week 1 starts on the first day of the year and
       // continues to the seventh day of the year.
       if (startsWithIgnoreCase(pattern, index, "WW")) {
-        list.add(new FieldFormat(ChronoField.ALIGNED_WEEK_OF_YEAR, fillMode, 2));
+        list.add(new WeekOfYearFormat(fillMode));
         index += 2;
         continue;
       }
@@ -1023,7 +1467,7 @@ import java.util.Locale;
       // Aligned week of month (1-5) where week 1 starts on the first day of the month and ends on
       // the seventh.
       if (startsWithIgnoreCase(pattern, index, "W")) {
-        list.add(new FieldFormat(ChronoField.ALIGNED_WEEK_OF_MONTH, false, 1));
+        list.add(new WeekOfMonthFormat());
         index += 2;
         continue;
       }
@@ -1065,7 +1509,8 @@ import java.util.Locale;
 
       // Local radix character
       if (startsWithIgnoreCase(pattern, index, "X")) {
-        list.add(new CharFormat(DecimalFormatSymbols.getInstance(locale).getDecimalSeparator()));
+        list.add(new CharFormat(exactMode,
+            DecimalFormatSymbols.getInstance(locale).getDecimalSeparator()));
         index += 1;
         continue;
       }
@@ -1076,425 +1521,25 @@ import java.util.Locale;
 
     return list.toArray(new Format[0]);
   }
-
-
+ 
   public ZonedDateTime parse(String text) throws ParseException {
 
-    ParsePosition position = new ParsePosition(0);
+    DateTimeParser parser = new DateTimeParser(text);
 
     // start at the first not white space symbol
-    for (int start = position.getIndex(); start < text.length(); start++) {
-      if (!Character.isSpaceChar(text.charAt(start))) {
-        position.setIndex(start);
-        break;
-      }
-    }
+    // for (int start = position.getIndex(); start < text.length(); start++) {
+    // if (!Character.isSpaceChar(text.charAt(start))) {
+    // position.setIndex(start);
+    // break;
+    // }
+    // }
 
-    boolean bc = false;
-    long epochDay = 0;
-    // Default minimum year if omitted
-    int year = 1970;
-    // Default minimum month if omitted
-    int month = 1;
-    // Default minimum day if omitted
-    int day = 1;
-    int dayOfYear = 0;
-    int hour = 0;
-    int minute = 0;
-    int second = 0;
-    int nanos = 0;
-    int timeZoneHour = 0;
-    int timeZoneMinute = 0;
-
-    boolean isPM = false;
-    boolean isHourFormat12 = false;
-    boolean isEpochDay = false;
-    boolean isDayOfYear = false;
-    boolean isTimeZoneOffset = false;
-    ZoneId zoneId = null;
-
-    int length = pattern.length();
-    int index = 0;
-    while (index < length) {
-
-      // Ignore case for parsing
-      char c = Character.toUpperCase(pattern.charAt(index));
-
-      // Use first letter for optimization
-      switch (c) {
-
-        // Ignore space and punctuation such as hyphen (-), slash (/), comma (,), period
-        // (.) and colons (:)
-        case ' ':
-        case '-':
-        case '_':
-        case '/':
-        case ',':
-        case '.':
-        case ';':
-        case ':':
-        case '\\':
-          index++;
-          position.setIndex(position.getIndex() + 1);
-          continue;
-
-        case 'A':
-          // Meridian indicator
-          if (startsWithIgnoreCase(pattern, index, "AM")) {
-            String str = parseString(text, position, AM_PM);
-            if (str == null)
-              break;
-            if (str.charAt(0) == 'P')
-              isPM = true;
-            isHourFormat12 = true;
-            index += 2;
-            continue;
-          }
-
-          // Meridian indicator with period
-          if (startsWithIgnoreCase(pattern, index, "A.M.")) {
-            String str = parseString(text, position, AM_PM);
-            if (str == null)
-              break;
-            if (str.charAt(0) == 'P')
-              isPM = true;
-            isHourFormat12 = true;
-            index += 4;
-            continue;
-          }
-
-          // Era designator
-          if (startsWithIgnoreCase(pattern, index, "AD")) {
-            String str = parseString(text, position, AD_BC);
-            if (str == null)
-              break;
-            if (str.charAt(0) == 'B')
-              bc = true;
-            isDayOfYear = false;
-            isEpochDay = false;
-            index += 2;
-            continue;
-          }
-
-          // Era designator with period
-          if (startsWithIgnoreCase(pattern, index, "A.D.")) {
-            String str = parseString(text, position, AD_BC);
-            if (str == null)
-              break;
-            if (str.charAt(0) == 'B')
-              bc = true;
-            isDayOfYear = false;
-            isEpochDay = false;
-            index += 4;
-            continue;
-          }
-          break;
-
-        case 'B':
-          // Era designator
-          if (startsWithIgnoreCase(pattern, index, "BC")) {
-            String str = parseString(text, position, AD_BC);
-            if (str == null)
-              break;
-            if (str.charAt(0) == 'B')
-              bc = true;
-            isDayOfYear = false;
-            isEpochDay = false;
-            index += 2;
-            continue;
-          }
-
-          // Era designator with period
-          if (startsWithIgnoreCase(pattern, index, "B.C.")) {
-            String str = parseString(text, position, AD_BC);
-            if (str == null)
-              break;
-            if (str.charAt(0) == 'B')
-              bc = true;
-            isDayOfYear = false;
-            isEpochDay = false;
-            index += 4;
-            continue;
-          }
-          break;
-
-        case 'D':
-          // Day of year (1-366)
-          if (startsWithIgnoreCase(pattern, index, "DDD")) {
-            dayOfYear = parseInt(text, position, "DDD".length());
-            isDayOfYear = true;
-            isEpochDay = false;
-            index += 3;
-            continue;
-          }
-
-          // Day of month (1-31)
-          if (startsWithIgnoreCase(pattern, index, "DD")) {
-            day = parseInt(text, position, "DD".length());
-            isDayOfYear = false;
-            isEpochDay = false;
-            index += 2;
-            continue;
-          }
-
-        // TODO: Day of week (1-7)
-        {
-          // day = parseInt(text, position, "D".length());
-          // isDayOfYear = false;
-          // isEpochDay = false;
-          // index += 1;
-          /* NOT supported yet */
-          throw new ParseException("Parsing format D not supported yet", index);
-          // continue;
-        }
-
-        // Fractional seconds FF[0-9]
-        case 'F':
-          if (startsWithIgnoreCase(pattern, index, "FF")) {
-            index += 2;
-            int scale = 6;
-            if (index < length) {
-              c = pattern.charAt(index);
-              if (Characters.isDigit(c)) {
-                scale = c - '0';
-                index++;
-              }
-            }
-            nanos = parseInt(text, position, scale);
-            if (scale < 9) {
-              nanos = (int) (nanos * FastMath.pow(10d, 9d - scale));
-            }
-            continue;
-          }
-
-          throw new ParseException("Parsing format F not supported yet", index);
-
-        case 'J': {
-          // Julian day; the number of days since Jan 1, 4712 BC.
-
-          index += 1;
-          epochDay = parseInt(text, position, 7) - JULIAN_DAY_OFFSET;
-          isDayOfYear = false;
-          isEpochDay = true;
-          continue;
-        }
-        case 'M':
-          // Minutes (0-59)
-          if (startsWithIgnoreCase(pattern, index, "MI")) {
-            minute = parseInt(text, position, 2);
-            index += 2;
-            continue;
-          }
-
-          // Month number (1-12)
-          if (startsWithIgnoreCase(pattern, index, "MM")) {
-            index += 2;
-
-            try {
-              month = parseInt(text, position, 2);
-            } catch (NumberFormatException e) {
-              // Rule to try alternate format MONTH and MON
-              month = parseMonthName(text, position);
-            }
-            isDayOfYear = false;
-            isEpochDay = false;
-            continue;
-          }
-          // Full name of month (parse before MON)
-          if (startsWithIgnoreCase(pattern, index, "MONTH")) {
-            index += 5;
-            month = parseMonthName(text, position);
-            isDayOfYear = false;
-            isEpochDay = false;
-            continue;
-          }
-          // Abbreviated name of month (parse after MONTH)
-          if (startsWithIgnoreCase(pattern, index, "MON")) {
-            index += 3;
-            month = parseMonthName(text, position);
-            isDayOfYear = false;
-            isEpochDay = false;
-            continue;
-          }
-          break;
-
-        case 'H':
-          // Hour of day (1-23)
-          if (startsWithIgnoreCase(pattern, index, "HH24")) {
-            hour = parseInt(text, position, 2);
-            isHourFormat12 = false;
-            index += 4;
-            continue;
-          }
-
-          // Hour of day (1-12)
-          if (startsWithIgnoreCase(pattern, index, "HH12")) {
-            hour = parseInt(text, position, 2);
-            isHourFormat12 = true;
-            index += 4;
-            continue;
-          }
-
-          // Hour of day (1-12)
-          if (startsWithIgnoreCase(pattern, index, "HH")) {
-            hour = parseInt(text, position, 2);
-            isHourFormat12 = true;
-            index += 2;
-            continue;
-          }
-          break;
-
-        case 'Q':
-          /* NOT supported yet */
-          throw new ParseException("Parsing format Q not supported yet", index);
-
-        case 'R':
-          // Roman numeral month (I-XII; January = I).
-          if (startsWithIgnoreCase(pattern, index, "RM")) {
-            index += 2;
-            month = parseMonthRoman(text, position);
-            continue;
-          }
-
-          // 4-digit year
-          if (startsWithIgnoreCase(pattern, index, "RRRR")) {
-            year = parseInt(text, position, 4);
-            // Years between 00-49 will be given the 21st century (the year 2000)
-            if (year >= 0 && year <= 49)
-              year += 2000;
-            // Years between 50-99 will be given the 20th century (the year 1900).
-            else if (year >= 50 && year <= 99)
-              year += 1900;
-            isEpochDay = false;
-            index += 4;
-            continue;
-          }
-          break;
-
-        case 'S':
-          // Seconds
-          if (startsWithIgnoreCase(pattern, index, "SS")) {
-            second = parseInt(text, position, 2);
-            index += 2;
-            continue;
-          }
-
-          // 4-digit year; S prefixes BC dates with a minus sign
-          if (startsWithIgnoreCase(pattern, index, "SYYYY")) {
-            year = parseSignedInt(text, position, 5);
-            isEpochDay = false;
-            index += 5;
-            continue;
-          }
-          break;
-
-        case 'T':
-          // Time zone hour [+-][0]0
-          if (startsWithIgnoreCase(pattern, index, "TZH")) {
-            // Skip space
-            int i = position.getIndex();
-            if (Characters.isSpace(text.charAt(i)))
-              position.setIndex(++i);
-            isTimeZoneOffset = true;
-            timeZoneHour = parseSignedInt(text, position, 3);
-            index += 3;
-          }
-
-          // Time zone minute
-          if (startsWithIgnoreCase(pattern, index, "TZM")) {
-            isTimeZoneOffset = true;
-            timeZoneMinute = parseInt(text, position, 2);
-            index += 3;
-          }
-
-          // Time zone region
-          if (startsWithIgnoreCase(pattern, index, "TZR")) {
-            int i = position.getIndex();
-            char ch;
-            while (i < text.length()) {
-              ch = text.charAt(i);
-              if (!(Character.isLetter(ch) || ch == '/'))
-                break;
-              i++;
-            }
-
-            String zone = text.substring(position.getIndex(), i);
-            zoneId = ZoneId.of(zone);
-            position.setIndex(i);
-            index += 3;
-          }
-          break;
-
-        case 'Y':
-          // 4-digit year
-          if (startsWithIgnoreCase(pattern, index, "YYYY")) {
-            year = parseInt(text, position, 4);
-            isEpochDay = false;
-            index += 4;
-            continue;
-          }
-
-          // Last 2-digit year
-          if (startsWithIgnoreCase(pattern, index, "YY")) {
-            year = parseInt(text, position, 2);
-            year += (year < twoDigitYearStart - 1900) ? 2000 : 1900;
-            isEpochDay = false;
-            index += 2;
-            continue;
-          }
-          break;
-
-        case '"':
-          index++;
-          int pos = position.getIndex();
-          while (true) {
-            if (index == pattern.length()) {
-              throw createUnparsableDate(text, pos);
-            }
-            char s = pattern.charAt(index++);
-            if (s == '"')
-              break;
-            pos++;
-          }
-          position.setIndex(pos);
-          break;
-
-        default:
-          throw createUnparsableDate(text, position.getErrorIndex());
-      }
+    for (Format format : formats) {
+      format.parse(parser);
     }
 
     // Build the date
-    LocalDate date = null;
-    if (isEpochDay) {
-      date = LocalDate.ofEpochDay(epochDay);
-    } else {
-      if (bc) {
-        year = 1 - year;
-      }
-      if (isDayOfYear) {
-        date = LocalDate.ofYearDay(year, dayOfYear);
-      } else {
-        date = LocalDate.of(year, month, day);
-      }
-    }
-
-    if (isHourFormat12) {
-      hour = hour % 12;
-      if (isPM) {
-        hour += 12;;
-      }
-    }
-    LocalTime time = LocalTime.of(hour, minute, second, nanos);
-    LocalDateTime localDatetime = LocalDateTime.of(date, time);
-    if (zoneId == null) {
-      if (isTimeZoneOffset) {
-        zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
-      } else {
-        zoneId = ZoneId.systemDefault();
-      }
-    }
-    return ZonedDateTime.of(localDatetime, zoneId);
+    return parser.build();
   }
 
   /**
@@ -1515,59 +1560,6 @@ import java.util.Locale;
     } catch (Exception e) {
       throw new RuntimeException("Error formating datetime " + value + " with pattern " + pattern);
     }
-  }
-
-  protected static int parseMonthName(String value, ParsePosition position) throws ParseException {
-
-    // Rule to try alternate format MONTH
-    // String str = parseString(value, position, MONTHS);
-
-    int index = position.getIndex();
-    int month = 1;
-    for (String name : MONTHS) {
-      if (value.regionMatches(true, index, name, 0, name.length())) {
-        position.setIndex(index + name.length());
-        return month;
-      }
-      month++;
-    }
-
-    // Rule to try alternate format MON
-    month = 1;
-    for (String name : SHORT_MONTHS) {
-      if (value.regionMatches(true, index, name, 0, name.length())) {
-        position.setIndex(index + name.length());
-        return month;
-      }
-      month++;
-    }
-
-    position.setErrorIndex(index);
-
-    throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"),
-        position.getIndex());
-  }
-
-  protected static int parseMonthRoman(String value, ParsePosition position) throws ParseException {
-    int index = position.getIndex();
-
-    int len = 0;
-    while (len < 4) {
-      char c = Character.toUpperCase(value.charAt(index + len));
-      if (c != 'I' && c != 'V' && c != 'X') {
-        break;
-      }
-      len++;
-    }
-
-    for (int i = 0; i < ROMAN_MONTHS.length; i++) {
-      if (value.regionMatches(true, index, ROMAN_MONTHS[i], 0, len)) {
-        position.setIndex(index + len);
-        return i + 1;
-      }
-    }
-
-    throw new ParseException("Invalid roman month when parsing date with format RM", index);
   }
 
   protected final ParseException createUnparsableDate(final String text, int index) {

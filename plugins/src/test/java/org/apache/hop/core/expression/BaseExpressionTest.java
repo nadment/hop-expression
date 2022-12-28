@@ -44,6 +44,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -252,6 +253,10 @@ public class BaseExpressionTest {
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
     Locale.setDefault(new Locale("fr", "BE"));
+    //evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
+    //evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
+    //evalEquals("To_Char(To_Date('-0200','SYYYY'),'SCC')", "-02");
+    evalEquals("To_Date('2019-02-13','YYYY-MM-DD HH24:MI:SS')", LocalDateTime.of(2019, Month.FEBRUARY, 13, 0, 0, 0));
     // Local radix character
     //evalEquals("To_Char(Timestamp '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
   }

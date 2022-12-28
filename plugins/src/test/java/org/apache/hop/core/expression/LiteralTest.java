@@ -192,11 +192,11 @@ public class LiteralTest extends BaseExpressionTest {
 
     evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
     evalEquals("Date '21-02-25'", LocalDate.of(21, 2, 25));
-    evalEquals("Date '2021-Feb-25'", LocalDate.of(2021, 2, 25));
+   // evalEquals("Date '2021-Feb-25'", LocalDate.of(2021, 2, 25));
     
     writeEquals("DATE '2021-02-25'");
 
-    returnType("Date '2021-Feb-25'", DataTypeName.DATE);
+    returnType("Date '2021-02-25'", DataTypeName.DATE);
   }
 
 

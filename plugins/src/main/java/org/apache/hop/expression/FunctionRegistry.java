@@ -89,7 +89,6 @@ public class FunctionRegistry {
    */
   public static void registerBuilInFunctions() throws HopException {
     JarCache cache = JarCache.getInstance();
-
     try {
       // Search annotation in native jar
       for (File jarFile : cache.getNativeJars()) {
