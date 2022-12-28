@@ -26,7 +26,7 @@ public class NumericReturnTypeInference implements IReturnTypeInference {
   }
   
   @Override
-  public DataTypeName getReturnType​(IExpressionContext context, Call call) {
+  public DataTypeName getReturnType(IExpressionContext context, Call call) {
     
     DataTypeName result = call.getType(); 
     

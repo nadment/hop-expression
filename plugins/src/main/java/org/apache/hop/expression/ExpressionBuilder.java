@@ -1465,9 +1465,9 @@ public class ExpressionBuilder {
     return new Call(operator, operands);
   }
 
-  protected IExpression inferReturnType​(IExpressionContext context, Call call) {
+  protected IExpression inferReturnType(IExpressionContext context, Call call) {
     // Inference return data type    
-    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType​(context, call);
+    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
     return new Call(type, call.getOperator(), call.getOperands());
   }
 

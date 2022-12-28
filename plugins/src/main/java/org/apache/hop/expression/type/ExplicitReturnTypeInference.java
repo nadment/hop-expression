@@ -30,7 +30,7 @@ public class ExplicitReturnTypeInference implements IReturnTypeInference {
   }
   
   @Override
-  public DataTypeName getReturnType​(IExpressionContext context, Call call) {
+  public DataTypeName getReturnType(IExpressionContext context, Call call) {
     return type;
   }
 }

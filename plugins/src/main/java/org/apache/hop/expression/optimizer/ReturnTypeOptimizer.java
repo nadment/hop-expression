@@ -25,7 +25,7 @@ public class ReturnTypeOptimizer extends ExpressionCompiler {
   @Override
   public IExpression apply(final IExpressionContext context, final Call call) {
     
-    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType​(context, call);
+    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
     
     return new Call(type, call.getOperator(), call.getOperands());
   }

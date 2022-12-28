@@ -27,9 +27,9 @@ public class ReturnTypeInferenceChain implements IReturnTypeInference {
   }
   
   @Override
-  public DataTypeName getReturnType​(IExpressionContext context, Call call) {
+  public DataTypeName getReturnType(IExpressionContext context, Call call) {
     for (IReturnTypeInference rule : rules) {
-      DataTypeName type = rule.getReturnType​(context, call);
+      DataTypeName type = rule.getReturnType(context, call);
       if (type != DataTypeName.UNKNOWN) {
         return type;
       }

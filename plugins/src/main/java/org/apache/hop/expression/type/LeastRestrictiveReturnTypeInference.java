@@ -27,7 +27,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
   }
   
   @Override
-  public DataTypeName getReturnType​(IExpressionContext context, Call call) {
+  public DataTypeName getReturnType(IExpressionContext context, Call call) {
     
     DataTypeName result = call.getType(); 
     

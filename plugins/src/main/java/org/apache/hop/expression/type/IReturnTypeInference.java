@@ -30,5 +30,5 @@ public interface IReturnTypeInference {
    * @param call
    * @return
    */
-  public DataTypeName getReturnType​(IExpressionContext context, Call call);  
+  public DataTypeName getReturnType(IExpressionContext context, Call call);  
 }

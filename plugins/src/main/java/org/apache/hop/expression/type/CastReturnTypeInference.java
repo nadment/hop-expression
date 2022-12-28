@@ -27,7 +27,7 @@ public class CastReturnTypeInference implements IReturnTypeInference {
   }
   
   @Override
-  public DataTypeName getReturnType​(IExpressionContext context, Call call) {
+  public DataTypeName getReturnType(IExpressionContext context, Call call) {
     try {
       return (DataTypeName) call.getOperand(1).getValue(context);
     } catch (ExpressionException e) {
