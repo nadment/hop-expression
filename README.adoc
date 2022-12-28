@@ -52,15 +52,15 @@ end
 ----
 
 * Supports 8 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary` `Json` 
-* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, Date '2022-4-25'
+* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, Date '2022-04-25', Timestamp '2022-04-25 05:28:59'
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` `LIKE` `ILIKE`
+* Concatenate operator `||`
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Over 150 scalar functions (conditional, mathematical, trigonometry, conversion, bitwise...).
-* Aggregate functions `AVG` `COUNT` `MIN` `MAX` `FIRST_VALUE` `LAST_VALUE` `STDDEV_SAMP` `STDDEV_POP` `PERCENTILE` `VARIANCE_POP` `VARIANCE_SAMP`
+* Over 170 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
 * User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading
 * Are not case-sensitive, excepted for identifier
