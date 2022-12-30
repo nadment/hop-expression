@@ -591,7 +591,7 @@ public class ExpressionBuilder {
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
     try {
-      DateTimeFormat format = DateTimeFormat.of("YYYY-MM-DD");
+      DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {

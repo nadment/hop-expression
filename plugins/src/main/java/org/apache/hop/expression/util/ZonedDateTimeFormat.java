@@ -253,7 +253,15 @@ import java.util.Locale;
   private static final String[] MONTHS = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
       "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
 
-  private interface Format {
+  private static abstract class Format {
+    protected final boolean fillMode;
+    protected final boolean exactMode;
+    
+    public Format(boolean fillMode, boolean exactMode) {
+      this.fillMode = fillMode;
+      this.exactMode = exactMode;
+    }
+    
     /**
      * Appends the value of the specified calendar to the output buffer based on the rule
      * implementation.
@@ -262,17 +270,18 @@ import java.util.Locale;
      * @param calendar calendar to be appended
      * @throws Exception if an error occurs.
      */
-    public void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception;
+    public abstract void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception;
 
-    public default void parse(DateTimeParser parser) throws ParseException {
+    public void parse(DateTimeParser parser) throws ParseException {
 
     }
   }
 
-  private static class StringFormat implements Format {
+  private static class StringFormat extends Format {
     private final String value;
 
     public StringFormat(final String value) {
+      super(true, true);
       this.value = value;
     }
 
@@ -287,12 +296,12 @@ import java.util.Locale;
     }
   }
 
-  private static class CharFormat implements Format {
+  private static class CharFormat extends Format {
     private boolean exactMode;
     private final char ch;
 
     public CharFormat(boolean exactMode, final char ch) {
-      this.exactMode = exactMode;
+      super(true, exactMode);
       this.ch = ch;
     }
 
@@ -311,13 +320,14 @@ import java.util.Locale;
     }
   }
 
-  private static class AdBcFormat implements Format {
+  private static class AdBcFormat extends Format {
     private static final String[] AD_BC = {"AD", "A.D.", "BC", "B.C."};
-    
+
     private String ad;
     private String bc;
-
+    
     public AdBcFormat(Capitalization cap, String ad, String bc) {
+      super(true, true);
       this.ad = cap.apply(ad);
       this.bc = cap.apply(bc);
     }
@@ -340,12 +350,11 @@ import java.util.Locale;
     }
   }
 
-  private static class CenturyFormat implements Format {
-    private final boolean fillMode;
+  private static class CenturyFormat extends Format {
     private final boolean signed;
 
     public CenturyFormat(boolean fillMode, boolean signed) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
       this.signed = signed;
     }
 
@@ -373,14 +382,13 @@ import java.util.Locale;
     }
   }
 
-  private static class WordYearFormat implements Format {
+  private static class WordYearFormat extends Format {
     private final Capitalization cap;
-    private final boolean fillMode;
     private final boolean signed;
 
     public WordYearFormat(Capitalization cap, boolean fillMode, boolean signed) {
+      super(fillMode, true);
       this.cap = cap;
-      this.fillMode = fillMode;
       this.signed = signed;
     }
 
@@ -400,13 +408,14 @@ import java.util.Locale;
     }
   }
 
-  private static class RomanMonthFormat implements Format {
+  private static class RomanMonthFormat extends Format {
     private static final String[] ROMAN_MONTHS =
-      {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
-    
+        {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"};
+
     private final Capitalization cap;
 
     public RomanMonthFormat(Capitalization cap) {
+      super(true, true);
       this.cap = cap;
     }
 
@@ -440,13 +449,14 @@ import java.util.Locale;
     }
   }
 
-  private static class MeridianFormat implements Format {
+  private static class MeridianFormat extends Format {
     private static final String[] AM_PM = {"AM", "A.M.", "PM", "P.M."};
 
     private final String am;
     private final String pm;
 
     public MeridianFormat(Capitalization cap, String am, String pm) {
+      super(true, true);
       this.am = cap.apply(am);
       this.pm = cap.apply(pm);
     }
@@ -467,7 +477,11 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeZoneRegionFormat implements Format {
+  private static class TimeZoneRegionFormat extends Format {
+    public TimeZoneRegionFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append(datetime.getZone().toString());
@@ -490,15 +504,23 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeZoneAbbreviatedRegionFormat implements Format {
+  private static class TimeZoneAbbreviatedRegionFormat extends Format {
+    public TimeZoneAbbreviatedRegionFormat() {
+      super(true, true);
+    }
+    
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append(datetime.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH));
     }
   }
 
   // Time zone hour [+-][0]0
-  private static class TimeZoneHourFormat implements Format {
+  private static class TimeZoneHourFormat extends Format {
 
+    public TimeZoneHourFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       ZoneOffset offset = datetime.getOffset();
@@ -520,7 +542,12 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeZoneMinuteFormat implements Format {
+  private static class TimeZoneMinuteFormat extends Format {
+    
+    public TimeZoneMinuteFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder buffer, final ZonedDateTime datetime) throws Exception {
       ZoneOffset offset = datetime.getOffset();
@@ -535,10 +562,11 @@ import java.util.Locale;
     }
   }
 
-  private static class DateLongFormat implements Format {
+  private static class DateLongFormat extends Format {
     private final DateTimeFormatter formatter;
 
     public DateLongFormat() {
+      super(true, true);
       this.formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL); // .withLocale(Locale.ENGLISH);
     }
 
@@ -548,10 +576,11 @@ import java.util.Locale;
     }
   }
 
-  private static class DateShortFormat implements Format {
+  private static class DateShortFormat extends Format {
     private final DateTimeFormatter formatter;
 
     public DateShortFormat() {
+      super(true, true);
       formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
     }
 
@@ -561,11 +590,12 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeFormat implements Format {
+  private static class TimeFormat extends Format {
     private final DateTimeFormatter formatter;
     private final Capitalization cap;
 
     public TimeFormat(Capitalization cap) {
+      super(true, true);
       this.cap = cap;
       this.formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM); // .withLocale(Locale.ENGLISH);
     }
@@ -576,9 +606,13 @@ import java.util.Locale;
     }
   }
 
-  private static class JulianDayFormat implements Format {
+  private static class JulianDayFormat extends Format {
     /** The offset from Julian to EPOCH DAY. */
     private static final long JULIAN_DAY_OFFSET = 2440588L;
+
+    public JulianDayFormat() {
+      super(true, true);
+    }
     
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
@@ -597,7 +631,11 @@ import java.util.Locale;
   /**
    * Inner class to output the twelve hour field.
    */
-  private static class Hour12Format implements Format {
+  private static class Hour12Format extends Format {
+    public Hour12Format() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int h12 = (datetime.getHour() + 11) % 12 + 1;
@@ -612,7 +650,11 @@ import java.util.Locale;
   }
 
   // Hour of day (1-23)
-  private static class Hour24Format implements Format {
+  private static class Hour24Format extends Format {
+    public Hour24Format() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       appendDigits(output, datetime.getHour());
@@ -625,7 +667,11 @@ import java.util.Locale;
     }
   }
 
-  private static class MinuteFormat implements Format {
+  private static class MinuteFormat extends Format {
+    public MinuteFormat() {
+      super(true, true);
+    }
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       appendDigits(output, datetime.getMinute());
@@ -637,13 +683,9 @@ import java.util.Locale;
     }
   }
 
-  private static class DayOfMonthFormat implements Format {
-    private final boolean fillMode;
-    private final boolean exactMode;
-    
+  private static class DayOfMonthFormat extends Format {
     public DayOfMonthFormat(boolean fillMode, boolean exactMode) {
-      this.fillMode = fillMode;
-      this.exactMode = exactMode;
+      super(fillMode, exactMode);
     }
 
     @Override
@@ -658,19 +700,19 @@ import java.util.Locale;
 
     @Override
     public void parse(final DateTimeParser parser) {
-      parser.day = parser.parseInt(2);
+      if (exactMode) {
+        parser.day = parser.parseExactInt(2);
+      } else {
+        parser.day = parser.parseInt(2);
+      }
       parser.isDayOfYear = false;
       parser.isEpochDay = false;
     }
   }
 
-  private static class MonthFormat implements Format {
-    protected final boolean fillMode;
-    protected final boolean exactMode;
-
+  private static class MonthFormat extends Format {
     public MonthFormat(boolean fillMode, boolean exactMode) {
-      this.fillMode = fillMode;
-      this.exactMode = exactMode;
+      super(fillMode, exactMode);
     }
 
     @Override
@@ -685,14 +727,16 @@ import java.util.Locale;
 
     @Override
     public void parse(final DateTimeParser parser) throws ParseException {
-      try {
+      if (exactMode) {
+        parser.month = parser.parseExactInt(2);
+      } else try {
         parser.month = parser.parseInt(2);
       } catch (NumberFormatException e) {
-        if ( exactMode ) {
+        if (exactMode) {
           // TODO: Translate
           throw new ParseException("Parse date error", parser.index);
         }
-        
+
         // Rule to try alternate format MONTH and MON
         parseNameOfMonth(parser);
       }
@@ -728,7 +772,11 @@ import java.util.Locale;
     }
   }
 
-  private static class SecondOfDayFormat implements Format {
+  private static class SecondOfDayFormat extends Format {
+    public SecondOfDayFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int seconds = datetime.get(ChronoField.SECOND_OF_DAY);
@@ -736,7 +784,11 @@ import java.util.Locale;
     }
   }
 
-  private static class SecondOfMinuteFormat implements Format {
+  private static class SecondOfMinuteFormat extends Format {
+    public SecondOfMinuteFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       appendDigits(output, datetime.getSecond());
@@ -749,11 +801,9 @@ import java.util.Locale;
   }
 
   // Day of year (1-366)
-  private static class DayOfYearFormat implements Format {
-    private final boolean fillMode;
-
+  private static class DayOfYearFormat extends Format {
     public DayOfYearFormat(boolean fillMode) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
     }
 
     @Override
@@ -774,7 +824,11 @@ import java.util.Locale;
     }
   }
 
-  private static class DayOfWeekFormat implements Format {
+  private static class DayOfWeekFormat extends Format {
+    public DayOfWeekFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int dof = (datetime.getDayOfWeek().getValue() + 1) % 7;
@@ -782,7 +836,11 @@ import java.util.Locale;
     }
   }
 
-  private static class WeekOfMonthFormat implements Format {
+  private static class WeekOfMonthFormat extends Format {
+    public WeekOfMonthFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int week = datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -790,11 +848,9 @@ import java.util.Locale;
     }
   }
 
-  private static class WeekOfYearFormat implements Format {
-    private final boolean fillMode;
-
+  private static class WeekOfYearFormat extends Format {
     public WeekOfYearFormat(boolean fillMode) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
     }
 
     @Override
@@ -808,7 +864,11 @@ import java.util.Locale;
     }
   }
 
-  private static class QuarterFormat implements Format {
+  private static class QuarterFormat extends Format {
+    public QuarterFormat() {
+      super(true, true);
+    }
+    
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int quarter = datetime.get(IsoFields.QUARTER_OF_YEAR);
@@ -816,11 +876,9 @@ import java.util.Locale;
     }
   }
 
-  private static class SignedYearFormat implements Format {
-    private final boolean fillMode;
-
+  private static class SignedYearFormat extends Format {
     public SignedYearFormat(boolean fillMode) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
     }
 
     @Override
@@ -848,12 +906,11 @@ import java.util.Locale;
     }
   }
 
-  private class YearFormat implements Format {
-    private final boolean fillMode;
+  private class YearFormat extends Format {
     private final int length;
 
-    public YearFormat(boolean fillMode, int length) {
-      this.fillMode = fillMode;
+    public YearFormat(boolean fillMode, boolean exactMode, int length) {
+      super(fillMode, exactMode);
       this.length = length;
     }
 
@@ -904,12 +961,11 @@ import java.util.Locale;
       parser.isEpochDay = false;
     }
   }
-  private class RoundYearFormat implements Format {
-    private final boolean fillMode;
+  private class RoundYearFormat extends Format {
     private final int length;
 
     public RoundYearFormat(boolean fillMode, int length) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
       this.length = length;
     }
 
@@ -950,12 +1006,11 @@ import java.util.Locale;
     }
   }
 
-  private static class IsoYearFormat implements Format {
-    private final boolean fillMode;
+  private static class IsoYearFormat extends Format {
     private final int length;
 
     public IsoYearFormat(boolean fillMode, int length) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
       this.length = length;
     }
 
@@ -992,11 +1047,9 @@ import java.util.Locale;
     }
   }
 
-  private static class IsoWeekFormat implements Format {
-    private final boolean fillMode;
-
+  private static class IsoWeekFormat extends Format {
     public IsoWeekFormat(boolean fillMode) {
-      this.fillMode = fillMode;
+      super(fillMode, true);
     }
 
     @Override
@@ -1010,10 +1063,11 @@ import java.util.Locale;
     }
   }
 
-  private static class NanoFormat implements Format {
+  private static class NanoFormat extends Format {
     private final int scale;
 
     public NanoFormat(int scale) {
+      super(true, true);
       this.scale = scale;
     }
 
@@ -1036,14 +1090,13 @@ import java.util.Locale;
     }
   }
 
-  private static class NameOfDayFormat implements Format {
+  private static class NameOfDayFormat extends Format {
     private final Capitalization cap;
-    private final boolean fillMode;
     private final TextStyle style;
 
     public NameOfDayFormat(Capitalization cap, boolean fillMode, TextStyle style) {
+     super(fillMode, true);
       this.cap = cap;
-      this.fillMode = fillMode;
       this.style = style;
     }
 
@@ -1062,7 +1115,8 @@ import java.util.Locale;
     private final Capitalization cap;
     private final TextStyle style;
 
-    public NameOfMonthFormat(Capitalization cap, boolean fillMode, boolean exactMode, TextStyle style) {
+    public NameOfMonthFormat(Capitalization cap, boolean fillMode, boolean exactMode,
+        TextStyle style) {
       super(fillMode, exactMode);
       this.cap = cap;
       this.style = style;
@@ -1427,27 +1481,27 @@ import java.util.Locale;
 
       // 4-digit year
       if (startsWithIgnoreCase(pattern, index, "YYYY")) {
-        list.add(new YearFormat(fillMode, 4));
+        list.add(new YearFormat(fillMode, exactMode, 4));
         index += 4;
         continue;
       }
 
       // Last 3 digits of year.
       if (startsWithIgnoreCase(pattern, index, "YYY")) {
-        list.add(new YearFormat(fillMode, 3));
+        list.add(new YearFormat(fillMode, exactMode, 3));
         index += 3;
         continue;
       }
       // Last 2 digits of year.
       if (startsWithIgnoreCase(pattern, index, "YY", "RR")) {
-        list.add(new YearFormat(fillMode, 2));
+        list.add(new YearFormat(fillMode, exactMode, 2));
         index += 2;
         continue;
       }
 
       // Last 1 digit of year.
       if (startsWithIgnoreCase(pattern, index, "Y", "R")) {
-        list.add(new YearFormat(fillMode, 1));
+        list.add(new YearFormat(fillMode, exactMode, 1));
         index += 1;
         continue;
       }
@@ -1517,7 +1571,7 @@ import java.util.Locale;
 
     return list.toArray(new Format[0]);
   }
- 
+
   public ZonedDateTime parse(String text) throws ParseException {
 
     DateTimeParser parser = new DateTimeParser(text);
@@ -1559,8 +1613,7 @@ import java.util.Locale;
   }
 
   protected final ParseException createUnparsableDate(final String text, int index) {
-    return new ParseException(
-        BaseMessages.getString(PKG, "Expression.UnparsableDateWithFormat", text, pattern), index);
+    return new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), index);
   }
 
   @Override

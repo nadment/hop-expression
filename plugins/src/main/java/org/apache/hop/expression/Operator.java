@@ -18,7 +18,7 @@ import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
-import org.apache.hop.expression.util.Utilities;
+import org.apache.hop.expression.util.ExpressionUtils;
 import java.io.StringWriter;
 import java.util.Objects;
 
@@ -86,8 +86,8 @@ public abstract class Operator implements Comparable<Operator> {
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;    
-    this.documentation = Utilities.loadDocumention(id, documentationUrl);
-    this.description = Utilities.findDocumentionDescription(documentation);
+    this.documentation = ExpressionUtils.loadDocumention(id, documentationUrl);
+    this.description = ExpressionUtils.findDocumentionDescription(documentation);
   }
 
   protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,

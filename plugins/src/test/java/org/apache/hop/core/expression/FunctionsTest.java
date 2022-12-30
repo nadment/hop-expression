@@ -1331,7 +1331,7 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void v() throws Exception {
+  public void To_Char() throws Exception {
     // Text
     evalNull("TO_CHAR(NULL)");
 
@@ -1661,7 +1661,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // Special char
     evalEquals("To_Char(Date '2019-07-23',':;.,=-/(FMMONTH)')", ":;.,=-/(JULY)");
     evalFails("To_Char(Date '2019-07-23','*')");
-    evalFails("To_Char(Date '2019-07-23','£')");
+    evalFails("To_Char(Date '2019-07-23','Â£')");
     evalFails("To_Char(Date '2019-07-23','{}[]')");
 
     // Full case
@@ -1774,7 +1774,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // FX    
     //evalEquals("To_Date('15/ 02 /2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     //evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')");
-    evalFails("To_Date('01-02-2020','FXDD/MM/YYYY')");
+    evalFails("To_Date('1-02-2020','FXDD/MM/YYYY')");
     //evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
     //evalEquals("To_Date('1/02/2020','FXFMDD-MON-YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     

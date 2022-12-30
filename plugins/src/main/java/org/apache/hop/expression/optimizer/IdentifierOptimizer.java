@@ -21,7 +21,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.Utilities;
+import org.apache.hop.expression.util.ExpressionUtils;
 
 public class IdentifierOptimizer extends ExpressionCompiler {
   
@@ -36,7 +36,7 @@ public class IdentifierOptimizer extends ExpressionCompiler {
       return identifier;
     }
     
-    DataTypeName type = Utilities.createDataType(rowMeta.getValueMeta(index));
+    DataTypeName type = ExpressionUtils.createDataType(rowMeta.getValueMeta(index));
     
     return new Identifier(identifier.getName(), type, index);
   }

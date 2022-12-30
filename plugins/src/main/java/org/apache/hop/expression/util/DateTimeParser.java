@@ -105,6 +105,30 @@ import java.time.ZonedDateTime;
     return result;
   }
 
+  protected int parseExactInt(int length)
+      throws NumberFormatException {
+   
+    int end = text.length();
+        
+    int result = 0;
+    if (index + length > end)
+      throw new NumberFormatException("Invalid number: " + text);
+    
+    for (int i = 0; i < length; i++, index++) {
+      char ch = text.charAt(index);
+       
+      int digit = Character.digit(ch, 10);
+      if (digit < 0) {
+        throw new NumberFormatException("Invalid number: " + text);
+      }
+
+      result *= 10;
+      result += digit;
+    }
+
+    return result;
+  }
+  
   /**
    * Parse an integer at the given position in a string
    *

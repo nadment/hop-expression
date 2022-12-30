@@ -34,7 +34,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.Utilities;
+import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -155,7 +155,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
         
         DataTypeName type = expression.getType();
         
-        IValueMeta valueMeta = Utilities.createValueMeta(field.getName(), type);
+        IValueMeta valueMeta = ExpressionUtils.createValueMeta(field.getName(), type);
         valueMeta.setOrigin(transformName);
         valueMeta.setStorageType(IValueMeta.STORAGE_TYPE_NORMAL);
         fields.addValueMeta(valueMeta);

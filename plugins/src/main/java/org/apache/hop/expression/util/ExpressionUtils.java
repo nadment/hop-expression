@@ -38,10 +38,10 @@ import java.io.StringWriter;
 /**
  * Utility methods called by operator or transformation.
  */
-public class Utilities {
+public class ExpressionUtils {
   private static final ILogChannel LOG = new LogChannel("Expression");
 
-  private Utilities() {
+  private ExpressionUtils() {
     // Utility class
   }
 

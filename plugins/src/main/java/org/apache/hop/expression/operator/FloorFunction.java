@@ -50,6 +50,4 @@ public class FloorFunction extends Function {
     }
     return FastMath.floor(Coerse.toNumber(value));
   }
-
-
 }

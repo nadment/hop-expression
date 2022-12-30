@@ -16,7 +16,6 @@ package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.i18n.BaseMessages;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -984,7 +983,6 @@ final class SimpleNumberFormat extends NumberFormat {
   }
 
   protected final ParseException createUnparsableNumber(final String text, int index) {
-    return new ParseException(
-        BaseMessages.getString(PKG, "Expression.UnparsableNumberWithFormat", text, format), index);
+    return new ParseException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT.message(text, format), index);
   }
 }

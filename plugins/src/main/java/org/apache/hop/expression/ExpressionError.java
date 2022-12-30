@@ -64,6 +64,8 @@ public enum ExpressionError {
   UNKNOWN_DATATYPE("Expression.UnknownDataType"),
   UNKNOWN_TIMEZONE("Expression.UnknownTimeZone"),
   CONVERSION_ERROR("Expression.ConversionError"),
+  UNPARSABLE_DATE_WITH_FORMAT("Expression.UnparsableDateWithFormat"),
+  UNPARSABLE_NUMBER_WITH_FORMAT("Expression.UnparsableNumberWithFormat"),
   REGEXP_REPLACE_ERROR("Expression.RegexpReplaceError");
 
   private final String message;
