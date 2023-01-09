@@ -235,8 +235,8 @@ public class ExpressionBuilder {
    * Parse IS expression
    *
    * <p>
-   * RelationalExpression [NOT] TRUE|FALSE|NULL
-   * RelationalExpression [NOT] DISTINCT FROM RelationalExpression
+   * RelationalExpression IS [NOT] TRUE|FALSE|NULL
+   * RelationalExpression IS [NOT] DISTINCT FROM RelationalExpression
    */
   private IExpression parseIs() throws ParseException {
     IExpression expression = this.parseComparaison();
@@ -259,8 +259,8 @@ public class ExpressionBuilder {
             return new Call((not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM, expression, parseLogicalNot());
           }
         default:
-          throw new ParseException(ExpressionError.INVALID_BOOLEAN.message(token.text()),
-              token.start());
+          throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
+              this.getPosition());
       }
     }
     return expression;

@@ -297,7 +297,6 @@ import java.util.Locale;
   }
 
   private static class CharFormat extends Format {
-    private boolean exactMode;
     private final char ch;
 
     public CharFormat(boolean exactMode, final char ch) {
@@ -732,11 +731,6 @@ import java.util.Locale;
       } else try {
         parser.month = parser.parseInt(2);
       } catch (NumberFormatException e) {
-        if (exactMode) {
-          // TODO: Translate
-          throw new ParseException("Parse date error", parser.index);
-        }
-
         // Rule to try alternate format MONTH and MON
         parseNameOfMonth(parser);
       }

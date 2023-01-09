@@ -63,7 +63,6 @@ public enum DataTypeName {
   
   ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class)
   ;
-
   
   public static final List<DataTypeName> STRING_TYPES = List.of(STRING);
   public static final List<DataTypeName> BINARY_TYPES = List.of(BINARY);
@@ -72,17 +71,7 @@ public enum DataTypeName {
   public static final List<DataTypeName> DATE_TYPES = List.of(DATE);
   public static final List<DataTypeName> JSON_TYPES = List.of(JSON);
   public static final List<DataTypeName> ALL_TYPES = List.of(STRING,BOOLEAN,INTEGER, NUMBER, BIGNUMBER,DATE,BINARY,JSON);
-
   
-  /**
-   * Flags indicating precision/scale combinations.
-   */
-  private interface PrecScale {
-    int NO_NO = 1;
-    int YES_NO = 2;
-    int YES_YES = 4;
-  }
-
   /**
    * Indicating allowable precision/scale combinations.
    */
