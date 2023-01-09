@@ -21,13 +21,18 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Constant value in a expression.
  */
-public class Literal implements IExpression {
+public final class Literal implements IExpression {
 
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  
   public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
   public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
@@ -197,6 +202,15 @@ public class Literal implements IExpression {
           writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
         }
         writer.append('\'');
+        break;
+      case JSON:        
+        try {   
+          writer.append("JSON '");
+          writer.append(MAPPER.writeValueAsString((JsonNode) value));
+          writer.append('\'');
+        } catch (JsonProcessingException e) {
+          throw new RuntimeException("Unable to unparse json object ", e);
+        }
         break;
       case UNKNOWN:
         if (value == null) {

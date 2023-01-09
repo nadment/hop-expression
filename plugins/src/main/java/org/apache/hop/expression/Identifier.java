@@ -26,14 +26,14 @@ import java.util.Objects;
 /**
  * Expression representing a named column in an input row.
  */
-public class Identifier implements IExpression {
+public final class Identifier implements IExpression {
   private final String name;
   private final DataTypeName type;
   private final int index;
   
-  public Identifier(final String name,  DataTypeName type, int index) {
-    this.name = Objects.requireNonNull(name, "name must not be null");
-    this.type = Objects.requireNonNull(type, "data type must not be null");
+  public Identifier(final String name, final DataTypeName type, int index) {
+    this.name = Objects.requireNonNull(name, "name is null");
+    this.type = Objects.requireNonNull(type, "data type is null");
     this.index = index;
   }
   

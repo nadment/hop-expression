@@ -112,7 +112,7 @@ NOTE:  A leading `0x` is case-sensitive and cannot be written as `0X`, but the c
 Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a `YYYY-MM-DD` format. 
 
 ----
-Date '2020-05-18'
+DATE '2020-05-18'
 ----
 
 The parsing is strict and requires months to be less than 12, days to be less than 31.
@@ -123,19 +123,28 @@ The parsing is strict and requires months to be less than 12, days to be less th
 Literal timestamp can includes a time zone offset or a time zone region.
 
 ----
-Timestamp 'yyyy-mm-dd hh24:mi:ss.ffffff' [AT TIME ZONE  '...']
+TIMESTAMP 'yyyy-mm-dd hh24:mi:ss.ffffff' [AT TIME ZONE  '...']
 ----
 Examples:
 ----
-Timestamp '2020-05-18 23:48'
-Timestamp '2020-05-18 23:48:59'
-Timestamp '2020-05-18 23:48:59.123456789'
-Timestamp '2020-05-18 23:48:59 +05:00'
-Timestamp '2020-05-18T23:48:59+0500'
-Timestamp '2021-01-01 15:28:59' AT TIME ZONE 'US/Pacific'
+TIMESTAMP '2020-05-18 23:48'
+TIMESTAMP '2020-05-18 23:48:59'
+TIMESTAMP '2020-05-18 23:48:59.123456789'
+TIMESTAMP '2020-05-18 23:48:59 +05:00'
+TIMESTAMP '2020-05-18T23:48:59+0500'
+TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'US/Pacific'
 ----
 
 In some of the timestamp formats, the letter T is used as a separator between the date and time.
+
+=== Json
+
+Literal json.
+
+----
+JSON '{"name":"John","age":30}'
+----
+
 
 == Identifier
 

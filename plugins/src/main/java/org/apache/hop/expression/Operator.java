@@ -77,8 +77,8 @@ public abstract class Operator implements Comparable<Operator> {
    */
   protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
       boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    this.id = Objects.requireNonNull(id);
-    this.name = Objects.requireNonNull(name);
+    this.id = Objects.requireNonNull(id, "id is null");
+    this.name = Objects.requireNonNull(name, "name is null");
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
     this.isDeterministic = isDeterministic;

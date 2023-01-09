@@ -52,7 +52,7 @@ end
 ----
 
 * Supports 8 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary` `Json` 
-* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, Date '2022-04-25', Timestamp '2022-04-25 05:28:59'
+* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `Date` '2022-04-25', `Timestamp` '2022-04-25 05:28:59', `Json` '{"name":"John"}'
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
@@ -111,12 +111,12 @@ Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
 
-1. Place the “expression” folder in the hop\plugins\transforms directory
+1. Place the â€œexpressionâ€� folder in the hop\plugins\transforms directory
 2. Restart Hop
 
 ### Support
 
-This plugin is provided “as is”, without any warranties, expressed or implied. This software is not covered by any Support Agreement.
+This plugin is provided â€œas isâ€�, without any warranties, expressed or implied. This software is not covered by any Support Agreement.
 
 ### License
 

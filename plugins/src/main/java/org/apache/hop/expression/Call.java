@@ -25,7 +25,7 @@ import java.util.Objects;
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
  */
-public class Call implements IExpression {
+public final class Call implements IExpression {
 
   protected final DataTypeName type;
   protected final Operator operator;
@@ -40,14 +40,14 @@ public class Call implements IExpression {
   }
 
   public Call(DataTypeName type, Operator operator, IExpression... operands) {
-    this.type = type;
-    this.operator = Objects.requireNonNull(operator);
+    this.type = Objects.requireNonNull(type, "data type is null");
+    this.operator = Objects.requireNonNull(operator, "operator is null");
     this.operands = Objects.requireNonNull(operands);
   }
   
   public Call(DataTypeName type, Operator operator, Collection<IExpression> operands) {
-    this.type = type;
-    this.operator = Objects.requireNonNull(operator);
+    this.type = Objects.requireNonNull(type, "data type is null");
+    this.operator = Objects.requireNonNull(operator, "operator is null");
     this.operands = Objects.requireNonNull(operands).toArray(new IExpression[0]);
   }
 

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /** 
  * A tuple is a immutable ordered list of expressions.
  */
-public class Tuple implements IExpression, Iterable<IExpression> {
+public final class Tuple implements IExpression, Iterable<IExpression> {
 
   /**
    * Iterator implementation used to efficiently expose contents of an Tuple as read-only
@@ -56,9 +56,6 @@ public class Tuple implements IExpression, Iterable<IExpression> {
       throw new UnsupportedOperationException();
     }
   }
-
-  /** An immutable, empty Tuple. */
-  public static final Tuple EMPTY = new Tuple() {};
 
   private final IExpression[] values;
 

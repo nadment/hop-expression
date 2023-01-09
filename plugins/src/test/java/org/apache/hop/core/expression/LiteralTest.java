@@ -33,6 +33,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class LiteralTest extends BaseExpressionTest {
 
@@ -46,7 +47,7 @@ public class LiteralTest extends BaseExpressionTest {
     assertNotEquals(Literal.NULL,null);
     assertNotEquals(Literal.NULL,Literal.ZERO);
     assertNull(Literal.NULL.getValue(createExpressionContext()));
-   // assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
+    // assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
   }
 
   @Test
@@ -76,6 +77,26 @@ public class LiteralTest extends BaseExpressionTest {
     writeEquals("'Test ''Bla'' string'");
     
     returnType("NAME", DataTypeName.STRING);
+  }
+  
+
+  @Test
+  public void Json() throws Exception {
+    JsonMapper mapper = JsonMapper.builder().build();
+    
+    assertEquals(Literal.of(mapper.readTree("{\"name\": \"John\", \"age\": 30}")), Literal.of(mapper.readTree("{\"name\": \"John\", \"age\": 30}")));
+    
+    evalEquals("JSON '{\"name\":\"John\",\"age\":5}'", mapper.readTree("{\"name\": \"John\", \"age\": 5}"));
+    
+    // Ignores the order of attributes
+    evalTrue("JSON '{\"name\":\"John\",\"age\":5,\"gender\":null}'=JSON '{\"name\":\"John\",\"gender\":null,\"age\":5}'");
+
+    // Considers numeric values 5.0 and 5 as equals.
+    evalTrue("JSON '{\"name\":\"John\",\"age\":5}'=JSON '{\"name\":\"John\",\"age\":5.0}'");
+    
+    writeEquals("JSON '{\"name\":\"John\",\"age\":5.0}'","JSON '{\"name\":\"John\",\"age\":5.0}'");
+    
+    returnType("JSON '{\"name\":\"John\",\"age\":5}'", DataTypeName.JSON);
   }
 
   @Test

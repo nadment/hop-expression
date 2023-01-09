@@ -60,6 +60,8 @@ public class Token {
     LITERAL_STRING,
     /** The "DATE" word for literal date. */
     DATE,
+    /** The "JSON" word for literal JSON. */
+    JSON,
     /** The BETWEEN ASYMMETRIC operator*/
     ASYMMETRIC,
     /** The BETWEEN SYMMETRIC operator*/

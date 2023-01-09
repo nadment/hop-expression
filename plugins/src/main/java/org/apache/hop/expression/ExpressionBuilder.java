@@ -41,6 +41,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class ExpressionBuilder {
 
@@ -53,7 +56,7 @@ public class ExpressionBuilder {
 
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
       "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE",
-      "ILIKE", "IN", "IS", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN", "TIME",
+      "ILIKE", "IN", "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN", "TIME",
       "TIMESTAMP", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
   private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT", "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
@@ -398,6 +401,16 @@ public class ExpressionBuilder {
     return Literal.of(token.text());
   }
 
+  /** Literal Json */
+  private Literal parseLiteralJson(Token token) throws ParseException {
+    try {
+      ObjectMapper objectMapper = JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      return Literal.of(objectMapper.readTree(token.text()));
+    } catch (Exception e) {
+      throw new ParseException(ExpressionError.INVALID_JSON.message(token.text()), token.start());
+    }
+  }
+  
   /**
    * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone>)
    *
@@ -456,6 +469,11 @@ public class ExpressionBuilder {
         if (token == null)
           break;
         return parseLiteralTimestamp(token);
+      case JSON:
+        token = next();
+        if (token == null)
+          break;
+        return parseLiteralJson(token);
       case CASE:
         return parseCase();
       case CAST:

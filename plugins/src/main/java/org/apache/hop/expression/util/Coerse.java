@@ -26,6 +26,8 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Coerse {
+    
+  private static JsonComparator JSON_COMPARATOR = new JsonComparator();
   
   /**
    * Private constructor since this is a utility class.
@@ -317,11 +319,21 @@ public class Coerse {
 
     // The lower order data type is converted
     if (left instanceof byte[] || right instanceof byte[]) {
-      return compareTo(Coerse.toBinary(left), Coerse.toBinary(right));
+      return compareTo(toBinary(left), toBinary(right));
     }
+    
+    if (left instanceof JsonNode || right instanceof JsonNode) {
+      
+      JsonNode l = toJson(left);
+      JsonNode r = toJson(right);
+      
+      // Ignores the order of attributes
+      return l.equals(JSON_COMPARATOR, r) ? 0:1;
+    }
+    
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      ZonedDateTime dt1 = Coerse.toDateTime(left);
-      ZonedDateTime dt2 = Coerse.toDateTime(right);
+      ZonedDateTime dt1 = toDateTime(left);
+      ZonedDateTime dt2 = toDateTime(right);
       // Two timestamp are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       if (dt1.isEqual(dt2)) {

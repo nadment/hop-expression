@@ -370,10 +370,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("PRICE+PRICE", -10.24);
     evalEquals("AMOUNT+1", 123456.789 + 1);
 
-    // Addition and subtraction of days to DATE
+    // Addition of days to DATE or TIMESTAMP
     evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
-    evalEquals("Date '2019-02-25'-2", LocalDate.of(2019, 2, 23));
-    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    evalEquals("Date '2019-02-25'+2", LocalDate.of(2019, 2, 27));
+    evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
+    
     // Only integer, round number
     evalEquals("Date '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
     evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
@@ -392,8 +393,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("Age-0.5", 39.5);
     evalEquals("Age-10::INTEGER", 30L);
     
-    //evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
-    //evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+    // Subtraction of days to DATE or TIMESTAMP
+    evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
+    evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+    evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    
     //evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     //evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 
@@ -535,9 +539,10 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
     evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2020, 1, 19, 11,23,44));
     
+    // String to Json
+    
     // Binary to Integer
     evalEquals("CAST(0x123 as Integer)", 291L);
-
 
     evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124);
 
@@ -550,6 +555,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("CAST(Null as Integer)");
     evalNull("CAST(Null as Number)");
     evalNull("CAST(Null as BigNumber)");
+    evalNull("CAST(Null as Json)");
 
     // Unsupported conversion
     evalFails("CAST(Date '2019-02-25' AS INTEGER)");

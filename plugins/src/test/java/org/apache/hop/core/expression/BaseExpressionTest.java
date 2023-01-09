@@ -256,7 +256,8 @@ public class BaseExpressionTest {
     //evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
     //evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
     //evalEquals("To_Char(To_Date('-0200','SYYYY'),'SCC')", "-02");
-    evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
+    //evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
+    evalTrue("JSON '{\"name\":\"John\",\"age\":5}'=JSON '{\"name\":\"John\",\"age\":5.0}'");
     // Local radix character
     //evalEquals("To_Char(Timestamp '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
   }
