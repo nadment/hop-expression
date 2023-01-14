@@ -12,13 +12,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.util;
+
+import org.apache.hop.expression.ExpressionError;
 
 /**
- * A date part can be used with functions such as EXTRACT, FIRST_DAY...
+ * A time unit can be used with functions such as EXTRACT, FIRST_DAY...
  * It describes a part of a date / datetime value
  */
-public enum DatePart {
+public enum TimeUnit {
   /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
   EPOCH,
 
@@ -107,11 +109,11 @@ public enum DatePart {
 
   private final String[] alias;
 
-  private DatePart() {
+  private TimeUnit() {
    this.alias = new String[0];
   }
 
-  private DatePart(final String... alias) {
+  private TimeUnit(final String... alias) {
     this.alias = alias;
   }
 
@@ -123,20 +125,20 @@ public enum DatePart {
    * @param name
    * @return DatePart
    */
-  public static DatePart of(final String name) {
-    for (DatePart part : DatePart.values()) {
-      if (part.name().equalsIgnoreCase(name)) {
-        return part;
+  public static TimeUnit of(final String name) {
+    for (TimeUnit unit : TimeUnit.values()) {
+      if (unit.name().equalsIgnoreCase(name)) {
+        return unit;
       }
 
-      for (String alias : part.alias) {
+      for (String alias : unit.alias) {
         if (alias.equalsIgnoreCase(name)) {
-          return part;
+          return unit;
         }
       }
     }
 
-    throw new IllegalArgumentException(ExpressionError.INVALID_DATEPART.message(name));
+    throw new IllegalArgumentException(ExpressionError.INVALID_TIMEUNIT.message(name));
   }
   
   /**
@@ -146,11 +148,11 @@ public enum DatePart {
    * @return
    */
   public static boolean exist(final String name) {
-    for (DatePart part : DatePart.values()) {
-      if (part.name().equalsIgnoreCase(name)) {
+    for (TimeUnit unit : TimeUnit.values()) {
+      if (unit.name().equalsIgnoreCase(name)) {
         return true;
       }
-      for (String alias : part.alias) {
+      for (String alias : unit.alias) {
         if (alias.equalsIgnoreCase(name)) {
           return true;
         }

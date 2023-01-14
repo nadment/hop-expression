@@ -146,7 +146,7 @@ public class Token {
     /** Function COUNT(*) or COUNT([DISTINCT] numeric) operator */
     COUNT,
     DISTINCT,
-    /** Function EXTRACT(part FROM date_time) operator */
+    /** Function EXTRACT(unit FROM date) operator */
     EXTRACT,
     /** Function POSITION(substring IN string) operator */
     POSITION,
@@ -158,8 +158,8 @@ public class Token {
     LISTAGG,    
     /** Data type element NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
-    /** Date part element DAY, MONTH,... */
-    LITERAL_DATEPART;
+    /** Time unit element DAY, MONTH, QUARTER, MINUTE, ... */
+    LITERAL_TIMEUNIT;
 
     private final String source;
 

@@ -18,12 +18,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.TimeUnit;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -51,8 +51,8 @@ public class LiteralTest extends BaseExpressionTest {
   }
 
   @Test
-  public void DatePart() throws Exception {
-    assertEquals(DatePart.HOUR, Literal.of(DatePart.HOUR).getValue(null));
+  public void TimeUnit() throws Exception {
+    assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue(null));
   }
 
   public void DataType() throws Exception {

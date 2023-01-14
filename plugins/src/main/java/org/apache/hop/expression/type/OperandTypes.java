@@ -150,9 +150,9 @@ public final class OperandTypes {
   public static final IOperandTypeChecker DATE_STRING = family(DataTypeFamily.DATE, DataTypeFamily.STRING);
   public static final IOperandTypeChecker DATE_OPTIONAL_STRING = family(List.of(DataTypeFamily.DATE, DataTypeFamily.STRING), i -> i == 1);
   
-  // TODO: enforce check to DatePart, not only to literal
-  public static final IOperandTypeChecker DATE_DATEPART = sequence(DATE,LITERAL);
-  public static final IOperandTypeChecker DATE_OPTIONAL_DATEPART = DATE_DATEPART.or(DATE);
+  // TODO: enforce check to TimeUnit, not only to literal
+  public static final IOperandTypeChecker DATE_TIMEUNIT = sequence(DATE,LITERAL);
+  public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT = DATE_TIMEUNIT.or(DATE);
     
  // public static final IOperandTypeChecker INTEGER = family(DataTypeFamily.INTEGER);
  // public static final IOperandTypeChecker INTEGER_INTEGER = family(DataTypeFamily.INTEGER, DataTypeFamily.INTEGER);

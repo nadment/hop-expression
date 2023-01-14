@@ -27,7 +27,7 @@ import org.apache.hop.expression.util.Coerse;
 import java.util.Random;
 
 /**
- * 
+ * Return a random number between 0 (inclusive) and 1 (exclusive).
  */
 @FunctionPlugin
 public class RandomFunction extends Function {

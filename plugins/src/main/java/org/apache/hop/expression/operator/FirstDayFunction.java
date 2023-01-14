@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,20 +26,21 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.FirstDayOfQuarter;
+import org.apache.hop.expression.util.TimeUnit;
 import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * Returns the first day of the date part.
+ * Returns the first day of the time unit.
  */
 @FunctionPlugin
 public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
 
   public FirstDayFunction() {
-    super("FIRST_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_DATEPART,
+    super("FIRST_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT,
         "i18n::Operator.Category.Date", "/docs/first_day.html");
   }
 
@@ -58,8 +58,8 @@ public class FirstDayFunction extends Function {
       Object v1 = operands[1].getValue(context);
       if (v1 == null)
         return null;
-      DatePart part = Coerse.toDatePart(v1);
-      switch (part) {
+      TimeUnit unit = Coerse.toTimeUnit(v1);
+      switch (unit) {
         case YEAR:
           adjuster = TemporalAdjusters.firstDayOfYear();
           break;
@@ -73,7 +73,7 @@ public class FirstDayFunction extends Function {
           adjuster = TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY);
           break;
         default:
-          throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
+          throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
       }
     }
 

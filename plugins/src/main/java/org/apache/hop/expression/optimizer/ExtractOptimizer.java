@@ -17,7 +17,6 @@
 package org.apache.hop.expression.optimizer;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
@@ -26,6 +25,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.TimeUnit;
 
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
@@ -36,8 +36,8 @@ public class ExtractOptimizer extends ExpressionCompiler {
   public IExpression apply(IExpressionContext context, Call call) {
     try {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
-        DatePart part = Coerse.toDatePart(call.getOperand(0).getValue(context));
-        Function function = FunctionRegistry.getFunction(part.name());
+        TimeUnit unit = Coerse.toTimeUnit(call.getOperand(0).getValue(context));
+        Function function = FunctionRegistry.getFunction(unit.name());
         if (function != null && ! (function instanceof UserDefinedFunction) ) {
           return new Call(function, call.getOperand(1));
         }

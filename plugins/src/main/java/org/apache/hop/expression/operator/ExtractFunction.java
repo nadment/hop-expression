@@ -17,7 +17,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -27,6 +26,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.TimeUnit;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -50,17 +50,17 @@ public class ExtractFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     // Null throw exception
-    DatePart part = Coerse.toDatePart(operands[0].getValue(context));
+    TimeUnit unit = Coerse.toTimeUnit(operands[0].getValue(context));
 
     Object value = operands[1].getValue(context);
     if (value == null)
       return null;
 
-    return extract(Coerse.toDateTime(value), part);
+    return extract(Coerse.toDateTime(value), unit);
   }
 
-  protected Object extract(ZonedDateTime datetime, DatePart part) throws Exception {
-    switch (part) {
+  protected Object extract(ZonedDateTime datetime, TimeUnit unit) throws Exception {
+    switch (unit) {
       case DAY:
         return datetime.getDayOfMonth();
       case DAYOFYEAR:
@@ -115,7 +115,7 @@ public class ExtractFunction extends Function {
       case TIMEZONE_MINUTE:
         return (datetime.getOffset().getTotalSeconds() / 60) % 60;
       default:
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
     }
   }
 

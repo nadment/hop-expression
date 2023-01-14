@@ -16,18 +16,18 @@ under the License.
 ////
 = FIRST_DAY
 
-Returns the first day of the specified date part.
+Returns the first day of the specified time unit.
 
 == Syntax
 ----
-FIRST_DAY( date [, part ] )
+FIRST_DAY( date [, unit ] )
 ----
 
 Return type:: Date
 
 == Usage
 
-* Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
+* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,19 +25,20 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.util.TimeUnit;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
 /**
- * Truncates a date or timestamp to the specified part.
+ * Truncates a date or timestamp to the specified time unit.
  */
 @FunctionPlugin
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {
-    super("DATE_TRUNC", true, ReturnTypes.DATE, OperandTypes.DATE_DATEPART,
+    super("DATE_TRUNC", true, ReturnTypes.DATE, OperandTypes.DATE_TIMEUNIT,
         "i18n::Operator.Category.Date", "/docs/date_trunc.html");
   }
 
@@ -46,7 +46,7 @@ public class DateTruncFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
 
-    DatePart part = Coerse.toDatePart(operands[0].getValue(context));
+    TimeUnit unit = Coerse.toTimeUnit(operands[0].getValue(context));
 
     Object v1 = operands[1].getValue(context);
     if (v1 == null)
@@ -54,7 +54,7 @@ public class DateTruncFunction extends Function {
 
     ZonedDateTime datetime = Coerse.toDateTime(v1);
 
-    switch (part) {
+    switch (unit) {
       case MILLENNIUM:
         return datetime.withDayOfYear(1).minusYears(datetime.getYear() % 1000);
       case CENTURY:
@@ -91,7 +91,7 @@ public class DateTruncFunction extends Function {
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
       default:
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, part);
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
     }
   }
 }

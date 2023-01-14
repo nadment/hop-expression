@@ -32,6 +32,7 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.TimeUnit;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -450,7 +451,7 @@ public class ExpressionBuilder {
         return parseLiteralBinaryHexa(token);
       case LITERAL_BINARY_BIT:
         return parseLiteralBinaryBit(token);
-      case LITERAL_DATEPART:
+      case LITERAL_TIMEUNIT:
         return parseLiteralDatePart(token);
       case LITERAL_DATATYPE:
         return parseLiteralDataType(token);
@@ -1041,10 +1042,10 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralDatePart(Token token) throws ParseException {
     try {
-      DatePart part = DatePart.of(token.text());
-      return Literal.of(part);
+      TimeUnit unit = TimeUnit.of(token.text());
+      return Literal.of(unit);
     } catch (RuntimeException e) {
-      throw new ParseException(ExpressionError.INVALID_DATEPART.message(token.text()),
+      throw new ParseException(ExpressionError.INVALID_TIMEUNIT.message(token.text()),
           token.start());
     }
   }
@@ -1381,8 +1382,8 @@ public class ExpressionBuilder {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 
-          if (DatePart.exist(name)) {
-            return new Token(Id.LITERAL_DATEPART, start, position, name);
+          if (TimeUnit.exist(name)) {
+            return new Token(Id.LITERAL_TIMEUNIT, start, position, name);
           }
 
           return new Token(Id.IDENTIFIER, start, position, identifier);

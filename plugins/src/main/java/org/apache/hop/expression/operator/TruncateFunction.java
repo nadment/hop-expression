@@ -27,7 +27,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Round down numeric expressions or truncates a date or timestamp to the specified part.
+ * Round down numeric expressions or truncates.
  */
 @FunctionPlugin(names = "TRUNC")
 public class TruncateFunction extends Function {

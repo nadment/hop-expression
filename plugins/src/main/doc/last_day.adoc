@@ -16,18 +16,18 @@ under the License.
 ////
 = LAST_DAY
 
-Returns the last day of the specified date part.
+Returns the last day of the specified time unit.
 
 == Syntax
 ----
-LAST_DAY( date [, part] )
+LAST_DAY( date [, unit] )
 ----
 
 Return type:: Date
 
 == Usage
 
-* Possible date part are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
+* Possible unit are YEAR, QUARTER, MONTH or WEEK (default is MONTH). 
 * Returns NULL if one of the arguments is NULL.
 
 == Examples

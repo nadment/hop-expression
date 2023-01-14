@@ -42,7 +42,7 @@ public enum ExpressionError {
   INVALID_OPERATOR("Expression.InvalidOperator"),
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   INVALID_DATE("Expression.InvalidDate"),
-  INVALID_DATEPART("Expression.InvalidDatePart"),
+  INVALID_TIMEUNIT("Expression.InvalidTimeUnit"),
   INVALID_DATE_FORMAT("Expression.InvalidDateFormat"),
   INVALID_TIME("Expression.InvalidTime"),
   INVALID_TIMESTAMP("Expression.InvalidTimestamp"),  

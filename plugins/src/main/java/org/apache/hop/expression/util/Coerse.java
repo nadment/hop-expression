@@ -15,7 +15,6 @@
 
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.DatePart;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.DataTypeName;
@@ -252,11 +251,11 @@ public class Coerse {
    * @param value the value to coerce
    * @return DatePart
    */
-  public static DatePart toDatePart(Object value) throws ExpressionException {
-    if (value instanceof DatePart) {
-      return (DatePart) value;
+  public static TimeUnit toTimeUnit(Object value) throws ExpressionException {
+    if (value instanceof TimeUnit) {
+      return (TimeUnit) value;
     }
-    throw new ExpressionException(ExpressionError.INVALID_DATEPART, value);
+    throw new ExpressionException(ExpressionError.INVALID_TIMEUNIT, value);
   }
   
   /**

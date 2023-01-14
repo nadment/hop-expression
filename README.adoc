@@ -111,12 +111,12 @@ Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
 
-1. Place the â€œexpressionâ€� folder in the hop\plugins\transforms directory
+1. Place the expression folder in the hop\plugins\transforms directory
 2. Restart Hop
 
 ### Support
 
-This plugin is provided â€œas isâ€�, without any warranties, expressed or implied. This software is not covered by any Support Agreement.
+This plugin is provided as is, without any warranties, expressed or implied. This software is not covered by any Support Agreement.
 
 ### License
 

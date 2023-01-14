@@ -18,6 +18,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.util.TimeUnit;
 import java.io.StringWriter;
 import java.time.ZoneId;
 import java.util.Date;
@@ -30,13 +31,13 @@ public final class Identifier implements IExpression {
   private final String name;
   private final DataTypeName type;
   private final int index;
-  
+
   public Identifier(final String name, final DataTypeName type, int index) {
     this.name = Objects.requireNonNull(name, "name is null");
     this.type = Objects.requireNonNull(type, "data type is null");
     this.index = index;
   }
-  
+
   public Identifier(final String name) {
     this(name, DataTypeName.UNKNOWN, -1);
   }
@@ -45,20 +46,21 @@ public final class Identifier implements IExpression {
   public Kind getKind() {
     return Kind.IDENTIFIER;
   }
-  
+
   /**
    * Return the name of the identifier.
+   * 
    * @return
    */
   public String getName() {
     return name;
   }
-  
+
   @Override
   public DataTypeName getType() {
     return type;
   }
-  
+
   @Override
   public int getCost() {
     return 2;
@@ -66,21 +68,22 @@ public final class Identifier implements IExpression {
 
   /**
    * Return the index in IRowMeta when resolved or -1 if unresolved identifier.
+   * 
    * @return
    */
   public int getIndex() {
     return index;
   }
-  
+
   @Override
   public Object getValue(final IExpressionContext context) throws ExpressionException {
-        
+
     IRowMeta rowMeta = context.getRowMeta();
-    
+
     Object[] row = context.getRow();
     try {
       IValueMeta valueMeta = rowMeta.getValueMeta(index);
-      
+
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
           return rowMeta.getBoolean(row, index);
@@ -90,7 +93,7 @@ public final class Identifier implements IExpression {
           Date date = rowMeta.getDate(row, index);
           if (date == null)
             return null;
-          return date.toInstant().atZone(ZoneId.systemDefault());          
+          return date.toInstant().atZone(ZoneId.systemDefault());
         case IValueMeta.TYPE_STRING:
           return rowMeta.getString(row, index);
         case IValueMeta.TYPE_INTEGER:
@@ -100,28 +103,28 @@ public final class Identifier implements IExpression {
         case IValueMeta.TYPE_BIGNUMBER:
           return rowMeta.getBigNumber(row, index);
         case ValueMetaJson.TYPE_JSON:
-          return context.getRow()[index];  
+          return context.getRow()[index];
         case IValueMeta.TYPE_BINARY:
           return rowMeta.getBinary(row, index);
         default:
-          throw new ExpressionException(ExpressionError.UNSUPPORTED_VALUEMETA, name, valueMeta.getTypeDesc());
+          throw new ExpressionException(ExpressionError.UNSUPPORTED_VALUEMETA, name,
+              valueMeta.getTypeDesc());
       }
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
     }
   }
-  
+
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);    
+    return visitor.apply(context, this);
   }
 
   @Override
   public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionBuilder.isReservedWord(name)
-        || DataTypeName.exist(name) || DatePart.exist(name)
-        || FunctionRegistry.isFunction(name)) {
+        || FunctionRegistry.isFunction(name) || DataTypeName.exist(name) || TimeUnit.exist(name)) {
       writer.append('\"');
       writer.append(name);
       writer.append('\"');

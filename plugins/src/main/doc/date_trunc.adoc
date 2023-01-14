@@ -20,10 +20,10 @@ Truncate a date or datetime value to the start of a given unit of duration.
 
 == Syntax
 ----
-DATE_TRUNC( part, {date | timestamp} )
+DATE_TRUNC( unit, {date | timestamp} )
 ----
 
-Support part of date and time:
+Support unit of date and time:
 
 - MILLENNIUM
 - CENTURY
