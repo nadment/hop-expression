@@ -23,7 +23,7 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.ExpressionUtils;
 
-public class IdentifierOptimizer extends ExpressionCompiler {
+public class IdentifierOptimizer extends Optimizer {
   
   // Resolve index and data type of a value in row.
  

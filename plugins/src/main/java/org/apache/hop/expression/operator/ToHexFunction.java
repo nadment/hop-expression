@@ -34,7 +34,7 @@ public class ToHexFunction extends Function {
   private static final byte[] HEX = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
 
   public ToHexFunction() {
-    super("TO_HEX", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY_OR_NUMERIC,
+    super("TO_HEX", true, ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
         "i18n::Operator.Category.Conversion", "/docs/to_hex.html");
   }
 
@@ -57,6 +57,6 @@ public class ToHexFunction extends Function {
       hexChars[j * 2] = HEX[v >>> 4];
       hexChars[j * 2 + 1] = HEX[v & 0x0F];
     }
-    return new String(hexChars, StandardCharsets.UTF_8);
+    return new String(hexChars, StandardCharsets.US_ASCII);
   }
 }

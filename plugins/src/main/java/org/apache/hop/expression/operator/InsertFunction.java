@@ -38,10 +38,9 @@ import java.io.IOException;
 public class InsertFunction extends Function {
 
   public static final IOperandTypeChecker OTC = OperandTypes.or(
-      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC,
-          DataTypeFamily.STRING),
-      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC,
-          DataTypeFamily.STRING));
+      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING),
+      OperandTypes.family(DataTypeFamily.BINARY, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.BINARY)
+      );
 
   public InsertFunction() {
     super("INSERT", true, ReturnTypes.ARG0, OTC, "i18n::Operator.Category.String",

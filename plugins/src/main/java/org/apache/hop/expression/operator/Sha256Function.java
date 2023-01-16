@@ -37,7 +37,7 @@ import org.apache.hop.expression.util.Coerse;
 public class Sha256Function extends Function {
 
   public Sha256Function() {
-    super("SHA256", true, ReturnTypes.STRING, OperandTypes.BINARY,
+    super("SHA256", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.Cryptographic", "/docs/sha256.html");
   }
 

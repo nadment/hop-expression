@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
 public class SubstringFunction extends Function {
 
   public SubstringFunction() {
-    super("SUBSTRING", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+    super("SUBSTRING", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_NUMERIC,
         "i18n::Operator.Category.String", "/docs/substring.html");
   }
 

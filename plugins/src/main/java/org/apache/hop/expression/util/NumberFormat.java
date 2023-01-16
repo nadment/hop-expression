@@ -138,8 +138,9 @@ public abstract class NumberFormat extends BaseFormat {
   private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
   public static NumberFormat of(String pattern) {
-    if (pattern == null)
-      pattern = "TM";
+    if (pattern == null) {
+      throw new IllegalArgumentException("Paterrn is null");
+    }
 
     return cache.computeIfAbsent(pattern, NumberFormat::create);
   }

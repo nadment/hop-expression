@@ -23,7 +23,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 
-public class ArithmeticOptimizer extends ExpressionCompiler {
+public class ArithmeticOptimizer extends Optimizer {
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
     try {

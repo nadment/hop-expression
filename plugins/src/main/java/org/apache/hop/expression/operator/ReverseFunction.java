@@ -31,7 +31,7 @@ import org.apache.hop.expression.util.Coerse;
 public class ReverseFunction extends Function {
 
   public ReverseFunction() {
-    super("REVERSE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY,
+    super("REVERSE", true, ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.String", "/docs/reverse.html");
   }
 

@@ -49,19 +49,6 @@ public class SubtractOperator extends Operator {
     if (right == null)
       return null;
 
-    // Removed because hard to optimize
-    // if (left instanceof ZonedDateTime) {
-    // // If number, subtract fraction of day
-    // if (right instanceof Number) {
-    // long seconds = (long) (Coerse.toNumber(right) * SECONDS_BY_DAY);
-    // return Coerse.toDate(left).minusSeconds(seconds);
-    // }
-    //
-    // // If right operand is date, return difference in fraction of day
-    // if (right instanceof ZonedDateTime) {
-    // return Coerse.toDate(right).until(Coerse.toDate(left), ChronoUnit.SECONDS) / SECONDS_BY_DAY;
-    // }
-    // }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
       return Coerse.toBigNumber(left).subtract(Coerse.toBigNumber(right));
     }

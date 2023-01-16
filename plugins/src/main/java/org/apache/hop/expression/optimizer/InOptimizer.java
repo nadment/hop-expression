@@ -30,7 +30,7 @@ import java.util.List;
  * 1. Remove duplicate expressions in list.
  * 2. Sort expressions on cost.
  */
-public class InOptimizer extends ExpressionCompiler {
+public class InOptimizer extends Optimizer {
   @Override
   public IExpression apply(final IExpressionContext context, final Call call) {
     if (call.is(Operators.IN)) {

@@ -45,7 +45,7 @@ public class ToNumberFunction extends Function {
 
     try {
       String str = Coerse.toString(v0);
-      String format = null;
+      String format = "TM";
 
       // With format
       if (operands.length == 2) {

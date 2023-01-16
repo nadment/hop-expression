@@ -36,7 +36,7 @@ import org.apache.hop.expression.util.Coerse;
 public class Sha384Function extends Function {
 
   public Sha384Function() {
-    super("SHA384", true, ReturnTypes.STRING, OperandTypes.BINARY,
+    super("SHA384", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.Cryptographic", "/docs/sha384.html");
   }
 

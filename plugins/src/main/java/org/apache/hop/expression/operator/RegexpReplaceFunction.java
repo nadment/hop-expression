@@ -22,6 +22,8 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.DataTypeFamily;
+import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
@@ -36,8 +38,10 @@ import java.util.regex.PatternSyntaxException;
 @FunctionPlugin
 public class RegexpReplaceFunction extends Function {
 
+  private static final IOperandTypeChecker OTC = OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i >= 2);
+  
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OperandTypes.CUSTOM_REGEXP_REPLACE,
+    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OTC,
         "i18n::Operator.Category.String", "/docs/regexp_replace.html");
   }
 

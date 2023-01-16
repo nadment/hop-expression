@@ -16,8 +16,9 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.type.CompositeOperandTypeChecker.Composition;
+import org.apache.hop.expression.util.TimeUnit;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Strategies for checking operand types.
@@ -37,69 +38,70 @@ public final class OperandTypes {
   }
 
   /**
-   * Creates a checker that passes if each operand is a member of a
-   * corresponding family.
-   */
-  public static FamilyOperandTypeChecker family(List<DataTypeFamily> families) {
-    return family(families, i -> false);
-  }
-
-  /**
-   * Creates a checker that passes if each operand is a member of a
-   * corresponding family, and allows specified parameters to be optional.
-   */
-  public static FamilyOperandTypeChecker family(List<DataTypeFamily> families,
-      Predicate<Integer> optional) {
-    return new FamilyOperandTypeChecker(families, optional);
-  }
-
-  /**
    * Creates a checker that passes if all operand is a member of a
    * corresponding family.
    */
   public static FamilyOperandTypeChecker family(DataTypeFamily family, IOperandCountRange range) {
     return new FamilyOperandTypeChecker(family, range);
   }
-  
+
   /**
    * Creates a checker that passes if any one of the rules passes.
    */
   public static IOperandTypeChecker or(IOperandTypeChecker... rules) {
-    return new CompositeOperandTypeChecker(CompositeOperandTypeChecker.Composition.OR,
-        List.of(rules));
+    return new CompositeOperandTypeChecker(Composition.OR, List.of(rules));
   }
 
   /**
    * Creates a checker that passes if all of the rules pass.
    */
   public static IOperandTypeChecker and(IOperandTypeChecker... rules) {
-    return new CompositeOperandTypeChecker(CompositeOperandTypeChecker.Composition.AND,
-        List.of(rules));
+    return new CompositeOperandTypeChecker(Composition.AND, List.of(rules));
   }
 
   /**
    * Creates an operand checker from a sequence of single-operand checkers.
    */
-  public static IOperandTypeChecker sequence(IOperandTypeChecker... rules) {
-    return new CompositeOperandTypeChecker(CompositeOperandTypeChecker.Composition.SEQUENCE,
-        List.of(rules));
+  public static SequenceOperandTypeChecker sequence(IOperandTypeChecker... rules) {
+    return new SequenceOperandTypeChecker(List.of(rules));
   }
 
+  public static ISingleOperandTypeChecker literal(Class<?> javaClass) {
+    return new LiteralOperandTypeChecker(javaClass);    
+  }
+
+  /**
+   * Operand type-checking strategy that check nothing.
+   */  
+  public static final IOperandTypeChecker NO_CHECK = new NoneOperandTypeChecker();
+    
+  /**
+   * Operand type-checking strategy type must be a data type.
+   */
+  public static final IOperandTypeChecker DATATYPE = literal(DataTypeName.class);
+  
+  /**
+   * Operand type-checking strategy type must be a time unit.
+   */
+  public static final IOperandTypeChecker TIMEUNIT = literal(TimeUnit.class);
+  
+  /**
+   * Operand type-checking strategy type must be a literal string non-NULL.
+   */
+  public static final IOperandTypeChecker TEXT = literal(String.class);
+  
   /**
    * Operand type-checking strategy for an operator which takes no operands.
    */
   public static final IOperandTypeChecker NILADIC = family();
   
-  /**
-   * Operand type-checking strategy type must be a non-NULL literal.
-   */
-  public static final IOperandTypeChecker LITERAL = new LiteralOperandTypeChecker(false);
-
   public static final IOperandTypeChecker ANY = family(DataTypeFamily.ANY);
-  public static final IOperandTypeChecker ANY_OPTIONAL_BOOLEAN = family(List.of(DataTypeFamily.ANY, DataTypeFamily.BOOLEAN), i -> i == 1);
+  public static final IOperandTypeChecker ANY_OPTIONAL_BOOLEAN = family(DataTypeFamily.ANY, DataTypeFamily.BOOLEAN).optional(i -> i == 1);
   public static final IOperandTypeChecker ANY_ANY = family(DataTypeFamily.ANY,DataTypeFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY = family(DataTypeFamily.ANY,DataTypeFamily.ANY,DataTypeFamily.ANY);
-  public static final IOperandTypeChecker OPTIONAL_ANY = family(List.of(DataTypeFamily.ANY), i -> i == 0);
+  public static final IOperandTypeChecker ANY_DATATYPE_OPTIONAL_TEXT = OperandTypes.sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
+  public static final IOperandTypeChecker OPTIONAL_ANY = family(DataTypeFamily.ANY).optional(i -> i == 0);
+  
   
   /**
    * Operand type-checking strategy where two operands must both be in the
@@ -123,13 +125,14 @@ public final class OperandTypes {
    * in the same type family.
    */
   public static final IOperandTypeChecker AT_LEAST_ONE_SAME_VARIADIC = new SameOperandTypeChecker(OperandCountRange.between(1, -1));
-  public static final IOperandTypeChecker AT_LEAST_TREE_VARIADIC = new SameOperandTypeChecker(OperandCountRange.between(3, -1));
+  public static final IOperandTypeChecker AT_LEAST_TREE_SAME_VARIADIC = new SameOperandTypeChecker(OperandCountRange.between(3, -1));
 
   public static final IOperandTypeChecker BOOLEAN = family(DataTypeFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN = family(DataTypeFamily.BOOLEAN, DataTypeFamily.BOOLEAN);
-  // TODO: Create BOOLEAN_SAME_SAME
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY = family(DataTypeFamily.BOOLEAN, DataTypeFamily.ANY, DataTypeFamily.ANY);
+  // TODO: Create BOOLEAN_SAME_SAME
   //public static final IOperandTypeChecker BOOLEAN_SAME_SAME = family(List.of(BOOLEAN, SAME_SAME));
+
   
   public static final IOperandTypeChecker BINARY = family(DataTypeFamily.BINARY);
   public static final IOperandTypeChecker BINARY_VARIADIC =family(DataTypeFamily.BINARY, OperandCountRange.between(1, -1));  
@@ -140,60 +143,38 @@ public final class OperandTypes {
   public static final IOperandTypeChecker NUMERIC = family(DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC = family(DataTypeFamily.NUMERIC,DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC = family(DataTypeFamily.NUMERIC,DataTypeFamily.NUMERIC,DataTypeFamily.NUMERIC);
-  public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING = family(List.of(DataTypeFamily.NUMERIC, DataTypeFamily.STRING), i -> i == 1);
-  public static final IOperandTypeChecker NUMERIC_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i == 1);
-  public static final IOperandTypeChecker OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.NUMERIC), i -> i == 0);
+  public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING = family(DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i == 1);
+  public static final IOperandTypeChecker NUMERIC_OPTIONAL_NUMERIC = family(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC).optional(i -> i == 1);
+  public static final IOperandTypeChecker NUMERIC_OPTIONAL_TEXT = sequence(OperandTypes.NUMERIC, OperandTypes.TEXT).optional(i -> i == 1);
+  public static final IOperandTypeChecker OPTIONAL_NUMERIC = family(DataTypeFamily.NUMERIC).optional(i -> i == 0);
   
   public static final IOperandTypeChecker DATE = family(DataTypeFamily.DATE);
   public static final IOperandTypeChecker DATE_DATETIME = family(DataTypeFamily.DATE, DataTypeFamily.DATE);
   public static final IOperandTypeChecker DATE_NUMERIC = family(DataTypeFamily.DATE, DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker DATE_STRING = family(DataTypeFamily.DATE, DataTypeFamily.STRING);
-  public static final IOperandTypeChecker DATE_OPTIONAL_STRING = family(List.of(DataTypeFamily.DATE, DataTypeFamily.STRING), i -> i == 1);
+  public static final IOperandTypeChecker DATE_OPTIONAL_STRING = family(DataTypeFamily.DATE, DataTypeFamily.STRING).optional(i -> i == 1);
+  public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT = sequence(DATE,TIMEUNIT).optional(i -> i == 1);
+  public static final IOperandTypeChecker DATE_OPTIONAL_TEXT = sequence(OperandTypes.DATE, OperandTypes.TEXT).optional(i -> i == 1);
   
-  // TODO: enforce check to TimeUnit, not only to literal
-  public static final IOperandTypeChecker DATE_TIMEUNIT = sequence(DATE,LITERAL);
-  public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT = DATE_TIMEUNIT.or(DATE);
-    
- // public static final IOperandTypeChecker INTEGER = family(DataTypeFamily.INTEGER);
- // public static final IOperandTypeChecker INTEGER_INTEGER = family(DataTypeFamily.INTEGER, DataTypeFamily.INTEGER);
- // public static final IOperandTypeChecker INTEGER_INTEGER_INTEGER = family(DataTypeFamily.INTEGER, DataTypeFamily.INTEGER, DataTypeFamily.INTEGER);
- // public static final IOperandTypeChecker OPTIONAL_INTEGER = family(List.of(DataTypeFamily.INTEGER), i -> i == 0);
+  public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT,DATE);
   
   public static final IOperandTypeChecker STRING = family(DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker STRING_STRING_VARIADIC = family(DataTypeFamily.STRING, OperandCountRange.between(2, -1));  
-  public static final IOperandTypeChecker STRING_OR_BINARY = STRING.or(BINARY);
-  public static final IOperandTypeChecker STRING_OR_BINARY_OR_NUMERIC = STRING.or(BINARY).or(NUMERIC);
   public static final IOperandTypeChecker STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_NUMERIC_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC), i -> i == 1);
-  public static final IOperandTypeChecker STRING_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING), i -> i == 1);
-  public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i == 2); 
-  public static final IOperandTypeChecker STRING_NUMERIC_OR_BINARY_NUMERIC = STRING_NUMERIC.or(BINARY_NUMERIC);  
-  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING), i -> i == 2);  
-  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC), i -> i == 2);
-  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC), i -> i >= 2);  
-  public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_STRING = family(List.of(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING), i -> i == 2);
-  public static final IOperandTypeChecker STRING_STRING_OR_BINARY_BINARY = STRING_STRING.or(BINARY_BINARY);
-  
-  // TO_CHAR
-  public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING_OR_DATETIME_OPTIONAL_STRING = NUMERIC_OPTIONAL_STRING.or(DATE_OPTIONAL_STRING);
-
-  // STRTOK
-  public static final IOperandTypeChecker CUSTOM_STRTOK = STRING.or(STRING_STRING).or(STRING_NUMERIC).or(STRING_STRING_NUMERIC);
-
-  // REGEXP_REPLACE
-  public static final IOperandTypeChecker CUSTOM_REGEXP_REPLACE = family(List.of(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING), i -> i >= 2);
-
+  public static final IOperandTypeChecker STRING_OPTIONAL_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC).optional(i -> i == 1);
+  public static final IOperandTypeChecker STRING_OPTIONAL_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING).optional(i -> i == 1);
+  public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC).optional(i -> i == 2);  
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING).optional(i -> i == 2);  
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC).optional(i -> i == 2);
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC).optional(i -> i >= 2);  
+  public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_STRING = family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i == 2);
   
   public static final IOperandTypeChecker JSON = family(DataTypeFamily.JSON);
-  public static final IOperandTypeChecker JSON_STRING = family(DataTypeFamily.JSON, DataTypeFamily.STRING);
-  public static final IOperandTypeChecker JSON_STRING_OR_STRING_STRING = JSON_STRING.or(STRING_STRING);
-  
-  
-  public static final IOperandTypeChecker NO_CHECK = new NoneOperandTypeChecker();
+  public static final IOperandTypeChecker JSON_STRING = family(DataTypeFamily.JSON, DataTypeFamily.STRING); 
 }

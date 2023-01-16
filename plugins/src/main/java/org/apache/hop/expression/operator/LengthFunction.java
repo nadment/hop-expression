@@ -25,13 +25,13 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
 
 /**
- * The function returns the number of characters of the specified string.
+ * The function returns the number of characters of the specified string or binary.
  */
 @FunctionPlugin
 public class LengthFunction extends Function {
 
   public LengthFunction() {
-    super("LENGTH", true, ReturnTypes.INTEGER, OperandTypes.STRING,
+    super("LENGTH", true, ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.String", "/docs/length.html");
   }
 

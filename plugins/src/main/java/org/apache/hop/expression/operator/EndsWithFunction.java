@@ -35,7 +35,7 @@ import org.apache.hop.expression.util.Coerse;
 public class EndsWithFunction extends Function {
 
   public EndsWithFunction() {
-    super("ENDSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OR_BINARY_BINARY,
+    super("ENDSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         "i18n::Operator.Category.Comparison", "/docs/endswith.html");
   }
 

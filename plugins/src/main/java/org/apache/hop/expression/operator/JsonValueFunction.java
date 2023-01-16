@@ -45,7 +45,7 @@ public class JsonValueFunction extends Function {
 
 
   public JsonValueFunction() {
-    super("JSON_VALUE", true, ReturnTypes.STRING, OperandTypes.JSON_STRING_OR_STRING_STRING,
+    super("JSON_VALUE", true, ReturnTypes.STRING, OperandTypes.JSON_STRING.or(OperandTypes.STRING_STRING),
         "i18n::Operator.Category.Json", "/docs/json_value.html");
   }
 

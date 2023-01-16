@@ -48,12 +48,6 @@ public class AddOperator extends Operator {
     if (right == null)
       return null;
 
-    // Removed because it's hard to optimize
-    // if (left instanceof ZonedDateTime) {
-    // // Computes fraction of day
-    // long seconds = (long) (Coerse.toNumber(right) * SECONDS_BY_DAY);
-    // return Coerse.toDate(left).plusSeconds(seconds);
-    // }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
       return Coerse.toBigNumber(left).add(Coerse.toBigNumber(right));
     }

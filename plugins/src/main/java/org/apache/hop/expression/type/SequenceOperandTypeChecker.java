@@ -17,31 +17,27 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpression;
 import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * Operand type-checking strategy which checks operands for inclusion in type families.
- */
-public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
+public class SequenceOperandTypeChecker implements IOperandTypeChecker {
 
+  private final List<IOperandTypeChecker> rules;
   private final IOperandCountRange range;
-  private final List<DataTypeFamily> families;
   private final Predicate<Integer> optional;
-
-  FamilyOperandTypeChecker(DataTypeFamily family, IOperandCountRange range) {
+  
+  SequenceOperandTypeChecker(List<IOperandTypeChecker> rules) {
     super();
-    this.families = List.of(family);
+    this.rules = rules;
     this.optional = i -> false;
-    this.range = range;
+    this.range = OperandCountRange.of(rules.size());
   }
 
-  FamilyOperandTypeChecker(List<DataTypeFamily> families, Predicate<Integer> optional) {
-    this.families = families;
+  SequenceOperandTypeChecker(List<IOperandTypeChecker> rules, Predicate<Integer> optional) {
+    super();
+    this.rules = rules;
     this.optional = optional;
-
-    final int max = families.size();
+    final int max = rules.size();
     int min = max;
     while (min > 0 && optional.test(min - 1)) {
       --min;
@@ -52,32 +48,20 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
   /**
    * Allows specified parameters to be optional.
    */
-  public FamilyOperandTypeChecker optional(Predicate<Integer> optional) {
-    return new FamilyOperandTypeChecker(families, optional);
+  public SequenceOperandTypeChecker optional(Predicate<Integer> optional) {
+    return new SequenceOperandTypeChecker(this.rules, optional);
   }
-
+  
   @Override
-  public boolean checkOperandTypes(final Call call) {
-    // Variadic
-    if (families.size() != range.getMax()) {
-      for (IExpression operand : call.getOperands()) {
-        if (!operand.getType().isCompatibleWithCoercion(families.get(0))) {
-          return false;
-        }
-      }
+  public boolean checkOperandTypes(Call call) {
+    int index = 0;
+    for (IOperandTypeChecker rule : rules) {
+      ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
 
-      return true;
-    }
-    // List
-    else {
-      for (int i = 0; i < call.getOperandCount(); i++) {
-        if (i == families.size()
-            || !call.getOperand(i).getType().isCompatibleWithCoercion(families.get(i))) {
-          return false;
-        }
+      if (index < call.getOperandCount() && !checker.checkSingleOperandType(call.getOperand(index++))) {
+        return false;
       }
     }
-
     return true;
   }
 
@@ -87,12 +71,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
   }
 
   @Override
-  public boolean isOptional(int i) {
+  public boolean isOptional(int i) {    
     return optional.test(i);
-  }
-
-  @Override
-  public boolean checkSingleOperandType(IExpression operand) {
-    return operand.getType().isCompatibleWithCoercion(families.get(0));
   }
 }

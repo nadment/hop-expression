@@ -26,19 +26,19 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void EqualTo() throws Exception {
-    evalTrue("NAME = 'TEST'");
-    evalTrue("Age = 40");
-    evalTrue("FLAg = true");
-    evalTrue("2.000 = 2");
-    evalTrue("2.000 = 2.00");
-    evalTrue("-1.4e-10 = -1.4e-10");
-
     // Integer
     evalTrue("'0.0' = 0");
     evalTrue("0.0 = '0.000'");
     evalTrue("15.0 = '15'");
     evalTrue("'.01' = 0.01");
-
+    evalTrue("FIELD_INTEGER = 40.0");
+    
+    // Number
+    evalTrue("FIELD_NUMBER = -5.12");
+    evalTrue("2.000 = 2");
+    evalTrue("2.000 = 2.00");
+    evalTrue("-1.4e-10 = -1.4e-10");
+    
     // Binary
     evalTrue("0b11110000 = 0xF0");
     
@@ -47,11 +47,13 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("false = false");
     evalFalse("true = false");
     evalFalse("false = true");
-
+    evalTrue("FIELD_BOOLEAN = true");
+    
     // String
     evalTrue("'ABC' = 'ABC'");
     evalFalse("'ABC' = 'abc'");
-
+    evalTrue("FIELD_STRING = 'TEST'");
+    
     // Date
     evalTrue("Date '2019-01-01' = Date '2019-01-01'");
     evalFalse("Date '2019-01-01' = Date '2018-01-01'");
@@ -62,28 +64,28 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
     
-    // Null    
-    evalNull("VALUE_NULL = null");
+    // NULL is not equal ( = ) to anything not even to another NULL.
     evalNull("1 = null");
     evalNull("null = true");
-    evalNull("null = false");
-    // NULL is not equal ( = ) to anything—not even to another NULL.
-    evalNull("null = null");
+    evalNull("null = false");    
+    evalNull("NULL_BOOLEAN = null");
+    evalNull("NULL_STRING = null");
+    evalNull("null = NULL_INTEGER");
 
-    evalFails("NOM=");
-    evalFails("NOM = ");
+    evalFails("FIELD_INTEGER=");
+    evalFails(" = FIELD_INTEGER ");
 
-    writeEquals("AGE=40");
+    writeEquals("FIELD_INTEGER=40");
     
-    returnType("AGE=40", DataTypeName.BOOLEAN);
+    returnType("FIELD_INTEGER=40", DataTypeName.BOOLEAN);
   }
 
   @Test
   public void NotEqualTo() throws Exception {
-    evalTrue("'bar' != 'foo'");
-    evalTrue("NAME <> 'tEST'");
-    evalFalse("Age != 40");
-    evalFalse("Age <> 40");
+    evalTrue("FIELD_STRING != 'foo'");
+    evalTrue("FIELD_STRING <> 'tEST'");
+    evalFalse("FIELD_INTEGER != 40");
+    evalFalse("FIELD_INTEGER <> 40");
 
     evalTrue("1 <> 2");
     //evalTrue("10 <> 0x10");
@@ -112,9 +114,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("NOM!");
     evalFails("NOM ! ");
     
-    writeEquals("10!=AGE");
+    writeEquals("10!=FIELD_INTEGER");
     
-    returnType("AGE<>40", DataTypeName.BOOLEAN);  
+    returnType("FIELD_INTEGER<>40", DataTypeName.BOOLEAN);  
   }
 
   @Test
@@ -122,7 +124,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("9>5");
     evalTrue("9.4>9.358");
     evalTrue("(4+2)>10-9");
-    evalTrue("Age>10");
+    evalTrue("FIELD_INTEGER>10");
     evalFalse("5>5");
     evalFalse("0xF5>0xFE");
     
@@ -139,14 +141,14 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("Date '2019-01-01' > Date '2019-01-01'");
     evalFalse("Date '2018-01-01' > Date '2019-01-01'");
 
-    evalNull("VALUE_NULL > 0");
-    evalNull("1 > VALUE_NULL");
+    evalNull("NULL_BOOLEAN > 0");
+    evalNull("1 > NULL_BOOLEAN");
 
-    evalFails("NOM>");
-    evalFails("NOM > ");
-    evalFails("NOM>5");
+    evalFails("> FIELD_INTEGER");
+    evalFails("FIELD_INTEGER > ");
+    evalFails("FIELD_STRING>5");
     
-    writeEquals("10>AGE");
+    writeEquals("10>FIELD_INTEGER");
     
     returnType("'bar' > 'foo'", DataTypeName.BOOLEAN);
   }
@@ -156,7 +158,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("9 >= 5");
     evalTrue("9.4 >= 9.358");
     evalTrue("(4+2) >= 10-9");
-    evalTrue("Age >= 10");
+    evalTrue("FIELD_INTEGER >= 10");
     evalTrue("5 >= 5");
 
     evalFalse("false >= true");
@@ -172,14 +174,14 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Date '2019-01-01' >= Date '2019-01-01'");
     evalFalse("Date '2018-01-01' >= Date '2019-01-01'");
 
-    evalNull("VALUE_NULL >= 0");
-    evalNull("1 >= VALUE_NULL");
+    evalNull("NULL_BOOLEAN >= 0");
+    evalNull("1 >= NULL_BOOLEAN");
 
-    evalFails("NOM>=");
-    evalFails("NOM >=");
-    evalFails("NOM>=5");
+    evalFails(">=FIELD_INTEGER");
+    evalFails("FIELD_INTEGER >=");
+    evalFails("FIELD_STRING>=5");
     
-    writeEquals("AGE>=80");
+    writeEquals("FIELD_INTEGER>=80");
     
     returnType("'bar' >= 'foo'", DataTypeName.BOOLEAN);
   }
@@ -189,7 +191,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("5 < 9");
     evalTrue("9.358 < 9.4");
     evalTrue("10-9 < (4+2)");
-    evalTrue("Age < 100");
+    evalTrue("FIELD_INTEGER < 100");
     evalFalse("5 < 5");
 
     evalFalse("true < false");
@@ -208,11 +210,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("null < 1");
     evalNull("0 < null");
 
-    evalFails("NOM<");
-    evalFails("NOM < ");
-    evalFails("NOM < 5");
+    evalFails("< FIELD_INTEGER");
+    evalFails("FIELD_INTEGER < ");
+    evalFails("FIELD_STRING < 5");
     
-    writeEquals("AGE<80");
+    writeEquals("FIELD_INTEGER<80");
     
     returnType("'bar' < 'foo'", DataTypeName.BOOLEAN);
   }
@@ -222,7 +224,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("5 <= 9");
     evalTrue("9.358 <= 9.4");
     evalTrue("10-9 <= (4+2)");
-    evalTrue("Age <= 100");
+    evalTrue("FIELD_INTEGER <= 100");
     evalTrue("5 <= 5");
 
     evalTrue("false <= false");
@@ -241,20 +243,20 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("null <= 1");
     evalNull("0 <= null");
 
-    evalFails("NOM<=");
-    evalFails("NOM <=");
-    evalFails("NOM <=5");
+    evalFails("<= FIELD_INTEGER");
+    evalFails("FIELD_INTEGER <=");
+    evalFails("FIELD_STRING <=5");
     
-    writeEquals("AGE<=5");
+    writeEquals("FIELD_INTEGER<=5");
     
     returnType("'bar' <= 'foo'", DataTypeName.BOOLEAN);
   }
 
   @Test
   public void In() throws Exception {
-    evalTrue("SEX in ('?','F','RM')");
-    evalTrue("SEX not in ('?','-','!')");
-    evalTrue("2 in (1,2,3)");
+    evalTrue("FIELD_STRING in ('?','*','TEST')");
+    evalTrue("FIELD_STRING not in ('?','-','!')");
+    evalTrue("FIELD_INTEGER not in (1,2,3)");
     
     evalTrue("2.5 IN (1,2.5,3)");
     evalTrue("'2' in (null,1,2,3)");
@@ -270,19 +272,19 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
-    evalFails("FIELD in (1,2,FIELD)");
+    evalFails("FIELD_INTEGER in (1,2,FIELD_INTEGER)");
 
-    writeEquals("AGE IN (10,20,30,40)");
+    writeEquals("FIELD_INTEGER IN (10,20,30,40)");
     
-    returnType("AGE IN (10,20,30,40)", DataTypeName.BOOLEAN);
+    returnType("FIELD_INTEGER IN (10,20,30,40)", DataTypeName.BOOLEAN);
   }
 
   @Test
   public void IsTrue() throws Exception {
     evalTrue("True IS True");
     evalTrue("True IS NOT False");
-    evalTrue("FLAG is True");
-    evalFalse("VALUE_NULL IS True");  
+    evalTrue("FIELD_BOOLEAN is True");
+    evalFalse("NULL_BOOLEAN IS True");  
     evalTrue("False IS NOT TRUE");      
     evalFalse("Null is True");
     
@@ -290,11 +292,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("IS TRUE");
     evalFails("IS NOT TRUE");
     
-    writeEquals("FLAG IS TRUE");
-    writeEquals("FLAG IS NOT TRUE","FLAG IS FALSE");
+    writeEquals("FIELD_BOOLEAN IS TRUE");
+    writeEquals("FIELD_BOOLEAN IS NOT TRUE","FIELD_BOOLEAN IS FALSE");
     
-    returnType("FLAG IS TRUE", DataTypeName.BOOLEAN);
-    returnType("FLAG IS NOT TRUE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS TRUE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT TRUE", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -302,8 +304,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("True IS NOT False");
     evalFalse("True IS False");
     evalTrue("False IS False");
-    evalFalse("VALUE_NULL IS False");
-    evalFalse("VALUE_NULL IS NOT False");    
+    evalFalse("NULL_BOOLEAN IS False");
+    evalFalse("NULL_BOOLEAN IS NOT False");    
     evalFalse("Null IS False");
     evalFalse("Null IS NOT False");
 
@@ -321,9 +323,9 @@ public class OperatorsTest extends BaseExpressionTest {
   public void IsNull() throws Exception {
     evalFalse("True IS Null");
     evalFalse("False IS Null");
-    evalFalse("VALUE_NULL IS NOT NULL");
+    evalFalse("NULL_BOOLEAN IS NOT NULL");
     evalTrue("Null IS NULL");
-    evalTrue("VALUE_NULL IS NULL");
+    evalTrue("NULL_BOOLEAN IS NULL");
 
     evalFails("IS NULL");
     evalFails("IS NOT NULL");
@@ -342,8 +344,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("1 IS DISTINCT FROM null");
     evalTrue("1 IS NOT DISTINCT FROM 1");
     
-    evalFalse("VALUE_NULL IS NOT DISTINCT FROM true");
-    evalTrue("VALUE_NULL  IS NOT DISTINCT FROM null");
+    evalFalse("NULL_BOOLEAN IS NOT DISTINCT FROM true");
+    evalTrue("NULL_BOOLEAN  IS NOT DISTINCT FROM null");
     
     evalFalse("Date '2019-01-01' IS DISTINCT FROM Date '2019-01-01'");
     evalTrue("Date '2019-01-01' IS NOT DISTINCT FROM Date '2019-01-01'");
@@ -364,11 +366,11 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void Add() throws Exception {
     evalEquals("10+(-0.5)", 9.5);
-    evalEquals("0xF+0", 15);
-    evalEquals("0b00011+0", 3);
+    evalEquals("0xF::INTEGER+1", 16);
+    evalEquals("0b00011::INTEGER+0", 3);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
-    evalEquals("PRICE+PRICE", -10.24);
-    evalEquals("AMOUNT+1", 123456.789 + 1);
+    evalEquals("FIELD_NUMBER+FIELD_NUMBER", -10.24);
+    evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
 
     // Addition of days to DATE or TIMESTAMP
     evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
@@ -384,14 +386,14 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("5+");
     evalFails("TRUE+FALSE");
     
-    writeEquals("10+AGE");
+    writeEquals("10+FIELD_INTEGER");
   }
 
   @Test
   public void Subtract() throws Exception {
     evalEquals("10-0.5", 9.5);
-    evalEquals("Age-0.5", 39.5);
-    evalEquals("Age-10::INTEGER", 30L);
+    evalEquals("FIELD_INTEGER-0.5", 39.5);
+    evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     
     // Subtraction of days to DATE or TIMESTAMP
     evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
@@ -411,7 +413,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("5-");
     evalFails("TRUE-FALSE");
     
-    writeEquals("10-AGE");
+    writeEquals("10-FIELD_INTEGER");
   }
 
   @Test
@@ -420,13 +422,13 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
     evalFalse("5 between 5 and 3");
-    evalTrue("AGE between symmetric 50 and 30");
+    evalTrue("FIELD_INTEGER between symmetric 50 and 30");
     evalTrue("-1 between -3+1 and 5");
     evalTrue("'the' between 'that' and 'then'");
     evalFalse("1 between 3 and 5");
-    evalTrue("Age between 39.999 and 40.0001");
-    evalTrue("Age not between 10 and 20");
-    evalTrue("Age not between 10 and 20 and 'Test' is not null");
+    evalTrue("FIELD_INTEGER between 39.999 and 40.0001");
+    evalTrue("FIELD_INTEGER not between 10 and 20");
+    evalTrue("FIELD_INTEGER not between 10 and 20 and 'Test' is not null");
 
     evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
 
@@ -437,13 +439,13 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("1 between -10 and NULL");
     evalNull("1 between symmetric -10 and NULL");
 
-    evalFails("Age between 10 and");
-    evalFails("Age between and 10");
-    evalFails("Age between and ");
+    evalFails("FIELD_INTEGER between 10 and");
+    evalFails("FIELD_INTEGER between and 10");
+    evalFails("FIELD_INTEGER between and ");
 
-    writeEquals("AGE BETWEEN 10 AND 20");
-    writeEquals("AGE BETWEEN SYMMETRIC 50 AND 20");
-    writeEquals("NAME BETWEEN 'AZE' AND 'KLM'");
+    writeEquals("FIELD_INTEGER BETWEEN 10 AND 20");
+    writeEquals("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND 20");
+    writeEquals("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
     
     
     returnType("5 between 3 and 5", DataTypeName.BOOLEAN);
@@ -564,20 +566,25 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("CAST(Date '2019-02-25' AS BOOLEAN )");
     evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
 
-    // Bad syntax
+    // Error syntax
     evalFails("'1234':");
     evalFails("'1234':NUMBER");
     evalFails("'1234'::");
     evalFails("CAST('bad' AS)");
-    evalFails("CAST('bad' AS NULL)");
     evalFails("CAST('2020-01-01' AS NULL)");
     evalFails("CAST(1234 AS STRING FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
     evalFails("CAST(Date '2019-02-25' AS String FORMAT NULL)");
 
-    // Bad data type
+    // Unknown data type
     evalFails("Cast(123 as Nill)");
 
+    // Second operand not a data type
+    evalFails("Cast(123 as 1)");
+    evalFails("Cast(123 as TRUE)");
+    evalFails("CAST('bad' AS NULL)");
+    evalFails("Cast(123 as 'Text')");
+        
     writeEquals("CAST(DATA AS BINARY)", "CAST(DATA AS BINARY)");
     writeEquals("CAST(AGE AS NUMBER)", "CAST(AGE AS NUMBER)");
     writeEquals("AGE::NUMBER", "CAST(AGE AS NUMBER)");
@@ -605,23 +612,23 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void Positive() throws Exception {
     evalEquals("+(40)", 40);
-    evalEquals("+(Age)", 40);
+    evalEquals("+(FIELD_INTEGER)", 40);
     evalEquals("+40", 40);
     evalEquals("1+ +2", 3);
     evalNull("+null");
     
-    writeEquals("+AGE","AGE");
+    writeEquals("+FIELD_INTEGER","FIELD_INTEGER");
   }
 
   @Test
   public void Negative() throws Exception {
     evalEquals("-(1+2)", -3);
-    evalEquals("-40", -40);
-    evalEquals("-Age", -40);
+    evalEquals("-FIELD_INTEGER", -40);
+    evalEquals("-FIELD_INTEGER", -40);
     evalEquals("+40", 40);
     evalEquals("1+ -2", -1);
     evalNull("-null");
-    writeEquals("-AGE","-AGE");
+    writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
   }
 
   @Test
@@ -637,7 +644,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("Mod(9,0)");
     evalFails("Mod(3)");
     
-    writeEquals("AGE%4");
+    writeEquals("FIELD_INTEGER%4");
   }
   
   @Test
@@ -650,7 +657,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("1.23456::BigNumber*-2.987654", -3.68843812224);
     evalNull("null*1");
     evalNull("1*null");
-    writeEquals("AGE*4","4*AGE");
+    writeEquals("FIELD_INTEGER*4","4*FIELD_INTEGER");
   }
 
   @Test
@@ -672,8 +679,8 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void Div0() throws Exception {
     evalEquals("Div0(10,4)", 2.5D);
-    evalEquals("Div0(AGE,-10)", -4D);    
-    evalEquals("Div0(AGE,0)", 0);
+    evalEquals("Div0(FIELD_INTEGER,-10)", -4D);    
+    evalEquals("Div0(FIELD_INTEGER,0)", 0);
     evalNull("Div0(null,1)");
     evalNull("Div0(null,0)");
     evalNull("Div0(1,null)");
@@ -694,9 +701,9 @@ public class OperatorsTest extends BaseExpressionTest {
     // Alias
     evalEquals("BIT_NOT(1)", -2);
     
-    writeEquals("~AGE");
+    writeEquals("~FIELD_INTEGER");
     
-    returnType("~AGE", DataTypeName.INTEGER);
+    returnType("~FIELD_INTEGER", DataTypeName.INTEGER);
   }
 
   @Test
@@ -709,9 +716,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("100&");
     evalFails("100 & ");
     
-    writeEquals("AGE&4");
+    writeEquals("FIELD_INTEGER&4");
     
-    returnType("AGE&4", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER&4", DataTypeName.INTEGER);
   }
 
   @Test
@@ -724,9 +731,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("3|");
     evalFails("3 | ");
     
-    writeEquals("AGE|4");
+    writeEquals("FIELD_INTEGER|4");
     
-    returnType("AGE|4", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER|4", DataTypeName.INTEGER);
   }
 
   @Test
@@ -739,26 +746,26 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("100^");
     evalFails("100 ^ ");
     
-    writeEquals("AGE^4");
+    writeEquals("FIELD_INTEGER^4");
     
-    returnType("AGE^4", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER^4", DataTypeName.INTEGER);
   }
 
   @Test
   public void BoolNot() throws Exception {
-    evalTrue("FLAG is not false");
-    evalTrue("VALUE_NULL is null");
-    evalTrue("NOT (VALUE_NULL is not null)");
+    evalTrue("FIELD_BOOLEAN is not false");
+    evalTrue("NULL_BOOLEAN is null");
+    evalTrue("NOT (NULL_BOOLEAN is not null)");
     evalFalse("NOT 1");
     evalTrue("NOT 0");
     evalTrue("NOT NOT True");
     evalNull("NOT NULL");
-    evalFails("FLAG is ");
+    evalFails("FIELD_BOOLEAN is ");
     evalFails("NOT");
     
-    writeEquals("NOT FLAG");
+    writeEquals("NOT FIELD_BOOLEAN");
     
-    returnType("NOT FLAG", DataTypeName.BOOLEAN);
+    returnType("NOT FIELD_BOOLEAN", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -767,22 +774,22 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("true OR false");
     evalTrue("false OR true");
     evalFalse("false OR false");
-    evalTrue("true OR VALUE_NULL");
+    evalTrue("true OR NULL_BOOLEAN");
     evalTrue("true OR FIELD");
-    evalTrue("VALUE_NULL OR true");
-    evalTrue("FLAG OR false");
-    evalNull("false OR VALUE_NULL");
-    evalNull("VALUE_NULL OR false");
-    evalNull("VALUE_NULL OR VALUE_NULL");
+    evalTrue("NULL_BOOLEAN OR true");
+    evalTrue("FIELD_BOOLEAN OR false");
+    evalNull("false OR NULL_BOOLEAN");
+    evalNull("NULL_BOOLEAN OR false");
+    evalNull("NULL_BOOLEAN OR NULL_BOOLEAN");
     
     evalFails("false OR");
     evalFails("OR false");
 
     //evalFails("true OR NAME");
     
-    writeEquals("FLAG OR VALUE_NULL");
+    writeEquals("FIELD_BOOLEAN OR VALUE_NULL");
     
-    returnType("false OR FLAG", DataTypeName.BOOLEAN);
+    returnType("false OR FIELD_BOOLEAN", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -792,20 +799,21 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("false AND true");
     evalFalse("false AND false");
     evalFalse("false AND FIELD");
-    evalNull("FLAG AND null");
-    evalNull("VALUE_NULL AND FLAG");
     evalFalse("false AND VALUE_NULL");
-    evalFalse("VALUE_NULL AND false");
-    evalNull("true AND VALUE_NULL");
-    evalNull("VALUE_NULL AND true");
-    evalNull("VALUE_NULL AND VALUE_NULL");
+    evalFalse("NULL_BOOLEAN AND false");
+    
+    evalNull("FIELD_BOOLEAN AND null");
+    evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN");
+    evalNull("true AND NULL_BOOLEAN");
+    evalNull("NULL_BOOLEAN AND true");
+    evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN");
     
     evalFails("false AND");
     evalFails("AND false");
 
-    writeEquals("FLAG AND VALUE_NULL");
+    writeEquals("FIELD_BOOLEAN AND NULL_BOOLEAN");
     
-    returnType("false AND FLAG", DataTypeName.BOOLEAN);
+    returnType("false AND FIELD_BOOLEAN", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -825,9 +833,9 @@ public class OperatorsTest extends BaseExpressionTest {
 
   @Test
   public void Like() throws Exception {
-    evalTrue("NAME like 'TES%'");
-    evalTrue("NAME not like 'X%'");
-    evalFalse("NAME like 'X%'");
+    evalTrue("FIELD_STRING like 'TES%'");
+    evalTrue("FIELD_STRING not like 'X%'");
+    evalFalse("FIELD_STRING like 'X%'");
     evalTrue("'Tuesday' like '%es%'");
     evalTrue("'...Tuesday....' like '%es%'");
 
@@ -883,8 +891,8 @@ public class OperatorsTest extends BaseExpressionTest {
 
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
     
-    writeEquals("NAME LIKE 'ADD%'","STARTSWITH(NAME,'ADD')");
-    writeEquals("NAME LIKE '%ADD!_%' ESCAPE '!'");
+    writeEquals("FIELD_STRING LIKE 'ADD%'","STARTSWITH(FIELD_STRING,'ADD')");
+    writeEquals("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
     
     returnType("'amigo' like 'a%o'", DataTypeName.BOOLEAN);
   }
@@ -893,8 +901,8 @@ public class OperatorsTest extends BaseExpressionTest {
   public void Concat() throws Exception {
     // String
     evalEquals("CONCAT('TES','T')", "TEST");
-    evalTrue("NAME='TES'||'T'");
-    evalTrue("NAME='TES'||VALUE_NULL||'T'");
+    evalTrue("FIELD_STRING='TES'||'T'");
+    evalTrue("FIELD_STRING='TES'||NULL_STRING||'T'");
     evalEquals("'TEST'||null", "TEST");
     evalEquals("null||'TEST'", "TEST");
     
@@ -914,31 +922,31 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void CaseWhen() throws Exception {
     // implicit ELSE NULL case
-    evalNull("case when Age=10 then 10 end");
-    evalEquals("case when Age=40 then 10 end", 10L);
+    evalNull("case when FIELD_INTEGER=10 then 10 end");
+    evalEquals("case when FIELD_INTEGER=40 then 10 end", 10L);
 
     // explicit ELSE case
-    evalEquals("case when Age=40 then 10 else 50 end", 10L);
-    evalEquals("case when Age>80 then 'A' else 'B' end", "B");
-    evalNull("case when Age>80 then 'A' end");
+    evalEquals("case when FIELD_INTEGER=40 then 10 else 50 end", 10L);
+    evalEquals("case when FIELD_INTEGER>80 then 'A' else 'B' end", "B");
+    evalNull("case when FIELD_INTEGER>80 then 'A' end");
 
     // Search CASE WHEN
-    evalEquals("case when Age=10+20 then 1*5 when Age=20+20 then 2*5 else 50 end", 10L);
-    evalEquals("case when VALUE_NULL=Age then null when Age=20+20 then 2*5 else 50 end", 10L);
+    evalEquals("case when FIELD_INTEGER=10+20 then 1*5 when FIELD_INTEGER=20+20 then 2*5 else 50 end", 10L);
+    evalEquals("case when NULL_BOOLEAN=FIELD_INTEGER then null when FIELD_INTEGER=20+20 then 2*5 else 50 end", 10L);
     
     // Simple CASE
-    evalEquals("case Age when 10 then 10 when 40 then 40 else 50 end", 40L);
-    evalEquals("case Age when 10 then 10 when 20 then 20 else -1 end", -1L);
-    evalNull("case Age when 10 then 10 when 20 then 20 end");
+    evalEquals("case FIELD_INTEGER when 10 then 10 when 40 then 40 else 50 end", 40L);
+    evalEquals("case FIELD_INTEGER when 10 then 10 when 20 then 20 else -1 end", -1L);
+    evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end");
 
     // Missing 'END'
-    evalFails("case when Age=40 then 10 else 50");
+    evalFails("case when FIELD_INTEGER=40 then 10 else 50");
 
     // Implicit ELSE NULL
-    writeEquals("CASE WHEN AGE=40 THEN 10 END", "CASE WHEN AGE=40 THEN 10 ELSE NULL END");
+    writeEquals("CASE WHEN FIELD_INTEGER=40 THEN 10 END", "CASE WHEN FIELD_INTEGER=40 THEN 10 ELSE NULL END");
 
-    writeEquals("CASE WHEN AGE=40 THEN TRUE ELSE FALSE END");
-    writeEquals("CASE AGE WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
+    writeEquals("CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END");
+    writeEquals("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
   }
 }
 

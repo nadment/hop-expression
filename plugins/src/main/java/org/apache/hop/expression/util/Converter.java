@@ -135,6 +135,9 @@ public class Converter {
           return ((boolean) value) ? "TRUE" : "FALSE";
         }
         if (value instanceof Number) {
+          if ( pattern==null) {
+            pattern = "TM";
+          }
           return NumberFormat.of(pattern).format(Coerse.toBigNumber(value));
         }
         if (value instanceof ZonedDateTime) {

@@ -33,7 +33,7 @@ import org.apache.hop.expression.util.Coerse;
 public class RightFunction extends Function {
 
   public RightFunction() {
-    super("RIGHT", true, ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC_OR_BINARY_NUMERIC,
+    super("RIGHT", true, ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
         "i18n::Operator.Category.String", "/docs/right.html");
   }
 

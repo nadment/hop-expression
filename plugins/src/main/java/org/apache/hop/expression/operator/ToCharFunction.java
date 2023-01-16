@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,9 +34,8 @@ import org.apache.hop.expression.util.NumberFormat;
 public class ToCharFunction extends Function {
 
   public ToCharFunction() {
-    super("TO_CHAR", true, ReturnTypes.STRING,
-        OperandTypes.NUMERIC_OPTIONAL_STRING_OR_DATETIME_OPTIONAL_STRING,
-        "i18n::Operator.Category.Conversion", "/docs/to_char.html");
+    super("TO_CHAR", true, ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT.or(OperandTypes.DATE_OPTIONAL_TEXT), "i18n::Operator.Category.Conversion",
+        "/docs/to_char.html");
   }
 
   @Override
@@ -54,9 +54,16 @@ public class ToCharFunction extends Function {
     }
 
     if (v0 instanceof Number) {
+      if (pattern == null) {
+        pattern = "TM";
+      }
+
       return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
     }
 
+    if (pattern == null) {
+      pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+    }
     return DateTimeFormat.of(pattern).format(Coerse.toDateTime(v0));
   }
 }

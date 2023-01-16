@@ -22,7 +22,7 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
 
-public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
+public abstract class Optimizer implements IExpressionVisitor<IExpression> {
 
   @Override
   public IExpression apply(IExpressionContext context, Identifier identifier) {

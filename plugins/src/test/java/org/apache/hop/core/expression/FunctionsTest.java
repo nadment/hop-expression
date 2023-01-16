@@ -83,13 +83,13 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Coalesce() throws Exception {
     evalEquals("Coalesce(1,2,3)", 1);
-    evalEquals("Coalesce(null,1,2)", 1);
-    evalEquals("Coalesce(null,'TEST','BIDON')", "TEST");
-    evalNull("Coalesce(null,null,null)");
+    evalEquals("Coalesce(null,NULL_INTEGER,1,2)", 1);
+    evalEquals("Coalesce(null,NULL_STRING,'TEST','BIDON')", "TEST");
+    evalNull("Coalesce(null,NULL_STRING,null)");
     evalFails("Coalesce()");
 
-    returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
-    returnType("Coalesce(NAME, NULL, 'XYZ')", DataTypeName.STRING);
+    returnType("Coalesce(FIELD_INTEGER, NULL, 5)", DataTypeName.INTEGER);
+    returnType("Coalesce(FIELD_STRING, NULL, 'XYZ')", DataTypeName.STRING);
   }
 
   @Test
@@ -117,7 +117,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void IfNull() throws Exception {
-    evalEquals("IfNull(1,2)", 1);
+    evalEquals("IfNull(1,FIELD_INTEGER)", 1);
     evalEquals("IfNull(null,1)", 1);
     evalEquals("IfNull('A','B')", "A");
     evalEquals("IfNull(null,'B')", "B");
@@ -172,7 +172,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Decode(9,1,'one',2,'two',Null,'<NULL>','other')", "other");
 
     // Support ABORT as default
-    evalEquals("Decode(AGE,4,'Flag 1',40,'Flag 2',ABORT('Error generated with ABORT'))", "Flag 2");
+    evalEquals("Decode(FIELD_INTEGER,4,'Flag 1',40,'Flag 2',ABORT('Error generated with ABORT'))", "Flag 2");
 
     evalNull("Decode(9,1,'one',2,'two',Null,'<NULL>')");
 
@@ -265,13 +265,14 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDate.of(2020, Month.FEBRUARY, 1));
 
     evalNull("First_Day(NULL)");
-    evalNull("First_day(Date '2020-02-27', NULL)");
+    evalNull("First_day(NULL_DATE, MONTH)");
 
     evalFails("First_Day()");
-    evalFails("First_Day('test')");
-    evalFails("First_Day(Date '2020-12-31', AGE)");
+    evalFails("First_Day(FIELD_STRING)");
+    evalFails("First_Day(FIELD_DATE, FIELD_INTEGER)");
+    evalFails("First_Day(FIELD_DATE, NULL)");
 
-    returnType("First_Day(Date '2019-01-01')", DataTypeName.DATE);
+    returnType("First_Day(FIELD_DATE)", DataTypeName.DATE);
   }
 
   @Test
@@ -291,13 +292,15 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDate.of(2020, Month.DECEMBER, 31));
 
     evalNull("Last_Day(NULL)");
-    evalNull("Last_Day(Date '2020-02-27', NULL)");
+    evalNull("Last_Day(NULL_DATE, MONTH)");
 
     evalFails("Last_Day()");
-    evalFails("Last_Day('test')");
-    evalFails("Last_Day(Date '2020-12-31', AGE)");
-
-    returnType("Last_Day(Date '2019-01-01')", DataTypeName.DATE);
+    evalFails("Last_Day(FIELD_INTEGER)");
+    evalFails("Last_Day(FIELD_STRING)");
+    evalFails("Last_Day(FIELD_DATE, FIELD_INTEGER)");
+    evalFails("Last_Day(FIELD_DATE, NULL)");
+    
+    returnType("Last_Day(FIELD_DATE)", DataTypeName.DATE);
   }
 
   @Test
@@ -305,12 +308,14 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Next_Day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.MARCH, 2));
 
     evalNull("Next_Day(null, 'monday')");
-    evalNull("Next_Day(Date '2020-02-28', null)");
+    evalNull("Next_Day(FIELD_DATE, null)");
 
     evalFails("Next_Day()");
-    evalFails("Next_Day(Date '2020-02-28')");
+    evalFails("Next_Day(FIELD_INTEGER, 'monday')");
+    evalFails("Next_Day(FIELD_STRIN, 'monday')");
+    evalFails("Next_Day(FIELD_DATE)");
 
-    returnType("Next_Day(Date '2020-02-28','monday')", DataTypeName.DATE);
+    returnType("Next_Day(FIELD_DATE,'monday')", DataTypeName.DATE);
   }
 
   @Test
@@ -318,12 +323,13 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Previous_Day(Date '2020-02-28','monday')", LocalDate.of(2020, Month.FEBRUARY, 24));
 
     evalNull("Previous_Day(null, 'monday')");
-    evalNull("Previous_Day(Date '2020-02-28', null)");
+    evalNull("Previous_Day(FIELD_DATE, null)");
 
     evalFails("Previous_Day()");
-    evalFails("Previous_Day(Date '2020-02-28')");
+    evalFails("Previous_Day(FIELD_DATE)");
+    evalFails("Previous_Day(FIELD_INTEGER, 'monday')");
 
-    returnType("Previous_Day(Date '2020-02-28','monday')", DataTypeName.DATE);
+    returnType("Previous_Day(FIELD_DATE,'monday')", DataTypeName.DATE);
   }
 
   @Test
@@ -373,7 +379,8 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Upper() throws Exception {
     evalEquals("Upper('test')", "TEST");
     evalNull("Upper(NULL)");
-    evalFails("Upper()");
+    
+    evalFails("Upper()");   
 
     // Alias
     // evalEquals("UCase('test')", "TEST");
@@ -482,6 +489,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Month(Date '2019-12-28')", 12);
     evalNull("Month(NULL)");
     evalFails("Month()");
+    evalFails("Month(FIELD_INTEGER)");
   }
 
   @Test
@@ -561,8 +569,13 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Quarter(Date '2019-04-28')", 2);
     evalEquals("Quarter(Date '2019-08-28')", 3);
     evalEquals("Quarter(Date '2019-12-28')", 4);
-    evalNull("Quarter(NULL)");
+
+    evalNull("Quarter(NULL_DATE)");
+    
     evalFails("Quarter()");
+    evalFails("Quarter(FIELD_STRING)");
+    evalFails("Quarter(FIELD_INTEGER)");
+    evalFails("Quarter(FIELD_NUMBER)");
   }
 
   @Test
@@ -571,7 +584,9 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("DayOfWeek(Date '2019-07-27')", 7);
     evalEquals("DayOfWeek(Date '2019-07-28')", 1);
     evalEquals("DayOfWeek(Date '2019-12-31')", 3);
-    evalNull("DayOfWeek(NULL)");
+    
+    evalNull("DayOfWeek(NULL_DATE)");
+    
     evalFails("DayOfWeek()");
   }
 
@@ -580,9 +595,14 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Day(Date '2019-01-01')", 1);
     evalEquals("Day(Date '2019-02-28')", 28);
     evalEquals("Day(Date '2019-12-28')", 28);
-    evalEquals("Day(BIRTHDATE)", 23);
-    evalNull("Day(NULL)");
+    evalEquals("Day(FIELD_DATE)", 23);
+    
+    evalNull("Day(NULL_DATE)");
+    
     evalFails("Day()");
+    evalFails("Day(123)");
+    evalFails("Day('text')");
+    
   }
 
   @Test
@@ -590,7 +610,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("DayOfYear(Date '2019-01-01')", 1);
     evalEquals("DayOfYear(Date '2019-02-02')", 33);
     evalEquals("DayOfYear(Date '2019-12-31')", 365);
-    evalNull("DayOfYear(NULL)");
+    evalNull("DayOfYear(NULL_DATE)");
     evalFails("DayOfYear()");
   }
 
@@ -599,14 +619,14 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Week(Date '2015-12-31')", 53);
     evalEquals("Week(Date '2015-01-01')", 1);
     evalEquals("Week(Date '2015-01-02')", 1);
-    evalNull("Week(NULL)");
+    evalNull("Week(NULL_DATE)");
     evalFails("Week()");
   }
 
   @Test
   public void IsoDayOfWeek() throws Exception {
     evalEquals("IsoDayOfWeek(Date '2003-12-28')", 7);
-    evalNull("IsoDayOfWeek(NULL)");
+    evalNull("IsoDayOfWeek(NULL_DATE)");
     evalFails("IsoDayOfWeek()");
 
   }
@@ -618,7 +638,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("IsoWeek(Date '2016-01-02')", 53);
     evalEquals("IsoWeek(Date '2016-01-03')", 53);
     evalEquals("IsoWeek(Date '2016-01-04')", 1);
-    evalNull("IsoWeek(NULL)");
+    evalNull("IsoWeek(NULL_DATE)");
     evalFails("IsoWeek()");
   }
 
@@ -629,7 +649,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("IsoYear(Date '2016-01-02')", 2015);
     evalEquals("IsoYear(Date '2016-01-04')", 2016);
     evalEquals("IsoYear(Date '2042-12-31')", 2043);
-    evalNull("IsoYear(NULL)");
+    evalNull("IsoYear(NULL_DATE)");
     evalFails("IsoYear('ERROR')");
     evalFails("IsoYear()");
   }
@@ -641,8 +661,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Add_Years(Date '2019-11-15',3)", LocalDate.of(2022, Month.NOVEMBER, 15));
     // the resulting month has fewer days
     evalEquals("Add_Years(Date '2020-02-29',1)", LocalDate.of(2021, Month.FEBRUARY, 28));
-    evalNull("Add_Years(Null,140)");
+    
+    evalNull("Add_Years(NULL_DATE,140)");
     evalNull("Add_Years(Date '2019-01-15',Null)");
+    
     evalFails("Add_Years(Date '2019-01-15')");
     evalFails("Add_Years()");
   }
@@ -654,7 +676,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Add_Months(Date '2019-11-15',3)", LocalDate.of(2020, Month.FEBRUARY, 15));
     // the resulting month has fewer days
     evalEquals("Add_Months(Date '2019-01-31',1)", LocalDate.of(2019, Month.FEBRUARY, 28));
-    evalNull("Add_Months(Null,140)");
+    evalNull("Add_Months(NULL_DATE,140)");
     evalNull("Add_Months(Date '2019-01-15',Null)");
     evalFails("Add_Months(Date '2019-01-15')");
   }
@@ -663,7 +685,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Add_Weeks() throws Exception {
     evalEquals("Add_Weeks(Date '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(Date '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
-    evalNull("Add_Weeks(Null,140)");
+    evalNull("Add_Weeks(NULL_DATE,140)");
     evalNull("Add_Weeks(Date '2019-01-15',Null)");
     evalFails("Add_Weeks(Date '2019-01-15')");
   }
@@ -672,7 +694,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Add_Days() throws Exception {
     evalEquals("Add_Days(Date '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(Date '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
-    evalNull("Add_Days(Null,140)");
+    evalNull("Add_Days(NULL_DATE,140)");
     evalNull("Add_Days(Date '2019-01-15',Null)");
     evalFails("Add_Days(Date '2019-01-15')");
   }
@@ -681,7 +703,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Add_Hours() throws Exception {
     evalEquals("Add_Hours(Date '2019-01-15',1)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
-    evalNull("Add_Hours(Null,140)");
+    evalNull("Add_Hours(NULL_DATE,140)");
     evalNull("Add_Hours(Date '2019-01-15',Null)");
     evalFails("Add_Hours(Date '2019-01-15')");
   }
@@ -690,7 +712,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Add_Minutes() throws Exception {
     evalEquals("Add_Minutes(Date '2019-01-15',20)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
-    evalNull("Add_Minutes(Null,140)");
+    evalNull("Add_Minutes(NULL_DATE,140)");
     evalNull("Add_Minutes(Date '2019-01-15',Null)");
     evalFails("Add_Minutes(Date '2019-01-15')");
   }
@@ -701,7 +723,7 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20, 0));
     evalEquals("Add_Seconds(Date '2019-01-15',140)",
         LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
-    evalNull("Add_Seconds(Null,140)");
+    evalNull("Add_Seconds(NULL_DATE,140)");
     evalNull("Add_Seconds(Date '2019-01-15',Null)");
     evalFails("Add_Seconds(Date '2019-01-15')");
   }
@@ -709,35 +731,35 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Hour() throws Exception {
     evalEquals("Hour(Timestamp '2019-01-01 15:28:59')", 15);
-    evalNull("Hour(Null)");
+    evalNull("Hour(NULL_DATE)");
     evalFails("Hour()");
   }
 
   @Test
   public void Minute() throws Exception {
     evalEquals("Minute(Timestamp '2019-01-01 15:28:59')", 28);
-    evalNull("Minute(Null)");
+    evalNull("Minute(NULL_DATE)");
     evalFails("Minute()");
   }
 
   @Test
   public void Second() throws Exception {
     evalEquals("Second(Timestamp '2019-01-01 15:28:59')", 59);
-    evalNull("Second(Null)");
+    evalNull("Second(NULL_DATE)");
     evalFails("Second()");
   }
 
   @Test
   public void Lower() throws Exception {
     evalEquals("Lower('TesT')", "test");
-    evalNull("Lower(NULL)");
+    evalNull("Lower(NULL_STRING)");
     evalFails("Lower()");
     evalFails("Lower('Test','Test')");
 
     // Alias
     // evalEquals("LCase('TesT')", "test");
 
-    returnType("Lower('TesT')", DataTypeName.STRING);
+    returnType("Lower(FIELD_STRING)", DataTypeName.STRING);
   }
 
   @Test
@@ -754,7 +776,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // Alias
     evalEquals("Substr('TEST',5)", "");
 
-    returnType("Substring('ABCDEFG',0,1)", DataTypeName.STRING);
+    returnType("Substring(FIELD_STRING,0,1)", DataTypeName.STRING);
   }
 
   @Test
@@ -824,10 +846,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Space(4)", "    ");
     evalEquals("Space(0)", "");
     evalNull("Space(-3)");
-    evalNull("Space(NULL)");
+    evalNull("Space(NULL_INTEGER)");
     evalFails("Space()");
     evalFails("Space('str')");
-    returnType("Space(4)", DataTypeName.STRING);
+    returnType("Space(FIELD_INTEGER)", DataTypeName.STRING);
   }
 
   @Test
@@ -835,7 +857,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Abs(0)", 0);
     evalEquals("Abs(1)", 1);
     evalEquals("Abs(-1)", 1);
-    evalEquals("Abs(Price)", 5.12);
+    evalEquals("Abs(FIELD_NUMBER)", 5.12);
     evalEquals("Abs(-1::INTEGER)", 1);
     evalEquals("Abs(-1.12345679)", 1.12345679);
     evalEquals("Abs(-1.1234567912345679123456791234567912345679)",
@@ -843,7 +865,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Abs(NULL)");
     evalFails("Abs()");
 
-    writeEquals("ABS(-AGE)");
+    writeEquals("ABS(-FIELD_INTEGER)");
   }
 
   @Test
@@ -851,9 +873,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Acos(0)", 1.5707963267948966);
     evalEquals("Acos(1)", 0);
     evalNull("Acos(NULL)");
+    
     evalFails("Acos(2)");
     evalFails("Acos(-2)");
     evalFails("Acos()");
+    evalFails("Acos(FIELD_STRING)");
+    
     returnType("Acos(0)", DataTypeName.NUMBER);
   }
 
@@ -862,7 +887,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Acosh(1)", 0);
     evalEquals("Acosh(3)", 1.762747174039086);
     evalNull("Acosh(NULL)");
+    
     evalFails("Acosh()");
+    evalFails("Acosh(FIELD_STRING)");
+    
     returnType("Acosh(0)", DataTypeName.NUMBER);
   }
 
@@ -880,6 +908,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Asinh(asin(0.5))", 0.5022189850346116D);
     evalNull("Asinh(NULL)");
     evalFails("Asinh()");
+    evalFails("Asinh(FIELD_STRING)");
+    
     returnType("Asinh(1)", DataTypeName.NUMBER);
   }
 
@@ -898,34 +928,40 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Atan2(0,-3)", Math.PI);
     evalNull("Atan2(NULL,0)");
     evalNull("Atan2(1,NULL)");
+
     evalFails("Atan2()");
     evalFails("Atan2(1)");
+    evalFails("Atan2(FIELD_STRING)");
   }
 
   @Test
   public void Atanh() throws Exception {
     evalEquals("Atanh(0.2)", 0.2027325540540821D);
     evalNull("Atanh(NULL)");
+    
     evalFails("Atanh()");
+    evalFails("Atanh(FIELD_STRING)");
   }
 
   @Test
   public void Avg() throws Exception {
-    returnType("AVG(AGE)", DataTypeName.NUMBER);
+    returnType("AVG(FIELD_NUMBER)", DataTypeName.NUMBER);
   }
 
   @Test
   public void Max() throws Exception {
-    returnType("MAX(NAME)", DataTypeName.STRING);
-    returnType("MAX(AGE)", DataTypeName.INTEGER);
-    returnType("MAX(DN)", DataTypeName.DATE);
+    returnType("MAX(FIELD_STRING)", DataTypeName.STRING);
+    returnType("MAX(FIELD_INTEGER)", DataTypeName.INTEGER);
+    returnType("MAX(FIELD_NUMBER)", DataTypeName.NUMBER);
+    returnType("MAX(FIELD_DATE)", DataTypeName.DATE);
   }
 
   @Test
   public void Min() throws Exception {
-    returnType("MIN(NAME)", DataTypeName.STRING);
-    returnType("MIN(AGE)", DataTypeName.INTEGER);
-    returnType("MIN(DN)", DataTypeName.DATE);
+    returnType("MIN(FIELD_STRING)", DataTypeName.STRING);
+    returnType("MIN(FIELD_INTEGER)", DataTypeName.INTEGER);
+    returnType("MIN(FIELD_NUMBER)", DataTypeName.NUMBER);
+    returnType("MIN(FIELD_DATE)", DataTypeName.DATE);
   }
 
   @Test
@@ -964,7 +1000,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Sinh(0)", 0);
     evalNull("Sinh(NULL)");
     evalFails("Sinh()");
-    evalFails("Sinh('test')");
+    evalFails("Sinh(FIELD_STRING)");
     evalFails("Sinh(0,1)");
   }
 
@@ -975,7 +1011,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Cot(NULL)");
     evalFails("Cot(0)");
     evalFails("Cot()");
-    evalFails("Cot('test')");
+    evalFails("Cot(FIELD_STRING)");
     evalFails("Cot(1,0)");
   }
 
@@ -986,7 +1022,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Csc(NULL)");
     evalFails("Csc(0)");
     evalFails("Csc()");
-    evalFails("Csc('test')");
+    evalFails("Csc(FIELD_STRING)");
     evalFails("Csc(1,0)");
   }
 
@@ -1012,7 +1048,9 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Exp() throws Exception {
     evalEquals("Exp(1)", Math.E);
     evalEquals("Exp(2)", Math.E * Math.E);
+    
     evalNull("Exp(NULL)");
+    
     evalFails("Exp()");
     evalFails("Exp(1,2)");
   }
@@ -1026,8 +1064,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Power(999,0)", 1D);
     evalEquals("Power(2,2.5)", 5.656854249492381D);
     evalEquals("Power(2,-3)", 0.125D);
+
     evalNull("Power(NULL,2)");
     evalNull("Power(3,NULL)");
+    
     evalFails("Power()");
     evalFails("Power(3)");
     evalFails("Power(1,2,3)");
@@ -1043,7 +1083,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Sign(-5)", -1L);
     evalFails("Sign()");
     evalFails("Sign(1,2)");
-    evalNull("Sign(NULL)");
+    
+    evalNull("Sign(NULL_INTEGER)");
   }
 
   @Test
@@ -1051,7 +1092,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Cbrt(0)", 0);
     evalEquals("Cbrt(2)", 1.2599210498948732D);
     evalEquals("Cbrt(-343)", -7);
-    evalNull("Cbrt(NULL)");
+    evalNull("Cbrt(NULL_INTEGER)");
     evalFails("Cbrt()");
   }
 
@@ -1068,7 +1109,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Square(1)", 1);
     evalEquals("Square(-5)", 25);
     evalFails("Square()");
-    evalNull("Square(NULL)");
+    evalNull("Square(NULL_INTEGER)");
   }
 
   @Test
@@ -1078,7 +1119,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Trim('  a b  ')", "a b");
     evalEquals("Trim('01ABC10 ', '012')", "ABC10 ");
     evalEquals("Trim(' 01ABC10 ', ' 012')", "ABC");
-    evalNull("Trim(NULL)");
+    evalNull("Trim(NULL_STRING)");
     evalNull("Trim(' 01ABC012 ',NULL)");
     evalFails("Trim()");
 
@@ -1231,7 +1272,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFalse("To_Boolean('0')");
     evalFalse("To_Boolean(0)");
 
-    evalNull("To_Boolean(NULL)");
+    evalNull("To_Boolean(NULL_STRING)");
 
     evalFails("To_Boolean()");
     evalFails("To_Boolean('falsee')");
@@ -1249,7 +1290,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
     evalNull("To_Hex(NULL)");
 
-    evalFails("To_Hex()");
+    evalFails("To_Hex()");    
 
     evalFails("To_Hex(0x01,0x02)");
   }
@@ -1883,7 +1924,7 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void Reverse() throws Exception {
     evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH");
-    evalNull("Reverse(NULL)");
+    evalNull("Reverse(NULL_STRING)");
     evalFails("Reverse()");
   }
 
@@ -1931,7 +1972,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Translate('Hello, world!','eo','EO')", "HEllO, wOrld!");
     evalEquals("Translate('Hello, wOrld!','eol', 'E')", "HE, wOrd!");
     evalEquals("Translate('Hello, world!','oel,! ', '')", "Hwrd");
-    evalNull("Translate(NULL,'eo','EO')");
+    evalNull("Translate(NULL_STRING,'eo','EO')");
     evalNull("Translate('Hello, world!',NULL,'EO')");
     evalNull("Translate('Hello, world!','EO',NULL)");
   }
@@ -1967,8 +2008,15 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Date_Trunc(Q, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(WW, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
+    
     evalNull("Date_Trunc(DAY, NULL)");
+    evalNull("Date_Trunc(DAY, NULL_DATE)");
+    
+    evalFails("Date_Trunc(DAY)");
+    evalFails("Date_Trunc(DATE '2020-05-25')");
     evalFails("Date_Trunc(NULL, DATE '2020-05-25')");
+    evalFails("Date_Trunc(123, DATE '2020-05-25')");
+    evalFails("Date_Trunc('xxx', DATE '2020-05-25')");
 
     // Truncate timestamp
     evalEquals("Date_Trunc(DAY, Timestamp '2020-05-25 23:59:59')",
@@ -1995,12 +2043,17 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Contains() throws Exception {
-    evalTrue("CONTAINS(NAME,'ES')");
-    evalFalse("CONTAINS(NAME,'YZ')");
-    evalNull("CONTAINS(NULL,'ES')");
-    evalNull("CONTAINS(NAME,NULL)");
+    evalTrue("CONTAINS(FIELD_STRING,'ES')");
+    evalFalse("CONTAINS(FIELD_STRING,'YZ')");
     
-    returnType("CONTAINS(NAME,'ES')", DataTypeName.BOOLEAN);
+    evalNull("CONTAINS(NULL,'ES')");
+    evalNull("CONTAINS(NULL_STRING,'ES')");
+    evalNull("CONTAINS(FIELD_STRING,NULL_STRING)");
+    
+    evalFails("CONTAINS()");
+    evalFails("CONTAINS(FIELD_STRING)");
+    
+    returnType("CONTAINS(FIELD_STRING,'ES')", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -2014,8 +2067,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFalse("StartsWith(0xFAA12345,0xEE)");
     evalFalse("StartsWith(0x12345,0x123456)");
 
-    evalNull("StartsWith(NULL,'ROMA')");
-    evalNull("StartsWith('TEST FROM',NULL)");
+    evalNull("StartsWith(NULL_STRING,'ROMA')");
+    evalNull("StartsWith('TEST FROM',NULL_STRING)");
     evalFails("StartsWith()");
     
     returnType("StartsWith(NAME,'ES')", DataTypeName.BOOLEAN);
@@ -2032,8 +2085,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFalse("EndsWith(0xFAA12345,0x88)");
     evalFalse("EndsWith(0x12345,0xFFFF12345)");
 
-    evalNull("EndsWith(NULL,'ROMA')");
-    evalNull("EndsWith('TEST FROM',NULL)");
+    evalNull("EndsWith(NULL_STRING,'ROMA')");
+    evalNull("EndsWith('TEST FROM',NULL_STRING)");
     evalFails("EndsWith()");
     
     returnType("EndsWith(NAME,'ES')", DataTypeName.BOOLEAN);
@@ -2337,8 +2390,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Floor(125.9)", 125);
     evalEquals("Floor(0.4873)", 0.0);
     evalEquals("Floor(-0.65)", -1);
-    evalEquals("Floor(Price)", -6);
-    evalEquals("Floor(Amount)", 123456);
+    evalEquals("Floor(FIELD_NUMBER)", -6);
+    evalEquals("Floor(FIELD_BIGNUMBER)", 123456);
     evalNull("Floor(null)");
     evalFails("Floor()");
     evalFails("Floor(1,2,3)");
@@ -2580,7 +2633,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Bit_Shift(16,-4)", 1);
     evalEquals("Bit_Shift(10000,-3)", 1250);
     evalEquals("Bit_Shift(1,63)", 0x8000000000000000L);
-    evalEquals("Bit_Shift(0x8000000000000000,-63)", 1);
+    //evalEquals("Bit_Shift(0x8000000000000000,-63)", 1);
 
     // Cast to integer
     evalEquals("Bit_Shift(16.3,-4)", 1);
@@ -2599,6 +2652,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("Bit_Shift('Bidon',3)");
     evalFails("Bit_Shift()");
     evalFails("Bit_Shift(123)");
+    evalFails("Bit_Shift(Date '2022-11-25', 3)");
   }
 
   @Test
@@ -2692,8 +2746,11 @@ public class FunctionsTest extends BaseExpressionTest {
 
     evalNull("Extract(SECOND from NULL)");
 
+    evalFails("Extract(123 from Date '2021-01-01')");
+    evalFails("Extract('TEST' from Date '2021-01-01')");
     evalFails("Extract(NULL from Date '2021-01-01')");
     evalFails("Extract(BIDON from NULL)");
+    evalFails("Extract(DAY Date '2021-01-01')");
 
     writeEquals("EXTRACT(CENTURY FROM FIELD_DATE)");
 

@@ -35,8 +35,8 @@ public class IdentifierTest extends BaseExpressionTest {
   
   @Test
   public void eval() throws Exception {
-    evalEquals("Age%2", 0);
-    evalEquals(" \t\n\"Age\"%2", 0);
+    evalEquals("FIELD_INTEGER%2", 0);
+    evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0);
     evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
     evalEquals("\"IDENTIFIER_UNDERSCORE\"", "UNDERSCORE");
     evalEquals("\"IDENTIFIER lower\"", "lower");

@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpressionContext;
 
 public class CastReturnTypeInference implements IReturnTypeInference {
@@ -30,7 +29,7 @@ public class CastReturnTypeInference implements IReturnTypeInference {
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
     try {
       return (DataTypeName) call.getOperand(1).getValue(context);
-    } catch (ExpressionException e) {
+    } catch (Exception e) {
       return DataTypeName.UNKNOWN;
     }
   }

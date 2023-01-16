@@ -36,7 +36,7 @@ import org.apache.hop.expression.util.Coerse;
 public class Md5Function extends Function {
 
   public Md5Function() {
-    super("MD5", true, ReturnTypes.STRING, OperandTypes.BINARY,
+    super("MD5", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.Cryptographic", "/docs/md5.html");
   }
 

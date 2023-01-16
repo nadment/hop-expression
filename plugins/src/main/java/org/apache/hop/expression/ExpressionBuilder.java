@@ -15,17 +15,9 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.optimizer.ArithmeticOptimizer;
-import org.apache.hop.expression.optimizer.BooleanOptimizer;
-import org.apache.hop.expression.optimizer.CombineConcatOptimizer;
-import org.apache.hop.expression.optimizer.DeterministicOptimizer;
-import org.apache.hop.expression.optimizer.ExpressionCompiler;
-import org.apache.hop.expression.optimizer.ExtractOptimizer;
-import org.apache.hop.expression.optimizer.IdentifierOptimizer;
-import org.apache.hop.expression.optimizer.InOptimizer;
-import org.apache.hop.expression.optimizer.LikeOptimizer;
+import org.apache.hop.expression.optimizer.Optimizer;
+import org.apache.hop.expression.optimizer.Optimizers;
 import org.apache.hop.expression.optimizer.ReturnTypeOptimizer;
-import org.apache.hop.expression.optimizer.SymmetricalOptimizer;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
@@ -48,12 +40,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class ExpressionBuilder {
 
-  private static final Set<ExpressionCompiler> OPTIMIZERS =
-      Set.of(new SymmetricalOptimizer(), new ArithmeticOptimizer(), new LikeOptimizer(),
-          new InOptimizer(), new ExtractOptimizer(), new CombineConcatOptimizer(),
-          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer());
-
-  private static final ExpressionCompiler RETURN_TYPE = new ReturnTypeOptimizer();
+  private static final Optimizer RETURN_TYPE = new ReturnTypeOptimizer();
 
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
       "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE",
@@ -452,9 +439,10 @@ public class ExpressionBuilder {
       case LITERAL_BINARY_BIT:
         return parseLiteralBinaryBit(token);
       case LITERAL_TIMEUNIT:
-        return parseLiteralDatePart(token);
+        return parseLiteralTimeUnit(token);
       case LITERAL_DATATYPE:
-        return parseLiteralDataType(token);
+        return parseLiteralDataType(token);     
+      // Date can be Literal or DataType
       case DATE:
         token = next();
         if (token == null)
@@ -896,7 +884,7 @@ public class ExpressionBuilder {
 
     List<IExpression> operands = new ArrayList<>();
 
-    operands.add(this.parseLiteralDatePart(next()));
+    operands.add(this.parseLiteralTimeUnit(next()));
 
     if (isNotThenNext(Id.FROM)) {
       throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.EXTRACT),
@@ -1040,7 +1028,7 @@ public class ExpressionBuilder {
     return new Call(function, operands);
   }
 
-  private Literal parseLiteralDatePart(Token token) throws ParseException {
+  private Literal parseLiteralTimeUnit(Token token) throws ParseException {
     try {
       TimeUnit unit = TimeUnit.of(token.text());
       return Literal.of(unit);
@@ -1167,7 +1155,7 @@ public class ExpressionBuilder {
           return new Token(Id.GT, start);
         }
 
-        // parse not equal symbol
+        // parse bang equal symbol "!="
         case '!': {
           int start = position++;
           if (position < source.length()) {
@@ -1405,7 +1393,7 @@ public class ExpressionBuilder {
       return null;
 
     IExpression original = expression;
-
+    
     int cycle = 20;
     do {
       // Compile operands first
@@ -1414,9 +1402,9 @@ public class ExpressionBuilder {
       } else if (expression instanceof Tuple) {
         expression = compileTuple(context, (Tuple) expression);
       }
-
+      
       // Apply optimizers
-      for (ExpressionCompiler optimizer : OPTIMIZERS) {
+      for (IExpressionVisitor<IExpression> optimizer : Optimizers.getOptimizers()) {
         expression = expression.accept(context, optimizer);
       }
 
@@ -1424,17 +1412,6 @@ public class ExpressionBuilder {
 
         // Return type inference
         expression = expression.accept(context, RETURN_TYPE);
-
-        // Check operand types expected
-        if (expression instanceof Call) {
-          Call call = (Call) expression;
-          Operator operator = call.getOperator();
-          IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
-          if (!operandTypeChecker.checkOperandTypes(call)) {
-            throw new ExpressionException(
-                ExpressionError.ILLEGAL_ARGUMENT.message(operator.getName()));
-          }
-        }
 
         return expression;
       }
@@ -1470,35 +1447,33 @@ public class ExpressionBuilder {
       }
     }
 
+    // Check operand types expected
+    IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
+    if (!operandTypeChecker.checkOperandTypes(call)) {
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT.message(operator.getName()));
+    }
+    
     // Replace arguments in User Defined Function by the operands of the call.
     if (call.getOperator() instanceof UserDefinedFunction) {
-      return compile(context, call, (UserDefinedFunction) call.getOperator());
+      UserDefinedFunction udf = (UserDefinedFunction) call.getOperator();
+      try {
+        IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
+        IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
+        return expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
+      } catch (Exception e) {
+        throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
+      }
     }
 
-    // Optimize all operands
-    List<IExpression> operands = new ArrayList<>(call.getOperandCount());
+    // Compile all operands
+    List<IExpression> operands = new ArrayList<>();
     for (IExpression expression : call.getOperands()) {
       operands.add(compile(context, expression));
     }
-
-    return new Call(operator, operands);
-  }
-
-  protected IExpression inferReturnType(IExpressionContext context, Call call) {
-    // Inference return data type    
+    
+    // Inference return type
     DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
-    return new Call(type, call.getOperator(), call.getOperands());
-  }
 
-  protected IExpression compile(IExpressionContext context, Call call, UserDefinedFunction udf)
-      throws ExpressionException {
-    try {
-      IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
-      IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
-      return expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
-    } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
-    }
+    return new Call(type, operator, operands);
   }
-
 }

@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * condition. For example, when the expression is just checking to see if a string starts with a
  * given pattern.
  */
-public class LikeOptimizer extends ExpressionCompiler {
+public class LikeOptimizer extends Optimizer {
   Pattern startsWith = Pattern.compile("^([^_%]+)%$");
   Pattern endsWith = Pattern.compile("^%([^_%]+)$");
   Pattern contains = Pattern.compile("^%([^_%]+)%$");

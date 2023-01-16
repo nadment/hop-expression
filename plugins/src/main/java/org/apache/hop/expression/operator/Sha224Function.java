@@ -30,13 +30,13 @@ import org.apache.hop.expression.util.Coerse;
  * characters hex-encoded string.
  *
  * @see {@link Md5Function}, {@link Sha1Function}, {@link Sha256Function}, {@link Sha384Function},
- *      {@link Svha512Function}
+ *      {@link Sha512Function}
  */
 @FunctionPlugin
 public class Sha224Function extends Function {
 
   public Sha224Function() {
-    super("SHA224", true, ReturnTypes.STRING, OperandTypes.BINARY,
+    super("SHA224", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.Cryptographic", "/docs/sha224.html");
   }
 

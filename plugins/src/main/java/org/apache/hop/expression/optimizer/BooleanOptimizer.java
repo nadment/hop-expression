@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Coerse;
  * 2. Merge same expressions.
  * 3. Removes `Not` operator.
  */
-public class BooleanOptimizer extends ExpressionCompiler {
+public class BooleanOptimizer extends Optimizer {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {

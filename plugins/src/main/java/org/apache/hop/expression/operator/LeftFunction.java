@@ -33,7 +33,7 @@ import org.apache.hop.expression.util.Coerse;
 public class LeftFunction extends Function {
 
   public LeftFunction() {
-    super("LEFT", true, ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC_OR_BINARY_NUMERIC,
+    super("LEFT", true, ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
         "i18n::Operator.Category.String", "/docs/left.html");
   }
 

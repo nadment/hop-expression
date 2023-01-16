@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Converter;
 public class ToBooleanFunction extends Function {
 
   public ToBooleanFunction() {
-    super("TO_BOOLEAN", true, ReturnTypes.BOOLEAN, OperandTypes.STRING,
+    super("TO_BOOLEAN", true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
         "i18n::Operator.Category.Conversion", "/docs/to_boolean.html");
   }
 

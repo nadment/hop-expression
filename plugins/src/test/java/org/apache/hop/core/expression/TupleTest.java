@@ -35,11 +35,13 @@ public class TupleTest extends BaseExpressionTest {
     Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
     Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
     Tuple tuple4 = new Tuple(Literal.NULL, Literal.ZERO, Literal.NULL);
+    Tuple tuple5 = new Tuple(Literal.TRUE, Literal.FALSE);
     
     assertEquals(Kind.TUPLE, tuple1.getKind());
     assertEquals(DataTypeName.INTEGER, tuple1.getType());
     assertEquals(DataTypeName.INTEGER, tuple4.getType());
     assertEquals(DataTypeName.UNKNOWN, tuple3.getType());
+    assertEquals(DataTypeName.BOOLEAN, tuple5.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
     assertEquals(tuple1, tuple2);

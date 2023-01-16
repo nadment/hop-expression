@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Coerse;
@@ -38,9 +39,10 @@ import org.apache.hop.expression.util.Coerse;
 @FunctionPlugin
 public class StrtokFunction extends Function {
 
+  private static final IOperandTypeChecker OTC = OperandTypes.STRING.or(OperandTypes.STRING_STRING).or(OperandTypes.STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC);
+  
   public StrtokFunction() {
-    super("STRTOK", true, ReturnTypes.STRING, OperandTypes.CUSTOM_STRTOK,
-        "i18n::Operator.Category.String", "/docs/strtok.html");
+    super("STRTOK", true, ReturnTypes.STRING, OTC, "i18n::Operator.Category.String", "/docs/strtok.html");
   }
 
   @Override

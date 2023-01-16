@@ -246,10 +246,10 @@ public class Coerse {
   }
   
   /**
-   * Coerce value to DatePart.
+   * Coerce value to TimeUnit.
    * 
    * @param value the value to coerce
-   * @return DatePart
+   * @return TimeUnit
    */
   public static TimeUnit toTimeUnit(Object value) throws ExpressionException {
     if (value instanceof TimeUnit) {

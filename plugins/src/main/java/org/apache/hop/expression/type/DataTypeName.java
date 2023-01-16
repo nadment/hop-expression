@@ -101,8 +101,25 @@ public enum DataTypeName {
     return family;
   }
 
+  /** 
+   * Returns whether type are in same type family.
+   */
   public boolean isSameFamily(DataTypeName type) {
-    return this.family.is(type.getFamily());
+    return this.family.isSameFamily(type.getFamily());
+  }
+  
+  /** 
+   * Returns whether type are in same type family.
+   */
+  public boolean isSameFamily(DataTypeFamily family) {
+    return this.family.isSameFamily(family);
+  }
+  
+  /** 
+   * Returns whether type are in same type family.
+   */
+  public boolean isCompatibleWithCoercion(DataTypeFamily family) {
+    return this.family.isCompatibleWithCoercion(family);
   }
   
   public boolean allowsNoPrecNoScale() {

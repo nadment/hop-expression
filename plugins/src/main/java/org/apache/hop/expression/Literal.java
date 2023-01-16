@@ -34,6 +34,11 @@ public final class Literal implements IExpression {
   private static final ObjectMapper MAPPER = new ObjectMapper();
   
   public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
+  
+//  public static final Literal NULL_BOOLEAN = new Literal(null, DataTypeName.BOOLEAN);
+//  public static final Literal NULL_STRING = new Literal(null, DataTypeName.STRING);
+//  public static final Literal NULL_DATE = new Literal(null, DataTypeName.DATE);
+  
   public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, DataTypeName.INTEGER);
@@ -135,6 +140,12 @@ public final class Literal implements IExpression {
     return type;
   }
 
+  public Class<?> getJavaClass() {
+    if ( value==null ) 
+      return Void.class;    
+    return value.getClass();
+  }
+  
   @Override
   public int hashCode() {
     return Objects.hash(value, type);

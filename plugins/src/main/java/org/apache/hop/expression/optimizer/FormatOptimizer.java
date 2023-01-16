@@ -27,7 +27,7 @@ import org.apache.hop.expression.util.NumberFormat;
 /**
  * Replace string pattern format operand with a compiled format
  */
-public class FormatOptimizer extends ExpressionCompiler {
+public class FormatOptimizer extends Optimizer {
   @Override
   public IExpression apply(final IExpressionContext context, final Call call) {
 

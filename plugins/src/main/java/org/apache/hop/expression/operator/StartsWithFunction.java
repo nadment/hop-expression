@@ -34,7 +34,7 @@ import org.apache.hop.expression.util.Coerse;
 public class StartsWithFunction extends Function {
 
   public StartsWithFunction() {
-    super("STARTSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OR_BINARY_BINARY,
+    super("STARTSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
         "i18n::Operator.Category.Comparison", "/docs/startswith.html");
   }
 

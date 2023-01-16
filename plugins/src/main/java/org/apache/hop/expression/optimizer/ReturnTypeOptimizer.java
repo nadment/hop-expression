@@ -21,7 +21,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.DataTypeName;
 
-public class ReturnTypeOptimizer extends ExpressionCompiler {
+public class ReturnTypeOptimizer extends Optimizer {
   @Override
   public IExpression apply(final IExpressionContext context, final Call call) {
     

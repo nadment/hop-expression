@@ -57,6 +57,12 @@ public class LiteralTest extends BaseExpressionTest {
 
   public void DataType() throws Exception {
     assertEquals(DataTypeName.BIGNUMBER, Literal.of(DataTypeName.BIGNUMBER).getValue(null));
+    
+    evalEquals("Cast(123 as InTeGeR)", 123);
+    
+    // Accept DataType quoted like a String
+    evalEquals("Cast(123 as 'INTEGER')", 123);
+    evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
   }
 
   @Test
@@ -76,7 +82,7 @@ public class LiteralTest extends BaseExpressionTest {
 
     writeEquals("'Test ''Bla'' string'");
     
-    returnType("NAME", DataTypeName.STRING);
+    returnType("FIELD_STRING", DataTypeName.STRING);
   }
   
 
@@ -161,7 +167,7 @@ public class LiteralTest extends BaseExpressionTest {
 
     writeEquals("123456", "123456");
     
-    returnType("AGE", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER", DataTypeName.INTEGER);
   }
 
   @Test

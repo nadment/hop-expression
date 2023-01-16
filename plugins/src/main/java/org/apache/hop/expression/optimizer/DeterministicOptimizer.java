@@ -24,7 +24,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Tuple;
 
-public class DeterministicOptimizer extends ExpressionCompiler {
+public class DeterministicOptimizer extends Optimizer {
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
     try {

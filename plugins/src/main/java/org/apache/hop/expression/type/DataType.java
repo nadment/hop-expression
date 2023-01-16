@@ -109,8 +109,7 @@ public class DataType {
    * <p>Returns {@link #PRECISION_NOT_SPECIFIED} (-1) if precision is not
    * applicable for this type.</p>
    *
-   * @return number of 
-   * decimal digits for exact numeric types; 
+   * @return number of decimal digits for exact numeric types; 
    * number of decimal digits in mantissa for approximate numeric types;
    * number of decimal digits for fractional seconds of datetime types; 
    * length in characters for String types; 

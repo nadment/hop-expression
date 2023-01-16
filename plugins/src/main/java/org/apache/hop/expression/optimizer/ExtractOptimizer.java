@@ -30,7 +30,7 @@ import org.apache.hop.expression.util.TimeUnit;
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
  */
-public class ExtractOptimizer extends ExpressionCompiler {
+public class ExtractOptimizer extends Optimizer {
 
   @Override
   public IExpression apply(IExpressionContext context, Call call) {

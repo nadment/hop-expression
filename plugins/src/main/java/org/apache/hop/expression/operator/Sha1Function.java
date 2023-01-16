@@ -35,7 +35,7 @@ import org.apache.hop.expression.util.Coerse;
 public class Sha1Function extends Function {
 
   public Sha1Function() {
-    super("SHA1", true, ReturnTypes.STRING, OperandTypes.BINARY,
+    super("SHA1", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.Cryptographic", "/docs/sha1.html");
   }
 

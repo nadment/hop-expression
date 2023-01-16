@@ -112,7 +112,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalEquals("30/(5+5)", 3);
     evalEquals("42%(3+2)", 2);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
-    evalEquals("Age-(10+3*10+50-2*25)", 0);
+    evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0);
 
       
     // NOT has higher precedence than AND, which has higher precedence than OR
@@ -123,7 +123,7 @@ public class ExpressionTest extends BaseExpressionTest {
     evalTrue("NOT 2 = 1");
 
     // IS NULL has higher precedence than NOT
-    evalFalse("NOT VALUE_NULL IS NULL");
+    evalFalse("NOT NULL_BOOLEAN IS NULL");
 
     // IS NULL has lower precedence than comparison (1 = 1) IS NULL
     evalFalse("1 = 1 is null");
@@ -221,6 +221,5 @@ public class ExpressionTest extends BaseExpressionTest {
     
     // String to BigNumber
     evalEquals("' -1e-3 '::BigNumber", new BigDecimal("-1e-3", MathContext.DECIMAL128));    
-
   }
 }

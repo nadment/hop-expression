@@ -14,31 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Kind;
-import org.apache.hop.expression.Literal;
 
-/**
- * Operand type-checking strategy which checks operand type must be a literal with the specified class.
- */
-public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
-  private final Class<?> javaClass;
- // private final boolean allowNull;
+public interface ISingleOperandTypeChecker extends IOperandTypeChecker {
+   
+  public boolean checkSingleOperandType(IExpression operand);
   
-  public LiteralOperandTypeChecker(Class<?> javaClass) {
-    this.javaClass = javaClass;
+  
+  default IOperandCountRange getOperandCountRange() {
+    return OperandCountRange.any();
+  } 
+  
+  default boolean checkOperandTypes(Call call) {
+    return true;
   }
   
-  @Override
-  public boolean checkSingleOperandType(IExpression operand) {    
-    if ( operand.getKind()==Kind.LITERAL ) {
-      Literal literal = (Literal) operand;     
-      if ( javaClass.equals(literal.getJavaClass())) {
-        return true;
-      }
-    }
-    return false;
-  }  
+//  default ISingleOperandTypeChecker and(ISingleOperandTypeChecker checker) {
+//    return OperandTypes.and(this, checker);
+//  }
+//
+//
+//  default ISingleOperandTypeChecker or(ISingleOperandTypeChecker checker) {
+//    return OperandTypes.or(this, checker);
+//  }
 }

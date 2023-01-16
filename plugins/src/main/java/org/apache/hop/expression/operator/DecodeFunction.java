@@ -34,7 +34,8 @@ import org.apache.hop.expression.util.Coerse;
  */
 @FunctionPlugin
 public class DecodeFunction extends Function {
-  public static final IOperandTypeChecker OTC = new DecodeOperandTypeChecker();
+  
+  private static final IOperandTypeChecker OTC = new DecodeOperandTypeChecker();
 
   public static class DecodeOperandTypeChecker implements IOperandTypeChecker {
 

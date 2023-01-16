@@ -35,7 +35,7 @@ import java.util.Base64;
 public class Base64EncodeFunction extends Function {
 
   public Base64EncodeFunction() {
-    super("BASE64_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING_OR_BINARY,
+    super("BASE64_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         "i18n::Operator.Category.String", "/docs/base64_encode.html");
   }
 

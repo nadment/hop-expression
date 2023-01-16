@@ -39,7 +39,7 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
     for (int i=0 ; i<nOperandsActual; i++) {
       DataTypeName type = call.getOperand(i).getType();
       if ( firstFamily !=null) {
-        if ( !type.getFamily().is(firstFamily) ) {
+        if ( !type.getFamily().isSameFamily(firstFamily) ) {
           return false;
         }
       }

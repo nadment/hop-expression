@@ -43,7 +43,7 @@ import java.util.Locale;
 public class ExtractFunction extends Function {
 
   public ExtractFunction() {
-    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.NO_CHECK,
+    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE,
         "i18n::Operator.Category.Date", "/docs/extract.html");
   }
 

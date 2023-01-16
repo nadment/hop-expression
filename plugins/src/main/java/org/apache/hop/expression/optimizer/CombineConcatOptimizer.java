@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
 import java.util.ArrayList;
 
-public class CombineConcatOptimizer extends ExpressionCompiler {
+public class CombineConcatOptimizer extends Optimizer {
   @Override
   public IExpression apply(IExpressionContext context, Call call) {
 

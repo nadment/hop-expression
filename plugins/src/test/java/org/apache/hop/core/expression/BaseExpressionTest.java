@@ -36,7 +36,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.Coerse;
-import org.apache.hop.junit.rules.RestoreHopEngineEnvironment;
+import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -44,21 +44,20 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class BaseExpressionTest {
   
-  // Use the Engine environment to make the compression plugins available.
+  
   @ClassRule
-  public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
-  //public static RestoreHopEnvironment env = new RestoreHopEnvironment();
+  // Use the Engine environment to make the compression plugins available.
+  // public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
+  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
   
   @ClassRule
   public static ExternalResource getResource() {
@@ -75,17 +74,28 @@ public class BaseExpressionTest {
     variables.setVariable("TEST", "12345");
 
     IRowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta(new ValueMetaString("NAME"));
-    rowMeta.addValueMeta(new ValueMetaString("SEX"));
-    rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE"));
-    rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
-    rowMeta.addValueMeta(new ValueMetaDate("DN"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("VALUE_NULL"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING"));
+    rowMeta.addValueMeta(new ValueMetaString("SEX2"));
+    rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE2"));
+    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));    
+    rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
+        
+    // Null values
+    rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("NULL_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaInteger("NULL_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaNumber("NULL_NUMBER"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER")); 
+    rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
+
+    // Reserved words
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("FROM"));
-    rowMeta.addValueMeta(new ValueMetaNumber("PRICE"));
-    rowMeta.addValueMeta(new ValueMetaBigNumber("AMOUNT"));
+        
+    // Special identifier
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
@@ -93,21 +103,26 @@ public class BaseExpressionTest {
     Calendar calendar = Calendar.getInstance();
     calendar.set(1981, 5, 23);
 
-    Object[] row = new Object[14];
+    Object[] row = new Object[19];
     row[0] = "TEST";
     row[1] = "F";
     row[2] = calendar.getTime();
     row[3] = 40L;
-    row[4] = new Date();
-    row[5] = true;
-    row[6] = null;
-    row[7] = 2020L;
-    row[8] = "Paris";
-    row[9] = -5.12D;
-    row[10] = BigDecimal.valueOf(123456.789);
-    row[11] = "SPACE";
-    row[12] = "UNDERSCORE";
-    row[13] = "lower";
+    row[4] = -5.12D;
+    row[5] = BigDecimal.valueOf(123456.789);
+    row[6] = calendar.getTime();
+    row[7] = true;
+    row[8] = null;
+    row[9] = null;
+    row[10] = null;
+    row[11] = null;
+    row[12] = null;
+    row[13] = null;
+    row[14] = 2020L;
+    row[15] = "Paris";
+    row[16] = "SPACE";
+    row[17] = "UNDERSCORE";
+    row[18] = "lower";
 
     ExpressionContext context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
@@ -251,14 +266,9 @@ public class BaseExpressionTest {
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
 //    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    //returnType("Coalesce(AGE, NULL, 5)", DataTypeName.INTEGER);
     Locale.setDefault(new Locale("fr", "BE"));
-    //evalEquals("Extract(MILLISECOND from Timestamp '2020-05-25 00:00:01.123456')", 123);
-    //evalEquals("Date '2021-02-25'", LocalDate.of(2021, 2, 25));
-    //evalEquals("To_Char(To_Date('-0200','SYYYY'),'SCC')", "-02");
-    //evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
-    evalTrue("JSON '{\"name\":\"John\",\"age\":5}'=JSON '{\"name\":\"John\",\"age\":5.0}'");
-    // Local radix character
-    //evalEquals("To_Char(Timestamp '2019-07-23 14:52:00','HH:MI:SSXFF')", "02:52:00,000000");
+    evalEquals("To_Hex(0x00010203AAeeeFFF)", "00010203aaeeefff");
+
   }
 }
+
