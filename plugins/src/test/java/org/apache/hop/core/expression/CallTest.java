@@ -23,14 +23,15 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
+import java.util.List;
 
 public class CallTest extends BaseExpressionTest {
  
   @Test
   public void test() throws Exception {
-    Call call1 = new Call(Operators.ADD, Literal.of(3), Literal.of(5));
-    Call call2 = new Call(Operators.ADD, Literal.of(3), Literal.of(5));
-    Call call3 = new Call(DataTypeName.INTEGER, Operators.ADD, Literal.of(3), Literal.of(5));
+    Call call1 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
+    Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
+    Call call3 = new Call(DataTypeName.INTEGER, Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
     assertTrue(call1.is(Kind.CALL));

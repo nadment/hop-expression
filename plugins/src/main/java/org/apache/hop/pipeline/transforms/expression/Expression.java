@@ -89,7 +89,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
 
         // Compile expression
         try {
-          data.expressions[index] = ExpressionBuilder.compile(data.context, source);
+          data.expressions[index] = ExpressionBuilder.build(data.context, source);
         } catch (ExpressionException e) {
           String message =
               BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",

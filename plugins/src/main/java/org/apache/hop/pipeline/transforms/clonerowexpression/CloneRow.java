@@ -57,7 +57,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     ExpressionContext context = new ExpressionContext(this);
     IExpression expression;
     try {   
-      expression = ExpressionBuilder.compile(context, value.substring(1));
+      expression = ExpressionBuilder.build(context, value.substring(1));
     } catch (ExpressionException e) {
       throw new HopException(
           BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
@@ -105,7 +105,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
       String nrclonesString = resolve(meta.getNrClones());
       try {
-        data.numberOfClones = ExpressionBuilder.compile(data.context, nrclonesString);
+        data.numberOfClones = ExpressionBuilder.build(data.context, nrclonesString);
       } catch (ExpressionException e) {
         throw new HopException(
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),

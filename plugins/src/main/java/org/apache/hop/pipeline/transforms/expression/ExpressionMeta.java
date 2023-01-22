@@ -178,7 +178,7 @@ public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData
                 transformMeta));
       }      
       else try {        
-        ExpressionBuilder.compile(context, field.getExpression());
+        ExpressionBuilder.build(context, field.getExpression());
       } catch (Exception e) {
         remarks.add(
             new CheckResult(

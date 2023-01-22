@@ -59,7 +59,7 @@ public class PerformanceTest {
     ExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
     context.setRow(row);
     
-    IExpression expression = ExpressionBuilder.compile(context, source);
+    IExpression expression = ExpressionBuilder.build(context, source);
     
     long cycle = 1000000;
     long startTime = System.currentTimeMillis();

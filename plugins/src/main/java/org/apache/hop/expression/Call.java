@@ -44,7 +44,7 @@ public final class Call implements IExpression {
     this.operator = Objects.requireNonNull(operator, "operator is null");
     this.operands = Objects.requireNonNull(operands);
   }
-  
+
   public Call(DataTypeName type, Operator operator, Collection<IExpression> operands) {
     this.type = Objects.requireNonNull(type, "data type is null");
     this.operator = Objects.requireNonNull(operator, "operator is null");
@@ -102,12 +102,12 @@ public final class Call implements IExpression {
   public int getOperandCount() {
     return operands.length;
   }
-  
+
   @Override
   public Object getValue(IExpressionContext context) throws ExpressionException {
     try {
       return operator.eval(context, operands);
-    } catch (Exception e) {      
+    } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());
     }

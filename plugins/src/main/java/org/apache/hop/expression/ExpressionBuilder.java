@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.optimizer.Optimizer;
 import org.apache.hop.expression.optimizer.Optimizers;
@@ -23,6 +24,7 @@ import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
 import org.apache.hop.expression.util.TimeUnit;
 import java.math.BigDecimal;
@@ -40,16 +42,16 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class ExpressionBuilder {
 
-  private static final Optimizer RETURN_TYPE = new ReturnTypeOptimizer();
-
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
-      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE",
-      "ILIKE", "IN", "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN", "TIME",
-      "TIMESTAMP", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
+      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM",
+      "IGNORE", "ILIKE", "IN", "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT",
+      "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN",
+      "ZONE");
 
-  private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT", "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
-  
-  
+  private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT",
+      "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
+
+
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
@@ -70,11 +72,12 @@ public class ExpressionBuilder {
 
   private List<Token> tokens = new ArrayList<>();
 
-  public static IExpression compile(IExpressionContext context, final String source)
+  public static IExpression build(IExpressionContext context, final String source)
       throws ExpressionException {
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
-      return builder.compile(context, builder.parse());
+      IExpression expression = builder.parse();
+      return builder.validate(context, expression);
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);
     } catch (IllegalArgumentException e) {
@@ -234,17 +237,18 @@ public class ExpressionBuilder {
         not = true;
       }
 
-      Token token = next();      
+      Token token = next();
       switch (token.id()) {
-        case TRUE:          
+        case TRUE:
           return new Call((not) ? Operators.IS_FALSE : Operators.IS_TRUE, expression);
         case FALSE:
-          return new Call((not) ?  Operators.IS_TRUE : Operators.IS_FALSE, expression);
+          return new Call((not) ? Operators.IS_TRUE : Operators.IS_FALSE, expression);
         case NULL:
           return new Call((not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
         case DISTINCT:
           if (isThenNext(Id.FROM)) {
-            return new Call((not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM, expression, parseLogicalNot());
+            return new Call((not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
+                expression, parseLogicalNot());
           }
         default:
           throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
@@ -392,13 +396,14 @@ public class ExpressionBuilder {
   /** Literal Json */
   private Literal parseLiteralJson(Token token) throws ParseException {
     try {
-      ObjectMapper objectMapper = JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      ObjectMapper objectMapper =
+          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return Literal.of(objectMapper.readTree(token.text()));
     } catch (Exception e) {
       throw new ParseException(ExpressionError.INVALID_JSON.message(token.text()), token.start());
     }
   }
-  
+
   /**
    * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone>)
    *
@@ -441,7 +446,7 @@ public class ExpressionBuilder {
       case LITERAL_TIMEUNIT:
         return parseLiteralTimeUnit(token);
       case LITERAL_DATATYPE:
-        return parseLiteralDataType(token);     
+        return parseLiteralDataType(token);
       // Date can be Literal or DataType
       case DATE:
         token = next();
@@ -525,23 +530,25 @@ public class ExpressionBuilder {
     return expression;
   }
 
-  /** 
+  /**
    * BitwiseOrExpression ( (+ | - | ||) BitwiseOrExpression )*
    **/
   private IExpression parseAdditive() throws ParseException {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
-      if (isThenNext(Id.PLUS)) {      
-       // Supports the basic addition and subtraction of days to DATE values, in the form of { + | - } <integer>        
-        if ( expression.getType()==DataTypeName.DATE ) {         
+      if (isThenNext(Id.PLUS)) {
+        // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
+        // - } <integer>
+        if (expression.getType() == DataTypeName.DATE) {
           expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
-        } else {   
+        } else {
           expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
         }
-      } else if (isThenNext(Id.MINUS)) {        
-        if ( expression.getType()==DataTypeName.DATE ) {         
-          expression = new Call(Operators.ADD_DAYS, expression, new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
-        } else {   
+      } else if (isThenNext(Id.MINUS)) {
+        if (expression.getType() == DataTypeName.DATE) {
+          expression = new Call(Operators.ADD_DAYS, expression,
+              new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
+        } else {
           expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
         }
       } else if (isThenNext(Id.CONCAT)) {
@@ -717,9 +724,9 @@ public class ExpressionBuilder {
 
       do {
         IExpression value = parsePrimary();
-        
+
         // Only literal in values list
-        if ( value.is(Kind.LITERAL) ) {
+        if (value.is(Kind.LITERAL)) {
           list.add(value);
         } else {
           throw new ParseException(ExpressionError.INVALID_VALUES.message(), this.getPosition());
@@ -834,14 +841,14 @@ public class ExpressionBuilder {
 
     return new Call(Operators.POSITION, operands);
   }
-  
-  /** 
-   * FIRST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] ) 
+
+  /**
+   * FIRST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    * LAST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    */
   private IExpression parseFunctionFirstLastValue(Token token) throws ParseException {
 
-    Function function = FunctionRegistry.getFunction(token.text());  
+    Function function = FunctionRegistry.getFunction(token.text());
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
@@ -853,21 +860,19 @@ public class ExpressionBuilder {
     if (isThenNext(Id.IGNORE)) {
       if (isThenNext(Id.NULLS)) {
         operands.add(Literal.TRUE);
-      }
-      else 
+      } else
         throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
             this.getPosition());
-    }
-    else if (isThenNext(Id.RESPECT)) {
-      
+    } else if (isThenNext(Id.RESPECT)) {
+
       // Default respect null, no operand
-      
+
       if (isNotThenNext(Id.NULLS)) {
         throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
             this.getPosition());
       }
     }
-    
+
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
     }
@@ -914,7 +919,7 @@ public class ExpressionBuilder {
     List<IExpression> operands = new ArrayList<>();
 
     // COUNT(*) no operand
-    if (isThenNext(Id.MULTIPLY)) {      
+    if (isThenNext(Id.MULTIPLY)) {
       aggregator = Operators.COUNT_ALL;
     } else if (isThenNext(Id.DISTINCT)) {
       operands.add(this.parseTerm());
@@ -954,14 +959,14 @@ public class ExpressionBuilder {
     if (isThenNext(Id.COMMA)) {
       operands.add(this.parseTerm());
     }
-    
+
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
     return new Call(aggregator, operands);
   }
-  
+
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
   private IExpression parseFunctionJsonObject(Token token) throws ParseException {
 
@@ -1381,57 +1386,97 @@ public class ExpressionBuilder {
   }
 
   /**
-   * Compile and optimize the expression.
+   * Validate and optimize the expression.
    *
    * @param context the context
    * @param expression the expression to compile
    * @return the optimized expression
    */
-  protected IExpression compile(IExpressionContext context, IExpression expression)
+  protected IExpression validate(final IExpressionContext context, IExpression expression)
       throws ExpressionException {
-    if (expression == null)
-      return null;
 
-    IExpression original = expression;
-    
-    int cycle = 20;
+    if (expression == null)
+      return expression;
+
+    // Validate
+    switch (expression.getKind()) {
+      case CALL:
+        expression = validateCall(context, (Call) expression);
+        break;
+      case IDENTIFIER:
+        expression = validateIdentifier(context, (Identifier) expression);
+        break;
+      case LITERAL:
+        expression = validateLiteral(context, (Literal) expression);
+        break;
+      case TUPLE:
+        expression = validateTuple(context, (Tuple) expression);
+        break;
+    }
+
+    // Apply optimizers
+    IExpression original;    
     do {
-      // Compile operands first
-      if (expression instanceof Call) {
-        expression = compileCall(context, (Call) expression);
-      } else if (expression instanceof Tuple) {
-        expression = compileTuple(context, (Tuple) expression);
-      }
-      
-      // Apply optimizers
-      for (IExpressionVisitor<IExpression> optimizer : Optimizers.getOptimizers()) {
+      original = expression;
+      for (Optimizer optimizer : Optimizers.getOptimizers()) {
         expression = expression.accept(context, optimizer);
       }
+    } while (!expression.equals(original));
 
-      if (expression.equals(original)) {
-
-        // Return type inference
-        expression = expression.accept(context, RETURN_TYPE);
-
-        return expression;
-      }
-
-      original = expression;
-    } while (--cycle > 0);
-
+    // Return type inference
+    expression = expression.accept(context, new ReturnTypeOptimizer());
+    
     return expression;
   }
 
-  protected IExpression compileTuple(IExpressionContext context, Tuple tuple)
+  /**
+   * Validate a identifier.
+   * 
+   * <ul>
+   * <li>Resolve index in IRowMeta</li>
+   * <li>Determine data type of a value in row.</li>
+   * </ul>
+   */
+  protected IExpression validateIdentifier(final IExpressionContext context,
+      final Identifier identifier) throws ExpressionException {
+    IRowMeta rowMeta = context.getRowMeta();
+
+    int index = rowMeta.indexOfValue(identifier.getName());
+    if (index < 0) {
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, identifier);
+    }
+
+    DataTypeName type = ExpressionUtils.createDataType(rowMeta.getValueMeta(index));
+
+    return new Identifier(identifier.getName(), type, index);
+  }
+  
+  /**
+   * Validate a literal.
+   * 
+   * @param context The context against which the expression will be validated.
+   * @param literal Literal
+   */
+  protected IExpression validateLiteral(final IExpressionContext context, final Literal literal) {
+    return literal;
+  }
+
+  protected IExpression validateTuple(IExpressionContext context, Tuple tuple)
       throws ExpressionException {
     List<IExpression> elements = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
-      elements.add(compile(context, expression));
+      elements.add(validate(context, expression));
     }
     return new Tuple(elements);
   }
 
-  protected IExpression compileCall(IExpressionContext context, Call call)
+  /**
+   * Validate a call.
+   * 
+   * @param context The context against which the expression will be validated.
+   * @param call Call
+   */
+  protected IExpression validateCall(IExpressionContext context, Call call)
       throws ExpressionException {
 
     // Check the number of operands expected
@@ -1452,13 +1497,13 @@ public class ExpressionBuilder {
     if (!operandTypeChecker.checkOperandTypes(call)) {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT.message(operator.getName()));
     }
-    
+
     // Replace arguments in User Defined Function by the operands of the call.
     if (call.getOperator() instanceof UserDefinedFunction) {
       UserDefinedFunction udf = (UserDefinedFunction) call.getOperator();
       try {
         IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
-        IExpression expression = ExpressionBuilder.compile(udfContext, udf.getSource());
+        IExpression expression = ExpressionBuilder.build(udfContext, udf.getSource());
         return expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
       } catch (Exception e) {
         throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
@@ -1468,9 +1513,9 @@ public class ExpressionBuilder {
     // Compile all operands
     List<IExpression> operands = new ArrayList<>();
     for (IExpression expression : call.getOperands()) {
-      operands.add(compile(context, expression));
+      operands.add(validate(context, expression));
     }
-    
+
     // Inference return type
     DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
 

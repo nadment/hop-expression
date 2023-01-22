@@ -74,7 +74,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         String expression = resolve(meta.getCondition());
 
         // Compile expression
-        data.condition = ExpressionBuilder.compile(data.context, expression);
+        data.condition = ExpressionBuilder.build(data.context, expression);
 
         // Cache the position of the RowSet for the output.
         List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();

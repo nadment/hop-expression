@@ -80,7 +80,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
         // Compile expression
         try {
-          IExpression expression = ExpressionBuilder.compile(data.context, source);
+          IExpression expression = ExpressionBuilder.build(data.context, source);
           data.targets.add(new RouteTarget(route, expression, rowSet));
         } catch (ExpressionException e) {
           String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",

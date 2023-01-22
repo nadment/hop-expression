@@ -312,11 +312,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("IS FALSE");
     evalFails("IS NOT FALSE");
     
-    writeEquals("FLAG IS FALSE");
-    writeEquals("FLAG IS NOT FALSE","FLAG IS TRUE");
+    writeEquals("FIELD_BOOLEAN IS FALSE");
+    writeEquals("FIELD_BOOLEAN IS NOT FALSE","FIELD_BOOLEAN IS TRUE");
     
-    returnType("FLAG IS FALSE", DataTypeName.BOOLEAN);
-    returnType("FLAG IS NOT FALSE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS FALSE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT FALSE", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -330,11 +330,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("IS NULL");
     evalFails("IS NOT NULL");
     
-    writeEquals("FLAG IS NULL");
-    writeEquals("FLAG IS NOT NULL");
+    writeEquals("FIELD_BOOLEAN IS NULL");
+    writeEquals("FIELD_BOOLEAN IS NOT NULL");
     
-    returnType("FLAG IS NULL", DataTypeName.BOOLEAN);
-    returnType("FLAG IS NOT NULL", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NULL", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT NULL", DataTypeName.BOOLEAN);
   }
   
   @Test
@@ -353,14 +353,14 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("Date '2019-01-01' IS DISTINCT FROM Date '2018-01-01'");
     evalFalse("Date '2019-01-01' IS NOT DISTINCT FROM Date '2018-01-01'");
 
-    evalFails("NOM  IS NOT DISTINCT FROM ");
-    evalFails("NOM  IS DISTINCT 'TEST' ");
+    evalFails("FIELD_STRING IS NOT DISTINCT FROM ");
+    evalFails("FIELD_STRING IS DISTINCT 'TEST' ");
 
-    writeEquals("FLAG IS DISTINCT FROM TRUE");
-    writeEquals("FLAG IS NOT DISTINCT FROM TRUE");
+    writeEquals("FIELD_BOOLEAN IS DISTINCT FROM TRUE");
+    writeEquals("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE");
     
-    returnType("FLAG IS DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
-    returnType("FLAG IS NOT DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
   }
   
   @Test
@@ -585,9 +585,9 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("CAST('bad' AS NULL)");
     evalFails("Cast(123 as 'Text')");
         
-    writeEquals("CAST(DATA AS BINARY)", "CAST(DATA AS BINARY)");
-    writeEquals("CAST(AGE AS NUMBER)", "CAST(AGE AS NUMBER)");
-    writeEquals("AGE::NUMBER", "CAST(AGE AS NUMBER)");
+    writeEquals("CAST(FIELD_BINARY AS BINARY)", "CAST(FIELD_BINARY AS BINARY)");
+    writeEquals("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
+    writeEquals("FIELD_INTEGER::NUMBER", "CAST(FIELD_INTEGER AS NUMBER)");
     
     returnType("CAST(3 as BOOLEAN)", DataTypeName.BOOLEAN);
     returnType("CAST('3' as INTEGER)", DataTypeName.INTEGER);  
@@ -673,7 +673,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalNull("1/null");
     evalFails("40/0");
         
-    writeEquals("AGE/4");
+    writeEquals("FIELD_INTEGER/4");
   }
 
   @Test
@@ -775,7 +775,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalTrue("false OR true");
     evalFalse("false OR false");
     evalTrue("true OR NULL_BOOLEAN");
-    evalTrue("true OR FIELD");
+    evalTrue("true OR FIELD_BOOLEAN");
     evalTrue("NULL_BOOLEAN OR true");
     evalTrue("FIELD_BOOLEAN OR false");
     evalNull("false OR NULL_BOOLEAN");
@@ -787,7 +787,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
     //evalFails("true OR NAME");
     
-    writeEquals("FIELD_BOOLEAN OR VALUE_NULL");
+    writeEquals("FIELD_BOOLEAN OR NULL_BOOLEAN");
     
     returnType("false OR FIELD_BOOLEAN", DataTypeName.BOOLEAN);
   }
@@ -798,8 +798,8 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFalse("true AND false");    
     evalFalse("false AND true");
     evalFalse("false AND false");
-    evalFalse("false AND FIELD");
-    evalFalse("false AND VALUE_NULL");
+    evalFalse("false AND FIELD_BOOLEAN");
+    evalFalse("false AND NULL_BOOLEAN");
     evalFalse("NULL_BOOLEAN AND false");
     
     evalNull("FIELD_BOOLEAN AND null");
@@ -916,7 +916,7 @@ public class OperatorsTest extends BaseExpressionTest {
     
     evalNull("null||null");
 
-    writeEquals("FIELD1||'TEST'");
+    writeEquals("FIELD_STRING||'TEST'");
   }
 
   @Test

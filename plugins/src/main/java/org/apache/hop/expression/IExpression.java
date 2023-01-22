@@ -42,9 +42,7 @@ public interface IExpression {
    *
    * @return a {@link DataTypeName} value
    */
-  public default DataTypeName getType() {
-    return DataTypeName.UNKNOWN;
-  }
+  public DataTypeName getType();
     
   /**
    * Check if the expression is a call to this operator or an alias of this operator.

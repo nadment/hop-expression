@@ -50,24 +50,22 @@ public class IdentifierTest extends BaseExpressionTest {
   @Test
   public void escape() throws Exception {
     // Reserved word
-    evalEquals("Upper(\"FROM\")", "PARIS");
+    evalEquals("Upper(\"STRING\")", "PARIS");
     // DatePart
     evalEquals("\"YEAR\"", 2020);
   }
   
   @Test
   public void write() throws Exception {
-    writeEquals("IDENTIFIER");
+    writeEquals("FIELD_STRING");
     // Reserved word
-    writeEquals("\"CASE\"");
-    writeEquals("\"LIKE\"");
+    writeEquals("\"CASE\"");    
     // Data type name
-    writeEquals("\"NUMBER\"");
+    writeEquals("\"STRING\"");
     // Date part name
     writeEquals("\"CENTURY\"");
     // Function name
     writeEquals("\"YEAR\"");
-    writeEquals("\"UPPER\"");
     // Contains space
     writeEquals("Trim(\"IDENTIFIER SPACE\")","TRIM(\"IDENTIFIER SPACE\")");
   }

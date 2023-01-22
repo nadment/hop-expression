@@ -18,10 +18,9 @@ import java.util.Set;
 
 public class Optimizers {
 
-  private static final Set<Optimizer> OPTIMIZERS =
-      Set.of(new SymmetricalOptimizer(), new ArithmeticOptimizer(), new LikeOptimizer(),
+  private static final Set<Optimizer> OPTIMIZERS = Set.of(new DeterministicOptimizer(), new ArithmeticOptimizer(), new SymmetricalOptimizer(), new LikeOptimizer(),
           new InOptimizer(), new ExtractOptimizer(), new CombineConcatOptimizer(),
-          new BooleanOptimizer(), new DeterministicOptimizer(), new IdentifierOptimizer());
+          new BooleanOptimizer());
   
   public static Set<Optimizer> getOptimizers() {
     return OPTIMIZERS;

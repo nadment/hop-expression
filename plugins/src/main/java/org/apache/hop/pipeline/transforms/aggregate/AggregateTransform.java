@@ -120,7 +120,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           IValueMeta valueMeta = data.outputRowMeta.searchValueMeta(field.getName());
           data.aggregateMeta.addValueMeta(valueMeta);
 
-          IExpression expression = ExpressionBuilder.compile(data.context, source);
+          IExpression expression = ExpressionBuilder.build(data.context, source);
           Call call = null;
           AggregateFunction function = null;
           if (expression.is(Kind.CALL)) {

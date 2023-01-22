@@ -148,7 +148,7 @@ public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
 
     try {
       IExpressionContext context = new ExpressionContext(new Variables());
-      IExpression expression = ExpressionBuilder.compile(context, value.substring(1));
+      IExpression expression = ExpressionBuilder.build(context, value.substring(1));
       Object result = expression.getValue(new ExpressionContext(variables));      
       return String.valueOf(result);
     } catch (ExpressionException e) {

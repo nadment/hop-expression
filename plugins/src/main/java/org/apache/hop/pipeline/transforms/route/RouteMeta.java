@@ -124,7 +124,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
             "RouteMeta.CheckResult.NoConditionExpression", routeNumber, route.getTransformName()), transformMeta);
         remarks.add(cr);
       } else  try {        
-        ExpressionBuilder.compile(context, route.getCondition());
+        ExpressionBuilder.build(context, route.getCondition());
       } catch (Exception e) {
         remarks.add(
             new CheckResult(

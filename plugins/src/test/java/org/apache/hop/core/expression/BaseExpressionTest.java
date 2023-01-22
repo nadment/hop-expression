@@ -21,6 +21,7 @@ import static org.junit.Assert.assertThrows;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
+import org.apache.hop.core.row.value.ValueMetaBinary;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
@@ -40,6 +41,7 @@ import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
+import java.io.PrintStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -82,6 +84,7 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));    
     rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
     rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
         
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
@@ -93,8 +96,10 @@ public class BaseExpressionTest {
 
     // Reserved words
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
-    rowMeta.addValueMeta(new ValueMetaString("FROM"));
-        
+    rowMeta.addValueMeta(new ValueMetaString("STRING"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("CASE"));
+    rowMeta.addValueMeta(new ValueMetaInteger("CENTURY"));    
+    
     // Special identifier
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
@@ -103,7 +108,7 @@ public class BaseExpressionTest {
     Calendar calendar = Calendar.getInstance();
     calendar.set(1981, 5, 23);
 
-    Object[] row = new Object[19];
+    Object[] row = new Object[22];
     row[0] = "TEST";
     row[1] = "F";
     row[2] = calendar.getTime();
@@ -112,17 +117,20 @@ public class BaseExpressionTest {
     row[5] = BigDecimal.valueOf(123456.789);
     row[6] = calendar.getTime();
     row[7] = true;
-    row[8] = null;
+    row[8] = "TEST".getBytes();
     row[9] = null;
     row[10] = null;
     row[11] = null;
     row[12] = null;
     row[13] = null;
-    row[14] = 2020L;
-    row[15] = "Paris";
-    row[16] = "SPACE";
-    row[17] = "UNDERSCORE";
-    row[18] = "lower";
+    row[14] = null;
+    row[15] = 2020L;
+    row[16] = "Paris";
+    row[17] = true;
+    row[18] = 2;
+    row[19] = "SPACE";
+    row[20] = "UNDERSCORE";
+    row[21] = "lower";
 
     ExpressionContext context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
@@ -132,7 +140,7 @@ public class BaseExpressionTest {
 
   protected void returnType(String source, DataTypeName expected) throws Exception {
     ExpressionContext context = createExpressionContext();
-    IExpression expression = ExpressionBuilder.compile(context, source);
+    IExpression expression = ExpressionBuilder.build(context, source);
     assertEquals(expected, expression.getType());
   }
   
@@ -156,7 +164,7 @@ public class BaseExpressionTest {
     if (consumer != null)
       consumer.accept(context);
     
-    IExpression expression = ExpressionBuilder.compile(context, source);
+    IExpression expression = ExpressionBuilder.build(context, source);
 
     try {
       return expression.getValue(context);
@@ -253,13 +261,43 @@ public class BaseExpressionTest {
 
   protected void writeEquals(String source, String result) throws Exception {
     IExpressionContext context = createExpressionContext();
-    IExpression expression = ExpressionBuilder.compile(context, source);
+    IExpression expression = ExpressionBuilder.build(context, source);
 
     StringWriter writer = new StringWriter();
     expression.unparse(writer);
     assertEquals(result, writer.toString());
   }
 
+  protected IExpression optimize(String e) throws Exception {
+    IExpressionContext context = createExpressionContext();
+    IExpression expression = ExpressionBuilder.build(context, e);
+
+    PrintStream console = System.out;
+    if ( expression.getType()==DataTypeName.UNKNOWN) {
+      console = System.err;
+    }
+    
+    console.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression +" return type " + expression.getType());
+    
+    return expression;
+  }
+  
+  protected void optimize(String e, String expected) throws Exception {
+    assertEquals(expected, (String) optimize(e).toString());
+  }
+
+  protected void optimizeTrue(String e) throws Exception {
+    assertEquals("TRUE", optimize(e).toString());
+  }
+
+  protected void optimizeFalse(String e) throws Exception {
+    assertEquals("FALSE", optimize(e).toString());
+  }
+
+  protected void optimizeNull(String e) throws Exception {
+    assertEquals("NULL", optimize(e).toString());
+  }
+  
   @Test
   public void test() throws Exception {
 //    ExpressionContext context = createExpressionContext();
@@ -267,8 +305,7 @@ public class BaseExpressionTest {
 //    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("To_Hex(0x00010203AAeeeFFF)", "00010203aaeeefff");
-
+    returnType("FIELD_STRING||'t'", DataTypeName.STRING);
   }
 }
 

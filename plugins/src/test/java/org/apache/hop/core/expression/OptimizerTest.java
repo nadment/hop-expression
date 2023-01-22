@@ -14,123 +14,41 @@
  */
 package org.apache.hop.core.expression;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.core.row.RowMeta;
-import org.apache.hop.core.row.value.ValueMetaBigNumber;
-import org.apache.hop.core.row.value.ValueMetaBoolean;
-import org.apache.hop.core.row.value.ValueMetaDate;
-import org.apache.hop.core.row.value.ValueMetaInteger;
-import org.apache.hop.core.row.value.ValueMetaNumber;
-import org.apache.hop.core.row.value.ValueMetaString;
-import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionBuilder;
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.junit.rules.RestoreHopEnvironment;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
-import java.io.PrintStream;
 
-public class OptimizerTest {
-
-  @ClassRule
-  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-
-  @ClassRule
-  public static ExternalResource getResource() {
-      return new ExternalResource() {
-          @Override
-          protected void before() throws Throwable {
-            FunctionRegistry.registerBuilInFunctions();
-          }
-      };
-  }
-  
-  protected IExpression optimize(String e) throws Exception {
-    IRowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta(new ValueMetaString("NAME"));
-    rowMeta.addValueMeta(new ValueMetaString("SEX"));
-    rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE"));
-    rowMeta.addValueMeta(new ValueMetaInteger("AGE"));
-    rowMeta.addValueMeta(new ValueMetaDate("DN"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("FLAG"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("VALUE_NULL"));
-    rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
-    rowMeta.addValueMeta(new ValueMetaString("FROM"));
-    rowMeta.addValueMeta(new ValueMetaNumber("PRICE"));
-    rowMeta.addValueMeta(new ValueMetaBigNumber("AMOUNT"));
-    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
-    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
-    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
-
-    IExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
-    IExpression expression = ExpressionBuilder.compile(context, e);
-
-    PrintStream console = System.out;
-    if ( expression.getType()==DataTypeName.UNKNOWN) {
-      console = System.err;
-    }
-    
-    console.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression +" return type " + expression.getType());
-    
-    return expression;
-  }
-
-  protected void optimize(String e, String expected) throws Exception {
-    assertEquals(expected, (String) optimize(e).toString());
-  }
-
-  protected void optimizeTrue(String e) throws Exception {
-    assertTrue((Boolean) optimize(e).getValue(null));
-  }
-
-  protected void optimizeFalse(String e) throws Exception {
-    assertFalse((Boolean) optimize(e).getValue(null));
-  }
-
-  protected void optimizeNull(String e) throws Exception {
-    assertNull(optimize(e).getValue(null));
-  }
+public class OptimizerTest extends BaseExpressionTest {
 
   @Test
   public void testSimplifyInRule() throws Exception {
-    optimize("FIELD in (1,2,1,null,null,3,4)", "FIELD IN (1,2,3,4)");
-    optimizeNull("NULL in (1,2,1,null,null)");
+    optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
+    optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')");
   }
 
   @Test
   public void testSimplifyLikeRule() throws Exception {
-    optimizeNull("NAME LIKE NULL");
-    optimizeNull("NULL LIKE NAME");
-    optimize("NAME LIKE 'Hello'", "NAME='Hello'");
-    optimize("NAME LIKE 'H%'", "STARTSWITH(NAME,'H')");
-    optimize("NAME LIKE '%o'", "ENDSWITH(NAME,'o')");
-    optimize("NAME LIKE '%Hello%'", "CONTAINS(NAME,'Hello')");
+    optimizeNull("FIELD_STRING LIKE NULL");
+    optimizeNull("NULL LIKE FIELD_STRING");
+    optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
+    optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
+    optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
+    optimize("FIELD_STRING LIKE '%Hello%'", "CONTAINS(FIELD_STRING,'Hello')");
   }
 
   @Test
   public void testSimplifyExtractRule() throws Exception {
-    optimize("EXTRACT(YEAR FROM OrderDate)", "YEAR(OrderDate)");
-    optimize("EXTRACT(ISOYEAR FROM OrderDate)", "ISOYEAR(OrderDate)");
-    optimize("EXTRACT(MONTH FROM OrderDate)", "MONTH(OrderDate)");
-    optimize("EXTRACT(QUARTER FROM OrderDate)", "QUARTER(OrderDate)");
-    optimize("EXTRACT(DAY FROM OrderDate)", "DAY(OrderDate)");
-    optimize("EXTRACT(HOUR FROM OrderDate)", "HOUR(OrderDate)");
-    optimize("EXTRACT(MINUTE FROM OrderDate)", "MINUTE(OrderDate)");
-    optimize("EXTRACT(SECOND FROM OrderDate)", "SECOND(OrderDate)");
-    optimize("EXTRACT(WEEK FROM OrderDate)", "WEEK(OrderDate)");
-    optimize("EXTRACT(ISOWEEK FROM OrderDate)", "ISOWEEK(OrderDate)");
-    optimize("EXTRACT(DAYOFYEAR FROM OrderDate)", "DAYOFYEAR(OrderDate)");
-    optimize("EXTRACT(DAYOFWEEK FROM OrderDate)", "DAYOFWEEK(OrderDate)");
-    optimize("EXTRACT(ISODAYOFWEEK FROM OrderDate)", "ISODAYOFWEEK(OrderDate)");
+    optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
+    optimize("EXTRACT(ISOYEAR FROM FIELD_DATE)", "ISOYEAR(FIELD_DATE)");
+    optimize("EXTRACT(MONTH FROM FIELD_DATE)", "MONTH(FIELD_DATE)");
+    optimize("EXTRACT(QUARTER FROM FIELD_DATE)", "QUARTER(FIELD_DATE)");
+    optimize("EXTRACT(DAY FROM FIELD_DATE)", "DAY(FIELD_DATE)");
+    optimize("EXTRACT(HOUR FROM FIELD_DATE)", "HOUR(FIELD_DATE)");
+    optimize("EXTRACT(MINUTE FROM FIELD_DATE)", "MINUTE(FIELD_DATE)");
+    optimize("EXTRACT(SECOND FROM FIELD_DATE)", "SECOND(FIELD_DATE)");
+    optimize("EXTRACT(WEEK FROM FIELD_DATE)", "WEEK(FIELD_DATE)");
+    optimize("EXTRACT(ISOWEEK FROM FIELD_DATE)", "ISOWEEK(FIELD_DATE)");
+    optimize("EXTRACT(DAYOFYEAR FROM FIELD_DATE)", "DAYOFYEAR(FIELD_DATE)");
+    optimize("EXTRACT(DAYOFWEEK FROM FIELD_DATE)", "DAYOFWEEK(FIELD_DATE)");
+    optimize("EXTRACT(ISODAYOFWEEK FROM FIELD_DATE)", "ISODAYOFWEEK(FIELD_DATE)");
   }
 
   @Test
@@ -139,10 +57,10 @@ public class OptimizerTest {
     optimizeTrue("not false");
     optimizeTrue("not not true");
     optimizeFalse("not not false");
-    optimize("not(AGE>5)", "AGE<=5");
-    optimize("not(AGE>=5)", "AGE<5");
-    optimize("not(AGE<5)", "AGE>=5");
-    optimize("not(AGE<=5)", "AGE>5");
+    optimize("not(FIELD_INTEGER>5)", "FIELD_INTEGER<=5");
+    optimize("not(FIELD_INTEGER>=5)", "FIELD_INTEGER<5");
+    optimize("not(FIELD_INTEGER<5)", "FIELD_INTEGER>=5");
+    optimize("not(FIELD_INTEGER<=5)", "FIELD_INTEGER>5");
 
     optimizeTrue("true or true");
     optimizeTrue("true or false");
@@ -151,27 +69,25 @@ public class OptimizerTest {
     optimizeTrue("true or null");
     optimizeTrue("null or true");
     optimizeNull("null or null");
-    optimizeTrue("FIELD or true");
-    optimizeTrue("true or NAME");
-    optimizeTrue("true or FLAG");
-    optimizeTrue("FLAG or true");
-    optimize("null or FLAG", "FLAG");
-    optimize("FLAG or null", "FLAG");
-    optimize("false or FLAG", "FALSE OR FLAG");
-    optimize("FLAG or false", "FALSE OR FLAG");
-    optimize("FLAG or FLAG", "FLAG");
+    optimizeTrue("FIELD_BOOLEAN or true");
+    optimizeTrue("true or FIELD_STRING");
+    optimizeTrue("true or FIELD_BOOLEAN");
+    optimizeTrue("FIELD_BOOLEAN or true");
+    optimize("null or FIELD_BOOLEAN", "FIELD_BOOLEAN");
+    optimize("FIELD_BOOLEAN or null", "FIELD_BOOLEAN");
+    optimize("false or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
+    optimize("FIELD_BOOLEAN or false", "FALSE OR FIELD_BOOLEAN");
+    optimize("FIELD_BOOLEAN or FIELD_BOOLEAN", "FIELD_BOOLEAN");
 
     optimizeTrue("true and true");
     optimizeFalse("true and false");
     optimizeFalse("false and true");
     optimizeFalse("false and false");
-    optimizeNull("FLAG and null");
-    optimizeNull("null and FLAG");
-    optimizeFalse("false and FLAG");
-    optimizeFalse("FLAG and false");
-    optimize("FLAG and FLAG", "FLAG");
-
-    optimize("FLAG and FLAG", "FLAG");
+    optimizeNull("FIELD_BOOLEAN and null");
+    optimizeNull("null and FIELD_BOOLEAN");
+    optimizeFalse("false and FIELD_BOOLEAN");
+    optimizeFalse("FIELD_BOOLEAN and false");
+    optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");    
     
     // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
@@ -189,16 +105,16 @@ public class OptimizerTest {
     optimize("-(10+2)", "-12");
     optimize("-(0)", "0");
 
-    optimize("NOT (FLAG IS TRUE)", "FLAG IS FALSE");
-    optimize("NOT (FLAG IS NOT TRUE)", "FLAG IS TRUE");
-    optimize("NOT (FLAG IS FALSE)", "FLAG IS TRUE");
-    optimize("NOT (FLAG IS NOT FALSE)", "FLAG IS FALSE");
-    optimize("NOT (FLAG IS NOT NULL)", "FLAG IS NULL");
-    optimize("NOT (FLAG IS NULL)", "FLAG IS NOT NULL");
+    optimize("NOT (FIELD_BOOLEAN IS TRUE)", "FIELD_BOOLEAN IS FALSE");
+    optimize("NOT (FIELD_BOOLEAN IS NOT TRUE)", "FIELD_BOOLEAN IS TRUE");
+    optimize("NOT (FIELD_BOOLEAN IS FALSE)", "FIELD_BOOLEAN IS TRUE");
+    optimize("NOT (FIELD_BOOLEAN IS NOT FALSE)", "FIELD_BOOLEAN IS FALSE");
+    optimize("NOT (FIELD_BOOLEAN IS NOT NULL)", "FIELD_BOOLEAN IS NULL");
+    optimize("NOT (FIELD_BOOLEAN IS NULL)", "FIELD_BOOLEAN IS NOT NULL");
 
-    optimize("-(-AGE)", "AGE");
-    optimize("false and true or FIELD", "FALSE OR FIELD");
-    optimizeFalse("false and FIELD");
+    optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
+    optimize("false and true or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
+    optimizeFalse("false and FIELD_BOOLEAN");
 
     optimizeTrue("null is null");
     optimizeTrue("true is true");
@@ -214,12 +130,12 @@ public class OptimizerTest {
     optimizeTrue("25>=12");
     optimizeTrue("25>=12 and 14<15");
 
-    optimize("AGE between 3 and (5+1)");
+    optimize("FIELD_INTEGER between 3 and (5+1)","FIELD_INTEGER BETWEEN 3 AND 6");
     optimizeFalse("2 between 3 and (5+1)");
 
     optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
 
-    optimize("null=null");
+    optimizeNull("null=null");
     optimizeTrue("'25' in ('1','25','66')");
     optimizeTrue("25.8 between 18 and 32");
     optimizeTrue("Trim(' test ')='test'");
@@ -230,31 +146,31 @@ public class OptimizerTest {
   @Test
   public void testCombineConcatsRule() throws Exception {
     // Same syntax but cost reduced
-    optimize("'A'||NAME||NAME||'C'", "'A'||NAME||NAME||'C'");
-    optimize("'A'||NAME||NULL||'C'", "'A'||NAME||'C'");
-    optimize("CONCAT('A',CONCAT(NAME,CONCAT(NAME,'C')||'D'))", "'A'||NAME||NAME||'C'||'D'");
-    optimize("NULL||CONCAT(NAME,NULL)","NAME");
+    optimize("'A'||FIELD_STRING||FIELD_STRING||'C'", "'A'||FIELD_STRING||FIELD_STRING||'C'");
+    optimize("'A'||FIELD_STRING||NULL||'C'", "'A'||FIELD_STRING||'C'");
+    optimize("CONCAT('A',CONCAT(FIELD_STRING,CONCAT(FIELD_STRING,'C')||'D'))", "'A'||FIELD_STRING||FIELD_STRING||'C'||'D'");
+    optimize("NULL||CONCAT(FIELD_STRING,NULL)","FIELD_STRING");
   }
 
   @Test
   public void testArithmeticRule() throws Exception {
 
-    optimize("AGE+0", "AGE");
-    optimize("0+AGE", "AGE");
-    optimize("AGE-0", "AGE");
-    optimize("0-AGE", "-AGE");
-    optimize("YEAR-(0-AGE)", "YEAR+AGE");
-    optimize("AGE*1", "AGE");
-    optimize("1.0*AGE", "AGE");
+    optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
+    optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
+    optimize("FIELD_INTEGER-0", "FIELD_INTEGER");
+    optimize("0-FIELD_INTEGER", "-FIELD_INTEGER");
+    optimize("FIELD_INTEGER-(0-FIELD_INTEGER)", "FIELD_INTEGER+FIELD_INTEGER");
+    optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
+    optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
 
-    optimize("AGE*3*2", "6*AGE");
-    optimize("3*(AGE*1)*1*(2*5)", "30*AGE");
-    optimize("1+AGE+3+FIELD+5*2", "14+AGE+FIELD");
-    optimize("AGE+3+1", "4+AGE");
-    optimize("4+AGE+1", "5+AGE");
-    optimize("4*AGE*0.5", "2.0*AGE");
-    optimize("AGE/1", "AGE");
-    optimize("AGE/1.0", "AGE");
+    optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
+    optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
+    optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
+    optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
+    optimize("4+FIELD_INTEGER+1", "5+FIELD_INTEGER");
+    optimize("4*FIELD_INTEGER*0.5", "2.0*FIELD_INTEGER");
+    optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
+    optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
   }
 
   @Test

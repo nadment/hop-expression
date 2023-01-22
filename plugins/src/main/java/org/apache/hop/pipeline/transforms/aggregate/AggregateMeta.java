@@ -144,7 +144,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       IExpressionContext context = new ExpressionContext(variables, rowMeta);
       // Compile expression
       try {
-        IExpression expression = ExpressionBuilder.compile(context, field.getExpression());
+        IExpression expression = ExpressionBuilder.build(context, field.getExpression());
         if (!expression.is(Kind.CALL)) {
           throw new ExpressionException("Not an aggregation expression");
         }

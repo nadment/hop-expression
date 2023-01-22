@@ -71,8 +71,8 @@ public class FunctionsTest extends BaseExpressionTest {
     // Bad data type
     evalFails("Try(Cast(123 as Nill))");
 
-    writeEquals("TRY(CAST(DATA AS BINARY))");
-    writeEquals("TRY(CAST(AGE AS NUMBER))");
+    writeEquals("TRY(CAST(FIELD_BINARY AS BINARY))");
+    writeEquals("TRY(CAST(FIELD_INTEGER AS NUMBER))");
     writeEquals("TRY(CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD'))");
 
     returnType("Try(TRUE)", DataTypeName.BOOLEAN);
@@ -101,8 +101,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("If(true)");
     evalFails("If(true,2)");
 
-    returnType("If(FLAG,'A','B')", DataTypeName.STRING);
-    returnType("If(FLAG,1,2)", DataTypeName.INTEGER);
+    returnType("If(FIELD_BOOLEAN,'A','B')", DataTypeName.STRING);
+    returnType("If(FIELD_BOOLEAN,1,2)", DataTypeName.INTEGER);
   }
 
   @Test
@@ -1123,7 +1123,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Trim(' 01ABC012 ',NULL)");
     evalFails("Trim()");
 
-    returnType("Trim(NAME)", DataTypeName.STRING);
+    returnType("Trim(FIELD_STRING)", DataTypeName.STRING);
   }
 
   @Test
@@ -1135,7 +1135,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("LTrim('01ABC012',NULL)");
     evalFails("LTrim()");
 
-    returnType("LTrim(NAME)", DataTypeName.STRING);
+    returnType("LTrim(FIELD_STRING)", DataTypeName.STRING);
   }
 
   @Test
@@ -1147,7 +1147,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("RTrim('01ABC012',NULL)");
     evalFails("RTrim()");
 
-    returnType("RTrim(NAME)", DataTypeName.STRING);
+    returnType("RTrim(FIELD_STRING)", DataTypeName.STRING);
   }
 
   @Test
@@ -1164,7 +1164,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // Datatype mixte
     evalFails("Greatest(123,'str',123)");
 
-    returnType("Greatest(NAME,'st','bf')", DataTypeName.STRING);
+    returnType("Greatest(FIELD_STRING,'st','bf')", DataTypeName.STRING);
     returnType("Greatest(123,456,789)", DataTypeName.BIGNUMBER);
   }
 
@@ -1194,7 +1194,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("Length(null)");
     evalFails("Length()");
 
-    returnType("Length(NAME)", DataTypeName.INTEGER);
+    returnType("Length(FIELD_STRING)", DataTypeName.INTEGER);
   }
 
   @Test
@@ -2071,7 +2071,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("StartsWith('TEST FROM',NULL_STRING)");
     evalFails("StartsWith()");
     
-    returnType("StartsWith(NAME,'ES')", DataTypeName.BOOLEAN);
+    returnType("StartsWith(FIELD_STRING,'ES')", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -2089,7 +2089,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("EndsWith('TEST FROM',NULL_STRING)");
     evalFails("EndsWith()");
     
-    returnType("EndsWith(NAME,'ES')", DataTypeName.BOOLEAN);
+    returnType("EndsWith(FIELD_STRING,'ES')", DataTypeName.BOOLEAN);
   }
 
   @Test
@@ -2225,7 +2225,7 @@ public class FunctionsTest extends BaseExpressionTest {
     // Mix String and Binary
     evalFails("Concat(NOM,0x2A3B)");
 
-    returnType("NOM||'t'", DataTypeName.STRING);
+    returnType("FIELD_STRING||'t'", DataTypeName.STRING);
     returnType("Concat(0x1F,0x2A3B)", DataTypeName.BINARY);
   }
 
@@ -2697,9 +2697,9 @@ public class FunctionsTest extends BaseExpressionTest {
 
     returnType("Count(*)", DataTypeName.INTEGER);
 
-    writeEquals("COUNT(AGE)");
+    writeEquals("COUNT(FIELD_INTEGER)");
     writeEquals("COUNT(*)");
-    writeEquals("COUNT(DISTINCT AGE)");
+    writeEquals("COUNT(DISTINCT FIELD_STRING)");
   }
 
   @Test
@@ -2707,8 +2707,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("CountIf()");
     evalFails("CountIf(FIELD_DATE)");
     evalFails("CountIf(1,2)");
-    returnType("CountIf(AGE>=10)", DataTypeName.INTEGER);
-    writeEquals("COUNTIF(AGE>=10)");
+    returnType("CountIf(FIELD_INTEGER>=10)", DataTypeName.INTEGER);
+    writeEquals("COUNTIF(FIELD_INTEGER>=10)");
   }
 
   @Test
@@ -2718,20 +2718,20 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Extract(CENTURY from Timestamp '2020-05-25 23:48:59')", 21);
     evalEquals("Extract(CENTURY from Date '0001-01-01')", 1);
     evalEquals("Extract(DECADE from Timestamp '1999-02-16 20:38:40')", 199);
+    evalEquals("Extract(EPOCH from Timestamp '1970-01-01 00:00:00')", 0);
+    evalEquals("Extract(EPOCH from Timestamp '1970-01-02 00:00:00')", 86400);
     evalEquals("Extract(YEAR from Timestamp '2020-05-25 23:48:59')", 2020);
     evalEquals("Extract(ISOYEAR from Date '2017-01-01')", 2016);
     evalEquals("Extract(QUARTER from Timestamp '2020-05-25 23:48:59')", 2);
     evalEquals("Extract(MONTH from Timestamp '2020-05-25 23:48:59')", 5);
     evalEquals("Extract(WEEK from Timestamp '2020-05-25 23:48:59')", 21);
     evalEquals("Extract(WEEK from Timestamp '2020-01-01 23:48:59')", 1);
+    evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
     evalEquals("Extract(ISOWEEK from Date '2016-01-03')", 53);
     evalEquals("Extract(ISOWEEK from Date '2016-01-04')", 1);
-    evalEquals("Extract(WEEKOFMONTH from Date '2011-03-15')", 3);
+    evalEquals("Extract(ISODAYOFWEEK from Date '2003-12-28')", 7);
     evalEquals("Extract(DAY from Timestamp '2020-05-25 23:48:59')", 25);
     evalEquals("Extract(DAYOFWEEK from Timestamp '2020-05-25 23:48:59')", 2);
-    evalEquals("Extract(ISODAYOFWEEK from Date '2003-12-28')", 7);
-    evalEquals("Extract(EPOCH from Timestamp '1970-01-01 00:00:00')", 0);
-    evalEquals("Extract(EPOCH from Timestamp '1970-01-02 00:00:00')", 86400);
     evalEquals("Extract(HOUR from Timestamp '2020-05-25 23:48:59')", 23);
     evalEquals("Extract(MINUTE from Timestamp '2020-05-25 23:48:59')", 48);
     evalEquals("Extract(SECOND from Timestamp '2020-05-25 23:48:59')", 59);

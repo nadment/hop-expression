@@ -57,14 +57,14 @@ public class SymmetricalOptimizer extends Optimizer {
         IExpression subLeft = subCall.getOperand(0);
         IExpression subRight = subCall.getOperand(1);
 
-        // Go up an operand if low cost
+        // Go up left operand if low cost
         if (subLeft.getCost() < left.getCost()) {
           return new Call(operator, subLeft, new Call(operator, left, subRight));
         }
-
+        
         // Order identifier by name
         if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)) {
-          if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) < 0) {
+          if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) > 0) {
             return new Call(operator, subLeft, new Call(operator, left, subRight));
           }
         }

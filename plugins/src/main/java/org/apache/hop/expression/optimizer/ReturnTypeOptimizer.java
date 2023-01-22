@@ -23,10 +23,8 @@ import org.apache.hop.expression.type.DataTypeName;
 
 public class ReturnTypeOptimizer extends Optimizer {
   @Override
-  public IExpression apply(final IExpressionContext context, final Call call) {
-    
+  public IExpression apply(final IExpressionContext context, final Call call) {   
     DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
-    
     return new Call(type, call.getOperator(), call.getOperands());
   }
 }
