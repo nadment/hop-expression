@@ -20,10 +20,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Converter;
 
 /**
  * Converts a string or numeric expression to a boolean value.

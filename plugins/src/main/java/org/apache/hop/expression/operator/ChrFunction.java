@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function converts a Unicode code point (including 7-bit ASCII) into the character that
@@ -46,7 +46,7 @@ public class ChrFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    int codePoint = Coerse.toInteger(value).intValue();
+    int codePoint = Coerce.toInteger(value).intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, codePoint);

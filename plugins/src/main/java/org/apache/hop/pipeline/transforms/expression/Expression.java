@@ -23,7 +23,7 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -161,23 +161,23 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       case IValueMeta.TYPE_NONE:
         return null;
       case IValueMeta.TYPE_STRING:
-        return Coerse.toString(value);
+        return Coerce.toString(value);
       case IValueMeta.TYPE_NUMBER:
-        return Coerse.toNumber(value);
+        return Coerce.toNumber(value);
       case IValueMeta.TYPE_INTEGER:
-        return Coerse.toInteger(value);
+        return Coerce.toInteger(value);
       case IValueMeta.TYPE_DATE:
-        return Coerse.toDate(value);
+        return Coerce.toDate(value);
       case IValueMeta.TYPE_TIMESTAMP:
-        return Coerse.toTimestamp(value);
+        return Coerce.toTimestamp(value);
       case IValueMeta.TYPE_BIGNUMBER:
-        return Coerse.toBigNumber(value);
+        return Coerce.toBigNumber(value);
       case IValueMeta.TYPE_BOOLEAN:
-        return Coerse.toBoolean(value);
+        return Coerce.toBoolean(value);
       case IValueMeta.TYPE_BINARY:
-        return Coerse.toBinary(value);
+        return Coerce.toBinary(value);
       case ValueMetaJson.TYPE_JSON:
-        return Coerse.toJson(value);
+        return Coerce.toJson(value);
       default:
         throw new HopValueException(
             value + " : I can't convert the specified value to data type : " + meta.getType());

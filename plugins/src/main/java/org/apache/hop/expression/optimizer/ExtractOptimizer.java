@@ -24,7 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.UserDefinedFunction;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.util.TimeUnit;
 
 /**
@@ -36,7 +36,7 @@ public class ExtractOptimizer extends Optimizer {
   public IExpression apply(IExpressionContext context, Call call) {
     try {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
-        TimeUnit unit = Coerse.toTimeUnit(call.getOperand(0).getValue(context));
+        TimeUnit unit = Coerce.toTimeUnit(call.getOperand(0).getValue(context));
         Function function = FunctionRegistry.getFunction(unit.name());
         if (function != null && ! (function instanceof UserDefinedFunction) ) {
           return new Call(function, call.getOperand(1));

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -47,10 +47,10 @@ public class ToHexFunction extends Function {
     }
 
     if ( v0 instanceof Number ) {
-      return Long.toHexString(Coerse.toInteger(v0));
+      return Long.toHexString(Coerce.toInteger(v0));
     }
     
-    byte[] bytes = Coerse.toBinary(v0);
+    byte[] bytes = Coerce.toBinary(v0);
     byte[] hexChars = new byte[bytes.length * 2];
     for (int j = 0; j < bytes.length; j++) {
       int v = bytes[j] & 0xFF;

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.util.zip.CRC32C;
 
 /**
@@ -43,7 +43,7 @@ public class Crc32Function extends Function {
     if (v0 == null)
       return null;
 
-    byte[] bytes = Coerse.toBinary(v0);
+    byte[] bytes = Coerce.toBinary(v0);
     CRC32C crc = new CRC32C();
     crc.update(bytes, 0, bytes.length);
 

@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the position in the string that is the first character of a specified occurrence of the
@@ -50,15 +50,15 @@ public class InstrFunction extends Function {
       return null;
     }
 
-    String str = Coerse.toString(v0);
-    String substr = Coerse.toString(v1);
+    String str = Coerce.toString(v0);
+    String substr = Coerce.toString(v1);
     int start = 0;
     int occurence = 1;
     int result = 0;
 
     // If 3 operands, indicate the position to start
     if (operands.length >= 3) {
-      start = Coerse.toInteger(operands[2].getValue(context)).intValue();
+      start = Coerce.toInteger(operands[2].getValue(context)).intValue();
 
       if (start > 0) {
         start -= 1;
@@ -66,7 +66,7 @@ public class InstrFunction extends Function {
 
       // The occurence to find, must be positive
       if (operands.length == 4) {
-        occurence = Coerse.toInteger(operands[3].getValue(context)).intValue();
+        occurence = Coerce.toInteger(operands[3].getValue(context)).intValue();
         if (occurence < 1) {
           throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);
         }

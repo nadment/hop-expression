@@ -23,9 +23,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the trigonometric cotangent of the angle in radians specified by float expression.
@@ -45,7 +45,7 @@ public class CotFunction extends Function {
     if (value == null)
       return null;
 
-    double number = Coerse.toNumber(value);
+    double number = Coerce.toNumber(value);
     if (number == 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 

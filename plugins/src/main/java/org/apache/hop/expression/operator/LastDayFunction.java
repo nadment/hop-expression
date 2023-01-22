@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.LastDayOfQuarter;
 import org.apache.hop.expression.util.TimeUnit;
 import java.time.DayOfWeek;
@@ -58,7 +58,7 @@ public class LastDayFunction extends Function {
       Object v1 = operands[1].getValue(context);
       if (v1 == null)
         return null;
-      TimeUnit unit = Coerse.toTimeUnit(v1);
+      TimeUnit unit = Coerce.toTimeUnit(v1);
       switch (unit) {
         case YEAR:
           adjuster = TemporalAdjusters.lastDayOfYear();
@@ -78,6 +78,6 @@ public class LastDayFunction extends Function {
     }
 
     // Remove time and adjust
-    return Coerse.toDateTime(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
+    return Coerce.toDateTime(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
   }
 }

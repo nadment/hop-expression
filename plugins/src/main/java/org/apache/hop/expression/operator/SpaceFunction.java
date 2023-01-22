@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 
 /**
@@ -43,7 +43,7 @@ public class SpaceFunction extends Function {
     if (value == null)
       return null;
 
-    int length = Coerse.toInteger(value).intValue();
+    int length = Coerce.toInteger(value).intValue();
     if (length < 0)
       return null;
 

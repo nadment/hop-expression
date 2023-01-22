@@ -23,9 +23,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the trigonometric cosecant of the specified angle in radians.
@@ -45,7 +45,7 @@ public class CscFunction extends Function {
     if (v0 == null)
       return null;
 
-    Double number = Coerse.toNumber(v0);
+    Double number = Coerce.toNumber(v0);
     if (number == 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, number);
 

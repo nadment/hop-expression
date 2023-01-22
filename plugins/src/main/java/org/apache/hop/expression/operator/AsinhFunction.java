@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Compute the inverse hyperbolic sine of a number.
@@ -43,6 +43,6 @@ public class AsinhFunction extends Function {
     if (value == null)
       return null;
 
-    return FastMath.asinh(Coerse.toNumber(value));
+    return FastMath.asinh(Coerce.toNumber(value));
   }
 }

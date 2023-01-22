@@ -21,7 +21,7 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineHopMeta;
@@ -113,7 +113,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       data.context.setRow(row);
       Object predicat = data.condition.getValue(data.context);
 
-      if (Coerse.isTrue(predicat)) {
+      if (Coerce.isTrue(predicat)) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {
           if (log.isRowLevel()) {

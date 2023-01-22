@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns NULL if the argument evaluates to 0; otherwise, returns the argument.
@@ -40,7 +40,7 @@ public class NullIfZeroFunction extends Function {
       throws Exception {
     Object value = operands[0].getValue(context);
 
-    if (Coerse.toInteger(value) == 0L)
+    if (Coerce.toInteger(value) == 0L)
       return null;
 
     return value;

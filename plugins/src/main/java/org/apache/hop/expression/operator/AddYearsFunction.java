@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.ZonedDateTime;
 
 /**
@@ -47,8 +47,8 @@ public class AddYearsFunction extends Function {
     if (v1 == null)
       return null;
 
-    ZonedDateTime datetime = Coerse.toDateTime(v0);
-    long years = Coerse.toInteger(v1);
+    ZonedDateTime datetime = Coerce.toDateTime(v0);
+    long years = Coerce.toInteger(v1);
     
     return datetime.plusYears(years);
   }

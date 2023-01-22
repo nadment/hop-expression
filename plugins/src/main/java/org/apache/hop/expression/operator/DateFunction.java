@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
@@ -52,9 +52,9 @@ public class DateFunction extends Function {
     if (v2 == null)
       return null;
 
-    int year = Coerse.toInteger(v0).intValue();
-    int month = Coerse.toInteger(v1).intValue();
-    int day = Coerse.toInteger(v2).intValue();
+    int year = Coerce.toInteger(v0).intValue();
+    int month = Coerce.toInteger(v1).intValue();
+    int day = Coerce.toInteger(v2).intValue();
 
     int monthsToAdd = 0;
     if (month < 1) {

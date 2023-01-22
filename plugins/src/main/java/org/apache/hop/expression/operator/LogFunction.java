@@ -23,9 +23,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the specified base logarithm of a numeric value.
@@ -48,10 +48,10 @@ public class LogFunction extends Function {
     Object value = operands[1].getValue(context);
     if (value == null)
       return null;
-    Double number = Coerse.toNumber(value);
+    Double number = Coerce.toNumber(value);
     if (number <= 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 
-    return FastMath.log(number) / FastMath.log(Coerse.toNumber(base));
+    return FastMath.log(number) / FastMath.log(Coerce.toNumber(base));
   }
 }

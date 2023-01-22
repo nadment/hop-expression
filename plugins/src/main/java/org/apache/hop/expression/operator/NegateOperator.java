@@ -21,9 +21,9 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -58,7 +58,7 @@ public class NegateOperator extends Operator {
       return Long.valueOf(-value);
     }
 
-    return Coerse.toBigNumber(v0).negate();
+    return Coerce.toBigNumber(v0).negate();
   }
 
   @Override

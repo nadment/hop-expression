@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 
@@ -50,7 +50,7 @@ public class ToCharFunction extends Function {
     if (operands.length > 1) {
       Object v1 = operands[1].getValue(context);
       if (v1 != null)
-        pattern = Coerse.toString(v1);
+        pattern = Coerce.toString(v1);
     }
 
     if (v0 instanceof Number) {
@@ -58,12 +58,12 @@ public class ToCharFunction extends Function {
         pattern = "TM";
       }
 
-      return NumberFormat.of(pattern).format(Coerse.toBigNumber(v0));
+      return NumberFormat.of(pattern).format(Coerce.toBigNumber(v0));
     }
 
     if (pattern == null) {
       pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
-    return DateTimeFormat.of(pattern).format(Coerse.toDateTime(v0));
+    return DateTimeFormat.of(pattern).format(Coerce.toDateTime(v0));
   }
 }

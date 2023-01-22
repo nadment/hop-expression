@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 
@@ -47,13 +47,13 @@ public class NormalizeFunction extends Function {
     if (v0 == null)
       return null;
 
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
 
     Form form = Form.NFD;
 
     if (operands.length == 2) {
       try {
-        form = Form.valueOf(Coerse.toString(operands[1].getValue(context)));
+        form = Form.valueOf(Coerce.toString(operands[1].getValue(context)));
       } catch (Exception e) {
         throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, this.getName());
       }

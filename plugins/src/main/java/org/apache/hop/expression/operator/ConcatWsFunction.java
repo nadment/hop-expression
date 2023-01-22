@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
 
 
@@ -51,7 +51,7 @@ public class ConcatWsFunction extends Function {
     // Concat Binary
     if (v0 instanceof byte[]) {      
       ByteArrayOutputStream output = new ByteArrayOutputStream();
-      byte[] separator = Coerse.toBinary(v0);
+      byte[] separator = Coerce.toBinary(v0);
       for (int i = 1; i < operands.length; i++) {
         Object value = operands[i].getValue(context);
         
@@ -60,7 +60,7 @@ public class ConcatWsFunction extends Function {
             output.write(separator);          
           }
           notFirstValue = true;
-          output.write(Coerse.toBinary(value));
+          output.write(Coerce.toBinary(value));
         }
       }
       
@@ -72,7 +72,7 @@ public class ConcatWsFunction extends Function {
 
     // Concat String
     StringBuilder builder = new StringBuilder();
-    String separator = Coerse.toString(v0);
+    String separator = Coerce.toString(v0);
     for (int i = 1; i < operands.length; i++) {
       Object value = operands[i].getValue(context);
       if (value != null) {
@@ -80,7 +80,7 @@ public class ConcatWsFunction extends Function {
           builder.append(separator);          
         }
         notFirstValue = true;
-        builder.append(Coerse.toString(value));
+        builder.append(Coerce.toString(value));
       }      
     }
 

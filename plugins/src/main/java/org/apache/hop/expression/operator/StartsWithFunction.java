@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function returns TRUE if the first value starts with second value. Both values must be data
@@ -50,8 +50,8 @@ public class StartsWithFunction extends Function {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = Coerse.toBinary(v0);
-      byte[] prefix = Coerse.toBinary(v1);
+      byte[] data = Coerce.toBinary(v0);
+      byte[] prefix = Coerce.toBinary(v1);
       if (prefix.length > data.length) {
         return Boolean.TRUE;
       } else {
@@ -65,6 +65,6 @@ public class StartsWithFunction extends Function {
       return Boolean.TRUE;
     }
 
-    return Coerse.toString(v0).startsWith(Coerse.toString(v1));
+    return Coerce.toString(v0).startsWith(Coerce.toString(v1));
   }
 }

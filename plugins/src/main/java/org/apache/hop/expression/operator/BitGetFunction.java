@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * 
@@ -45,12 +45,12 @@ public class BitGetFunction extends Function {
     if (v1 == null)
       return null;
 
-    int distance = Coerse.toInteger(v1).intValue();
+    int distance = Coerce.toInteger(v1).intValue();
     if (distance <= 0)
       return null;
     if (distance > 64)
       return Boolean.FALSE;
 
-    return (Coerse.toInteger(v0) & (1L << distance - 1)) != 0;
+    return (Coerce.toInteger(v0) & (1L << distance - 1)) != 0;
   }
 }

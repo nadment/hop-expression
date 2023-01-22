@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.NumberFormat;
 
 /**
@@ -44,12 +44,12 @@ public class ToNumberFunction extends Function {
       return null;
 
     try {
-      String str = Coerse.toString(v0);
+      String str = Coerce.toString(v0);
       String format = "TM";
 
       // With format
       if (operands.length == 2) {
-        format = Coerse.toString(operands[1].getValue(context));
+        format = Coerce.toString(operands[1].getValue(context));
       }
       return NumberFormat.of(format).parse(str);
     } catch (Exception e) {

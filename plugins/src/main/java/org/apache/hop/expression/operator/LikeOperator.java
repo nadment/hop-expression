@@ -19,9 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Regexp;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
@@ -65,14 +65,14 @@ public class LikeOperator extends Operator {
       if (escapeValue == null) {
         return null;
       }
-      escape = Coerse.toString(escapeValue);
+      escape = Coerce.toString(escapeValue);
     }
 
-    final String regex = Regexp.toRegexLike(Coerse.toString(pattern), escape);
+    final String regex = Regexp.toRegexLike(Coerce.toString(pattern), escape);
 
     Pattern p = Pattern.compile(regex, Pattern.DOTALL);
 
-    return p.matcher(Coerse.toString(input)).matches();
+    return p.matcher(Coerce.toString(input)).matches();
   }
 
   @Override

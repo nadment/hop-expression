@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -56,28 +56,28 @@ public class ModFunction extends Function {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = Coerse.toBigNumber(right);
+      BigDecimal divisor = Coerce.toBigNumber(right);
       // prevent a division by zero ..
       if (divisor.signum() == 0)
         throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
-      return Coerse.toBigNumber(left).remainder(divisor);
+      return Coerce.toBigNumber(left).remainder(divisor);
     }
     if (left instanceof Double || right instanceof Double) {
-      double divisor = Coerse.toNumber(right);
+      double divisor = Coerce.toNumber(right);
       // prevent a division by zero ..
       if (divisor == 0L)
         throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
-      return Coerse.toNumber(left) % divisor;
+      return Coerce.toNumber(left) % divisor;
     }
     if (left instanceof Long || right instanceof Long) {
-      long divisor = Coerse.toInteger(right);
+      long divisor = Coerce.toInteger(right);
       // prevent a division by zero ..
       if (divisor == 0L)
         throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
-      return Coerse.toInteger(left) % divisor;
+      return Coerce.toInteger(left) % divisor;
     }
 
-    return Coerse.toBigNumber(left).remainder(Coerse.toBigNumber(right));
+    return Coerce.toBigNumber(left).remainder(Coerce.toBigNumber(right));
   }
 
   @Override

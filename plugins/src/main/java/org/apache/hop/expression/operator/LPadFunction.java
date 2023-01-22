@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function left-pads a string with another string, to a certain length.
@@ -47,16 +47,16 @@ public class LPadFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
 
     Object v1 = operands[1].getValue(context);
-    int length = Coerse.toInteger(v1).intValue();
+    int length = Coerce.toInteger(v1).intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
       Object v2 = operands[2].getValue(context);
-      pad = Coerse.toString(v2);
+      pad = Coerce.toString(v2);
     }
 
     if (length < 0) {

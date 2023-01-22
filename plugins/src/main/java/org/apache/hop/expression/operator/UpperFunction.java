@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.util.Locale;
 
 /**
@@ -44,6 +44,6 @@ public class UpperFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    return Coerse.toString(value).toUpperCase(Locale.getDefault());
+    return Coerce.toString(value).toUpperCase(Locale.getDefault());
   }
 }

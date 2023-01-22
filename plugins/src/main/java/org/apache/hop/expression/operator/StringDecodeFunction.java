@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 
 /**
@@ -44,7 +44,7 @@ public class StringDecodeFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    String str = Coerse.toString(value);
+    String str = Coerce.toString(value);
 
     return StringEscapeUtils.unescapeJava(str);
   }

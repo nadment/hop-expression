@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function encode special characters in a strings using HTML entities.
@@ -44,6 +44,6 @@ public class HtmlEncodeFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     Object value = operands[0].getValue(context);
-    return StringEscapeUtils.escapeHtml(Coerse.toString(value));
+    return StringEscapeUtils.escapeHtml(Coerce.toString(value));
   }
 }

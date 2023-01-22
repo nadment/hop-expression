@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function return the Unicode code point for the first Unicode character in a string. If the
@@ -44,7 +44,7 @@ public class UnicodeFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    String string = Coerse.toString(value);
+    String string = Coerce.toString(value);
     int codePoint = 0;
     if (string.length() > 0) {
       codePoint = string.codePointAt(0);

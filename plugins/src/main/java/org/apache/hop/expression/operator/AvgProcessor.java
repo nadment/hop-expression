@@ -17,7 +17,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
@@ -37,7 +37,7 @@ public class AvgProcessor implements IExpressionProcessor {
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value != null) {
-      sum += Coerse.toNumber(value);
+      sum += Coerce.toNumber(value);
       count++;
     }
   }

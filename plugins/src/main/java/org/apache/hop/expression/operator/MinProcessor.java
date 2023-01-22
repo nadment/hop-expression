@@ -17,7 +17,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 
 /** Returns the maximum of an expression across all input rows. */
 public class MinProcessor implements IExpressionProcessor {
@@ -33,7 +33,7 @@ public class MinProcessor implements IExpressionProcessor {
 
     Object value = operands[0].getValue(context);
 
-    if (min == null || (value != null && Coerse.compare(value, min) < 0)) {
+    if (min == null || (value != null && Coerce.compare(value, min) < 0)) {
       min = value;
     }
   }

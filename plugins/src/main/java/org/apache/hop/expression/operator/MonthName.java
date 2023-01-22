@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -46,7 +46,7 @@ public class MonthName extends Function {
     if (value == null)
       return null;
 
-    ZonedDateTime datetime = Coerse.toDateTime(value);
+    ZonedDateTime datetime = Coerce.toDateTime(value);
     Month month = datetime.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }

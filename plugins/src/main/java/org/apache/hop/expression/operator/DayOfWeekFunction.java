@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.DayOfWeek;
 
 /**
@@ -43,7 +43,7 @@ public class DayOfWeekFunction extends Function {
     if (value == null)
       return null;
 
-    DayOfWeek dow = Coerse.toDateTime(value).getDayOfWeek();
+    DayOfWeek dow = Coerce.toDateTime(value).getDayOfWeek();
     int result = dow.getValue() + 1;
     if (result == 8)
       result = 1;

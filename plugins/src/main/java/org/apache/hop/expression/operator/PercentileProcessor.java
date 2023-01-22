@@ -18,7 +18,7 @@ import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class PercentileProcessor implements IExpressionProcessor {
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value != null) {
-      values.add(Coerse.toNumber(value));
+      values.add(Coerce.toNumber(value));
     }
   }
 
@@ -54,6 +54,6 @@ public class PercentileProcessor implements IExpressionProcessor {
       array[i] = values.get(i);
     }
 
-    return PERCENTILE.evaluate(array, Coerse.toNumber(percentile));
+    return PERCENTILE.evaluate(array, Coerce.toNumber(percentile));
   }
 }

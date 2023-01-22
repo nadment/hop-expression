@@ -21,12 +21,12 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Compares the select expression to each search expression in order. As soon as a search
@@ -84,7 +84,7 @@ public class DecodeFunction extends Function {
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
       Object search = operands[i].getValue(context);
-      if (Coerse.compare(value, search) == 0) {
+      if (Coerce.compare(value, search) == 0) {
         index = i + 1;
         break;
       }

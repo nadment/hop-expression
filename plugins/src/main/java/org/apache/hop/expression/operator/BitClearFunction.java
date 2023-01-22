@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * 
@@ -45,12 +45,12 @@ public class BitClearFunction extends Function {
     if (v1 == null)
       return null;
 
-    int position = Coerse.toInteger(v1).intValue();
+    int position = Coerce.toInteger(v1).intValue();
     if (position <= 0)
       return null;
     if (position > 64)
       return v0;
-    return Coerse.toInteger(v0) & ~(1L << position - 1);
+    return Coerce.toInteger(v0) & ~(1L << position - 1);
   }
 
 }

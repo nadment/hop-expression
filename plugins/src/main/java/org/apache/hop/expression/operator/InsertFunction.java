@@ -22,11 +22,11 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -63,8 +63,8 @@ public class InsertFunction extends Function {
     if (v3 == null)
       return null;
 
-    int position = Coerse.toInteger(v1).intValue();
-    int length = Coerse.toInteger(v2).intValue();
+    int position = Coerce.toInteger(v1).intValue();
+    int length = Coerce.toInteger(v2).intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -77,7 +77,7 @@ public class InsertFunction extends Function {
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);
-        buffer.write(Coerse.toBinary(v3));
+        buffer.write(Coerce.toBinary(v3));
         buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
@@ -85,7 +85,7 @@ public class InsertFunction extends Function {
       }
     }
 
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
     int start = Math.min(Math.max(0, position - 1), str.length());
 
     length = Math.min(length, str.length());
@@ -94,7 +94,7 @@ public class InsertFunction extends Function {
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));
-    builder.append(Coerse.toString(v3));
+    builder.append(Coerce.toString(v3));
     builder.append(str.substring(start + length));
     return builder.toString();
   }

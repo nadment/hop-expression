@@ -22,11 +22,11 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.Regexp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,13 +52,13 @@ public class RegexpReplaceFunction extends Function {
     if (v0 == null) {
       return null;
     }
-    String input = Coerse.toString(v0);
+    String input = Coerce.toString(v0);
 
     Object v1 = operands[1].getValue(context);
     if (v1 == null) {
       return null;
     }
-    String pattern = Coerse.toString(v1);
+    String pattern = Coerce.toString(v1);
 
     // An empty pattern matches nothing
     if (pattern.length() == 0)
@@ -69,7 +69,7 @@ public class RegexpReplaceFunction extends Function {
     if (operands.length >= 3) {
       Object v2 = operands[2].getValue(context);
       if (v2 != null) {
-        replacement = Coerse.toString(v2);
+        replacement = Coerce.toString(v2);
       }
     }
 
@@ -78,7 +78,7 @@ public class RegexpReplaceFunction extends Function {
     if (operands.length >= 4) {
       Object v3 = operands[3].getValue(context);
       if (v3 != null) {
-        position = Coerse.toInteger(v3).intValue();
+        position = Coerce.toInteger(v3).intValue();
       }
     }
 
@@ -87,14 +87,14 @@ public class RegexpReplaceFunction extends Function {
     if (operands.length >= 5) {
       Object v4 = operands[4].getValue(context);
       if (v4 != null) {
-        occurrence = Coerse.toInteger(v4).intValue();
+        occurrence = Coerce.toInteger(v4).intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
       Object v5 = operands[5].getValue(context);
-      flags = Regexp.parseFlags(Coerse.toString(v5));
+      flags = Regexp.parseFlags(Coerce.toString(v5));
     }
 
     try {

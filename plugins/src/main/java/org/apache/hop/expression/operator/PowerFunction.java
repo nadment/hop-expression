@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * 
@@ -45,8 +45,8 @@ public class PowerFunction extends Function {
       return null;
     }
 
-    Double number = Coerse.toNumber(v0);
-    Double exponent = Coerse.toNumber(v1);
+    Double number = Coerce.toNumber(v0);
+    Double exponent = Coerce.toNumber(v1);
 
     if (exponent == 0)
       return 1L;

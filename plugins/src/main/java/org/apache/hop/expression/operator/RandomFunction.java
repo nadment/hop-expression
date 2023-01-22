@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.util.Random;
 
 /**
@@ -46,7 +46,7 @@ public class RandomFunction extends Function {
     if (operands.length == 1) {
       Object value = operands[0].getValue(context);
       // FIXME: What if multi random in the same with different SEED ?
-      random.setSeed(Coerse.toInteger(value));
+      random.setSeed(Coerce.toInteger(value));
     }
     return random.nextDouble();
   }

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ public class RepeatFunction extends Function {
     Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
-    int count = Coerse.toInteger(v1).intValue();
+    int count = Coerce.toInteger(v1).intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -62,7 +62,7 @@ public class RepeatFunction extends Function {
       }
     }
 
-    String value = Coerse.toString(v0);
+    String value = Coerce.toString(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);

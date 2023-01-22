@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Decoder;
@@ -53,6 +53,6 @@ public class Base64DecodeFunction extends Function {
       return new String(decoder.decode(str), StandardCharsets.UTF_8);
     }
 
-    return new String(decoder.decode(Coerse.toBinary(value)), StandardCharsets.UTF_8);
+    return new String(decoder.decode(Coerce.toBinary(value)), StandardCharsets.UTF_8);
   }
 }

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Trims white space from the beginning and end of the string, and replaces all other white space
@@ -46,7 +46,7 @@ public class SqueezeFunction extends Function {
     if (v0 == null)
       return null;
 
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
     char[] a = str.toCharArray();
     int n = 1;
     for (int i = 1; i < a.length; i++) {

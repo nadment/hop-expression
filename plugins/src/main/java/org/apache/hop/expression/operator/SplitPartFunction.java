@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 
 /**
@@ -59,9 +59,9 @@ public class SplitPartFunction extends Function {
     if (v2 == null)
       return null;
 
-    String str = Coerse.toString(v0);
-    String delimiter = Coerse.toString(v1);
-    int index = Coerse.toInteger(v2).intValue();
+    String str = Coerce.toString(v0);
+    String delimiter = Coerce.toString(v1);
+    int index = Coerce.toInteger(v2).intValue();
 
     String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);
 

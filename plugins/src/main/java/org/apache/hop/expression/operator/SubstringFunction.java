@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the portion of the string from string, starting from the character/byte specified by
@@ -39,9 +39,9 @@ public class SubstringFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    String string = Coerse.toString(operands[0].getValue(context));
+    String string = Coerce.toString(operands[0].getValue(context));
     int length = string.length();
-    int start = Coerse.toInteger(operands[1].getValue(context)).intValue();
+    int start = Coerce.toInteger(operands[1].getValue(context)).intValue();
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -55,7 +55,7 @@ public class SubstringFunction extends Function {
       return string.substring(start - 1);
     }
 
-    int end = start + Coerse.toInteger(operands[2].getValue(context)).intValue();
+    int end = start + Coerce.toInteger(operands[2].getValue(context)).intValue();
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);

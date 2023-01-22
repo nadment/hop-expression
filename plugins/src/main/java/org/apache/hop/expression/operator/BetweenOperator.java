@@ -20,9 +20,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -56,11 +56,11 @@ public class BetweenOperator extends Operator {
     }
 
     // If lower bound is greater than upper bound
-    if (between == Between.SYMMETRIC && Coerse.compare(start, end) >= 0) {
-      return Coerse.compare(value, end) >= 0 && Coerse.compare(value, start) <= 0;
+    if (between == Between.SYMMETRIC && Coerce.compare(start, end) >= 0) {
+      return Coerce.compare(value, end) >= 0 && Coerce.compare(value, start) <= 0;
     }
 
-    return Coerse.compare(value, start) >= 0 && Coerse.compare(value, end) <= 0;
+    return Coerce.compare(value, start) >= 0 && Coerce.compare(value, end) <= 0;
   }
 
   @Override

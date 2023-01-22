@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.TimeUnit;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
@@ -46,13 +46,13 @@ public class DateTruncFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
 
-    TimeUnit unit = Coerse.toTimeUnit(operands[0].getValue(context));
+    TimeUnit unit = Coerce.toTimeUnit(operands[0].getValue(context));
 
     Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
 
-    ZonedDateTime datetime = Coerse.toDateTime(v1);
+    ZonedDateTime datetime = Coerce.toDateTime(v1);
 
     switch (unit) {
       case MILLENNIUM:

@@ -20,9 +20,9 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -59,7 +59,7 @@ public class InOperator extends Operator {
     Tuple tuple = (Tuple) operands[1];
     for (IExpression expression : tuple) {
       Object value = expression.getValue(context);
-      if (Coerse.compare(left, value) == 0) {
+      if (Coerce.compare(left, value) == 0) {
         return Boolean.TRUE;
       }
     }

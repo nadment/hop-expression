@@ -23,9 +23,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /**
@@ -50,7 +50,7 @@ public class ToDateFunction extends Function {
     if (operands.length > 1) {
       Object v1 = operands[1].getValue(context);
       if (v1 != null)
-        format = Coerse.toString(v1);
+        format = Coerce.toString(v1);
     } else {
       format = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
@@ -60,7 +60,7 @@ public class ToDateFunction extends Function {
           .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
       DateTimeFormat formatter = DateTimeFormat.of(format);
       formatter.setTwoDigitYearStart(twoDigitYearStart);
-      return formatter.parse(Coerse.toString(v0));
+      return formatter.parse(Coerce.toString(v0));
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, this.getName(), e.getMessage());
     }

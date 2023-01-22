@@ -21,8 +21,8 @@ import static org.junit.Assert.assertNull;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.TimeUnit;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -113,8 +113,8 @@ public class LiteralTest extends BaseExpressionTest {
     assertEquals(Literal.FALSE, Literal.of(false));
     assertEquals(Literal.FALSE.hashCode(), Literal.of(false).hashCode());
 
-    assertEquals("TRUE", Coerse.toString(Literal.TRUE));
-    assertEquals("FALSE", Coerse.toString(Literal.FALSE));
+    assertEquals("TRUE", Coerce.toString(Literal.TRUE));
+    assertEquals("FALSE", Coerce.toString(Literal.FALSE));
 
     evalTrue("True");
     evalTrue("True");

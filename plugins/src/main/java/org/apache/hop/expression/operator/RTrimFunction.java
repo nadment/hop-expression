@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function removes leading characters from a string.
@@ -45,14 +45,14 @@ public class RTrimFunction extends Function {
     if (value == null)
       return null;
 
-    String string = Coerse.toString(value);
+    String string = Coerce.toString(value);
     String characters = null;
 
     if (operands.length == 2) {
       Object stripChars = operands[1].getValue(context);
       if (stripChars == null)
         return null;
-      characters = Coerse.toString(stripChars);
+      characters = Coerce.toString(stripChars);
     }
 
     return StringUtils.stripEnd(string, characters);

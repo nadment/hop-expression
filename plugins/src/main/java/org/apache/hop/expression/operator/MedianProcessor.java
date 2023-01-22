@@ -18,7 +18,7 @@ import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class MedianProcessor implements IExpressionProcessor {
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);
     if (value != null) {
-      values.add(Coerse.toNumber(value));
+      values.add(Coerce.toNumber(value));
     }
   }
 

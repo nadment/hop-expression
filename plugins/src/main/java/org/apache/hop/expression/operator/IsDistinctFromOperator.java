@@ -19,9 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -41,7 +41,7 @@ public class IsDistinctFromOperator extends Operator {
     Object v0 = operands[0].getValue(context);
     Object v1 = operands[1].getValue(context);
 
-    return Coerse.compare(v0, v1) != 0;
+    return Coerce.compare(v0, v1) != 0;
   }
 
   @Override

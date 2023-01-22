@@ -16,8 +16,8 @@ package org.apache.hop.core.expression;
 
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.Converter;
 import org.junit.Test;
 import java.security.SecureRandom;
 import java.time.LocalDate;

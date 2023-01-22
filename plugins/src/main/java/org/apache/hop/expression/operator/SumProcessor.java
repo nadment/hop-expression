@@ -17,7 +17,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 
 /** Returns the sum of all values in the expression. Null values are ignored. */
 public class SumProcessor implements IExpressionProcessor {
@@ -34,7 +34,7 @@ public class SumProcessor implements IExpressionProcessor {
     Object value = operands[0].getValue(context);
 
     if (value != null) {
-      sum += Coerse.toNumber(value);
+      sum += Coerce.toNumber(value);
     }
   }
 

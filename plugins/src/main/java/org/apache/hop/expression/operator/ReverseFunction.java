@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
@@ -43,7 +43,7 @@ public class ReverseFunction extends Function {
       return null;
 
     if (value instanceof byte[]) {
-      byte[] data = Coerse.toBinary(value);
+      byte[] data = Coerce.toBinary(value);
       byte[] result = new byte[data.length];
       for (int i = data.length - 1, j = 0; i >= 0; i--, j++) {
         result[j] = data[i];
@@ -51,7 +51,7 @@ public class ReverseFunction extends Function {
       return result;
     }
 
-    StringBuilder builder = new StringBuilder(Coerse.toString(value)).reverse();
+    StringBuilder builder = new StringBuilder(Coerce.toString(value)).reverse();
     return builder.toString();
   }
 }

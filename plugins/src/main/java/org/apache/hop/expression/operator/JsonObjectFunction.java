@@ -23,12 +23,12 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.EnumSet;
@@ -90,7 +90,7 @@ public class JsonObjectFunction extends Function {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 
     for (int i = 0; i < operands.length; i += 2) {
-      String key = Coerse.toString(operands[i].getValue(context));
+      String key = Coerce.toString(operands[i].getValue(context));
       Object value = operands[i + 1].getValue(context);
       if (value == null) {
         node.putNull(key);

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -46,6 +46,6 @@ public class UrlDecodeFunction extends Function {
     if (value == null)
       return null;
 
-    return URLDecoder.decode(Coerse.toString(value), StandardCharsets.UTF_8);
+    return URLDecoder.decode(Coerce.toString(value), StandardCharsets.UTF_8);
   }
 }

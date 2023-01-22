@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -45,6 +45,6 @@ public class UrlEncodeFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    return URLEncoder.encode(Coerse.toString(value), StandardCharsets.UTF_8);
+    return URLEncoder.encode(Coerce.toString(value), StandardCharsets.UTF_8);
   }
 }

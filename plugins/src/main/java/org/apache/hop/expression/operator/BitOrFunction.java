@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -51,7 +51,7 @@ public class BitOrFunction extends Function {
     Object right = operands[1].getValue(context);
     if (right == null)
       return null;
-    return Coerse.toInteger(left) | Coerse.toInteger(right);
+    return Coerce.toInteger(left) | Coerce.toInteger(right);
   }
 
   @Override

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function extracts a number of characters from a string starting from left.
@@ -47,7 +47,7 @@ public class LeftFunction extends Function {
     Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
-    int length = Coerse.toInteger(v1).intValue();
+    int length = Coerce.toInteger(v1).intValue();
     if (length < 0) {
       length = 0;
     }
@@ -61,7 +61,7 @@ public class LeftFunction extends Function {
       return result;
     }
 
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
     if (str.length() <= length) {
       return str;
     }

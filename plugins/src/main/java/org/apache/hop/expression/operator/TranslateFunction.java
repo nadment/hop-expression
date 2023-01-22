@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * 
@@ -48,9 +48,9 @@ public class TranslateFunction extends Function {
     if (v2 == null)
       return null;
 
-    String string = Coerse.toString(v0);
-    String findChars = Coerse.toString(v1);
-    String replaceChars = Coerse.toString(v2);
+    String string = Coerce.toString(v0);
+    String findChars = Coerce.toString(v1);
+    String replaceChars = Coerce.toString(v2);
 
     StringBuilder buffer = new StringBuilder(string.length());
     // if shorter than findChars, then characters are removed

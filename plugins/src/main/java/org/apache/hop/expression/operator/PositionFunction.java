@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -46,8 +46,8 @@ public class PositionFunction extends Function {
       return null;
     }
 
-    String substr = Coerse.toString(v0);
-    String str = Coerse.toString(v1);
+    String substr = Coerce.toString(v0);
+    String str = Coerce.toString(v1);
 
     return Long.valueOf(str.indexOf(substr, 0) + 1L);
   }

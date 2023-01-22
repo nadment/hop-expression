@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -46,8 +46,8 @@ public class FloorFunction extends Function {
     if (value instanceof Long)
       return value;
     if (value instanceof BigDecimal) {
-      return Coerse.toBigNumber(value).setScale(0, RoundingMode.FLOOR);
+      return Coerce.toBigNumber(value).setScale(0, RoundingMode.FLOOR);
     }
-    return FastMath.floor(Coerse.toNumber(value));
+    return FastMath.floor(Coerce.toNumber(value));
   }
 }

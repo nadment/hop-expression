@@ -13,25 +13,27 @@
  * the License.
  */
 
-package org.apache.hop.expression.util;
+package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.util.JsonComparator;
+import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.TimeUnit;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class Coerse {
+public class Coerce {
     
   private static JsonComparator JSON_COMPARATOR = new JsonComparator();
   
   /**
    * Private constructor since this is a utility class.
    */
-  private Coerse() {
+  private Coerce() {
   }
 
   /**
@@ -341,19 +343,19 @@ public class Coerse {
       return dt1.compareTo(dt2);
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return Coerse.toBigNumber(left).compareTo(Coerse.toBigNumber(right));
+      return Coerce.toBigNumber(left).compareTo(Coerce.toBigNumber(right));
     }
     if (left instanceof Double || right instanceof Double) {
-      return Coerse.toNumber(left).compareTo(Coerse.toNumber(right));
+      return Coerce.toNumber(left).compareTo(Coerce.toNumber(right));
     }
     if (left instanceof Long || right instanceof Long) {
-      return Coerse.toInteger(left).compareTo(Coerse.toInteger(right));
+      return Coerce.toInteger(left).compareTo(Coerce.toInteger(right));
     }
     if (left instanceof Boolean || right instanceof Boolean) {
-      return Coerse.toBoolean(left).compareTo(Coerse.toBoolean(right));
+      return Coerce.toBoolean(left).compareTo(Coerce.toBoolean(right));
     }
 
-    return Coerse.toString(left).compareTo(Coerse.toString(right));
+    return Coerce.toString(left).compareTo(Coerce.toString(right));
   }
 
   protected static int compareTo(final byte[] left, final byte[] right) {

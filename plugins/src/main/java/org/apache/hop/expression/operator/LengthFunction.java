@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function returns the number of characters of the specified string or binary.
@@ -44,6 +44,6 @@ public class LengthFunction extends Function {
     if (value instanceof byte[]) {
       return ((byte[]) value).length;
     }
-    return Long.valueOf(Coerse.toString(value).length());
+    return Long.valueOf(Coerce.toString(value).length());
   }
 }

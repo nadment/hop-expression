@@ -19,9 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -49,16 +49,16 @@ public class MultiplyOperator extends Operator {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return Coerse.toBigNumber(left).multiply(Coerse.toBigNumber(right));
+      return Coerce.toBigNumber(left).multiply(Coerce.toBigNumber(right));
     }
     if (left instanceof Double || right instanceof Double) {
-      return Coerse.toNumber(left) * Coerse.toNumber(right);
+      return Coerce.toNumber(left) * Coerce.toNumber(right);
     }
     if (left instanceof Long || right instanceof Long) {
-      return Coerse.toInteger(left) * Coerse.toInteger(right);
+      return Coerce.toInteger(left) * Coerce.toInteger(right);
     }
 
-    return Coerse.toBigNumber(left).multiply(Coerse.toBigNumber(right));
+    return Coerce.toBigNumber(left).multiply(Coerce.toBigNumber(right));
   }
 
   @Override

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.DayOfWeek;
 import java.time.temporal.TemporalAdjusters;
 
@@ -50,6 +50,6 @@ public class PreviousDayFunction extends Function {
 
     DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
 
-    return Coerse.toDateTime(value).with(TemporalAdjusters.previous(dayofweek));
+    return Coerce.toDateTime(value).with(TemporalAdjusters.previous(dayofweek));
   }
 }

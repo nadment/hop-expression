@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function compute Jaro Winkler distance.
@@ -47,7 +47,7 @@ public class JaroWinklerFunction extends Function {
       return null;
 
     HopJaroWinklerDistance jaro = new HopJaroWinklerDistance();
-    jaro.apply(Coerse.toString(v0), Coerse.toString(v1));
+    jaro.apply(Coerce.toString(v0), Coerce.toString(v1));
     return Long.valueOf(Math.round(100 * jaro.getJaroDistance()));
   }
 

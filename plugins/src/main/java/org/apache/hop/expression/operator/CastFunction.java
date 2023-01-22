@@ -23,11 +23,11 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
-import org.apache.hop.expression.util.Converter;
 import java.io.StringWriter;
 
 /**
@@ -62,7 +62,7 @@ public class CastFunction extends Function {
     DataTypeName type = (DataTypeName) v1;
     String format = null;
     if (operands.length == 3) {
-      format = Coerse.toString(operands[2].getValue(context));
+      format = Coerce.toString(operands[2].getValue(context));
     }
 
     return Converter.to(value, type, format);

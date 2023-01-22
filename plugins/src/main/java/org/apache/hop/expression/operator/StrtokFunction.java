@@ -21,10 +21,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Splits a string on the specified list of delimiter characters and returns the part at the
@@ -51,7 +51,7 @@ public class StrtokFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
 
     // Default value
     String delimiter = " ";
@@ -63,19 +63,19 @@ public class StrtokFunction extends Function {
         return null;
 
       if (v1 instanceof Number) {
-        index = Coerse.toInteger(v1).intValue();
+        index = Coerce.toInteger(v1).intValue();
       } else {
-        delimiter = Coerse.toString(v1);
+        delimiter = Coerce.toString(v1);
       }
     } else if (operands.length == 3) {
       Object v1 = operands[1].getValue(context);
       if (v1 == null)
         return null;
-      delimiter = Coerse.toString(v1);
+      delimiter = Coerce.toString(v1);
       Object v2 = operands[2].getValue(context);
       if (v2 == null)
         return null;
-      index = Coerse.toInteger(v2).intValue();
+      index = Coerce.toInteger(v2).intValue();
     }
 
     String[] parts = StringUtils.splitPreserveAllTokens(str, delimiter, 256);

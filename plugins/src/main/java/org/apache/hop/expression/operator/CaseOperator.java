@@ -21,9 +21,9 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** An operator describing the <code>CASE</code> operator. */
@@ -45,7 +45,7 @@ public class CaseOperator extends Operator {
     if (switchExpression == null) {
       for (IExpression whenOperand : whenTuple) {
         Object condition = whenOperand.getValue(context);
-        if (Coerse.isTrue(condition)) {
+        if (Coerce.isTrue(condition)) {
           return thenTuple.get(index).getValue(context);
         }
         index++;
@@ -54,7 +54,7 @@ public class CaseOperator extends Operator {
       Object condition = switchExpression.getValue(context);
       for (IExpression whenOperand : whenTuple) {
         Object value = whenOperand.getValue(context);
-        if (Coerse.compare(condition, value) == 0) {
+        if (Coerce.compare(condition, value) == 0) {
           return thenTuple.get(index).getValue(context);
         }
         index++;

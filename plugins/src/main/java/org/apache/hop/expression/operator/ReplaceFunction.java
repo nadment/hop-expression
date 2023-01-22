@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Removes all occurrences of a specified substring, and optionally replaces them with another
@@ -47,12 +47,12 @@ public class ReplaceFunction extends Function {
     if (v1 == null)
       return null;
 
-    String string = Coerse.toString(v0);
-    String search = Coerse.toString(v1);
+    String string = Coerce.toString(v0);
+    String search = Coerce.toString(v1);
 
     if (operands.length == 3) {
       Object v2 = operands[2].getValue(context);
-      String replacement = Coerse.toString(v2);
+      String replacement = Coerce.toString(v2);
       return string.replace(search, replacement);
     }
 

@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -44,13 +44,13 @@ public class TruncateFunction extends Function {
     if (value == null)
       return null;
 
-    BigDecimal number = Coerse.toBigNumber(value);
+    BigDecimal number = Coerce.toBigNumber(value);
     int scale = 0;
     if (operands.length == 2) {
       Object pattern = operands[1].getValue(context);
       if (pattern == null)
         return null;
-      scale = Coerse.toInteger(pattern).intValue();
+      scale = Coerce.toInteger(pattern).intValue();
     }
 
     if (scale > number.scale())

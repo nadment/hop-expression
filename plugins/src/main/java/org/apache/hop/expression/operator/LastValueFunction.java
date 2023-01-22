@@ -20,9 +20,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the last value over a group of rows.
@@ -41,7 +41,7 @@ public class LastValueFunction extends AggregateFunction {
 
     if (operands.length == 2) {
       try {
-        ignoreNull = Coerse.toBoolean(operands[1].getValue(context));
+        ignoreNull = Coerce.toBoolean(operands[1].getValue(context));
       } catch (ExpressionException e) {
         // Ignore
       }

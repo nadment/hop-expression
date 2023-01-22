@@ -17,7 +17,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -37,7 +37,7 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
     if (value == null || values.contains(value))
       return;
 
-    values.add(Coerse.toString(value));
+    values.add(Coerce.toString(value));
   }
 
   @Override
@@ -48,7 +48,7 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
 
     String delimiter = ",";
     if (operands.length == 2) {
-      delimiter = Coerse.toString(operands[1].getValue(context));
+      delimiter = Coerce.toString(operands[1].getValue(context));
     }
 
     StringBuilder builder = new StringBuilder();

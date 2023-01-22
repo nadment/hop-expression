@@ -14,8 +14,8 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.Coerse;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -231,7 +231,7 @@ public final class Literal implements IExpression {
         }
         break;
       default:
-        writer.append(Coerse.toString(value));
+        writer.append(Coerce.toString(value));
     }
   }
 

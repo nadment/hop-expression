@@ -13,12 +13,13 @@
  * the License.
  */
 
-package org.apache.hop.expression.util;
+package org.apache.hop.expression.type;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
@@ -138,14 +139,14 @@ public class Converter {
           if ( pattern==null) {
             pattern = "TM";
           }
-          return NumberFormat.of(pattern).format(Coerse.toBigNumber(value));
+          return NumberFormat.of(pattern).format(Coerce.toBigNumber(value));
         }
         if (value instanceof ZonedDateTime) {
           if (pattern == null)
             pattern = "YYYY-MM-DD";
           return DateTimeFormat.of(pattern).format((ZonedDateTime) value);
         }
-        return Coerse.toString(value);
+        return Coerce.toString(value);
       case DATE:
         if (value instanceof String) {
           try {

@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function decode special HTML entities.
@@ -42,6 +42,6 @@ public class HtmlDecodeFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     Object value = operands[0].getValue(context);
-    return StringEscapeUtils.unescapeHtml(Coerse.toString(value));
+    return StringEscapeUtils.unescapeHtml(Coerce.toString(value));
   }
 }

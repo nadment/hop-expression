@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.temporal.IsoFields;
 
 /**
@@ -42,6 +42,6 @@ public class QuarterFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    return Long.valueOf(Coerse.toDateTime(value).get(IsoFields.QUARTER_OF_YEAR));
+    return Long.valueOf(Coerce.toDateTime(value).get(IsoFields.QUARTER_OF_YEAR));
   }
 }

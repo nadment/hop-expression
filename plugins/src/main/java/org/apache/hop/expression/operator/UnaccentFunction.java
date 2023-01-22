@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
@@ -48,7 +48,7 @@ public class UnaccentFunction extends Function {
     if (v0 == null)
       return null;
 
-    String str = Coerse.toString(v0);
+    String str = Coerce.toString(v0);
 
     final StringBuilder decomposed =
         new StringBuilder(Normalizer.normalize(str, Normalizer.Form.NFD));

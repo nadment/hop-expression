@@ -26,9 +26,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -57,7 +57,7 @@ public class CompressFunction extends Function {
     // ICompressionProvider provider_test = factory.getCompressionProviderByName(algorithm);
     // ICompressionProvider provider = getCompressionProviderByName(algorithm);
 
-    byte[] bytes = Coerse.toBinary(v0);
+    byte[] bytes = Coerce.toBinary(v0);
     ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
     // CompressionOutputStream compression = provider.createOutputStream(output);
     GZIPOutputStream compression = new GZIPOutputStream(output);

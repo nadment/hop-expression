@@ -20,10 +20,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Characters;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns a string with the first letter of each word in uppercase and the subsequent letters in
@@ -46,7 +46,7 @@ public class InitCapFunction extends Function {
     if (value == null)
       return null;
 
-    String str = Coerse.toString(value);
+    String str = Coerce.toString(value);
     int length = str.length();
     StringBuilder builder = new StringBuilder(length);
     boolean capitalizeNext = true;

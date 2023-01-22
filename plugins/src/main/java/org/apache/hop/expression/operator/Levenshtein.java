@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 
 /**
@@ -48,6 +48,6 @@ public class Levenshtein extends Function {
       return null;
 
     return Long
-        .valueOf(StringUtils.getLevenshteinDistance(Coerse.toString(v0), Coerse.toString(v1)));
+        .valueOf(StringUtils.getLevenshteinDistance(Coerce.toString(v0), Coerce.toString(v1)));
   }
 }

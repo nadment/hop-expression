@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the exponential value of a numeric expression.
@@ -42,7 +42,7 @@ public class ExpFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    return FastMath.exp(Coerse.toNumber(value));
+    return FastMath.exp(Coerce.toNumber(value));
   }
 
 }

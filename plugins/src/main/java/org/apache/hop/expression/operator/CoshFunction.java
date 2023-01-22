@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the trigonometric cosine of the specified angle in radians in the specified number.
@@ -42,6 +42,6 @@ public class CoshFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return null;
-    return FastMath.cosh(Coerse.toNumber(value));
+    return FastMath.cosh(Coerce.toNumber(value));
   }
 }

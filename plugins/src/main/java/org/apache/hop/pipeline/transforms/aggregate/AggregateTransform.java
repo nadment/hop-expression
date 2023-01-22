@@ -32,7 +32,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.util.Coerse;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -195,10 +195,10 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         // Value meta doesn't support ZonedDateTime
         switch (data.aggregateMeta.getValueMeta(i).getType()) {
           case IValueMeta.TYPE_DATE:
-            value = Coerse.toDate(value);
+            value = Coerce.toDate(value);
             break;
           case IValueMeta.TYPE_TIMESTAMP:
-            value = Coerse.toTimestamp(value);
+            value = Coerce.toTimestamp(value);
             break;
           default:
         }

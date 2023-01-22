@@ -19,9 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /** Comparison not equals operator '<code>!=</code>'. */
@@ -43,7 +43,7 @@ public class NotEqualOperator extends Operator {
       return null;
     }
 
-    return Coerse.compare(left, right) != 0;
+    return Coerce.compare(left, right) != 0;
   }
 
   @Override

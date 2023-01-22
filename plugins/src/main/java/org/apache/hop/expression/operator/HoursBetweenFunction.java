@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -47,8 +47,8 @@ public class HoursBetweenFunction extends Function {
     if (v1 == null)
       return null;
 
-    ZonedDateTime startDateTime = Coerse.toDateTime(v0);
-    ZonedDateTime endDateTime = Coerse.toDateTime(v1);
+    ZonedDateTime startDateTime = Coerce.toDateTime(v0);
+    ZonedDateTime endDateTime = Coerce.toDateTime(v1);
     return startDateTime.until(endDateTime, ChronoUnit.HOURS);
   }
 }

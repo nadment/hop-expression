@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function returns the smallest value that is not NULL, or NULL if all values are NULL.
@@ -46,7 +46,7 @@ public class LeastFunction extends Function {
       // null is always smaller
       if (value == null)
         continue;
-      if (result == null || Coerse.compare(value, result) < 0) {
+      if (result == null || Coerce.compare(value, result) < 0) {
         result = value;
       }
     }

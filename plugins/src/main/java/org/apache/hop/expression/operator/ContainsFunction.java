@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Contains function
@@ -46,7 +46,7 @@ public class ContainsFunction extends Function {
     if (v1 == null)
       return null;
 
-    if (Coerse.toString(v0).contains(Coerse.toString(v1)))
+    if (Coerce.toString(v0).contains(Coerce.toString(v1)))
       return Boolean.TRUE;
 
     return Boolean.FALSE;

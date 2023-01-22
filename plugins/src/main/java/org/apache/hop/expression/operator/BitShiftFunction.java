@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * 
@@ -44,8 +44,8 @@ public class BitShiftFunction extends Function {
     if (v1 == null)
       return null;
 
-    long value = Coerse.toInteger(v0);
-    int distance = Coerse.toInteger(v1).intValue();
+    long value = Coerce.toInteger(v0);
+    int distance = Coerce.toInteger(v1).intValue();
 
     if (distance >= 64 || distance <= -64)
       return 0L;

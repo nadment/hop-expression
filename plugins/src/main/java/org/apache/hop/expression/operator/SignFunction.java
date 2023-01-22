@@ -20,9 +20,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * Returns the sign of a number.
@@ -41,7 +41,7 @@ public class SignFunction extends Function {
     Object value = operands[0].getValue(context);
     if (value == null)
       return value;
-    Double number = Coerse.toNumber(value);
+    Double number = Coerce.toNumber(value);
     if (number == 0)
       return 0L;
     return (number > 0) ? 1L : -1L;

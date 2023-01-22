@@ -22,9 +22,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -60,11 +60,11 @@ public class JsonValueFunction extends Function {
     if (v1 == null)
       return null;
 
-    JsonNode jsonNode = Coerse.toJson(v0);
+    JsonNode jsonNode = Coerce.toJson(v0);
     JsonPath jsonPath;
-    String path = Coerse.toString(v1);
+    String path = Coerce.toString(v1);
     try {
-      jsonPath = JsonPath.compile(Coerse.toString(v1));
+      jsonPath = JsonPath.compile(Coerce.toString(v1));
 
       JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
 

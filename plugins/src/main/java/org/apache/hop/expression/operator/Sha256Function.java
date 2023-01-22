@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 
 /**
@@ -48,6 +48,6 @@ public class Sha256Function extends Function {
     if (v0 == null) {
       return null;
     }
-    return DigestUtils.sha256Hex(Coerse.toBinary(v0));
+    return DigestUtils.sha256Hex(Coerce.toBinary(v0));
   }
 }

@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * 
@@ -46,6 +46,6 @@ public class Atan2Function extends Function {
     if (v1 == null)
       return null;
 
-    return FastMath.atan2(Coerse.toNumber(v0), Coerse.toNumber(v1));
+    return FastMath.atan2(Coerce.toNumber(v0), Coerce.toNumber(v1));
   }
 }

@@ -22,10 +22,10 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.Coerse;
-import org.apache.hop.expression.util.Converter;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -99,14 +99,14 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void coerceToBoolean() throws Exception {
-    assertNull(Coerse.toBoolean(null));
-    assertTrue(Coerse.toBoolean(true));
-    assertTrue(Coerse.toBoolean(3L));
-    assertTrue(Coerse.toBoolean(1L));
-    assertFalse(Coerse.toBoolean(0L));
-    assertFalse(Coerse.toBoolean(false));
-    assertThrows(ExpressionException.class, () -> Coerse.toBoolean("True"));
-    assertThrows(ExpressionException.class, () -> Coerse.toBoolean(ZonedDateTime.now()));
+    assertNull(Coerce.toBoolean(null));
+    assertTrue(Coerce.toBoolean(true));
+    assertTrue(Coerce.toBoolean(3L));
+    assertTrue(Coerce.toBoolean(1L));
+    assertFalse(Coerce.toBoolean(0L));
+    assertFalse(Coerce.toBoolean(false));
+    assertThrows(ExpressionException.class, () -> Coerce.toBoolean("True"));
+    assertThrows(ExpressionException.class, () -> Coerce.toBoolean(ZonedDateTime.now()));
   }
    
   @Test
@@ -136,10 +136,10 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void coerceToBinary() throws Exception {
-    assertNull(Coerse.toBinary(null));    
-    assertThrows(ExpressionException.class, () -> Coerse.toBinary(true) );
-    assertThrows(ExpressionException.class, () -> Coerse.toBinary(3L) );
-    assertThrows(ExpressionException.class, () -> Coerse.toBinary(3D) );
+    assertNull(Coerce.toBinary(null));    
+    assertThrows(ExpressionException.class, () -> Coerce.toBinary(true) );
+    assertThrows(ExpressionException.class, () -> Coerce.toBinary(3L) );
+    assertThrows(ExpressionException.class, () -> Coerce.toBinary(3D) );
   }
   
   @Test
@@ -149,17 +149,17 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void coerceToDate() throws Exception {
-    assertNull(Coerse.toDateTime(null));
-    assertThrows(ExpressionException.class, () -> Coerse.toDateTime(true));
+    assertNull(Coerce.toDateTime(null));
+    assertThrows(ExpressionException.class, () -> Coerce.toDateTime(true));
   }
   
   @Test
   public void coerceToString() throws Exception {
-    assertNull(Coerse.toString(null));
-    assertEquals("-1.0", Coerse.toString(-1.0D));
-    assertEquals("-1.2", Coerse.toString(-1.2));    
-    assertEquals("0.1", Coerse.toString(0.1D));
-    assertEquals("-0.1", Coerse.toString(-0.1D));
+    assertNull(Coerce.toString(null));
+    assertEquals("-1.0", Coerce.toString(-1.0D));
+    assertEquals("-1.2", Coerce.toString(-1.2));    
+    assertEquals("0.1", Coerce.toString(0.1D));
+    assertEquals("-0.1", Coerce.toString(-0.1D));
 
   }
    
@@ -175,13 +175,13 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void coerceToInteger() throws Exception {
-    assertNull(Coerse.toInteger(null));
-    assertEquals(Long.valueOf(1L), Coerse.toInteger(1));
-    assertEquals(Long.valueOf(1L), Coerse.toInteger(1L));
-    assertEquals(Long.valueOf(1L), Coerse.toInteger(1.2D));
-    assertEquals(Long.valueOf(1L), Coerse.toInteger("1.2"));
-    assertEquals(Long.valueOf(-1L), Coerse.toInteger("-1.6"));
-    assertThrows(ExpressionException.class, () -> Coerse.toInteger(ZonedDateTime.now()));
+    assertNull(Coerce.toInteger(null));
+    assertEquals(Long.valueOf(1L), Coerce.toInteger(1));
+    assertEquals(Long.valueOf(1L), Coerce.toInteger(1L));
+    assertEquals(Long.valueOf(1L), Coerce.toInteger(1.2D));
+    assertEquals(Long.valueOf(1L), Coerce.toInteger("1.2"));
+    assertEquals(Long.valueOf(-1L), Coerce.toInteger("-1.6"));
+    assertThrows(ExpressionException.class, () -> Coerce.toInteger(ZonedDateTime.now()));
   }
 
   @Test
@@ -197,14 +197,14 @@ public class DataTypeTest extends BaseExpressionTest {
   
   @Test
   public void coerceToNumber() throws Exception {
-    assertNull(Coerse.toNumber(null));
-    assertEquals(Double.valueOf(1D), Coerse.toNumber("1"));
-    assertEquals(Double.valueOf(1.2D), Coerse.toNumber("1.2"));
-    assertEquals(Double.valueOf(0.1D), Coerse.toNumber(".1"));
-    assertEquals(Double.valueOf(-2.3E+2D), Coerse.toNumber("-2.3E+2"));
-    assertEquals(Double.valueOf(-2.3E-2D), Coerse.toNumber("-2.3E-2"));
-    assertEquals(Double.valueOf(-2.3E-2D), Coerse.toNumber("-2.3e-2"));
-    assertThrows(ExpressionException.class, () -> Coerse.toNumber(ZonedDateTime.now()));
+    assertNull(Coerce.toNumber(null));
+    assertEquals(Double.valueOf(1D), Coerce.toNumber("1"));
+    assertEquals(Double.valueOf(1.2D), Coerce.toNumber("1.2"));
+    assertEquals(Double.valueOf(0.1D), Coerce.toNumber(".1"));
+    assertEquals(Double.valueOf(-2.3E+2D), Coerce.toNumber("-2.3E+2"));
+    assertEquals(Double.valueOf(-2.3E-2D), Coerce.toNumber("-2.3E-2"));
+    assertEquals(Double.valueOf(-2.3E-2D), Coerce.toNumber("-2.3e-2"));
+    assertThrows(ExpressionException.class, () -> Coerce.toNumber(ZonedDateTime.now()));
   }
   
   @Test
@@ -219,15 +219,15 @@ public class DataTypeTest extends BaseExpressionTest {
 
   @Test
   public void coerceToBigNumber() throws Exception {
-    assertNull(Coerse.toBigNumber(null));    
-    assertEquals(BigDecimal.ZERO, Coerse.toBigNumber(0L));
-    assertEquals(BigDecimal.ZERO, Coerse.toBigNumber(0D));
-    assertEquals(BigDecimal.ZERO, Coerse.toBigNumber(BigDecimal.ZERO));    
-    assertEquals(BigDecimal.ONE, Coerse.toBigNumber(1L));
-    assertEquals(BigDecimal.ONE, Coerse.toBigNumber(1D));
-    assertEquals(BigDecimal.ONE, Coerse.toBigNumber(BigDecimal.ONE) );
-    assertSame(BigDecimal.valueOf(3), Coerse.toBigNumber(3L));
-    assertThrows(ExpressionException.class, () -> Coerse.toBigNumber(ZonedDateTime.now()));
+    assertNull(Coerce.toBigNumber(null));    
+    assertEquals(BigDecimal.ZERO, Coerce.toBigNumber(0L));
+    assertEquals(BigDecimal.ZERO, Coerce.toBigNumber(0D));
+    assertEquals(BigDecimal.ZERO, Coerce.toBigNumber(BigDecimal.ZERO));    
+    assertEquals(BigDecimal.ONE, Coerce.toBigNumber(1L));
+    assertEquals(BigDecimal.ONE, Coerce.toBigNumber(1D));
+    assertEquals(BigDecimal.ONE, Coerce.toBigNumber(BigDecimal.ONE) );
+    assertSame(BigDecimal.valueOf(3), Coerce.toBigNumber(3L));
+    assertThrows(ExpressionException.class, () -> Coerce.toBigNumber(ZonedDateTime.now()));
   }
   
   @Test

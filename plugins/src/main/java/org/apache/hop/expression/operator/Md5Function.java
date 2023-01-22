@@ -21,9 +21,9 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 
 /**
  * The function calculate the MD5 hash of a data value.
@@ -49,6 +49,6 @@ public class Md5Function extends Function {
       return null;
     }
 
-    return DigestUtils.md5Hex(Coerse.toBinary(v0));
+    return DigestUtils.md5Hex(Coerce.toBinary(v0));
   }
 }

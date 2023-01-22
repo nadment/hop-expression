@@ -19,9 +19,9 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Coerse;
 import java.io.StringWriter;
 
 /**
@@ -39,18 +39,18 @@ public class BoolOrOperator extends Operator {
     Object left = operands[0].getValue(context);
     Object right = operands[1].getValue(context);
     if (left == null) {
-      Boolean result = Coerse.toBoolean(right);
+      Boolean result = Coerce.toBoolean(right);
       if (!result)
         return null;
       return result;
     }
     if (right == null) {
-      Boolean result = Coerse.toBoolean(left);
+      Boolean result = Coerce.toBoolean(left);
       if (!result)
         return null;
       return result;
     }
-    return Boolean.logicalOr(Coerse.toBoolean(left), Coerse.toBoolean(right));
+    return Boolean.logicalOr(Coerce.toBoolean(left), Coerce.toBoolean(right));
   }
 
   @Override
