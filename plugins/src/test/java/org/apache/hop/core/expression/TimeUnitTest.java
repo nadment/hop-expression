@@ -26,21 +26,20 @@ public class TimeUnitTest extends BaseExpressionTest {
      
   @Test
   public void of() throws Exception {
-    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MILLENNIUM"));
-    assertEquals(TimeUnit.CENTURY, TimeUnit.of("CENTURY"));
-    assertEquals(TimeUnit.DECADE, TimeUnit.of("DECADE"));
+    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUM"));
+    assertEquals(TimeUnit.CENTURY, TimeUnit.of("CeNTuRy"));
+    assertEquals(TimeUnit.DECADE, TimeUnit.of("DeCaDE"));
     assertEquals(TimeUnit.YEAR, TimeUnit.of("year"));
-    assertEquals(TimeUnit.YEAR, TimeUnit.of("Y"));
     assertEquals(TimeUnit.QUARTER, TimeUnit.of("quarter"));
-    assertEquals(TimeUnit.QUARTER, TimeUnit.of("q"));
     assertEquals(TimeUnit.MONTH, TimeUnit.of("Month"));
-    assertEquals(TimeUnit.MONTH, TimeUnit.of("MM"));
-    assertEquals(TimeUnit.DAY, TimeUnit.of("d"));
-    assertEquals(TimeUnit.DAY, TimeUnit.of("dd"));
+    assertEquals(TimeUnit.DAY, TimeUnit.of("day"));
     assertEquals(TimeUnit.DAY, TimeUnit.of("dayofmonth"));
-    assertEquals(TimeUnit.DAYOFWEEK, TimeUnit.of("DOW"));  
+    assertEquals(TimeUnit.DAYOFWEEK, TimeUnit.of("DayOfWeek"));  
     assertEquals(TimeUnit.HOUR, TimeUnit.of("HOUR"));
-    assertEquals(TimeUnit.HOUR, TimeUnit.of("HH"));
+    assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeek"));
+    assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeekOFYEAR"));    
+    assertEquals(TimeUnit.ISODAYOFWEEK, TimeUnit.of("IsoDayOfWeek"));
+    assertEquals(TimeUnit.ISOYEAR, TimeUnit.of("IsoYEAR"));
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
     assertNotEquals(TimeUnit.of("HOUR"), null);
     assertThrows(IllegalArgumentException.class, () -> TimeUnit.of("NOP"));
@@ -49,6 +48,6 @@ public class TimeUnitTest extends BaseExpressionTest {
   @Test
   public void exist() throws Exception {
     assertTrue(TimeUnit.exist("MONTH"));
-    assertTrue(TimeUnit.exist("MM"));
+    assertTrue(TimeUnit.exist("DAYOFYEAR"));
   } 
 }

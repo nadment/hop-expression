@@ -34,77 +34,76 @@ public enum TimeUnit {
   DECADE,
 
   /** The years */
-  YEAR("Y","YY","YYYY"),
+  YEAR,
 
   /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
-  ISOYEAR("IY","IYYY"),
+  ISOYEAR,
 
   /** The number (1 - 12) of the month */
-  MONTH("MM"),
+  MONTH,
 
   /** The number (1 - 31) of the day */
-  DAY("D","DD","DAYOFMONTH"),
+  DAY("DAYOFMONTH"),
 
-  /** A number (1 = Sunday, 2 = Monday, …, 7 = Saturday) indicating the day of the week */
-  DAYOFWEEK("DOW"),
+  /** A number (1 = Sunday, 2 = Monday, 7 = Saturday) indicating the day of the week */
+  DAYOFWEEK,
 
   /**
-   * A number (1 = Monday, …, 7 = Sunday) indicating the day of the week following the ISO 8601
+   * A number (1 = Monday, 7 = Sunday) indicating the day of the week following the ISO 8601
    * standard
    */
-  ISODAYOFWEEK("ISODOW"),
+  ISODAYOFWEEK,
 
   /** A number (1 - 366) indicating the day of the year */
-  DAYOFYEAR("DOY"),
+  DAYOFYEAR,
 
   /** 
    * The number (1 - 54) of the week of the year.
    * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
    */
-  WEEK("WW","WOY"),
+  WEEK("WEEKOFYEAR"),
 
   /** 
    * The number (1 - 53) of the week of the year ISO 8601.
    * The first week of the ISO year is the week that contains January 4. 
    */
-  ISOWEEK("IW","ISOWOY","ISOWEEKOFYEAR"),
+  ISOWEEK("ISOWEEKOFYEAR"),
 
   /** Week from the beginning of the month (0-5) */
   WEEKOFMONTH,
 
   /** Quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
-  QUARTER("Q"),
+  QUARTER,
 
   /** Hour (0-23). */
-  HOUR("HH"),
+  HOUR,
 
   /** Minute (0-59). */
-  MINUTE("MI"),
+  MINUTE,
 
   /** Second (0-59). */
-  SECOND("SS"),
+  SECOND,
 
   /** Millisecond. */
-  MILLISECOND("MS"),
+  MILLISECOND,
 
   /** Microsecond. */
-  MICROSECOND("MCS"),
+  MICROSECOND,
 
   /** The nanosecond. */
-  NANOSECOND("NS"),
+  NANOSECOND,
 
   /** Time zone region abbreviated */
-  TIMEZONE_ABBR("TZD"),
+  TIMEZONE_ABBR,
   
   /** Time zone region */
-  TIMEZONE_REGION("TZR"),
+  TIMEZONE_REGION,
 
   /** Time zone offset's hour part. */
-  TIMEZONE_HOUR("TZH"),
+  TIMEZONE_HOUR,
 
   /** Time zone offset's minute part. */
-  TIMEZONE_MINUTE("TZM")
-  
+  TIMEZONE_MINUTE  
   ;
 
   private final String[] alias;

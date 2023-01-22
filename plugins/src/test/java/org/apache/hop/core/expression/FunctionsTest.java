@@ -1999,15 +1999,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Date_Trunc(CENTURY, DATE '2020-05-08')", LocalDate.of(2000, Month.JANUARY, 1));
     evalEquals("Date_Trunc(DECADE, DATE '2021-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
     evalEquals("Date_Trunc(YEAR, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("Date_Trunc(YY, DATE '2020-05-08')", LocalDate.of(2020, Month.JANUARY, 1));
-    evalEquals("Date_Trunc(MONTH, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));
-    evalEquals("Date_Trunc(MM, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));
+    evalEquals("Date_Trunc(MONTH, DATE '2020-05-08')", LocalDate.of(2020, Month.MAY, 1));    
     evalEquals("Date_Trunc(DAY, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Date_Trunc(DD, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(DAYOFMONTH, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(QUARTER, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
-    evalEquals("Date_Trunc(Q, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
-    evalEquals("Date_Trunc(WW, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(WEEKOFYEAR, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
     
     evalNull("Date_Trunc(DAY, NULL)");
     evalNull("Date_Trunc(DAY, NULL_DATE)");
@@ -2023,15 +2020,9 @@ public class FunctionsTest extends BaseExpressionTest {
         LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(HOUR, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
-    evalEquals("Date_Trunc(HH, Timestamp '2020-05-25 23:59:59')",
-        LocalDateTime.of(2020, Month.MAY, 25, 23, 0, 0, 0));
     evalEquals("Date_Trunc(MINUTE, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
-    evalEquals("Date_Trunc(MI, Timestamp '2020-05-25 23:59:59')",
-        LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 0, 0));
     evalEquals("Date_Trunc(SECOND, Timestamp '2020-05-25 23:59:59')",
-        LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
-    evalEquals("Date_Trunc(SS, Timestamp '2020-05-25 23:59:59')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 0));
     evalEquals("Date_Trunc(MILLISECOND, Timestamp '2020-05-25 23:59:59.123456789')",
         LocalDateTime.of(2020, Month.MAY, 25, 23, 59, 59, 123000000));
