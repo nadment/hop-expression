@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -33,7 +34,7 @@ public class Nvl2Function extends Function {
   public Nvl2Function() {
     // TODO: Operand type check should be BOOLEAN_SAME_SAME
     super("NVL2", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_ANY_ANY,
-        "i18n::Operator.Category.Conditional", "/docs/nvl2.html");
+        OperatorCategory.CONDITIONAL, "/docs/nvl2.html");
   }
 
   @Override

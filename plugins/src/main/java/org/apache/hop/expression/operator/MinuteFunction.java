@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -33,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class MinuteFunction extends Function {
 
   public MinuteFunction() {
-    super("MINUTE", true, ReturnTypes.INTEGER, OperandTypes.DATE, "i18n::Operator.Category.Date",
+    super("MINUTE", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/minute.html");
   }
 

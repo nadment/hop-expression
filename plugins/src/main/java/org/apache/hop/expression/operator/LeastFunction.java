@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ public class LeastFunction extends Function {
 
   public LeastFunction() {
     super("LEAST", true, ReturnTypes.FIRST_KNOWN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
-        "i18n::Operator.Category.Conditional", "/docs/least.html");
+        OperatorCategory.CONDITIONAL, "/docs/least.html");
   }
 
   @Override

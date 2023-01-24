@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ public class TruncateFunction extends Function {
 
   public TruncateFunction() {
     super("TRUNCATE", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_OPTIONAL_NUMERIC,
-        "i18n::Operator.Category.Mathematical", "/docs/truncate.html");
+        OperatorCategory.MATHEMATICAL, "/docs/truncate.html");
   }
 
   @Override

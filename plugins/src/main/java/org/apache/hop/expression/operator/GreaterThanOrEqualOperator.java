@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -31,7 +32,7 @@ public class GreaterThanOrEqualOperator extends Operator {
 
   public GreaterThanOrEqualOperator() {
     super("GREATER_THAN_OR_EQUAL", ">=", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
-        "i18n::Operator.Category.Comparison", "/docs/greater_than_or_equal.html");
+        OperatorCategory.COMPARISON, "/docs/greater_than_or_equal.html");
   }
 
   @Override

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -32,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class DecodeFunction extends Function {
 
   public DecodeFunction() {
-    super("DECODE", true, ReturnTypes.ARG2, OperandTypes.DECODE, "i18n::Operator.Category.Conditional",
+    super("DECODE", true, ReturnTypes.ARG2, OperandTypes.DECODE, OperatorCategory.CONDITIONAL,
         "/docs/decode.html");
   }
 

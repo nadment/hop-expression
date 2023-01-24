@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,7 +36,7 @@ public class ToHexFunction extends Function {
 
   public ToHexFunction() {
     super("TO_HEX", true, ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
-        "i18n::Operator.Category.Conversion", "/docs/to_hex.html");
+        OperatorCategory.CONVERSION, "/docs/to_hex.html");
   }
 
   @Override

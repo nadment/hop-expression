@@ -22,6 +22,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,12 +39,12 @@ public class ModFunction extends Function {
 
   public ModFunction() {
     super("MOD", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Mathematical", "/docs/mod.html");
+        OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 
   public ModFunction(String name) {
     super("MOD", name, 50, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Mathematical", "/docs/mod.html");
+        OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 
   @Override

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +37,7 @@ public class UrlDecodeFunction extends Function {
 
   public UrlDecodeFunction() {
     super("URL_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING,
-        "i18n::Operator.Category.String", "/docs/url_decode.html");
+        OperatorCategory.STRING, "/docs/url_decode.html");
   }
 
   @Override

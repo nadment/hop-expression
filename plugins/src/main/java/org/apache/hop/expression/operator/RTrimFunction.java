@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,7 +36,7 @@ public class RTrimFunction extends Function {
 
   public RTrimFunction() {
     super("RTRIM", true, ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
-        "i18n::Operator.Category.String", "/docs/rtrim.html");
+        OperatorCategory.STRING, "/docs/rtrim.html");
   }
 
   @Override

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -33,7 +34,7 @@ public class Crc32Function extends Function {
 
   public Crc32Function() {
     super("CRC32", true, ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
-        "i18n::Operator.Category.Cryptographic", "/docs/crc32.html");
+        OperatorCategory.CRYPTOGRAPHIC, "/docs/crc32.html");
   }
 
   @Override

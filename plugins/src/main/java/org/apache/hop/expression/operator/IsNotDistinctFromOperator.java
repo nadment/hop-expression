@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -33,7 +34,7 @@ public class IsNotDistinctFromOperator extends Operator {
 
   public IsNotDistinctFromOperator() {
     super("IS NOT DISTINCT FROM", 10, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
-        "i18n::Operator.Category.Comparison", "/docs/is-distinct-from.html");
+        OperatorCategory.COMPARISON, "/docs/is-distinct-from.html");
   }
 
   @Override

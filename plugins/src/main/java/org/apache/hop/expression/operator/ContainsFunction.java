@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -32,7 +33,7 @@ public class ContainsFunction extends Function {
 
   public ContainsFunction() {
     super("CONTAINS", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING,
-        "i18n::Operator.Category.Comparison", "/docs/contains.html");
+        OperatorCategory.COMPARISON, "/docs/contains.html");
   }
 
   @Override

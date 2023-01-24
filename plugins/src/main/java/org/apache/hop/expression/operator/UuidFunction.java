@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.UUID;
@@ -31,7 +32,7 @@ import java.util.UUID;
 public class UuidFunction extends Function {
 
   public UuidFunction() {
-    super("UUID", false, ReturnTypes.STRING, OperandTypes.NILADIC, "i18n::Operator.Category.String",
+    super("UUID", false, ReturnTypes.STRING, OperandTypes.NILADIC, OperatorCategory.STRING,
         "/docs/uuid.html");
   }
 

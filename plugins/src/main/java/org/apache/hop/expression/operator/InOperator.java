@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
@@ -45,7 +46,7 @@ public class InOperator extends Operator {
 
   public InOperator() {
     super("IN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.NO_CHECK,
-        "i18n::Operator.Category.Comparison", "/docs/in.html");
+        OperatorCategory.COMPARISON, "/docs/in.html");
   }
 
   @Override

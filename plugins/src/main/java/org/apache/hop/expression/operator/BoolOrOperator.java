@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -31,7 +32,7 @@ public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
     super("BOOLOR", "OR", 180, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
-        "i18n::Operator.Category.Logical", "/docs/boolor.html");
+        OperatorCategory.LOGICAL, "/docs/boolor.html");
   }
 
   @Override

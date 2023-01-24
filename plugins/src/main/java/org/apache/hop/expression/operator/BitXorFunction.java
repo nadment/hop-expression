@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,12 +36,12 @@ public class BitXorFunction extends Function {
 
   public BitXorFunction() {
     super("BIT_XOR", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bit_xor.html");
+        OperatorCategory.BITWISE, "/docs/bit_xor.html");
   }
   
   public BitXorFunction(String name) {
     super("BIT_XOR", name, 80, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bit_xor.html");
+        OperatorCategory.BITWISE, "/docs/bit_xor.html");
   }
   
   @Override

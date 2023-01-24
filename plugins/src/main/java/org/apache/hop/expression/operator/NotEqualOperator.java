@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -29,7 +30,7 @@ public class NotEqualOperator extends Operator {
 
   public NotEqualOperator() {
     super("NOT_EQUAL", "!=", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
-        "i18n::Operator.Category.Comparison", "/docs/not_equal.html");
+        OperatorCategory.COMPARISON, "/docs/not_equal.html");
   }
 
   @Override

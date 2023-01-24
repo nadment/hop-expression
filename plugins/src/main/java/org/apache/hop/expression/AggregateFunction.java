@@ -22,7 +22,7 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 public abstract class AggregateFunction extends Function {
 
   protected AggregateFunction(String id, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String documentationUrl) {
-    super(id, false, returnTypeInference, operandTypeChecker, "i18n::Operator.Category.Aggregation", documentationUrl);
+    super(id, false, returnTypeInference, operandTypeChecker, OperatorCategory.AGGREGATION, documentationUrl);
   }
   
   @Override

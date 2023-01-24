@@ -23,6 +23,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandCountRange;
@@ -79,7 +80,7 @@ public class JsonObjectFunction extends Function {
 
 
   public JsonObjectFunction() {
-    super("JSON_OBJECT", true, ReturnTypes.JSON, OTC, "i18n::Operator.Category.Json",
+    super("JSON_OBJECT", true, ReturnTypes.JSON, OTC, OperatorCategory.JSON,
         "/docs/json_object.html");
   }
 

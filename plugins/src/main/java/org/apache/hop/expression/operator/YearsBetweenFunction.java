@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ public class YearsBetweenFunction extends Function {
 
   public YearsBetweenFunction() {
     super("YEARS_BETWEEN", true, ReturnTypes.INTEGER, OperandTypes.DATE_DATETIME,
-        "i18n::Operator.Category.Date", "/docs/years_between.html");
+        OperatorCategory.DATE, "/docs/years_between.html");
   }
 
   @Override

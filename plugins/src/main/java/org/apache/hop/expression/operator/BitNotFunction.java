@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,12 +36,12 @@ public class BitNotFunction extends Function {
 
   public BitNotFunction() {
     super("BIT_NOT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bit_not.html");
+        OperatorCategory.BITWISE, "/docs/bit_not.html");
   }
   
   public BitNotFunction(String name) {
     super("BIT_NOT", name, 40, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bit_not.html");
+        OperatorCategory.BITWISE, "/docs/bit_not.html");
   }
 
   @Override

@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
@@ -30,7 +31,7 @@ public class CaseOperator extends Operator {
  
   public CaseOperator() {
     super("CASE", 120, true, true, ReturnTypes.UNKNOWN, OperandTypes.CASE,
-        "i18n::Operator.Category.Conditional", "/docs/case.html");
+        OperatorCategory.CONDITIONAL, "/docs/case.html");
   }
 
   @Override

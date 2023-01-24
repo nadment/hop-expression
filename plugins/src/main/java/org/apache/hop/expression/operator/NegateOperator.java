@@ -21,6 +21,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -32,7 +33,7 @@ import java.io.StringWriter;
 public class NegateOperator extends Operator {
   public NegateOperator() {
     super("NEGATE", "-", 30, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC,
-        "i18n::Operator.Category.Mathematical", "/docs/negate.html");
+        OperatorCategory.MATHEMATICAL, "/docs/negate.html");
   }
 
   @Override

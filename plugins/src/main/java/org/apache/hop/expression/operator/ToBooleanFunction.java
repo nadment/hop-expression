@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.OperandTypes;
@@ -33,7 +34,7 @@ public class ToBooleanFunction extends Function {
 
   public ToBooleanFunction() {
     super("TO_BOOLEAN", true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        "i18n::Operator.Category.Conversion", "/docs/to_boolean.html");
+        OperatorCategory.CONVERSION, "/docs/to_boolean.html");
   }
 
   @Override

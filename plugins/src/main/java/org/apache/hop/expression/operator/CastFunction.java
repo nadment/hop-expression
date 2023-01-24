@@ -23,6 +23,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
@@ -39,12 +40,12 @@ public class CastFunction extends Function {
   
   // Function
   public CastFunction() {
-    super("CAST", true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT, "i18n::Operator.Category.Conversion", "/docs/cast.html");
+    super("CAST", true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT, OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
   // Operator
   public CastFunction(String name) {
-    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT, "i18n::Operator.Category.Conversion", "/docs/cast.html");
+    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT, OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
   @Override

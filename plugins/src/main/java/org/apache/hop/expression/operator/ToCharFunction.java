@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ import org.apache.hop.expression.util.NumberFormat;
 public class ToCharFunction extends Function {
 
   public ToCharFunction() {
-    super("TO_CHAR", true, ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT.or(OperandTypes.DATE_OPTIONAL_TEXT), "i18n::Operator.Category.Conversion",
+    super("TO_CHAR", true, ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT.or(OperandTypes.DATE_OPTIONAL_TEXT), OperatorCategory.CONVERSION,
         "/docs/to_char.html");
   }
 

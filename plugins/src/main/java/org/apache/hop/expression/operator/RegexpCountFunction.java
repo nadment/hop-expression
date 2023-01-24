@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -39,7 +40,7 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpCountFunction extends Function {
 
   public RegexpCountFunction() {
-    super("REGEXP_COUNT", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_STRING,  "i18n::Operator.Category.String", "/docs/regexp_count.html");
+    super("REGEXP_COUNT", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_STRING,  OperatorCategory.STRING, "/docs/regexp_count.html");
   }
 
   @Override

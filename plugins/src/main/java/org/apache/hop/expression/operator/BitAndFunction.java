@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,12 +37,12 @@ public class BitAndFunction extends Function {
 
   public BitAndFunction() {
     super("BIT_AND", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bit_and.html");
+        OperatorCategory.BITWISE, "/docs/bit_and.html");
   }
   
   public BitAndFunction(String name) {
     super("BIT_AND", name, 70, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        "i18n::Operator.Category.Bitwise", "/docs/bit_and.html");
+        OperatorCategory.BITWISE, "/docs/bit_and.html");
   }
 
   @Override

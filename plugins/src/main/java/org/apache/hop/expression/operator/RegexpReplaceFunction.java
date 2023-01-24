@@ -22,6 +22,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
@@ -42,7 +43,7 @@ public class RegexpReplaceFunction extends Function {
   
   public RegexpReplaceFunction() {
     super("REGEXP_REPLACE", true, ReturnTypes.STRING, OTC,
-        "i18n::Operator.Category.String", "/docs/regexp_replace.html");
+        OperatorCategory.STRING, "/docs/regexp_replace.html");
   }
 
   @Override

@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -32,8 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AbsFunction extends Function {
 
   public AbsFunction() {
-    super("ABS", true, ReturnTypes.ARG0, OperandTypes.NUMERIC,
-        "i18n::Operator.Category.Mathematical", "/docs/abs.html");
+    super("ABS", true, ReturnTypes.ARG0, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/abs.html");
   }
 
   @Override

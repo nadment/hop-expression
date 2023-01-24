@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,7 +38,7 @@ public class Md5Function extends Function {
 
   public Md5Function() {
     super("MD5", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
-        "i18n::Operator.Category.Cryptographic", "/docs/md5.html");
+        OperatorCategory.CRYPTOGRAPHIC, "/docs/md5.html");
   }
 
   @Override

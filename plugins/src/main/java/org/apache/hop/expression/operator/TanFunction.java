@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -33,7 +34,7 @@ public class TanFunction extends Function {
 
   public TanFunction() {
     super("TAN", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        "i18n::Operator.Category.Trigonometry", "/docs/tan.html");
+        OperatorCategory.TRIGONOMETRY, "/docs/tan.html");
   }
 
   @Override

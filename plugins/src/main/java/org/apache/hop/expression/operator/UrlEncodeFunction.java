@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +37,7 @@ public class UrlEncodeFunction extends Function {
 
   public UrlEncodeFunction() {
     super("URL_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING,
-        "i18n::Operator.Category.String", "/docs/url_encode.html");
+        OperatorCategory.STRING, "/docs/url_encode.html");
   }
 
   @Override

@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -32,7 +33,7 @@ public class CurrentDateTimeFunction extends Function {
 
   public CurrentDateTimeFunction() {
     super("CURRENT_TIMESTAMP", false, ReturnTypes.DATE, OperandTypes.NILADIC,
-        "i18n::Operator.Category.Date", "/docs/current_timestamp.html");
+        OperatorCategory.DATE, "/docs/current_timestamp.html");
   }
 
   @Override

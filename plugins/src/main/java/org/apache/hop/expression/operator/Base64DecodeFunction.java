@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,7 +38,7 @@ public class Base64DecodeFunction extends Function {
 
   public Base64DecodeFunction() {
     super("BASE64_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
-        "i18n::Operator.Category.String", "/docs/base64_decode.html");
+        OperatorCategory.STRING, "/docs/base64_decode.html");
   }
 
   @Override

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +37,7 @@ public class EndsWithFunction extends Function {
 
   public EndsWithFunction() {
     super("ENDSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
-        "i18n::Operator.Category.Comparison", "/docs/endswith.html");
+        OperatorCategory.COMPARISON, "/docs/endswith.html");
   }
 
   @Override

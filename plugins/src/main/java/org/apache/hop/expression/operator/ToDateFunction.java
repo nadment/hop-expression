@@ -23,6 +23,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +37,7 @@ public class ToDateFunction extends Function {
 
   public ToDateFunction() {
     super("TO_DATE", true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_STRING,
-        "i18n::Operator.Category.Conversion", "/docs/to_date.html");
+        OperatorCategory.CONVERSION, "/docs/to_date.html");
   }
 
   @Override

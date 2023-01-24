@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -33,7 +34,7 @@ public class StringEncodeFunction extends Function {
 
   public StringEncodeFunction() {
     super("STRING_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING,
-        "i18n::Operator.Category.String", "/docs/string_encode.html");
+        OperatorCategory.STRING, "/docs/string_encode.html");
   }
 
   @Override

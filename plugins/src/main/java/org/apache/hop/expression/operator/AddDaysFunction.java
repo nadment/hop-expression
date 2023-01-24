@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -33,7 +34,7 @@ public class AddDaysFunction extends Function {
 
   public AddDaysFunction() {
     super("ADD_DAYS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC,
-        "i18n::Operator.Category.Date", "/docs/add_days.html");
+        OperatorCategory.DATE, "/docs/add_days.html");
   }
 
   @Override

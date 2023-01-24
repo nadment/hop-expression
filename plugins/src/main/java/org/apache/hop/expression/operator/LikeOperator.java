@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -45,7 +46,7 @@ public class LikeOperator extends Operator {
 
   public LikeOperator() {
     super("LIKE", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
-        "i18n::Operator.Category.Comparison", "/docs/like.html");
+        OperatorCategory.COMPARISON, "/docs/like.html");
   }
 
   @Override

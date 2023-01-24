@@ -22,6 +22,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,7 +38,7 @@ public class AtTimeZoneOperator extends Operator {
 
   public AtTimeZoneOperator() {
     super("TIMEZONE", "AT TIME ZONE", 10, true, true, ReturnTypes.DATE, OperandTypes.DATE_STRING,
-        "i18n::Operator.Category.Conversion", "/docs/attimezone.html");
+        OperatorCategory.CONVERSION, "/docs/attimezone.html");
   }
 
   @Override

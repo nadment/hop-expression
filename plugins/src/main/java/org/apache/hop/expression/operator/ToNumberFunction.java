@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ public class ToNumberFunction extends Function {
 
   public ToNumberFunction() {
     super("TO_NUMBER", true, ReturnTypes.BIGNUMBER, OperandTypes.STRING_OPTIONAL_STRING,
-        "i18n::Operator.Category.Conversion", "/docs/to_number.html");
+        OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)

@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -30,7 +31,7 @@ public class IsFalseOperator extends Operator {
 
   public IsFalseOperator() {
     super("IS FALSE", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        "i18n::Operator.Category.Comparison", "/docs/is-false.html");
+        OperatorCategory.COMPARISON, "/docs/is-false.html");
   }
 
   @Override

@@ -21,6 +21,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -41,7 +42,7 @@ public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {
     super("SPLIT_PART", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC,
-        "i18n::Operator.Category.String", "/docs/split_part.html");
+        OperatorCategory.STRING, "/docs/split_part.html");
   }
 
   @Override

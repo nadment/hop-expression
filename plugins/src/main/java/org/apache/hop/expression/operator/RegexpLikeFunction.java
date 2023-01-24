@@ -22,6 +22,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,7 +39,7 @@ public class RegexpLikeFunction extends Function {
 
   public RegexpLikeFunction() {
     super("REGEXP_LIKE", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
-        "i18n::Operator.Category.Comparison", "/docs/regexp_like.html");
+        OperatorCategory.COMPARISON, "/docs/regexp_like.html");
   }
 
   @Override

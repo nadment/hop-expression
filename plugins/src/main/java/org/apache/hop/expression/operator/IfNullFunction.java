@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -31,7 +32,7 @@ public class IfNullFunction extends Function {
 
   public IfNullFunction() {
     super("IFNULL", true, ReturnTypes.FIRST_KNOWN, OperandTypes.ANY_ANY,
-        "i18n::Operator.Category.Conditional", "/docs/ifnull.html");
+        OperatorCategory.CONDITIONAL, "/docs/ifnull.html");
   }
 
   @Override

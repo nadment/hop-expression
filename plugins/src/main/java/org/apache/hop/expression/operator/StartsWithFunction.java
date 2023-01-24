@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,7 +36,7 @@ public class StartsWithFunction extends Function {
 
   public StartsWithFunction() {
     super("STARTSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
-        "i18n::Operator.Category.Comparison", "/docs/startswith.html");
+        OperatorCategory.COMPARISON, "/docs/startswith.html");
   }
 
   @Override

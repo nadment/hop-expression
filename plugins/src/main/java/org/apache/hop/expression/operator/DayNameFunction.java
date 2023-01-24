@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ import java.util.Locale;
 public class DayNameFunction extends Function {
 
   public DayNameFunction() {
-    super("DAYNAME", true, ReturnTypes.STRING, OperandTypes.DATE, "i18n::Operator.Category.Date",
+    super("DAYNAME", true, ReturnTypes.STRING, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/dayname.html");
   }
 

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -32,7 +33,7 @@ public class IfFunction extends Function {
 
   public IfFunction() {
     super("IF", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_ANY_ANY,
-        "i18n::Operator.Category.Conditional", "/docs/if.html");
+        OperatorCategory.CONDITIONAL, "/docs/if.html");
     // TODO: OperandTypes.BOOLEAN_SAME_SAME
   }
 

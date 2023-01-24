@@ -22,6 +22,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -39,7 +40,7 @@ public class RegexpSubstrFunction extends Function {
   // TODO: Check operands type
   public RegexpSubstrFunction() {
     super("REGEXP_SUBSTR", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_STRING,
-        "i18n::Operator.Category.String", "/docs/regexp_substr.html");
+        OperatorCategory.STRING, "/docs/regexp_substr.html");
   }
 
   @Override

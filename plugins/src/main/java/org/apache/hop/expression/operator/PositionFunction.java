@@ -20,6 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,7 +35,7 @@ public class PositionFunction extends Function {
 
   public PositionFunction() {
     super("POSITION", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        "i18n::Operator.Category.String", "/docs/position.html");
+        OperatorCategory.STRING, "/docs/position.html");
   }
 
   @Override
