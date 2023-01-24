@@ -33,8 +33,8 @@ import java.time.ZonedDateTime;
 public class AddMonthsFunction extends Function {
 
   public AddMonthsFunction() {
-    super("ADD_MONTHS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC,
-        OperatorCategory.DATE, "/docs/add_months.html");
+    super("ADD_MONTHS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+        "/docs/add_months.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
@@ -42,8 +42,8 @@ public class AddMonthsFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    
-    Object v1= operands[1].getValue(context);
+
+    Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
 

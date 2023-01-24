@@ -23,11 +23,11 @@ import org.apache.hop.expression.Call;
  * families.
  */
 public class NoneOperandTypeChecker implements IOperandTypeChecker {
-  
+
   public class NoneOperandCountRange implements IOperandCountRange {
 
     @Override
-    public boolean isValid(int count) {    
+    public boolean isValid(int count) {
       return true;
     }
 
@@ -39,25 +39,25 @@ public class NoneOperandTypeChecker implements IOperandTypeChecker {
     @Override
     public int getMax() {
       return 0;
-    }    
+    }
   }
-  
+
   NoneOperandTypeChecker() {
     super();
   }
-  
+
   @Override
   public boolean checkOperandTypes(Call call) {
     return true;
   }
-  
+
   @Override
   public IOperandCountRange getOperandCountRange() {
     return new NoneOperandCountRange();
   }
-  
+
   @Override
   public boolean isOptional(int i) {
     return false;
-  }  
+  }
 }

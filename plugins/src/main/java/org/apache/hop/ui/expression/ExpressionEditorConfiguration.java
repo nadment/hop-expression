@@ -63,15 +63,17 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   private IVariables variables;
   private ExpressionMode mode;
   private CompletableFuture<IRowMeta> rowMeta;
-  private static final Set<String> RESERVED_WORDS = Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "DISTINCT", "ELSE",
-          "END", "ESCAPE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULLS", "OR", "RESPECT", "SYMMETRY",
-          "THEN", "TIME", "TIMESTAMP", "WHEN", "XOR", "ZONE");
+  private static final Set<String> RESERVED_WORDS =
+      Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "DISTINCT", "ELSE", "END",
+          "ESCAPE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULLS", "OR",
+          "RESPECT", "SYMMETRY", "THEN", "TIME", "TIMESTAMP", "WHEN", "XOR", "ZONE");
 
   private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
 
   private org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter presenter;
 
-  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta, ExpressionMode mode) {
+  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta,
+      ExpressionMode mode) {
     super();
     this.variables = variables;
     this.rowMeta = rowMeta;
@@ -188,8 +190,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
     // Add rule for operator
     rules.add(new OperatorRule(keyword));
-    
-    // Add case sensitive rule for identifier without double quote 
+
+    // Add case sensitive rule for identifier without double quote
     if (rowMeta != null) {
       WordRule ruleIdentifier = new WordRule(new IndentifierDetector(), Token.UNDEFINED, false);
       try {
@@ -203,9 +205,9 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       }
       rules.add(ruleIdentifier);
     }
-    
+
     // Add case insensitive rule for reserved world and function name
-    // If word not found use Token.WHITESPACE to signal problem 
+    // If word not found use Token.WHITESPACE to signal problem
     WordRule rule = new WordRule(new WordDetector(), Token.WHITESPACE, true);
     for (String name : FunctionRegistry.getFunctionNames()) {
       rule.addWord(name, function);
@@ -252,7 +254,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     IRule[] rules = {
         // Add rule for variables
         new PatternRule("${", "}", variable, (char) 0, false)};
-    RuleBasedScanner scanner = new  RuleBasedScanner();
+    RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
     return scanner;

@@ -37,8 +37,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class HtmlEncodeFunction extends Function {
 
   public HtmlEncodeFunction() {
-    super("HTML_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING,
-        OperatorCategory.STRING, "/docs/html_encode.html");
+    super("HTML_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+        "/docs/html_encode.html");
   }
 
   @Override

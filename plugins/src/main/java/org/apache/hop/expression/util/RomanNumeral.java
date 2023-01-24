@@ -26,8 +26,7 @@ public class RomanNumeral {
   /**
    * Private constructor since this is a utility class.
    */
-  private RomanNumeral() {    
-  }
+  private RomanNumeral() {}
 
   /**
    * Convert an arabic integer value into a roman numeral string

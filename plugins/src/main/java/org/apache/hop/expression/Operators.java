@@ -119,11 +119,11 @@ public class Operators {
   // DATE OPERATORS
   // -------------------------------------------------------------
   public static final Operator AT_TIME_ZONE = new AtTimeZoneOperator();
-  
+
   // -------------------------------------------------------------
-  // SPECIAL OPERATORS with custom or alternative syntax, or optimized 
+  // SPECIAL OPERATORS with custom or alternative syntax, or optimized
   // -------------------------------------------------------------
-  public static final Function CAST = new CastFunction("::");  
+  public static final Function CAST = new CastFunction("::");
   public static final Function CONCAT = new ConcatFunction("||");
   public static final Function EXTRACT = new ExtractFunction();
   public static final Function POSITION = new PositionFunction();
@@ -133,19 +133,20 @@ public class Operators {
   public static final Function ADD_DAYS = new AddDaysFunction();
 
   // -------------------------------------------------------------
-  // AGGREGATE FUNCTIONS with custom syntax 
+  // AGGREGATE FUNCTIONS with custom syntax
   // -------------------------------------------------------------
   public static final AggregateFunction COUNT_DISTINCT = new CountFunction(Count.DISTINCT);
   public static final AggregateFunction COUNT_VALUE = new CountFunction(Count.VALUE);
   public static final AggregateFunction COUNT_ALL = new CountFunction(Count.ALL);
   public static final AggregateFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
   public static final AggregateFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);
-  
+
   /** Set of scalar operators. */
-  private static final Set<Operator> SET_OPERATORS = Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND,
-      BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE,
-      LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE,
-      CONCAT, IN, IS_DISTINCT_FROM, IS_NULL, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
+  private static final Set<Operator> SET_OPERATORS =
+      Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL,
+          GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
+          LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE, CONCAT, IN,
+          IS_DISTINCT_FROM, IS_NULL, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(SET_OPERATORS);

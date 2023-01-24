@@ -35,7 +35,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AcosFunction extends Function {
 
   public AcosFunction() {
-    super("ACOS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY, "/docs/acos.html");
+    super("ACOS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/acos.html");
   }
 
   @Override

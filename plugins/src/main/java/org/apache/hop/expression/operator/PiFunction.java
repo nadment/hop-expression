@@ -31,8 +31,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class PiFunction extends Function {
 
   public PiFunction() {
-    super("PI", true, ReturnTypes.NUMBER, OperandTypes.NILADIC,
-        OperatorCategory.MATHEMATICAL, "/docs/pi.html");
+    super("PI", true, ReturnTypes.NUMBER, OperandTypes.NILADIC, OperatorCategory.MATHEMATICAL,
+        "/docs/pi.html");
   }
 
   @Override

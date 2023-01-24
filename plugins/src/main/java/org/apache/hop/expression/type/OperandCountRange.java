@@ -24,6 +24,7 @@ public class OperandCountRange implements IOperandCountRange {
   public static IOperandCountRange of(int length) {
     return new OperandCountRange(length, length);
   }
+
   public static IOperandCountRange between(int min, int max) {
     return new OperandCountRange(min, max);
   }
@@ -34,8 +35,8 @@ public class OperandCountRange implements IOperandCountRange {
 
   public static IOperandCountRange any() {
     return new OperandCountRange(0, -1);
-  } 
-  
+  }
+
   private final int min;
   private final int max;
 

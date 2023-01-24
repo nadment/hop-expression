@@ -18,6 +18,7 @@ package org.apache.hop.expression.util;
 import java.util.Comparator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
+
 /**
  * Compare Json Node
  * <ul>
@@ -25,20 +26,19 @@ import com.fasterxml.jackson.databind.node.NumericNode;
  * <li>Considers numeric values 5.0 and 5 as equals</li>
  * </ul>
  */
-public class JsonComparator implements Comparator<JsonNode>  {
- @Override
-    public int compare(final JsonNode o1, final JsonNode o2)
-    {
-        if (o1.equals(o2)){
-           return 0;
-        }
-        if ((o1 instanceof NumericNode) && (o2 instanceof NumericNode)){
-            Double d1 = ((NumericNode) o1).asDouble();
-            Double d2 = ((NumericNode) o2).asDouble(); 
-            if (d1.compareTo(d2) == 0) {
-               return 0;
-            }
-        }
-        return 1;
+public class JsonComparator implements Comparator<JsonNode> {
+  @Override
+  public int compare(final JsonNode o1, final JsonNode o2) {
+    if (o1.equals(o2)) {
+      return 0;
     }
+    if ((o1 instanceof NumericNode) && (o2 instanceof NumericNode)) {
+      Double d1 = ((NumericNode) o1).asDouble();
+      Double d2 = ((NumericNode) o2).asDouble();
+      if (d1.compareTo(d2) == 0) {
+        return 0;
+      }
+    }
+    return 1;
+  }
 }

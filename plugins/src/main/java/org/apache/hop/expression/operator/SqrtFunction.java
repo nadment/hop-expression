@@ -38,8 +38,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SqrtFunction extends Function {
 
   public SqrtFunction() {
-    super("SQRT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/sqrt.html");
+    super("SQRT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+        "/docs/sqrt.html");
   }
 
   @Override

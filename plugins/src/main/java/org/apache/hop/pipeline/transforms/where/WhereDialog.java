@@ -202,7 +202,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
     return GuiResource.getInstance().getImageError();
   }
-  
+
   // Search the fields in the background
   protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
       PipelineMeta pipelineMeta, String transformName) {
@@ -221,17 +221,19 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
 
   protected Control createDialogArea(final Composite parent) {
 
-    CompletableFuture<IRowMeta> rowMetaProvider = getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
+    CompletableFuture<IRowMeta> rowMetaProvider =
+        getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
 
-    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), ExpressionMode.ROW, rowMetaProvider);
+    wEditor = new ExpressionEditor(parent, SWT.BORDER, this.getVariables(), ExpressionMode.ROW,
+        rowMetaProvider);
     wEditor.setLayoutData(new FormDataBuilder().top().fullWidth().bottom().result());
     wEditor.addListener(SWT.Modify, e -> onChanged());
-        
+
     return parent;
   }
-  
+
   /** Update the meta object to indicate that changes are being made. */
-  protected void onChanged()  {
+  protected void onChanged() {
     baseTransformMeta.setChanged();
     wOk.setEnabled(isValid());
   }

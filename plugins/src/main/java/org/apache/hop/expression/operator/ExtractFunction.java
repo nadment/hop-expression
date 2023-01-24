@@ -44,8 +44,8 @@ import java.util.Locale;
 public class ExtractFunction extends Function {
 
   public ExtractFunction() {
-    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE,
-        OperatorCategory.DATE, "/docs/extract.html");
+    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, OperatorCategory.DATE,
+        "/docs/extract.html");
   }
 
   @Override

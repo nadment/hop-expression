@@ -31,22 +31,22 @@ public class CombineConcatOptimizer extends Optimizer {
 
       for (IExpression expression : call.getOperands()) {
         if (expression.is(Operators.CONCAT)) {
-          Call childCall = (Call) expression;          
+          Call childCall = (Call) expression;
           for (IExpression child : childCall.getOperands()) {
-            if ( !child.isNull()) {
+            if (!child.isNull()) {
               operands.add(child);
             }
-          }          
-        } else if ( !expression.isNull() ) {          
+          }
+        } else if (!expression.isNull()) {
           operands.add(expression);
         }
       }
 
       // If only 1 expression, nothing to concat
-      if ( operands.size()==1 ) {
+      if (operands.size() == 1) {
         return operands.get(0);
       }
-      
+
       return new Call(Operators.CONCAT, operands);
     }
 

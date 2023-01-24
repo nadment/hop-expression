@@ -56,13 +56,13 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     }
     ExpressionContext context = new ExpressionContext(this);
     IExpression expression;
-    try {   
+    try {
       expression = ExpressionBuilder.build(context, value.substring(1));
     } catch (ExpressionException e) {
       throw new HopException(
           BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
     }
-    
+
     return expression.getValue(context);
   }
 
@@ -100,7 +100,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
               BaseMessages.getString(PKG, "CloneRow.Error.CloneNumFieldMissing"));
         }
       }
-      
+
       data.context = new ExpressionContext(this, getInputRowMeta());
 
       String nrclonesString = resolve(meta.getNrClones());
@@ -139,7 +139,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
     data.context.setRow(r);
     long nrClones = Coerce.toInteger(data.numberOfClones.getValue(data.context));
-    
+
     for (int i = 0; i < nrClones && !isStopped(); i++) {
       // Output now all clones row
       outputRowData = r.clone();

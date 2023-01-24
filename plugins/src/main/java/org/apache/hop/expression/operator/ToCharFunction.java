@@ -35,8 +35,9 @@ import org.apache.hop.expression.util.NumberFormat;
 public class ToCharFunction extends Function {
 
   public ToCharFunction() {
-    super("TO_CHAR", true, ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT.or(OperandTypes.DATE_OPTIONAL_TEXT), OperatorCategory.CONVERSION,
-        "/docs/to_char.html");
+    super("TO_CHAR", true, ReturnTypes.STRING,
+        OperandTypes.NUMERIC_OPTIONAL_TEXT.or(OperandTypes.DATE_OPTIONAL_TEXT),
+        OperatorCategory.CONVERSION, "/docs/to_char.html");
   }
 
   @Override

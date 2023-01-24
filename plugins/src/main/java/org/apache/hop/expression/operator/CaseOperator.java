@@ -16,6 +16,7 @@
  */
 
 package org.apache.hop.expression.operator;
+
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -28,7 +29,7 @@ import java.io.StringWriter;
 
 /** An operator describing the <code>CASE</code> operator. */
 public class CaseOperator extends Operator {
- 
+
   public CaseOperator() {
     super("CASE", 120, true, true, ReturnTypes.UNKNOWN, OperandTypes.CASE,
         OperatorCategory.CONDITIONAL, "/docs/case.html");

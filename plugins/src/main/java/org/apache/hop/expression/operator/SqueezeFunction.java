@@ -36,8 +36,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SqueezeFunction extends Function {
 
   public SqueezeFunction() {
-    super("SQUEEZE", true, ReturnTypes.STRING, OperandTypes.STRING,
-        OperatorCategory.STRING, "/docs/squeeze.html");
+    super("SQUEEZE", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+        "/docs/squeeze.html");
   }
 
   @Override

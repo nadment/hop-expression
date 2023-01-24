@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,21 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A user-defined function (UDF) is a function provided by the user 
+ * A user-defined function (UDF) is a function provided by the user
  */
-@HopMetadata(
-    key = "udf",
-    name = "User Defined Function",
-    description = "User defined function for expression",
-    image = "function.svg")
+@HopMetadata(key = "udf", name = "User Defined Function",
+    description = "User defined function for expression", image = "function.svg")
 public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMetadata {
 
   @HopMetadataProperty
   private String description;
-  
+
   @HopMetadataProperty
   private String source;
-  
+
   @HopMetadataProperty(key = "arguments")
   private List<Argument> arguments;
 
@@ -46,7 +43,7 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
     super();
     arguments = new ArrayList<>();
   }
-  
+
   /**
    * Gets user-defined function description
    *
@@ -58,13 +55,13 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
 
   /**
    * Set the user-defined function description
-   *  
+   * 
    * @param description The description to set
    */
   public void setDescription(String description) {
     this.description = description;
   }
-  
+
   public List<Argument> getArguments() {
     return arguments;
   }
@@ -72,7 +69,7 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
   public void setArguments(List<Argument> arguments) {
     this.arguments = arguments;
   }
-  
+
   public String getSource() {
     return source;
   }

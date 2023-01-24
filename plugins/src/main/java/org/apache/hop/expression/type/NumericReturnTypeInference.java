@@ -22,21 +22,20 @@ import org.apache.hop.expression.IExpressionContext;
 
 public class NumericReturnTypeInference implements IReturnTypeInference {
 
-  public NumericReturnTypeInference() {      
-  }
-  
+  public NumericReturnTypeInference() {}
+
   @Override
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
-    
-    DataTypeName result = call.getType(); 
-    
-    for(IExpression operand: call.getOperands() ) {
+
+    DataTypeName result = call.getType();
+
+    for (IExpression operand : call.getOperands()) {
       DataTypeName type = operand.getType();
-      if ( type.ordinal()<result.ordinal() ) {
+      if (type.ordinal() < result.ordinal()) {
         result = type;
       }
     }
-    
+
     return result;
   }
 }

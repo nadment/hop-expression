@@ -19,14 +19,14 @@ package org.apache.hop.expression.type;
 import java.util.Objects;
 
 public class DataType {
-  
+
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
-  
+
   /**
    * NULL type with parameters.
    */
-  //public static final DataType NULL;
+  // public static final DataType NULL;
 
   /**
    * Default BINARY type with default parameters.
@@ -49,21 +49,21 @@ public class DataType {
    * JSON type with parameters.
    */
   public static final DataType JSON;
-  
+
   /**
    * Default INTEGER type with parameters.
    */
   public static final DataType INTEGER;
   public static final DataType NUMBER;
   public static final DataType BIGNUMBER;
-  
+
   static {
-    //NULL = new DataType(DataTypeName.UNKNOWN);
-    BOOLEAN = new DataType(DataTypeName.BOOLEAN, 1 ,0);
+    // NULL = new DataType(DataTypeName.UNKNOWN);
+    BOOLEAN = new DataType(DataTypeName.BOOLEAN, 1, 0);
     BINARY = new DataType(DataTypeName.BINARY);
     DATE = new DataType(DataTypeName.DATE);
-    JSON = new DataType(DataTypeName.JSON);    
-    STRING = new DataType(DataTypeName.STRING);    
+    JSON = new DataType(DataTypeName.JSON);
+    STRING = new DataType(DataTypeName.STRING);
     INTEGER = new DataType(DataTypeName.INTEGER, 10, 0);
     NUMBER = new DataType(DataTypeName.NUMBER, 38, 0);
     BIGNUMBER = new DataType(DataTypeName.BIGNUMBER, 38, 0);
@@ -78,7 +78,7 @@ public class DataType {
     this.precision = PRECISION_NOT_SPECIFIED;
     this.scale = SCALE_NOT_SPECIFIED;
   }
-  
+
   private DataType(final DataTypeName name, final int precision, final int scale) {
     this.name = Objects.requireNonNull(name);
     this.precision = precision;
@@ -93,7 +93,7 @@ public class DataType {
   public DataTypeName getName() {
     return name;
   }
-  
+
   /**
    * Gets the family of this type.
    *
@@ -102,20 +102,22 @@ public class DataType {
   public DataTypeFamily getFamily() {
     return name.getFamily();
   }
-  
+
   /**
    * Gets the precision of this type.
    *
-   * <p>Returns {@link #PRECISION_NOT_SPECIFIED} (-1) if precision is not
-   * applicable for this type.</p>
+   * <p>
+   * Returns {@link #PRECISION_NOT_SPECIFIED} (-1) if precision is not
+   * applicable for this type.
+   * </p>
    *
-   * @return number of decimal digits for exact numeric types; 
-   * number of decimal digits in mantissa for approximate numeric types;
-   * number of decimal digits for fractional seconds of datetime types; 
-   * length in characters for String types; 
-   * length in bytes for Binary types;
-   * 1 for BOOLEAN;
-   * -1 if precision is not valid for this type
+   * @return number of decimal digits for exact numeric types;
+   *         number of decimal digits in mantissa for approximate numeric types;
+   *         number of decimal digits for fractional seconds of datetime types;
+   *         length in characters for String types;
+   *         length in bytes for Binary types;
+   *         1 for BOOLEAN;
+   *         -1 if precision is not valid for this type
    */
   public int getPrecision() {
     return precision;

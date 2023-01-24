@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ExpFunction extends Function {
 
   public ExpFunction() {
-    super("EXP", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/exp.html");
+    super("EXP", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+        "/docs/exp.html");
   }
 
   @Override

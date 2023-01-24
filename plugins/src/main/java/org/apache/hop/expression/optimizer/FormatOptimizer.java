@@ -33,16 +33,16 @@ public class FormatOptimizer extends Optimizer {
 
     if (call.is(Operators.TO_NUMBER)) {
       NumberFormat format = NumberFormat.of("TM");
-      
+
       try {
-        if ( call.getOperandCount()==2 ) {
-          String pattern = (String) call.getOperand(1).getValue(context);  
+        if (call.getOperandCount() == 2) {
+          String pattern = (String) call.getOperand(1).getValue(context);
           format = NumberFormat.of(pattern);
         }
       } catch (ExpressionException e) {
 
       }
-       
+
       return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
     }
 

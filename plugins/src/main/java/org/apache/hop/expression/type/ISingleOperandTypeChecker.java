@@ -21,24 +21,24 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 
 public interface ISingleOperandTypeChecker extends IOperandTypeChecker {
-   
+
   public boolean checkSingleOperandType(IExpression operand);
-  
-  
+
+
   default IOperandCountRange getOperandCountRange() {
     return OperandCountRange.any();
-  } 
-  
+  }
+
   default boolean checkOperandTypes(Call call) {
     return true;
   }
-  
-//  default ISingleOperandTypeChecker and(ISingleOperandTypeChecker checker) {
-//    return OperandTypes.and(this, checker);
-//  }
-//
-//
-//  default ISingleOperandTypeChecker or(ISingleOperandTypeChecker checker) {
-//    return OperandTypes.or(this, checker);
-//  }
+
+  // default ISingleOperandTypeChecker and(ISingleOperandTypeChecker checker) {
+  // return OperandTypes.and(this, checker);
+  // }
+  //
+  //
+  // default ISingleOperandTypeChecker or(ISingleOperandTypeChecker checker) {
+  // return OperandTypes.or(this, checker);
+  // }
 }

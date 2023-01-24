@@ -35,8 +35,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CotFunction extends Function {
 
   public CotFunction() {
-    super("COT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/cot.html");
+    super("COT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/cot.html");
   }
 
   @Override

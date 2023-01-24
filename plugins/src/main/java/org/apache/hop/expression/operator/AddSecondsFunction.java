@@ -33,8 +33,8 @@ import java.time.ZonedDateTime;
 public class AddSecondsFunction extends Function {
 
   public AddSecondsFunction() {
-    super("ADD_SECONDS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC,
-        OperatorCategory.DATE, "/docs/add_seconds.html");
+    super("ADD_SECONDS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+        "/docs/add_seconds.html");
   }
 
   @Override
@@ -43,8 +43,8 @@ public class AddSecondsFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    
-    Object v1= operands[1].getValue(context);
+
+    Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
 

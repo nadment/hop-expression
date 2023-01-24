@@ -78,10 +78,10 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
     this.condition = "";
   }
 
-//  @Override
-//  public Object clone() {
-//    return new WhereMeta(this);
-//  }
+  // @Override
+  // public Object clone() {
+  // return new WhereMeta(this);
+  // }
 
   @Override
   public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta,
@@ -95,8 +95,9 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
           transformMeta));
     }
 
-    //TODO: check if Identifiers used in expression are available:  FieldsNotFoundFromPreviousTransform
-    
+    // TODO: check if Identifiers used in expression are available:
+    // FieldsNotFoundFromPreviousTransform
+
     checkTarget(transformMeta, true, getTrueTransformName(), output).ifPresent(remarks::add);
     checkTarget(transformMeta, false, getFalseTransformName(), output).ifPresent(remarks::add);
 
@@ -176,20 +177,12 @@ public class WhereMeta extends BaseTransformMeta<Where, WhereData> {
 
       ioMeta = new TransformIOMeta(true, true, false, false, false, false);
 
-      ioMeta.addStream(
-          new Stream(
-              StreamType.TARGET,
-              null,
-              BaseMessages.getString(PKG, "WhereMeta.TargetStream.True.Description"),
-              StreamIcon.TRUE,
-              null));
-      ioMeta.addStream(
-          new Stream(
-              StreamType.TARGET,
-              null,
-              BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"),
-              StreamIcon.FALSE,
-              null));
+      ioMeta.addStream(new Stream(StreamType.TARGET, null,
+          BaseMessages.getString(PKG, "WhereMeta.TargetStream.True.Description"), StreamIcon.TRUE,
+          null));
+      ioMeta.addStream(new Stream(StreamType.TARGET, null,
+          BaseMessages.getString(PKG, "WhereMeta.TargetStream.False.Description"), StreamIcon.FALSE,
+          null));
       setTransformIOMeta(ioMeta);
     }
 

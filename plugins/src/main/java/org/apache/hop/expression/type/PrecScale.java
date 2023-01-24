@@ -21,7 +21,7 @@ package org.apache.hop.expression.type;
  * Flags indicating precision/scale combinations.
  */
 
-/*package*/ final class PrecScale {
+/* package */ final class PrecScale {
   public static final int NO_NO = 1;
   public static final int YES_NO = 2;
   public static final int YES_YES = 4;

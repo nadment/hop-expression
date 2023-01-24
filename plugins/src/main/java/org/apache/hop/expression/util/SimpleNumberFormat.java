@@ -979,10 +979,11 @@ final class SimpleNumberFormat extends NumberFormat {
   }
 
   protected final IllegalArgumentException createInvalidFormat(final String pattern) {
-    return new IllegalArgumentException(ExpressionError.INVALID_NUMBER_FORMAT.message(pattern));  
+    return new IllegalArgumentException(ExpressionError.INVALID_NUMBER_FORMAT.message(pattern));
   }
 
   protected final ParseException createUnparsableNumber(final String text, int index) {
-    return new ParseException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT.message(text, format), index);
+    return new ParseException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT.message(text, format),
+        index);
   }
 }

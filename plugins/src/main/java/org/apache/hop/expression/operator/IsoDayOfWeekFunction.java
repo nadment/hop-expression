@@ -33,8 +33,8 @@ import java.time.DayOfWeek;
 public class IsoDayOfWeekFunction extends Function {
 
   public IsoDayOfWeekFunction() {
-    super("ISODAYOFWEEK", true, ReturnTypes.INTEGER, OperandTypes.DATE,
-        OperatorCategory.DATE, "/docs/isodayofweek.html");
+    super("ISODAYOFWEEK", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+        "/docs/isodayofweek.html");
   }
 
   @Override

@@ -50,11 +50,11 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
     throw new ParseException(
         BaseMessages.getString(PKG, "Expression.UnparsableDate", text, pattern), 0);
   }
-  
+
   @Override
   public void setTwoDigitYearStart(int year) {
     for (ZonedDateTimeFormat format : formats) {
       format.setTwoDigitYearStart(year);
-    }    
-  } 
+    }
+  }
 }

@@ -35,8 +35,7 @@ public class MultiplyOperator extends Operator {
 
   public MultiplyOperator() {
     super("MULTIPLY", "*", 50, true, true, ReturnTypes.LEAST_RESTRICTIVE,
-        OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
-        "/docs/multiply.html");
+        OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 
   @Override

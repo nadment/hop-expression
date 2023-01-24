@@ -23,12 +23,13 @@ import org.apache.hop.expression.IExpressionContext;
  * Inference rule which returns a explicit data type.
  */
 public class ExplicitReturnTypeInference implements IReturnTypeInference {
-  
+
   private final DataTypeName type;
-  public ExplicitReturnTypeInference(DataTypeName type) { 
+
+  public ExplicitReturnTypeInference(DataTypeName type) {
     this.type = type;
   }
-  
+
   @Override
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
     return type;

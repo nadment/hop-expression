@@ -19,7 +19,7 @@ package org.apache.hop.expression;
 import org.apache.hop.core.exception.HopException;
 
 public class ExpressionException extends HopException {
- 
+
   private static final long serialVersionUID = 8634955627375465878L;
 
   /**
@@ -30,7 +30,7 @@ public class ExpressionException extends HopException {
   public ExpressionException(String error) {
     super(error);
   }
-  
+
   /**
    * Construct a new expression exception.
    * 
@@ -40,10 +40,10 @@ public class ExpressionException extends HopException {
     super(error.message());
   }
 
-  public ExpressionException(ExpressionError error, Object... values) {       
+  public ExpressionException(ExpressionError error, Object... values) {
     super(error.message(values));
   }
-  
+
   @Override
   public String getMessage() {
     return getSuperMessage();

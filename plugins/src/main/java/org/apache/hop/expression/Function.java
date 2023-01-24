@@ -30,18 +30,26 @@ public abstract class Function extends Operator {
    * @param id The unique identifier of the function
    * @param name The name of function
    */
-  protected Function(String id, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    super(id, id, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
+  protected Function(String id, boolean isDeterministic, IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+    super(id, id, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category,
+        documentationUrl);
   }
-  
-  protected Function(String id, String name, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    super(id, name, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
+
+  protected Function(String id, String name, boolean isDeterministic,
+      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
+      String category, String documentationUrl) {
+    super(id, name, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category,
+        documentationUrl);
   }
- 
-  protected Function(String id, String name, int precedence, boolean isLeftAssociative, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    super(id, name, precedence, isLeftAssociative, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
+
+  protected Function(String id, String name, int precedence, boolean isLeftAssociative,
+      boolean isDeterministic, IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+    super(id, name, precedence, isLeftAssociative, isDeterministic, returnTypeInference,
+        operandTypeChecker, category, documentationUrl);
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());

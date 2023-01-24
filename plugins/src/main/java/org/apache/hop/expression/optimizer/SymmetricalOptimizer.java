@@ -61,7 +61,7 @@ public class SymmetricalOptimizer extends Optimizer {
         if (subLeft.getCost() < left.getCost()) {
           return new Call(operator, subLeft, new Call(operator, left, subRight));
         }
-        
+
         // Order identifier by name
         if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)) {
           if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) > 0) {

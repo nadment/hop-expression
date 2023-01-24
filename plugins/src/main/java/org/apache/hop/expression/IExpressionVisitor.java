@@ -13,12 +13,16 @@
  * the License.
  */
 package org.apache.hop.expression;
+
 /**
  * Visitor pattern for traversing a tree of {@link IExpression} objects.
  */
 public interface IExpressionVisitor<E> {
   public E apply(IExpressionContext context, Identifier identifier);
+
   public E apply(IExpressionContext context, Call call);
+
   public E apply(IExpressionContext context, Tuple tuple);
+
   public E apply(IExpressionContext context, Literal literal);
 }

@@ -269,10 +269,11 @@ public abstract class DateTimeFormat extends BaseFormat {
    * @return the formatted timestamp
    */
   public abstract String format(ZonedDateTime value);
-  
+
   /**
-   *  Specifies the century start year for 2-digit years (Default is 1970).
-   *  This parameter prevents year ambiguous dates when parsing date with the YY date format component.
+   * Specifies the century start year for 2-digit years (Default is 1970).
+   * This parameter prevents year ambiguous dates when parsing date with the YY date format
+   * component.
    */
   public abstract void setTwoDigitYearStart(int year);
 }

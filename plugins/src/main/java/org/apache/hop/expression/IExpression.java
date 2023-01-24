@@ -21,7 +21,8 @@ import org.apache.hop.expression.type.DataTypeName;
 import java.io.StringWriter;
 
 /**
- * An expression is a combination of one or more literal, identifiers, list of expressions or a call to an operator that evaluate to a value.
+ * An expression is a combination of one or more literal, identifiers, list of expressions or a call
+ * to an operator that evaluate to a value.
  */
 public interface IExpression {
 
@@ -36,21 +37,21 @@ public interface IExpression {
   public default boolean is(Kind kind) {
     return getKind() == kind;
   }
-  
+
   /**
    * Returns the data type of expression.
    *
    * @return a {@link DataTypeName} value
    */
   public DataTypeName getType();
-    
+
   /**
    * Check if the expression is a call to this operator or an alias of this operator.
    */
   public default boolean is(Operator operator) {
     return false;
   }
-  
+
   /**
    * Check if this expression will always return the NULL value.
    *
@@ -78,7 +79,7 @@ public interface IExpression {
    * @return The result of evaluating the expression.
    */
   public Object getValue(IExpressionContext context) throws ExpressionException;
-  
+
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.

@@ -37,15 +37,17 @@ import java.io.StringWriter;
  */
 @FunctionPlugin
 public class CastFunction extends Function {
-  
+
   // Function
   public CastFunction() {
-    super("CAST", true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT, OperatorCategory.CONVERSION, "/docs/cast.html");
+    super("CAST", true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT,
+        OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
   // Operator
   public CastFunction(String name) {
-    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT, OperatorCategory.CONVERSION, "/docs/cast.html");
+    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT,
+        OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
   @Override

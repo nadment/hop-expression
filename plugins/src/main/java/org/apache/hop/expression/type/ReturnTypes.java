@@ -24,7 +24,7 @@ public final class ReturnTypes {
   private ReturnTypes() {
     // Utility class
   }
-  
+
   public static final IReturnTypeInference UNKNOWN =
       new ExplicitReturnTypeInference(DataTypeName.UNKNOWN);
 
@@ -69,7 +69,7 @@ public final class ReturnTypes {
    */
   public static final IReturnTypeInference DATE =
       new ExplicitReturnTypeInference(DataTypeName.DATE);
-  
+
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
@@ -92,17 +92,18 @@ public final class ReturnTypes {
    * the operand #2.
    */
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
-  
-  public static final IReturnTypeInference ARG1_OR_ARG2 = chain(new OrdinalReturnTypeInference(1),new OrdinalReturnTypeInference(2));
+
+  public static final IReturnTypeInference ARG1_OR_ARG2 =
+      chain(new OrdinalReturnTypeInference(1), new OrdinalReturnTypeInference(2));
 
   public static final IReturnTypeInference FIRST_KNOWN = new FirstKnownReturnTypeInference();
-  
-  public static final IReturnTypeInference LEAST_RESTRICTIVE = new LeastRestrictiveReturnTypeInference();
-  
+
+  public static final IReturnTypeInference LEAST_RESTRICTIVE =
+      new LeastRestrictiveReturnTypeInference();
+
   public static final IReturnTypeInference CAST = new CastFunctionReturnTypeInference();
-  
-  public static ReturnTypeInferenceChain chain(
-      IReturnTypeInference... rules) {
+
+  public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);
   }
 }

@@ -30,13 +30,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class Converter {
-  
+
   /**
    * Private constructor since this is a utility class.
    */
-  private Converter() {
-  }
-  
+  private Converter() {}
+
   public static Object to(Object value, final DataTypeName type) throws ExpressionException {
     return to(value, type, null);
   }
@@ -54,16 +53,16 @@ public class Converter {
       throws ExpressionException {
 
     Objects.requireNonNull(type);
-    
-    // Special date type, can't be converted to  
-  //  if ( type.getFamily()==DataTypeFamily.UNKNOWN ) {
-   //   throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, type);
- //   }
-    
+
+    // Special date type, can't be converted to
+    // if ( type.getFamily()==DataTypeFamily.UNKNOWN ) {
+    // throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, type);
+    // }
+
     if (value == null) {
       return null;
     }
-    
+
     if (type.getJavaClass().isInstance(value)) {
       return value;
     }
@@ -71,7 +70,7 @@ public class Converter {
     switch (type) {
       case BOOLEAN:
         if (value instanceof Number) {
-          Number number = (Number) value;          
+          Number number = (Number) value;
           return number.intValue() != 0;
         }
         if (value instanceof String) {
@@ -136,7 +135,7 @@ public class Converter {
           return ((boolean) value) ? "TRUE" : "FALSE";
         }
         if (value instanceof Number) {
-          if ( pattern==null) {
+          if (pattern == null) {
             pattern = "TM";
           }
           return NumberFormat.of(pattern).format(Coerce.toBigNumber(value));
@@ -160,7 +159,7 @@ public class Converter {
         if (value instanceof String) {
           return toJson((String) value);
         }
-        break;        
+        break;
       case BINARY:
         if (value instanceof String) {
           return ((String) value).getBytes(StandardCharsets.UTF_8);
@@ -172,17 +171,18 @@ public class Converter {
       default:
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), type);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), type);
   }
-  
+
   public static final BigDecimal toBigNumber(final String str) throws ExpressionException {
-    try {     
+    try {
       return new BigDecimal(StringUtils.trim(str));
     } catch (NumberFormatException e) {
       throw new ExpressionException(ExpressionError.INVALID_BIGNUMBER, str);
     }
   }
- 
+
   public static final Long toInteger(final String str) throws ExpressionException {
     try {
       Double number = Double.parseDouble(str);
@@ -211,7 +211,8 @@ public class Converter {
 
   public static Long toInteger(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes, DataTypeName.INTEGER);
+      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes,
+          DataTypeName.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -222,7 +223,8 @@ public class Converter {
 
   public static Double toNumber(final byte[] bytes) throws ExpressionException {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes, DataTypeName.NUMBER);
+      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes,
+          DataTypeName.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -270,10 +272,11 @@ public class Converter {
       default:
         break;
     }
-    
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, str, DataTypeName.STRING ,DataTypeName.BOOLEAN);
+
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, str, DataTypeName.STRING,
+        DataTypeName.BOOLEAN);
   }
-   
+
 
   /**
    * Convert String value to Json.
@@ -283,13 +286,14 @@ public class Converter {
    */
   public static JsonNode toJson(final String str) throws ExpressionException {
     try {
-      ObjectMapper objectMapper = JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      ObjectMapper objectMapper =
+          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return objectMapper.readTree(str);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.INVALID_JSON, str);
     }
   }
-  
+
   /**
    * Convert Json value to String.
    * 
@@ -304,5 +308,5 @@ public class Converter {
       throw new ExpressionException(ExpressionError.INVALID_JSON, json);
     }
   }
-  
+
 }

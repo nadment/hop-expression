@@ -83,7 +83,7 @@ public class FunctionRegistry {
       log.logError("Error registring function " + classInfo.simpleName(), e);
     }
   }
-  
+
   /**
    * Discovery and register built-in and plugin functions
    */

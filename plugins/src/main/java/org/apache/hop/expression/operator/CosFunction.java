@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CosFunction extends Function {
 
   public CosFunction() {
-    super("COS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/cos.html");
+    super("COS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/cos.html");
   }
 
   @Override

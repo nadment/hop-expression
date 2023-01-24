@@ -32,8 +32,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentDateTimeFunction extends Function {
 
   public CurrentDateTimeFunction() {
-    super("CURRENT_TIMESTAMP", false, ReturnTypes.DATE, OperandTypes.NILADIC,
-        OperatorCategory.DATE, "/docs/current_timestamp.html");
+    super("CURRENT_TIMESTAMP", false, ReturnTypes.DATE, OperandTypes.NILADIC, OperatorCategory.DATE,
+        "/docs/current_timestamp.html");
   }
 
   @Override

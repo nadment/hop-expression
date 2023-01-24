@@ -24,7 +24,7 @@ public enum TimeUnit {
   /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
   EPOCH,
 
-  /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd.*/
+  /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
   MILLENNIUM,
 
   /** The century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
@@ -57,15 +57,15 @@ public enum TimeUnit {
   /** A number (1 - 366) indicating the day of the year */
   DAYOFYEAR,
 
-  /** 
+  /**
    * The number (1 - 54) of the week of the year.
    * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
    */
   WEEK("WEEKOFYEAR"),
 
-  /** 
+  /**
    * The number (1 - 53) of the week of the year ISO 8601.
-   * The first week of the ISO year is the week that contains January 4. 
+   * The first week of the ISO year is the week that contains January 4.
    */
   ISOWEEK("ISOWEEKOFYEAR"),
 
@@ -95,7 +95,7 @@ public enum TimeUnit {
 
   /** Time zone region abbreviated */
   TIMEZONE_ABBR,
-  
+
   /** Time zone region */
   TIMEZONE_REGION,
 
@@ -103,13 +103,12 @@ public enum TimeUnit {
   TIMEZONE_HOUR,
 
   /** Time zone offset's minute part. */
-  TIMEZONE_MINUTE  
-  ;
+  TIMEZONE_MINUTE;
 
   private final String[] alias;
 
   private TimeUnit() {
-   this.alias = new String[0];
+    this.alias = new String[0];
   }
 
   private TimeUnit(final String... alias) {
@@ -139,7 +138,7 @@ public enum TimeUnit {
 
     throw new IllegalArgumentException(ExpressionError.INVALID_TIMEUNIT.message(name));
   }
-  
+
   /**
    * Check if date part exist.
    * 

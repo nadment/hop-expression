@@ -21,20 +21,22 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 
 public abstract class AggregateFunction extends Function {
 
-  protected AggregateFunction(String id, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String documentationUrl) {
-    super(id, false, returnTypeInference, operandTypeChecker, OperatorCategory.AGGREGATION, documentationUrl);
+  protected AggregateFunction(String id, IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker, String documentationUrl) {
+    super(id, false, returnTypeInference, operandTypeChecker, OperatorCategory.AGGREGATION,
+        documentationUrl);
   }
-  
+
   @Override
   public boolean isAggregate() {
     return true;
-  } 
-  
-  public abstract IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands);
+  }
+
+  public abstract IExpressionProcessor createProcessor(IExpressionContext context,
+      IExpression[] operands);
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception
-  {
+  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
     throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
   }
 }

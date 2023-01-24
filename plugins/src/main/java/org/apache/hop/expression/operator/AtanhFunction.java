@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AtanhFunction extends Function {
 
   public AtanhFunction() {
-    super("ATANH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/atanh.html");
+    super("ATANH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/atanh.html");
   }
 
   @Override

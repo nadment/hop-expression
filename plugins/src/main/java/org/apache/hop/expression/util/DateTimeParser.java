@@ -30,7 +30,7 @@ import java.time.ZonedDateTime;
 
   public final String text;
   public int index;
-  
+
   public boolean bc = false;
   public long epochDay = 0;
   // Default minimum year if omitted
@@ -55,13 +55,13 @@ import java.time.ZonedDateTime;
   public ZoneId zoneId = null;
 
   protected char parseChar() {
-    
-    if ( index==text.length() ) 
+
+    if (index == text.length())
       return 0;
-    
+
     return text.charAt(index++);
   }
-  
+
   /**
    * Parse an integer at the given position in a string
    *
@@ -69,27 +69,26 @@ import java.time.ZonedDateTime;
    * @return the int
    * @throws NumberFormatException if the value is not a number
    */
-  protected int parseInt(int length)
-      throws NumberFormatException {
-   
+  protected int parseInt(int length) throws NumberFormatException {
+
     int end = text.length();
-    
+
     // start at the first not white space symbol
     for (; index < end; index++) {
       if (!Characters.isSpace(text.charAt(index))) {
         break;
       }
     }
-    
+
     int result = 0;
     if (index + length > end)
       length = end - index;
 
     int initialIndex = index;
-    
+
     for (int i = 0; i < length; i++, index++) {
       char ch = text.charAt(index);
-       
+
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
         if (index == initialIndex) {
@@ -105,18 +104,17 @@ import java.time.ZonedDateTime;
     return result;
   }
 
-  protected int parseExactInt(int length)
-      throws NumberFormatException {
-   
+  protected int parseExactInt(int length) throws NumberFormatException {
+
     int end = text.length();
-        
+
     int result = 0;
     if (index + length > end)
       throw new NumberFormatException("Invalid number: " + text);
-    
+
     for (int i = 0; i < length; i++, index++) {
       char ch = text.charAt(index);
-       
+
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
         throw new NumberFormatException("Invalid number: " + text);
@@ -128,7 +126,7 @@ import java.time.ZonedDateTime;
 
     return result;
   }
-  
+
   /**
    * Parse an integer at the given position in a string
    *
@@ -138,18 +136,17 @@ import java.time.ZonedDateTime;
    * @return the signed int
    * @throws NumberFormatException if the value is not a number
    */
-  protected int parseSignedInt(int length)
-      throws NumberFormatException {
-        
+  protected int parseSignedInt(int length) throws NumberFormatException {
+
     int end = text.length();
-    
+
     // start at the first not white space symbol
     for (; index < end; index++) {
       if (!Characters.isSpace(text.charAt(index))) {
         break;
       }
     }
-    
+
     int result = 0;
     if (index + length > end)
       length = end - index;
@@ -176,9 +173,9 @@ import java.time.ZonedDateTime;
 
     return (sign == '-') ? -result : result;
   }
-  
+
   protected String parseString(String... substrings) {
-   for (String substring : substrings) {
+    for (String substring : substrings) {
       if (text.regionMatches(true, index, substring, 0, substring.length())) {
         index += substring.length();
         return substring;

@@ -68,22 +68,19 @@ public class LikeOptimizer extends Optimizer {
           // Try contains before starts and ends
           if (contains.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new Call(FunctionRegistry.getFunction("CONTAINS"), v0,
-                Literal.of(search));
+            return new Call(FunctionRegistry.getFunction("CONTAINS"), v0, Literal.of(search));
           }
 
           // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')
           if (startsWith.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new Call(FunctionRegistry.getFunction("STARTSWITH"), v0,
-                Literal.of(search));
+            return new Call(FunctionRegistry.getFunction("STARTSWITH"), v0, Literal.of(search));
           }
 
           // Optimize the common case of FIELD LIKE '%foo' to ENDSWITH(FIELD,'foo')
           if (endsWith.matcher(pattern).find()) {
             String search = pattern.replace("%", "");
-            return new Call(FunctionRegistry.getFunction("ENDSWITH"), v0,
-                Literal.of(search));
+            return new Call(FunctionRegistry.getFunction("ENDSWITH"), v0, Literal.of(search));
           }
 
           // Optimize FIELD LIKE 'Hello' to FIELD='Hello'
@@ -97,6 +94,6 @@ public class LikeOptimizer extends Optimizer {
       return call;
     } catch (Exception e) {
       return call;
-    }    
+    }
   }
 }

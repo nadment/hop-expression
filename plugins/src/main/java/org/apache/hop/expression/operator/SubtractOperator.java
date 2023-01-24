@@ -37,8 +37,7 @@ public class SubtractOperator extends Operator {
 
   public SubtractOperator() {
     super("SUBTRACT", "-", 100, true, true, ReturnTypes.LEAST_RESTRICTIVE,
-        OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
-        "/docs/subtract.html");
+        OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/subtract.html");
   }
 
   @Override

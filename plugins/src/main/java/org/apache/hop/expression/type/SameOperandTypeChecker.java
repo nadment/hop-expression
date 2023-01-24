@@ -23,11 +23,11 @@ import org.apache.hop.expression.Call;
  */
 public class SameOperandTypeChecker implements IOperandTypeChecker {
   private final IOperandCountRange range;
-  
+
   public SameOperandTypeChecker(IOperandCountRange range) {
     this.range = range;
   }
-  
+
   @Override
   public boolean checkOperandTypes(Call call) {
     int nOperandsActual = range.getMax();
@@ -36,21 +36,21 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
     }
 
     DataTypeFamily firstFamily = null;
-    for (int i=0 ; i<nOperandsActual; i++) {
+    for (int i = 0; i < nOperandsActual; i++) {
       DataTypeName type = call.getOperand(i).getType();
-      if ( firstFamily !=null) {
-        if ( !type.getFamily().isSameFamily(firstFamily) ) {
+      if (firstFamily != null) {
+        if (!type.getFamily().isSameFamily(firstFamily)) {
           return false;
         }
-      }
-      else firstFamily = type.getFamily();
+      } else
+        firstFamily = type.getFamily();
     }
 
     return true;
   }
-  
+
   @Override
   public IOperandCountRange getOperandCountRange() {
-   return range;
+    return range;
   }
 }

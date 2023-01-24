@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,10 +66,10 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
   private final RouteMeta input;
 
-  public RouteDialog(
-      Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta, String transformName) {
+  public RouteDialog(Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta,
+      String transformName) {
     super(parent, variables, (RouteMeta) input, pipelineMeta, transformName);
-    this.input = (RouteMeta) input;   
+    this.input = (RouteMeta) input;
   }
 
   @Override
@@ -113,7 +113,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     // The "transformName" variable is inherited from BaseTransformDialog
     return transformName;
   }
-  
+
 
   protected final Control createContents(final Composite parent) {
 
@@ -166,16 +166,18 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
     // Widget Transform name
     wTransformName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wTransformName.setLayoutData(new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
+    wTransformName.setLayoutData(
+        new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, event -> onChanged());
 
     return composite;
   }
-  
+
   protected Control createDialogArea(final Composite parent) {
     int margin = PropsUi.getMargin();
-    
-    CompletableFuture<IRowMeta> rowMetaProvider = getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
+
+    CompletableFuture<IRowMeta> rowMetaProvider =
+        getAsyncRowMeta(this.getVariables(), pipelineMeta, transformName);
 
     String[] nextTransformNames = pipelineMeta.getNextTransformNames(transformMeta);
 
@@ -189,52 +191,36 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     fdlRoutes.right = new FormAttachment(100, 0);
     wlRoutes.setLayoutData(fdlRoutes);
     PropsUi.setLook(wlRoutes);
-    
-    ColumnInfo[] columns =
-        new ColumnInfo[] {
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.Condition"),
-              ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
-              false),
-          new ColumnInfo(
-              BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.TargetTransform"),
-              ColumnInfo.COLUMN_TYPE_CCOMBO,
-              nextTransformNames,
-              false),
-        };
 
-    wRoutes =
-        new TableView(
-            variables,
-            parent,
-            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            columns,
-            input.getRoutes().size(),
-            null,
-            props);
+    ColumnInfo[] columns = new ColumnInfo[] {
+        new ColumnInfo(BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.Condition"),
+            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "RouteDialog.ColumnInfo.TargetTransform"),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, nextTransformNames, false),};
+
+    wRoutes = new TableView(variables, parent, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columns,
+        input.getRoutes().size(), null, props);
     PropsUi.setLook(wRoutes);
     columns[0].setUsingVariables(true);
     columns[0].setTextVarButtonSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(SelectionEvent e) {
 
-        String expression =
-            wRoutes.getActiveTableItem().getText(wRoutes.getActiveTableColumn());
+        String expression = wRoutes.getActiveTableItem().getText(wRoutes.getActiveTableColumn());
 
         if (!shell.isDisposed()) {
           ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
           expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaProvider);
           if (expression != null) {
-            wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(),
-                expression);
+            wRoutes.getActiveTableItem().setText(wRoutes.getActiveTableColumn(), expression);
           }
         }
       }
     });
-    wRoutes.addListener(SWT.Modify, e-> onChanged());
-    
+    wRoutes.addListener(SWT.Modify, e -> onChanged());
+
     // The default target transform
-    //    
+    //
     wDefaultTarget = new Combo(parent, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     FormData fdDefaultTarget = new FormData();
     fdDefaultTarget.left = new FormAttachment(0, 0);
@@ -244,7 +230,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wDefaultTarget.setItems(nextTransformNames);
     wDefaultTarget.addListener(SWT.Modify, e -> onChanged());
     PropsUi.setLook(wDefaultTarget);
-    
+
     Label wlDefaultTarget = new Label(parent, SWT.LEFT);
     wlDefaultTarget.setText(BaseMessages.getString(PKG, "RouteDialog.DefaultTarget.Label"));
     FormData fdlDefaultTarget = new FormData();
@@ -253,17 +239,17 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     fdlDefaultTarget.bottom = new FormAttachment(wDefaultTarget, -margin);
     wlDefaultTarget.setLayoutData(fdlDefaultTarget);
     PropsUi.setLook(wlDefaultTarget);
-        
+
     FormData fdRoutes = new FormData();
     fdRoutes.left = new FormAttachment(0, 0);
     fdRoutes.top = new FormAttachment(wlRoutes, margin);
     fdRoutes.right = new FormAttachment(100, 0);
-    fdRoutes.bottom = new FormAttachment(wlDefaultTarget, -margin*2);
+    fdRoutes.bottom = new FormAttachment(wlDefaultTarget, -margin * 2);
     wRoutes.setLayoutData(fdRoutes);
 
     return parent;
   }
-  
+
   // Search the fields in the background
   protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
       PipelineMeta pipelineMeta, String transformName) {
@@ -279,7 +265,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
       return null;
     });
   }
-  
+
   public Image getImage() {
 
     IPlugin plugin = PluginRegistry.getInstance().getPlugin(TransformPluginType.class,
@@ -292,18 +278,18 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
     return GuiResource.getInstance().getImageError();
   }
-  
+
   /** Update the meta object to indicate that changes are being made. */
-  protected void onChanged()  {
+  protected void onChanged() {
     baseTransformMeta.setChanged();
     wOk.setEnabled(isValid());
   }
-  
-  
+
+
   protected boolean isValid() {
     return !Utils.isEmpty(this.wTransformName.getText());
   }
-  
+
   protected void getWidgetsContent(final RouteMeta meta) {
     int nrValues = wRoutes.nrNonEmpty();
     meta.getRoutes().clear();
@@ -319,7 +305,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
     meta.setDefaultTargetTransformName(wDefaultTarget.getText());
   }
-  
+
   /** Copy information from the meta-data input to the dialog fields. */
   protected void setWidgetsContent(final RouteMeta meta) {
     for (int i = 0; i < meta.getRoutes().size(); i++) {

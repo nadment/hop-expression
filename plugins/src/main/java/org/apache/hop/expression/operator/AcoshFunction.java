@@ -33,7 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AcoshFunction extends Function {
 
   public AcoshFunction() {
-    super("ACOSH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY, "/docs/acosh.html");
+    super("ACOSH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/acosh.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)

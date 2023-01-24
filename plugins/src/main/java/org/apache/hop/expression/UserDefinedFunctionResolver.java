@@ -36,7 +36,7 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
     List<IExpression> expressions = new ArrayList<>(call.getOperandCount());
     for (IExpression expression : call.getOperands()) {
       // Some operands can be null
-      if ( expression!=null ) {
+      if (expression != null) {
         expression = expression.accept(context, this);
       }
       expressions.add(expression);
@@ -49,7 +49,7 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
     List<IExpression> expressions = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
       // Some operands can be null
-      if ( expression!=null ) {
+      if (expression != null) {
         expression = expression.accept(context, this);
       }
       expressions.add(expression);

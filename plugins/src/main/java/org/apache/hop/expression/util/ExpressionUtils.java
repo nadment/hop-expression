@@ -100,13 +100,13 @@ public class ExpressionUtils {
 
   public static IValueMeta createValueMeta(final String name, final DataTypeName type) {
 
-    if ( name==null ) {
+    if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
     }
-    if (type == null ) {
+    if (type == null) {
       throw new IllegalArgumentException("DataTypeName must not be null");
-    }    
-    
+    }
+
     switch (type) {
       case BOOLEAN:
         return new ValueMetaBoolean(name);
@@ -127,16 +127,16 @@ public class ExpressionUtils {
       case UNKNOWN:
       default:
         return new ValueMetaNone(name);
-    }    
+    }
   }
 
   public static IValueMeta createValueMeta(final String name, final DataType type) {
-    if ( name==null ) {
+    if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
     }
-    if (type == null ) {
+    if (type == null) {
       throw new IllegalArgumentException("DataType must not be null");
-    }    
+    }
     switch (type.getName()) {
       case BOOLEAN:
         return new ValueMetaBoolean(name);
@@ -152,7 +152,7 @@ public class ExpressionUtils {
         return new ValueMetaDate(name, -1, -1);
       case JSON:
         return new ValueMetaJson(name);
-      case UNKNOWN:        
+      case UNKNOWN:
       default:
         return new ValueMetaNone(name);
     }

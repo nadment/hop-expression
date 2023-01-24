@@ -32,13 +32,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public final class Literal implements IExpression {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
-  
+
   public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
-  
-//  public static final Literal NULL_BOOLEAN = new Literal(null, DataTypeName.BOOLEAN);
-//  public static final Literal NULL_STRING = new Literal(null, DataTypeName.STRING);
-//  public static final Literal NULL_DATE = new Literal(null, DataTypeName.DATE);
-  
+
+  // public static final Literal NULL_BOOLEAN = new Literal(null, DataTypeName.BOOLEAN);
+  // public static final Literal NULL_STRING = new Literal(null, DataTypeName.STRING);
+  // public static final Literal NULL_DATE = new Literal(null, DataTypeName.DATE);
+
   public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, DataTypeName.INTEGER);
@@ -95,15 +95,15 @@ public final class Literal implements IExpression {
     if (value instanceof byte[]) {
       return new Literal(value, DataTypeName.BINARY);
     }
-    
+
     if (value instanceof ZonedDateTime) {
       return new Literal(value, DataTypeName.DATE);
     }
-    
+
     if (value instanceof ObjectNode) {
       return new Literal(value, DataTypeName.JSON);
     }
-    
+
     // Special case for optimization
     return new Literal(value, DataTypeName.UNKNOWN);
   }
@@ -141,11 +141,11 @@ public final class Literal implements IExpression {
   }
 
   public Class<?> getJavaClass() {
-    if ( value==null ) 
-      return Void.class;    
+    if (value == null)
+      return Void.class;
     return value.getClass();
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(value, type);
@@ -214,8 +214,8 @@ public final class Literal implements IExpression {
         }
         writer.append('\'');
         break;
-      case JSON:        
-        try {   
+      case JSON:
+        try {
           writer.append("JSON '");
           writer.append(MAPPER.writeValueAsString((JsonNode) value));
           writer.append('\'');

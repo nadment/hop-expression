@@ -30,17 +30,17 @@ public class Token {
     BITWISE_XOR("^"),
     /** Case when operator */
     CASE,
-    /** Concat operator <code>||<code>.*/
-    CONCAT("||"),    
+    /** Concat operator <code>||<code>. */
+    CONCAT("||"),
     /** CAST(value AS type) */
     CAST,
     /** CAST(value AS type) */
     AS,
     /** The AT TIME ZONE */
-    AT,    
+    AT,
     /** CAST(value AS type FORMAT '9999') */
-    FORMAT,    
-    /** Cast operator <code>::<code>.*/
+    FORMAT,
+    /** Cast operator <code>::<code>. */
     CAST_OP("::"),
     /** Comment */
     COMMENT,
@@ -62,9 +62,9 @@ public class Token {
     DATE,
     /** The "JSON" word for literal JSON. */
     JSON,
-    /** The BETWEEN ASYMMETRIC operator*/
+    /** The BETWEEN ASYMMETRIC operator */
     ASYMMETRIC,
-    /** The BETWEEN SYMMETRIC operator*/
+    /** The BETWEEN SYMMETRIC operator */
     SYMMETRIC,
     /** The "TIME" word for literal time. */
     TIME,
@@ -88,9 +88,13 @@ public class Token {
     ESCAPE,
     /** The arithmetic remainder operator, "MOD" (and "%" in some dialects). */
     MODULUS("%"),
-    /** The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".*/
+    /**
+     * The arithmetic unary plus (positive) operator "+" or the arithmetic addition operator "+".
+     */
     PLUS("+"),
-    /** The arithmetic unary minus (negative) operator "-" or the arithmetic subtract operator "-".*/
+    /**
+     * The arithmetic unary minus (negative) operator "-" or the arithmetic subtract operator "-".
+     */
     MINUS("-"),
     /** The "IN" operator. */
     IN,
@@ -108,19 +112,19 @@ public class Token {
     EQUAL("="),
     /** The not-equals operator "&lt;&gt;" or "&#33;=". */
     NOT_EQUAL("<>"),
-    /** The logical "OR" operator.*/
+    /** The logical "OR" operator. */
     OR,
-    /** The logical "XOR" operator.*/
+    /** The logical "XOR" operator. */
     XOR,
     /** The logical "AND" operator or keyword for BEETWEN value1 "AND" value2 . */
     AND,
-    /** The "LIKE" operator.*/
+    /** The "LIKE" operator. */
     LIKE,
-    /** The "ILIKE" operator.*/
+    /** The "ILIKE" operator. */
     ILIKE,
-    /** The logical "NOT" operator.*/
+    /** The logical "NOT" operator. */
     NOT,
-    /** The literal value "NULL".*/
+    /** The literal value "NULL". */
     NULL,
     /** For IGNORE NULLS or RESPECT NULLS */
     NULLS,
@@ -128,24 +132,16 @@ public class Token {
     IGNORE,
     /** For IGNORE NULLS or RESPECT NULLS */
     RESPECT,
-    /** The "IS" operator.*/
+    /** The "IS" operator. */
     IS,
-    /** The "JSON_OBJECT" function.*/
-    JSON_OBJECT,
-    KEY,
-    VALUE,
-    /** The literal value "TRUE".*/
+    /** The "JSON_OBJECT" function. */
+    JSON_OBJECT, KEY, VALUE,
+    /** The literal value "TRUE". */
     TRUE,
-    /** The literal value "FALSE".*/
-    FALSE,
-    ELSE, 
-    THEN, 
-    END, 
-    WHEN, 
-    TRY,
+    /** The literal value "FALSE". */
+    FALSE, ELSE, THEN, END, WHEN, TRY,
     /** Function COUNT(*) or COUNT([DISTINCT] numeric) operator */
-    COUNT,
-    DISTINCT,
+    COUNT, DISTINCT,
     /** Function EXTRACT(unit FROM date) operator */
     EXTRACT,
     /** Function POSITION(substring IN string) operator */
@@ -155,7 +151,7 @@ public class Token {
     /** Function LAST_VALUE(expression [IGNORE NULLS | RESPECT NULLS]) */
     LAST_VALUE,
     /** Function LISTAGG( [DISTINCT] string [, delimiter]) */
-    LISTAGG,    
+    LISTAGG,
     /** Data type element NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
     /** Time unit element DAY, MONTH, QUARTER, MINUTE, ... */
@@ -198,7 +194,7 @@ public class Token {
   public boolean is(final Id id) {
     return this.id == id;
   }
- 
+
   public Id id() {
     return id;
   }
@@ -227,8 +223,8 @@ public class Token {
   /** Returns the token value. */
   public String text() {
     return text;
-  } 
-  
+  }
+
   @Override
   public String toString() {
     return id.name() + "(" + text + ")";

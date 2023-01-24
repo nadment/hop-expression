@@ -34,8 +34,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class RightFunction extends Function {
 
   public RightFunction() {
-    super("RIGHT", true, ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
-        OperatorCategory.STRING, "/docs/right.html");
+    super("RIGHT", true, ReturnTypes.ARG0,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), OperatorCategory.STRING,
+        "/docs/right.html");
   }
 
   @Override

@@ -32,14 +32,12 @@ public class ExpressionPartitionScanner extends RuleBasedPartitionScanner {
   public ExpressionPartitionScanner() {
     IToken comment = new Token(COMMENT);
     IToken string = new Token(STRING);
-    
-    setPredicateRules(new IPredicateRule[] {        
+
+    setPredicateRules(new IPredicateRule[] {
         // Add partition rule for comment
-        new EndOfLineRule("//", comment),
-        new EndOfLineRule("--", comment), 
+        new EndOfLineRule("//", comment), new EndOfLineRule("--", comment),
         new MultiLineRule("/*", "*/", comment),
         // Add partition rule for strings
-        new PatternRule("'", "'", string, (char) 0, true)        
-     });
+        new PatternRule("'", "'", string, (char) 0, true)});
   }
 }

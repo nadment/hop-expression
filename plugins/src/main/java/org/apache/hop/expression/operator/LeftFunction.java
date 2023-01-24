@@ -34,8 +34,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class LeftFunction extends Function {
 
   public LeftFunction() {
-    super("LEFT", true, ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
-        OperatorCategory.STRING, "/docs/left.html");
+    super("LEFT", true, ReturnTypes.ARG0,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), OperatorCategory.STRING,
+        "/docs/left.html");
   }
 
   @Override

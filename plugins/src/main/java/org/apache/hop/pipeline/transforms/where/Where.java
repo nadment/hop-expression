@@ -134,7 +134,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       }
     } catch (HopException e) {
       logError(e.getMessage());
-      if ( isDebug() ) {
+      if (isDebug()) {
         logError(Const.getStackTracker(e));
       }
       setErrors(1);

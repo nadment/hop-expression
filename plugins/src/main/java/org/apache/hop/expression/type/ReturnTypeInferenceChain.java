@@ -21,11 +21,11 @@ import org.apache.hop.expression.IExpressionContext;
 
 public class ReturnTypeInferenceChain implements IReturnTypeInference {
   private final IReturnTypeInference[] rules;
-  
+
   ReturnTypeInferenceChain(IReturnTypeInference... rules) {
     this.rules = rules;
   }
-  
+
   @Override
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
     for (IReturnTypeInference rule : rules) {

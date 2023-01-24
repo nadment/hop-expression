@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-/** 
+/**
  * A tuple is a immutable ordered list of expressions.
  */
 public final class Tuple implements IExpression, Iterable<IExpression> {
@@ -66,20 +66,21 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   public Tuple(Collection<IExpression> expressions) {
     this.values = expressions.toArray(new IExpression[0]);
   }
-  
+
   @Override
   public Kind getKind() {
     return Kind.TUPLE;
-  } 
-  
+  }
+
   @Override
   public DataTypeName getType() {
-    // Returns the first known data type of values.    
-    for (IExpression v : values  ) {
+    // Returns the first known data type of values.
+    for (IExpression v : values) {
       DataTypeName type = v.getType();
-      if ( type!= DataTypeName.UNKNOWN ) return type;
+      if (type != DataTypeName.UNKNOWN)
+        return type;
     }
-    
+
     return DataTypeName.UNKNOWN;
   }
 
@@ -112,10 +113,10 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   public Object getValue(IExpressionContext context) throws ExpressionException {
     throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
   }
-  
+
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);    
+    return visitor.apply(context, this);
   }
 
   @Override
@@ -125,7 +126,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
     if (other instanceof Tuple) {
       Tuple o = (Tuple) other;
-      return Arrays.equals(values,o.values);
+      return Arrays.equals(values, o.values);
     }
     return false;
   }

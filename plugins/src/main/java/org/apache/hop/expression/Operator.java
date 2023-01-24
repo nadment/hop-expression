@@ -23,12 +23,14 @@ import java.io.StringWriter;
 import java.util.Objects;
 
 /**
- * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ... END, or even internally generated constructs like implicit type conversions.
+ * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ...
+ * END, or even internally generated constructs like implicit type conversions.
  * 
- * Operators have the precedence levels. An operator on higher levels is evaluated before an operator on a lower level
+ * Operators have the precedence levels. An operator on higher levels is evaluated before an
+ * operator on a lower level
  */
 public abstract class Operator implements Comparable<Operator> {
-      
+
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;
 
@@ -51,16 +53,16 @@ public abstract class Operator implements Comparable<Operator> {
 
   /** Used to infer the return type of a call to this operator. */
   private final IReturnTypeInference returnTypeInference;
-  
+
   /** Used to validate operand types. */
   private final IOperandTypeChecker operandTypeChecker;
-  
+
   private final String category;
 
   private final String documentationUrl;
-  
+
   private final String documentation;
-  
+
   private final String description;
 
   /**
@@ -76,7 +78,8 @@ public abstract class Operator implements Comparable<Operator> {
    * @param category The category to group operator
    */
   protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
-      boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+      boolean isDeterministic, IReturnTypeInference returnTypeInference,
+      IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id is null");
     this.name = Objects.requireNonNull(name, "name is null");
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
@@ -85,14 +88,16 @@ public abstract class Operator implements Comparable<Operator> {
     this.returnTypeInference = returnTypeInference;
     this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
-    this.documentationUrl = documentationUrl;    
+    this.documentationUrl = documentationUrl;
     this.documentation = ExpressionUtils.loadDocumention(id, documentationUrl);
     this.description = ExpressionUtils.findDocumentionDescription(documentation);
   }
 
-  protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
+  protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic,
+      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
       String category, String documentationUrl) {
-    this(id, id, precedence, isLeftAssociative, isDeterministic, returnTypeInference, operandTypeChecker, category, documentationUrl);
+    this(id, id, precedence, isLeftAssociative, isDeterministic, returnTypeInference,
+        operandTypeChecker, category, documentationUrl);
   }
 
   private static int leftPrecedence(int precedence, boolean isLeftAssociative) {
@@ -115,7 +120,7 @@ public abstract class Operator implements Comparable<Operator> {
   public String getId() {
     return id;
   }
- 
+
   /**
    * The name of the operator
    */
@@ -139,7 +144,7 @@ public abstract class Operator implements Comparable<Operator> {
   public boolean isDeterministic() {
     return isDeterministic;
   }
-  
+
   /**
    * Returns whether a call to this operator is not sensitive to the operands order.
    * An operator is symmetrical if the call returns the same result when the operands are permuted.
@@ -147,37 +152,39 @@ public abstract class Operator implements Comparable<Operator> {
   public boolean isSymmetrical() {
     return false;
   }
-  
+
   /**
    * Returns whether this function is an aggregate function.
    */
   public boolean isAggregate() {
     return false;
   }
-  
+
   /**
    * Return type inference strategy.
+   * 
    * @return
    */
   public final IReturnTypeInference getReturnTypeInference() {
     return this.returnTypeInference;
   }
-  
-  /** 
+
+  /**
    * Returns a strategy to validate operand types expected by this operator.
    */
   public IOperandTypeChecker getOperandTypeChecker() {
     return operandTypeChecker;
   }
-  
+
   /**
    * Returns a constraint on the number of operands expected by this operator.
+   * 
    * @return acceptable range
    */
   public IOperandCountRange getOperandCountRange() {
-     return operandTypeChecker.getOperandCountRange();
+    return operandTypeChecker.getOperandCountRange();
   }
-  
+
   public String getDocumentationUrl() {
     return this.documentationUrl;
   }
@@ -193,8 +200,9 @@ public abstract class Operator implements Comparable<Operator> {
 
   /**
    * Check if it's the same operator.
+   * 
    * @param other
-   * @return 
+   * @return
    */
   public boolean is(Operator other) {
     if (other == null)
@@ -225,7 +233,8 @@ public abstract class Operator implements Comparable<Operator> {
     return description;
   }
 
-  public abstract Object eval(final IExpressionContext context, final IExpression[] operands) throws Exception;
+  public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
+      throws Exception;
 
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
@@ -237,17 +246,18 @@ public abstract class Operator implements Comparable<Operator> {
       return compare;
 
     // Primary operator first and alias last
-    if ( id.equals(this.name)) return 99;
-    
+    if (id.equals(this.name))
+      return 99;
+
     return name.compareTo(o.name);
   }
-  
+
   public String getDocumentation() {
     return this.documentation;
   }
-  
+
   @Override
   public String toString() {
     return id;
-  } 
+  }
 }

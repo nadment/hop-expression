@@ -32,10 +32,11 @@ import org.apache.hop.metadata.api.IHopMetadata;
     description = "User Defined Function updated")
 public class UdfUpdatedExtensionPoint implements IExtensionPoint<IHopMetadata> {
   @Override
-  public void callExtensionPoint(final ILogChannel log, IVariables variables,  IHopMetadata object) throws HopException {
-    
-    if ( object instanceof UserDefinedFunctionMeta) {
-      UserDefinedFunctionMeta meta = (UserDefinedFunctionMeta) object;   
+  public void callExtensionPoint(final ILogChannel log, IVariables variables, IHopMetadata object)
+      throws HopException {
+
+    if (object instanceof UserDefinedFunctionMeta) {
+      UserDefinedFunctionMeta meta = (UserDefinedFunctionMeta) object;
       log.logBasic("User Defined Function updated " + meta.getName());
       FunctionRegistry.unregister(meta.getName());
       FunctionRegistry.register(meta.getName(), new UserDefinedFunction(meta));

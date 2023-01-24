@@ -29,35 +29,35 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     Tuple whenTuple = (Tuple) call.getOperand(1);
     Tuple thenTuple = (Tuple) call.getOperand(2);
     IExpression elseExpression = call.getOperand(3);
-    
+
     if (switchExpression == null) {
       for (IExpression whenOperand : whenTuple) {
         if (!whenOperand.getType().isSameFamily(DataTypeFamily.BOOLEAN)) {
           return false;
         }
-      }        
+      }
     } else {
       DataTypeName switchType = switchExpression.getType();
-      
+
       for (IExpression whenOperand : whenTuple) {
         if (!whenOperand.getType().isSameFamily(switchType)) {
           return false;
         }
-      }     
+      }
     }
 
-    
+
     DataTypeName thenType = thenTuple.get(0).getType();
     for (IExpression thenOperand : thenTuple) {
       if (!thenOperand.getType().isSameFamily(thenType)) {
         return false;
       }
     }
-    
+
     if (!elseExpression.isNull() && !elseExpression.getType().isSameFamily(thenType)) {
       return false;
-    }        
-    
+    }
+
     return true;
   }
 

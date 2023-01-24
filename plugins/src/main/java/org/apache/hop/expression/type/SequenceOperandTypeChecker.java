@@ -25,7 +25,7 @@ public class SequenceOperandTypeChecker implements IOperandTypeChecker {
   private final List<IOperandTypeChecker> rules;
   private final IOperandCountRange range;
   private final Predicate<Integer> optional;
-  
+
   SequenceOperandTypeChecker(List<IOperandTypeChecker> rules) {
     super();
     this.rules = rules;
@@ -44,21 +44,22 @@ public class SequenceOperandTypeChecker implements IOperandTypeChecker {
     }
     this.range = OperandCountRange.between(min, max);
   }
-  
+
   /**
    * Allows specified parameters to be optional.
    */
   public SequenceOperandTypeChecker optional(Predicate<Integer> optional) {
     return new SequenceOperandTypeChecker(this.rules, optional);
   }
-  
+
   @Override
   public boolean checkOperandTypes(Call call) {
     int index = 0;
     for (IOperandTypeChecker rule : rules) {
       ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
 
-      if (index < call.getOperandCount() && !checker.checkSingleOperandType(call.getOperand(index++))) {
+      if (index < call.getOperandCount()
+          && !checker.checkSingleOperandType(call.getOperand(index++))) {
         return false;
       }
     }
@@ -71,7 +72,7 @@ public class SequenceOperandTypeChecker implements IOperandTypeChecker {
   }
 
   @Override
-  public boolean isOptional(int i) {    
+  public boolean isOptional(int i) {
     return optional.test(i);
   }
 }

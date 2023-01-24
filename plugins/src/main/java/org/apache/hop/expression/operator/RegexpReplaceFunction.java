@@ -39,11 +39,14 @@ import java.util.regex.PatternSyntaxException;
 @FunctionPlugin
 public class RegexpReplaceFunction extends Function {
 
-  private static final IOperandTypeChecker OTC = OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i >= 2);
-  
+  private static final IOperandTypeChecker OTC = OperandTypes
+      .family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING,
+          DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING)
+      .optional(i -> i >= 2);
+
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OTC,
-        OperatorCategory.STRING, "/docs/regexp_replace.html");
+    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OTC, OperatorCategory.STRING,
+        "/docs/regexp_replace.html");
   }
 
   @Override

@@ -18,10 +18,10 @@ package org.apache.hop.ui.expression;
 
 public enum ExpressionMode {
   /** No IRowMeta available in the context */
-  NONE,  
+  NONE,
   /** IRowMeta available in the context */
-  ROW,  
-  /** Special mode for aggregation  */
+  ROW,
+  /** Special mode for aggregation */
   COLUMN,
   /** Special mode to edit User-Defined Function (Udf) */
   UDF

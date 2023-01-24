@@ -45,8 +45,7 @@ public class ExpressionBuilder {
   private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
       "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM",
       "IGNORE", "ILIKE", "IN", "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT",
-      "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN",
-      "ZONE");
+      "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN", "ZONE");
 
   private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT",
       "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
@@ -1415,7 +1414,7 @@ public class ExpressionBuilder {
     }
 
     // Apply optimizers
-    IExpression original;    
+    IExpression original;
     do {
       original = expression;
       for (Optimizer optimizer : Optimizers.getOptimizers()) {
@@ -1425,7 +1424,7 @@ public class ExpressionBuilder {
 
     // Return type inference
     expression = expression.accept(context, new ReturnTypeOptimizer());
-    
+
     return expression;
   }
 
@@ -1450,7 +1449,7 @@ public class ExpressionBuilder {
 
     return new Identifier(identifier.getName(), type, index);
   }
-  
+
   /**
    * Validate a literal.
    * 

@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SinhFunction extends Function {
 
   public SinhFunction() {
-    super("SINH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/sinh.html");
+    super("SINH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/sinh.html");
   }
 
   @Override

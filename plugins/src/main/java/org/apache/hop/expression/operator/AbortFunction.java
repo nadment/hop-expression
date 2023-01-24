@@ -33,7 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AbortFunction extends Function {
 
   public AbortFunction() {
-    super("ABORT", true, ReturnTypes.UNKNOWN, OperandTypes.STRING, OperatorCategory.SPECIAL, "/docs/abort.html");
+    super("ABORT", true, ReturnTypes.UNKNOWN, OperandTypes.STRING, OperatorCategory.SPECIAL,
+        "/docs/abort.html");
   }
 
   @Override

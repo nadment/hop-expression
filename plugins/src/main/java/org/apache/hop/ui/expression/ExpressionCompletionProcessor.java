@@ -63,7 +63,8 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
     this(variables, null, ExpressionMode.NONE);
   }
 
-  public ExpressionCompletionProcessor(IVariables variables, CompletableFuture<IRowMeta> rowMeta, ExpressionMode mode) {
+  public ExpressionCompletionProcessor(IVariables variables, CompletableFuture<IRowMeta> rowMeta,
+      ExpressionMode mode) {
     this.variables = variables;
     this.rowMeta = rowMeta;
     this.mode = mode;
@@ -173,9 +174,10 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
       // Add to proposal if variable name start with the qualifier
       if (variableName.length() >= prefix.length()
           && variableName.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
-        
-        
-        boolean isDeprecated = VariableRegistry.getInstance().getDeprecatedVariableNames().contains(variableName);
+
+
+        boolean isDeprecated =
+            VariableRegistry.getInstance().getDeprecatedVariableNames().contains(variableName);
 
         String content = "${" + variableName + '}';
         ContextInformation contextInfo =
@@ -217,19 +219,19 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           && name.substring(0, prefix.length()).equalsIgnoreCase(prefix)) {
 
         Function function = FunctionRegistry.getFunction(name);
-        
+
         // Skip UDF proposal in UDF mode
-        if ( mode==ExpressionMode.UDF && function instanceof UserDefinedFunction ) {
+        if (mode == ExpressionMode.UDF && function instanceof UserDefinedFunction) {
           continue;
         }
-        
+
         String replacement = name;
         // TODO: add function arguments to proposal
         String diplayName = name;
         CompletionProposal proposal = new CompletionProposal(replacement, start, end - start,
             replacement.length(), image, diplayName, null, function.getDescription());
         proposals.add(proposal);
-        
+
       }
     }
   }

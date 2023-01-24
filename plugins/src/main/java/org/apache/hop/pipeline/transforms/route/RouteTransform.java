@@ -56,14 +56,14 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     // Prepare transform for execution
     if (first) {
       first = false;
-      
+
       // clone the input row structure and place it in our data object
       data.rowMeta = getInputRowMeta().clone();
       data.context = new ExpressionContext(this, data.rowMeta);
       data.targets = new ArrayList<>();
 
       for (Route route : meta.getRoutes()) {
-       
+
         if (StringUtils.isEmpty(route.getTransformName())) {
           throw new HopException(BaseMessages.getString(PKG,
               "Route.Exception.NoTargetTransformSpecified", route.getCondition()));
@@ -74,7 +74,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
           throw new HopException(BaseMessages.getString(PKG,
               "Route.Exception.UnableToFindTargetTransform", route.getTransformName()));
         }
-        
+
         // Resolve variable
         String source = resolve(route.getCondition());
 
@@ -111,17 +111,17 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
       try {
         Object result = target.expression.getValue(data.context);
-        
-        if ( Coerce.isTrue(result)) {
+
+        if (Coerce.isTrue(result)) {
           toDefault = false;
           putRowTo(data.rowMeta, row, target.rowSet);
           break;
         }
       } catch (HopException e) {
         String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
-           target.route.getTransformName(), target.route.getCondition(), e.getMessage());
+            target.route.getTransformName(), target.route.getCondition(), e.getMessage());
         logError(message);
-        if ( isDebug() ) {
+        if (isDebug()) {
           logError(Const.getStackTracker(e));
         }
         setErrors(1);
@@ -131,7 +131,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       }
     }
 
-    if ( toDefault ) {
+    if (toDefault) {
       putRowTo(data.rowMeta, row, data.defaultRowSet);
     }
 

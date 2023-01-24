@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+
 @GuiPlugin(description = "This is the editor for User Defined Function (UDF) metadata")
 public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFunctionMeta> {
   private static final Class<?> PKG = UserDefinedFunctionMetaEditor.class; // For Translator
@@ -49,7 +50,8 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
   private TableView wArguments;
   private ExpressionEditor wExpression;
 
-  public UserDefinedFunctionMetaEditor(HopGui hopGui, MetadataManager<UserDefinedFunctionMeta> manager, UserDefinedFunctionMeta udf) {
+  public UserDefinedFunctionMetaEditor(HopGui hopGui,
+      MetadataManager<UserDefinedFunctionMeta> manager, UserDefinedFunctionMeta udf) {
     super(hopGui, manager, udf);
   }
 
@@ -61,8 +63,8 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     int margin = PropsUi.getMargin();
 
     // Add listener to detect change after loading data
-    Listener changedListener = e -> setChanged(); 
-    
+    Listener changedListener = e -> setChanged();
+
     // The icon
     //
     Label wIcon = new Label(parent, SWT.RIGHT);
@@ -134,10 +136,13 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, DataTypeName.ALL_NAMES.toArray(new String[0]), false)};
-      
+
     wArguments = new TableView(new Variables(), parent,
-        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns, getMetadata().getArguments().size(), e -> {updateField(); setChanged();},
-        props);
+        SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns,
+        getMetadata().getArguments().size(), e -> {
+          updateField();
+          setChanged();
+        }, props);
 
     FormData fdArguments = new FormData();
     fdArguments.left = new FormAttachment(0, 0);
@@ -156,8 +161,9 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     fdlSource.left = new FormAttachment(0, 0);
     fdlSource.top = new FormAttachment(wArguments, margin * 2);
     wlExpression.setLayoutData(fdlSource);
-    
-    wExpression = new ExpressionEditor(parent, SWT.BORDER, manager.getVariables(), ExpressionMode.UDF, null);
+
+    wExpression =
+        new ExpressionEditor(parent, SWT.BORDER, manager.getVariables(), ExpressionMode.UDF, null);
     FormData fdExression = new FormData();
     fdExression.left = new FormAttachment(0, 0);
     fdExression.top = new FormAttachment(wlExpression, margin);
@@ -167,7 +173,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     wExpression.addListener(SWT.Modify, changedListener);
 
     this.setWidgetsContent();
-    
+
     // Some widget set changed
     this.resetChanged();
   }
@@ -179,22 +185,22 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
 
     wExpression.setRowMeta(UserDefinedFunction.createRowMeta(meta.getArguments()));
   }
-  
+
   @Override
   public void setWidgetsContent() {
     UserDefinedFunctionMeta udf = getMetadata();
 
     wName.setText(Const.NVL(udf.getName(), ""));
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
-    wExpression.setText(Const.NVL(udf.getSource(), ""));    
+    wExpression.setText(Const.NVL(udf.getSource(), ""));
     for (int i = 0; i < udf.getArguments().size(); i++) {
       Argument argument = udf.getArguments().get(i);
       wArguments.setText(Const.NVL(argument.getName(), ""), 1, i);
-      if ( argument.getType()!=null ) {
+      if (argument.getType() != null) {
         wArguments.setText(Const.NVL(argument.getType().name(), ""), 2, i);
       }
     }
-    
+
     this.updateField();
   }
 
@@ -212,7 +218,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
       try {
         dataType = DataTypeName.of(item.getText(2));
       } catch (Exception e) {
-       
+
       }
       Argument argument = new Argument(name, dataType);
       udf.getArguments().add(argument);

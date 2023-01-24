@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class DegreesFunction extends Function {
 
   public DegreesFunction() {
-    super("DEGREES", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/degrees.html");
+    super("DEGREES", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+        "/docs/degrees.html");
   }
 
   @Override

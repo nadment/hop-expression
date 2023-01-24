@@ -38,7 +38,7 @@ public class BitOrFunction extends Function {
     super("BIT_OR", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_or.html");
   }
-  
+
   public BitOrFunction(String name) {
     super("BIT_OR", name, 90, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_or.html");

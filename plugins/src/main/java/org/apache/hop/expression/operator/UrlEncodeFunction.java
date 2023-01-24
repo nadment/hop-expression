@@ -36,8 +36,8 @@ import java.nio.charset.StandardCharsets;
 public class UrlEncodeFunction extends Function {
 
   public UrlEncodeFunction() {
-    super("URL_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING,
-        OperatorCategory.STRING, "/docs/url_encode.html");
+    super("URL_ENCODE", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+        "/docs/url_encode.html");
   }
 
   @Override

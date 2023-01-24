@@ -48,7 +48,8 @@ public enum DataTypeName {
   NUMBER(DataTypeFamily.NUMERIC, PrecScale.NO_NO, Double.class),
 
   /** Unlimited precision number */
-  BIGNUMBER(DataTypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, BigDecimal.class),
+  BIGNUMBER(DataTypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
+      BigDecimal.class),
 
   /** Date-time value with nanosecond precision */
   DATE(DataTypeFamily.DATE, PrecScale.NO_NO, ZonedDateTime.class),
@@ -60,18 +61,18 @@ public enum DataTypeName {
 
   /** A unknown type */
   UNKNOWN(DataTypeFamily.ANY, PrecScale.NO_NO, Void.class),
-  
-  ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class)
-  ;
-  
+
+  ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class);
+
   public static final List<DataTypeName> STRING_TYPES = List.of(STRING);
   public static final List<DataTypeName> BINARY_TYPES = List.of(BINARY);
   public static final List<DataTypeName> BOOLEAN_TYPES = List.of(BOOLEAN);
   public static final List<DataTypeName> NUMERIC_TYPES = List.of(INTEGER, NUMBER, BIGNUMBER);
   public static final List<DataTypeName> DATE_TYPES = List.of(DATE);
   public static final List<DataTypeName> JSON_TYPES = List.of(JSON);
-  public static final List<DataTypeName> ALL_TYPES = List.of(STRING,BOOLEAN,INTEGER, NUMBER, BIGNUMBER,DATE,BINARY,JSON);
-  
+  public static final List<DataTypeName> ALL_TYPES =
+      List.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
+
   /**
    * Indicating allowable precision/scale combinations.
    */
@@ -101,27 +102,27 @@ public enum DataTypeName {
     return family;
   }
 
-  /** 
+  /**
    * Returns whether type are in same type family.
    */
   public boolean isSameFamily(DataTypeName type) {
     return this.family.isSameFamily(type.getFamily());
   }
-  
-  /** 
+
+  /**
    * Returns whether type are in same type family.
    */
   public boolean isSameFamily(DataTypeFamily family) {
     return this.family.isSameFamily(family);
   }
-  
-  /** 
+
+  /**
    * Returns whether type are in same type family.
    */
   public boolean isCompatibleWithCoercion(DataTypeFamily family) {
     return this.family.isCompatibleWithCoercion(family);
   }
-  
+
   public boolean allowsNoPrecNoScale() {
     return (signature & PrecScale.NO_NO) != 0;
   }

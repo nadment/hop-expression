@@ -1,5 +1,5 @@
 /*
-  * Licensed to the Apache Software Foundation (ASF) under one or more
+ * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
@@ -43,23 +43,19 @@ public class BooleanOptimizer extends Optimizer {
 
         // NOT(l > r) => l <= r
         if (operand.is(Operators.GREATER_THAN)) {
-          return new Call(Operators.LESS_THAN_OR_EQUAL,
-              ((Call) operand).getOperands());
+          return new Call(Operators.LESS_THAN_OR_EQUAL, ((Call) operand).getOperands());
         }
         // NOT(l >= r) => l < r
         if (operand.is(Operators.GREATER_THAN_OR_EQUAL)) {
-          return new Call(Operators.LESS_THAN,
-              ((Call) operand).getOperands());
+          return new Call(Operators.LESS_THAN, ((Call) operand).getOperands());
         }
         // NOT(l < r) => l >= r
         if (operand.is(Operators.LESS_THAN)) {
-          return new Call(Operators.GREATER_THAN_OR_EQUAL,
-              ((Call) operand).getOperands());
+          return new Call(Operators.GREATER_THAN_OR_EQUAL, ((Call) operand).getOperands());
         }
         // NOT(l <= r) => l > r
         if (operand.is(Operators.LESS_THAN_OR_EQUAL)) {
-          return new Call(Operators.GREATER_THAN,
-              ((Call) operand).getOperands());
+          return new Call(Operators.GREATER_THAN, ((Call) operand).getOperands());
         }
         // NOT(NOT(e)) => e
         if (operand.is(Operators.BOOLNOT)) {
@@ -100,7 +96,7 @@ public class BooleanOptimizer extends Optimizer {
           if (value == Boolean.TRUE)
             return Literal.TRUE;
         }
-        
+
         // [field] OR [field] => [field]
         if (call.getOperand(0).equals(call.getOperand(1))) {
           return call.getOperand(0);

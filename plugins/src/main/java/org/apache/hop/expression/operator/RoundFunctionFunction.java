@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class RoundFunctionFunction extends Function {
 
   public RoundFunctionFunction() {
-    super("ROUND", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/round.html");
+    super("ROUND", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+        "/docs/round.html");
   }
 
   @Override

@@ -21,10 +21,10 @@ public class Argument {
 
   @HopMetadataProperty
   private String name;
-  
+
   @HopMetadataProperty
   private DataTypeName type;
-  
+
   public Argument() {
     super();
   }
@@ -34,15 +34,15 @@ public class Argument {
     this.name = name;
     this.type = type;
   }
-  
+
   public String getName() {
     return name;
   }
 
   public void setName(String name) {
     this.name = name;
-  } 
-  
+  }
+
   public DataTypeName getType() {
     return type;
   }

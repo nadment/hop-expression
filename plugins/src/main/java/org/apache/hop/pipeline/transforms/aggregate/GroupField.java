@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,34 +22,36 @@ import java.util.Objects;
 
 public class GroupField {
 
-    @HopMetadataProperty(injectionKey = "GROUP_FIELD", injectionKeyDescription = "AggregateMeta.Injection.GROUP_FIELD")
-    private String name;
+  @HopMetadataProperty(injectionKey = "GROUP_FIELD",
+      injectionKeyDescription = "AggregateMeta.Injection.GROUP_FIELD")
+  private String name;
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public GroupField() {
-    }
+  public GroupField() {}
 
-    public GroupField(String name) {
-        this.name = name;
-    }
+  public GroupField(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GroupField that = (GroupField) o;
-        return Objects.equals(name, that.name);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GroupField that = (GroupField) o;
+    return Objects.equals(name, that.name);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
+  }
 }

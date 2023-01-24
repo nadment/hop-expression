@@ -36,8 +36,8 @@ import org.apache.hop.expression.util.Characters;
 public class InitCapFunction extends Function {
 
   public InitCapFunction() {
-    super("INITCAP", true, ReturnTypes.STRING, OperandTypes.STRING,
-        OperatorCategory.STRING, "/docs/initcap.html");
+    super("INITCAP", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+        "/docs/initcap.html");
   }
 
   @Override

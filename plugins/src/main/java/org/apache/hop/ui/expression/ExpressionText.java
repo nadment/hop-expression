@@ -48,9 +48,10 @@ import java.util.concurrent.CompletableFuture;
  * variables.
  */
 public class ExpressionText extends Composite {
-  protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by Translator!!
+  protected static final Class<?> PKG = ExpressionText.class; // for i18n purposes, needed by
+                                                              // Translator!!
 
-  //protected String toolTipText;
+  // protected String toolTipText;
 
   protected IGetCaretPosition getCaretPositionInterface;
 
@@ -66,14 +67,15 @@ public class ExpressionText extends Composite {
 
   protected ToolBar wToolBar;
 
-  protected ExpressionMode mode; 
+  protected ExpressionMode mode;
   protected CompletableFuture<IRowMeta> rowMetaFutur;
 
   public ExpressionText(IVariables variables, Composite composite, int flags) {
     this(variables, composite, flags, ExpressionMode.NONE, null);
   }
-  
-  public ExpressionText(IVariables variables, Composite composite, int flags, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaFutur) {
+
+  public ExpressionText(IVariables variables, Composite composite, int flags, ExpressionMode mode,
+      CompletableFuture<IRowMeta> rowMetaFutur) {
     super(composite, SWT.NONE);
     initialize(variables, composite, flags, null, null, null, null);
     this.mode = mode;
@@ -122,11 +124,11 @@ public class ExpressionText extends Composite {
     controlSpaceKeyAdapter = new ControlSpaceKeyAdapter(variables, wText, getCaretPositionInterface,
         insertTextInterface);
     wText.addKeyListener(controlSpaceKeyAdapter);
-    
+
     this.setToolTipText(toolTipText);
   }
 
-  
+
   protected void openExpressionDialog() {
     ExpressionEditorDialog dialog = new ExpressionEditorDialog(this.getShell());
     String expression = dialog.open(wText.getText(), variables, mode, rowMetaFutur);
@@ -161,7 +163,7 @@ public class ExpressionText extends Composite {
         if (textField.getEchoChar() == '\0') { // Can't show passwords ;-)
 
           String tip = textField.getText();
-          
+
           if (!Utils.isEmpty(tip) && !Utils.isEmpty(getToolTipText())) {
             tip += Const.CR + Const.CR + getToolTipText();
           }

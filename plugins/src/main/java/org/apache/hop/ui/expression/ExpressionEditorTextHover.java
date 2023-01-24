@@ -55,7 +55,7 @@ public class ExpressionEditorTextHover implements ITextHover, ITextHoverExtensio
 
     return null;
   }
-  
+
   @Override
   public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
 

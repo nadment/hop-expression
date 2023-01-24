@@ -36,8 +36,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class EndsWithFunction extends Function {
 
   public EndsWithFunction() {
-    super("ENDSWITH", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY),
-        OperatorCategory.COMPARISON, "/docs/endswith.html");
+    super("ENDSWITH", true, ReturnTypes.BOOLEAN,
+        OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), OperatorCategory.COMPARISON,
+        "/docs/endswith.html");
   }
 
   @Override

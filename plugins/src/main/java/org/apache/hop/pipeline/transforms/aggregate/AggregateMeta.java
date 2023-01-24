@@ -70,14 +70,14 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
 
   public AggregateMeta(AggregateMeta other) {
     super();
-    
+
     this.alwaysGivingBackOneRow = other.alwaysGivingBackOneRow;
-    
+
     this.groupFields = new ArrayList<>();
     for (GroupField field : other.getGroupFields()) {
       groupFields.add(new GroupField(field.getName()));
     }
-    
+
     this.aggregateFields = new ArrayList<>();
     for (AggregateField field : other.getAggregateFields()) {
       aggregateFields.add(new AggregateField(field));
@@ -90,7 +90,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
     this.groupFields = new ArrayList<>();
     this.aggregateFields = new ArrayList<>();
   }
-  
+
   /**
    * @return Returns the list of aggregates.
    */
@@ -149,12 +149,12 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
           throw new ExpressionException("Not an aggregation expression");
         }
         Operator operator = ((Call) expression).getOperator();
-        if (! (operator instanceof AggregateFunction)) {
+        if (!(operator instanceof AggregateFunction)) {
           throw new ExpressionException("Not an aggregation expression");
         }
-        
+
         DataTypeName type = expression.getType();
-        
+
         IValueMeta valueMeta = ExpressionUtils.createValueMeta(field.getName(), type);
         valueMeta.setOrigin(transformName);
         valueMeta.setStorageType(IValueMeta.STORAGE_TYPE_NORMAL);
@@ -162,7 +162,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
       } catch (ExpressionException e) {
         String message = BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
             field.getName(), field.getExpression(), e.getMessage());
-        this.logError(message);        
+        this.logError(message);
       }
     }
 

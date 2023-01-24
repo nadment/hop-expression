@@ -44,30 +44,30 @@ public class ConcatWsFunction extends Function {
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
 
     Object v0 = operands[0].getValue(context);
-    if ( v0==null )
+    if (v0 == null)
       return null;
-    
+
     boolean notFirstValue = false;
-    
+
     // Concat Binary
-    if (v0 instanceof byte[]) {      
+    if (v0 instanceof byte[]) {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
       byte[] separator = Coerce.toBinary(v0);
       for (int i = 1; i < operands.length; i++) {
         Object value = operands[i].getValue(context);
-        
+
         if (value != null) {
-          if ( notFirstValue ) {
-            output.write(separator);          
+          if (notFirstValue) {
+            output.write(separator);
           }
           notFirstValue = true;
           output.write(Coerce.toBinary(value));
         }
       }
-      
-      if ( output.size()==0 ) 
+
+      if (output.size() == 0)
         return null;
-      
+
       return output.toByteArray();
     }
 
@@ -77,17 +77,17 @@ public class ConcatWsFunction extends Function {
     for (int i = 1; i < operands.length; i++) {
       Object value = operands[i].getValue(context);
       if (value != null) {
-        if ( notFirstValue ) {
-          builder.append(separator);          
+        if (notFirstValue) {
+          builder.append(separator);
         }
         notFirstValue = true;
         builder.append(Coerce.toString(value));
-      }      
+      }
     }
 
-    if ( builder.length()==0 ) 
+    if (builder.length() == 0)
       return null;
-    
+
     return builder.toString();
   }
 }

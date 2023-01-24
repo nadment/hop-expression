@@ -42,8 +42,8 @@ import java.util.zip.GZIPOutputStream;
 public class CompressFunction extends Function {
 
   public CompressFunction() {
-    super("COMPRESS", true, ReturnTypes.BINARY, OperandTypes.BINARY,
-        OperatorCategory.STRING, "/docs/compress.html");
+    super("COMPRESS", true, ReturnTypes.BINARY, OperandTypes.BINARY, OperatorCategory.STRING,
+        "/docs/compress.html");
   }
 
   @Override

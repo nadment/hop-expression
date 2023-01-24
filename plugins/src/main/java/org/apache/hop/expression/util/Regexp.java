@@ -25,11 +25,11 @@ public class Regexp {
   /**
    * Private constructor since this is a utility class.
    */
-  private Regexp() {
-  }
-  
+  private Regexp() {}
+
   /** Translates a LIKE pattern to Java regexp pattern, with optional escape string. */
-  public static String toRegexLike(String pattern, CharSequence escapeStr) throws ExpressionException {
+  public static String toRegexLike(String pattern, CharSequence escapeStr)
+      throws ExpressionException {
     final char escapeChar;
     if (escapeStr != null) {
 
@@ -79,8 +79,8 @@ public class Regexp {
     }
     return javaPattern.toString();
   }
-  
-  
+
+
   public static int parseFlags(String str) throws ExpressionException {
     int flags = Pattern.UNICODE_CASE;
     if (str != null) {
@@ -94,7 +94,7 @@ public class Regexp {
           case 'c':
             flags &= ~Pattern.CASE_INSENSITIVE;
             break;
-          // Enables dotall mode, that allows the period (.) to match the newline character. 
+          // Enables dotall mode, that allows the period (.) to match the newline character.
           case 'n':
             flags |= Pattern.DOTALL;
             break;

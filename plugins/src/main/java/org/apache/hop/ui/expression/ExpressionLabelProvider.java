@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,8 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   public ExpressionLabelProvider() {
     super();
-    imageVariable = GuiResource.getInstance().getImage("ui/images/variable.svg", ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
+    imageVariable = GuiResource.getInstance().getImage("ui/images/variable.svg",
+        ConstUi.SMALL_ICON_SIZE, ConstUi.SMALL_ICON_SIZE);
   }
 
   @Override
@@ -40,7 +41,8 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
   @Override
   public void dispose() {
-    if (imageVariable != null) imageVariable.dispose();
+    if (imageVariable != null)
+      imageVariable.dispose();
   }
 
   @Override
@@ -69,7 +71,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
 
     return null;
   }
-    
+
   @Override
   public String getText(Object element) {
     if (element instanceof Operator) {
@@ -79,7 +81,7 @@ public class ExpressionLabelProvider implements ILabelProvider, IToolTipProvider
     if (element instanceof IValueMeta) {
       return ((IValueMeta) element).getName();
     }
-    
+
     return String.valueOf(element);
   }
 

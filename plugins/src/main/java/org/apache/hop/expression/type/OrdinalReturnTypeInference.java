@@ -20,13 +20,13 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpressionContext;
 
 public class OrdinalReturnTypeInference implements IReturnTypeInference {
-  
+
   private final int ordinal;
 
-  public OrdinalReturnTypeInference(int ordinal) {    
+  public OrdinalReturnTypeInference(int ordinal) {
     this.ordinal = ordinal;
   }
-  
+
   @Override
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
     return call.getOperand(ordinal).getType();

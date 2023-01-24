@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SinFunction extends Function {
 
   public SinFunction() {
-    super("SIN", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/sin.html");
+    super("SIN", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/sin.html");
   }
 
   @Override

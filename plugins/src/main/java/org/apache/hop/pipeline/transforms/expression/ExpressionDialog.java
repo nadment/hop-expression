@@ -58,14 +58,14 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ExpressionDialog extends BaseTransformDialog implements ITransformDialog {
-  private static final Class<?> PKG = ExpressionMeta.class; 
+  private static final Class<?> PKG = ExpressionMeta.class;
 
   private final ExpressionMeta input;
   private TableView wTableFields;
   private ModifyListener lsMod;
 
-  public ExpressionDialog(Shell parent, IVariables variables, Object input, PipelineMeta pipelineMeta,
-      String transformName) {
+  public ExpressionDialog(Shell parent, IVariables variables, Object input,
+      PipelineMeta pipelineMeta, String transformName) {
     super(parent, variables, (ExpressionMeta) input, pipelineMeta, transformName);
     this.input = (ExpressionMeta) input;
   }
@@ -206,7 +206,8 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
     Label icon = new Label(composite, SWT.CENTER);
     icon.setImage(getImage());
-    icon.setLayoutData(new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
+    icon.setLayoutData(
+        new FormDataBuilder().top().right(100, 0).width(ConstUi.LARGE_ICON_SIZE).result());
     PropsUi.setLook(icon);
 
     Label label = new Label(composite, SWT.NONE);
@@ -247,8 +248,9 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
         if (!shell.isDisposed()) {
 
-          CompletableFuture<IRowMeta> rowMeta = getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
-          
+          CompletableFuture<IRowMeta> rowMeta =
+              getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
+
           ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
           expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMeta);
           if (expression != null) {
@@ -267,7 +269,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
     return wTableFields;
   }
-  
+
   // Search the fields in the background
   protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
       PipelineMeta pipelineMeta, String transformName) {
@@ -283,7 +285,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
       return null;
     });
   }
-  
+
 
   public Image getImage() {
 

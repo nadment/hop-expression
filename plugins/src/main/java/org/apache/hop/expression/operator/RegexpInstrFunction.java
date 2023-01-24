@@ -38,8 +38,9 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpInstrFunction extends Function {
 
   public RegexpInstrFunction() {
-    super("REGEXP_INSTR", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_NUMERIC_STRING,
-        OperatorCategory.STRING, "/docs/regexp_instr.html");
+    super("REGEXP_INSTR", true, ReturnTypes.INTEGER,
+        OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_NUMERIC_STRING, OperatorCategory.STRING,
+        "/docs/regexp_instr.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)

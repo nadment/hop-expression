@@ -256,12 +256,12 @@ import java.util.Locale;
   private static abstract class Format {
     protected final boolean fillMode;
     protected final boolean exactMode;
-    
+
     public Format(boolean fillMode, boolean exactMode) {
       this.fillMode = fillMode;
       this.exactMode = exactMode;
     }
-    
+
     /**
      * Appends the value of the specified calendar to the output buffer based on the rule
      * implementation.
@@ -324,7 +324,7 @@ import java.util.Locale;
 
     private String ad;
     private String bc;
-    
+
     public AdBcFormat(Capitalization cap, String ad, String bc) {
       super(true, true);
       this.ad = cap.apply(ad);
@@ -480,7 +480,7 @@ import java.util.Locale;
     public TimeZoneRegionFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append(datetime.getZone().toString());
@@ -507,7 +507,7 @@ import java.util.Locale;
     public TimeZoneAbbreviatedRegionFormat() {
       super(true, true);
     }
-    
+
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
       output.append(datetime.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH));
     }
@@ -519,7 +519,7 @@ import java.util.Locale;
     public TimeZoneHourFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       ZoneOffset offset = datetime.getOffset();
@@ -542,11 +542,11 @@ import java.util.Locale;
   }
 
   private static class TimeZoneMinuteFormat extends Format {
-    
+
     public TimeZoneMinuteFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder buffer, final ZonedDateTime datetime) throws Exception {
       ZoneOffset offset = datetime.getOffset();
@@ -612,7 +612,7 @@ import java.util.Locale;
     public JulianDayFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       long julianDay = datetime.getLong(JulianFields.JULIAN_DAY);
@@ -634,7 +634,7 @@ import java.util.Locale;
     public Hour12Format() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int h12 = (datetime.getHour() + 11) % 12 + 1;
@@ -653,7 +653,7 @@ import java.util.Locale;
     public Hour24Format() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       appendDigits(output, datetime.getHour());
@@ -728,12 +728,13 @@ import java.util.Locale;
     public void parse(final DateTimeParser parser) throws ParseException {
       if (exactMode) {
         parser.month = parser.parseExactInt(2);
-      } else try {
-        parser.month = parser.parseInt(2);
-      } catch (NumberFormatException e) {
-        // Rule to try alternate format MONTH and MON
-        parseNameOfMonth(parser);
-      }
+      } else
+        try {
+          parser.month = parser.parseInt(2);
+        } catch (NumberFormatException e) {
+          // Rule to try alternate format MONTH and MON
+          parseNameOfMonth(parser);
+        }
       parser.isDayOfYear = false;
       parser.isEpochDay = false;
     }
@@ -770,7 +771,7 @@ import java.util.Locale;
     public SecondOfDayFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int seconds = datetime.get(ChronoField.SECOND_OF_DAY);
@@ -782,7 +783,7 @@ import java.util.Locale;
     public SecondOfMinuteFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       appendDigits(output, datetime.getSecond());
@@ -822,7 +823,7 @@ import java.util.Locale;
     public DayOfWeekFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int dof = (datetime.getDayOfWeek().getValue() + 1) % 7;
@@ -834,7 +835,7 @@ import java.util.Locale;
     public WeekOfMonthFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int week = datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
@@ -862,7 +863,7 @@ import java.util.Locale;
     public QuarterFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(final StringBuilder output, final ZonedDateTime datetime) throws Exception {
       int quarter = datetime.get(IsoFields.QUARTER_OF_YEAR);
@@ -1089,7 +1090,7 @@ import java.util.Locale;
     private final TextStyle style;
 
     public NameOfDayFormat(Capitalization cap, boolean fillMode, TextStyle style) {
-     super(fillMode, true);
+      super(fillMode, true);
       this.cap = cap;
       this.style = style;
     }
@@ -1607,7 +1608,8 @@ import java.util.Locale;
   }
 
   protected final ParseException createUnparsableDate(final String text, int index) {
-    return new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), index);
+    return new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern),
+        index);
   }
 
   @Override

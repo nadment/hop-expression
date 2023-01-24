@@ -35,8 +35,8 @@ import java.math.RoundingMode;
 public class FloorFunction extends Function {
 
   public FloorFunction() {
-    super("FLOOR", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/floor.html");
+    super("FLOOR", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+        "/docs/floor.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)

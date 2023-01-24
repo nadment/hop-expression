@@ -24,16 +24,16 @@ import org.apache.hop.expression.UserDefinedFunctionMeta;
  */
 public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecker {
   private UserDefinedFunctionMeta meta;
- 
+
   public UserDefinedFunctionOperandTypeChecker(UserDefinedFunctionMeta meta) {
     this.meta = meta;
   }
-  
+
   @Override
   public boolean checkOperandTypes(Call call) {
     return true;
   }
-  
+
   @Override
   public IOperandCountRange getOperandCountRange() {
     return OperandCountRange.of(meta.getArguments().size());

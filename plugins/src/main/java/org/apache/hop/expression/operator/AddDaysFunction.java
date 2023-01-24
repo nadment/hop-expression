@@ -33,8 +33,8 @@ import java.time.ZonedDateTime;
 public class AddDaysFunction extends Function {
 
   public AddDaysFunction() {
-    super("ADD_DAYS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC,
-        OperatorCategory.DATE, "/docs/add_days.html");
+    super("ADD_DAYS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+        "/docs/add_days.html");
   }
 
   @Override
@@ -43,14 +43,14 @@ public class AddDaysFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    
-    Object v1= operands[1].getValue(context);
+
+    Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
 
     ZonedDateTime datetime = Coerce.toDateTime(v0);
     long days = Coerce.toInteger(v1);
-    
+
     return datetime.plusDays(days);
   }
 }

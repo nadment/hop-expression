@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CoshFunction extends Function {
 
   public CoshFunction() {
-    super("COSH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/cosh.html");
+    super("COSH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/cosh.html");
   }
 
   @Override

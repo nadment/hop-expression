@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,11 +33,11 @@ import org.eclipse.swt.widgets.TreeItem;
 public class BrowserToolTip extends ToolTip {
   /**
    * Minimal size constraints.
-  */
-  private static final int MIN_WIDTH= 500;
+   */
+  private static final int MIN_WIDTH = 500;
 
-  private static final int MIN_HEIGHT= 500;
-  
+  private static final int MIN_HEIGHT = 500;
+
   private IToolTipProvider tooltipProvider;
 
   public BrowserToolTip(Tree control, IToolTipProvider provider) {
@@ -49,8 +49,8 @@ public class BrowserToolTip extends ToolTip {
     this.setRespectMonitorBounds(true);
     this.setRespectDisplayBounds(true);
     this.setHideOnMouseDown(false);
-        
-    control.addListener(SWT.MouseHover,  e -> this.hide());
+
+    control.addListener(SWT.MouseHover, e -> this.hide());
   }
 
   @Override
@@ -58,22 +58,23 @@ public class BrowserToolTip extends ToolTip {
 
     Browser browser = new Browser(parent, SWT.NONE);
     browser.setSize(MIN_WIDTH, MIN_HEIGHT);
-        
+
     // Cancel opening of new windows
-    browser.addOpenWindowListener(e -> e.required=true);
+    browser.addOpenWindowListener(e -> e.required = true);
 
     // Replace browser's built-in context menu with none
     browser.setMenu(new Menu(parent.getShell(), SWT.NONE));
-    
+
     String doc = this.getText(event);
-    if (doc!=null) browser.setText(doc);
+    if (doc != null)
+      browser.setText(doc);
 
     return browser;
   }
 
   @Override
-  protected boolean shouldCreateToolTip(Event event) {    
-    return this.getText(event)!=null;
+  protected boolean shouldCreateToolTip(Event event) {
+    return this.getText(event) != null;
   }
 
   protected final String getText(Event event) {

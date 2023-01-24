@@ -23,7 +23,7 @@ public interface IExpressionProcessor {
    * @param operands
    * @return
    */
-  public void process(IExpressionContext context, IExpression[] operands)  throws Exception;
+  public void process(IExpressionContext context, IExpression[] operands) throws Exception;
 
   /**
    * This method returns the computed aggregate value.

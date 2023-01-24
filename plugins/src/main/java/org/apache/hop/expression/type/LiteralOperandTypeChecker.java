@@ -21,24 +21,25 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 
 /**
- * Operand type-checking strategy which checks operand type must be a literal with the specified class.
+ * Operand type-checking strategy which checks operand type must be a literal with the specified
+ * class.
  */
 public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
   private final Class<?> javaClass;
- // private final boolean allowNull;
-  
+  // private final boolean allowNull;
+
   public LiteralOperandTypeChecker(Class<?> javaClass) {
     this.javaClass = javaClass;
   }
-  
+
   @Override
-  public boolean checkSingleOperandType(IExpression operand) {    
-    if ( operand.getKind()==Kind.LITERAL ) {
-      Literal literal = (Literal) operand;     
-      if ( javaClass.equals(literal.getJavaClass())) {
+  public boolean checkSingleOperandType(IExpression operand) {
+    if (operand.getKind() == Kind.LITERAL) {
+      Literal literal = (Literal) operand;
+      if (javaClass.equals(literal.getJavaClass())) {
         return true;
       }
     }
     return false;
-  }  
+  }
 }

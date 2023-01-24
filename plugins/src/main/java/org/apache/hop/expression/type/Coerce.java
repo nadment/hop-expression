@@ -27,14 +27,13 @@ import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Coerce {
-    
+
   private static JsonComparator JSON_COMPARATOR = new JsonComparator();
-  
+
   /**
    * Private constructor since this is a utility class.
    */
-  private Coerce() {
-  }
+  private Coerce() {}
 
   /**
    * Coerce value to data type BINARY
@@ -53,9 +52,10 @@ public class Coerce {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value) ,DataTypeName.BINARY);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BINARY);
   }
-  
+
   /**
    * Coerce value to data type BOOLEAN
    * 
@@ -73,9 +73,10 @@ public class Coerce {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BOOLEAN);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BOOLEAN);
   }
-  
+
   /**
    * Coerce value to data type NUMBER
    * 
@@ -99,9 +100,10 @@ public class Coerce {
       return Converter.toNumber((byte[]) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.NUMBER);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.NUMBER);
   }
-  
+
   /**
    * Coerce value to data type BIGNUMBER
    * 
@@ -134,9 +136,10 @@ public class Coerce {
     if (value instanceof String) {
       return Converter.toBigNumber((String) value);
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BIGNUMBER);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BIGNUMBER);
   }
-  
+
   /**
    * Coerce value to data type INTEGER
    * 
@@ -163,9 +166,10 @@ public class Coerce {
       return Converter.toInteger((byte[]) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.INTEGER);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.INTEGER);
   }
-  
+
   /**
    * Coerce value to data type STRING
    * 
@@ -202,9 +206,10 @@ public class Coerce {
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.DATE);
   }
-  
+
   public static final Date toDate(final Object value) throws ExpressionException {
     if (value == null) {
       return null;
@@ -212,20 +217,23 @@ public class Coerce {
     if (value instanceof ZonedDateTime) {
       return Date.from(((ZonedDateTime) value).toInstant());
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.DATE);
   }
 
-  
-  public static final java.sql.Timestamp toTimestamp(final Object value) throws ExpressionException {
+
+  public static final java.sql.Timestamp toTimestamp(final Object value)
+      throws ExpressionException {
     if (value == null) {
       return null;
     }
     if (value instanceof ZonedDateTime) {
       return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.DATE);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.DATE);
   }
- 
+
 
   /**
    * Coerce value to data type JSON
@@ -244,9 +252,10 @@ public class Coerce {
       return Converter.toJson((String) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.JSON);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.JSON);
   }
-  
+
   /**
    * Coerce value to TimeUnit.
    * 
@@ -259,7 +268,7 @@ public class Coerce {
     }
     throw new ExpressionException(ExpressionError.INVALID_TIMEUNIT, value);
   }
-  
+
   /**
    * Check if predicate is true.
    * 
@@ -277,9 +286,10 @@ public class Coerce {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BOOLEAN);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BOOLEAN);
   }
-  
+
   /**
    * Check if predicate is false.
    * 
@@ -297,9 +307,10 @@ public class Coerce {
     if (value instanceof Number) {
       return ((Number) value).intValue() == 0;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value, DataTypeName.from(value), DataTypeName.BOOLEAN);
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BOOLEAN);
   }
-  
+
   /**
    * Compare this value against another value. If values need to be converted to match the other
    * operands data type, the value with the lower order is converted to the value with the higher
@@ -322,16 +333,16 @@ public class Coerce {
     if (left instanceof byte[] || right instanceof byte[]) {
       return compareTo(toBinary(left), toBinary(right));
     }
-    
+
     if (left instanceof JsonNode || right instanceof JsonNode) {
-      
+
       JsonNode l = toJson(left);
       JsonNode r = toJson(right);
-      
+
       // Ignores the order of attributes
-      return l.equals(JSON_COMPARATOR, r) ? 0:1;
+      return l.equals(JSON_COMPARATOR, r) ? 0 : 1;
     }
-    
+
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
       ZonedDateTime dt1 = toDateTime(left);
       ZonedDateTime dt2 = toDateTime(right);

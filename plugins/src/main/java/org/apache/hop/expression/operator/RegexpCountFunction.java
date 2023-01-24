@@ -28,9 +28,11 @@ import org.apache.hop.expression.util.Regexp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 /**
  * 
- * Searches a string for a regular expression pattern and returns an integer that indicates the number of times the pattern occurs in the string.
+ * Searches a string for a regular expression pattern and returns an integer that indicates the
+ * number of times the pattern occurs in the string.
  * If no match is found, then the function returns 0.
  * 
  * REGEXP_COUNT ( source, pattern [, start [, parameters ] ] )
@@ -40,7 +42,9 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpCountFunction extends Function {
 
   public RegexpCountFunction() {
-    super("REGEXP_COUNT", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_STRING,  OperatorCategory.STRING, "/docs/regexp_count.html");
+    super("REGEXP_COUNT", true, ReturnTypes.INTEGER,
+        OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_STRING, OperatorCategory.STRING,
+        "/docs/regexp_count.html");
   }
 
   @Override
@@ -48,7 +52,7 @@ public class RegexpCountFunction extends Function {
       throws Exception {
 
     long count = 0L;
-    
+
     Object v0 = operands[0].getValue(context);
     if (v0 == null) {
       return null;
@@ -69,22 +73,23 @@ public class RegexpCountFunction extends Function {
     if (operands.length >= 3) {
       Object v2 = operands[2].getValue(context);
       start = Coerce.toInteger(v2).intValue();
-      
+
       if (operands.length == 4) {
         Object v3 = operands[3].getValue(context);
         parameters = Regexp.parseFlags(Coerce.toString(v3));
       }
     }
-    
-    try {     
-      Matcher matcher = Pattern.compile(pattern, parameters).matcher(source).region(start-1, source.length());
-      while ( matcher.find() ) {
+
+    try {
+      Matcher matcher =
+          Pattern.compile(pattern, parameters).matcher(source).region(start - 1, source.length());
+      while (matcher.find()) {
         count++;
       }
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern);
     }
-    
+
     return count;
   }
 }

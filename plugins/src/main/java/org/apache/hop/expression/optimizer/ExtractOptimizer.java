@@ -38,7 +38,7 @@ public class ExtractOptimizer extends Optimizer {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
         TimeUnit unit = Coerce.toTimeUnit(call.getOperand(0).getValue(context));
         Function function = FunctionRegistry.getFunction(unit.name());
-        if (function != null && ! (function instanceof UserDefinedFunction) ) {
+        if (function != null && !(function instanceof UserDefinedFunction)) {
           return new Call(function, call.getOperand(1));
         }
       }

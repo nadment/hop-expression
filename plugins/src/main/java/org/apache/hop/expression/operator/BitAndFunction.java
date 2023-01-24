@@ -39,7 +39,7 @@ public class BitAndFunction extends Function {
     super("BIT_AND", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_and.html");
   }
-  
+
   public BitAndFunction(String name) {
     super("BIT_AND", name, 70, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_and.html");

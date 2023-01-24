@@ -20,11 +20,11 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpressionContext;
 
 public class CastFunctionReturnTypeInference implements IReturnTypeInference {
-  
+
   public CastFunctionReturnTypeInference() {
     super();
   }
-  
+
   @Override
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
     try {

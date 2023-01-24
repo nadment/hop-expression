@@ -32,8 +32,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class NullIfFunction extends Function {
 
   public NullIfFunction() {
-    super("NULLIF", true, ReturnTypes.ARG0, OperandTypes.SAME_SAME,
-        OperatorCategory.CONDITIONAL, "/docs/nullif.html");
+    super("NULLIF", true, ReturnTypes.ARG0, OperandTypes.SAME_SAME, OperatorCategory.CONDITIONAL,
+        "/docs/nullif.html");
   }
 
   @Override

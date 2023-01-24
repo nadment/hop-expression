@@ -39,11 +39,11 @@ public class InOptimizer extends Optimizer {
 
       // Remove duplicate element in list
       for (IExpression expression : (Tuple) call.getOperand(1)) {
-        
-        if ( expression.isNull() ) {
+
+        if (expression.isNull()) {
           continue;
         }
-        
+
         // If this element is not present in new list then add it
         if (!list.contains(expression)) {
           list.add(expression);
@@ -52,7 +52,7 @@ public class InOptimizer extends Optimizer {
 
       // Sort list on cost
       list.sort(Comparator.comparing(IExpression::getCost));
-      
+
       return new Call(call.getOperator(), call.getOperand(0), new Tuple(list));
     }
 

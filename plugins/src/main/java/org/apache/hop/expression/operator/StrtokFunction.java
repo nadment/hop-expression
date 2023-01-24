@@ -40,8 +40,9 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class StrtokFunction extends Function {
 
-  private static final IOperandTypeChecker OTC = OperandTypes.STRING.or(OperandTypes.STRING_STRING).or(OperandTypes.STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC);
-  
+  private static final IOperandTypeChecker OTC = OperandTypes.STRING.or(OperandTypes.STRING_STRING)
+      .or(OperandTypes.STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC);
+
   public StrtokFunction() {
     super("STRTOK", true, ReturnTypes.STRING, OTC, OperatorCategory.STRING, "/docs/strtok.html");
   }

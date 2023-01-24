@@ -18,22 +18,21 @@ import java.time.ZonedDateTime;
 import java.util.Random;
 
 public enum Attribute {
-  CURRENT_TIMEZONE("timezone", String.class),
-  CURRENT_TIMESTAMP("current_timestamp", ZonedDateTime.class),
-  CURRENT_DATE("current_data", ZonedDateTime.class),
-  RANDOM("random", Random.class);
-  
-  public final String id;    
+  CURRENT_TIMEZONE("timezone", String.class), CURRENT_TIMESTAMP("current_timestamp",
+      ZonedDateTime.class), CURRENT_DATE("current_data",
+          ZonedDateTime.class), RANDOM("random", Random.class);
+
+  public final String id;
   public final Class<?> clazz;
-  
+
   Attribute(String name, Class<?> clazz) {
     this.id = name;
-    this.clazz = clazz;     
+    this.clazz = clazz;
   }
 
   /** Returns the value of this attribute in a given context. */
   public <T> T get(IExpressionContext context) {
-    //noinspection unchecked
+    // noinspection unchecked
     return (T) clazz.cast(context.getAttribute(id));
   }
 }

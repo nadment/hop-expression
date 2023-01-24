@@ -28,13 +28,13 @@ public class UserDefinedFunction extends Function {
   private UserDefinedFunctionMeta meta;
 
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
-    super(meta.getName(), true, ReturnTypes.UNKNOWN, new UserDefinedFunctionOperandTypeChecker(meta), OperatorCategory.UDF, "/docs/udf.html");
+    super(meta.getName(), true, ReturnTypes.UNKNOWN,
+        new UserDefinedFunctionOperandTypeChecker(meta), OperatorCategory.UDF, "/docs/udf.html");
     this.meta = meta;
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands)
-  {
+  public Object eval(IExpressionContext context, IExpression[] operands) {
     throw new RuntimeException(ExpressionError.INTERNAL_ERROR.toString());
   }
 
@@ -45,20 +45,20 @@ public class UserDefinedFunction extends Function {
   public List<Argument> getArguments() {
     return meta.getArguments();
   }
-    
-  public  IRowMeta createRowMeta() {
+
+  public IRowMeta createRowMeta() {
     return createRowMeta(meta.getArguments());
   }
-  
+
   public static IRowMeta createRowMeta(List<Argument> arguments) {
-    
+
     // Convert arguments to row meta
     IRowMeta rowMeta = new RowMeta();
-    for (Argument argument:arguments ) {
+    for (Argument argument : arguments) {
       IValueMeta vm = ExpressionUtils.createValueMeta(argument.getName(), argument.getType());
       rowMeta.addValueMeta(vm);
     }
-    
+
     return rowMeta;
   }
 }

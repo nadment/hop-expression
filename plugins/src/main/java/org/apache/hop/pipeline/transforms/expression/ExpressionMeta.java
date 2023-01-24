@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,28 +39,27 @@ import java.util.List;
 /**
  * This transform create field value with expression.
  */
-@Transform(
-    id = "Expression",
-    name = "i18n::Expression.Name",
-    description = "i18n::Expression.Description",
-    image = "expression.svg",
+@Transform(id = "Expression", name = "i18n::Expression.Name",
+    description = "i18n::Expression.Description", image = "expression.svg",
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     documentationUrl = "/pipeline/transforms/expresssion.html",
     keywords = "i18n::Expression.Keywords")
 public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData> {
 
   private static final Class<?> PKG = ExpressionMeta.class;
- 
-  @HopMetadataProperty(groupKey = "fields", key = "field", injectionGroupDescription = "ExpressionMeta.Injection.Fields", injectionKeyDescription = "ExpressionMeta.Injection.Field")
+
+  @HopMetadataProperty(groupKey = "fields", key = "field",
+      injectionGroupDescription = "ExpressionMeta.Injection.Fields",
+      injectionKeyDescription = "ExpressionMeta.Injection.Field")
   private List<ExpressionField> fields;
 
   public ExpressionMeta() {
     super();
   }
-  
+
   public ExpressionMeta(ExpressionMeta other) {
     super();
-    
+
     this.fields = new ArrayList<>();
     for (ExpressionField field : other.getFields()) {
       fields.add(new ExpressionField(field));
@@ -72,19 +71,14 @@ public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData
     this.fields = new ArrayList<>();
   }
 
-//  @Override
-//  public Object clone() {
-//    return new ExpressionMeta(this);
-//  }
+  // @Override
+  // public Object clone() {
+  // return new ExpressionMeta(this);
+  // }
 
   @Override
-  public void getFields(
-      IRowMeta rowMeta,
-      String transformName,
-      IRowMeta[] info,
-      TransformMeta nextTransform,
-      IVariables variables,
-      IHopMetadataProvider metadataProvider)
+  public void getFields(IRowMeta rowMeta, String transformName, IRowMeta[] info,
+      TransformMeta nextTransform, IVariables variables, IHopMetadataProvider metadataProvider)
       throws HopTransformException {
     try {
       // store the input stream meta
@@ -95,7 +89,8 @@ public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData
         if (!Utils.isEmpty(field.getName())) {
 
           // create ValueMeta
-          IValueMeta vm = ValueMetaFactory.createValueMeta(field.getName(), ValueMetaFactory.getIdForValueMeta(field.getType()));
+          IValueMeta vm = ValueMetaFactory.createValueMeta(field.getName(),
+              ValueMetaFactory.getIdForValueMeta(field.getType()));
           vm.setOrigin(transformName);
           vm.setLength(field.getLength(), field.getPrecision());
 
@@ -115,81 +110,52 @@ public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData
   }
 
   @Override
-  public void check(
-      List<ICheckResult> remarks,
-      PipelineMeta pipelineMeta,
-      TransformMeta transformMeta,
-      IRowMeta prev,
-      String[] input,
-      String[] output,
-      IRowMeta info,
-      IVariables variables,
-      IHopMetadataProvider metadataProvider) {
+  public void check(List<ICheckResult> remarks, PipelineMeta pipelineMeta,
+      TransformMeta transformMeta, IRowMeta prev, String[] input, String[] output, IRowMeta info,
+      IVariables variables, IHopMetadataProvider metadataProvider) {
 
     // Look up fields in the input stream <prev>
     if (prev != null && prev.size() > 0) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG,
-                  "ExpressionMeta.CheckResult.ReceivingFieldsFromPreviousTransforms",
-                  prev.size() + ""),
-              transformMeta));
+      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_OK,
+          BaseMessages.getString(PKG,
+              "ExpressionMeta.CheckResult.ReceivingFieldsFromPreviousTransforms", prev.size() + ""),
+          transformMeta));
     } else {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(
-                  PKG, "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
-              transformMeta));
+      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
+          BaseMessages.getString(PKG,
+              "ExpressionMeta.CheckResult.NotReceivingFieldsFromPreviousTransforms"),
+          transformMeta));
     }
 
     // See if we have input streams leading to this transform!
     if (input.length > 0) {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_OK,
-              BaseMessages.getString(
-                  PKG, "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"),
-              transformMeta));
+      remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_OK, BaseMessages.getString(PKG,
+          "ExpressionMeta.CheckResult.ReceivingInfoFromOtherTransforms"), transformMeta));
 
     } else {
-      remarks.add(
-          new CheckResult(
-              ICheckResult.TYPE_RESULT_ERROR,
-              BaseMessages.getString(
-                  PKG, "ExpressionMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
+      remarks
+          .add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString(PKG,
+                  "ExpressionMeta.CheckResult.NotReceivingInfoFromOtherTransforms"),
               transformMeta));
     }
 
     // Check expression
     ExpressionContext context = new ExpressionContext(variables, prev);
     for (ExpressionField field : this.fields) {
-      
-      if ( Utils.isEmpty(field.getExpression())) {
-        remarks.add(
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_WARNING,
-                BaseMessages.getString(
-                    PKG,
-                    "ExpressionMeta.CheckResult.ExpressionEmpty",
-                    field.getName()),                   
-                transformMeta));
-      }      
-      else try {        
-        ExpressionBuilder.build(context, field.getExpression());
-      } catch (Exception e) {
-        remarks.add(
-            new CheckResult(
-                ICheckResult.TYPE_RESULT_ERROR,
-                BaseMessages.getString(
-                    PKG,
-                    "ExpressionMeta.CheckResult.ExpressionError",
-                    field.getName(),
-                    e.getMessage()),
-                transformMeta));
-      }
+
+      if (Utils.isEmpty(field.getExpression())) {
+        remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(PKG,
+            "ExpressionMeta.CheckResult.ExpressionEmpty", field.getName()), transformMeta));
+      } else
+        try {
+          ExpressionBuilder.build(context, field.getExpression());
+        } catch (Exception e) {
+          remarks.add(new CheckResult(
+              ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,
+                  "ExpressionMeta.CheckResult.ExpressionError", field.getName(), e.getMessage()),
+              transformMeta));
+        }
     }
   }
 

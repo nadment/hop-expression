@@ -62,7 +62,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ExpressionEditor extends Composite {
   private static final Class<?> PKG = ExpressionEditor.class;
-  
+
   private ExpressionMode mode = ExpressionMode.NONE;
   private ExpressionLabelProvider labelProvider;
   private IVariables variables;
@@ -72,7 +72,8 @@ public class ExpressionEditor extends Composite {
   private Tree tree;
   private TreeItem treeItemField;
 
-  public ExpressionEditor(Composite parent, int style, IVariables variables, ExpressionMode mode, CompletableFuture<IRowMeta> rowMetaFutur) {
+  public ExpressionEditor(Composite parent, int style, IVariables variables, ExpressionMode mode,
+      CompletableFuture<IRowMeta> rowMetaFutur) {
     super(parent, style);
     this.variables = variables;
     this.mode = mode;
@@ -85,18 +86,18 @@ public class ExpressionEditor extends Composite {
     this.createTree(sashForm);
     this.createEditor(sashForm);
 
-    // When IRowMeta is ready   
-    if ( rowMetaFutur!=null ) {
+    // When IRowMeta is ready
+    if (rowMetaFutur != null) {
       rowMetaFutur.thenAccept(this::setRowMeta);
     }
-    
-    sashForm.setWeights(25, 75);    
+
+    sashForm.setWeights(25, 75);
   }
 
   protected void createEditor(final Composite parent) {
 
     PropsUi.setLook(this);
-    
+
     CompositeRuler ruler = new CompositeRuler(24);
     ruler.addDecorator(0, new LineNumberRulerColumn());
     sourceViewer = new SourceViewer(parent, ruler, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
@@ -118,8 +119,8 @@ public class ExpressionEditor extends Composite {
       }
     });
     PropsUi.setLook(sourceViewer.getTextWidget());
-    
-    
+
+
     Menu menu = new Menu(getShell(), SWT.POP_UP);
     MenuItem undoItem = new MenuItem(menu, SWT.PUSH);
     undoItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.Undo"));
@@ -140,9 +141,10 @@ public class ExpressionEditor extends Composite {
     new MenuItem(menu, SWT.SEPARATOR);
     MenuItem selectAllItem = new MenuItem(menu, SWT.PUSH);
     selectAllItem.setText(BaseMessages.getString(PKG, "ExpressionEditor.SelectAll"));
-    selectAllItem.addListener(SWT.Selection, e -> sourceViewer.doOperation(ITextOperationTarget.SELECT_ALL));
+    selectAllItem.addListener(SWT.Selection,
+        e -> sourceViewer.doOperation(ITextOperationTarget.SELECT_ALL));
 
-    sourceViewer.getTextWidget().setMenu(menu);    
+    sourceViewer.getTextWidget().setMenu(menu);
     sourceViewer.getTextWidget().addListener(SWT.MenuDetect, event -> {
       undoItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.UNDO));
       redoItem.setEnabled(sourceViewer.canDoOperation(ITextOperationTarget.REDO));
@@ -152,7 +154,8 @@ public class ExpressionEditor extends Composite {
     });
 
     Document doc = new Document("");
-    ExpressionEditorConfiguration configuration = new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
+    ExpressionEditorConfiguration configuration =
+        new ExpressionEditorConfiguration(variables, rowMetaFutur, mode);
     IDocumentPartitioner partitioner = new FastPartitioner(new ExpressionPartitionScanner(),
         configuration.getConfiguredContentTypes(sourceViewer));
     partitioner.connect(doc);
@@ -183,16 +186,17 @@ public class ExpressionEditor extends Composite {
       }
 
       @Override
-      public void dragSetData(DragSourceEvent event) {        
+      public void dragSetData(DragSourceEvent event) {
         // Set the data to be the first selected item's text
         event.data = labelProvider.getText(tree.getSelection()[0].getData());
       }
     });
 
-    if (  mode==ExpressionMode.ROW || mode==ExpressionMode.COLUMN || mode==ExpressionMode.UDF ) {
+    if (mode == ExpressionMode.ROW || mode == ExpressionMode.COLUMN || mode == ExpressionMode.UDF) {
       treeItemField = new TreeItem(tree, SWT.NULL);
       treeItemField.setImage(GuiResource.getInstance().getImageFolder());
-      String text = (  mode==ExpressionMode.UDF ) ? "ExpressionEditor.Tree.Arguments.Label":"ExpressionEditor.Tree.Fields.Label";
+      String text = (mode == ExpressionMode.UDF) ? "ExpressionEditor.Tree.Arguments.Label"
+          : "ExpressionEditor.Tree.Fields.Label";
       treeItemField.setText(BaseMessages.getString(PKG, text));
     }
 
@@ -204,19 +208,19 @@ public class ExpressionEditor extends Composite {
     List<Operator> primaryOperators = new ArrayList<>();
     HashMap<String, String> mapDisplay = new HashMap<>();
 
-    Set<Operator> operators = Operators.getOperators();         
-   
+    Set<Operator> operators = Operators.getOperators();
+
     // Inventory operator unique identifier and category
     for (Operator operator : operators) {
 
-      if ( mode!=ExpressionMode.COLUMN && operator instanceof AggregateFunction ) {
+      if (mode != ExpressionMode.COLUMN && operator instanceof AggregateFunction) {
         continue;
       }
-      
-      if ( mode==ExpressionMode.UDF && operator instanceof UserDefinedFunction ) {
+
+      if (mode == ExpressionMode.UDF && operator instanceof UserDefinedFunction) {
         continue;
       }
-      
+
       if (!categories.contains(operator.getCategory())) {
         categories.add(operator.getCategory());
       }
@@ -224,7 +228,7 @@ public class ExpressionEditor extends Composite {
       if (operator.getId().equals(operator.getName())) {
         primaryOperators.add(operator);
         mapDisplay.put(operator.getId(), operator.getName());
-      }      
+      }
     }
 
     // Alias operator
@@ -274,7 +278,8 @@ public class ExpressionEditor extends Composite {
 
       treeItemVariable.removeAll();
       for (String name : names) {
-        boolean isDeprecated = VariableRegistry.getInstance().getDeprecatedVariableNames().contains(name);
+        boolean isDeprecated =
+            VariableRegistry.getInstance().getDeprecatedVariableNames().contains(name);
 
         String data = "${" + name + '}';
 
@@ -312,7 +317,7 @@ public class ExpressionEditor extends Composite {
     Display.getDefault().asyncExec(() -> {
       // Remove existing fields
       treeItemField.removeAll();
-            
+
       if (rowMeta != null) {
         for (int i = 0; i < rowMeta.size(); i++) {
           IValueMeta valueMeta = rowMeta.getValueMeta(i);

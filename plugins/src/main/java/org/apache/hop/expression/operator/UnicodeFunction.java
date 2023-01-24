@@ -35,8 +35,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {
-    super("UNICODE", true, ReturnTypes.INTEGER, OperandTypes.STRING,
-        OperatorCategory.STRING, "/docs/unicode.html");
+    super("UNICODE", true, ReturnTypes.INTEGER, OperandTypes.STRING, OperatorCategory.STRING,
+        "/docs/unicode.html");
   }
 
   @Override

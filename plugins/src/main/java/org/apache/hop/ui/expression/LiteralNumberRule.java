@@ -69,9 +69,9 @@ public class LiteralNumberRule implements IRule {
       if (c == 'E') {
         c = scanner.read();
         if (c == '+' || c == '-') {
-           scanner.read();
-        }
-        else scanner.unread();
+          scanner.read();
+        } else
+          scanner.unread();
 
         do {
           c = scanner.read();

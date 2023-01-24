@@ -29,13 +29,13 @@ public class FirstDayOfQuarter implements TemporalAdjuster {
     int quarter = temporal.get(IsoFields.QUARTER_OF_YEAR);
     switch (quarter) {
       case 1:
-        temporal =  temporal.with(MONTH_OF_YEAR, Month.JANUARY.getValue());
+        temporal = temporal.with(MONTH_OF_YEAR, Month.JANUARY.getValue());
         break;
       case 2:
-        temporal =  temporal.with(MONTH_OF_YEAR, Month.APRIL.getValue());
+        temporal = temporal.with(MONTH_OF_YEAR, Month.APRIL.getValue());
         break;
       case 3:
-        temporal =  temporal.with(MONTH_OF_YEAR, Month.JULY.getValue());
+        temporal = temporal.with(MONTH_OF_YEAR, Month.JULY.getValue());
         break;
       case 4:
         temporal = temporal.with(MONTH_OF_YEAR, Month.OCTOBER.getValue());

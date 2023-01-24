@@ -22,18 +22,18 @@ import org.apache.hop.expression.IExpressionContext;
 
 public class FirstKnownReturnTypeInference implements IReturnTypeInference {
 
-  public FirstKnownReturnTypeInference() {  
+  public FirstKnownReturnTypeInference() {
     super();
   }
-  
+
   @Override
   public DataTypeName getReturnType(IExpressionContext context, Call call) {
-    for(IExpression operand: call.getOperands() ) {
+    for (IExpression operand : call.getOperands()) {
       DataTypeName type = operand.getType();
-      if ( type!=DataTypeName.UNKNOWN )
+      if (type != DataTypeName.UNKNOWN)
         return type;
     }
-    
+
     return call.getType();
   }
 }

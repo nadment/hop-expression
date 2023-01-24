@@ -32,8 +32,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {
-    super("NULLIFZERO", true, ReturnTypes.ARG0, OperandTypes.NUMERIC,
-        OperatorCategory.CONDITIONAL, "/docs/nullifzero.html");
+    super("NULLIFZERO", true, ReturnTypes.ARG0, OperandTypes.NUMERIC, OperatorCategory.CONDITIONAL,
+        "/docs/nullifzero.html");
   }
 
   @Override

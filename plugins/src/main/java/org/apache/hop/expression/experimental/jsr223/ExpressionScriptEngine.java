@@ -27,8 +27,7 @@ import javax.script.ScriptException;
 /**
  * Implements the Expression ScriptEngine for JSR-223.
  */
-public final class ExpressionScriptEngine extends AbstractScriptEngine
-    implements Compilable {
+public final class ExpressionScriptEngine extends AbstractScriptEngine implements Compilable {
 
   private ExpressionScriptEngineFactory factory;
 
@@ -48,8 +47,8 @@ public final class ExpressionScriptEngine extends AbstractScriptEngine
   @Override
   public Object eval(String script, ScriptContext context) throws ScriptException {
     try {
-    //  IExpression expression = ExpressionBuilder.compile(script);
-      //return expression.eval((ExpressionContext) context);
+      // IExpression expression = ExpressionBuilder.compile(script);
+      // return expression.eval((ExpressionContext) context);
       return null;
     } catch (Exception e) {
       throw new ScriptException(e);
@@ -79,12 +78,12 @@ public final class ExpressionScriptEngine extends AbstractScriptEngine
 
   @Override
   public CompiledScript compile(String script) throws ScriptException {
-//    try {
-//     // IExpression expression = ExpressionBuilder.compile(script);
-//      //return new CompiledExpression(this, expression);     
-//    } catch (ExpressionException e) {
-//      throw new ScriptException("Unable to compile expression: " + script);
-//    }
+    // try {
+    // // IExpression expression = ExpressionBuilder.compile(script);
+    // //return new CompiledExpression(this, expression);
+    // } catch (ExpressionException e) {
+    // throw new ScriptException("Unable to compile expression: " + script);
+    // }
     return null;
   }
 

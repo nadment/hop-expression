@@ -48,7 +48,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     }
     this.range = OperandCountRange.between(min, max);
   }
-  
+
   /**
    * Allows specified parameters to be optional.
    */

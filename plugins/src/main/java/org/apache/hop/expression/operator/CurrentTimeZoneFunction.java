@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentTimeZoneFunction extends Function {
 
   public CurrentTimeZoneFunction() {
-    super("CURRENT_TIMEZONE", true, ReturnTypes.STRING, OperandTypes.NILADIC,
-        OperatorCategory.DATE, "/docs/current_timezone.html");
+    super("CURRENT_TIMEZONE", true, ReturnTypes.STRING, OperandTypes.NILADIC, OperatorCategory.DATE,
+        "/docs/current_timezone.html");
     // TODO: is deterministic ?
   }
 

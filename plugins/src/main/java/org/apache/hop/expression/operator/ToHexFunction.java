@@ -47,10 +47,10 @@ public class ToHexFunction extends Function {
       return null;
     }
 
-    if ( v0 instanceof Number ) {
+    if (v0 instanceof Number) {
       return Long.toHexString(Coerce.toInteger(v0));
     }
-    
+
     byte[] bytes = Coerce.toBinary(v0);
     byte[] hexChars = new byte[bytes.length * 2];
     for (int j = 0; j < bytes.length; j++) {

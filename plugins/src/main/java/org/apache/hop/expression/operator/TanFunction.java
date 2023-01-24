@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TanFunction extends Function {
 
   public TanFunction() {
-    super("TAN", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/tan.html");
+    super("TAN", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+        "/docs/tan.html");
   }
 
   @Override

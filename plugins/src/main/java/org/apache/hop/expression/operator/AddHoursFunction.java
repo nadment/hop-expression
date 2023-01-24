@@ -33,8 +33,8 @@ import java.time.ZonedDateTime;
 public class AddHoursFunction extends Function {
 
   public AddHoursFunction() {
-    super("ADD_HOURS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC,
-        OperatorCategory.DATE, "/docs/add_hours.html");
+    super("ADD_HOURS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+        "/docs/add_hours.html");
   }
 
   @Override
@@ -43,14 +43,14 @@ public class AddHoursFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    
-    Object v1= operands[1].getValue(context);
+
+    Object v1 = operands[1].getValue(context);
     if (v1 == null)
       return null;
 
     ZonedDateTime datetime = Coerce.toDateTime(v0);
     long hours = Coerce.toInteger(v1);
-    
+
     return datetime.plusHours(hours);
   }
 }
