@@ -99,7 +99,7 @@ public final class ReturnTypes {
   
   public static final IReturnTypeInference LEAST_RESTRICTIVE = new LeastRestrictiveReturnTypeInference();
   
-  public static final IReturnTypeInference CAST = new CastReturnTypeInference();
+  public static final IReturnTypeInference CAST = new CastFunctionReturnTypeInference();
   
   public static ReturnTypeInferenceChain chain(
       IReturnTypeInference... rules) {

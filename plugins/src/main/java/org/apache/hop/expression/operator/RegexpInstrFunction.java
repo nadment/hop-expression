@@ -37,7 +37,7 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpInstrFunction extends Function {
 
   public RegexpInstrFunction() {
-    super("REGEXP_INSTR", true, ReturnTypes.INTEGER, OperandTypes.NO_CHECK,
+    super("REGEXP_INSTR", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_NUMERIC_STRING,
         "i18n::Operator.Category.String", "/docs/regexp_instr.html");
   }
 

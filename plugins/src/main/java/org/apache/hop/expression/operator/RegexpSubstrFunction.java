@@ -38,7 +38,7 @@ public class RegexpSubstrFunction extends Function {
 
   // TODO: Check operands type
   public RegexpSubstrFunction() {
-    super("REGEXP_SUBSTR", true, ReturnTypes.STRING, OperandTypes.NO_CHECK,
+    super("REGEXP_SUBSTR", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_STRING,
         "i18n::Operator.Category.String", "/docs/regexp_substr.html");
   }
 

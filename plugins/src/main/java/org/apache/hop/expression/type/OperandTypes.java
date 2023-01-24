@@ -174,7 +174,14 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC).optional(i -> i == 2);
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC).optional(i -> i >= 2);  
   public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_STRING = family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i == 2);
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i >= 2);
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i >= 2);
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_NUMERIC_STRING = family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i >= 2);
+  
   
   public static final IOperandTypeChecker JSON = family(DataTypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(DataTypeFamily.JSON, DataTypeFamily.STRING); 
+  
+  public static final IOperandTypeChecker CASE =  new CaseOperatorOperandTypeChecker();
+  public static final IOperandTypeChecker DECODE =  new DecodeFunctionOperandTypeChecker();
 }

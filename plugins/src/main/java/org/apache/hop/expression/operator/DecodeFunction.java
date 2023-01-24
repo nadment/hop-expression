@@ -16,16 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.Coerce;
-import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.type.IOperandCountRange;
-import org.apache.hop.expression.type.IOperandTypeChecker;
-import org.apache.hop.expression.type.OperandCountRange;
+import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
@@ -34,45 +30,9 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class DecodeFunction extends Function {
-  
-  private static final IOperandTypeChecker OTC = new DecodeOperandTypeChecker();
-
-  public static class DecodeOperandTypeChecker implements IOperandTypeChecker {
-
-    public DecodeOperandTypeChecker() {}
-
-    @Override
-    public boolean checkOperandTypes(Call call) {
-      DataTypeName search = call.getOperand(0).getType();
-      DataTypeName result = call.getOperand(2).getType();
-
-      int count = ((call.getOperandCount() - 1) / 2) * 2;
-      for (int i = 1; i < count; i += 2) {
-        if (!search.isSameFamily(call.getOperand(i).getType())) {
-          return false;
-        }
-        if (!result.isSameFamily(call.getOperand(i + 1).getType())) {
-          return false;
-        }
-      }
-
-      // Check type if function has a default value
-      if ((call.getOperandCount() - 1) > count
-          && !result.isSameFamily(call.getOperand(count + 1).getType())) {
-        return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public IOperandCountRange getOperandCountRange() {
-      return OperandCountRange.between(3, Integer.MAX_VALUE);
-    }
-  }
 
   public DecodeFunction() {
-    super("DECODE", true, ReturnTypes.ARG2, OTC, "i18n::Operator.Category.Conditional",
+    super("DECODE", true, ReturnTypes.ARG2, OperandTypes.DECODE, "i18n::Operator.Category.Conditional",
         "/docs/decode.html");
   }
 
