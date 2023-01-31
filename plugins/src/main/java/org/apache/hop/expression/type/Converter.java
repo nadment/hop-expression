@@ -19,10 +19,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.JsonComparator;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,13 +34,15 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class Converter {
 
+  private static final JsonComparator JSON_COMPARATOR = new JsonComparator();
+
   /**
    * Private constructor since this is a utility class.
    */
   private Converter() {}
 
-  public static Object to(Object value, final DataTypeName type) throws ExpressionException {
-    return to(value, type, null);
+  public static Object cast(Object value, final DataTypeName type) throws ExpressionException {
+    return cast(value, type, null);
   }
 
   /**
@@ -49,15 +54,10 @@ public class Converter {
    *        numeric, or null if none
    * @return the converted value
    */
-  public static final Object to(final Object value, final DataTypeName type, String pattern)
+  public static final Object cast(final Object value, final DataTypeName type, String pattern)
       throws ExpressionException {
 
     Objects.requireNonNull(type);
-
-    // Special date type, can't be converted to
-    // if ( type.getFamily()==DataTypeFamily.UNKNOWN ) {
-    // throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, type);
-    // }
 
     if (value == null) {
       return null;
@@ -74,7 +74,7 @@ public class Converter {
           return number.intValue() != 0;
         }
         if (value instanceof String) {
-          return toBoolean((String) value);
+          return parseBoolean((String) value);
         }
         break;
       case INTEGER:
@@ -86,7 +86,7 @@ public class Converter {
           return ((boolean) value) ? 1L : 0L;
         }
         if (value instanceof String) {
-          return toInteger((String) value);
+          return parseInteger((String) value);
         }
         if (value instanceof byte[]) {
           return toInteger((byte[]) value);
@@ -100,7 +100,7 @@ public class Converter {
           return Double.valueOf(((Number) value).doubleValue());
         }
         if (value instanceof String) {
-          return toNumber((String) value);
+          return parseNumber((String) value);
         }
         if (value instanceof byte[]) {
           return toNumber((byte[]) value);
@@ -127,7 +127,10 @@ public class Converter {
           return BigDecimal.valueOf(v);
         }
         if (value instanceof String) {
-          return toBigNumber((String) value);
+          return parseBigNumber((String) value);
+        }
+        if (value instanceof byte[]) {
+          return toBigNumber((byte[]) value);
         }
         break;
       case STRING:
@@ -138,14 +141,14 @@ public class Converter {
           if (pattern == null) {
             pattern = "TM";
           }
-          return NumberFormat.of(pattern).format(Coerce.toBigNumber(value));
+          return NumberFormat.of(pattern).format(coerceToBigNumber(value));
         }
         if (value instanceof ZonedDateTime) {
           if (pattern == null)
             pattern = "YYYY-MM-DD";
           return DateTimeFormat.of(pattern).format((ZonedDateTime) value);
         }
-        return Coerce.toString(value);
+        return coerceToString(value);
       case DATE:
         if (value instanceof String) {
           try {
@@ -157,16 +160,16 @@ public class Converter {
         break;
       case JSON:
         if (value instanceof String) {
-          return toJson((String) value);
+          return parseJson((String) value);
         }
         break;
       case BINARY:
         if (value instanceof String) {
           return ((String) value).getBytes(StandardCharsets.UTF_8);
         }
-        if (value instanceof Long) {
-          return toBinary((Long) value);
-        }
+        // if (value instanceof Long) {
+        // return toBinary((Long) value);
+        // }
         break;
       default:
     }
@@ -175,7 +178,7 @@ public class Converter {
         DataTypeName.from(value), type);
   }
 
-  public static final BigDecimal toBigNumber(final String str) throws ExpressionException {
+  public static final BigDecimal parseBigNumber(final String str) throws ExpressionException {
     try {
       return new BigDecimal(StringUtils.trim(str));
     } catch (NumberFormatException e) {
@@ -183,7 +186,7 @@ public class Converter {
     }
   }
 
-  public static final Long toInteger(final String str) throws ExpressionException {
+  public static final Long parseInteger(final String str) throws ExpressionException {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
@@ -192,12 +195,68 @@ public class Converter {
     }
   }
 
-  public static final Double toNumber(final String str) throws ExpressionException {
+  public static final Double parseNumber(final String str) throws ExpressionException {
     try {
       return Double.parseDouble(str);
     } catch (NumberFormatException e) {
       throw new ExpressionException(ExpressionError.INVALID_NUMBER, str);
     }
+  }
+
+  public static byte[] parseBinaryHex(final String s) {
+    final int len = s.length();
+
+    // "111" is not a valid hex encoding.
+    if (len % 2 != 0) {
+      throw new IllegalArgumentException("hexBinary needs to be even-length: " + s);
+    }
+
+    byte[] out = new byte[len / 2];
+
+    for (int i = 0; i < len; i += 2) {
+      int h = hexToBin(s.charAt(i));
+      int l = hexToBin(s.charAt(i + 1));
+      if (h == -1 || l == -1) {
+        throw new IllegalArgumentException("contains illegal character for hexBinary: " + s);
+      }
+
+      out[i / 2] = (byte) (h * 16 + l);
+    }
+
+    return out;
+  }
+
+  private static int hexToBin(char ch) {
+    if ('0' <= ch && ch <= '9') {
+      return ch - '0';
+    }
+    if ('A' <= ch && ch <= 'F') {
+      return ch - 'A' + 10;
+    }
+    if ('a' <= ch && ch <= 'f') {
+      return ch - 'a' + 10;
+    }
+    return -1;
+  }
+
+  private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
+
+  public static String toStringHex(final byte[] value) {
+    StringBuilder r = new StringBuilder(value.length * 2);
+    for (byte b : value) {
+        r.append(hexCode[(b >> 4) & 0xF]);
+        r.append(hexCode[(b & 0xF)]);
+    }
+    return r.toString();
+  }
+  
+  
+  public static byte[] parseBinaryBase64(final String value) {
+    return Base64.getDecoder().decode(value);
+  }
+
+  public static String toStringBase64(final byte[] value) {    
+    return Base64.getEncoder().encodeToString(value);
   }
 
   public static byte[] toBinary(Long number) {
@@ -233,7 +292,19 @@ public class Converter {
     return Double.valueOf(result);
   }
 
-  public static final boolean toBoolean(final String str) throws ExpressionException {
+  public static BigDecimal toBigNumber(final byte[] bytes) throws ExpressionException {
+    if (bytes.length > 8)
+      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes,
+          DataTypeName.BIGNUMBER);
+    long result = 0;
+    for (int i = 0; i < bytes.length; i++) {
+      result <<= Byte.SIZE;
+      result |= (bytes[i] & 0xFF);
+    }
+    return new BigDecimal(result);
+  }
+
+  public static final Boolean parseBoolean(final String str) throws ExpressionException {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
@@ -277,14 +348,13 @@ public class Converter {
         DataTypeName.BOOLEAN);
   }
 
-
   /**
    * Convert String value to Json.
    * 
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode toJson(final String str) throws ExpressionException {
+  public static JsonNode parseJson(final String str) throws ExpressionException {
     try {
       ObjectMapper objectMapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
@@ -294,6 +364,11 @@ public class Converter {
     }
   }
 
+  
+  public static String toString(final boolean value) {
+    return value ? "TRUE" : "FALSE";
+  }
+ 
   /**
    * Convert Json value to String.
    * 
@@ -307,6 +382,307 @@ public class Converter {
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.INVALID_JSON, json);
     }
+  }
+
+  /**
+   * Compare this value against another value. If values need to be converted to match the other
+   * operands data type, the value with the lower order is converted to the value with the higher
+   * order.
+   *
+   * @param value the other value
+   * @return 0 if both values are equal, -1 if this value is smaller, and 1 otherwise
+   */
+  public static final int compare(final Object left, final Object right)
+      throws ExpressionException {
+
+    if (left == null && right == null)
+      return 0;
+    if (left == null)
+      return -1;
+    if (right == null)
+      return 1;
+
+    // The lower order data type is converted
+    if (left instanceof byte[] || right instanceof byte[]) {
+      return compareTo(coerceToBinary(left), coerceToBinary(right));
+    }
+
+    if (left instanceof JsonNode || right instanceof JsonNode) {
+
+      JsonNode l = coerceToJson(left);
+      JsonNode r = coerceToJson(right);
+
+      // Ignores the order of attributes
+      return l.equals(JSON_COMPARATOR, r) ? 0 : 1;
+    }
+
+    if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
+      ZonedDateTime dt1 = coerceToDateTime(left);
+      ZonedDateTime dt2 = coerceToDateTime(right);
+      // Two timestamp are equal if they represent the same moment in time:
+      // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
+      if (dt1.isEqual(dt2)) {
+        return 0;
+      }
+      return dt1.compareTo(dt2);
+    }
+    if (left instanceof BigDecimal || right instanceof BigDecimal) {
+      return coerceToBigNumber(left).compareTo(coerceToBigNumber(right));
+    }
+    if (left instanceof Double || right instanceof Double) {
+      return coerceToNumber(left).compareTo(coerceToNumber(right));
+    }
+    if (left instanceof Long || right instanceof Long) {
+      return coerceToInteger(left).compareTo(coerceToInteger(right));
+    }
+    if (left instanceof Boolean || right instanceof Boolean) {
+      return coerceToBoolean(left).compareTo(coerceToBoolean(right));
+    }
+
+    return coerceToString(left).compareTo(coerceToString(right));
+  }
+
+  protected static int compareTo(final byte[] left, final byte[] right) {
+    int length = left.length < right.length ? left.length : right.length;
+
+    int compare = left.length - right.length;
+    if (compare == 0) {
+      for (int i = 0; i < length; i++) {
+        compare = left[i] - right[i];
+        if (compare != 0) {
+          compare = compare < 0 ? -1 : 1;
+          break;
+        }
+      }
+    }
+
+    return compare;
+  }
+
+  /**
+   * Coerce value to data type NUMBER
+   * 
+   * @param value the value to coerce
+   * @return Double
+   */
+  public static Double coerceToNumber(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Double) {
+      return (Double) value;
+    }
+    if (value instanceof Number) {
+      return Double.valueOf(((Number) value).doubleValue());
+    }
+    // if (value instanceof Boolean) {
+    // return ((boolean) value) ? 1D : 0D;
+    // }
+    if (value instanceof String) {
+      return parseNumber((String) value);
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.NUMBER);
+  }
+
+  /**
+   * Coerce value to data type BIGNUMBER
+   * 
+   * @param value the value to coerce
+   * @return BigDecimal
+   */
+  public static final BigDecimal coerceToBigNumber(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof BigDecimal) {
+      return (BigDecimal) value;
+    }
+    // if (value instanceof Boolean) {
+    // return ((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO;
+    // }
+    if (value instanceof Long) {
+      long v = (long) value;
+      if (v == 0L)
+        return BigDecimal.ZERO;
+      if (v == 1L)
+        return BigDecimal.ONE;
+      return BigDecimal.valueOf(v);
+    }
+    if (value instanceof Double) {
+      double v = (double) value;
+      if (v == 0D)
+        return BigDecimal.ZERO;
+      if (v == 1D)
+        return BigDecimal.ONE;
+      return BigDecimal.valueOf(v);
+    }
+    if (value instanceof String) {
+      return parseBigNumber((String) value);
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BIGNUMBER);
+  }
+
+  /**
+   * Coerce value to data type INTEGER
+   * 
+   * @param value the value to coerce
+   * @return Long
+   */
+  public static final Long coerceToInteger(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Long) {
+      return (Long) value;
+    }
+    if (value instanceof Number) {
+      return ((Number) value).longValue();
+    }
+    if (value instanceof String) {
+      return parseInteger((String) value);
+    }
+    // if (value instanceof Boolean) {
+    // return ((boolean) value) ? 1L : 0L;
+    // }
+    // if (value instanceof byte[]) {
+    // return toInteger((byte[]) value);
+    // }
+
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.INTEGER);
+  }
+
+  /**
+   * Coerce value to data type STRING
+   * 
+   * @param value the value to coerce
+   * @return String
+   */
+  public static final String coerceToString(final Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof String) {
+      return (String) value;
+    }
+    if (value instanceof Boolean) {
+      return ((boolean) value) ? "TRUE" : "FALSE";
+    }
+    if (value instanceof BigDecimal) {
+      return NumberFormat.of("TM").format((BigDecimal) value);
+    }
+    if (value instanceof byte[]) {
+      return new String((byte[]) value, StandardCharsets.UTF_8);
+    }
+
+    return String.valueOf(value);
+  }
+
+
+  /**
+   * Coerce value to data type DATE.
+   * 
+   * @param value the value to coerce
+   * @return ZonedDateTime
+   */
+  public static final ZonedDateTime coerceToDateTime(final Object value)
+      throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof ZonedDateTime) {
+      return (ZonedDateTime) value;
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.DATE);
+  }
+
+  public static final Date coerceToDate(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof ZonedDateTime) {
+      return Date.from(((ZonedDateTime) value).toInstant());
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.DATE);
+  }
+
+  public static final java.sql.Timestamp coerceToTimestamp(final Object value)
+      throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof ZonedDateTime) {
+      return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.DATE);
+  }
+
+  /**
+   * Coerce value to data type BOOLEAN
+   * 
+   * @param value the value to coerce
+   * @return Boolean
+   */
+
+  public static final Boolean coerceToBoolean(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Boolean) {
+      return (Boolean) value;
+    }
+    if (value instanceof Number) {
+      return ((Number) value).intValue() != 0;
+    }
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BOOLEAN);
+  }
+
+  /**
+   * Coerce value to data type BINARY
+   * 
+   * @param value the value to coerce
+   * @return bytes array
+   */
+  public static final byte[] coerceToBinary(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof byte[]) {
+      return (byte[]) value;
+    }
+    if (value instanceof String) {
+      return ((String) value).getBytes(StandardCharsets.UTF_8);
+    }
+
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.BINARY);
+  }
+
+  /**
+   * Coerce value to data type JSON
+   * 
+   * @param value the value to coerce
+   * @return String
+   */
+  public static final JsonNode coerceToJson(final Object value) throws ExpressionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof JsonNode) {
+      return (JsonNode) value;
+    }
+    if (value instanceof String) {
+      return Converter.parseJson((String) value);
+    }
+
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), DataTypeName.JSON);
   }
 
 }

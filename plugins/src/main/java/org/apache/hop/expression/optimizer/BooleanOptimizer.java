@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Coerce;
 
 /**
  * Simplifies boolean expressions:
@@ -82,7 +81,7 @@ public class BooleanOptimizer extends Optimizer {
       else if (call.is(Operators.BOOLOR)) {
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = Coerce.toBoolean(call.getOperand(0).getValue(context));
+          Boolean value = call.getOperand(0).getValue(context, Boolean.class);
           if (value == null)
             return call.getOperand(1);
           if (value == Boolean.TRUE)
@@ -90,7 +89,7 @@ public class BooleanOptimizer extends Optimizer {
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = Coerce.toBoolean(call.getOperand(1).getValue(context));
+          Boolean value = call.getOperand(1).getValue(context, Boolean.class);
           if (value == null)
             return call.getOperand(0);
           if (value == Boolean.TRUE)
@@ -108,7 +107,7 @@ public class BooleanOptimizer extends Optimizer {
         boolean right = true;
 
         if (call.getOperand(0).is(Kind.LITERAL)) {
-          Boolean value = Coerce.toBoolean(call.getOperand(0).getValue(context));
+          Boolean value =call.getOperand(0).getValue(context, Boolean.class);
           if (value == null)
             return Literal.NULL;
           if (value == Boolean.FALSE)
@@ -116,7 +115,7 @@ public class BooleanOptimizer extends Optimizer {
         }
 
         if (call.getOperand(1).is(Kind.LITERAL)) {
-          Boolean value = Coerce.toBoolean(call.getOperand(1).getValue(context));
+          Boolean value = call.getOperand(1).getValue(context, Boolean.class);
           if (value == null)
             return Literal.NULL;
           if (value == Boolean.FALSE)

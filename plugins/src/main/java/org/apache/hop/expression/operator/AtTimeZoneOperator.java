@@ -23,11 +23,11 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * Converts a value of one timezone into another timezone.
@@ -43,12 +43,12 @@ public class AtTimeZoneOperator extends Operator {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
+    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
     if (value == null)
       return null;
 
-    ZoneId zone = toZoneId(Coerce.toString(operands[1].getValue(context)));
-    return Coerce.toDateTime(value).withZoneSameInstant(zone);
+    ZoneId zone = toZoneId(operands[1].getValue(context, String.class));
+    return value.withZoneSameInstant(zone);
   }
 
   protected ZoneId toZoneId(String zone) throws Exception {

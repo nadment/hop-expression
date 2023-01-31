@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToBooleanFunction extends Function {
 
   public ToBooleanFunction() {
-    super("TO_BOOLEAN", true, ReturnTypes.BOOLEAN, OperandTypes.ANY, OperatorCategory.CONVERSION,
+    super("TO_BOOLEAN", true, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
         "/docs/to_boolean.html");
   }
 
@@ -44,6 +44,6 @@ public class ToBooleanFunction extends Function {
     if (value == null)
       return null;
 
-    return Converter.to(value, DataTypeName.BOOLEAN, null);
+    return Converter.cast(value, DataTypeName.BOOLEAN, null);
   }
 }

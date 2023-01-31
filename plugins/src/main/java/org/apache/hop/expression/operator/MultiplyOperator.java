@@ -20,7 +20,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -49,16 +49,16 @@ public class MultiplyOperator extends Operator {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return Coerce.toBigNumber(left).multiply(Coerce.toBigNumber(right));
+      return Converter.coerceToBigNumber(left).multiply(Converter.coerceToBigNumber(right));
     }
     if (left instanceof Double || right instanceof Double) {
-      return Coerce.toNumber(left) * Coerce.toNumber(right);
+      return Converter.coerceToNumber(left) * Converter.coerceToNumber(right);
     }
     if (left instanceof Long || right instanceof Long) {
-      return Coerce.toInteger(left) * Coerce.toInteger(right);
+      return Converter.coerceToInteger(left) * Converter.coerceToInteger(right);
     }
 
-    return Coerce.toBigNumber(left).multiply(Coerce.toBigNumber(right));
+    return Converter.coerceToBigNumber(left).multiply(Converter.coerceToBigNumber(right));
   }
 
   @Override

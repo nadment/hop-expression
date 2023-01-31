@@ -25,7 +25,6 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -110,9 +109,9 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     for (RouteTarget target : data.targets) {
 
       try {
-        Object result = target.expression.getValue(data.context);
+        Boolean predicat = target.expression.getValue(data.context, Boolean.class);
 
-        if (Coerce.isTrue(result)) {
+        if ( predicat ) {
           toDefault = false;
           putRowTo(data.rowMeta, row, target.rowSet);
           break;

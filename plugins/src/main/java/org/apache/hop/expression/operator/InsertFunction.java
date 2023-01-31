@@ -23,7 +23,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
@@ -54,18 +54,18 @@ public class InsertFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    Long v1 = operands[1].getValue(context, Long.class);
     if (v1 == null)
       return null;
-    Object v2 = operands[2].getValue(context);
+    Long v2 = operands[2].getValue(context, Long.class);
     if (v2 == null)
       return null;
     Object v3 = operands[3].getValue(context);
     if (v3 == null)
       return null;
 
-    int position = Coerce.toInteger(v1).intValue();
-    int length = Coerce.toInteger(v2).intValue();
+    int position = v1.intValue();
+    int length = v2.intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -78,7 +78,7 @@ public class InsertFunction extends Function {
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);
-        buffer.write(Coerce.toBinary(v3));
+        buffer.write(Converter.coerceToBinary(v3));
         buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
@@ -86,7 +86,7 @@ public class InsertFunction extends Function {
       }
     }
 
-    String str = Coerce.toString(v0);
+    String str = Converter.coerceToString(v0);
     int start = Math.min(Math.max(0, position - 1), str.length());
 
     length = Math.min(length, str.length());
@@ -95,7 +95,7 @@ public class InsertFunction extends Function {
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));
-    builder.append(Coerce.toString(v3));
+    builder.append(Converter.coerceToString(v3));
     builder.append(str.substring(start + length));
     return builder.toString();
   }

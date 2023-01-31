@@ -20,7 +20,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -46,11 +45,11 @@ public class BoolNotOperator extends Operator {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
+    Boolean value = operands[0].getValue(context, Boolean.class);
     if (value == null) {
       return null;
     }
-    return !Coerce.toBoolean(value);
+    return !value;
   }
 
   @Override

@@ -14,15 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= UPPER
 
-Converts a string to upper case.
+== Binary formats
 
-== Syntax
-----
-UPPER( string )
-----
-
-Returns:: String
-
-See also xref:lower.adoc[LOWER]
+[cols="<1,<5", options="header"]
+|===
+|Format|Description
+|HEX|Hexadecimal
+|BASE64|Printable ASCII characters https://tools.ietf.org/html/rfc4648[RFC 4648]
+|UTF-8|Character encoding for Unicode
+|===

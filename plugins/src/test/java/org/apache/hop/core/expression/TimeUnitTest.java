@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.util.TimeUnit;
+import org.apache.hop.expression.TimeUnit;
 import org.junit.Test;
 
 public class TimeUnitTest extends BaseExpressionTest {

@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -43,12 +42,11 @@ public class SqueezeFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String value = operands[0].getValue(context, String.class);
+    if (value == null)
       return null;
 
-    String str = Coerce.toString(v0);
-    char[] a = str.toCharArray();
+    char[] a = value.toCharArray();
     int n = 1;
     for (int i = 1; i < a.length; i++) {
       a[n] = a[i];

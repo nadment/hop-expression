@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.zip.CRC32C;
@@ -33,18 +32,16 @@ import java.util.zip.CRC32C;
 public class Crc32Function extends Function {
 
   public Crc32Function() {
-    super("CRC32", true, ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("CRC32", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC, "/docs/crc32.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    byte[] bytes = operands[0].getValue(context, byte[].class);
+    if (bytes == null)
       return null;
-
-    byte[] bytes = Coerce.toBinary(v0);
     CRC32C crc = new CRC32C();
     crc.update(bytes, 0, bytes.length);
 

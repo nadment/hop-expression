@@ -24,7 +24,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -42,17 +41,17 @@ public class LogFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object base = operands[0].getValue(context);
+    Double base = operands[0].getValue(context, Double.class);
     if (base == null)
       return null;
 
-    Object value = operands[1].getValue(context);
+    Double value = operands[1].getValue(context, Double.class);
     if (value == null)
       return null;
-    Double number = Coerce.toNumber(value);
-    if (number <= 0)
+    
+    if (value <= 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 
-    return FastMath.log(number) / FastMath.log(Coerce.toNumber(base));
+    return FastMath.log(value) / FastMath.log(base);
   }
 }

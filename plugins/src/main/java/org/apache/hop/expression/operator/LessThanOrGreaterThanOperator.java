@@ -20,7 +20,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -44,7 +44,7 @@ public class LessThanOrGreaterThanOperator extends Operator {
       return null;
     }
 
-    return Coerce.compare(left, right) != 0;
+    return Converter.compare(left, right) != 0;
   }
 
   @Override

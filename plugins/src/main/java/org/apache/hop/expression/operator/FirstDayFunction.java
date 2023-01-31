@@ -23,12 +23,12 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.FirstDayOfQuarter;
-import org.apache.hop.expression.util.TimeUnit;
 import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
@@ -48,7 +48,7 @@ public class FirstDayFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
     if (value == null)
       return null;
 
@@ -56,10 +56,8 @@ public class FirstDayFunction extends Function {
     TemporalAdjuster adjuster = TemporalAdjusters.firstDayOfMonth();
 
     if (operands.length == 2) {
-      Object v1 = operands[1].getValue(context);
-      if (v1 == null)
-        return null;
-      TimeUnit unit = Coerce.toTimeUnit(v1);
+      TimeUnit unit = operands[1].getValue(context, TimeUnit.class);
+
       switch (unit) {
         case YEAR:
           adjuster = TemporalAdjusters.firstDayOfYear();
@@ -79,7 +77,7 @@ public class FirstDayFunction extends Function {
     }
 
     // Remove time and adjust
-    return Coerce.toDateTime(value).truncatedTo(ChronoUnit.DAYS).with(adjuster);
+    return value.truncatedTo(ChronoUnit.DAYS).with(adjuster);
   }
 
 }

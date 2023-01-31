@@ -24,7 +24,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
@@ -91,7 +90,7 @@ public class JsonObjectFunction extends Function {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 
     for (int i = 0; i < operands.length; i += 2) {
-      String key = Coerce.toString(operands[i].getValue(context));
+      String key = operands[i].getValue(context, String.class);
       Object value = operands[i + 1].getValue(context);
       if (value == null) {
         node.putNull(key);

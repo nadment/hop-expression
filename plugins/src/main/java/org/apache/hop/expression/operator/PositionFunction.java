@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -40,15 +39,12 @@ public class PositionFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object v0 = operands[0].getValue(context);
-    Object v1 = operands[1].getValue(context);
+    String substr = operands[0].getValue(context, String.class);
+    String str = operands[1].getValue(context, String.class);
 
-    if (v0 == null || v1 == null) {
+    if (substr == null || str == null) {
       return null;
     }
-
-    String substr = Coerce.toString(v0);
-    String str = Coerce.toString(v1);
 
     return Long.valueOf(str.indexOf(substr, 0) + 1L);
   }

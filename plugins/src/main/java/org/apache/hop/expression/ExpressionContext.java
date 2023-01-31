@@ -41,6 +41,13 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   /**
    * The date format used for conversions between dates and strings.
    */
+  @Variable(value = "HEX",
+      description = "The default binary format used by expression for conversions between binaries and strings")
+  public static final String EXPRESSION_BINARY_FORMAT = "EXPRESSION_BINARY_FORMAT";
+  
+  /**
+   * The date format used for conversions between dates and strings.
+   */
   @Variable(value = "YYYY-MM-DD",
       description = "The default date format used by expression for conversions between dates and strings")
   public static final String EXPRESSION_DATE_FORMAT = "EXPRESSION_DATE_FORMAT";

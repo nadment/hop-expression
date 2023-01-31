@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -47,6 +47,6 @@ public class EqualNullFunction extends Function {
     Object v0 = operands[0].getValue(context);
     Object v1 = operands[1].getValue(context);
 
-    return Coerce.compare(v0, v1) == 0;
+    return Converter.compare(v0, v1) == 0;
   }
 }

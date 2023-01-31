@@ -20,7 +20,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -37,21 +36,20 @@ public class BoolOrOperator extends Operator {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
-    Object right = operands[1].getValue(context);
+    Boolean left = operands[0].getValue(context, Boolean.class);
+    Boolean right = operands[1].getValue(context, Boolean.class);
+    
     if (left == null) {
-      Boolean result = Coerce.toBoolean(right);
-      if (!result)
+      if (!right)
         return null;
-      return result;
+      return right;
     }
     if (right == null) {
-      Boolean result = Coerce.toBoolean(left);
-      if (!result)
+      if (!left)
         return null;
-      return result;
+      return left;
     }
-    return Boolean.logicalOr(Coerce.toBoolean(left), Coerce.toBoolean(right));
+    return Boolean.logicalOr(left, right);
   }
 
   @Override

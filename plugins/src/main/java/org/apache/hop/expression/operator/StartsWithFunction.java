@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -52,8 +52,8 @@ public class StartsWithFunction extends Function {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = Coerce.toBinary(v0);
-      byte[] prefix = Coerce.toBinary(v1);
+      byte[] data = Converter.coerceToBinary(v0);
+      byte[] prefix = Converter.coerceToBinary(v1);
       if (prefix.length > data.length) {
         return Boolean.TRUE;
       } else {
@@ -67,6 +67,6 @@ public class StartsWithFunction extends Function {
       return Boolean.TRUE;
     }
 
-    return Coerce.toString(v0).startsWith(Coerce.toString(v1));
+    return Converter.coerceToString(v0).startsWith(Converter.coerceToString(v1));
   }
 }

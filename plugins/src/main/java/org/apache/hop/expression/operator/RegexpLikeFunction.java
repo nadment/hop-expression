@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -46,25 +45,24 @@ public class RegexpLikeFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
 
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    String input = operands[0].getValue(context, String.class);
+    if (input == null) {
       return null;
     }
-    String input = Coerce.toString(v0);
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null) {
+    String pattern = operands[1].getValue(context, String.class);
+    if (pattern == null) {
       return null;
     }
-    String pattern = Coerce.toString(v1);
+
     // An empty pattern matches nothing
     if (pattern.length() == 0)
       return Boolean.FALSE;
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 3) {
-      Object v2 = operands[2].getValue(context);
-      flags = Regexp.parseFlags(Coerce.toString(v2));
+      String v2 = operands[2].getValue(context, String.class);
+      flags = Regexp.parseFlags(v2);
     }
 
     try {

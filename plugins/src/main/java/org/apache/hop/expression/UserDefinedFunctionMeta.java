@@ -37,7 +37,7 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
   private String source;
 
   @HopMetadataProperty(key = "arguments")
-  private List<Argument> arguments;
+  private List<FunctionArgument> arguments;
 
   public UserDefinedFunctionMeta() {
     super();
@@ -62,11 +62,11 @@ public class UserDefinedFunctionMeta extends HopMetadataBase implements IHopMeta
     this.description = description;
   }
 
-  public List<Argument> getArguments() {
+  public List<FunctionArgument> getArguments() {
     return arguments;
   }
 
-  public void setArguments(List<Argument> arguments) {
+  public void setArguments(List<FunctionArgument> arguments) {
     this.arguments = arguments;
   }
 

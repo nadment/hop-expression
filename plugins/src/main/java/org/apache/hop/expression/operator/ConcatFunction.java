@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
@@ -82,11 +81,12 @@ public class ConcatFunction extends Function {
     }
 
     // Concat String
+    // TODO: Preload array
     StringBuilder builder = new StringBuilder();
     for (IExpression operand : operands) {
-      Object value = operand.getValue(context);
+      String value = operand.getValue(context, String.class);
       if (value != null)
-        builder.append(Coerce.toString(value));
+        builder.append(value);
     }
 
     return builder.toString();

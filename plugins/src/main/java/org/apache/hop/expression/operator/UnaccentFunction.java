@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.text.Normalizer;
@@ -45,14 +44,12 @@ public class UnaccentFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String value = operands[0].getValue(context, String.class);
+    if (value == null)
       return null;
 
-    String str = Coerce.toString(v0);
-
     final StringBuilder decomposed =
-        new StringBuilder(Normalizer.normalize(str, Normalizer.Form.NFD));
+        new StringBuilder(Normalizer.normalize(value, Normalizer.Form.NFD));
 
     for (int i = 0; i < decomposed.length(); i++) {
       if (decomposed.charAt(i) == '\u0141') {

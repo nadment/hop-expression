@@ -21,10 +21,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.DayOfWeek;
+import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 
 /**
@@ -41,15 +41,15 @@ public class NextDayFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
     if (value == null)
       return null;
-    Object dow = operands[1].getValue(context);
+    String dow = operands[1].getValue(context, String.class);
     if (dow == null)
       return null;
 
-    DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toString().toUpperCase());
+    DayOfWeek dayofweek = DayOfWeek.valueOf(dow.toUpperCase());
 
-    return Coerce.toDateTime(value).with(TemporalAdjusters.next(dayofweek));
+    return value.with(TemporalAdjusters.next(dayofweek));
   }
 }

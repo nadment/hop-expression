@@ -27,7 +27,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
@@ -49,8 +48,8 @@ public class CompressFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    byte[] bytes = operands[0].getValue(context, byte[].class);
+    if (bytes == null)
       return null;
 
     // String algorithm = "SNAPPY";
@@ -58,7 +57,6 @@ public class CompressFunction extends Function {
     // ICompressionProvider provider_test = factory.getCompressionProviderByName(algorithm);
     // ICompressionProvider provider = getCompressionProviderByName(algorithm);
 
-    byte[] bytes = Coerce.toBinary(v0);
     ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
     // CompressionOutputStream compression = provider.createOutputStream(output);
     GZIPOutputStream compression = new GZIPOutputStream(output);

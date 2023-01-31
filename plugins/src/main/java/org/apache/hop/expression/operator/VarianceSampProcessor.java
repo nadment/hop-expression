@@ -19,7 +19,6 @@ import org.apache.commons.math3.stat.StatUtils;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Coerce;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +41,9 @@ public class VarianceSampProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
+    Double value = operands[0].getValue(context, Double.class);
     if (value != null) {
-      values.add(Coerce.toNumber(value));
+      values.add(value);
     }
   }
 

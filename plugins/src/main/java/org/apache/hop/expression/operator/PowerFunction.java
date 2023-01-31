@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -40,14 +39,11 @@ public class PowerFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    Object v1 = operands[1].getValue(context);
-    if (v0 == null || v1 == null) {
+    Double number = operands[0].getValue(context, Double.class);
+    Double exponent = operands[1].getValue(context, Double.class);
+    if (number == null || exponent == null) {
       return null;
     }
-
-    Double number = Coerce.toNumber(v0);
-    Double exponent = Coerce.toNumber(v1);
 
     if (exponent == 0)
       return 1L;

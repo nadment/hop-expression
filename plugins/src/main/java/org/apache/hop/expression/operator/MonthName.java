@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.Month;
@@ -43,12 +42,11 @@ public class MonthName extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
     if (value == null)
       return null;
 
-    ZonedDateTime datetime = Coerce.toDateTime(value);
-    Month month = datetime.getMonth();
+    Month month = value.getMonth();
     return month.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
   }
 

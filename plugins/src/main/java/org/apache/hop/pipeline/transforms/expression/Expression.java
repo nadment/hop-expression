@@ -23,13 +23,18 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Date;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
   private static final Class<?> PKG = ExpressionMeta.class;
@@ -119,9 +124,8 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
 
       try {
         IExpression expression = data.expressions[index];
-        Object value = expression.getValue(data.context);
-        IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
-        outputRowValues[index] = convertValue(valueMeta, value);
+        IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);        
+        outputRowValues[index] = getValue(data.context, expression, valueMeta);
       } catch (HopException e) {
         String message =
             BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
@@ -144,43 +148,34 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     return true;
   }
 
-  /**
-   * We can't use valueMeta.convertData(valueMeta,value) because doesn't support ZonedDateTime
-   * 
-   * @param meta
-   * @param value
-   * @return
-   * @throws HopException
-   */
-  public Object convertValue(IValueMeta meta, Object value) throws HopException {
-
-    if (value == null)
-      return null;
-
+  public Object getValue(IExpressionContext context, IExpression expression, IValueMeta meta) throws HopException {
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
         return null;
       case IValueMeta.TYPE_STRING:
-        return Coerce.toString(value);
+        return expression.getValue(data.context, String.class);
       case IValueMeta.TYPE_NUMBER:
-        return Coerce.toNumber(value);
+        return expression.getValue(data.context, Double.class);
       case IValueMeta.TYPE_INTEGER:
-        return Coerce.toInteger(value);
-      case IValueMeta.TYPE_DATE:
-        return Coerce.toDate(value);
-      case IValueMeta.TYPE_TIMESTAMP:
-        return Coerce.toTimestamp(value);
+        return expression.getValue(data.context, Long.class);
+      case IValueMeta.TYPE_DATE: {
+        ZonedDateTime date = expression.getValue(data.context, ZonedDateTime.class);
+        return Date.from(date.toInstant());
+      }
+      case IValueMeta.TYPE_TIMESTAMP: {
+        ZonedDateTime date = expression.getValue(data.context, ZonedDateTime.class);
+        return Timestamp.from(date.toInstant());
+      }
       case IValueMeta.TYPE_BIGNUMBER:
-        return Coerce.toBigNumber(value);
+        return expression.getValue(data.context, BigDecimal.class);
       case IValueMeta.TYPE_BOOLEAN:
-        return Coerce.toBoolean(value);
+        return expression.getValue(data.context, Boolean.class);
       case IValueMeta.TYPE_BINARY:
-        return Coerce.toBinary(value);
+        return expression.getValue(data.context, byte[].class);
       case ValueMetaJson.TYPE_JSON:
-        return Coerce.toJson(value);
+        return expression.getValue(data.context, JsonNode.class);
       default:
-        throw new HopValueException(
-            value + " : I can't convert the specified value to data type : " + meta.getType());
+        throw new HopValueException("Error convert evaluate " + meta.getName() + " with data type : " + meta.getType());
     }
   }
 }

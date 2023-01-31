@@ -115,6 +115,11 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   @Override
+  public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  }
+  
+  @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
   }
@@ -165,4 +170,5 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   public java.util.Iterator<IExpression> iterator() {
     return new Iterator();
   }
+
 }

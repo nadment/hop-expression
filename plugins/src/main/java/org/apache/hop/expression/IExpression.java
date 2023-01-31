@@ -69,17 +69,25 @@ public interface IExpression {
   public int getCost();
 
   /**
-   * Evaluates the expression.
+   * Evaluates the value of this expression.
    *
    * @param context The context against which the expression will be evaluated.
-   * 
    * @throws ExpressionException if an error occurs.
    * @throws NullPointerException if context is null.
-   * 
    * @return The result of evaluating the expression.
    */
   public Object getValue(IExpressionContext context) throws ExpressionException;
-
+  
+  /**
+   * Evaluates the value of this expressions a given Java type.
+   *
+   * @param context The context against which the expression will be evaluated.
+   * @param clazz Desired value type
+   * @param <T> Value type
+   * @return The result of evaluating the expression in desired type
+   */
+  public <T extends Object> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException;
+  
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.

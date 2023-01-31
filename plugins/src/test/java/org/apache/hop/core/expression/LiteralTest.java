@@ -21,9 +21,9 @@ import static org.junit.Assert.assertNull;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
-import org.apache.hop.expression.util.TimeUnit;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -113,8 +113,8 @@ public class LiteralTest extends BaseExpressionTest {
     assertEquals(Literal.FALSE, Literal.of(false));
     assertEquals(Literal.FALSE.hashCode(), Literal.of(false).hashCode());
 
-    assertEquals("TRUE", Coerce.toString(Literal.TRUE));
-    assertEquals("FALSE", Coerce.toString(Literal.FALSE));
+    assertEquals("TRUE", Converter.coerceToString(Literal.TRUE));
+    assertEquals("FALSE", Converter.coerceToString(Literal.FALSE));
 
     evalTrue("True");
     evalTrue("True");
@@ -133,19 +133,16 @@ public class LiteralTest extends BaseExpressionTest {
   public void Binary() throws Exception {
 
     // Hexadecimal
-    evalEquals("0xff", 255L);
-    evalEquals("0xfE", 254L);
-    evalEquals("0x0F", 15L);
     evalEquals("0x1234567812345678", new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
     evalFails("0X0F");
     evalFails("0X0FG");
 
     // Binary
-    evalEquals("0b10", 2L);
-    evalEquals("0b00000010", 2L);
-    evalEquals("0b011", 3L);
-    evalEquals("0b000000011111111", 255L);
-    evalEquals("0b00001010101010101010101010101101010101010101010101010101010101010101",
+    evalEquals("0b10::INTEGER", 2L);
+    evalEquals("0b00000010::INTEGER", 2L);
+    evalEquals("0b011::INTEGER", 3L);
+    evalEquals("0b000000011111111::INTEGER", 255L);
+    evalEquals("0b00001010101010101010101010101101010101010101010101010101010101010101::NUMBER",
         6.1489146933895936E18);
     evalFails("0B010101");
     evalFails("0B010501");

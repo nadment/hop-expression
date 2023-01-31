@@ -20,7 +20,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -41,7 +40,7 @@ public class FirstValueFunction extends AggregateFunction {
 
     if (operands.length == 2) {
       try {
-        ignoreNull = Coerce.toBoolean(operands[1].getValue(context));
+        ignoreNull = operands[1].getValue(context, Boolean.class);
       } catch (ExpressionException e) {
         // Ignore
       }

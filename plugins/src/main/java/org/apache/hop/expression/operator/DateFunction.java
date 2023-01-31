@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.LocalDate;
@@ -41,21 +40,21 @@ public class DateFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
+    Long v0 = operands[0].getValue(context, Long.class);
     if (v0 == null)
       return null;
 
-    Object v1 = operands[1].getValue(context);
+    Long v1 = operands[1].getValue(context, Long.class);
     if (v1 == null)
       return null;
 
-    Object v2 = operands[2].getValue(context);
+    Long v2 = operands[2].getValue(context, Long.class);
     if (v2 == null)
       return null;
 
-    int year = Coerce.toInteger(v0).intValue();
-    int month = Coerce.toInteger(v1).intValue();
-    int day = Coerce.toInteger(v2).intValue();
+    int year = v0.intValue();
+    int month = v1.intValue();
+    int day = v2.intValue();
 
     int monthsToAdd = 0;
     if (month < 1) {

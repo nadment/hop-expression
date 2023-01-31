@@ -17,7 +17,7 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
-public class Argument {
+public class FunctionArgument {
 
   @HopMetadataProperty
   private String name;
@@ -25,11 +25,11 @@ public class Argument {
   @HopMetadataProperty
   private DataTypeName type;
 
-  public Argument() {
+  public FunctionArgument() {
     super();
   }
 
-  public Argument(String name, DataTypeName type) {
+  public FunctionArgument(String name, DataTypeName type) {
     super();
     this.name = name;
     this.type = type;
@@ -65,7 +65,7 @@ public class Argument {
     if (getClass() != o.getClass())
       return false;
 
-    return name.equals(((Argument) o).name);
+    return name.equals(((FunctionArgument) o).name);
   }
 
   @Override

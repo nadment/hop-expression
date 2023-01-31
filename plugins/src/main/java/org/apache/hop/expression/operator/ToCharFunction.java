@@ -17,16 +17,20 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
+import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 
 /**
  * Converts a numeric or date expression to a string value.
@@ -35,37 +39,58 @@ import org.apache.hop.expression.util.NumberFormat;
 public class ToCharFunction extends Function {
 
   public ToCharFunction() {
-    super("TO_CHAR", true, ReturnTypes.STRING,
-        OperandTypes.NUMERIC_OPTIONAL_TEXT.or(OperandTypes.DATE_OPTIONAL_TEXT),
+    super(
+        "TO_CHAR", true, ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT
+            .or(OperandTypes.DATE_OPTIONAL_TEXT).or(OperandTypes.BINARY_OPTIONAL_TEXT),
         OperatorCategory.CONVERSION, "/docs/to_char.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    Object value = operands[0].getValue(context);
+    if (value == null) {
       return null;
     }
 
     String pattern = null;
     if (operands.length > 1) {
-      Object v1 = operands[1].getValue(context);
-      if (v1 != null)
-        pattern = Coerce.toString(v1);
+      pattern = operands[1].getValue(context, String.class);
     }
 
-    if (v0 instanceof Number) {
+    if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
 
-      return NumberFormat.of(pattern).format(Coerce.toBigNumber(v0));
+      return NumberFormat.of(pattern).format(Converter.coerceToBigNumber(value));
     }
 
-    if (pattern == null) {
-      pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+    if (value instanceof ZonedDateTime) {
+      if (pattern == null) {
+        pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+      }
+      return DateTimeFormat.of(pattern).format(Converter.coerceToDateTime(value));
     }
-    return DateTimeFormat.of(pattern).format(Coerce.toDateTime(v0));
+    
+
+      if (pattern == null) {
+        pattern = "HEX";
+      } else
+        pattern = pattern.toUpperCase();
+
+      byte[] bytes = Converter.coerceToBinary(value);
+
+      if (pattern.equals("HEX")) {
+        return Converter.toStringHex(bytes);
+      }
+      if (pattern.equals("BASE64")) {
+        return Converter.toStringBase64(bytes);
+      }
+      if (pattern.equals("UTF-8") || pattern.equals("UTF8")) {
+        return new String(bytes, StandardCharsets.UTF_8);
+      }
+
+      throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
   }
 }

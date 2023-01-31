@@ -19,6 +19,7 @@ import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -858,11 +859,12 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Abs(1)", 1);
     evalEquals("Abs(-1)", 1);
     evalEquals("Abs(FIELD_NUMBER)", 5.12);
+    evalEquals("Abs(STRING_NUMBER)", 12.56);
     evalEquals("Abs(-1::INTEGER)", 1);
     evalEquals("Abs(-1.12345679)", 1.12345679);
     evalEquals("Abs(-1.1234567912345679123456791234567912345679)",
         1.123456791234567912345679123456791234567912345679);
-    evalNull("Abs(NULL)");
+    evalNull("Abs(NULL_INTEGER)");
     evalFails("Abs()");
 
     writeEquals("ABS(-FIELD_INTEGER)");
@@ -1108,6 +1110,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Square() throws Exception {
     evalEquals("Square(1)", 1);
     evalEquals("Square(-5)", 25);
+    evalEquals("Square(STRING_INTEGER)", 25*25);
     evalFails("Square()");
     evalNull("Square(NULL_INTEGER)");
   }
@@ -1213,7 +1216,7 @@ public class FunctionsTest extends BaseExpressionTest {
   public void Insert() throws Exception {
     evalEquals("Insert('abcd', 2, 1, 'qw')", "aqwcd");
     evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
-    evalEquals("Insert(0x1234, 2, 0, 0x56)", new byte[] {0x12, 0x56, 0x34});
+    evalEquals("Insert(0x1234::BINARY, 2, 0, 0x56::BINARY)", new byte[] {0x12, 0x56, 0x34});
     evalEquals("Insert(0x1234, 0, 0, 0x56)", new byte[] {0x56, 0x12, 0x34});
     evalNull("Insert(NULL, 2, 1, 'qw')");
     evalNull("Insert('abcd', NULL, 1, 'qw')");
@@ -1261,7 +1264,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalTrue("To_Boolean('on')");
     evalTrue("To_Boolean('1')");
     evalTrue("To_Boolean(5)");
-    evalTrue("To_Boolean(2.3)");
+    evalTrue("To_Boolean(2.3::Number)");
+    evalTrue("To_Boolean(2.3::BigNumber)");
     evalTrue("To_Boolean(-1)");
 
     evalFalse("To_Boolean('False')");
@@ -1283,7 +1287,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void To_Hex() throws Exception {
-    evalEquals("To_Hex('hello')", "68656c6c6f");
+    evalEquals("To_Hex('Apache Hop')", "41706163686520486f70");
     evalEquals("To_Hex(0x00010203AAeeeFFF)", "00010203aaeeefff");
     evalEquals("To_Hex(1234)", "4d2");
     evalEquals("To_Hex(1234.567)", "4d2");
@@ -1293,6 +1297,18 @@ public class FunctionsTest extends BaseExpressionTest {
     evalFails("To_Hex()");    
 
     evalFails("To_Hex(0x01,0x02)");
+  }
+  
+  @Test
+  public void To_Binary() throws Exception {
+    evalEquals("TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());    
+    evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
+    evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    
+    evalNull("TO_BINARY(NULL)");
+    evalNull("TO_BINARY('Apache Hop',NULL)");
+    
+    evalFails("TO_BINARY()");
   }
 
   @Test
@@ -1737,9 +1753,17 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456','yyyy-mm-dd hh:mi:ss.FF')",
         "2020-12-03 01:02:03.123456");
 
-
+    // Binary
+    evalEquals("TO_CHAR(0x41706163686520486f70,'HEX')", "41706163686520486F70");
+    evalEquals("TO_CHAR(0x41706163686520486f70,'BASE64')", "QXBhY2hlIEhvcA==");
+    evalEquals("TO_CHAR(0x41706163686520486f70,'UTF-8')", "Apache Hop");
+        
     // String
-    evalFails("TO_CHAR('abc')");
+    evalEquals("TO_CHAR('Apache Hop','HEX')","41706163686520486F70");
+    evalEquals("TO_CHAR('Apache Hop','BASE64')","QXBhY2hlIEhvcA==");
+    evalEquals("TO_CHAR('Apache Hop','UTF8')","Apache Hop");
+    
+    returnType("TO_CHAR(12,'99MI')", DataTypeName.STRING);
   }
 
   @Test
@@ -1907,12 +1931,12 @@ public class FunctionsTest extends BaseExpressionTest {
 
   @Test
   public void Json_Object() throws Exception {
-    evalEquals("Json_Object(KEY 'name' VALUE 'Smith')", Converter.toJson("{\"name\":\"Smith\"}"));
+    evalEquals("Json_Object(KEY 'name' VALUE 'Smith')", Converter.parseJson("{\"name\":\"Smith\"}"));
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')",
-        Converter.toJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
-    evalEquals("Json_Object( 'name' VALUE 'Smith')", Converter.toJson("{\"name\":\"Smith\"}"));
+        Converter.parseJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
+    evalEquals("Json_Object( 'name' VALUE 'Smith')", Converter.parseJson("{\"name\":\"Smith\"}"));
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'empty' VALUE null)",
-        Converter.toJson("{\"name\":\"Smith\",\"empty\":null}"));
+        Converter.parseJson("{\"name\":\"Smith\",\"empty\":null}"));
 
 
     evalFails("Json_Object(KEY 'name' VALUE )");

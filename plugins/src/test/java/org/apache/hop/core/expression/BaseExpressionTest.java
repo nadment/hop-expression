@@ -35,7 +35,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -94,6 +94,12 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER")); 
     rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
 
+    // For implicit cast
+    rowMeta.addValueMeta(new ValueMetaString("STRING_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaString("STRING_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaString("STRING_NUMBER"));
+   
+    
     // Reserved words
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("STRING"));
@@ -108,7 +114,7 @@ public class BaseExpressionTest {
     Calendar calendar = Calendar.getInstance();
     calendar.set(1981, 5, 23);
 
-    Object[] row = new Object[22];
+    Object[] row = new Object[25];
     row[0] = "TEST";
     row[1] = "F";
     row[2] = calendar.getTime();
@@ -124,13 +130,19 @@ public class BaseExpressionTest {
     row[12] = null;
     row[13] = null;
     row[14] = null;
-    row[15] = 2020L;
-    row[16] = "Paris";
-    row[17] = true;
-    row[18] = 2;
-    row[19] = "SPACE";
-    row[20] = "UNDERSCORE";
-    row[21] = "lower";
+
+    row[15] = "True";
+    row[16] = "25";
+    row[17] = "-12.56";
+
+    
+    row[18] = 2020L;
+    row[19] = "Paris";
+    row[20] = true;
+    row[21] = 2;
+    row[22] = "SPACE";
+    row[23] = "UNDERSCORE";
+    row[24] = "lower";
 
     ExpressionContext context = new ExpressionContext(variables, rowMeta);
     context.setRow(row);
@@ -214,7 +226,7 @@ public class BaseExpressionTest {
 
   protected void evalEquals(String source, double expected) throws Exception {
     Object value = eval(source);
-    assertEquals(expected, Coerce.toNumber(value), 0.000000000000001);
+    assertEquals(expected, Converter.coerceToNumber(value), 0.000000000000001);
   }
 
   protected void evalEquals(String source, BigDecimal expected) throws Exception {
@@ -305,7 +317,11 @@ public class BaseExpressionTest {
 //    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
 //    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalNull("case when FIELD_INTEGER=10 then 10 end");
+    //evalEquals("TO_CHAR(TO_BINARY('Apache Hop','HEX'),'HEX')", "Apache Hop");
+    evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    //evalEquals("TO_CHAR(TO_BINARY('Apache Hop','BASE64'),'BASE64')", "Apache Hop");
+//    evalEquals("TO_CHAR(TO_BINARY('Apache Hop','UTF-8'),'UTF-8')", "Apache Hop");
+
   }
 }
 

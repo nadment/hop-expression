@@ -21,7 +21,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -57,11 +57,11 @@ public class BetweenOperator extends Operator {
     }
 
     // If lower bound is greater than upper bound
-    if (between == Between.SYMMETRIC && Coerce.compare(start, end) >= 0) {
-      return Coerce.compare(value, end) >= 0 && Coerce.compare(value, start) <= 0;
+    if (between == Between.SYMMETRIC && Converter.compare(start, end) >= 0) {
+      return Converter.compare(value, end) >= 0 && Converter.compare(value, start) <= 0;
     }
 
-    return Coerce.compare(value, start) >= 0 && Coerce.compare(value, end) <= 0;
+    return Converter.compare(value, start) >= 0 && Converter.compare(value, end) <= 0;
   }
 
   @Override

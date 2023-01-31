@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -39,19 +38,15 @@ public class TranslateFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String string = operands[0].getValue(context, String.class);
+    if (string == null)
       return null;
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null)
+    String findChars = operands[1].getValue(context, String.class);
+    if (findChars == null)
       return null;
-    Object v2 = operands[2].getValue(context);
-    if (v2 == null)
+    String replaceChars = operands[2].getValue(context, String.class);
+    if (replaceChars == null)
       return null;
-
-    String string = Coerce.toString(v0);
-    String findChars = Coerce.toString(v1);
-    String replaceChars = Coerce.toString(v2);
 
     StringBuilder buffer = new StringBuilder(string.length());
     // if shorter than findChars, then characters are removed

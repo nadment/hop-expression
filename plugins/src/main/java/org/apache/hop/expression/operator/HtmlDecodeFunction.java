@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -42,7 +41,7 @@ public class HtmlDecodeFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
-    return StringEscapeUtils.unescapeHtml(Coerce.toString(value));
+    String value = operands[0].getValue(context, String.class);
+    return StringEscapeUtils.unescapeHtml(value);
   }
 }

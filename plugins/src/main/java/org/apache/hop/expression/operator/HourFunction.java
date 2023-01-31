@@ -21,9 +21,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.time.ZonedDateTime;
 
 /**
  * The hour (0-23).
@@ -41,9 +41,9 @@ public class HourFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
     if (value == null)
       return null;
-    return Long.valueOf(Coerce.toDateTime(value).getHour());
+    return Long.valueOf(value.getHour());
   }
 }

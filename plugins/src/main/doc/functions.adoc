@@ -166,6 +166,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sum.adoc[SUM] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tan.adoc[TAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tanh.adoc[TANH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]

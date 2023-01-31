@@ -24,10 +24,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.TimeUnit;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -50,17 +49,13 @@ public class ExtractFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    // Null throw exception
-    TimeUnit unit = Coerce.toTimeUnit(operands[0].getValue(context));
 
-    Object value = operands[1].getValue(context);
-    if (value == null)
+    TimeUnit unit = operands[0].getValue(context, TimeUnit.class);
+
+    ZonedDateTime datetime = operands[1].getValue(context, ZonedDateTime.class);
+    if (datetime == null)
       return null;
 
-    return extract(Coerce.toDateTime(value), unit);
-  }
-
-  protected Object extract(ZonedDateTime datetime, TimeUnit unit) throws Exception {
     switch (unit) {
       case DAY:
         return datetime.getDayOfMonth();

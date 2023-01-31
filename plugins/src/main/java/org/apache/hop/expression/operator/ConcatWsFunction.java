@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
@@ -48,20 +48,20 @@ public class ConcatWsFunction extends Function {
       return null;
 
     boolean notFirstValue = false;
-
+    
     // Concat Binary
     if (v0 instanceof byte[]) {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
-      byte[] separator = Coerce.toBinary(v0);
+      byte[] separator = Converter.coerceToBinary(v0);
       for (int i = 1; i < operands.length; i++) {
-        Object value = operands[i].getValue(context);
+        byte[] value = operands[i].getValue(context, byte[].class);
 
         if (value != null) {
           if (notFirstValue) {
             output.write(separator);
           }
           notFirstValue = true;
-          output.write(Coerce.toBinary(value));
+          output.write(value);
         }
       }
 
@@ -73,15 +73,15 @@ public class ConcatWsFunction extends Function {
 
     // Concat String
     StringBuilder builder = new StringBuilder();
-    String separator = Coerce.toString(v0);
+    String separator = Converter.coerceToString(v0);
     for (int i = 1; i < operands.length; i++) {
-      Object value = operands[i].getValue(context);
+      String value = operands[i].getValue(context, String.class);
       if (value != null) {
         if (notFirstValue) {
           builder.append(separator);
         }
         notFirstValue = true;
-        builder.append(Coerce.toString(value));
+        builder.append(value);
       }
     }
 

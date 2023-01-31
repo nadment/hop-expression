@@ -179,13 +179,14 @@ public class ExpressionTest extends BaseExpressionTest {
 
   @Test
   public void CoercionImplicit() throws Exception {
-    // Coercion Number to Boolean
-    evalTrue("true = 1");
-    evalTrue("false = 0");
-    evalTrue("true OR 0");
-    evalFalse("false AND 0");
+    // Coercion Number
+    evalTrue("1::BIGNUMBER = 1::INTEGER");    
+    evalTrue("0::BIGNUMBER = 0::NUMBER");
+    evalTrue("1::NUMBER = 1::INTEGER");
     
+        
     // String to Number
+    evalTrue("'1.25' = 1.25::NUMBER");
     evalEquals("2*'1.23'", 2.46);
     evalEquals("2+'2'", 4);
     evalEquals("'2'+2", 4);

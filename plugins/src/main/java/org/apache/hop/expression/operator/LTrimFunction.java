@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -42,21 +41,19 @@ public class LTrimFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    String value = operands[0].getValue(context, String.class);
     if (value == null)
       return null;
 
-    String string = Coerce.toString(value);
-    String characters = null;
+    String stripChars = null;
 
     if (operands.length == 2) {
-      Object stripChars = operands[1].getValue(context);
+      stripChars = operands[1].getValue(context, String.class);
       if (stripChars == null)
-        return null;
-      characters = Coerce.toString(stripChars);
+        return null;     
     }
 
-    return StringUtils.stripStart(string, characters);
+    return StringUtils.stripStart(value, stripChars);
   }
 
 }

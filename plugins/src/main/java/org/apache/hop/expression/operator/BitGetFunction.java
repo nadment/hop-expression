@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -39,19 +38,19 @@ public class BitGetFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    Long value = operands[0].getValue(context, Long.class);
+    if (value == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    Long v1 = operands[1].getValue(context, Long.class);
     if (v1 == null)
       return null;
 
-    int distance = Coerce.toInteger(v1).intValue();
+    int distance = v1.intValue();
     if (distance <= 0)
       return null;
     if (distance > 64)
       return Boolean.FALSE;
 
-    return (Coerce.toInteger(v0) & (1L << distance - 1)) != 0;
+    return (value & (1L << distance - 1)) != 0;
   }
 }

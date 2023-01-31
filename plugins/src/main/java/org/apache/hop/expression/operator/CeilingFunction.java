@@ -22,7 +22,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -48,9 +48,9 @@ public class CeilingFunction extends Function {
     if (value instanceof Long)
       return value;
     if (value instanceof BigDecimal) {
-      return Coerce.toBigNumber(value).setScale(0, RoundingMode.CEILING);
+      return Converter.coerceToBigNumber(value).setScale(0, RoundingMode.CEILING);
     }
-    return FastMath.ceil(Coerce.toNumber(value));
+    return FastMath.ceil(Converter.coerceToNumber(value));
   }
 
 }

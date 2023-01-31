@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
@@ -52,17 +51,15 @@ public class RegexpReplaceFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    String input = operands[0].getValue(context, String.class);
+    if (input == null) {
       return null;
     }
-    String input = Coerce.toString(v0);
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null) {
+    String pattern = operands[1].getValue(context, String.class);
+    if (pattern == null) {
       return null;
     }
-    String pattern = Coerce.toString(v1);
 
     // An empty pattern matches nothing
     if (pattern.length() == 0)
@@ -71,34 +68,31 @@ public class RegexpReplaceFunction extends Function {
     // Default empty string
     String replacement = "";
     if (operands.length >= 3) {
-      Object v2 = operands[2].getValue(context);
-      if (v2 != null) {
-        replacement = Coerce.toString(v2);
-      }
+      replacement = operands[2].getValue(context, String.class);            
     }
 
     // Default position 1
     int position = 1;
     if (operands.length >= 4) {
-      Object v3 = operands[3].getValue(context);
+      Long v3 = operands[3].getValue(context, Long.class);
       if (v3 != null) {
-        position = Coerce.toInteger(v3).intValue();
+        position = v3.intValue();
       }
     }
 
     // Default occurrence 0
     int occurrence = 0;
     if (operands.length >= 5) {
-      Object v4 = operands[4].getValue(context);
+      Long v4 = operands[4].getValue(context, Long.class);
       if (v4 != null) {
-        occurrence = Coerce.toInteger(v4).intValue();
+        occurrence = v4.intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
-      Object v5 = operands[5].getValue(context);
-      flags = Regexp.parseFlags(Coerce.toString(v5));
+      String v5 = operands[5].getValue(context, String.class);
+      flags = Regexp.parseFlags(v5);
     }
 
     try {

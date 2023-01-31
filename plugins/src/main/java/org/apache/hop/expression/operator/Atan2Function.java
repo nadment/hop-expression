@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -40,13 +39,13 @@ public class Atan2Function extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
+    Double v0 = operands[0].getValue(context, Double.class);
     if (v0 == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    Double v1 = operands[1].getValue(context, Double.class);
     if (v1 == null)
       return null;
 
-    return FastMath.atan2(Coerce.toNumber(v0), Coerce.toNumber(v1));
+    return FastMath.atan2(v0, v1);
   }
 }

@@ -114,6 +114,18 @@ public final class Call implements IExpression {
   }
 
   @Override
+  public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
+    try {
+      Object result = operator.eval(context, operands);
+      
+      return clazz.cast(result);
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
+          e.getMessage());
+    }
+  }
+  
+  @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
   }

@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -44,7 +44,7 @@ public class ReverseFunction extends Function {
       return null;
 
     if (value instanceof byte[]) {
-      byte[] data = Coerce.toBinary(value);
+      byte[] data = Converter.coerceToBinary(value);
       byte[] result = new byte[data.length];
       for (int i = data.length - 1, j = 0; i >= 0; i--, j++) {
         result[j] = data[i];
@@ -52,7 +52,7 @@ public class ReverseFunction extends Function {
       return result;
     }
 
-    StringBuilder builder = new StringBuilder(Coerce.toString(value)).reverse();
+    StringBuilder builder = new StringBuilder(Converter.coerceToString(value)).reverse();
     return builder.toString();
   }
 }

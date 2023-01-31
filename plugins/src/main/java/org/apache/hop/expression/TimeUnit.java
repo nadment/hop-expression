@@ -12,9 +12,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.expression.util;
-
-import org.apache.hop.expression.ExpressionError;
+package org.apache.hop.expression;
 
 /**
  * A time unit can be used with functions such as EXTRACT, FIRST_DAY...

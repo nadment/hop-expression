@@ -28,7 +28,6 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -138,7 +137,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
 
     data.context.setRow(r);
-    long nrClones = Coerce.toInteger(data.numberOfClones.getValue(data.context));
+    long nrClones = data.numberOfClones.getValue(data.context, Long.class);
 
     for (int i = 0; i < nrClones && !isStopped(); i++) {
       // Output now all clones row

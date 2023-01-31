@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -41,22 +40,21 @@ public class TruncateFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
 
-    BigDecimal number = Coerce.toBigNumber(value);
     int scale = 0;
     if (operands.length == 2) {
-      Object pattern = operands[1].getValue(context);
+      Long pattern = operands[1].getValue(context, Long.class);
       if (pattern == null)
         return null;
-      scale = Coerce.toInteger(pattern).intValue();
+      scale = pattern.intValue();
     }
 
-    if (scale > number.scale())
-      scale = number.scale();
-    return number.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
+    if (scale > value.scale())
+      scale = value.scale();
+    return value.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
   }
 
 }

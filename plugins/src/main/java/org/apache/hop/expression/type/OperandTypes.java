@@ -16,8 +16,8 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.CompositeOperandTypeChecker.Composition;
-import org.apache.hop.expression.util.TimeUnit;
 import java.util.List;
 
 /**
@@ -155,7 +155,9 @@ public final class OperandTypes {
       family(DataTypeFamily.BINARY, DataTypeFamily.BINARY);
   public static final IOperandTypeChecker BINARY_NUMERIC =
       family(DataTypeFamily.BINARY, DataTypeFamily.NUMERIC);
-
+  public static final IOperandTypeChecker BINARY_OPTIONAL_TEXT =
+      sequence(OperandTypes.BINARY, OperandTypes.TEXT).optional(i -> i == 1);
+  
   public static final IOperandTypeChecker NUMERIC = family(DataTypeFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC =
       family(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);

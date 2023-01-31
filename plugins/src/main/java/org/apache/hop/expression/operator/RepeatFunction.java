@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
@@ -46,10 +46,10 @@ public class RepeatFunction extends Function {
     Object v0 = operands[0].getValue(context);
     if (v0 == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    Long v1 = operands[1].getValue(context, Long.class);
     if (v1 == null)
       return null;
-    int count = Coerce.toInteger(v1).intValue();
+    int count = v1.intValue();
 
     if (v0 instanceof byte[]) {
       byte[] bytes = (byte[]) v0;
@@ -64,7 +64,7 @@ public class RepeatFunction extends Function {
       }
     }
 
-    String value = Coerce.toString(v0);
+    String value = Converter.coerceToString(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);

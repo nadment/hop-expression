@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -40,15 +39,15 @@ public class JaroWinklerFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
+    String v0 = operands[0].getValue(context, String.class);
     if (v0 == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    String v1 = operands[1].getValue(context, String.class);
     if (v1 == null)
       return null;
 
     HopJaroWinklerDistance jaro = new HopJaroWinklerDistance();
-    jaro.apply(Coerce.toString(v0), Coerce.toString(v1));
+    jaro.apply(v0, v1);
     return Long.valueOf(Math.round(100 * jaro.getJaroDistance()));
   }
 

@@ -17,7 +17,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Coerce;
 
 /** Returns the number of input values. Null values are not counted. */
 public class CountIfProcessor implements IExpressionProcessor {
@@ -31,9 +30,10 @@ public class CountIfProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
 
-    Object result = operands[0].getValue(context);
-    if (Coerce.isTrue(result))
+    Boolean predicat = operands[0].getValue(context, Boolean.class);
+    if (predicat) {
       count++;
+    }
   }
 
   @Override

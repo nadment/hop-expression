@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -47,17 +46,16 @@ public class RegexpSubstrFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    String input = operands[0].getValue(context, String.class);
+    if (input == null) {
       return null;
     }
-    String input = Coerce.toString(v0);
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null) {
+    String regexp = operands[1].getValue(context, String.class);
+    if (regexp == null) {
       return null;
     }
-    String regexp = Coerce.toString(v1);
+
     // An empty pattern matches nothing
     if (regexp.length() == 0)
       return null;
@@ -65,25 +63,25 @@ public class RegexpSubstrFunction extends Function {
     // Default position 1
     int position = 1;
     if (operands.length >= 3) {
-      Object v2 = operands[2].getValue(context);
+      Long v2 = operands[2].getValue(context, Long.class);
       if (v2 != null) {
-        position = Coerce.toInteger(v2).intValue();
+        position = v2.intValue();
       }
     }
 
     // Default occurrence
     int occurrence = 0;
     if (operands.length >= 4) {
-      Object v3 = operands[3].getValue(context);
+      Long v3 = operands[3].getValue(context, Long.class);
       if (v3 != null) {
-        occurrence = Coerce.toInteger(v3).intValue();
+        occurrence = v3.intValue();
       }
     }
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 5) {
-      Object v4 = operands[5].getValue(context);
-      flags = Regexp.parseFlags(Coerce.toString(v4));
+      String v4 = operands[5].getValue(context, String.class);
+      flags = Regexp.parseFlags(v4);
     }
 
     try {

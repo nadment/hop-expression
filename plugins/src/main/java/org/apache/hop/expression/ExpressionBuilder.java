@@ -26,7 +26,6 @@ import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
-import org.apache.hop.expression.util.TimeUnit;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -580,6 +579,17 @@ public class ExpressionBuilder {
       bytes[i] = (byte) Integer.parseInt(str.substring(start, start + 2), 16);
     }
 
+    // Return as INTEGER
+//    if ( bytes.length<=8 ) {
+//      long result = 0;
+//      for (int i = 0; i < bytes.length; i++) {
+//        result <<= Byte.SIZE;
+//        result |= (bytes[i] & 0xFF);
+//      }
+//      return Literal.of(result);
+//    }
+    
+    // Return as BINARY
     return Literal.of(bytes);
   }
 
@@ -595,7 +605,20 @@ public class ExpressionBuilder {
       }
     }
 
-    return Literal.of(bitset.toByteArray());
+    byte[] bytes = bitset.toByteArray();
+    
+    // Return as INTEGER
+//    if ( bytes.length<=8 ) {
+//      long result = 0;
+//      for (int i = 0; i < bytes.length; i++) {
+//        result <<= Byte.SIZE;
+//        result |= (bytes[i] & 0xFF);
+//      }
+//      return Literal.of(result);
+//    }
+    
+    // Return as BINARY
+    return Literal.of(bytes);
   }
 
   /**

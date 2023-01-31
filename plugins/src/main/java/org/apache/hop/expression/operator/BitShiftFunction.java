@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -38,15 +37,14 @@ public class BitShiftFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    Long value = operands[0].getValue(context, Long.class);
+    if (value == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    Long v1 = operands[1].getValue(context, Long.class);
     if (v1 == null)
       return null;
-
-    long value = Coerce.toInteger(v0);
-    int distance = Coerce.toInteger(v1).intValue();
+    
+    int distance = v1.intValue();
 
     if (distance >= 64 || distance <= -64)
       return 0L;

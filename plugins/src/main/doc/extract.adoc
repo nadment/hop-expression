@@ -28,6 +28,8 @@ EXTRACT( unit FROM {date | timestamp} )
 DATE_PART( unit, {date | timestamp} )
 ----
 
+Return type:: Integer
+
 == Usage
 
 [cols="^2,^2,<5", options="header"]

@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -45,6 +45,6 @@ public class LengthFunction extends Function {
     if (value instanceof byte[]) {
       return ((byte[]) value).length;
     }
-    return Long.valueOf(Coerce.toString(value).length());
+    return Long.valueOf(Converter.coerceToString(value).length());
   }
 }

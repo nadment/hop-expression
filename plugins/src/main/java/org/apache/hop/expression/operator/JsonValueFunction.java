@@ -22,7 +22,6 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -53,19 +52,18 @@ public class JsonValueFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    JsonNode jsonNode = operands[0].getValue(context, JsonNode.class);
+    if (jsonNode == null)
       return null;
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null)
+    String path = operands[1].getValue(context, String.class);
+    if (path == null)
       return null;
-
-    JsonNode jsonNode = Coerce.toJson(v0);
+    
     JsonPath jsonPath;
-    String path = Coerce.toString(v1);
+
     try {
-      jsonPath = JsonPath.compile(Coerce.toString(v1));
+      jsonPath = JsonPath.compile(path);
 
       JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
 

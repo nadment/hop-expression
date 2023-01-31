@@ -21,7 +21,7 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.gui.plugin.GuiPlugin;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.Argument;
+import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.type.DataTypeName;
@@ -194,7 +194,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
     wExpression.setText(Const.NVL(udf.getSource(), ""));
     for (int i = 0; i < udf.getArguments().size(); i++) {
-      Argument argument = udf.getArguments().get(i);
+      FunctionArgument argument = udf.getArguments().get(i);
       wArguments.setText(Const.NVL(argument.getName(), ""), 1, i);
       if (argument.getType() != null) {
         wArguments.setText(Const.NVL(argument.getType().name(), ""), 2, i);
@@ -220,7 +220,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
       } catch (Exception e) {
 
       }
-      Argument argument = new Argument(name, dataType);
+      FunctionArgument argument = new FunctionArgument(name, dataType);
       udf.getArguments().add(argument);
     }
   }

@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZonedDateTime;
@@ -39,17 +38,14 @@ public class AddMonthsFunction extends Function {
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
+    if (value == null)
       return null;
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null)
+    Long months = operands[1].getValue(context, Long.class);
+    if (months == null)
       return null;
 
-    ZonedDateTime datetime = Coerce.toDateTime(v0);
-    long months = Coerce.toInteger(v1);
-
-    return datetime.plusMonths(months);
+    return value.plusMonths(months);
   }
 }

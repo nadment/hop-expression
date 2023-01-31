@@ -15,7 +15,7 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import org.apache.hop.expression.Argument;
+import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
@@ -30,8 +30,8 @@ public class UserDefinedFunctionTest extends BaseExpressionTest {
       meta.setName("UCASE");
       meta.setDescription("UDF test");
       meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
-      meta.getArguments().add(new Argument("v0", DataTypeName.STRING));
-      meta.getArguments().add(new Argument("v1", DataTypeName.INTEGER));
+      meta.getArguments().add(new FunctionArgument("v0", DataTypeName.STRING));
+      meta.getArguments().add(new FunctionArgument("v1", DataTypeName.INTEGER));
       
       //meta.getArguments().add(new Argument("v2", DataTypeName.DATE));
       //meta.getArguments().add(new Argument("v3", DataTypeName.BOOLEAN));

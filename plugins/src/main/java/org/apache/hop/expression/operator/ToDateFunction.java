@@ -24,7 +24,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -43,15 +42,13 @@ public class ToDateFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String value = operands[0].getValue(context, String.class);
+    if (value == null)
       return null;
 
     String format = null;
     if (operands.length > 1) {
-      Object v1 = operands[1].getValue(context);
-      if (v1 != null)
-        format = Coerce.toString(v1);
+      format = operands[1].getValue(context, String.class);
     } else {
       format = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
@@ -61,7 +58,7 @@ public class ToDateFunction extends Function {
           .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
       DateTimeFormat formatter = DateTimeFormat.of(format);
       formatter.setTwoDigitYearStart(twoDigitYearStart);
-      return formatter.parse(Coerce.toString(v0));
+      return formatter.parse(value);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, this.getName(), e.getMessage());
     }

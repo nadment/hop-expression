@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -43,10 +42,10 @@ public class Sha512Function extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    byte[] value = operands[0].getValue(context, byte[].class);
+    if (value == null) {
       return null;
     }
-    return DigestUtils.sha512Hex(Coerce.toBinary(v0));
+    return DigestUtils.sha512Hex(value);
   }
 }

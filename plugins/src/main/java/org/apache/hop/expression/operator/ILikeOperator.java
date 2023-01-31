@@ -20,7 +20,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -37,30 +36,29 @@ public class ILikeOperator extends Operator {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    String value = operands[0].getValue(context, String.class);
+    if (value == null) {
       return null;
     }
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null) {
+    String pattern = operands[1].getValue(context, String.class);
+    if (pattern == null) {
       return null;
     }
 
     String escape = null;
     if (operands.length == 3) {
-      Object escapeValue = operands[2].getValue(context);
-      if (escapeValue == null) {
+      escape = operands[2].getValue(context, String.class);
+      if (escape == null) {
         return null;
       }
-      escape = Coerce.toString(escapeValue);
     }
 
-    final String regex = Regexp.toRegexLike(Coerce.toString(v1), escape);
+    final String regex = Regexp.toRegexLike(pattern, escape);
 
     Pattern p = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
-    return p.matcher(Coerce.toString(v0)).matches();
+    return p.matcher(value).matches();
   }
 
   @Override

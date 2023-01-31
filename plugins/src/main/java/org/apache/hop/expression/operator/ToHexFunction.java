@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.nio.charset.StandardCharsets;
@@ -42,16 +42,16 @@ public class ToHexFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    Object value = operands[0].getValue(context);
+    if (value == null) {
       return null;
     }
 
-    if (v0 instanceof Number) {
-      return Long.toHexString(Coerce.toInteger(v0));
+    if (value instanceof Number) {
+      return Long.toHexString(Converter.coerceToInteger(value));
     }
 
-    byte[] bytes = Coerce.toBinary(v0);
+    byte[] bytes = Converter.coerceToBinary(value);
     byte[] hexChars = new byte[bytes.length * 2];
     for (int j = 0; j < bytes.length; j++) {
       int v = bytes[j] & 0xFF;

@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -53,17 +52,16 @@ public class RegexpCountFunction extends Function {
 
     long count = 0L;
 
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    String source = operands[0].getValue(context, String.class);
+    if (source == null) {
       return null;
     }
-    String source = Coerce.toString(v0);
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null) {
+    String pattern = operands[1].getValue(context, String.class);
+    if (pattern == null) {
       return count;
     }
-    String pattern = Coerce.toString(v1);
+    
     // An empty pattern matches nothing
     if (pattern.length() == 0)
       return count;
@@ -71,12 +69,12 @@ public class RegexpCountFunction extends Function {
     int start = 1;
     int parameters = Pattern.UNICODE_CASE;
     if (operands.length >= 3) {
-      Object v2 = operands[2].getValue(context);
-      start = Coerce.toInteger(v2).intValue();
+      Long v2 = operands[2].getValue(context, Long.class);
+      start = v2.intValue();
 
       if (operands.length == 4) {
-        Object v3 = operands[3].getValue(context);
-        parameters = Regexp.parseFlags(Coerce.toString(v3));
+        String v3 = operands[3].getValue(context, String.class);
+        parameters = Regexp.parseFlags(v3);
       }
     }
 

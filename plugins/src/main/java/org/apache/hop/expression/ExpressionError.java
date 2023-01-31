@@ -46,9 +46,10 @@ public enum ExpressionError {
                                                                                               "Expression.InvalidTime"), INVALID_TIMESTAMP(
                                                                                                   "Expression.InvalidTimestamp"), INVALID_INTEGER(
                                                                                                       "Expression.InvalidInteger"), INVALID_NUMBER(
-                                                                                                          "Expression.InvalidNumber"), INVALID_NUMBER_FORMAT(
-                                                                                                              "Expression.InvalidNumberFormat"), INVALID_BIGNUMBER(
-                                                                                                                  "Expression.InvalidBigNumber"), INVALID_JSON(
+                                                                                                          "Expression.InvalidNumber"), 
+  INVALID_NUMBER_FORMAT("Expression.InvalidNumberFormat"), 
+  INVALID_BINARY_FORMAT("Expression.InvalidBinaryFormat"),
+  INVALID_BIGNUMBER("Expression.InvalidBigNumber"), INVALID_JSON(
                                                                                                                       "Expression.InvalidJson"), INVALID_JSON_PATH(
                                                                                                                           "Expression.InvalidJsonPath"), INVALID_DATATYPE(
                                                                                                                               "Expression.InvalidDataType"), INVALID_VALUES(

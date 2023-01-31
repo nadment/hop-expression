@@ -23,9 +23,8 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
-import org.apache.hop.expression.type.Coerce;
-import org.apache.hop.expression.util.TimeUnit;
 
 /**
  * Replace EXTRACT with the corresponding function only if without time zone
@@ -36,7 +35,7 @@ public class ExtractOptimizer extends Optimizer {
   public IExpression apply(IExpressionContext context, Call call) {
     try {
       if (call.is(Operators.EXTRACT) && call.getOperandCount() == 2) {
-        TimeUnit unit = Coerce.toTimeUnit(call.getOperand(0).getValue(context));
+        TimeUnit unit = call.getOperand(0).getValue(context, TimeUnit.class);
         Function function = FunctionRegistry.getFunction(unit.name());
         if (function != null && !(function instanceof UserDefinedFunction)) {
           return new Call(function, call.getOperand(1));

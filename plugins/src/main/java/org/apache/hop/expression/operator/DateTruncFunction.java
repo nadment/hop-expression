@@ -23,10 +23,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.TimeUnit;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -47,13 +46,11 @@ public class DateTruncFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
 
-    TimeUnit unit = Coerce.toTimeUnit(operands[0].getValue(context));
+    TimeUnit unit = operands[0].getValue(context, TimeUnit.class);
 
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null)
-      return null;
-
-    ZonedDateTime datetime = Coerce.toDateTime(v1);
+    ZonedDateTime datetime = operands[1].getValue(context, ZonedDateTime.class);
+    if (datetime == null)
+      return null;   
 
     switch (unit) {
       case MILLENNIUM:

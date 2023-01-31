@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -45,11 +44,11 @@ public class Md5Function extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
 
-    Object v0 = operands[0].getValue(context);
+    byte[] v0 = operands[0].getValue(context, byte[].class);
     if (v0 == null) {
       return null;
     }
 
-    return DigestUtils.md5Hex(Coerce.toBinary(v0));
+    return DigestUtils.md5Hex(v0);
   }
 }

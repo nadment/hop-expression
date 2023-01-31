@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -42,24 +41,22 @@ public class InstrFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null) {
+    String str = operands[0].getValue(context, String.class);
+    if (str == null) {
       return null;
     }
-    Object v1 = operands[1].getValue(context);
-    if (v1 == null) {
+    String substr = operands[1].getValue(context, String.class);
+    if (substr == null) {
       return null;
     }
 
-    String str = Coerce.toString(v0);
-    String substr = Coerce.toString(v1);
     int start = 0;
     int occurence = 1;
     int result = 0;
 
     // If 3 operands, indicate the position to start
     if (operands.length >= 3) {
-      start = Coerce.toInteger(operands[2].getValue(context)).intValue();
+      start = operands[2].getValue(context, Long.class).intValue();
 
       if (start > 0) {
         start -= 1;
@@ -67,7 +64,7 @@ public class InstrFunction extends Function {
 
       // The occurence to find, must be positive
       if (operands.length == 4) {
-        occurence = Coerce.toInteger(operands[3].getValue(context)).intValue();
+        occurence = operands[3].getValue(context, Long.class).intValue();
         if (occurence < 1) {
           throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);
         }

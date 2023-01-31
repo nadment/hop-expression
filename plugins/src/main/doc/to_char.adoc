@@ -16,11 +16,13 @@ under the License.
 ////
 = TO_CHAR
 
-Converts a number, date or timestamp to a string.
+Converts the input (number, date or binary) to a string.
 
 == Syntax
 ----
-TO_CHAR( {numeric | date | timestamp} [, format ] )
+TO_CHAR( numeric [, format ] )
+TO_CHAR( date [, format ] )
+TO_CHAR( binary [, format ] )
 ----
 
 == Usage
@@ -33,11 +35,6 @@ include::numberformat.adoc[]
 
 NOTE: Fill mode modifier; toggles between compact and fill modes.
 
-== Format examples
- 
-[cols="2,2"]
-|===
-|DY, DD MON YYYY HH12:MI:SS AM|Thu, 21 Dec 2021 04:01:07 PM
-|YYYY-MM-DD"T"HH24:MI:SS.FF6TZH:TZM|2021-12-21T04:01:07.123456+02:00
-|DD/MM/YYYY HH24:MI TZR|21/12/2021 04:01:07 Europe/Paris
-|===
+include::binaryformat.adoc[]
+
+The parameter values are case-insensitive. The default is HEX.

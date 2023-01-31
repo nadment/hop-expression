@@ -17,7 +17,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Coerce;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -32,12 +31,12 @@ public class ListAggProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
 
-    Object value = operands[0].getValue(context);
+    String value = operands[0].getValue(context, String.class);
 
     if (value == null)
       return;
 
-    values.add(Coerce.toString(value));
+    values.add(value);
   }
 
   @Override
@@ -48,7 +47,7 @@ public class ListAggProcessor implements IExpressionProcessor {
 
     String delimiter = ",";
     if (operands.length == 2) {
-      delimiter = Coerce.toString(operands[1].getValue(context));
+      delimiter = operands[1].getValue(context, String.class);
     }
 
     StringBuilder builder = new StringBuilder();

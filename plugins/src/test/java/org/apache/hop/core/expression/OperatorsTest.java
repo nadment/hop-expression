@@ -369,7 +369,7 @@ public class OperatorsTest extends BaseExpressionTest {
     evalEquals("0xF::INTEGER+1", 16);
     evalEquals("0b00011::INTEGER+0", 3);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
-    evalEquals("FIELD_NUMBER+FIELD_NUMBER", -10.24);
+    evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
 
     // Addition of days to DATE or TIMESTAMP
@@ -795,6 +795,7 @@ public class OperatorsTest extends BaseExpressionTest {
   @Test
   public void BoolAnd() throws Exception {
     evalTrue("true AND true");
+    evalTrue("true AND STRING_BOOLEAN");    
     evalFalse("true AND false");    
     evalFalse("false AND true");
     evalFalse("false AND false");
@@ -932,7 +933,7 @@ public class OperatorsTest extends BaseExpressionTest {
 
     // Search CASE WHEN
     evalEquals("case when FIELD_INTEGER=10+20 then 1*5 when FIELD_INTEGER=20+20 then 2*5 else 50 end", 10L);
-    evalEquals("case when NULL_BOOLEAN=FIELD_INTEGER then null when FIELD_INTEGER=20+20 then 2*5 else 50 end", 10L);
+    evalEquals("case when FIELD_INTEGER IS NULL then null when FIELD_INTEGER=20+20 then 2*5 else 50 end", 10L);
     
     // Simple CASE
     evalEquals("case FIELD_INTEGER when 10 then 10 when 40 then 40 else 50 end", 40L);

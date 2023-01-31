@@ -22,7 +22,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -50,10 +50,10 @@ public class StrtokFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String str = operands[0].getValue(context, String.class);
+    if (str == null)
       return null;
-    String str = Coerce.toString(v0);
+   
 
     // Default value
     String delimiter = " ";
@@ -65,19 +65,19 @@ public class StrtokFunction extends Function {
         return null;
 
       if (v1 instanceof Number) {
-        index = Coerce.toInteger(v1).intValue();
+        index = Converter.coerceToInteger(v1).intValue();
       } else {
-        delimiter = Coerce.toString(v1);
+        delimiter = Converter.coerceToString(v1);
       }
     } else if (operands.length == 3) {
-      Object v1 = operands[1].getValue(context);
-      if (v1 == null)
+      delimiter = operands[1].getValue(context, String.class);
+      if (delimiter == null)
         return null;
-      delimiter = Coerce.toString(v1);
-      Object v2 = operands[2].getValue(context);
+      
+      Long v2 = operands[2].getValue(context, Long.class);
       if (v2 == null)
         return null;
-      index = Coerce.toInteger(v2).intValue();
+      index = v2.intValue();
     }
 
     String[] parts = StringUtils.splitPreserveAllTokens(str, delimiter, 256);

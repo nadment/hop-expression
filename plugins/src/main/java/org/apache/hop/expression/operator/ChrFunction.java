@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -44,10 +43,10 @@ public class ChrFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    Long value = operands[0].getValue(context, Long.class);
     if (value == null)
       return null;
-    int codePoint = Coerce.toInteger(value).intValue();
+    int codePoint = value.intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, codePoint);

@@ -17,7 +17,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 
 /** Returns the maximum of an expression across all input rows. */
 public class MaxProcessor implements IExpressionProcessor {
@@ -32,7 +32,7 @@ public class MaxProcessor implements IExpressionProcessor {
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
 
     Object value = operands[0].getValue(context);
-    if (max == null || Coerce.compare(value, max) > 0) {
+    if (max == null || Converter.compare(value, max) > 0) {
       max = value;
     }
   }

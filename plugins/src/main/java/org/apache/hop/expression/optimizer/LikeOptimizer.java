@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Coerce;
 import java.util.regex.Pattern;
 
 /**
@@ -49,14 +48,14 @@ public class LikeOptimizer extends Optimizer {
 
         IExpression v1 = call.getOperand(1);
         if (v1.is(Kind.LITERAL)) {
-          String pattern = Coerce.toString(v1.getValue(context));
+          String pattern = v1.getValue(context, String.class);
 
           // Optimize FIELD LIKE NULL to NULL
           if (pattern == null)
             return Literal.NULL;
 
           if (call.getOperandCount() == 3) {
-            String escape = Coerce.toString(call.getOperand(2).getValue(context));
+            String escape = call.getOperand(2).getValue(context, String.class);
             if (escape == null)
               return Literal.NULL;
 

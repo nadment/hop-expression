@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -45,19 +44,17 @@ public class LPadFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String value = operands[0].getValue(context, String.class);
+    if (value == null)
       return null;
-    String str = Coerce.toString(v0);
 
-    Object v1 = operands[1].getValue(context);
-    int length = Coerce.toInteger(v1).intValue();
+    Long v1 = operands[1].getValue(context, Long.class);
+    int length = v1.intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
-      Object v2 = operands[2].getValue(context);
-      pad = Coerce.toString(v2);
+      pad = operands[2].getValue(context, String.class);      
     }
 
     if (length < 0) {
@@ -72,26 +69,26 @@ public class LPadFunction extends Function {
     }
 
     final int size = pad.length();
-    final int index = length - str.length();
+    final int index = length - value.length();
 
     if (index <= 0) {
-      str = str.substring(0, length);
+      value = value.substring(0, length);
     } else if (size == 0) {
       // nothing to do
     } else if (index == size) {
-      str = pad.concat(str);
+      value = pad.concat(value);
     } else if (index < size) {
-      str = pad.substring(0, index).concat(str);
+      value = pad.substring(0, index).concat(value);
     } else {
       final char[] padding = new char[index];
       final char[] padChars = pad.toCharArray();
       for (int i = 0; i < index; i++) {
         padding[i] = padChars[i % size];
       }
-      str = new String(padding).concat(str);
+      value = new String(padding).concat(value);
     }
 
-    return str;
+    return value;
   }
 
 }

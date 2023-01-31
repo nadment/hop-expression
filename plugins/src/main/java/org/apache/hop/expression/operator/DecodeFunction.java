@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -45,7 +45,7 @@ public class DecodeFunction extends Function {
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
       Object search = operands[i].getValue(context);
-      if (Coerce.compare(value, search) == 0) {
+      if (Converter.compare(value, search) == 0) {
         index = i + 1;
         break;
       }

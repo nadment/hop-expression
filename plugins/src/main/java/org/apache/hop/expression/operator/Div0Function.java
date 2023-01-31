@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -48,36 +48,36 @@ public class Div0Function extends Function {
       return null;
 
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = Coerce.toBigNumber(right);
+      BigDecimal divisor = Converter.coerceToBigNumber(right);
 
       // prevent a division by zero and return zero
       if (divisor.signum() == 0)
         return divisor;
 
-      return Coerce.toBigNumber(left).divide(Coerce.toBigNumber(right), MathContext.DECIMAL128);
+      return Converter.coerceToBigNumber(left).divide(Converter.coerceToBigNumber(right), MathContext.DECIMAL128);
     }
     if (left instanceof Double || right instanceof Double) {
-      double divisor = Coerce.toNumber(right);
+      double divisor = Converter.coerceToNumber(right);
       // prevent a division by zero and return zero
       if (divisor == 0D)
         return 0D;
-      return Coerce.toNumber(left) / divisor;
+      return Converter.coerceToNumber(left) / divisor;
     }
     if (left instanceof Long || right instanceof Long) {
-      long divisor = Coerce.toInteger(right);
+      long divisor = Converter.coerceToInteger(right);
       // prevent a division by zero and return zero
       if (divisor == 0L)
         return 0L;
 
-      return Coerce.toInteger(left) / divisor;
+      return Converter.coerceToInteger(left) / divisor;
     }
 
-    BigDecimal divisor = Coerce.toBigNumber(right);
+    BigDecimal divisor = Converter.coerceToBigNumber(right);
     // prevent a division by zero and return zero
     if (divisor.signum() == 0)
       return divisor;
 
-    return Coerce.toBigNumber(left).divide(divisor);
+    return Converter.coerceToBigNumber(left).divide(divisor);
   }
 
 }

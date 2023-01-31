@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -46,14 +45,14 @@ public class BitXorFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
+    Long left = operands[0].getValue(context, Long.class);
     if (left == null)
       return null;
-    Object right = operands[1].getValue(context);
+    Long right = operands[1].getValue(context, Long.class);
     if (right == null)
       return null;
 
-    return Coerce.toInteger(left) ^ Coerce.toInteger(right);
+    return left ^ right;
   }
 
   @Override

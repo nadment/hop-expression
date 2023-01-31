@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.text.Normalizer;
@@ -44,22 +43,20 @@ public class NormalizeFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String value = operands[0].getValue(context, String.class);
+    if (value == null)
       return null;
-
-    String str = Coerce.toString(v0);
 
     Form form = Form.NFD;
 
     if (operands.length == 2) {
       try {
-        form = Form.valueOf(Coerce.toString(operands[1].getValue(context)));
+        form = Form.valueOf(operands[1].getValue(context, String.class));
       } catch (Exception e) {
         throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, this.getName());
       }
     }
 
-    return Normalizer.normalize(str, form);
+    return Normalizer.normalize(value, form);
   }
 }

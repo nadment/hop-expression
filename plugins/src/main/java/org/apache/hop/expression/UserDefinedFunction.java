@@ -42,7 +42,7 @@ public class UserDefinedFunction extends Function {
     return meta.getSource();
   }
 
-  public List<Argument> getArguments() {
+  public List<FunctionArgument> getArguments() {
     return meta.getArguments();
   }
 
@@ -50,11 +50,11 @@ public class UserDefinedFunction extends Function {
     return createRowMeta(meta.getArguments());
   }
 
-  public static IRowMeta createRowMeta(List<Argument> arguments) {
+  public static IRowMeta createRowMeta(List<FunctionArgument> arguments) {
 
     // Convert arguments to row meta
     IRowMeta rowMeta = new RowMeta();
-    for (Argument argument : arguments) {
+    for (FunctionArgument argument : arguments) {
       IValueMeta vm = ExpressionUtils.createValueMeta(argument.getName(), argument.getType());
       rowMeta.addValueMeta(vm);
     }

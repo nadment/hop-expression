@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -44,7 +44,7 @@ public class GreatestFunction extends Function {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.getValue(context);
-      if (Coerce.compare(result, value) < 0)
+      if (Converter.compare(result, value) < 0)
         result = value;
     }
 

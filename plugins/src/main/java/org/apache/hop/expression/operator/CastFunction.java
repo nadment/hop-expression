@@ -17,14 +17,11 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.OperandTypes;
@@ -56,19 +53,14 @@ public class CastFunction extends Function {
     if (value == null)
       return null;
 
-    Object v1 = operands[1].getValue(context);
+    DataTypeName type = operands[1].getValue(context, DataTypeName.class);
 
-    if (!(v1 instanceof DataTypeName)) {
-      throw new ExpressionException(ExpressionError.INVALID_DATATYPE, v1);
-    }
-
-    DataTypeName type = (DataTypeName) v1;
     String format = null;
     if (operands.length == 3) {
-      format = Coerce.toString(operands[2].getValue(context));
+      format = operands[2].getValue(context, String.class);
     }
 
-    return Converter.to(value, type, format);
+    return Converter.cast(value, type, format);
   }
 
   @Override

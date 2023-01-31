@@ -14,17 +14,19 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.type.Coerce;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Constant value in a expression.
@@ -100,7 +102,7 @@ public final class Literal implements IExpression {
       return new Literal(value, DataTypeName.DATE);
     }
 
-    if (value instanceof ObjectNode) {
+    if (value instanceof JsonNode) {
       return new Literal(value, DataTypeName.JSON);
     }
 
@@ -109,7 +111,7 @@ public final class Literal implements IExpression {
   }
 
   /**
-   * The data type of this literal, as reported by {@link #getDataType}.
+   * The data type of this literal, as reported by {@link #getType}.
    */
   private final DataTypeName type;
 
@@ -123,6 +125,122 @@ public final class Literal implements IExpression {
   @Override
   public Object getValue(final IExpressionContext context) throws ExpressionException {
     return value;
+  }
+
+  @Override
+  public <T> T getValue(final IExpressionContext context, final Class<T> clazz)
+      throws ExpressionException {
+
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+
+    if (value == null)
+      return null;
+
+    switch (type) {
+
+      case BOOLEAN:
+        if (clazz == String.class) {
+          return clazz.cast(String.valueOf(value));
+        }
+        if (clazz == Long.class) {
+          return clazz.cast(((Boolean) value) ? 1L : 0L);
+        }
+        if (clazz == Double.class) {
+          return clazz.cast(((Boolean) value) ? 1D : 0D);
+        }
+        if (clazz == BigDecimal.class) {
+          return clazz.cast(((Boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+        }
+        break;
+
+      case STRING:
+        if (clazz == Boolean.class) {         
+          return clazz.cast(Converter.parseBoolean((String) value));
+        }
+        if (clazz == Long.class) {
+          return clazz.cast(Converter.parseInteger((String) value));
+        }
+        if (clazz == Double.class) {
+          return clazz.cast(Converter.parseNumber((String) value));
+        }
+        if (clazz == BigDecimal.class) {
+          return clazz.cast(Converter.parseBigNumber((String) value));
+        }
+        if (clazz == byte[].class) {
+          return clazz.cast(((String) value).getBytes(StandardCharsets.UTF_8));
+        }
+        if (clazz == JsonNode.class) {
+          return clazz.cast(Converter.parseJson((String) value));
+        }
+        break;
+
+      case INTEGER:
+        if (clazz == Boolean.class) {
+          return clazz.cast(((Long) value)!=0);
+        }        
+        if (clazz == Double.class) {
+          return clazz.cast(Double.valueOf((Long) value));
+        }
+        if (clazz == BigDecimal.class) {
+          return clazz.cast(BigDecimal.valueOf((Long) value));
+        }
+        if (clazz == String.class) {
+          return clazz.cast(String.valueOf(value));
+        }        
+        break;
+
+      case NUMBER:
+        if (clazz == Boolean.class) {
+          return clazz.cast(((Double) value)!=0);
+        }
+        if (clazz == Long.class) {
+          return clazz.cast(((Double) value).longValue());
+        }
+        if (clazz == BigDecimal.class) {
+          return clazz.cast(BigDecimal.valueOf((Double) value));
+        }        
+        if (clazz == String.class) {
+          return clazz.cast(String.valueOf(value));
+        }   
+        break;
+
+      case BIGNUMBER:
+        if (clazz == Boolean.class) {
+          return clazz.cast(((BigDecimal) value).unscaledValue()!=BigInteger.ZERO);
+        }
+        if (clazz == Long.class) {
+          return clazz.cast(((BigDecimal) value).longValue());
+        }
+        if (clazz == Double.class) {
+          return clazz.cast(((BigDecimal) value).doubleValue());
+        }
+        if (clazz == String.class) {
+          return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
+        }
+        break;
+
+      case BINARY:
+        if (clazz == String.class) {
+          return clazz.cast(new String((byte[]) value, StandardCharsets.UTF_8));
+        }
+        break;
+
+      case JSON:
+        if (clazz == String.class) {
+          return clazz.cast(Converter.parseJson((String) value));
+        }
+        break;
+        
+      case DATE:
+      case ANY:
+      case UNKNOWN:
+        break;
+    }
+
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        DataTypeName.from(value), clazz);
   }
 
   @Override
@@ -231,7 +349,7 @@ public final class Literal implements IExpression {
         }
         break;
       default:
-        writer.append(Coerce.toString(value));
+        writer.append(Converter.coerceToString(value));
     }
   }
 

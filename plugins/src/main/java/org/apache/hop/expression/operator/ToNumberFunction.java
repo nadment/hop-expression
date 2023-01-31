@@ -22,7 +22,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Coerce;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.NumberFormat;
@@ -40,19 +39,18 @@ public class ToNumberFunction extends Function {
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object v0 = operands[0].getValue(context);
-    if (v0 == null)
+    String value = operands[0].getValue(context, String.class);
+    if (value == null)
       return null;
 
-    try {
-      String str = Coerce.toString(v0);
+    try {     
       String format = "TM";
 
       // With format
       if (operands.length == 2) {
-        format = Coerce.toString(operands[1].getValue(context));
+        format = operands[1].getValue(context, String.class);
       }
-      return NumberFormat.of(format).parse(str);
+      return NumberFormat.of(format).parse(value);
     } catch (Exception e) {
       throw new ExpressionException(e.getMessage());
     }
