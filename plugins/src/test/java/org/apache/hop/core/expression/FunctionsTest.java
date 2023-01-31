@@ -2004,9 +2004,10 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Translate('Hello, world!','eo','EO')", "HEllO, wOrld!");
     evalEquals("Translate('Hello, wOrld!','eol', 'E')", "HE, wOrd!");
     evalEquals("Translate('Hello, world!','oel,! ', '')", "Hwrd");
+    evalEquals("Translate('Hello, world!','eo',NULL)","Hll, wrld!");
     evalNull("Translate(NULL_STRING,'eo','EO')");
     evalNull("Translate('Hello, world!',NULL,'EO')");
-    evalNull("Translate('Hello, world!','EO',NULL)");
+
   }
 
   @Test

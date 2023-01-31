@@ -45,14 +45,12 @@ public class TranslateFunction extends Function {
     if (findChars == null)
       return null;
     String replaceChars = operands[2].getValue(context, String.class);
-    if (replaceChars == null)
-      return null;
-
-    StringBuilder buffer = new StringBuilder(string.length());
     // if shorter than findChars, then characters are removed
     // (if null, we don't access replaceChars at all)
     if (replaceChars == null)
       replaceChars = "";
+    StringBuilder buffer = new StringBuilder(string.length());
+
     int replaceSize = replaceChars.length();
 
     for (int i = 0, size = string.length(); i < size; i++) {
