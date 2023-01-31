@@ -1286,17 +1286,25 @@ public class FunctionsTest extends BaseExpressionTest {
   }
 
   @Test
-  public void To_Hex() throws Exception {
-    evalEquals("To_Hex('Apache Hop')", "41706163686520486f70");
-    evalEquals("To_Hex(0x00010203AAeeeFFF)", "00010203aaeeefff");
-    evalEquals("To_Hex(1234)", "4d2");
-    evalEquals("To_Hex(1234.567)", "4d2");
+  public void HexEncode() throws Exception {
+    evalEquals("HEX_ENCODE('Apache Hop')", "41706163686520486f70");
 
-    evalNull("To_Hex(NULL)");
+    evalNull("HEX_ENCODE(NULL)");
 
-    evalFails("To_Hex()");    
+    evalFails("HEX_ENCODE()");    
 
-    evalFails("To_Hex(0x01,0x02)");
+    evalFails("HEX_ENCODE(0x01,0x02)");
+  }
+
+  @Test
+  public void HexDecode() throws Exception {
+    evalEquals("HEX_DECODE('41706163686520486f70')", "Apache Hop");
+
+    evalNull("HEX_DECODE(NULL)");
+
+    evalFails("HEX_DECODE()");    
+
+    evalFails("HEX_DECODE('p1','p2')");
   }
   
   @Test
@@ -1754,12 +1762,12 @@ public class FunctionsTest extends BaseExpressionTest {
         "2020-12-03 01:02:03.123456");
 
     // Binary
-    evalEquals("TO_CHAR(0x41706163686520486f70,'HEX')", "41706163686520486F70");
+    evalEquals("TO_CHAR(0x41706163686520486f70,'HEX')", "41706163686520486f70");
     evalEquals("TO_CHAR(0x41706163686520486f70,'BASE64')", "QXBhY2hlIEhvcA==");
     evalEquals("TO_CHAR(0x41706163686520486f70,'UTF-8')", "Apache Hop");
         
     // String
-    evalEquals("TO_CHAR('Apache Hop','HEX')","41706163686520486F70");
+    evalEquals("TO_CHAR('Apache Hop','HEX')","41706163686520486f70");
     evalEquals("TO_CHAR('Apache Hop','BASE64')","QXBhY2hlIEhvcA==");
     evalEquals("TO_CHAR('Apache Hop','UTF8')","Apache Hop");
     

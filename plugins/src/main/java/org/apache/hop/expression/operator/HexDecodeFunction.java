@@ -17,9 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -27,47 +24,26 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+
 
 /**
- * Converts the string expression to a binary value.
+ * Converts a encoded hexadecimal string to a string.
  */
 @FunctionPlugin
-public class ToBinaryFunction extends Function {
+public class HexDecodeFunction extends Function {
 
-  public ToBinaryFunction() {
-    super("TO_BINARY", true, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_STRING,
-        OperatorCategory.CONVERSION, "/docs/to_binary.html");
+  public HexDecodeFunction() {
+    super("HEX_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING, "/docs/hex_decode.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     String value = operands[0].getValue(context, String.class);
-    if (value == null)
-      return null;
-    
-    String format = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
-    if (operands.length > 1) {
-      format = operands[1].getValue(context, String.class);  
-    }    
-    
-    if ( format==null ) {
+    if (value == null) {
       return null;
     }
-    format = format.toUpperCase(); 
-    
-    if ( format.equals("HEX")) {
-      return Hex.decodeHex(value);
-    }
-    if ( format.equals("BASE64")) {
-      return Base64.getDecoder().decode(value);
-    }    
-    if ( format.equals("UTF-8") || format.equals("UTF8")) {
-      return value.getBytes(StandardCharsets.UTF_8);
-    }
-    
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+
+    return new String(Hex.decodeHex(value));
   }
 }

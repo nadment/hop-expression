@@ -88,6 +88,8 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/first_value.adoc[FIRST_VALUE] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/floor.adoc[FLOOR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/greatest.adoc[GREATEST]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hex_decode.adoc[HEX_DECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hex_encode.adoc[HEX_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hour.adoc[HOUR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/hours_between.adoc[HOURS_BETWEEN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/html_encode.adoc[HTML_ENCODE]
@@ -170,7 +172,6 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_hex.adoc[TO_HEX]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/today.adoc[TODAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/translate.adoc[TRANSLATE]

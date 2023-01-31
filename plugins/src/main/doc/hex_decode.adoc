@@ -14,13 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_HEX
+= HEX_DECODE
 
-Converts a string, number or binary value to a hexadecimal string.
+Decodes a hexadecimal string to a string.
 
 == Syntax
 ----
-TO_HEX( {string | numeric | binary} )
+HEX_DECODE( string )
 ----
 
 Return:: String

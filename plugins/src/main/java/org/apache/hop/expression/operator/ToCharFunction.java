@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
@@ -31,6 +32,7 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.Base64;
 
 /**
  * Converts a numeric or date expression to a string value.
@@ -72,25 +74,24 @@ public class ToCharFunction extends Function {
       }
       return DateTimeFormat.of(pattern).format(Converter.coerceToDateTime(value));
     }
-    
 
-      if (pattern == null) {
-        pattern = "HEX";
-      } else
-        pattern = pattern.toUpperCase();
+    if (pattern == null) {
+      pattern = "HEX";
+    } else
+      pattern = pattern.toUpperCase();
 
-      byte[] bytes = Converter.coerceToBinary(value);
+    byte[] bytes = Converter.coerceToBinary(value);
 
-      if (pattern.equals("HEX")) {
-        return Converter.toStringHex(bytes);
-      }
-      if (pattern.equals("BASE64")) {
-        return Converter.toStringBase64(bytes);
-      }
-      if (pattern.equals("UTF-8") || pattern.equals("UTF8")) {
-        return new String(bytes, StandardCharsets.UTF_8);
-      }
+    if (pattern.equals("HEX")) {
+      return Hex.encodeHexString(bytes);
+    }
+    if (pattern.equals("BASE64")) {
+      return Base64.getEncoder().encodeToString(bytes);
+    }
+    if (pattern.equals("UTF-8") || pattern.equals("UTF8")) {
+      return new String(bytes, StandardCharsets.UTF_8);
+    }
 
-      throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
+    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
   }
 }

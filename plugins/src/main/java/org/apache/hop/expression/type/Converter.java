@@ -24,7 +24,6 @@ import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -202,63 +201,7 @@ public class Converter {
       throw new ExpressionException(ExpressionError.INVALID_NUMBER, str);
     }
   }
-
-  public static byte[] parseBinaryHex(final String s) {
-    final int len = s.length();
-
-    // "111" is not a valid hex encoding.
-    if (len % 2 != 0) {
-      throw new IllegalArgumentException("hexBinary needs to be even-length: " + s);
-    }
-
-    byte[] out = new byte[len / 2];
-
-    for (int i = 0; i < len; i += 2) {
-      int h = hexToBin(s.charAt(i));
-      int l = hexToBin(s.charAt(i + 1));
-      if (h == -1 || l == -1) {
-        throw new IllegalArgumentException("contains illegal character for hexBinary: " + s);
-      }
-
-      out[i / 2] = (byte) (h * 16 + l);
-    }
-
-    return out;
-  }
-
-  private static int hexToBin(char ch) {
-    if ('0' <= ch && ch <= '9') {
-      return ch - '0';
-    }
-    if ('A' <= ch && ch <= 'F') {
-      return ch - 'A' + 10;
-    }
-    if ('a' <= ch && ch <= 'f') {
-      return ch - 'a' + 10;
-    }
-    return -1;
-  }
-
-  private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
-
-  public static String toStringHex(final byte[] value) {
-    StringBuilder r = new StringBuilder(value.length * 2);
-    for (byte b : value) {
-        r.append(hexCode[(b >> 4) & 0xF]);
-        r.append(hexCode[(b & 0xF)]);
-    }
-    return r.toString();
-  }
   
-  
-  public static byte[] parseBinaryBase64(final String value) {
-    return Base64.getDecoder().decode(value);
-  }
-
-  public static String toStringBase64(final byte[] value) {    
-    return Base64.getEncoder().encodeToString(value);
-  }
-
   public static byte[] toBinary(Long number) {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {

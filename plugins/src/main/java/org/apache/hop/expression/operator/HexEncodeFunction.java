@@ -16,48 +16,34 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.nio.charset.StandardCharsets;
+
 
 /**
- * Converts a string, number or binary value to a hexadecimal string.
+ * Converts a string value to a hexadecimal string.
  */
 @FunctionPlugin
-public class ToHexFunction extends Function {
+public class HexEncodeFunction extends Function {
 
-  private static final byte[] HEX = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
-
-  public ToHexFunction() {
-    super("TO_HEX", true, ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
-        OperatorCategory.CONVERSION, "/docs/to_hex.html");
+  public HexEncodeFunction() {
+    super("HEX_ENCODE", true, ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
+        OperatorCategory.STRING, "/docs/hex_encode.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    String value = operands[0].getValue(context, String.class);
     if (value == null) {
       return null;
     }
-
-    if (value instanceof Number) {
-      return Long.toHexString(Converter.coerceToInteger(value));
-    }
-
-    byte[] bytes = Converter.coerceToBinary(value);
-    byte[] hexChars = new byte[bytes.length * 2];
-    for (int j = 0; j < bytes.length; j++) {
-      int v = bytes[j] & 0xFF;
-      hexChars[j * 2] = HEX[v >>> 4];
-      hexChars[j * 2 + 1] = HEX[v & 0x0F];
-    }
-    return new String(hexChars, StandardCharsets.US_ASCII);
+    return Hex.encodeHexString(value.getBytes());
   }
 }
