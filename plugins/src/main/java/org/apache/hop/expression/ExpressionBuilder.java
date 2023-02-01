@@ -1463,14 +1463,14 @@ public class ExpressionBuilder {
       final Identifier identifier) throws ExpressionException {
     IRowMeta rowMeta = context.getRowMeta();
 
-    int index = rowMeta.indexOfValue(identifier.getName());
-    if (index < 0) {
+    int indexOfValue = rowMeta.indexOfValue(identifier.getName());
+    if (indexOfValue < 0) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, identifier);
     }
 
-    DataTypeName type = ExpressionUtils.createDataType(rowMeta.getValueMeta(index));
+    DataTypeName type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
 
-    return new Identifier(identifier.getName(), type, index);
+    return new Identifier(identifier.getName(), type, indexOfValue);
   }
 
   /**

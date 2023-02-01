@@ -18,7 +18,10 @@
 package org.apache.hop.expression;
 
 public class OperatorCategory {
-  private OperatorCategory() {};
+  /**
+   * Private constructor since this is a utility class.
+   */
+  private OperatorCategory() {}
 
   public static final String STRING = "i18n::Operator.Category.String";
   public static final String JSON = "i18n::Operator.Category.Json";

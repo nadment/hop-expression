@@ -15,22 +15,19 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
 import org.junit.Test;
 
 public class IdentifierTest extends BaseExpressionTest {
- 
-  @SuppressWarnings("unlikely-arg-type")
+   
   @Test
   public void test() throws Exception {
     Identifier identifier = new Identifier("NAME");
     assertEquals("NAME", identifier.getName());
-    assertFalse(identifier.equals("NAME"));
     assertEquals(new Identifier("NAME"), identifier);
     assertEquals(new Identifier("NAME").hashCode(), identifier.hashCode());
-    assertNotEquals(identifier,null);
+    assertNotEquals(identifier,null);    
   }
   
   @Test

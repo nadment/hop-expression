@@ -1292,7 +1292,6 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("HEX_ENCODE(NULL)");
 
     evalFails("HEX_ENCODE()");    
-
     evalFails("HEX_ENCODE(0x01,0x02)");
   }
 
@@ -1303,15 +1302,18 @@ public class FunctionsTest extends BaseExpressionTest {
     evalNull("HEX_DECODE(NULL)");
 
     evalFails("HEX_DECODE()");    
-
     evalFails("HEX_DECODE('p1','p2')");
   }
   
   @Test
   public void To_Binary() throws Exception {
-    evalEquals("TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());    
-    evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
+    evalEquals("TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes());    
+    evalEquals("TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
+    
+    evalEquals("TO_BINARY(BASE64_ENCODE('Apache Hop'),'BASE64')", "Apache Hop".getBytes());
     evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    
+    evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
     
     evalNull("TO_BINARY(NULL)");
     evalNull("TO_BINARY('Apache Hop',NULL)");

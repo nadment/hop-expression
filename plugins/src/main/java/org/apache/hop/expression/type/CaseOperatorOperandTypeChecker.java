@@ -46,19 +46,14 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
       }
     }
 
-
     DataTypeName thenType = thenTuple.get(0).getType();
     for (IExpression thenOperand : thenTuple) {
       if (!thenOperand.getType().isSameFamily(thenType)) {
         return false;
       }
-    }
-
-    if (!elseExpression.isNull() && !elseExpression.getType().isSameFamily(thenType)) {
-      return false;
-    }
-
-    return true;
+    } 
+    
+    return elseExpression.isNull() || elseExpression.getType().isSameFamily(thenType);
   }
 
   @Override

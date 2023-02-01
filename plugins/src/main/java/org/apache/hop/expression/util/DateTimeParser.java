@@ -205,7 +205,7 @@ import java.time.ZonedDateTime;
     if (isHourFormat12) {
       hour = hour % 12;
       if (isPM) {
-        hour += 12;;
+        hour += 12;
       }
     }
     LocalTime time = LocalTime.of(hour, minute, second, nano);

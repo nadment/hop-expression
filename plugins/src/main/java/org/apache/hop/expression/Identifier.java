@@ -263,6 +263,7 @@ public final class Identifier implements IExpression {
           if (clazz == String.class) {
             return clazz.cast(NumberFormat.of("TM").format(value));
           }
+          break;          
         }
 
         case ValueMetaJson.TYPE_JSON: {
