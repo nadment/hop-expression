@@ -214,12 +214,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     for (int i = 0; i < nrFields; i++) {
       TableItem item = wArguments.getNonEmpty(i);
       String name = item.getText(1);
-      DataTypeName dataType = null;
-      try {
-        dataType = DataTypeName.of(item.getText(2));
-      } catch (Exception e) {
-
-      }
+      DataTypeName dataType = DataTypeName.of(item.getText(2));
       FunctionArgument argument = new FunctionArgument(name, dataType);
       udf.getArguments().add(argument);
     }

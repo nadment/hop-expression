@@ -23,6 +23,7 @@ import org.apache.hop.expression.util.JsonComparator;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class Converter {
    */
   private Converter() {}
 
-  public static Object cast(Object value, final DataTypeName type) throws ExpressionException {
+  public static Object cast(Object value, final DataTypeName type) {
     return cast(value, type, null);
   }
 
@@ -53,8 +54,7 @@ public class Converter {
    *        numeric, or null if none
    * @return the converted value
    */
-  public static final Object cast(final Object value, final DataTypeName type, String pattern)
-      throws ExpressionException {
+  public static final Object cast(final Object value, final DataTypeName type, String pattern) {
 
     Objects.requireNonNull(type);
 
@@ -134,7 +134,7 @@ public class Converter {
         break;
       case STRING:
         if (value instanceof Boolean) {
-          return ((boolean) value) ? "TRUE" : "FALSE";
+          return toString((boolean) value);
         }
         if (value instanceof Number) {
           if (pattern == null) {
@@ -152,8 +152,9 @@ public class Converter {
         if (value instanceof String) {
           try {
             return DateTimeFormat.of(pattern).parse((String) value);
-          } catch (Exception e) {
-            throw new ExpressionException(ExpressionError.INVALID_DATE, value);
+          } catch (ParseException e) {
+            throw new IllegalArgumentException(
+                ExpressionError.INVALID_DATE.message(e.getMessage()));
           }
         }
         break;
@@ -173,35 +174,35 @@ public class Converter {
       default:
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), type);
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataTypeName.from(value), type));
   }
 
-  public static final BigDecimal parseBigNumber(final String str) throws ExpressionException {
+  public static final BigDecimal parseBigNumber(final String str) {
     try {
       return new BigDecimal(StringUtils.trim(str));
     } catch (NumberFormatException e) {
-      throw new ExpressionException(ExpressionError.INVALID_BIGNUMBER, str);
+      throw new NumberFormatException(ExpressionError.INVALID_BIGNUMBER.message(str));
     }
   }
 
-  public static final Long parseInteger(final String str) throws ExpressionException {
+  public static final Long parseInteger(final String str) {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
     } catch (NumberFormatException e) {
-      throw new ExpressionException(ExpressionError.INVALID_INTEGER, str);
+      throw new NumberFormatException(ExpressionError.INVALID_INTEGER.message(str));
     }
   }
 
-  public static final Double parseNumber(final String str) throws ExpressionException {
+  public static final Double parseNumber(final String str) {
     try {
       return Double.parseDouble(str);
     } catch (NumberFormatException e) {
-      throw new ExpressionException(ExpressionError.INVALID_NUMBER, str);
+      throw new NumberFormatException(ExpressionError.INVALID_NUMBER.message(str));
     }
   }
-  
+
   public static byte[] toBinary(Long number) {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
@@ -211,10 +212,10 @@ public class Converter {
     return result;
   }
 
-  public static Long toInteger(final byte[] bytes) throws ExpressionException {
+  public static Long toInteger(final byte[] bytes) {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes,
-          DataTypeName.INTEGER);
+      throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
+          .message(DataTypeName.BINARY, bytes, DataTypeName.INTEGER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -223,10 +224,10 @@ public class Converter {
     return result;
   }
 
-  public static Double toNumber(final byte[] bytes) throws ExpressionException {
+  public static Double toNumber(final byte[] bytes) {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes,
-          DataTypeName.NUMBER);
+      throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
+          .message(DataTypeName.BINARY, bytes, DataTypeName.NUMBER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -235,10 +236,10 @@ public class Converter {
     return Double.valueOf(result);
   }
 
-  public static BigDecimal toBigNumber(final byte[] bytes) throws ExpressionException {
+  public static BigDecimal toBigNumber(final byte[] bytes) {
     if (bytes.length > 8)
-      throw new ExpressionException(ExpressionError.CONVERSION_ERROR, DataTypeName.BINARY, bytes,
-          DataTypeName.BIGNUMBER);
+      throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
+          .message(DataTypeName.BINARY, bytes, DataTypeName.BIGNUMBER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -247,7 +248,7 @@ public class Converter {
     return new BigDecimal(result);
   }
 
-  public static final Boolean parseBoolean(final String str) throws ExpressionException {
+  public static final Boolean parseBoolean(final String str) {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
@@ -287,8 +288,8 @@ public class Converter {
         break;
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, str, DataTypeName.STRING,
-        DataTypeName.BOOLEAN);
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_CONVERSION.message(str, DataTypeName.STRING, DataTypeName.BOOLEAN));
   }
 
   /**
@@ -297,33 +298,37 @@ public class Converter {
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode parseJson(final String str) throws ExpressionException {
+  public static JsonNode parseJson(final String str) {
     try {
       ObjectMapper objectMapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return objectMapper.readTree(str);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.INVALID_JSON, str);
+      throw new IllegalArgumentException(ExpressionError.INVALID_JSON.message(str));
     }
   }
 
-  
+
   public static String toString(final boolean value) {
     return value ? "TRUE" : "FALSE";
   }
- 
+
+  public static String toString(final BigDecimal value) {
+    return NumberFormat.of("TM").format((BigDecimal) value);
+  }
+
   /**
    * Convert Json value to String.
    * 
    * @param json the json to convert
    * @return String
    */
-  public static String toString(final JsonNode json) throws ExpressionException {
+  public static String toString(final JsonNode json) {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.INVALID_JSON, json);
+      throw new IllegalArgumentException(ExpressionError.INVALID_JSON.message(json));
     }
   }
 
@@ -408,7 +413,7 @@ public class Converter {
    * @param value the value to coerce
    * @return Double
    */
-  public static Double coerceToNumber(final Object value) throws ExpressionException {
+  public static Double coerceToNumber(final Object value) {
     if (value == null) {
       return null;
     }
@@ -424,8 +429,8 @@ public class Converter {
     if (value instanceof String) {
       return parseNumber((String) value);
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.NUMBER);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.NUMBER));
   }
 
   /**
@@ -434,7 +439,7 @@ public class Converter {
    * @param value the value to coerce
    * @return BigDecimal
    */
-  public static final BigDecimal coerceToBigNumber(final Object value) throws ExpressionException {
+  public static final BigDecimal coerceToBigNumber(final Object value) {
     if (value == null) {
       return null;
     }
@@ -463,8 +468,8 @@ public class Converter {
     if (value instanceof String) {
       return parseBigNumber((String) value);
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.BIGNUMBER);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.BIGNUMBER));
   }
 
   /**
@@ -473,7 +478,7 @@ public class Converter {
    * @param value the value to coerce
    * @return Long
    */
-  public static final Long coerceToInteger(final Object value) throws ExpressionException {
+  public static final Long coerceToInteger(final Object value) {
     if (value == null) {
       return null;
     }
@@ -493,8 +498,8 @@ public class Converter {
     // return toInteger((byte[]) value);
     // }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.INTEGER);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.INTEGER));
   }
 
   /**
@@ -511,10 +516,10 @@ public class Converter {
       return (String) value;
     }
     if (value instanceof Boolean) {
-      return ((boolean) value) ? "TRUE" : "FALSE";
+      return toString((boolean) value);
     }
     if (value instanceof BigDecimal) {
-      return NumberFormat.of("TM").format((BigDecimal) value);
+      return toString((BigDecimal) value);
     }
     if (value instanceof byte[]) {
       return new String((byte[]) value, StandardCharsets.UTF_8);
@@ -530,39 +535,38 @@ public class Converter {
    * @param value the value to coerce
    * @return ZonedDateTime
    */
-  public static final ZonedDateTime coerceToDateTime(final Object value)
-      throws ExpressionException {
+  public static final ZonedDateTime coerceToDateTime(final Object value) {
     if (value == null) {
       return null;
     }
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.DATE);
+
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.DATE));
   }
 
-  public static final Date coerceToDate(final Object value) throws ExpressionException {
+  public static final Date coerceToDate(final Object value) {
     if (value == null) {
       return null;
     }
     if (value instanceof ZonedDateTime) {
       return Date.from(((ZonedDateTime) value).toInstant());
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.DATE);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.DATE));
   }
 
-  public static final java.sql.Timestamp coerceToTimestamp(final Object value)
-      throws ExpressionException {
+  public static final java.sql.Timestamp coerceToTimestamp(final Object value) {
     if (value == null) {
       return null;
     }
     if (value instanceof ZonedDateTime) {
       return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.DATE);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.DATE));
   }
 
   /**
@@ -572,7 +576,7 @@ public class Converter {
    * @return Boolean
    */
 
-  public static final Boolean coerceToBoolean(final Object value) throws ExpressionException {
+  public static final Boolean coerceToBoolean(final Object value) {
     if (value == null) {
       return null;
     }
@@ -582,8 +586,8 @@ public class Converter {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.BOOLEAN);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.BOOLEAN));
   }
 
   /**
@@ -592,7 +596,7 @@ public class Converter {
    * @param value the value to coerce
    * @return bytes array
    */
-  public static final byte[] coerceToBinary(final Object value) throws ExpressionException {
+  public static final byte[] coerceToBinary(final Object value) {
     if (value == null) {
       return null;
     }
@@ -603,8 +607,8 @@ public class Converter {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.BINARY);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.BINARY));
   }
 
   /**
@@ -613,7 +617,7 @@ public class Converter {
    * @param value the value to coerce
    * @return String
    */
-  public static final JsonNode coerceToJson(final Object value) throws ExpressionException {
+  public static final JsonNode coerceToJson(final Object value) {
     if (value == null) {
       return null;
     }
@@ -624,8 +628,8 @@ public class Converter {
       return Converter.parseJson((String) value);
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.JSON);
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_CONVERSION.message(value,
+        DataTypeName.from(value), DataTypeName.JSON));
   }
 
 }

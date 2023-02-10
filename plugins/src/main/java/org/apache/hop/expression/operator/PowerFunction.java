@@ -40,11 +40,13 @@ public class PowerFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     Double number = operands[0].getValue(context, Double.class);
-    Double exponent = operands[1].getValue(context, Double.class);
-    if (number == null || exponent == null) {
+    if (number == null) {
       return null;
     }
-
+    Double exponent = operands[1].getValue(context, Double.class);
+    if (exponent == null) {
+      return null;
+    }
     if (exponent == 0)
       return 1L;
 

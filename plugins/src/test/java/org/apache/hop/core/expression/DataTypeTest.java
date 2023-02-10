@@ -20,7 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.DataTypeName;
@@ -50,7 +49,8 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(DataTypeName.BINARY, DataTypeName.of("BINARY"));
     assertEquals(DataTypeName.JSON, DataTypeName.of("Json"));
     assertEquals(DataTypeName.INTEGER, DataTypeName.of("INTEGER"));
-    assertThrows(IllegalArgumentException.class, () -> DataTypeName.of("NOP"));
+    assertNull(DataTypeName.of(null));
+    assertNull(DataTypeName.of("NOP"));
   }
 
   @Test
@@ -62,14 +62,28 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(DataTypeName.NUMBER, DataTypeName.from(1D));
     assertEquals(DataTypeName.BIGNUMBER, DataTypeName.from(BigDecimal.ONE));
     assertEquals(DataTypeName.BINARY, DataTypeName.from(new byte[] {0x78}));
-    assertEquals(DataTypeName.DATE,
-        DataTypeName.from(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh"))));
+    assertEquals(DataTypeName.DATE, DataTypeName.from(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh"))));
     assertEquals(DataTypeName.JSON, DataTypeName.from(Converter.parseJson("{\"name\":\"Smith\"}")));
 
-    assertThrows(IllegalArgumentException.class, () -> DataTypeName.from(Float.class));
-    assertThrows(IllegalArgumentException.class, () -> DataTypeName.from(Date.class));
+    assertThrows(IllegalArgumentException.class, () -> DataTypeName.from(new Date()));
   }
 
+  @Test
+  public void as() throws Exception {
+    assertEquals(DataTypeName.UNKNOWN, DataTypeName.as(Void.class));
+    assertEquals(DataTypeName.BOOLEAN, DataTypeName.as(Boolean.class));
+    assertEquals(DataTypeName.STRING, DataTypeName.as(String.class));
+    assertEquals(DataTypeName.INTEGER, DataTypeName.as(Long.class));
+    assertEquals(DataTypeName.NUMBER, DataTypeName.as(Double.class));
+    assertEquals(DataTypeName.BIGNUMBER, DataTypeName.as(BigDecimal.class));
+    assertEquals(DataTypeName.BINARY, DataTypeName.as(byte[].class));
+    assertEquals(DataTypeName.DATE, DataTypeName.as(ZonedDateTime.class));
+    assertEquals(DataTypeName.JSON, DataTypeName.as(JsonNode.class));
+
+    assertNull(DataTypeName.as(Float.class));
+    assertNull(DataTypeName.as(Date.class));
+  }
+  
   @Test
   public void family() throws Exception {
     assertTrue(DataTypeFamily.ANY.isSameFamily(DataTypeFamily.BINARY));
@@ -108,8 +122,8 @@ public class DataTypeTest extends BaseExpressionTest {
     assertTrue(Converter.coerceToBoolean(1D));
     assertFalse(Converter.coerceToBoolean(0L));
     assertFalse(Converter.coerceToBoolean(false));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBoolean("True"));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBoolean(ZonedDateTime.now()));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBoolean("True"));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBoolean(ZonedDateTime.now()));
   }
 
   @Test
@@ -136,19 +150,19 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(Boolean.FALSE, Converter.cast("N", DataTypeName.BOOLEAN));
     assertEquals(Boolean.FALSE, Converter.cast("No", DataTypeName.BOOLEAN));
     assertEquals(Boolean.FALSE, Converter.cast("Off", DataTypeName.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> Converter.cast("3", DataTypeName.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> Converter.cast("MO", DataTypeName.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> Converter.cast("BAD", DataTypeName.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> Converter.cast("TRUL", DataTypeName.BOOLEAN));
-    assertThrows(ExpressionException.class, () -> Converter.cast("FILSE", DataTypeName.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("3", DataTypeName.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("MO", DataTypeName.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("BAD", DataTypeName.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("TRUL", DataTypeName.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("FILSE", DataTypeName.BOOLEAN));
   }
 
   @Test
   public void coerceToBinary() throws Exception {
     assertNull(Converter.coerceToBinary(null));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBinary(true));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBinary(3L));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBinary(3D));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBinary(true));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBinary(3L));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBinary(3D));
   }
 
   @Test
@@ -156,11 +170,11 @@ public class DataTypeTest extends BaseExpressionTest {
     assertNull(Converter.cast(null, DataTypeName.BINARY));
     //assertEquals(new byte[] {0xF, 0xC}, Converter.cast(new byte[] {0xF, 0xC}, DataTypeName.BINARY));
 
-    assertThrows(ExpressionException.class, () ->  Converter.cast(true, DataTypeName.BINARY));
-    assertThrows(ExpressionException.class, () ->  Converter.cast(1L, DataTypeName.BINARY));
-    assertThrows(ExpressionException.class, () ->  Converter.cast(1D, DataTypeName.BINARY));
-    assertThrows(ExpressionException.class, () ->  Converter.cast(BigDecimal.ONE, DataTypeName.BINARY));
-    assertThrows(ExpressionException.class, () ->  Converter.cast(ZonedDateTime.now(), DataTypeName.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(true, DataTypeName.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(1L, DataTypeName.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(1D, DataTypeName.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(BigDecimal.ONE, DataTypeName.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(ZonedDateTime.now(), DataTypeName.BINARY));
   }
 
   @Test
@@ -170,8 +184,8 @@ public class DataTypeTest extends BaseExpressionTest {
     assertNull(Converter.coerceToDateTime(null));
     //assertEquals(date, Converter.coerceToDate(date));
     
-    assertThrows(ExpressionException.class, () -> Converter.coerceToDateTime(true));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToDateTime("2022"));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToDateTime(true));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToDateTime("2022"));
   }
   
   @Test
@@ -220,10 +234,10 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(Long.valueOf(1L), Converter.coerceToInteger(BigDecimal.ONE));
     assertEquals(Long.valueOf(0L), Converter.coerceToInteger(BigDecimal.ZERO));
 
-    assertThrows(ExpressionException.class, () -> Converter.coerceToInteger(true));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToInteger(new byte[] {0xF}));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToInteger(ZonedDateTime.now()));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToInteger("FALSE"));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToInteger(true));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToInteger(new byte[] {0xF}));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToInteger(ZonedDateTime.now()));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToInteger("FALSE"));
   }
 
   @Test
@@ -255,10 +269,10 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(Double.valueOf(1D), Converter.coerceToNumber(BigDecimal.ONE));
     assertEquals(Double.valueOf(0D), Converter.coerceToNumber(BigDecimal.ZERO));
 
-    assertThrows(ExpressionException.class, () -> Converter.coerceToNumber(true));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToNumber(new byte[] {0xF}));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToNumber(ZonedDateTime.now()));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToNumber("FALSE"));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToNumber(true));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToNumber(new byte[] {0xF}));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToNumber(ZonedDateTime.now()));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToNumber("FALSE"));
   }
 
   @Test
@@ -275,7 +289,7 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(Double.valueOf(-2.3E+2D), Converter.cast(-2.3E+2D, DataTypeName.NUMBER));
     assertEquals(15D, Converter.cast(new byte[] {0xF}, DataTypeName.NUMBER));
 
-    assertThrows(ExpressionException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> Converter.cast(ZonedDateTime.now(), DataTypeName.NUMBER));
   }
 
@@ -293,10 +307,10 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(BigDecimal.ONE, Converter.coerceToBigNumber("1"));
     assertEquals(BigDecimal.valueOf(3.123), Converter.coerceToBigNumber(3.123D));
 
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBigNumber(true));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBigNumber(new byte[] {0xF}));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBigNumber(ZonedDateTime.now()));
-    assertThrows(ExpressionException.class, () -> Converter.coerceToBigNumber("FALSE"));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBigNumber(true));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBigNumber(new byte[] {0xF}));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBigNumber(ZonedDateTime.now()));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToBigNumber("FALSE"));
   }
 
   @Test
@@ -318,16 +332,16 @@ public class DataTypeTest extends BaseExpressionTest {
     assertEquals(new BigDecimal("-3.56E2"), Converter.cast("-3.56E+2", DataTypeName.BIGNUMBER));
     assertEquals(BigDecimal.valueOf(15), Converter.cast(new byte[] {0xF}, DataTypeName.BIGNUMBER));
 
-    assertThrows(ExpressionException.class,
+    assertThrows(IllegalArgumentException.class,
         () -> Converter.cast(ZonedDateTime.now(), DataTypeName.BIGNUMBER));
   }
 
   @Test
   public void castToUnknown() throws Exception {
-    // assertThrows(ExpressionException.class, () -> Converter.cast(null, DataTypeName.UNKNOWN));
-    // assertThrows(ExpressionException.class, () -> Converter.to(true, DataTypeName.UNKNOWN));
-    // assertThrows(ExpressionException.class, () -> Converter.to("Test", DataTypeName.UNKNOWN));
-    // assertThrows(ExpressionException.class, () -> Converter.to(BigDecimal.ZERO,
+    // assertThrows(IllegalArgumentException.class, () -> Converter.cast(null, DataTypeName.UNKNOWN));
+    // assertThrows(IllegalArgumentException.class, () -> Converter.to(true, DataTypeName.UNKNOWN));
+    // assertThrows(IllegalArgumentException.class, () -> Converter.to("Test", DataTypeName.UNKNOWN));
+    // assertThrows(IllegalArgumentException.class, () -> Converter.to(BigDecimal.ZERO,
     // DataTypeName.UNKNOWN));
   }
 

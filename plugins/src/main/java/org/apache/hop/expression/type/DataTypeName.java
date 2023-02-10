@@ -70,8 +70,7 @@ public enum DataTypeName {
   public static final List<DataTypeName> NUMERIC_TYPES = List.of(INTEGER, NUMBER, BIGNUMBER);
   public static final List<DataTypeName> DATE_TYPES = List.of(DATE);
   public static final List<DataTypeName> JSON_TYPES = List.of(JSON);
-  public static final List<DataTypeName> ALL_TYPES =
-      List.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
+  public static final List<DataTypeName> ALL_TYPES = List.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
 
   /**
    * Indicating allowable precision/scale combinations.
@@ -145,15 +144,39 @@ public enum DataTypeName {
     return (signature & mask) != 0;
   }
 
+  /**
+   * Looks up a type name from its name.
+   *
+   * @return Type name, or null if not found
+   */
   public static DataTypeName of(final String name) {
     for (DataTypeName type : DataTypeName.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
     }
-    throw new IllegalArgumentException(ExpressionError.INVALID_DATATYPE.message(name));
+    return null;
   }
 
+  /**
+   * Search a type name for a java class.
+   *
+   * @return Type name, or null if not found
+   */
+  public static DataTypeName as(final Class<?> clazz) {
+    for (DataTypeName type : DataTypeName.values()) {
+      if (type.javaClass.equals(clazz)) {
+        return type;
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Search a type name for a value.
+   *
+   * @return Type name, or null if not found
+   */
   public static DataTypeName from(final Object value) {
     if (value == null)
       return UNKNOWN;

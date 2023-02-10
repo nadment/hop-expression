@@ -602,8 +602,7 @@ public class FunctionsTest extends BaseExpressionTest {
     
     evalFails("Day()");
     evalFails("Day(123)");
-    evalFails("Day('text')");
-    
+    evalFails("Day('text')");    
   }
 
   @Test

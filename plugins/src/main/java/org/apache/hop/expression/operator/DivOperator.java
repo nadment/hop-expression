@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -54,21 +53,21 @@ public class DivOperator extends Operator {
       BigDecimal divisor = Converter.coerceToBigNumber(right);
       // prevent a division by zero ..
       if (divisor.signum() == 0)
-        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+        throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
       return Converter.coerceToBigNumber(left).divide(Converter.coerceToBigNumber(right), MathContext.DECIMAL128);
     }
     if (left instanceof Double || right instanceof Double) {
       double divisor = Converter.coerceToNumber(right);
       // prevent a division by zero ..
       if (divisor == 0D)
-        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+        throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
       return Converter.coerceToNumber(left) / divisor;
     }
     if (left instanceof Long || right instanceof Long) {
       long divisor = Converter.coerceToInteger(right);
       // prevent a division by zero ..
       if (divisor == 0L)
-        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+        throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
 
       return Converter.coerceToInteger(left) / divisor;
     }

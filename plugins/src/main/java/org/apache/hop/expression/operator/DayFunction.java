@@ -44,5 +44,4 @@ public class DayFunction extends Function {
       return null;
     return Long.valueOf(value.getDayOfMonth());
   }
-
 }

@@ -240,7 +240,7 @@ public final class Literal implements IExpression {
     }
 
     throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), clazz);
+        DataTypeName.from(value), DataTypeName.from(clazz));
   }
 
   @Override

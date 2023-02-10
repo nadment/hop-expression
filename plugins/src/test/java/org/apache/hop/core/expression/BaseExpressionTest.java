@@ -41,7 +41,6 @@ import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
-import java.io.PrintStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,23 +53,32 @@ import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class BaseExpressionTest {
-  
-  
+
+  protected static final String ANSI_RESET = "\u001B[0m";
+  protected static final String ANSI_BLACK = "\u001B[30m";
+  protected static final String ANSI_RED = "\u001B[31m";
+  protected static final String ANSI_GREEN = "\u001B[32m";
+  protected static final String ANSI_YELLOW = "\u001B[33m";
+  protected static final String ANSI_BLUE = "\u001B[34m";
+  protected static final String ANSI_PURPLE = "\u001B[35m";
+  protected static final String ANSI_CYAN = "\u001B[36m";
+  protected static final String ANSI_WHITE = "\u001B[37m";
+
   @ClassRule
   // Use the Engine environment to make the compression plugins available.
   // public static RestoreHopEngineEnvironment env = new RestoreHopEngineEnvironment();
   public static RestoreHopEnvironment env = new RestoreHopEnvironment();
-  
+
   @ClassRule
   public static ExternalResource getResource() {
-      return new ExternalResource() {
-          @Override
-          protected void before() throws Throwable {
-            FunctionRegistry.registerBuilInFunctions();
-          }
-      };
+    return new ExternalResource() {
+      @Override
+      protected void before() throws Throwable {
+        FunctionRegistry.registerBuilInFunctions();
+      }
+    };
   }
-  
+
   protected ExpressionContext createExpressionContext() throws Exception {
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
@@ -81,31 +89,31 @@ public class BaseExpressionTest {
     rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE2"));
     rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER"));
     rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER"));
-    rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));    
+    rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
     rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
     rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
-        
+
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
     rowMeta.addValueMeta(new ValueMetaBoolean("NULL_BOOLEAN"));
     rowMeta.addValueMeta(new ValueMetaInteger("NULL_INTEGER"));
     rowMeta.addValueMeta(new ValueMetaNumber("NULL_NUMBER"));
-    rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER")); 
+    rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
 
     // For implicit cast
     rowMeta.addValueMeta(new ValueMetaString("STRING_BOOLEAN"));
     rowMeta.addValueMeta(new ValueMetaString("STRING_INTEGER"));
     rowMeta.addValueMeta(new ValueMetaString("STRING_NUMBER"));
-   
-    
+
+
     // Reserved words
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("STRING"));
     rowMeta.addValueMeta(new ValueMetaBoolean("CASE"));
-    rowMeta.addValueMeta(new ValueMetaInteger("CENTURY"));    
-    
+    rowMeta.addValueMeta(new ValueMetaInteger("CENTURY"));
+
     // Special identifier
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
@@ -135,7 +143,7 @@ public class BaseExpressionTest {
     row[16] = "25";
     row[17] = "-12.56";
 
-    
+
     row[18] = 2020L;
     row[19] = "Paris";
     row[20] = true;
@@ -155,7 +163,7 @@ public class BaseExpressionTest {
     IExpression expression = ExpressionBuilder.build(context, source);
     assertEquals(expected, expression.getType());
   }
-  
+
   protected Object eval(String source) throws Exception {
     return eval(source, createExpressionContext(), null);
   }
@@ -163,7 +171,7 @@ public class BaseExpressionTest {
   protected Object eval(String source, ExpressionContext context) throws Exception {
     return eval(source, context, null);
   }
-  
+
   protected Object eval(String source, ExpressionContext context,
       Consumer<ExpressionContext> consumer) throws Exception {
 
@@ -171,17 +179,18 @@ public class BaseExpressionTest {
     if (context == null) {
       context = createExpressionContext();
     }
-    
+
     // Apply context customization
     if (consumer != null)
       consumer.accept(context);
-    
-    IExpression expression = ExpressionBuilder.build(context, source);
 
+    
     try {
+      IExpression expression = ExpressionBuilder.build(context, source);
+
       return expression.getValue(context);
-    } catch (ExpressionException ex) {
-      System.out.println(source + " > " + ex.getMessage());
+    } catch (Exception ex) {
+      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
     }
   }
@@ -205,7 +214,7 @@ public class BaseExpressionTest {
   protected void evalEquals(String source, JsonNode expected) throws Exception {
     assertEquals(expected, (JsonNode) eval(source));
   }
-  
+
   protected void evalEquals(String source, String expected) throws Exception {
     assertEquals(expected, (String) eval(source));
   }
@@ -237,9 +246,12 @@ public class BaseExpressionTest {
     assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source));
   }
 
-  protected void evalEquals(String source, LocalDate expected, ExpressionContext context) throws Exception {
-    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source, context, null));
+  protected void evalEquals(String source, LocalDate expected, ExpressionContext context)
+      throws Exception {
+    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()),
+        eval(source, context, null));
   }
+
   protected void evalEquals(String source, LocalDateTime expected) throws Exception {
     assertEquals(expected.atZone(ZoneId.systemDefault()), eval(source));
   }
@@ -259,11 +271,6 @@ public class BaseExpressionTest {
   }
 
   protected void evalFails(final String source) {
-    try {
-      eval(source);
-    } catch (Exception e) {
-      System.out.println(source+" >>> "+e.getMessage());
-    }
     assertThrows(ExpressionException.class, () -> eval(source));
   }
 
@@ -284,16 +291,16 @@ public class BaseExpressionTest {
     IExpressionContext context = createExpressionContext();
     IExpression expression = ExpressionBuilder.build(context, e);
 
-    PrintStream console = System.out;
+    String color = ANSI_YELLOW;
     if ( expression.getType()==DataTypeName.UNKNOWN) {
-      console = System.err;
+      color = ANSI_RED;
     }
-    
-    console.println("optimize (" + e + ") cost=" + expression.getCost() + " >>> " + expression +" return type " + expression.getType());
-    
+
+    System.out.println(e + ANSI_PURPLE+" cost=" + expression.getCost() + "  "  +color + expression + ANSI_RESET);
+
     return expression;
   }
-  
+
   protected void optimize(String e, String expected) throws Exception {
     assertEquals(expected, (String) optimize(e).toString());
   }
@@ -309,19 +316,18 @@ public class BaseExpressionTest {
   protected void optimizeNull(String e) throws Exception {
     assertEquals("NULL", optimize(e).toString());
   }
-  
+
   @Test
   public void test() throws Exception {
-//    ExpressionContext context = createExpressionContext();
-//    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
-//    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
-//    context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+    // ExpressionContext context = createExpressionContext();
+    // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
+    // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    //evalEquals("TO_CHAR(TO_BINARY('Apache Hop','HEX'),'HEX')", "Apache Hop");
-    evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
-    //evalEquals("TO_CHAR(TO_BINARY('Apache Hop','BASE64'),'BASE64')", "Apache Hop");
-//    evalEquals("TO_CHAR(TO_BINARY('Apache Hop','UTF-8'),'UTF-8')", "Apache Hop");
-
+    // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','HEX'),'HEX')", "Apache Hop");
+    //evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','BASE64'),'BASE64')", "Apache Hop");
+    evalFails("To_Boolean('falsee')");
   }
 }
 

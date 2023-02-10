@@ -819,7 +819,7 @@ public class ExpressionBuilder {
     operands.add(this.parseLogicalOr());
 
     if (isNotThenNext(Id.AS)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), token.start());
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CAST), token.start());
     }
 
     operands.add(this.parseLiteralDataType(next()));
@@ -829,7 +829,7 @@ public class ExpressionBuilder {
       if (token.is(Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE), token.start());
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CAST), token.start());
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
