@@ -25,7 +25,7 @@ import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
 import java.util.List;
 
-public class CallTest extends BaseExpressionTest {
+public class CallTest extends ExpressionTest {
  
   @Test
   public void test() throws Exception {

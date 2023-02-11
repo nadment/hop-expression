@@ -12,215 +12,329 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package org.apache.hop.core.expression;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
+import org.apache.hop.core.row.value.ValueMetaBinary;
+import org.apache.hop.core.row.value.ValueMetaBoolean;
+import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaJson;
+import org.apache.hop.core.row.value.ValueMetaNumber;
+import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.core.row.value.ValueMetaTimestamp;
+import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.operator.ConcatFunction;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.junit.rules.RestoreHopEnvironment;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.MathContext;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.function.Consumer;
+import com.fasterxml.jackson.databind.JsonNode;
 
-public class ExpressionTest extends BaseExpressionTest { 
+public class ExpressionTest {
 
-  @Test
-  public void EmptyOrNull() throws Exception {
-    evalNull("");
-    evalNull(" ");
-    evalNull("\t");
-    evalNull("\n");
-    evalNull(null);
-  }
-    
-  @Test
-  public void Comment() throws Exception {
-    evalTrue(" // Test line comment \n  true ");
-    evalTrue(" /* Test block comment */  true ");
-    evalTrue(" true /* Test block comment */");
-    evalTrue("/*\n * Comment on multi line\n *\n */ True");
-    evalTrue(
-        "/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
+  protected static final String ANSI_RESET = "\u001B[0m";
+  protected static final String ANSI_BLACK = "\u001B[30m";
+  protected static final String ANSI_RED = "\u001B[31m";
+  protected static final String ANSI_GREEN = "\u001B[32m";
+  protected static final String ANSI_YELLOW = "\u001B[33m";
+  protected static final String ANSI_BLUE = "\u001B[34m";
+  protected static final String ANSI_PURPLE = "\u001B[35m";
+  protected static final String ANSI_CYAN = "\u001B[36m";
+  protected static final String ANSI_WHITE = "\u001B[37m";
 
-    // Single line comment
-    evalTrue("// Single line comment\nTrue");
-    evalTrue("-- Single line comment\nTrue");
-    evalTrue("-- Single line comment\rTrue");
+  @ClassRule
+  public static RestoreHopEnvironment env = new RestoreHopEnvironment();
 
-    // Multi line comment
-    evalTrue("/* Line 1\n * Line 2 */ True");
-
-    // Empty
-    evalNull("-- Single line comment\n");
-    
-    // Syntax error
-    evalFails(" /");
-    evalFails("/*   True");
-    evalFails("/   True");
-    evalFails("/*   True*");
-    evalFails("/* /* nested block comment */    True");
+  @ClassRule
+  public static ExternalResource getResource() {
+    return new ExternalResource() {
+      @Override
+      protected void before() throws Throwable {
+        FunctionRegistry.registerBuilInFunctions();
+      }
+    };
   }
 
-  @Test
-  public void CarriageReturnAndLineFeed() throws Exception {
-    evalTrue(" \rTrue");
-    evalTrue(" \nTrue");
-  }
-  
-  @Test
-  public void Operator() throws Exception {
-    assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
-    assertEquals(Operators.CONCAT, new ConcatFunction("||"));
+  protected ExpressionContext createExpressionContext() throws Exception {
+    IVariables variables = new Variables();
+    variables.setVariable("TEST", "12345");
+
+    IRowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING"));
+    rowMeta.addValueMeta(new ValueMetaString("SEX2"));
+    rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE2"));
+    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));
+    rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
+    rowMeta.addValueMeta(new ValueMetaTimestamp("FIELD_TIMESTAMP"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
+
+    // Null values
+    rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("NULL_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaInteger("NULL_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaNumber("NULL_NUMBER"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER"));
+    rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
+    rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESAMP"));
+    rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
     
-    // Primary operator first and alias last
-    assertTrue(Operators.CONCAT.compareTo(new ConcatFunction())>0);
+    // For implicit cast
+    rowMeta.addValueMeta(new ValueMetaString("STRING_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaString("STRING_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaString("STRING_NUMBER"));
+
+    // Reserved words
+    rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
+    rowMeta.addValueMeta(new ValueMetaString("STRING"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("CASE"));
+    rowMeta.addValueMeta(new ValueMetaInteger("CENTURY"));
+
+    // Special identifier
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER SPACE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
+    rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(1981, 5, 23);
+
+    Object[] row = new Object[29];
+    row[0] = "TEST";
+    row[1] = "F";
+    row[2] = calendar.getTime();
+    row[3] = 40L;
+    row[4] = -5.12D;
+    row[5] = BigDecimal.valueOf(123456.789);
+    row[6] = calendar.getTime();
+    row[7] = Timestamp.valueOf("2023-02-28 22:11:01");
+    row[8] = true;
+    row[9] = "TEST".getBytes();
     
-    assertEquals("CONCAT", Operators.CONCAT.toString());
-    assertNotEquals(Operators.CONCAT, Operators.EQUAL);
-    assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
-    assertFalse(Operators.CONCAT.is(null));
-    assertFalse(Operators.CONCAT.isAggregate());
-    assertNotNull(Operators.CONCAT.getDescription());
-    assertNotEquals(Operators.CONCAT, null);
-    //assertNotNull(Operators.CONCAT.getDocumentation());
-    assertNotNull(Operators.CONCAT.getDocumentationUrl());
+    row[10] = null;
+    row[11] = null;
+    row[12] = null;
+    row[13] = null;
+    row[14] = null;
+    row[15] = null;
+    row[16] = null;
+    row[17] = null;
     
-    assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
-    assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
-  }
+    row[18] = "True";
+    row[19] = "25";
+    row[20] = "-12.56";
 
-  @Test
-  public void precedenceAndAssociativity() throws Exception {
 
-    assertEquals(51, Operators.MULTIPLY.getLeftPrecedence());
-    assertEquals(50, Operators.MULTIPLY.getRightPrecedence());
+    row[21] = 2020L;
+    row[22] = "Paris";
+    row[23] = true;
+    row[24] = 2;
+    row[25] = "SPACE";
+    row[26] = "UNDERSCORE";
+    row[27] = "lower";
 
-    // Arithmetic
-    evalEquals("3*5/2",  3*5/2d);
-    evalEquals("9/3*3", 9d/3*3);
-    evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5);
-    evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
-    evalEquals("10*2+1", 21);
-    evalEquals("8+5-2*8", 8+5-2*8);
-    evalEquals("1+10*2", 1+10*2);
-    evalEquals("10*(2+1)", 30);
-    evalEquals("30/(5+5)", 3);
-    evalEquals("42%(3+2)", 2);
-    evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
-    evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0);
+    ExpressionContext context = new ExpressionContext(variables, rowMeta);
+    context.setRow(row);
 
-      
-    // NOT has higher precedence than AND, which has higher precedence than OR
-    evalTrue("NOT false AND NOT false");
-    evalTrue("NOT 5 = 5 OR NOT 'Test' = 'X' AND NOT 5 = 4");
-
-    // Equals (=) has higher precedence than NOT "NOT (1=1)"
-    evalTrue("NOT 2 = 1");
-
-    // IS NULL has higher precedence than NOT
-    evalFalse("NOT NULL_BOOLEAN IS NULL");
-
-    // IS NULL has lower precedence than comparison (1 = 1) IS NULL
-    evalFalse("1 = 1 is null");
-    evalTrue(" 3 > 5 IS FALSE");
-
-    // BETWEEN, IN, LIKE have higher precedence than comparison
-    // evalFalse("5 between 4>=4 and 6<=6");
-  }
-
-  @Test
-  public void SyntaxError() throws Exception {
-    evalFails("'T'||'T");
-    evalFails("\"T\"||\"T");
-    evalFails("9!7");
-    evalFails("9+(");
-    evalFails("9+*(");
-    evalFails("9:");
-    evalFails("*9");
-    evalFails("Left||'X'");
-    evalFails("Date ");
-    evalFails("Timestamp ");
-    evalFails("Extract(");
-    evalFails("3*(1+2");
-    evalFails(")+1");
-    evalFails("'missing end");
-    evalFails("Year(");
-    evalFails("Year(2020");
-    evalFails("Year)");
-    evalFails("Year()");
-    evalFails("Year(()");
-    evalFails("Today())");
-    evalFails("Date '2022-05-01' AT TIME");
-    evalFails("Date '2022-05-01' AT TIME ZONE");
-    evalFails("Date '2022-05-01' AT TIME ZONE 'XYZ'");
-    evalFails("Year(1,2)");
-    evalFails("TRUE AND");
-    evalFails("5 BETWEEN 4 AND");
-    evalFails("5 BETWEEN 4 OR");
-    evalFails("case when 1=1 then 1 else 0");
-    evalFails("case when 1=1 then 1 else  end ");
-    evalFails("case 1 when 1  else 0 end");
-    evalFails("Cast(3 as NILL)");
-    evalFails("Cast(3 as )");
-    evalFails("Cast(3 as");
-    evalFails("1 in ()    ");
-    evalFails("1 in (,2,3)");
-    evalFails("1 in (1,2,3");
-    evalFails("1 in (1,,3)");
-    evalFails("1 in (1,2,)");
-    evalFails("0xABCDEFg");
-    evalFails("Date '2020-20-28'");
+    return context;
   }
 
-  @Test
-  public void CoercionImplicit() throws Exception {
-    // Coercion Number
-    evalTrue("1::BIGNUMBER = 1::INTEGER");    
-    evalTrue("0::BIGNUMBER = 0::NUMBER");
-    evalTrue("1::NUMBER = 1::INTEGER");
+  protected void returnType(String source, DataTypeName expected) throws Exception {
+    ExpressionContext context = createExpressionContext();
+    IExpression expression = ExpressionBuilder.build(context, source);
+    assertEquals(expected, expression.getType());
+  }
+
+  protected Object eval(String source) throws Exception {
+    return eval(source, createExpressionContext(), null);
+  }
+
+  protected Object eval(String source, ExpressionContext context) throws Exception {
+    return eval(source, context, null);
+  }
+
+  protected Object eval(String source, ExpressionContext context,
+      Consumer<ExpressionContext> consumer) throws Exception {
+
+    // Create default context
+    if (context == null) {
+      context = createExpressionContext();
+    }
+
+    // Apply context customization
+    if (consumer != null)
+      consumer.accept(context);
+
     
-        
-    // String to Number
-    evalTrue("'1.25' = 1.25::NUMBER");
-    evalEquals("2*'1.23'", 2.46);
-    evalEquals("2+'2'", 4);
-    evalEquals("'2'+2", 4);
-    evalEquals("2 + 2 || 2", 42);
-    evalEquals(" 4 + 4 || '2' ", "82");    
-    evalEquals(" '8' || 1 + 1", 82);
-    
-    // Integer to BigNumber
-    evalEquals("'-1e-3'::BigNumber * 2", new BigDecimal("-2e-3", MathContext.DECIMAL128));    
-    // Number to BigNumber
-    evalEquals("'-1e-3'::BigNumber * 0.5", new BigDecimal("-5e-4", MathContext.DECIMAL128));
+    try {
+      IExpression expression = ExpressionBuilder.build(context, source);
+
+      return expression.getValue(context);
+    } catch (Exception ex) {
+      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+      throw ex;
+    }
+  }
+
+  protected void evalNull(String source) throws Exception {
+    assertNull(eval(source));
+  }
+
+  protected void evalTrue(String source) throws Exception {
+    assertEquals(Boolean.TRUE, eval(source));
+  }
+
+  protected void evalFalse(String source) throws Exception {
+    assertEquals(Boolean.FALSE, eval(source));
+  }
+
+  protected void evalEquals(String source, byte[] expected) throws Exception {
+    assertArrayEquals(expected, (byte[]) eval(source));
+  }
+
+  protected void evalEquals(String source, JsonNode expected) throws Exception {
+    assertEquals(expected, (JsonNode) eval(source));
+  }
+
+  protected void evalEquals(String source, String expected) throws Exception {
+    assertEquals(expected, (String) eval(source));
+  }
+
+  protected void evalEquals(String source, String expected, ExpressionContext context)
+      throws Exception {
+    assertEquals(expected, (String) eval(source, context, null));
+  }
+
+  protected void evalEquals(String source, String expected, Consumer<ExpressionContext> consumer)
+      throws Exception {
+    assertEquals(expected, (String) eval(source, null, consumer));
+  }
+
+  protected void evalEquals(String source, Long expected) throws Exception {
+    assertEquals(expected, (Long) eval(source));
+  }
+
+  protected void evalEquals(String source, double expected) throws Exception {
+    Object value = eval(source);
+    assertEquals(expected, Converter.coerceToNumber(value), 0.000000000000001);
+  }
+
+  protected void evalEquals(String source, BigDecimal expected) throws Exception {
+    assertEquals(expected, (BigDecimal) eval(source));
+  }
+
+  protected void evalEquals(String source, LocalDate expected) throws Exception {
+    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source));
+  }
+
+  protected void evalEquals(String source, LocalDate expected, ExpressionContext context)
+      throws Exception {
+    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()),
+        eval(source, context, null));
+  }
+
+  protected void evalEquals(String source, LocalDateTime expected) throws Exception {
+    assertEquals(expected.atZone(ZoneId.systemDefault()), eval(source));
+  }
+
+  protected void evalEquals(String source, ZonedDateTime expected) throws Exception {
+    assertEquals(expected, eval(source));
+  }
+
+  protected void evalEquals(String source, ZonedDateTime expected, ExpressionContext context)
+      throws Exception {
+    assertEquals(expected, eval(source, context, null));
+  }
+
+  protected void evalEquals(String source, ZonedDateTime expected,
+      Consumer<ExpressionContext> consumer) throws Exception {
+    assertEquals(expected, eval(source, null, consumer));
+  }
+
+  protected void evalFails(final String source) {
+    assertThrows(ExpressionException.class, () -> eval(source));
+  }
+
+  protected void writeEquals(String source) throws Exception {
+    writeEquals(source, source);
+  }
+
+  protected void writeEquals(String source, String result) throws Exception {
+    IExpressionContext context = createExpressionContext();
+    IExpression expression = ExpressionBuilder.build(context, source);
+
+    StringWriter writer = new StringWriter();
+    expression.unparse(writer);
+    assertEquals(result, writer.toString());
+  }
+
+  protected IExpression optimize(String e) throws Exception {
+    IExpressionContext context = createExpressionContext();
+    IExpression expression = ExpressionBuilder.build(context, e);
+
+    String color = ANSI_YELLOW;
+    if ( expression.getType()==DataTypeName.UNKNOWN) {
+      color = ANSI_RED;
+    }
+
+    System.out.println(e + ANSI_PURPLE+" cost=" + expression.getCost() + "  "  +color + expression + ANSI_RESET);
+
+    return expression;
+  }
+
+  protected void optimize(String e, String expected) throws Exception {
+    assertEquals(expected, (String) optimize(e).toString());
+  }
+
+  protected void optimizeTrue(String e) throws Exception {
+    assertEquals("TRUE", optimize(e).toString());
+  }
+
+  protected void optimizeFalse(String e) throws Exception {
+    assertEquals("FALSE", optimize(e).toString());
+  }
+
+  protected void optimizeNull(String e) throws Exception {
+    assertEquals("NULL", optimize(e).toString());
   }
 
   @Test
-  public void CoercionExplicit() throws Exception {
-    // Cast String to Boolean
-    evalTrue("'1'::Boolean=true");
-    evalTrue("'On'::Boolean=true");
-    evalTrue("'Y'::Boolean=true");
-    evalTrue("true = 'Y'::Boolean");
-    evalTrue("'Yes'::Boolean=true");
-    evalTrue("true = 'Yes'::Boolean");
-    evalTrue("'T'::Boolean=true");
-    evalTrue("'TRUE'::Boolean=true");
-    evalTrue("true = 'True'::Boolean");
-
-    evalTrue("'0'::Boolean=false");
-    evalTrue("'N'::Boolean=false");
-    evalTrue("'NO'::Boolean=false");
-    evalTrue("'OFF'::Boolean=false");
-    evalTrue("'F'::Boolean=false");
-    evalTrue("'FALSE'::Boolean=false");
-    
-    // String to BigNumber
-    evalEquals("' -1e-3 '::BigNumber", new BigDecimal("-1e-3", MathContext.DECIMAL128));    
+  public void test() throws Exception {
+    // ExpressionContext context = createExpressionContext();
+    // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
+    // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
+    // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
+    Locale.setDefault(new Locale("fr", "BE"));
+    // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','HEX'),'HEX')", "Apache Hop");
+    //evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','BASE64'),'BASE64')", "Apache Hop");    
+    evalFails("Week(NULL_BOOLEAN)");
   }
 }
+

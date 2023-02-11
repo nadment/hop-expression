@@ -16,7 +16,7 @@ package org.apache.hop.core.expression;
 
 import org.junit.Test;
 
-public class OptimizerTest extends BaseExpressionTest {
+public class OptimizerTest extends ExpressionTest {
 
   @Test
   public void testSimplifyInRule() throws Exception {

@@ -26,7 +26,7 @@ import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
 
-public class TupleTest extends BaseExpressionTest {
+public class TupleTest extends ExpressionTest {
   
   @Test
   public void test() throws Exception {

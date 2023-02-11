@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNull;
 import org.apache.hop.expression.FunctionRegistry;
 import org.junit.Test;
 
-public class FunctionRegistryTest extends BaseExpressionTest {
+public class FunctionRegistryTest extends ExpressionTest {
   
   @Test
   public void test() throws Exception {

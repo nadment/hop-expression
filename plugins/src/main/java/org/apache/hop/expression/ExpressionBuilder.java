@@ -49,7 +49,6 @@ public class ExpressionBuilder {
   private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT",
       "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
 
-
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
@@ -1501,28 +1500,37 @@ public class ExpressionBuilder {
   protected IExpression validateCall(IExpressionContext context, Call call)
       throws ExpressionException {
 
-    // Check the number of operands expected
     Operator operator = call.getOperator();
+    
+    // Validate all operands
+    List<IExpression> operands = new ArrayList<>();
+    for (IExpression expression : call.getOperands()) {
+      operands.add(validate(context, expression));
+    }
+    call = new Call(operator, operands);
+    
+      
+    // Check the number of operands expected
     IOperandCountRange operandCountRange = operator.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
         throw new ExpressionException(
-            ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator.getId()));
+            ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator));
       }
       if (call.getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator.getId()));
+        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator));
       }
     }
 
     // Check operand types expected
     IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
     if (!operandTypeChecker.checkOperandTypes(call)) {
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT.message(operator.getName()));
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
     }
 
     // Replace arguments in User Defined Function by the operands of the call.
-    if (call.getOperator() instanceof UserDefinedFunction) {
-      UserDefinedFunction udf = (UserDefinedFunction) call.getOperator();
+    if (operator instanceof UserDefinedFunction) {
+      UserDefinedFunction udf = (UserDefinedFunction) operator;
       try {
         IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
         IExpression expression = ExpressionBuilder.build(udfContext, udf.getSource());
@@ -1532,14 +1540,8 @@ public class ExpressionBuilder {
       }
     }
 
-    // Compile all operands
-    List<IExpression> operands = new ArrayList<>();
-    for (IExpression expression : call.getOperands()) {
-      operands.add(validate(context, expression));
-    }
-
     // Inference return type
-    DataTypeName type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
+    DataTypeName type = operator.getReturnTypeInference().getReturnType(context, call);
 
     return new Call(type, operator, operands);
   }

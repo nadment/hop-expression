@@ -22,7 +22,7 @@ import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
 
-public class UserDefinedFunctionTest extends BaseExpressionTest {
+public class UserDefinedFunctionTest extends ExpressionTest {
  
   @Test
   public void test() throws Exception {

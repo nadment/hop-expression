@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.TimeUnit;
 import org.junit.Test;
 
-public class TimeUnitTest extends BaseExpressionTest {
+public class TimeUnitTest extends ExpressionTest {
      
   @Test
   public void of() throws Exception {

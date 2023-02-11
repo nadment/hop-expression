@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public class OperatorsTest extends BaseExpressionTest {
+public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void EqualTo() throws Exception {
@@ -442,11 +442,11 @@ public class OperatorsTest extends BaseExpressionTest {
     evalFails("FIELD_INTEGER between 10 and");
     evalFails("FIELD_INTEGER between and 10");
     evalFails("FIELD_INTEGER between and ");
+    evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING");
 
     writeEquals("FIELD_INTEGER BETWEEN 10 AND 20");
     writeEquals("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND 20");
     writeEquals("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
-    
     
     returnType("5 between 3 and 5", DataTypeName.BOOLEAN);
   }

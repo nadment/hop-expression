@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
-public class FunctionsTest extends BaseExpressionTest {
+public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Abort() throws Exception {
@@ -585,6 +585,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("DayOfWeek(Date '2019-07-27')", 7);
     evalEquals("DayOfWeek(Date '2019-07-28')", 1);
     evalEquals("DayOfWeek(Date '2019-12-31')", 3);
+    evalEquals("DayOfWeek(FIELD_DATE)", 3);
+    evalEquals("DayOfWeek(FIELD_TIMESTAMP)", 3);
     
     evalNull("DayOfWeek(NULL_DATE)");
     
@@ -597,6 +599,7 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Day(Date '2019-02-28')", 28);
     evalEquals("Day(Date '2019-12-28')", 28);
     evalEquals("Day(FIELD_DATE)", 23);
+    evalEquals("Day(FIELD_TIMESTAMP)", 28);
     
     evalNull("Day(NULL_DATE)");
     
@@ -608,8 +611,10 @@ public class FunctionsTest extends BaseExpressionTest {
   @Test
   public void DayOfYear() throws Exception {
     evalEquals("DayOfYear(Date '2019-01-01')", 1);
-    evalEquals("DayOfYear(Date '2019-02-02')", 33);
     evalEquals("DayOfYear(Date '2019-12-31')", 365);
+    evalEquals("DayOfYear(FIELD_DATE)", 174);
+    evalEquals("DayOfYear(FIELD_TIMESTAMP)", 59);
+    
     evalNull("DayOfYear(NULL_DATE)");
     evalFails("DayOfYear()");
   }
@@ -620,6 +625,8 @@ public class FunctionsTest extends BaseExpressionTest {
     evalEquals("Week(Date '2015-01-01')", 1);
     evalEquals("Week(Date '2015-01-02')", 1);
     evalNull("Week(NULL_DATE)");
+    
+    //evalFails("Week(NULL_BOOLEAN)");
     evalFails("Week()");
   }
 
@@ -1934,6 +1941,7 @@ public class FunctionsTest extends BaseExpressionTest {
 
     evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29}',Null)");
     evalNull("Json_Value(Null,'$.name')");
+    //evalNull("Json_Value(NULL_JSON,'$.name')");
 
     evalFails("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.notexist')");
   }

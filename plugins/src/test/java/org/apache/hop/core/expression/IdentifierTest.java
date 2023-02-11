@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
 import org.junit.Test;
 
-public class IdentifierTest extends BaseExpressionTest {
+public class IdentifierTest extends ExpressionTest {
    
   @Test
   public void test() throws Exception {

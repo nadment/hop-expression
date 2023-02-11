@@ -35,7 +35,7 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-public class LiteralTest extends BaseExpressionTest {
+public class LiteralTest extends ExpressionTest {
 
   @Test
   public void Null() throws Exception {

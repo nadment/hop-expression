@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
@@ -35,12 +36,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 public final class Identifier implements IExpression {
   private final String name;
   private final DataTypeName type;
-  private final int index;
+  private final int ordinal;
 
-  public Identifier(final String name, final DataTypeName type, int index) {
+  public Identifier(final String name, final DataTypeName type, int ordinal) {
     this.name = Objects.requireNonNull(name, "name is null");
     this.type = Objects.requireNonNull(type, "data type is null");
-    this.index = index;
+    this.ordinal = ordinal;
   }
 
   public Identifier(final String name) {
@@ -77,7 +78,7 @@ public final class Identifier implements IExpression {
    * @return
    */
   public int getIndex() {
-    return index;
+    return ordinal;
   }
 
   @Override
@@ -87,30 +88,33 @@ public final class Identifier implements IExpression {
 
     Object[] row = context.getRow();
     try {
-      IValueMeta valueMeta = rowMeta.getValueMeta(index);
+      IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
 
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
-          return rowMeta.getBoolean(row, index);
-        case IValueMeta.TYPE_DATE:
+          return rowMeta.getBoolean(row, ordinal);            
         case IValueMeta.TYPE_TIMESTAMP:
-          // No getTimestamp from RowMeta ???
-          Date date = rowMeta.getDate(row, index);
+          Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
+          if (timestamp == null)
+            return null;
+          return timestamp.toInstant().atZone(ZoneId.systemDefault());          
+        case IValueMeta.TYPE_DATE:
+          Date date = rowMeta.getDate(row, ordinal);
           if (date == null)
             return null;
           return date.toInstant().atZone(ZoneId.systemDefault());
         case IValueMeta.TYPE_STRING:
-          return rowMeta.getString(row, index);
+          return rowMeta.getString(row, ordinal);
         case IValueMeta.TYPE_INTEGER:
-          return rowMeta.getInteger(row, index);
+          return rowMeta.getInteger(row, ordinal);
         case IValueMeta.TYPE_NUMBER:
-          return rowMeta.getNumber(row, index);
+          return rowMeta.getNumber(row, ordinal);
         case IValueMeta.TYPE_BIGNUMBER:
-          return rowMeta.getBigNumber(row, index);
+          return rowMeta.getBigNumber(row, ordinal);
         case ValueMetaJson.TYPE_JSON:
-          return context.getRow()[index];
+          return valueMeta.getNativeDataType(row[ordinal]);
         case IValueMeta.TYPE_BINARY:
-          return rowMeta.getBinary(row, index);
+          return rowMeta.getBinary(row, ordinal);
         default:
           throw new ExpressionException(ExpressionError.UNSUPPORTED_VALUEMETA, name,
               valueMeta.getTypeDesc());
@@ -124,7 +128,7 @@ public final class Identifier implements IExpression {
   public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
 
     IRowMeta rowMeta = context.getRowMeta();
-    IValueMeta valueMeta = rowMeta.getValueMeta(index);
+    IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
 
     if (valueMeta == null) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
@@ -135,7 +139,7 @@ public final class Identifier implements IExpression {
 
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN: {
-          Boolean value = rowMeta.getBoolean(row, index);
+          Boolean value = rowMeta.getBoolean(row, ordinal);
           if (value == null) {
             return null;
           }
@@ -161,7 +165,7 @@ public final class Identifier implements IExpression {
           // No getTimestamp from RowMeta ???        
           
         case IValueMeta.TYPE_DATE: {
-          Date value = rowMeta.getDate(row, index);
+          Date value = rowMeta.getDate(row, ordinal);
           if (value == null) {
             return null;
           }
@@ -170,7 +174,7 @@ public final class Identifier implements IExpression {
         }
         
         case IValueMeta.TYPE_STRING: {
-          String value = rowMeta.getString(row, index);
+          String value = rowMeta.getString(row, ordinal);
           if (value == null) {
             return null;
           }
@@ -199,7 +203,7 @@ public final class Identifier implements IExpression {
         }
 
         case IValueMeta.TYPE_INTEGER: {
-          Long value = rowMeta.getInteger(row, index);
+          Long value = rowMeta.getInteger(row, ordinal);
           if (value == null) {
             return null;
           }
@@ -222,7 +226,7 @@ public final class Identifier implements IExpression {
         }
 
         case IValueMeta.TYPE_NUMBER: {
-          Double value = rowMeta.getNumber(row, index);
+          Double value = rowMeta.getNumber(row, ordinal);
           if (value == null) {
             return null;
           }
@@ -244,7 +248,7 @@ public final class Identifier implements IExpression {
           break;
         }
         case IValueMeta.TYPE_BIGNUMBER: {
-          BigDecimal value = rowMeta.getBigNumber(row, index);
+          BigDecimal value = rowMeta.getBigNumber(row, ordinal);
           if (value == null) {
             return null;
           }          
@@ -267,7 +271,7 @@ public final class Identifier implements IExpression {
         }
 
         case ValueMetaJson.TYPE_JSON: {
-          Object value = context.getRow()[index];
+          Object value = context.getRow()[ordinal];
           if (clazz.isInstance(value)) {
             return clazz.cast(value);
           }
@@ -278,7 +282,7 @@ public final class Identifier implements IExpression {
         }
 
         case IValueMeta.TYPE_BINARY: {
-          byte[] value = rowMeta.getBinary(row, index);
+          byte[] value = rowMeta.getBinary(row, ordinal);
           if (clazz == byte[].class) {
             return clazz.cast(value);
           }
@@ -321,7 +325,7 @@ public final class Identifier implements IExpression {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, type, index);
+    return Objects.hash(name, type, ordinal);
   }
 
   @Override

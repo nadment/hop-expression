@@ -25,6 +25,7 @@ import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.DataTypeName;
 import org.junit.Test;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class DataTypeTest extends BaseExpressionTest {
+public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void of() throws Exception {
@@ -345,5 +346,51 @@ public class DataTypeTest extends BaseExpressionTest {
     // DataTypeName.UNKNOWN));
   }
 
+  @Test
+  public void coercionImplicit() throws Exception {
+    // Coercion Number
+    evalTrue("1::BIGNUMBER = 1::INTEGER");    
+    evalTrue("0::BIGNUMBER = 0::NUMBER");
+    evalTrue("1::NUMBER = 1::INTEGER");
+    
+        
+    // String to Number
+    evalTrue("'1.25' = 1.25::NUMBER");
+    evalEquals("2*'1.23'", 2.46);
+    evalEquals("2+'2'", 4);
+    evalEquals("'2'+2", 4);
+    evalEquals("2 + 2 || 2", 42);
+    evalEquals(" 4 + 4 || '2' ", "82");    
+    evalEquals(" '8' || 1 + 1", 82);
+    
+    // Integer to BigNumber
+    evalEquals("'-1e-3'::BigNumber * 2", new BigDecimal("-2e-3", MathContext.DECIMAL128));    
+    // Number to BigNumber
+    evalEquals("'-1e-3'::BigNumber * 0.5", new BigDecimal("-5e-4", MathContext.DECIMAL128));
+  }
+
+  @Test
+  public void coercionExplicit() throws Exception {
+    // Cast String to Boolean
+    evalTrue("'1'::Boolean=true");
+    evalTrue("'On'::Boolean=true");
+    evalTrue("'Y'::Boolean=true");
+    evalTrue("true = 'Y'::Boolean");
+    evalTrue("'Yes'::Boolean=true");
+    evalTrue("true = 'Yes'::Boolean");
+    evalTrue("'T'::Boolean=true");
+    evalTrue("'TRUE'::Boolean=true");
+    evalTrue("true = 'True'::Boolean");
+
+    evalTrue("'0'::Boolean=false");
+    evalTrue("'N'::Boolean=false");
+    evalTrue("'NO'::Boolean=false");
+    evalTrue("'OFF'::Boolean=false");
+    evalTrue("'F'::Boolean=false");
+    evalTrue("'FALSE'::Boolean=false");
+    
+    // String to BigNumber
+    evalEquals("' -1e-3 '::BigNumber", new BigDecimal("-1e-3", MathContext.DECIMAL128));    
+  }
 }
 

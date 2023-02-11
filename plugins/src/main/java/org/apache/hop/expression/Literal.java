@@ -364,4 +364,13 @@ public final class Literal implements IExpression {
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
   }
+
+  @Override
+  public boolean isAlwaysTrue() {  
+    return Boolean.TRUE.equals(value);
+  }
+
+  @Override
+  public boolean isAlwaysFalse() {
+    return Boolean.FALSE.equals(value);  }
 }

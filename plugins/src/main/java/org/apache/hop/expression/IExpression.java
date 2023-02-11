@@ -62,6 +62,25 @@ public interface IExpression {
   }
 
   /**
+   * Check if this expression will always return the TRUE value.
+   *
+   * @return if the expression is TRUE
+   */
+  public default boolean isAlwaysTrue() {
+    return false;
+  }
+  
+  /**
+   * Check if this expression will always return the FALSE value.
+   *
+   * @return if the expression is FALSE
+   */
+  public default boolean isAlwaysFalse() {
+    return false;
+  }
+  
+  
+  /**
    * Estimate the cost to process the expression, used when optimizing the expression.
    *
    * @return the estimated cost
