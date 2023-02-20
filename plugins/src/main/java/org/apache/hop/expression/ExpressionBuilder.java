@@ -16,9 +16,6 @@ package org.apache.hop.expression;
 
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.optimizer.Optimizer;
-import org.apache.hop.expression.optimizer.Optimizers;
-import org.apache.hop.expression.optimizer.ReturnTypeOptimizer;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
@@ -579,15 +576,15 @@ public class ExpressionBuilder {
     }
 
     // Return as INTEGER
-//    if ( bytes.length<=8 ) {
-//      long result = 0;
-//      for (int i = 0; i < bytes.length; i++) {
-//        result <<= Byte.SIZE;
-//        result |= (bytes[i] & 0xFF);
-//      }
-//      return Literal.of(result);
-//    }
-    
+    // if ( bytes.length<=8 ) {
+    // long result = 0;
+    // for (int i = 0; i < bytes.length; i++) {
+    // result <<= Byte.SIZE;
+    // result |= (bytes[i] & 0xFF);
+    // }
+    // return Literal.of(result);
+    // }
+
     // Return as BINARY
     return Literal.of(bytes);
   }
@@ -605,17 +602,17 @@ public class ExpressionBuilder {
     }
 
     byte[] bytes = bitset.toByteArray();
-    
+
     // Return as INTEGER
-//    if ( bytes.length<=8 ) {
-//      long result = 0;
-//      for (int i = 0; i < bytes.length; i++) {
-//        result <<= Byte.SIZE;
-//        result |= (bytes[i] & 0xFF);
-//      }
-//      return Literal.of(result);
-//    }
-    
+    // if ( bytes.length<=8 ) {
+    // long result = 0;
+    // for (int i = 0; i < bytes.length; i++) {
+    // result <<= Byte.SIZE;
+    // result |= (bytes[i] & 0xFF);
+    // }
+    // return Literal.of(result);
+    // }
+
     // Return as BINARY
     return Literal.of(bytes);
   }
@@ -1435,17 +1432,13 @@ public class ExpressionBuilder {
         break;
     }
 
-    // Apply optimizers
+    // Optimize
+    Optimizer optimizer = new Optimizer();
     IExpression original;
     do {
       original = expression;
-      for (Optimizer optimizer : Optimizers.getOptimizers()) {
-        expression = expression.accept(context, optimizer);
-      }
+      expression = expression.accept(context, optimizer);
     } while (!expression.equals(original));
-
-    // Return type inference
-    expression = expression.accept(context, new ReturnTypeOptimizer());
 
     return expression;
   }
@@ -1501,21 +1494,20 @@ public class ExpressionBuilder {
       throws ExpressionException {
 
     Operator operator = call.getOperator();
-    
+
     // Validate all operands
     List<IExpression> operands = new ArrayList<>();
     for (IExpression expression : call.getOperands()) {
       operands.add(validate(context, expression));
     }
     call = new Call(operator, operands);
-    
-      
+
+
     // Check the number of operands expected
     IOperandCountRange operandCountRange = operator.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(
-            ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator));
+        throw new ExpressionException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator));
       }
       if (call.getOperandCount() > operandCountRange.getMax()) {
         throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator));
@@ -1540,9 +1532,6 @@ public class ExpressionBuilder {
       }
     }
 
-    // Inference return type
-    DataTypeName type = operator.getReturnTypeInference().getReturnType(context, call);
-
-    return new Call(type, operator, operands);
+    return call;
   }
 }

@@ -86,7 +86,11 @@ public final class Identifier implements IExpression {
 
     IRowMeta rowMeta = context.getRowMeta();
 
-    Object[] row = context.getRow();
+    Object[] row = context.getRow();   
+    if ( row==null ) {
+      throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
+    }
+    
     try {
       IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
 
@@ -134,9 +138,13 @@ public final class Identifier implements IExpression {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
     }
 
-    try {
-      Object[] row = context.getRow();
+    Object[] row = context.getRow();
+    if ( row==null ) {
+      throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
+    }
 
+    try {
+            
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN: {
           Boolean value = rowMeta.getBoolean(row, ordinal);

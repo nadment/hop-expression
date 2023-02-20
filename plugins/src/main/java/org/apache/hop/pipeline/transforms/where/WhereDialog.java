@@ -168,7 +168,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, e -> onChanged());
-
+    PropsUi.setLook(wTransformName);
 
     final ControlDecoration deco = new ControlDecoration(wTransformName, SWT.TOP | SWT.LEFT);
     deco.setDescriptionText(BaseMessages.getString("System.TransformNameMissing.Msg"));

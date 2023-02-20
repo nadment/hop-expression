@@ -28,6 +28,7 @@ public class OptimizerTest extends ExpressionTest {
   public void testSimplifyLikeRule() throws Exception {
     optimizeNull("FIELD_STRING LIKE NULL");
     optimizeNull("NULL LIKE FIELD_STRING");
+    optimize("FIELD_STRING LIKE '%'", "FIELD_STRING=FIELD_STRING");
     optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
@@ -88,6 +89,9 @@ public class OptimizerTest extends ExpressionTest {
     optimizeFalse("false and FIELD_BOOLEAN");
     optimizeFalse("FIELD_BOOLEAN and false");
     optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");    
+    
+    optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
+    optimizeTrue("EQUAL_NULL(FIELD_STRING, FIELD_STRING)");
     
     // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
@@ -155,6 +159,7 @@ public class OptimizerTest extends ExpressionTest {
   @Test
   public void testArithmeticRule() throws Exception {
 
+    optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
     optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
     optimize("FIELD_INTEGER-0", "FIELD_INTEGER");

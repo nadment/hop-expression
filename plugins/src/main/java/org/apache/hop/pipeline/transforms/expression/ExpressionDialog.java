@@ -220,7 +220,8 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addModifyListener(lsMod);
-
+    PropsUi.setLook(wTransformName);
+    
     return composite;
   }
 

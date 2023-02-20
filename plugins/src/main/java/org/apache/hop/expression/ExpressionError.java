@@ -27,6 +27,8 @@ public enum ExpressionError {
   //
   OPERATOR_ERROR("Expression.OperatorError"),
   //
+  CONTEXT_ERROR("Expression.ContextError"),
+  //
   DIVISION_BY_ZERO("Expression.DivisionByZero"),
   //
   ILLEGAL_ARGUMENT("Expression.IllegalArgument"),

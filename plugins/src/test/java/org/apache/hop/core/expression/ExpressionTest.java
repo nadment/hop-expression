@@ -79,8 +79,11 @@ public class ExpressionTest {
       }
     };
   }
-
   protected ExpressionContext createExpressionContext() throws Exception {
+    return this.createExpressionContext(true);
+  }
+  
+  protected ExpressionContext createExpressionContext(boolean withData) throws Exception {
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
 
@@ -122,57 +125,61 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
-    Calendar calendar = Calendar.getInstance();
-    calendar.set(1981, 5, 23);
-
-    Object[] row = new Object[29];
-    row[0] = "TEST";
-    row[1] = "F";
-    row[2] = calendar.getTime();
-    row[3] = 40L;
-    row[4] = -5.12D;
-    row[5] = BigDecimal.valueOf(123456.789);
-    row[6] = calendar.getTime();
-    row[7] = Timestamp.valueOf("2023-02-28 22:11:01");
-    row[8] = true;
-    row[9] = "TEST".getBytes();
-    
-    row[10] = null;
-    row[11] = null;
-    row[12] = null;
-    row[13] = null;
-    row[14] = null;
-    row[15] = null;
-    row[16] = null;
-    row[17] = null;
-    
-    row[18] = "True";
-    row[19] = "25";
-    row[20] = "-12.56";
-
-
-    row[21] = 2020L;
-    row[22] = "Paris";
-    row[23] = true;
-    row[24] = 2;
-    row[25] = "SPACE";
-    row[26] = "UNDERSCORE";
-    row[27] = "lower";
-
     ExpressionContext context = new ExpressionContext(variables, rowMeta);
-    context.setRow(row);
+
+    if ( withData ) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.set(1981, 5, 23);
+
+      Object[] row = new Object[29];
+      row[0] = "TEST";
+      row[1] = "F";
+      row[2] = calendar.getTime();
+      row[3] = 40L;
+      row[4] = -5.12D;
+      row[5] = BigDecimal.valueOf(123456.789);
+      row[6] = calendar.getTime();
+      row[7] = Timestamp.valueOf("2023-02-28 22:11:01");
+      row[8] = true;
+      row[9] = "TEST".getBytes();
+      
+      row[10] = null;
+      row[11] = null;
+      row[12] = null;
+      row[13] = null;
+      row[14] = null;
+      row[15] = null;
+      row[16] = null;
+      row[17] = null;
+      
+      row[18] = "True";
+      row[19] = "25";
+      row[20] = "-12.56";
+
+
+      row[21] = 2020L;
+      row[22] = "Paris";
+      row[23] = true;
+      row[24] = 2;
+      row[25] = "SPACE";
+      row[26] = "UNDERSCORE";
+      row[27] = "lower";
+      context.setRow(row);
+    }
+
 
     return context;
   }
 
+  
   protected void returnType(String source, DataTypeName expected) throws Exception {
-    ExpressionContext context = createExpressionContext();
+    ExpressionContext context = createExpressionContext(false);
     IExpression expression = ExpressionBuilder.build(context, source);
     assertEquals(expected, expression.getType());
   }
 
   protected Object eval(String source) throws Exception {
-    return eval(source, createExpressionContext(), null);
+    return eval(source, createExpressionContext(true), null);
   }
 
   protected Object eval(String source, ExpressionContext context) throws Exception {
@@ -184,7 +191,7 @@ public class ExpressionTest {
 
     // Create default context
     if (context == null) {
-      context = createExpressionContext();
+      context = createExpressionContext(true);
     }
 
     // Apply context customization
@@ -286,7 +293,7 @@ public class ExpressionTest {
   }
 
   protected void writeEquals(String source, String result) throws Exception {
-    IExpressionContext context = createExpressionContext();
+    IExpressionContext context = createExpressionContext(false);
     IExpression expression = ExpressionBuilder.build(context, source);
 
     StringWriter writer = new StringWriter();
@@ -295,7 +302,7 @@ public class ExpressionTest {
   }
 
   protected IExpression optimize(String e) throws Exception {
-    IExpressionContext context = createExpressionContext();
+    IExpressionContext context = createExpressionContext(false);
     IExpression expression = ExpressionBuilder.build(context, e);
 
     String color = ANSI_YELLOW;
@@ -334,7 +341,9 @@ public class ExpressionTest {
     // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','HEX'),'HEX')", "Apache Hop");
     //evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
     // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','BASE64'),'BASE64')", "Apache Hop");    
-    evalFails("Week(NULL_BOOLEAN)");
+    //evalFails("Week(NULL_BOOLEAN)");
+    //writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
+    returnType("FIELD_STRING||'t'", DataTypeName.STRING);
   }
 }
 

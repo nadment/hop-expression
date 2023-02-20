@@ -195,7 +195,8 @@ public class AggregateDialog extends BaseTransformDialog implements ITransformDi
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, event -> input.setChanged());
-
+    PropsUi.setLook(wTransformName);
+    
     return composite;
   }
 

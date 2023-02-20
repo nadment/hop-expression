@@ -169,7 +169,8 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
     wTransformName.setLayoutData(
         new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, event -> onChanged());
-
+    PropsUi.setLook(wTransformName);
+    
     return composite;
   }
 

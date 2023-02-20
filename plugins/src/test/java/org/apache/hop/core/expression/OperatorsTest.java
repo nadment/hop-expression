@@ -541,6 +541,9 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1));
     evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2020, 1, 19, 11,23,44));
     
+    // String to Binary    
+    evalEquals("CAST('A' as BINARY)", "A".getBytes());
+    
     // String to Json
     
     // Binary to Integer
