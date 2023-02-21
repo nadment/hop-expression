@@ -396,13 +396,21 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
       throws ExpressionException {
     List<IExpression> list = new ArrayList<>();
 
-    // Remove duplicate element in list
-    for (IExpression expression : (Tuple) call.getOperand(1)) {
+    IExpression value = call.getOperand(0);
+    Tuple tuple = (Tuple) call.getOperand(1);
+    
+    // Remove null and duplicate element in list
+    for (IExpression expression : tuple) {
 
       if (expression.isNull()) {
         continue;
       }
 
+      // B in (A,B,C) return B=B;
+      if ( value.equals(expression) ) {
+        return new Call(Operators.EQUAL, value, expression);
+      }
+      
       // If this element is not present in new list then add it
       if (!list.contains(expression)) {
         list.add(expression);

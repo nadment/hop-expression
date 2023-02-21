@@ -21,8 +21,11 @@ public class OptimizerTest extends ExpressionTest {
   @Test
   public void testSimplifyInRule() throws Exception {
     optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
-    optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')");    
-    // TODO: optimizeTrue("FIELD_INTEGER in (1,2,FIELD_INTEGER)");
+    optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')"); 
+    
+    /// Value in the expression list
+    optimize("FIELD_INTEGER in (1,2,FIELD_INTEGER)","FIELD_INTEGER=FIELD_INTEGER");
+    optimize("FIELD_STRING in ('XX',FIELD_STRING,'ZZ')","FIELD_STRING=FIELD_STRING");
   }
 
   @Test
