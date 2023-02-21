@@ -32,16 +32,14 @@ public class Token {
     CASE,
     /** Concat operator <code>||<code>. */
     CONCAT("||"),
-    /** CAST(value AS type) */
-    CAST,
-    /** CAST(value AS type) */
+    /** Used by function CAST(value AS type) */
     AS,
-    /** The AT TIME ZONE */
+    /** Used by operator AT TIME ZONE */
     AT,
-    /** CAST(value AS type FORMAT '9999') */
+    /** Used by function CAST(value AS type FORMAT '9999') */
     FORMAT,
     /** Cast operator <code>::<code>. */
-    CAST_OP("::"),
+    CAST("::"),
     /** Comment */
     COMMENT,
     /** Comma separator */
@@ -70,8 +68,6 @@ public class Token {
     TIME,
     /** The "TIMESTAMP" word for literal timesamp. */
     TIMESTAMP,
-    /** TRY_CAST(value AS type) */
-    TRY_CAST,
     /** The AT TIME ZONE */
     ZONE,
     /** Identifier */
@@ -134,24 +130,20 @@ public class Token {
     RESPECT,
     /** The "IS" operator. */
     IS,
-    /** The "JSON_OBJECT" function. */
-    JSON_OBJECT, KEY, VALUE,
+    /** Used by function "JSON_OBJECT" */ 
+    KEY, 
+    /** Used by function "JSON_OBJECT" */
+    VALUE,
     /** The literal value "TRUE". */
     TRUE,
     /** The literal value "FALSE". */
-    FALSE, ELSE, THEN, END, WHEN, TRY,
-    /** Function COUNT(*) or COUNT([DISTINCT] numeric) operator */
-    COUNT, DISTINCT,
-    /** Function EXTRACT(unit FROM date) operator */
-    EXTRACT,
-    /** Function POSITION(substring IN string) operator */
-    POSITION,
-    /** Function FIRST_VALUE(expression [IGNORE NULLS | RESPECT NULLS]) */
-    FIRST_VALUE,
-    /** Function LAST_VALUE(expression [IGNORE NULLS | RESPECT NULLS]) */
-    LAST_VALUE,
-    /** Function LISTAGG( [DISTINCT] string [, delimiter]) */
-    LISTAGG,
+    FALSE, ELSE, THEN, END, WHEN, TRY,    
+    /** 
+     * Used by functions:
+     * COUNT([DISTINCT] numeric),  
+     * LISTAGG( [DISTINCT] string [, delimiter])
+     */
+    DISTINCT,
     /** Data type element NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
     /** Time unit element DAY, MONTH, QUARTER, MINUTE, ... */

@@ -27,7 +27,7 @@ import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.CaseOperator;
-import org.apache.hop.expression.operator.CastFunction;
+import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.operator.CountFunction.Count;
@@ -44,7 +44,6 @@ import org.apache.hop.expression.operator.IsNotDistinctFromOperator;
 import org.apache.hop.expression.operator.IsNotNullOperator;
 import org.apache.hop.expression.operator.IsNullOperator;
 import org.apache.hop.expression.operator.IsTrueOperator;
-import org.apache.hop.expression.operator.JsonObjectFunction;
 import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
 import org.apache.hop.expression.operator.LessThanOrGreaterThanOperator;
@@ -55,10 +54,7 @@ import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegateOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
-import org.apache.hop.expression.operator.PositionFunction;
 import org.apache.hop.expression.operator.SubtractOperator;
-import org.apache.hop.expression.operator.ToCharFunction;
-import org.apache.hop.expression.operator.ToNumberFunction;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -123,13 +119,9 @@ public class Operators {
   // -------------------------------------------------------------
   // SPECIAL OPERATORS with custom or alternative syntax, or optimized
   // -------------------------------------------------------------
-  public static final Function CAST = new CastFunction("::");
-  public static final Function CONCAT = new ConcatFunction("||");
+  public static final Operator CAST = new CastOperator();
+  public static final Function CONCAT = new ConcatFunction("||");  
   public static final Function EXTRACT = new ExtractFunction();
-  public static final Function POSITION = new PositionFunction();
-  public static final Function TO_CHAR = new ToCharFunction();
-  public static final Function TO_NUMBER = new ToNumberFunction();
-  public static final Function JSON_OBJECT = new JsonObjectFunction();
   public static final Function ADD_DAYS = new AddDaysFunction();
 
   // -------------------------------------------------------------

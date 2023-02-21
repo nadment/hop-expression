@@ -259,7 +259,8 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_INTEGER not in (1,2,3)");
     
     evalTrue("2.5 IN (1,2.5,3)");
-    evalTrue("'2' in (null,1,2,3)");
+    evalTrue("'2' in (null,1,2,FIELD_INTEGER)");
+    evalTrue("TRUE IN (FALSE,NULL_BOOLEAN,TRUE)");
     evalTrue("Date '2019-01-01' in (Date '2019-04-01',Date '2019-01-01',Date '2019-03-06')");
     evalTrue("0x0123456789 in (0x9876,0x0123456789,0x3698)");
     evalFalse("2 in (1,2.5,3)");
@@ -272,8 +273,7 @@ public class OperatorsTest extends ExpressionTest {
 
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
-    evalFails("FIELD_INTEGER in (1,2,FIELD_INTEGER)");
-
+   
     writeEquals("FIELD_INTEGER IN (10,20,30,40)");
     
     returnType("FIELD_INTEGER IN (10,20,30,40)", DataTypeName.BOOLEAN);
@@ -590,7 +590,7 @@ public class OperatorsTest extends ExpressionTest {
         
     writeEquals("CAST(FIELD_BINARY AS BINARY)", "CAST(FIELD_BINARY AS BINARY)");
     writeEquals("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
-    writeEquals("FIELD_INTEGER::NUMBER", "CAST(FIELD_INTEGER AS NUMBER)");
+    writeEquals("FIELD_INTEGER::NUMBER", "FIELD_INTEGER::NUMBER");
     
     returnType("CAST(3 as BOOLEAN)", DataTypeName.BOOLEAN);
     returnType("CAST('3' as INTEGER)", DataTypeName.INTEGER);  
@@ -888,12 +888,13 @@ public class OperatorsTest extends ExpressionTest {
 
     evalNull("NULL like 'NULL'");
     evalNull("'test' LIKE NULL");
-    evalNull("'test' LIKE 'TEST' escape NULL");
+
 
     // NULL does not match NULL
     evalNull("NULL like NULL");
 
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
+    evalFails("'test' LIKE 'TEST' escape NULL");
     
     writeEquals("FIELD_STRING LIKE 'ADD%'","STARTSWITH(FIELD_STRING,'ADD')");
     writeEquals("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");

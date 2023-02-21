@@ -43,9 +43,6 @@ public class ExpressionBuilder {
       "IGNORE", "ILIKE", "IN", "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT",
       "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN", "ZONE");
 
-  private static final Set<String> FUNCTION_WITH_CUSTOM_SYNTAX = Set.of("CAST", "COUNT", "EXTRACT",
-      "POSITION", "LISTAGG", "FIRST_VALUE", "LAST_VALUE", "JSON_OBJECT");
-
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
   }
@@ -271,7 +268,7 @@ public class ExpressionBuilder {
       IExpression pattern = this.parseAdditive();
 
       if (isThenNext(Id.ESCAPE)) {
-        IExpression escape = this.parsePrimary();
+        IExpression escape = this.parseLiteralString(next());
         expression = new Call(Operators.LIKE, expression, pattern, escape);
       } else {
         expression = new Call(Operators.LIKE, expression, pattern);
@@ -464,22 +461,6 @@ public class ExpressionBuilder {
         return parseLiteralJson(token);
       case CASE:
         return parseCase();
-      case CAST:
-      case TRY_CAST:
-        return parseFunctionCast(token);
-      case COUNT:
-        return parseFunctionCount(token);
-      case EXTRACT:
-        return parseFunctionExtract(token);
-      case POSITION:
-        return parseFunctionPosition(token);
-      case JSON_OBJECT:
-        return parseFunctionJsonObject(token);
-      case LISTAGG:
-        return parseFunctionListAgg(token);
-      case FIRST_VALUE:
-      case LAST_VALUE:
-        return parseFunctionFirstLastValue(token);
       case FUNCTION:
         return parseFunction(token);
       case LPARENTHESIS:
@@ -742,13 +723,7 @@ public class ExpressionBuilder {
 
       do {
         IExpression value = parsePrimary();
-
-        // Only literal in values list
-        if (value.is(Kind.LITERAL)) {
-          list.add(value);
-        } else {
-          throw new ParseException(ExpressionError.INVALID_VALUES.message(), this.getPosition());
-        }
+        list.add(value);
 
         if (isThenNext(Id.COMMA)) {
           continue;
@@ -801,11 +776,9 @@ public class ExpressionBuilder {
   }
 
   /**
-   * Cast operator CAST(value AS type [FORMAT pattern])
-   *
+   * Cast function CAST(value AS type [FORMAT pattern])
    */
-  private IExpression parseFunctionCast(Token token) throws ParseException {
-
+  private IExpression parseFunctionCast(Token token, Function function) throws ParseException {
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
@@ -832,11 +805,13 @@ public class ExpressionBuilder {
       throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.end());
     }
 
-    return new Call(Operators.CAST, operands);
+    return new Call(function, operands);
   }
 
-  /** POSITION(<expression> IN <expression>) */
-  private IExpression parseFunctionPosition(Token token) throws ParseException {
+  /** 
+   * Parse function POSITION(<expression> IN <expression>)
+   */
+  private IExpression parseFunctionPosition(Token token, final Function function) throws ParseException {
 
     List<IExpression> operands = new ArrayList<>();
 
@@ -847,7 +822,7 @@ public class ExpressionBuilder {
     operands.add(this.parseAdditive());
 
     if (isNotThenNext(Id.IN)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.POSITION),
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
           this.getPosition());
     }
 
@@ -857,16 +832,14 @@ public class ExpressionBuilder {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
     }
 
-    return new Call(Operators.POSITION, operands);
+    return new Call(function, operands);
   }
 
   /**
    * FIRST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    * LAST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    */
-  private IExpression parseFunctionFirstLastValue(Token token) throws ParseException {
-
-    Function function = FunctionRegistry.getFunction(token.text());
+  private IExpression parseFunctionFirstLastValue(Token token, final Function function) throws ParseException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
@@ -899,7 +872,7 @@ public class ExpressionBuilder {
   }
 
   /** EXTRACT(<part> FROM <expression>) */
-  private IExpression parseFunctionExtract(Token token) throws ParseException {
+  private IExpression parseFunctionExtract(Token token, final Function function) throws ParseException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
@@ -910,7 +883,7 @@ public class ExpressionBuilder {
     operands.add(this.parseLiteralTimeUnit(next()));
 
     if (isNotThenNext(Id.FROM)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.EXTRACT),
+      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
           this.getPosition());
     }
 
@@ -920,13 +893,13 @@ public class ExpressionBuilder {
       throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.end());
     }
 
-    return new Call(Operators.EXTRACT, operands);
+    return new Call(function, operands);
   }
 
   /**
    * COUNT(*) | COUNT([DISTINCT] <expression>)
    */
-  private IExpression parseFunctionCount(Token token) throws ParseException {
+  private IExpression parseFunctionCount(Token token, Function function) throws ParseException {
 
     AggregateFunction aggregator = Operators.COUNT_VALUE;
 
@@ -940,10 +913,10 @@ public class ExpressionBuilder {
     if (isThenNext(Id.MULTIPLY)) {
       aggregator = Operators.COUNT_ALL;
     } else if (isThenNext(Id.DISTINCT)) {
-      operands.add(this.parseTerm());
+      operands.add(this.parsePrimary());
       aggregator = Operators.COUNT_DISTINCT;
     } else {
-      operands.add(this.parseTerm());
+      operands.add(this.parsePrimary());
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
@@ -956,7 +929,7 @@ public class ExpressionBuilder {
   /**
    * LISTAGG([DISTINCT] <expression> [, delimiter] )
    */
-  private IExpression parseFunctionListAgg(Token token) throws ParseException {
+  private IExpression parseFunctionListAgg(Token token, final Function function) throws ParseException {
 
     AggregateFunction aggregator = Operators.LISTAGG_ALL;
 
@@ -967,15 +940,15 @@ public class ExpressionBuilder {
     List<IExpression> operands = new ArrayList<>();
 
     if (isThenNext(Id.DISTINCT)) {
-      operands.add(this.parseTerm());
+      operands.add(this.parsePrimary());
       aggregator = Operators.LISTAGG_DISTINCT;
     } else {
-      operands.add(this.parseTerm());
+      operands.add(this.parsePrimary());
     }
 
     // Optional delimiter
     if (isThenNext(Id.COMMA)) {
-      operands.add(this.parseTerm());
+      operands.add(this.parsePrimary());
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
@@ -986,7 +959,7 @@ public class ExpressionBuilder {
   }
 
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
-  private IExpression parseFunctionJsonObject(Token token) throws ParseException {
+  private IExpression parseFunctionJsonObject(Token token, final Function function) throws ParseException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
@@ -1003,9 +976,9 @@ public class ExpressionBuilder {
       operands.add(this.parseLiteralString(token));
 
       if (isThenNext(Id.VALUE)) {
-        operands.add(this.parseTerm());
+        operands.add(this.parsePrimary());
       } else {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.JSON_OBJECT),
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
             token.start());
       }
 
@@ -1020,13 +993,33 @@ public class ExpressionBuilder {
       throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
     }
 
-    return new Call(Operators.JSON_OBJECT, operands);
+    return new Call(function, operands);
   }
 
   /** Function */
   private IExpression parseFunction(Token token) throws ParseException {
 
     Function function = FunctionRegistry.getFunction(token.text());
+    
+    // Function with custom syntax
+    switch(token.text()) {
+      case "CAST":
+        return parseFunctionCast(token, function);
+      case "EXTRACT":
+        return parseFunctionExtract(token, function);
+      case "POSITION":
+        return parseFunctionPosition(token, function);
+      case "COUNT":
+        return parseFunctionCount(token, function);
+      case "FIRST_VALUE":
+      case "LAST_VALUE":
+        return this.parseFunctionFirstLastValue(token, function);
+      case "LISTAGG":
+        return this.parseFunctionListAgg(token, function);
+      case "JSON_OBJECT":
+        return this.parseFunctionJsonObject(token, function);
+    }
+    
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
@@ -1375,10 +1368,6 @@ public class ExpressionBuilder {
           String name = identifier.toUpperCase();
 
           if (c == '(') {
-            // Special function with custom syntax
-            if (FUNCTION_WITH_CUSTOM_SYNTAX.contains(name)) {
-              return new Token(Id.valueOf(name), start, position, name);
-            }
             if (FunctionRegistry.isFunction(name)) {
               return new Token(Id.FUNCTION, start, position, name);
             }
@@ -1535,3 +1524,4 @@ public class ExpressionBuilder {
     return call;
   }
 }
+

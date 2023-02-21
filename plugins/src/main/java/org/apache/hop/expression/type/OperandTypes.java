@@ -101,6 +101,8 @@ public final class OperandTypes {
   public static final IOperandTypeChecker ANY_ANY = family(DataTypeFamily.ANY, DataTypeFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY =
       family(DataTypeFamily.ANY, DataTypeFamily.ANY, DataTypeFamily.ANY);
+  public static final IOperandTypeChecker ANY_DATATYPE = OperandTypes
+      .sequence(OperandTypes.ANY, OperandTypes.DATATYPE);
   public static final IOperandTypeChecker ANY_DATATYPE_OPTIONAL_TEXT = OperandTypes
       .sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
   public static final IOperandTypeChecker OPTIONAL_ANY =
