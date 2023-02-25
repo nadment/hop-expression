@@ -103,6 +103,8 @@ public enum ExpressionError {
   //
   UDF_COMPILATION_ERROR("Expression.UdfCompilationError"),
   //
+  UNSUPPORTED_COERCION("Expression.UnsupportedCoercion"),
+  
   UNSUPPORTED_CONVERSION("Expression.UnsupportedConversion"),
   //
   UNSUPPORTED_VALUEMETA("Expression.UnsupportedValueMeta"),

@@ -236,7 +236,8 @@ public final class OperandTypes {
       family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC,
           DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING)
               .optional(i -> i >= 2);
-
+  public static final IOperandTypeChecker STRING_DATE =
+      family(DataTypeFamily.STRING, DataTypeFamily.DATE);
 
   public static final IOperandTypeChecker JSON = family(DataTypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING =

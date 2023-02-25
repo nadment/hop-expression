@@ -35,6 +35,8 @@ import java.time.temporal.TemporalAdjusters;
 
 /**
  * Returns the last day of the time unit.
+ * 
+ * @see {@link FirstDayFunction}
  */
 @FunctionPlugin
 public class LastDayFunction extends Function {

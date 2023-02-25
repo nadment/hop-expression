@@ -344,7 +344,7 @@ public class ExpressionTest {
     //evalFails("Week(NULL_BOOLEAN)");
     //writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
     //returnType("FIELD_STRING||'t'", DataTypeName.STRING);
-    evalEquals("Date_Part(HOUR,Timestamp '2020-05-25 23:48:59')", 23);
+   // evalEquals("Extract(HOUR from '2020-05-25 23:48:59')", 23);
     //evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
   }
 }

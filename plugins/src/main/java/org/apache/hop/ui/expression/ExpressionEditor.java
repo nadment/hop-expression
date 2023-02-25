@@ -98,8 +98,11 @@ public class ExpressionEditor extends Composite {
 
     PropsUi.setLook(this);
 
+    LineNumberRulerColumn lineNumberRulerColumn = new LineNumberRulerColumn();
+    lineNumberRulerColumn.setBackground(GuiResource.getInstance().getColorLightGray());
+    
     CompositeRuler ruler = new CompositeRuler(24);
-    ruler.addDecorator(0, new LineNumberRulerColumn());
+    ruler.addDecorator(0, lineNumberRulerColumn);
     sourceViewer = new SourceViewer(parent, ruler, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
     sourceViewer.getTextWidget().setFont(GuiResource.getInstance().getFontFixed());
     sourceViewer.getTextWidget()

@@ -297,6 +297,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("TIMESTAMP '9999-12-31 23:59:59.999999999'", LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999999999));
 
     writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999'");
+    //writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999' AT TIME ZONE 'Europe/Paris'");
     
     returnType("TIMESTAMP '2021-12-01 12:01:01'", DataTypeName.DATE);
   }

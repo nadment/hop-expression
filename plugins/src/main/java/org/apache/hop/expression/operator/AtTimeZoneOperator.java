@@ -30,7 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 /**
- * Converts a value of one timezone into another timezone.
+ * Converts a value of one time zone into another time zone.
  * <p>
  * <code>value AT TIME ZONE zone.<code>
  */
@@ -51,7 +51,7 @@ public class AtTimeZoneOperator extends Operator {
     return value.withZoneSameInstant(zone);
   }
 
-  protected ZoneId toZoneId(String zone) throws Exception {
+  protected ZoneId toZoneId(final String zone) throws Exception {
     try {
       return ZoneId.of(zone);
     } catch (Exception e) {

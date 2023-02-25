@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.DataTypeName;
@@ -40,51 +41,56 @@ public class DataTypeTest extends ExpressionTest {
   @Test
   public void of() throws Exception {
     assertEquals(DataTypeName.UNKNOWN, DataTypeName.of("UNKNOWN"));
-    assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("BOOLEAN"));
+    assertEquals(DataTypeName.UNKNOWN, DataTypeName.of(Void.class));
+    
+    assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("BOOLEAN"));    
     assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("Boolean"));
+    assertEquals(DataTypeName.BOOLEAN, DataTypeName.of(Boolean.class));
+    
     assertEquals(DataTypeName.STRING, DataTypeName.of("STRING"));
     assertEquals(DataTypeName.STRING, DataTypeName.of("String"));
+    assertEquals(DataTypeName.STRING, DataTypeName.of(String.class));
+    
     assertEquals(DataTypeName.DATE, DataTypeName.of("DATE"));
+    assertEquals(DataTypeName.DATE, DataTypeName.of(ZonedDateTime.class));
+    
     assertEquals(DataTypeName.NUMBER, DataTypeName.of("NUMBER"));
+    assertEquals(DataTypeName.NUMBER, DataTypeName.of(Double.class));
+    
     assertEquals(DataTypeName.BIGNUMBER, DataTypeName.of("BIGNUMBER"));
+    assertEquals(DataTypeName.BIGNUMBER, DataTypeName.of(BigDecimal.class));
+    
     assertEquals(DataTypeName.BINARY, DataTypeName.of("BINARY"));
+    assertEquals(DataTypeName.BINARY, DataTypeName.of(byte[].class));
+    
     assertEquals(DataTypeName.JSON, DataTypeName.of("Json"));
+    assertEquals(DataTypeName.JSON, DataTypeName.of(JsonNode.class));
+    
     assertEquals(DataTypeName.INTEGER, DataTypeName.of("INTEGER"));
-    assertNull(DataTypeName.of(null));
+    assertEquals(DataTypeName.INTEGER, DataTypeName.of(Long.class));
+    
+    assertNull(DataTypeName.of((String) null));
     assertNull(DataTypeName.of("NOP"));
+    assertNull(DataTypeName.of(Float.class));
+    assertNull(DataTypeName.of(Date.class));
   }
 
   @Test
   public void from() throws Exception {
-    assertEquals(DataTypeName.UNKNOWN, DataTypeName.from(null));
-    assertEquals(DataTypeName.BOOLEAN, DataTypeName.from(true));
-    assertEquals(DataTypeName.STRING, DataTypeName.from("test"));
-    assertEquals(DataTypeName.INTEGER, DataTypeName.from(1L));
-    assertEquals(DataTypeName.NUMBER, DataTypeName.from(1D));
-    assertEquals(DataTypeName.BIGNUMBER, DataTypeName.from(BigDecimal.ONE));
-    assertEquals(DataTypeName.BINARY, DataTypeName.from(new byte[] {0x78}));
-    assertEquals(DataTypeName.DATE, DataTypeName.from(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh"))));
-    assertEquals(DataTypeName.JSON, DataTypeName.from(Converter.parseJson("{\"name\":\"Smith\"}")));
-
-    assertThrows(IllegalArgumentException.class, () -> DataTypeName.from(new Date()));
+    assertEquals("UNKNOWN", DataTypeName.toString(null));
+    assertEquals("UNKNOWN", DataTypeName.toString(new Date()));
+    
+    assertEquals("BOOLEAN", DataTypeName.toString(true));
+    assertEquals("STRING", DataTypeName.toString("test"));
+    assertEquals("INTEGER", DataTypeName.toString(1L));
+    assertEquals("NUMBER", DataTypeName.toString(1D));
+    assertEquals("BIGNUMBER", DataTypeName.toString(BigDecimal.ONE));
+    assertEquals("BINARY", DataTypeName.toString(new byte[] {0x78}));
+    assertEquals("DATE", DataTypeName.toString(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh"))));
+    assertEquals("JSON", DataTypeName.toString(Converter.parseJson("{\"name\":\"Smith\"}")));
+    assertEquals("TIMEUNIT", DataTypeName.toString(TimeUnit.CENTURY));
   }
 
-  @Test
-  public void as() throws Exception {
-    assertEquals(DataTypeName.UNKNOWN, DataTypeName.as(Void.class));
-    assertEquals(DataTypeName.BOOLEAN, DataTypeName.as(Boolean.class));
-    assertEquals(DataTypeName.STRING, DataTypeName.as(String.class));
-    assertEquals(DataTypeName.INTEGER, DataTypeName.as(Long.class));
-    assertEquals(DataTypeName.NUMBER, DataTypeName.as(Double.class));
-    assertEquals(DataTypeName.BIGNUMBER, DataTypeName.as(BigDecimal.class));
-    assertEquals(DataTypeName.BINARY, DataTypeName.as(byte[].class));
-    assertEquals(DataTypeName.DATE, DataTypeName.as(ZonedDateTime.class));
-    assertEquals(DataTypeName.JSON, DataTypeName.as(JsonNode.class));
-
-    assertNull(DataTypeName.as(Float.class));
-    assertNull(DataTypeName.as(Date.class));
-  }
-  
   @Test
   public void family() throws Exception {
     assertTrue(DataTypeFamily.ANY.isSameFamily(DataTypeFamily.BINARY));
@@ -221,7 +227,7 @@ public class DataTypeTest extends ExpressionTest {
     assertEquals("1.2", Converter.cast(1.2D, DataTypeName.STRING));
     assertEquals("0", Converter.cast(BigDecimal.ZERO, DataTypeName.STRING));
     assertEquals("1", Converter.cast(BigDecimal.ONE, DataTypeName.STRING));
-    assertEquals("ABCDéç", Converter.cast("ABCDéç".getBytes(StandardCharsets.UTF_8), DataTypeName.STRING));
+    assertEquals("ABCDï¿½ï¿½", Converter.cast("ABCDï¿½ï¿½".getBytes(StandardCharsets.UTF_8), DataTypeName.STRING));
   }
 
   @Test

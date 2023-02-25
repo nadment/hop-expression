@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.TimeUnit;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -163,7 +163,7 @@ public enum DataTypeName {
    *
    * @return Type name, or null if not found
    */
-  public static DataTypeName as(final Class<?> clazz) {
+  public static DataTypeName of(final Class<?> clazz) {
     for (DataTypeName type : DataTypeName.values()) {
       if (type.javaClass.equals(clazz)) {
         return type;
@@ -175,29 +175,31 @@ public enum DataTypeName {
   /**
    * Search a type name for a value.
    *
-   * @return Type name, or null if not found
+   * @return The name of data type or 'UNKNOWN' if not found
    */
-  public static DataTypeName from(final Object value) {
+  public static String toString(final Object value) {
     if (value == null)
-      return UNKNOWN;
+      return UNKNOWN.name();
     if (value instanceof Boolean)
-      return BOOLEAN;
+      return BOOLEAN.name();
     if (value instanceof String)
-      return STRING;
+      return STRING.name();
     if (value instanceof BigDecimal)
-      return BIGNUMBER;
+      return BIGNUMBER.name();
     if (value instanceof Double)
-      return NUMBER;
+      return NUMBER.name();
     if (value instanceof Long)
-      return INTEGER;
+      return INTEGER.name();
     if (value instanceof ZonedDateTime)
-      return DATE;
+      return DATE.name();
     if (value instanceof JsonNode)
-      return JSON;
+      return JSON.name();
     if (value instanceof byte[])
-      return BINARY;
-
-    throw new IllegalArgumentException(ExpressionError.UNKNOWN_DATATYPE.message(value.getClass()));
+      return BINARY.name();
+    if (value instanceof TimeUnit)
+      return "TIMEUNIT";
+    
+    return UNKNOWN.name();
   }
 
   /**

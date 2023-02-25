@@ -239,8 +239,8 @@ public final class Literal implements IExpression {
         break;
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        DataTypeName.from(value), DataTypeName.from(clazz));
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
+        DataTypeName.toString(value), DataTypeName.of(clazz));
   }
 
   @Override
@@ -326,9 +326,23 @@ public final class Literal implements IExpression {
         if (datetime.getNano() > 0) {
           writer.append("TIMESTAMP '");
           writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
-        } else {
+          
+          if ( !datetime.getOffset().getId().equals("Z") ) {
+            writer.append("' AT TIME ZONE '");
+            writer.append(datetime.getZone().toString());
+          }
+        }
+        else if (datetime.getHour()==0 && datetime.getMinute()==0 && datetime.getSecond()==0) {
           writer.append("DATE '");
-          writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
+          writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));                    
+        } else {
+          writer.append("TIMESTAMP '");
+          writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
+          
+          if ( !datetime.getOffset().getId().equals("Z") ) {
+            writer.append("' AT TIME ZONE '");
+            writer.append(datetime.getZone().toString());
+          }
         }
         writer.append('\'');
         break;

@@ -64,7 +64,7 @@ public class DataType {
     DATE = new DataType(DataTypeName.DATE);
     JSON = new DataType(DataTypeName.JSON);
     STRING = new DataType(DataTypeName.STRING);
-    INTEGER = new DataType(DataTypeName.INTEGER, 10, 0);
+    INTEGER = new DataType(DataTypeName.INTEGER, 19, 0);
     NUMBER = new DataType(DataTypeName.NUMBER, 38, 0);
     BIGNUMBER = new DataType(DataTypeName.BIGNUMBER, 38, 0);
   }

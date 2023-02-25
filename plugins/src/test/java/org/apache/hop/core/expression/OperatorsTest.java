@@ -587,9 +587,10 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("Cast(123 as TRUE)");
     evalFails("CAST('bad' AS NULL)");
     evalFails("Cast(123 as 'Text')");
-        
-    writeEquals("CAST(FIELD_BINARY AS BINARY)", "CAST(FIELD_BINARY AS BINARY)");
+
     writeEquals("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
+    writeEquals("CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')", "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')");
+    writeEquals("CAST(FIELD_BINARY AS BINARY)", "CAST(FIELD_BINARY AS BINARY)");
     writeEquals("FIELD_INTEGER::NUMBER", "FIELD_INTEGER::NUMBER");
     
     returnType("CAST(3 as BOOLEAN)", DataTypeName.BOOLEAN);
@@ -610,7 +611,14 @@ public class OperatorsTest extends ExpressionTest {
     //writeEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
   
-
+  @Test
+  public void ConvertTimeZone() throws Exception {
+    evalEquals("CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')", ZonedDateTime.of(2020, 5, 25, 22,48,00,0,ZoneId.of("Europe/Paris")));
+   // evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
+    
+    writeEquals("CONVERT_TIMEZONE('Europe/Paris',FIELD_TIMESTAMP)");
+    writeEquals("CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')","TIMESTAMP '2020-05-25 22:48:00' AT TIME ZONE 'Europe/Paris'");
+  }
   
   @Test
   public void Positive() throws Exception {
