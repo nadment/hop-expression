@@ -16,6 +16,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
 
 public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
@@ -24,14 +25,16 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
   @Override
   public boolean checkOperandTypes(Call call) {
     DataTypeName search = call.getOperand(0).getType();
-    DataTypeName result = call.getOperand(2).getType();
+    DataTypeName result = firstNonNull(call.getOperands()).getType();
 
     int count = ((call.getOperandCount() - 1) / 2) * 2;
     for (int i = 1; i < count; i += 2) {
       if (!search.isSameFamily(call.getOperand(i).getType())) {
         return false;
       }
-      if (!result.isSameFamily(call.getOperand(i + 1).getType())) {
+
+      IExpression operandResult = call.getOperand(i + 1);
+      if (!(result.isSameFamily(operandResult.getType()) || operandResult.isNull())) {
         return false;
       }
     }
@@ -45,6 +48,13 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
     return true;
   }
 
+  private IExpression firstNonNull(IExpression[] operands) {
+    for (int i = 2; i < operands.length; i += 2) {
+      if ( ! operands[i].isNull() ) return operands[i];
+    }    
+    return operands[2];
+  }
+  
   @Override
   public IOperandCountRange getOperandCountRange() {
     return OperandCountRange.between(3, Integer.MAX_VALUE);
