@@ -72,7 +72,7 @@ public class ToCharFunction extends Function {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
-      return DateTimeFormat.of(pattern).format(Converter.coerceToDateTime(value));
+      return DateTimeFormat.of(pattern).format(Converter.coerceToDate(value));
     }
 
     if (pattern == null) {

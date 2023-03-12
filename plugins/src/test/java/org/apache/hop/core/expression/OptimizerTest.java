@@ -30,8 +30,6 @@ public class OptimizerTest extends ExpressionTest {
 
   @Test
   public void testSimplifyLikeRule() throws Exception {
-    optimizeNull("FIELD_STRING LIKE NULL");
-    optimizeNull("NULL LIKE FIELD_STRING");
     optimize("FIELD_STRING LIKE '%'", "FIELD_STRING=FIELD_STRING");
     optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
@@ -72,15 +70,13 @@ public class OptimizerTest extends ExpressionTest {
     optimizeTrue("true or false");
     optimizeTrue("false or true");
     optimizeFalse("false or false");
-    optimizeTrue("true or null");
-    optimizeTrue("null or true");
-    optimizeNull("null or null");
+    optimizeTrue("true or NULL_BOOLEAN");
+    optimizeTrue("NULL_BOOLEAN or true");
+    optimize("NULL_BOOLEAN or NULL_BOOLEAN","NULL_BOOLEAN");
     optimizeTrue("FIELD_BOOLEAN or true");
     optimizeTrue("true or FIELD_STRING");
     optimizeTrue("true or FIELD_BOOLEAN");
-    optimizeTrue("FIELD_BOOLEAN or true");
-    optimize("null or FIELD_BOOLEAN", "FIELD_BOOLEAN");
-    optimize("FIELD_BOOLEAN or null", "FIELD_BOOLEAN");
+    optimizeTrue("FIELD_BOOLEAN or true");    
     optimize("false or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
     optimize("FIELD_BOOLEAN or false", "FALSE OR FIELD_BOOLEAN");
     optimize("FIELD_BOOLEAN or FIELD_BOOLEAN", "FIELD_BOOLEAN");
@@ -89,8 +85,6 @@ public class OptimizerTest extends ExpressionTest {
     optimizeFalse("true and false");
     optimizeFalse("false and true");
     optimizeFalse("false and false");
-    optimizeNull("FIELD_BOOLEAN and null");
-    optimizeNull("null and FIELD_BOOLEAN");
     optimizeFalse("false and FIELD_BOOLEAN");
     optimizeFalse("FIELD_BOOLEAN and false");
     optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");    
@@ -125,7 +119,6 @@ public class OptimizerTest extends ExpressionTest {
     optimize("false and true or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
     optimizeFalse("false and FIELD_BOOLEAN");
 
-    optimizeTrue("null is null");
     optimizeTrue("true is true");
     optimizeTrue("false is false");
     optimizeFalse("true is false");
@@ -133,8 +126,6 @@ public class OptimizerTest extends ExpressionTest {
     optimizeTrue("true is not false");
     optimizeFalse("true is null");
     optimizeFalse("false is null");
-    optimizeFalse("null is true");
-    optimizeFalse("null is false");
 
     optimizeTrue("25>=12");
     optimizeTrue("25>=12 and 14<15");
@@ -144,7 +135,6 @@ public class OptimizerTest extends ExpressionTest {
 
     optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
 
-    optimizeNull("null=null");
     optimizeTrue("'25' in ('1','25','66')");
     optimizeTrue("25.8 between 18 and 32");
     optimizeTrue("Trim(' test ')='test'");
@@ -156,9 +146,8 @@ public class OptimizerTest extends ExpressionTest {
   public void testCombineConcatsRule() throws Exception {
     // Same syntax but cost reduced
     optimize("'A'||FIELD_STRING||FIELD_STRING||'C'", "'A'||FIELD_STRING||FIELD_STRING||'C'");
-    optimize("'A'||FIELD_STRING||NULL||'C'", "'A'||FIELD_STRING||'C'");
-    optimize("CONCAT('A',CONCAT(FIELD_STRING,CONCAT(FIELD_STRING,'C')||'D'))", "'A'||FIELD_STRING||FIELD_STRING||'C'||'D'");
-    optimize("NULL||CONCAT(FIELD_STRING,NULL)","FIELD_STRING");
+    optimize("'A'||FIELD_STRING||NULL_STRING||'C'", "'A'||FIELD_STRING||NULL_STRING||'C'");
+    optimize("CONCAT('A',CONCAT(FIELD_STRING,CONCAT(FIELD_STRING,'C')||'D'))", "'A'||FIELD_STRING||FIELD_STRING||'C'||'D'");    
   }
 
   @Test

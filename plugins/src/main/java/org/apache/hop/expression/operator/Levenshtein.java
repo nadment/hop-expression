@@ -40,13 +40,13 @@ public class Levenshtein extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    String v0 = operands[0].getValue(context, String.class);
-    if (v0 == null)
+    String str1 = operands[0].getValue(context, String.class);
+    if (str1 == null)
       return null;
-    String v1 = operands[1].getValue(context, String.class);
-    if (v1 == null)
+    String str2 = operands[1].getValue(context, String.class);
+    if (str2 == null)
       return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(v0, v1));
+    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
   }
 }

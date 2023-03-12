@@ -55,8 +55,8 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_STRING = 'TEST'");
     
     // Date
-    evalTrue("Date '2019-01-01' = Date '2019-01-01'");
-    evalFalse("Date '2019-01-01' = Date '2018-01-01'");
+    evalTrue("DATE '2019-01-01' = DATE '2019-01-01'");
+    evalFalse("DATE '2019-01-01' = DATE '2018-01-01'");
     
     // Timestamp
     evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
@@ -65,14 +65,17 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
     
     // NULL is not equal ( = ) to anything not even to another NULL.
-    evalNull("1 = null");
-    evalNull("null = true");
-    evalNull("null = false");    
-    evalNull("NULL_BOOLEAN = null");
-    evalNull("NULL_STRING = null");
-    evalNull("null = NULL_INTEGER");
-
+    evalNull("1 = NULL_INTEGER");
+    evalNull("NULL_BOOLEAN = true");
+    evalNull("NULL_BOOLEAN = false");  
+    
+    
+    evalNull("NULL_BOOLEAN = NULL_BOOLEAN");
+    evalNull("NULL_STRING = NULL_STRING");
+    evalNull("NULL_INTEGER = NULL_INTEGER");
+    
     evalFails("FIELD_INTEGER=");
+    evalFails("FIELD_INTEGER=NULL");
     evalFails(" = FIELD_INTEGER ");
 
     writeEquals("FIELD_INTEGER=40");
@@ -99,15 +102,15 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("2 <> 2.000");
     evalFalse("2.000 <> 2.00");
     evalFalse("true <> true");
-    evalTrue("Date '2019-01-01' <> Date '2018-01-01'");
-    evalFalse("Date '2019-01-01' <> Date '2019-01-01'");
+    evalTrue("DATE '2019-01-01' <> DATE '2018-01-01'");
+    evalFalse("DATE '2019-01-01' <> DATE '2019-01-01'");
 
     evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'UTC' <> Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'US/Pacific'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -8:00' <> Timestamp '2019-01-01 11:00:00 -5:00'");
     
-    evalNull("null <> 'bar'");
-    evalNull("'bar' <> null");
-    evalNull("null <> null");
+    evalNull("NULL_STRING <> 'bar'");
+    evalNull("'bar' <> NULL_STRING");
+    evalNull("NULL_STRING <> NULL_STRING");
 
     evalFails("NOM<>");
     evalFails("NOM <> ");
@@ -137,9 +140,9 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("'foo' > 'foo'");
     evalTrue("'foo' > 'bar'");
 
-    evalTrue("Date '2019-02-01' > Date '2019-01-01'");
-    evalFalse("Date '2019-01-01' > Date '2019-01-01'");
-    evalFalse("Date '2018-01-01' > Date '2019-01-01'");
+    evalTrue("DATE '2019-02-01' > DATE '2019-01-01'");
+    evalFalse("DATE '2019-01-01' > DATE '2019-01-01'");
+    evalFalse("DATE '2018-01-01' > DATE '2019-01-01'");
 
     evalNull("NULL_BOOLEAN > 0");
     evalNull("1 > NULL_BOOLEAN");
@@ -170,9 +173,9 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("'foo' >= 'foo'");
     evalTrue("'foo' >= 'bar'");
 
-    evalTrue("Date '2019-02-01' >= Date '2019-01-01'");
-    evalTrue("Date '2019-01-01' >= Date '2019-01-01'");
-    evalFalse("Date '2018-01-01' >= Date '2019-01-01'");
+    evalTrue("DATE '2019-02-01' >= DATE '2019-01-01'");
+    evalTrue("DATE '2019-01-01' >= DATE '2019-01-01'");
+    evalFalse("DATE '2018-01-01' >= DATE '2019-01-01'");
 
     evalNull("NULL_BOOLEAN >= 0");
     evalNull("1 >= NULL_BOOLEAN");
@@ -203,12 +206,12 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("'foo' < 'foo'");
     evalFalse("'foo' < 'bar'");
 
-    evalTrue("Date '2019-01-01' < Date '2019-02-01'");
-    evalFalse("Date '2019-01-01' < Date '2019-01-01'");
-    evalFalse("Date '2019-01-01' < Date '2018-01-01'");
+    evalTrue("DATE '2019-01-01' < DATE '2019-02-01'");
+    evalFalse("DATE '2019-01-01' < DATE '2019-01-01'");
+    evalFalse("DATE '2019-01-01' < DATE '2018-01-01'");
 
-    evalNull("null < 1");
-    evalNull("0 < null");
+    evalNull("NULL_INTEGER < 1");
+    evalNull("0 < NULL_INTEGER");
 
     evalFails("< FIELD_INTEGER");
     evalFails("FIELD_INTEGER < ");
@@ -236,12 +239,12 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("'bar' <= 'foo'");
     evalFalse("'foo' <= 'bar'");
 
-    evalTrue("Date '2019-01-01' <= Date '2019-02-01'");
-    evalTrue("Date '2019-01-01' <= Date '2019-01-01'");
-    evalFalse("Date '2019-01-01' <= Date '2018-01-01'");
+    evalTrue("DATE '2019-01-01' <= DATE '2019-02-01'");
+    evalTrue("DATE '2019-01-01' <= DATE '2019-01-01'");
+    evalFalse("DATE '2019-01-01' <= DATE '2018-01-01'");
 
-    evalNull("null <= 1");
-    evalNull("0 <= null");
+    evalNull("NULL_INTEGER <= 1");
+    evalNull("0 <= NULL_INTEGER");
 
     evalFails("<= FIELD_INTEGER");
     evalFails("FIELD_INTEGER <=");
@@ -261,15 +264,16 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("2.5 IN (1,2.5,3)");
     evalTrue("'2' in (null,1,2,FIELD_INTEGER)");
     evalTrue("TRUE IN (FALSE,NULL_BOOLEAN,TRUE)");
-    evalTrue("Date '2019-01-01' in (Date '2019-04-01',Date '2019-01-01',Date '2019-03-06')");
+    evalTrue("DATE '2019-01-01' in (DATE '2019-04-01',DATE '2019-01-01',DATE '2019-03-06')");
+    evalTrue("DATE '2019-01-01' in (TIMESTAMP '2019-04-01 00:00:00',DATE '2019-01-01',DATE '2019-03-06')");
     evalTrue("0x0123456789 in (0x9876,0x0123456789,0x3698)");
     evalFalse("2 in (1,2.5,3)");
 
     evalTrue("2 in (null,1,2,3)");
     evalFalse("2 in (null,null,null)");
     evalFalse("1 not in (null,1)");
-    evalNull("NULL in (1,2,3)");
-    evalNull("NULL in (1,2,3,null)");
+    evalNull("NULL_INTEGER in (1,2,3)");
+    evalNull("NULL_INTEGER in (1,2,3,null)");
 
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
@@ -286,7 +290,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_BOOLEAN is True");
     evalFalse("NULL_BOOLEAN IS True");  
     evalTrue("False IS NOT TRUE");      
-    evalFalse("Null is True");
+    evalFalse("NULL_STRING is True");
     
     evalFails("NOM IS ");
     evalFails("IS TRUE");
@@ -306,8 +310,8 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("False IS False");
     evalFalse("NULL_BOOLEAN IS False");
     evalFalse("NULL_BOOLEAN IS NOT False");    
-    evalFalse("Null IS False");
-    evalFalse("Null IS NOT False");
+    evalFalse("NULL_BOOLEAN IS False");
+    evalFalse("NULL_BOOLEAN IS NOT False");
 
     evalFails("IS FALSE");
     evalFails("IS NOT FALSE");
@@ -324,7 +328,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("True IS Null");
     evalFalse("False IS Null");
     evalFalse("NULL_BOOLEAN IS NOT NULL");
-    evalTrue("Null IS NULL");
+    evalTrue("NULL_INTEGER IS NULL");
+    evalTrue("NULL_STRING IS NULL");
     evalTrue("NULL_BOOLEAN IS NULL");
 
     evalFails("IS NULL");
@@ -339,19 +344,21 @@ public class OperatorsTest extends ExpressionTest {
   
   @Test
   public void IsDistinctFrom() throws Exception {
-    evalTrue("1 IS DISTINCT FROM null");
+    evalTrue("1 IS DISTINCT FROM 2");
     evalFalse("1 IS DISTINCT FROM 1");
-    evalTrue("1 IS DISTINCT FROM null");
+    evalTrue("FIELD_INTEGER IS DISTINCT FROM 1");
     evalTrue("1 IS NOT DISTINCT FROM 1");
     
     evalFalse("NULL_BOOLEAN IS NOT DISTINCT FROM true");
-    evalTrue("NULL_BOOLEAN  IS NOT DISTINCT FROM null");
+    evalTrue("NULL_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN");
     
-    evalFalse("Date '2019-01-01' IS DISTINCT FROM Date '2019-01-01'");
-    evalTrue("Date '2019-01-01' IS NOT DISTINCT FROM Date '2019-01-01'");
+    // TODO: evalFalse("NULL_INTEGER IS DISTINCT FROM NULL");
     
-    evalTrue("Date '2019-01-01' IS DISTINCT FROM Date '2018-01-01'");
-    evalFalse("Date '2019-01-01' IS NOT DISTINCT FROM Date '2018-01-01'");
+    evalFalse("DATE '2019-01-01' IS DISTINCT FROM DATE '2019-01-01'");
+    evalTrue("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2019-01-01'");
+    
+    evalTrue("DATE '2019-01-01' IS DISTINCT FROM DATE '2018-01-01'");
+    evalFalse("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2018-01-01'");
 
     evalFails("FIELD_STRING IS NOT DISTINCT FROM ");
     evalFails("FIELD_STRING IS DISTINCT 'TEST' ");
@@ -372,17 +379,17 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
 
-    // Addition of days to DATE or TIMESTAMP
-    evalEquals("Date '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
-    evalEquals("Date '2019-02-25'+2", LocalDate.of(2019, 2, 27));
+    // TODO: Addition of days to DATE or TIMESTAMP
+    evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
+    evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
     evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
     
     // Only integer, round number
-    evalEquals("Date '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
-    evalEquals("Date '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
 
-    evalNull("5+NULL+5");
-    evalNull("+NULL+5");
+    evalNull("5+NULL_INTEGER+5");
+    evalNull("+NULL_INTEGER+5");
     evalFails("5+");
     evalFails("TRUE+FALSE");
     
@@ -395,20 +402,20 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER-0.5", 39.5);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     
-    // Subtraction of days to DATE or TIMESTAMP
-    evalEquals("Date '2019-02-25'-1", LocalDate.of(2019, 2, 24));
-    evalEquals("Date '2019-02-25'-28", LocalDate.of(2019, 1, 28));
+    // TODO: Subtraction of days to DATE or TIMESTAMP
+    evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
+    evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
     evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
     
-    //evalEquals("Date '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-    //evalEquals("Date '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
+    //evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+    //evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 
-    //evalEquals("Date '2019-02-25'-Date '2019-02-23'", 2);
-    //evalEquals("Date '2019-02-23'-Date '2019-02-25'", -2);
-    //evalEquals("Date '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
+    //evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
+    //evalEquals("DATE '2019-02-23'-DATE '2019-02-25'", -2);
+    //evalEquals("DATE '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
 
-    evalNull("5-NULL");
-    evalNull("NULL-5");
+    evalNull("5-NULL_INTEGER");
+    evalNull("NULL_INTEGER-5");
 
     evalFails("5-");
     evalFails("TRUE-FALSE");
@@ -430,14 +437,14 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_INTEGER not between 10 and 20");
     evalTrue("FIELD_INTEGER not between 10 and 20 and 'Test' is not null");
 
-    evalTrue("Date '2019-02-28' between Date '2019-01-01' and Date '2019-12-31'");
+    evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
 
-    evalNull("NULL between -10 and 20");
-    evalNull("NULL between symmetric -10 and 20");
-    evalNull("1 between NULL and 20");    
-    evalNull("1 between symmetric NULL and 20");
-    evalNull("1 between -10 and NULL");
-    evalNull("1 between symmetric -10 and NULL");
+    evalNull("NULL_INTEGER between -10 and 20");
+    evalNull("NULL_INTEGER between symmetric -10 and 20");
+    evalNull("1 between NULL_INTEGER and 20");    
+    evalNull("1 between symmetric NULL_INTEGER and 20");
+    evalNull("1 between -10 and NULL_INTEGER");
+    evalNull("1 between symmetric -10 and NULL_INTEGER");
 
     evalFails("FIELD_INTEGER between 10 and");
     evalFails("FIELD_INTEGER between and 10");
@@ -495,8 +502,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("true::String", "TRUE");
 
     // Date to String
-    evalEquals("CAST(Date '2019-02-25' AS String)", "2019-02-25");
-    evalEquals("CAST(Date '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
+    evalEquals("CAST(DATE '2019-02-25' AS String)", "2019-02-25");
+    evalEquals("CAST(DATE '2019-02-25' AS String FORMAT 'DD/MM/YYYY')", "25/02/2019");
 
     // evalEquals("Cast(Time '23:48:59' as String)", "23:48:59");
 
@@ -554,20 +561,21 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST(12345678901234567890123456789012345678 as BigNumber)",
         new BigDecimal("12345678901234567890123456789012345678"));
 
-    evalNull("CAST(Null as Binary)");
-    evalNull("CAST(Null as Boolean)");
-    evalNull("CAST(Null as String)");
-    evalNull("CAST(Null as Integer)");
-    evalNull("CAST(Null as Number)");
-    evalNull("CAST(Null as BigNumber)");
-    evalNull("CAST(Null as Json)");
+    evalNull("CAST(NULL_BINARY as Binary)");
+    evalNull("CAST(NULL_BOOLEAN as Boolean)");
+    evalNull("CAST(NULL_STRING as String)");
+    evalNull("CAST(NULL_INTEGER as Integer)");
+    evalNull("CAST(NULL_NUMBER as Number)");
+    evalNull("CAST(NULL_DATE as Date)");
+    evalNull("CAST(NULL_BIGNUMBER as BigNumber)");
+    evalNull("CAST(NULL_JSON as Json)");
 
     // Unsupported conversion
-    evalFails("CAST(Date '2019-02-25' AS INTEGER)");
-    evalFails("CAST(Date '2019-02-25' AS NUMBER)");
+    evalFails("CAST(DATE '2019-02-25' AS INTEGER)");
+    evalFails("CAST(DATE '2019-02-25' AS NUMBER)");
     evalFails("CAST(TRUE AS DATE)");
-    evalFails("CAST(Date '2019-02-25' AS BOOLEAN )");
-    evalFails("CAST(Date '2019-02-25' AS BOOLEAN)");
+    evalFails("CAST(DATE '2019-02-25' AS BOOLEAN )");
+    evalFails("CAST(DATE '2019-02-25' AS BOOLEAN)");
 
     // Error syntax
     evalFails("'1234':");
@@ -576,8 +584,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("CAST('bad' AS)");
     evalFails("CAST('2020-01-01' AS NULL)");
     evalFails("CAST(1234 AS STRING FORMAT )");
-    evalFails("CAST(Date '2019-02-25' AS String FORMAT )");
-    evalFails("CAST(Date '2019-02-25' AS String FORMAT NULL)");
+    evalFails("CAST(DATE '2019-02-25' AS String FORMAT )");
+    evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)");
 
     // Unknown data type
     evalFails("Cast(123 as Nill)");
@@ -595,26 +603,26 @@ public class OperatorsTest extends ExpressionTest {
     
     returnType("CAST(3 as BOOLEAN)", DataTypeName.BOOLEAN);
     returnType("CAST('3' as INTEGER)", DataTypeName.INTEGER);  
-    returnType("CAST(Date '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataTypeName.DATE);
+    returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataTypeName.DATE);
   }
 
   @Test
   public void AtTimeZone() throws Exception {
-    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("Europe/Paris")));
-    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Singapore'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("Singapore")));
-    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'GMT+0'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("GMT+0")));
-    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'CET'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("CET")));
-    evalEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'EET'", ZonedDateTime.of(2020, 5, 25, 20,48,00,0,ZoneId.of("EET")));
-    evalEquals("Add_Days(Timestamp '2020-05-25 10:48:00' AT TIME ZONE 'UTC',1) AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));    
-    evalFails("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'XYZ'");
+    evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("Europe/Paris")));
+    evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Singapore'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("Singapore")));
+    evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'GMT+0'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("GMT+0")));
+    evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'CET'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("CET")));
+    evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'EET'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("EET")));
+    evalEquals("(TIMESTAMP '2023-05-25 10:48:00' AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2023, 5, 25, 10,48,00,0,ZoneId.of("Asia/Singapore")));    
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'XYZ'");
  
-    //writeEquals("Timestamp '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
+    writeEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
   
   @Test
   public void ConvertTimeZone() throws Exception {
     evalEquals("CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')", ZonedDateTime.of(2020, 5, 25, 22,48,00,0,ZoneId.of("Europe/Paris")));
-   // evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
+    //evalEquals("CONVERT_TIMEZONE('Asia/Singapore',TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'UTC')", ZonedDateTime.of(2020, 5, 26, 18,48,00,0,ZoneId.of("Asia/Singapore")));
     
     writeEquals("CONVERT_TIMEZONE('Europe/Paris',FIELD_TIMESTAMP)");
     writeEquals("CONVERT_TIMEZONE('Europe/Paris',TIMESTAMP '2020-05-25 20:48:00')","TIMESTAMP '2020-05-25 22:48:00' AT TIME ZONE 'Europe/Paris'");
@@ -638,7 +646,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("-FIELD_INTEGER", -40);
     evalEquals("+40", 40);
     evalEquals("1+ -2", -1);
-    evalNull("-null");
+    evalNull("-NULL_INTEGER");
     writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
   }
 
@@ -648,8 +656,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("Mod(15,4)", 3);
     evalEquals("Mod(15.3,4)", 3.3);
     evalEquals("Mod(15.3::BIGNUMBER,4)", 3.3);
-    evalNull("Mod(NULL,2)");
-    evalNull("Mod(2,NULL)");
+    evalNull("Mod(NULL_INTEGER,2)");
+    evalNull("Mod(2,NULL_INTEGER)");
     evalFails("'TEST'%5");
     evalFails("Mod()");
     evalFails("Mod(9,0)");
@@ -666,8 +674,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("2*-2", -4D);
     evalEquals("100 * .5", 50D);    
     evalEquals("1.23456::BigNumber*-2.987654", -3.68843812224);
-    evalNull("null*1");
-    evalNull("1*null");
+    evalNull("NULL_INTEGER*1");
+    evalNull("1*NULL_INTEGER");
     writeEquals("FIELD_INTEGER*4","4*FIELD_INTEGER");
   }
 
@@ -679,9 +687,9 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("5/2", 2.5D);
     evalEquals("10.1/2.1",  4.809523809523809D);
     evalEquals("0.1/0.0000000000001", 1000000000000.0000000D);
-    evalNull("null/1");
-    evalNull("null/0");
-    evalNull("1/null");
+    evalNull("NULL_INTEGER/1");
+    evalNull("NULL_INTEGER/0");
+    evalNull("1/NULL_INTEGER");
     evalFails("40/0");
         
     writeEquals("FIELD_INTEGER/4");
@@ -692,9 +700,9 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("Div0(10,4)", 2.5D);
     evalEquals("Div0(FIELD_INTEGER,-10)", -4D);    
     evalEquals("Div0(FIELD_INTEGER,0)", 0);
-    evalNull("Div0(null,1)");
-    evalNull("Div0(null,0)");
-    evalNull("Div0(1,null)");
+    evalNull("Div0(NULL_INTEGER,1)");
+    evalNull("Div0(NULL_INTEGER,0)");
+    evalNull("Div0(1,NULL_INTEGER)");
     evalFails("Div0(40)");
   }
   
@@ -705,7 +713,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("~0", -1);
     evalEquals("~4", -5);
     evalEquals("~65504", -65505);
-    evalNull("~NULL");
+    evalNull("~NULL_INTEGER");
     evalFails("~");
     evalFails("~ ");
 
@@ -722,8 +730,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("BIT_AND(3,2)", 2);
     evalEquals("3 & 2", 2);
     evalEquals("100 & 2", 0);
-    evalNull("100 & null");
-    evalNull("NULL & 100");
+    evalNull("100 & NULL_INTEGER");
+    evalNull("NULL_INTEGER & 100");
     evalFails("100&");
     evalFails("100 & ");
     
@@ -737,8 +745,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("BIT_OR(100,2)", 102);
     evalEquals("100 | 2", 102);
     evalEquals("3 | 2", 3);
-    evalNull("100 | null");
-    evalNull("NULL | 100");
+    evalNull("100 | NULL_INTEGER");
+    evalNull("NULL_INTEGER | 100");
     evalFails("3|");
     evalFails("3 | ");
     
@@ -752,8 +760,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("BIT_XOR(2,2)", 0);
     evalEquals("2 ^ 1", 3);
     evalEquals("100 ^ 2", 102);
-    evalNull("100 ^ null");
-    evalNull("NULL ^ 100");
+    evalNull("100 ^ NULL_INTEGER");
+    evalNull("NULL_INTEGER ^ 100");
     evalFails("100^");
     evalFails("100 ^ ");
     
@@ -770,7 +778,7 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("NOT 1");
     evalTrue("NOT 0");
     evalTrue("NOT NOT True");
-    evalNull("NOT NULL");
+    evalNull("NOT NULL_BOOLEAN");
     evalFails("FIELD_BOOLEAN is ");
     evalFails("NOT");
     
@@ -814,7 +822,7 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("false AND NULL_BOOLEAN");
     evalFalse("NULL_BOOLEAN AND false");
     
-    evalNull("FIELD_BOOLEAN AND null");
+    evalNull("FIELD_BOOLEAN AND NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN");
     evalNull("true AND NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN AND true");
@@ -836,9 +844,9 @@ public class OperatorsTest extends ExpressionTest {
     // Escape with other char
     evalTrue("'Result 100% value' ilike 'RESULT%100^%%' escape '^'");
 
-    evalNull("'test' ILIKE NULL");
-    evalNull("'test' ILIKE 'TEST' escape NULL");
-    evalNull("NULL ILIKE '%T%'");
+    evalNull("'test' ILIKE NULL_STRING");
+    evalNull("'test' ILIKE 'TEST' escape NULL_STRING");
+    evalNull("NULL_STRING ILIKE '%T%'");
     
     returnType("'amigo' ILIKE 'a%o' ESCAPE '@'", DataTypeName.BOOLEAN);
   }
@@ -893,13 +901,12 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("'ABCDEFG' like '%DEFG'");
     evalTrue("'ABCDEFG' like '%CDE%'");
 
-
-    evalNull("NULL like 'NULL'");
-    evalNull("'test' LIKE NULL");
+    evalNull("NULL_STRING like 'NULL'");
+    evalNull("'test' LIKE NULL_STRING");
 
 
     // NULL does not match NULL
-    evalNull("NULL like NULL");
+    evalNull("NULL_STRING like NULL_STRING");
 
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
     evalFails("'test' LIKE 'TEST' escape NULL");
@@ -916,18 +923,18 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CONCAT('TES','T')", "TEST");
     evalTrue("FIELD_STRING='TES'||'T'");
     evalTrue("FIELD_STRING='TES'||NULL_STRING||'T'");
-    evalEquals("'TEST'||null", "TEST");
-    evalEquals("null||'TEST'", "TEST");
+    evalEquals("'TEST'||NULL_STRING", "TEST");
+    evalEquals("NULL_STRING||'TEST'", "TEST");
     
     // Binary
-    evalEquals("0x1F || null || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
-    evalEquals("null || 0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
-    evalEquals("0x1F || 0x2A3B || null", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("0x1F || NULL_BINARY || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("NULL_BINARY || 0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("0x1F || 0x2A3B || NULL_BINARY", new byte[]{0x1F, 0x2A, 0x3B});
     
     // Integer
     evalEquals("4 || 2", "42");
     
-    evalNull("null||null");
+    evalNull("NULL_STRING||NULL_STRING");
 
     writeEquals("FIELD_STRING||'TEST'");
   }

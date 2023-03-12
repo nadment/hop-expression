@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
-import java.time.format.TextStyle;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.util.Locale;
@@ -42,6 +42,10 @@ import java.util.Locale;
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
 
+  private static final DateTimeFormatter zoneAbbreviationFormatter = DateTimeFormatter.ofPattern("zzz", Locale.ENGLISH);
+  
+  // TODO: Return type can be INTEGER or STRING
+  
   public ExtractFunction() {
     super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, OperatorCategory.DATE,
         "/docs/extract.html");
@@ -58,63 +62,63 @@ public class ExtractFunction extends Function {
 
     switch (unit) {
       case DAY:
-        return datetime.getDayOfMonth();
+        return Long.valueOf(datetime.getDayOfMonth());
       case DAYOFYEAR:
-        return datetime.getDayOfYear();
+        return Long.valueOf(datetime.getDayOfYear());
       case DAYOFWEEK:
         int dow = datetime.getDayOfWeek().getValue() + 1;
         if (dow == 8)
           dow = 1;
-        return dow;
+        return Long.valueOf(dow);
       case ISODAYOFWEEK:
-        return datetime.getDayOfWeek().getValue();
+        return Long.valueOf(datetime.getDayOfWeek().getValue());
       case WEEK:
-        return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+        return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
       case ISOWEEK:
-        return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
       case WEEKOFMONTH:
-        return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+        return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
       case MONTH:
-        return datetime.getMonthValue();
+        return Long.valueOf(datetime.getMonthValue());
       case QUARTER:
-        return datetime.get(IsoFields.QUARTER_OF_YEAR);
+        return Long.valueOf(datetime.get(IsoFields.QUARTER_OF_YEAR));
       case YEAR:
-        return datetime.getYear();
+        return Long.valueOf(datetime.getYear());
       case ISOYEAR:
-        return datetime.get(IsoFields.WEEK_BASED_YEAR);
+        return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
       case DECADE:
-        return decade(datetime.getYear());
+        return Long.valueOf(decade(datetime.getYear()));
       case CENTURY:
-        return century(datetime.getYear());
+        return Long.valueOf(century(datetime.getYear()));
       case MILLENNIUM:
-        return millennium(datetime.getYear());
+        return Long.valueOf(millennium(datetime.getYear()));
       case HOUR:
-        return datetime.getHour();
+        return Long.valueOf(datetime.getHour());
       case MINUTE:
-        return datetime.getMinute();
+        return Long.valueOf(datetime.getMinute());
       case SECOND:
-        return datetime.getSecond();
+        return Long.valueOf(datetime.getSecond());
       case MILLISECOND:
-        return datetime.get(ChronoField.MILLI_OF_SECOND);
+        return Long.valueOf(datetime.get(ChronoField.MILLI_OF_SECOND));
       case MICROSECOND:
-        return datetime.get(ChronoField.MICRO_OF_SECOND);
+        return Long.valueOf(datetime.get(ChronoField.MICRO_OF_SECOND));
       case NANOSECOND:
-        return datetime.getNano();
+        return Long.valueOf(datetime.getNano());
       case EPOCH:
         return datetime.toEpochSecond();
       case TIMEZONE_ABBR:
-        return datetime.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH);
+        return zoneAbbreviationFormatter.format(datetime);
       case TIMEZONE_REGION:
         return datetime.getZone().getId();
       case TIMEZONE_HOUR:
-        return datetime.getOffset().getTotalSeconds() / (60 * 60);
+        return Long.valueOf(datetime.getOffset().getTotalSeconds() / (60 * 60));
       case TIMEZONE_MINUTE:
-        return (datetime.getOffset().getTotalSeconds() / 60) % 60;
+        return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
       default:
         throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
     }
   }
-
+  
   private static int millennium(int year) {
     return year > 0 ? (year + 999) / 1000 : year / 1000;
   }

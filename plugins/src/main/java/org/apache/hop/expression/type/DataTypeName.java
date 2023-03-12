@@ -51,16 +51,16 @@ public enum DataTypeName {
   BIGNUMBER(DataTypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
       BigDecimal.class),
 
-  /** Date-time value with nanosecond precision */
-  DATE(DataTypeFamily.DATE, PrecScale.NO_NO, ZonedDateTime.class),
-
+  /** Date-time value with nanosecond precision and time zone */
+  DATE(DataTypeFamily.TEMPORAL, PrecScale.NO_NO, ZonedDateTime.class),
+  
   JSON(DataTypeFamily.JSON, PrecScale.NO_NO, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(DataTypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
 
   /** A unknown type */
-  UNKNOWN(DataTypeFamily.ANY, PrecScale.NO_NO, Void.class),
+  UNKNOWN(DataTypeFamily.NONE, PrecScale.NO_NO, Void.class),
 
   ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class);
 
@@ -68,7 +68,7 @@ public enum DataTypeName {
   public static final List<DataTypeName> BINARY_TYPES = List.of(BINARY);
   public static final List<DataTypeName> BOOLEAN_TYPES = List.of(BOOLEAN);
   public static final List<DataTypeName> NUMERIC_TYPES = List.of(INTEGER, NUMBER, BIGNUMBER);
-  public static final List<DataTypeName> DATE_TYPES = List.of(DATE);
+  public static final List<DataTypeName> TEMPORAL_TYPES = List.of(DATE);
   public static final List<DataTypeName> JSON_TYPES = List.of(JSON);
   public static final List<DataTypeName> ALL_TYPES = List.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
 

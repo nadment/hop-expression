@@ -16,6 +16,7 @@ package org.apache.hop.expression;
 
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.Token.Id;
+import org.apache.hop.expression.type.DataTypeFamily;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
@@ -25,7 +26,6 @@ import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
 import java.util.ArrayList;
@@ -514,18 +514,18 @@ public class ExpressionBuilder {
       if (isThenNext(Id.PLUS)) {
         // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
         // - } <integer>
-        if (expression.getType() == DataTypeName.DATE) {
-          expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
+        if (expression.getType().isSameFamily(DataTypeFamily.TEMPORAL)) {
+         expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
         } else {
           expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
         }
       } else if (isThenNext(Id.MINUS)) {
-        if (expression.getType() == DataTypeName.DATE) {
+        if (expression.getType().isSameFamily(DataTypeFamily.TEMPORAL)) {
           expression = new Call(Operators.ADD_DAYS, expression,
               new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
         } else {
-          expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
-        }
+         expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
+       }
       } else if (isThenNext(Id.CONCAT)) {
         expression = new Call(Operators.CONCAT, expression, this.parseBitwiseOr());
       } else
@@ -632,14 +632,25 @@ public class ExpressionBuilder {
     try {
       String pattern;
       String str = token.text();
-      switch (str.length()) {
+      
+      // TODO: Move to an AUTO format
+      int length = str.length();
+      switch (length) {
         case 36: // 2021-01-01 15:28:59.123456789 +02:00
         case 35: // 2021-01-01 15:28:59.123456789+02:00
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZH:TZM";
           break;
         case 33: // 2021-01-01 5:28:59.123456789+0200
+          if (str.indexOf(':', 20) > 0)
+            pattern = "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM";
+          else
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
+          break;    
         case 34: // 2021-01-01 15:28:59.123456789+0200
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
+          break;
+        case 30: // 2021-01-01 15:28:59.123 +02:00
+          pattern = "YYYY-MM-DD HH24:MI:SS.FF3 TZH:TZM";
           break;
         case 28: // 2021-12-01 2:01:01.123456789
         case 29: // 2021-12-01 12:01:01.123456789
@@ -691,16 +702,6 @@ public class ExpressionBuilder {
       DateTimeFormat format = DateTimeFormat.of(pattern);
       ZonedDateTime datetime = format.parse(token.text());
 
-      // AT TIME ZONE <zoneId>
-      if (isThenNext(Id.AT)) {
-        if (isNotThenNext(Id.TIME) || isNotThenNext(Id.ZONE)) {
-          throw new ParseException(ExpressionError.INVALID_OPERATOR.message("AT TIME ZONE"),
-              this.getPosition());
-        }
-        token = next();
-        ZoneId zoneId = ZoneId.of(token.text());
-        datetime = datetime.withZoneSameLocal(zoneId);
-      }
       return Literal.of(datetime);
     } catch (ZoneRulesException e) {
       throw new ParseException(ExpressionError.UNKNOWN_TIMEZONE.message(token.text()),

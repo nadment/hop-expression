@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * 
+ * Returns a number raised to the specified power exponent.
  */
 @FunctionPlugin(names = "POW")
 public class PowerFunction extends Function {
@@ -47,8 +47,6 @@ public class PowerFunction extends Function {
     if (exponent == null) {
       return null;
     }
-    if (exponent == 0)
-      return 1L;
 
     return FastMath.pow(number, exponent);
   }

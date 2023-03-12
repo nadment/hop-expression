@@ -20,7 +20,7 @@ Calculates the logarithm of number with base.
 
 == Syntax
 ----
-LOG10( base, numeric )
+LOG( base, numeric )
 ----
 
 == Usage

@@ -16,11 +16,17 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
@@ -116,9 +122,118 @@ public final class Call implements IExpression {
   @Override
   public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
     try {
-      Object result = operator.eval(context, operands);
+      Object value = operator.eval(context, operands);
       
-      return clazz.cast(result);
+      if (clazz.isInstance(value)) {
+        return clazz.cast(value);
+      }
+
+      if (value == null)
+        return null;
+
+      switch (type) {
+
+        case BOOLEAN:
+          if (clazz == String.class) {
+            return clazz.cast(String.valueOf(value));
+          }
+          if (clazz == Long.class) {
+            return clazz.cast(((Boolean) value) ? 1L : 0L);
+          }
+          if (clazz == Double.class) {
+            return clazz.cast(((Boolean) value) ? 1D : 0D);
+          }
+          if (clazz == BigDecimal.class) {
+            return clazz.cast(((Boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+          }
+          break;
+
+        case STRING:
+          if (clazz == Boolean.class) {
+            return clazz.cast(Converter.parseBoolean((String) value));
+          }
+          if (clazz == Long.class) {
+            return clazz.cast(Converter.parseInteger((String) value));
+          }
+          if (clazz == Double.class) {
+            return clazz.cast(Converter.parseNumber((String) value));
+          }
+          if (clazz == BigDecimal.class) {
+            return clazz.cast(Converter.parseBigNumber((String) value));
+          }
+          if (clazz == byte[].class) {
+            return clazz.cast(((String) value).getBytes(StandardCharsets.UTF_8));
+          }
+          if (clazz == JsonNode.class) {
+            return clazz.cast(Converter.parseJson((String) value));
+          }
+          break;
+
+        case INTEGER:
+          if (clazz == Boolean.class) {
+            return clazz.cast(((Long) value) != 0);
+          }
+          if (clazz == Double.class) {
+            return clazz.cast(Double.valueOf((Long) value));
+          }
+          if (clazz == BigDecimal.class) {
+            return clazz.cast(BigDecimal.valueOf((Long) value));
+          }
+          if (clazz == String.class) {
+            return clazz.cast(String.valueOf(value));
+          }
+          break;
+
+        case NUMBER:
+          if (clazz == Boolean.class) {
+            return clazz.cast(((Double) value) != 0);
+          }
+          if (clazz == Long.class) {
+            return clazz.cast(((Double) value).longValue());
+          }
+          if (clazz == BigDecimal.class) {
+            return clazz.cast(BigDecimal.valueOf((Double) value));
+          }
+          if (clazz == String.class) {
+            return clazz.cast(String.valueOf(value));
+          }
+          break;
+
+        case BIGNUMBER:
+          if (clazz == Boolean.class) {
+            return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
+          }
+          if (clazz == Long.class) {
+            return clazz.cast(((BigDecimal) value).longValue());
+          }
+          if (clazz == Double.class) {
+            return clazz.cast(((BigDecimal) value).doubleValue());
+          }
+          if (clazz == String.class) {
+            return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
+          }
+          break;
+
+        case BINARY:
+          if (clazz == String.class) {
+            return clazz.cast(new String((byte[]) value, StandardCharsets.UTF_8));
+          }
+          break;
+
+        case JSON:
+          if (clazz == String.class) {
+            return clazz.cast(Converter.parseJson((String) value));
+          }
+          break;
+
+        case DATE:
+        case ANY:
+        case UNKNOWN:
+          break;
+      }
+      
+      throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
+          DataTypeName.toString(value), DataTypeName.of(clazz));
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());

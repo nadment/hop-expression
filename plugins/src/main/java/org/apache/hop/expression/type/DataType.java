@@ -37,14 +37,17 @@ public class DataType {
    * BOOLEAN type with parameters.
    */
   public static final DataType BOOLEAN;
+
   /**
    * Default DATE type with parameters.
    */
   public static final DataType DATE;
+
   /**
    * Default STRING type with parameters.
    */
   public static final DataType STRING;
+
   /**
    * JSON type with parameters.
    */
@@ -61,7 +64,7 @@ public class DataType {
     // NULL = new DataType(DataTypeName.UNKNOWN);
     BOOLEAN = new DataType(DataTypeName.BOOLEAN, 1, 0);
     BINARY = new DataType(DataTypeName.BINARY);
-    DATE = new DataType(DataTypeName.DATE);
+    DATE = new DataType(DataTypeName.DATE,PRECISION_NOT_SPECIFIED,9);
     JSON = new DataType(DataTypeName.JSON);
     STRING = new DataType(DataTypeName.STRING);
     INTEGER = new DataType(DataTypeName.INTEGER, 19, 0);

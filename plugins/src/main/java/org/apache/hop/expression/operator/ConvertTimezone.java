@@ -16,13 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZoneId;
@@ -31,30 +30,31 @@ import java.time.ZonedDateTime;
 /**
  * Converts a timestamp to another time zone.
  */
-//TODO: @FunctionPlugin
+@FunctionPlugin
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
-    super("CONVERT_TIMEZONE", true, ReturnTypes.DATE, OperandTypes.STRING_DATE, OperatorCategory.DATE,
-        "/docs/convert_timezone.html");
+    super("CONVERT_TIMEZONE", true, ReturnTypes.DATE, OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), OperatorCategory.DATE, "/docs/convert_timezone.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    ZoneId zone = toZoneId(operands[0].getValue(context, String.class));
-    
-    ZonedDateTime value = operands[1].getValue(context, ZonedDateTime.class);
-    if (value == null)
-      return null;
-    
-    return value.withZoneSameInstant(zone);
-  }
-
-  protected ZoneId toZoneId(final String zone) throws Exception {
-    try {
-      return ZoneId.of(zone);
-    } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.UNKNOWN_TIMEZONE, zone);
+    if ( operands.length==3 ) {
+      ZoneId zoneSource = Converter.toZoneId(operands[0].getValue(context, String.class));
+      ZoneId zoneTarget = Converter.toZoneId(operands[1].getValue(context, String.class));      
+      ZonedDateTime value = operands[2].getValue(context, ZonedDateTime.class);
+      
+      if (value == null)
+        return null;
+      
+      return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
+    } else {
+      ZoneId zoneTarget = Converter.toZoneId(operands[0].getValue(context, String.class));    
+      ZonedDateTime value = operands[1].getValue(context, ZonedDateTime.class);
+      
+      if (value == null)
+        return null;
+      return value.withZoneSameInstant(zoneTarget); 
     }
   }
 }

@@ -14,21 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= AT TIME ZONE
+= FACTORIAL
 
-Specifies which time zone to use with a TIMESTAMP.
+Computes the factorial value of a numeric expression.
 
 == Syntax
 ----
-timestamp A TIME ZONE timezone
+FACTORIAL( numeric )
 ----
 
-== Usage
-
-Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
-
-== Example
-
-----
-TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'
-----
+Returns:: BigNumber

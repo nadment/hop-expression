@@ -476,8 +476,8 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeZoneRegionFormat extends Format {
-    public TimeZoneRegionFormat() {
+  private static class ZoneRegionFormat extends Format {
+    public ZoneRegionFormat() {
       super(true, true);
     }
 
@@ -503,20 +503,22 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeZoneAbbreviatedRegionFormat extends Format {
-    public TimeZoneAbbreviatedRegionFormat() {
+  private static class ZoneAbbreviatedRegionFormat extends Format {
+    private static final DateTimeFormatter zoneAbbreviationFormatter = DateTimeFormatter.ofPattern("zzz", Locale.ENGLISH);
+
+    public ZoneAbbreviatedRegionFormat() {
       super(true, true);
     }
 
     public void append(StringBuilder output, ZonedDateTime datetime) throws Exception {
-      output.append(datetime.getZone().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.ENGLISH));
+      output.append(zoneAbbreviationFormatter.format(datetime));
     }
   }
 
   // Time zone hour [+-][0]0
-  private static class TimeZoneHourFormat extends Format {
+  private static class ZoneHourFormat extends Format {
 
-    public TimeZoneHourFormat() {
+    public ZoneHourFormat() {
       super(true, true);
     }
 
@@ -541,9 +543,9 @@ import java.util.Locale;
     }
   }
 
-  private static class TimeZoneMinuteFormat extends Format {
+  private static class ZoneMinuteFormat extends Format {
 
-    public TimeZoneMinuteFormat() {
+    public ZoneMinuteFormat() {
       super(true, true);
     }
 
@@ -1526,28 +1528,28 @@ import java.util.Locale;
 
       // Time zone region
       if (startsWithIgnoreCase(pattern, index, "TZR")) {
-        list.add(new TimeZoneRegionFormat());
+        list.add(new ZoneRegionFormat());
         index += 3;
         continue;
       }
 
       // Time zone region abbreviated with Daylight Saving Time information included
       if (startsWithIgnoreCase(pattern, index, "TZD")) {
-        list.add(new TimeZoneAbbreviatedRegionFormat());
+        list.add(new ZoneAbbreviatedRegionFormat());
         index += 3;
         continue;
       }
 
       // Time zone hour
       if (startsWithIgnoreCase(pattern, index, "TZH")) {
-        list.add(new TimeZoneHourFormat());
+        list.add(new ZoneHourFormat());
         index += 3;
         continue;
       }
 
       // Time zone minute
       if (startsWithIgnoreCase(pattern, index, "TZM")) {
-        list.add(new TimeZoneMinuteFormat());
+        list.add(new ZoneMinuteFormat());
         index += 3;
         continue;
       }

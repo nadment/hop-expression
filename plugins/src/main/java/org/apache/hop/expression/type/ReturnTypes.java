@@ -103,6 +103,9 @@ public final class ReturnTypes {
 
   public static final IReturnTypeInference CAST = new CastFunctionReturnTypeInference();
 
+  public static final IReturnTypeInference ANY =
+      new ExplicitReturnTypeInference(DataTypeName.ANY);
+  
   public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);
   }

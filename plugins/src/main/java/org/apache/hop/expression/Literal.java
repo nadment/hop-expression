@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,9 +38,9 @@ public final class Literal implements IExpression {
 
   public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
 
-  // public static final Literal NULL_BOOLEAN = new Literal(null, DataTypeName.BOOLEAN);
-  // public static final Literal NULL_STRING = new Literal(null, DataTypeName.STRING);
-  // public static final Literal NULL_DATE = new Literal(null, DataTypeName.DATE);
+  // public static final Literal NULL_BOOLEAN = new Literal(DataTypeName.BOOLEAN);
+  // public static final Literal NULL_STRING = new Literal(DataTypeName.STRING);
+  // public static final Literal NULL_DATE = new Literal(DataTypeName.DATE);
 
   public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
@@ -117,6 +118,11 @@ public final class Literal implements IExpression {
 
   private Object value;
 
+  private Literal(final DataTypeName type) {
+    this.value = null;
+    this.type = type;
+  }
+  
   private Literal(final Object value, final DataTypeName type) {
     this.value = value;
     this.type = type;
@@ -156,7 +162,7 @@ public final class Literal implements IExpression {
         break;
 
       case STRING:
-        if (clazz == Boolean.class) {         
+        if (clazz == Boolean.class) {
           return clazz.cast(Converter.parseBoolean((String) value));
         }
         if (clazz == Long.class) {
@@ -178,8 +184,8 @@ public final class Literal implements IExpression {
 
       case INTEGER:
         if (clazz == Boolean.class) {
-          return clazz.cast(((Long) value)!=0);
-        }        
+          return clazz.cast(((Long) value) != 0);
+        }
         if (clazz == Double.class) {
           return clazz.cast(Double.valueOf((Long) value));
         }
@@ -188,27 +194,27 @@ public final class Literal implements IExpression {
         }
         if (clazz == String.class) {
           return clazz.cast(String.valueOf(value));
-        }        
+        }
         break;
 
       case NUMBER:
         if (clazz == Boolean.class) {
-          return clazz.cast(((Double) value)!=0);
+          return clazz.cast(((Double) value) != 0);
         }
         if (clazz == Long.class) {
           return clazz.cast(((Double) value).longValue());
         }
         if (clazz == BigDecimal.class) {
           return clazz.cast(BigDecimal.valueOf((Double) value));
-        }        
+        }
         if (clazz == String.class) {
           return clazz.cast(String.valueOf(value));
-        }   
+        }
         break;
 
       case BIGNUMBER:
         if (clazz == Boolean.class) {
-          return clazz.cast(((BigDecimal) value).unscaledValue()!=BigInteger.ZERO);
+          return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
         }
         if (clazz == Long.class) {
           return clazz.cast(((BigDecimal) value).longValue());
@@ -232,7 +238,7 @@ public final class Literal implements IExpression {
           return clazz.cast(Converter.parseJson((String) value));
         }
         break;
-        
+
       case DATE:
       case ANY:
       case UNKNOWN:
@@ -321,31 +327,50 @@ public final class Literal implements IExpression {
           writer.append(byteToHex(b & 0xF));
         }
         break;
-      case DATE:
+      case DATE: {
+        //ZonedDateTime datetime = ((LocalDateTime) value).atZone(ZoneId.systemDefault());
         ZonedDateTime datetime = (ZonedDateTime) value;
-        if (datetime.getNano() > 0) {
+        int nano = datetime.getNano();
+        if (nano > 0) {
           writer.append("TIMESTAMP '");
-          writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF").format(datetime));
-          
-          if ( !datetime.getOffset().getId().equals("Z") ) {
-            writer.append("' AT TIME ZONE '");
-            writer.append(datetime.getZone().toString());
+
+          if (nano % 1000000 == 0)
+            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF3").format(datetime));
+          else if (nano % 1000 == 0)
+            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF6").format(datetime));
+          else
+            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9").format(datetime));
+          if (datetime.getOffset().getTotalSeconds() != 0) {
+            if (datetime.getZone() instanceof ZoneOffset) {
+              writer.append(' ');
+              writer.append(datetime.getZone().toString());
+
+            } else {
+              writer.append("' AT TIME ZONE '");
+              writer.append(datetime.getZone().getId());
+            }
           }
-        }
-        else if (datetime.getHour()==0 && datetime.getMinute()==0 && datetime.getSecond()==0) {
+          
+        } else if (datetime.getHour() == 0 && datetime.getMinute() == 0 && datetime.getSecond() == 0) {
           writer.append("DATE '");
-          writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));                    
+          writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
         } else {
           writer.append("TIMESTAMP '");
           writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
-          
-          if ( !datetime.getOffset().getId().equals("Z") ) {
-            writer.append("' AT TIME ZONE '");
-            writer.append(datetime.getZone().toString());
+          if (datetime.getOffset().getTotalSeconds() != 0) {
+            if (datetime.getZone() instanceof ZoneOffset) {
+              writer.append(' ');
+              writer.append(datetime.getZone().toString());
+
+            } else {
+              writer.append("' AT TIME ZONE '");
+              writer.append(datetime.getZone().getId());
+            }
           }
         }
         writer.append('\'');
         break;
+      }
       case JSON:
         try {
           writer.append("JSON '");
@@ -380,11 +405,12 @@ public final class Literal implements IExpression {
   }
 
   @Override
-  public boolean isAlwaysTrue() {  
+  public boolean isAlwaysTrue() {
     return Boolean.TRUE.equals(value);
   }
 
   @Override
   public boolean isAlwaysFalse() {
-    return Boolean.FALSE.equals(value);  }
+    return Boolean.FALSE.equals(value);
+  }
 }

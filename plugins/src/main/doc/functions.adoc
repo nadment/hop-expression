@@ -61,6 +61,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[CONCAT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat_ws.adoc[CONCAT_WS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/contains.adoc[CONTAINS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/convert_timezone.adoc[CONVERT_TIMEZONE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cos.adoc[COS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cosh.adoc[COSH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cot.adoc[COT]
@@ -84,6 +85,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/equal_null.adoc[EQUAL_NULL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/exp.adoc[EXP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/extract.adoc[EXTRACT]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/factorial.adoc[FACTORIAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/first_day.adoc[FIRST_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/first_value.adoc[FIRST_VALUE] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/floor.adoc[FLOOR]
@@ -168,6 +170,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sum.adoc[SUM] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tan.adoc[TAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tanh.adoc[TANH]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/timestamp.adoc[TIMESTAMP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]

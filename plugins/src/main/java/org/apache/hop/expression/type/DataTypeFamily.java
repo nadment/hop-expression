@@ -20,9 +20,9 @@ import java.util.List;
 
 public enum DataTypeFamily {
   // Primary
-  BINARY, NUMERIC, DATE, BOOLEAN, STRING, JSON,
+  BINARY, NUMERIC, TEMPORAL, BOOLEAN, STRING, JSON,
   // Secondary
-  ANY;
+  NONE, ANY;
 
   /** Return the default {@link DataType} that belongs to this family. */
   public DataType getDefaultDataType() {
@@ -33,7 +33,7 @@ public enum DataTypeFamily {
         return DataType.BINARY;
       case STRING:
         return DataType.STRING;
-      case DATE:
+      case TEMPORAL:
         return DataType.DATE;
       case NUMERIC:
         return DataType.BIGNUMBER;
@@ -55,15 +55,15 @@ public enum DataTypeFamily {
         return DataTypeName.NUMERIC_TYPES;
       case STRING:
         return DataTypeName.STRING_TYPES;
-      case DATE:
-        return DataTypeName.DATE_TYPES;
+      case TEMPORAL:
+        return DataTypeName.TEMPORAL_TYPES;
       case JSON:
         return DataTypeName.JSON_TYPES;
       case ANY:
         return DataTypeName.ALL_TYPES;
+      default:
+        return List.of();
     }
-
-    return List.of();
   }
 
   /**
@@ -90,9 +90,9 @@ public enum DataTypeFamily {
       case BOOLEAN:
         return family.isSameFamily(BOOLEAN, NUMERIC, BINARY, STRING);
       case STRING:
-        return family.isSameFamily(STRING, BOOLEAN, NUMERIC, DATE, BINARY, JSON);
-      case DATE:
-        return family.isSameFamily(DATE);
+        return family.isSameFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
+      case TEMPORAL:
+        return family.isSameFamily(TEMPORAL);
       case NUMERIC:
         return family.isSameFamily(NUMERIC, BOOLEAN, BINARY, STRING);
       case BINARY:

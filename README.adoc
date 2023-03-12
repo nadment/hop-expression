@@ -50,7 +50,6 @@ case
   else To_Char([YEAR]+1,'FM9999') || ' XXX '
 end
 ----
-
 * Supports 8 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary` `Json` 
 * Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `Date` '2022-04-25', `Timestamp` '2022-04-25 05:28:59', `Json` '{"name":"John"}'
 * Logical operators `NOT` `AND` `OR`
@@ -83,21 +82,20 @@ Use @FunctionPlugin annotation to create custom function in your plugin.
 public class Levenshtein extends Function {
 
   public Levenshtein() {
-    super("LEVENSHTEIN", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING, "i18n::Operator.Category.String", "/docs/levenshtein.html");
+    super("LEVENSHTEIN", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING, OperatorCategory.STRING, "/docs/levenshtein.html");
   }
   
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws ExpressionException {
-    Object v0 = operands[0].eval(context);
-    if (v0 == null)
+      throws Exception {
+    String str1 = operands[0].getValue(context, String.class);
+    if (str1 == null)
       return null;
-    Object v1 = operands[1].eval(context);
-    if (v1 == null)
+    String str2 = operands[1].getValue(context, String.class);
+    if (str2 == null)
       return null;
 
-    return Long
-        .valueOf(StringUtils.getLevenshteinDistance(Coerse.toString(v0), Coerse.toString(v1)));
+    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
   }
 }
 ----

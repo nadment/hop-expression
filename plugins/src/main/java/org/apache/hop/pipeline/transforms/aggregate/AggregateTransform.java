@@ -195,10 +195,10 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         // Value meta doesn't support ZonedDateTime
         switch (data.aggregateMeta.getValueMeta(i).getType()) {
           case IValueMeta.TYPE_DATE:
-            value = Converter.coerceToDate(value);
+            value = Converter.convertToDate(value);
             break;
           case IValueMeta.TYPE_TIMESTAMP:
-            value = Converter.coerceToTimestamp(value);
+            value = Converter.convertToDate(value);
             break;
           default:
         }

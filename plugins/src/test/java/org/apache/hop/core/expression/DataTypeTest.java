@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -78,15 +77,14 @@ public class DataTypeTest extends ExpressionTest {
   @Test
   public void from() throws Exception {
     assertEquals("UNKNOWN", DataTypeName.toString(null));
-    assertEquals("UNKNOWN", DataTypeName.toString(new Date()));
-    
+    assertEquals("UNKNOWN", DataTypeName.toString(new Date()));    
     assertEquals("BOOLEAN", DataTypeName.toString(true));
     assertEquals("STRING", DataTypeName.toString("test"));
     assertEquals("INTEGER", DataTypeName.toString(1L));
     assertEquals("NUMBER", DataTypeName.toString(1D));
     assertEquals("BIGNUMBER", DataTypeName.toString(BigDecimal.ONE));
     assertEquals("BINARY", DataTypeName.toString(new byte[] {0x78}));
-    assertEquals("DATE", DataTypeName.toString(ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("Asia/Ho_Chi_Minh"))));
+    assertEquals("DATE", DataTypeName.toString(ZonedDateTime.now()));    
     assertEquals("JSON", DataTypeName.toString(Converter.parseJson("{\"name\":\"Smith\"}")));
     assertEquals("TIMEUNIT", DataTypeName.toString(TimeUnit.CENTURY));
   }
@@ -95,12 +93,12 @@ public class DataTypeTest extends ExpressionTest {
   public void family() throws Exception {
     assertTrue(DataTypeFamily.ANY.isSameFamily(DataTypeFamily.BINARY));
     assertTrue(DataTypeFamily.BINARY.isSameFamily(DataTypeFamily.ANY));
+    
     assertTrue(DataTypeFamily.BINARY.isSameFamily(DataTypeFamily.BINARY));
     assertFalse(DataTypeFamily.BINARY.isSameFamily(DataTypeFamily.NUMERIC));
-    
     assertEquals(DataTypeFamily.BINARY, DataTypeName.BINARY.getFamily());
     assertEquals(DataTypeFamily.BOOLEAN, DataTypeName.BOOLEAN.getFamily());
-    assertEquals(DataTypeFamily.DATE, DataTypeName.DATE.getFamily());
+    assertEquals(DataTypeFamily.TEMPORAL, DataTypeName.DATE.getFamily());
     assertEquals(DataTypeFamily.JSON, DataTypeName.JSON.getFamily());
     assertEquals(DataTypeFamily.NUMERIC, DataTypeName.INTEGER.getFamily());
     assertEquals(DataTypeFamily.NUMERIC, DataTypeName.NUMBER.getFamily());
@@ -185,14 +183,14 @@ public class DataTypeTest extends ExpressionTest {
   }
 
   @Test
-  public void coerceToDate() throws Exception {
+  public void coerceToZonedDateTime() throws Exception {
     ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
+   
+    assertNull(Converter.coerceToDate(null));
+
     
-    assertNull(Converter.coerceToDateTime(null));
-    //assertEquals(date, Converter.coerceToDate(date));
-    
-    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToDateTime(true));
-    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToDateTime("2022"));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToDate(true));
+    assertThrows(IllegalArgumentException.class, () -> Converter.coerceToDate("2022"));
   }
   
   @Test
@@ -203,7 +201,7 @@ public class DataTypeTest extends ExpressionTest {
     assertEquals(date, Converter.cast("2022-12-28", DataTypeName.DATE));
     assertEquals(date, Converter.cast("2022-12-28", DataTypeName.DATE, "YYYY-MM-DD"));
   }
-
+  
   @Test
   public void coerceToString() throws Exception {
     assertNull(Converter.coerceToString(null));

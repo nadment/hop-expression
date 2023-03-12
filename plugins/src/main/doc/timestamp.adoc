@@ -14,21 +14,23 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= AT TIME ZONE
+= TIMESTAMP
 
-Specifies which time zone to use with a TIMESTAMP.
-
+Creates a timestamp from individual numeric components.
+		
 == Syntax
 ----
-timestamp A TIME ZONE timezone
+TIMESTAMP( year, month, day, hour, minute, second [, nanosecond] )
+----
+The literal value with ISO format provides alternative syntax.
+----
+TIMESTAMP 'YYYY-MM-DD HH.MM.SS'
 ----
 
 == Usage
 
-Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC').
-
-== Example
-
-----
-TIMESTAMP '2020-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'
-----
+* If day<1 or day>31 then month is adjusted: Date(2020, 6, 50) >> 2020 JULY 21
+* If month<1 or month>12 then year is adjusted: Date(2020,19,1) >> 2021 JULY 01
+* If hour<0 or hour>23 then day is adjusted
+* If minute<0 or minute>59 then hour is adjusted
+* If second<0 or second>59 then minute is adjusted

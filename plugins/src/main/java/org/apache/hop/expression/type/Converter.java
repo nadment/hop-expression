@@ -24,6 +24,9 @@ import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
@@ -157,7 +160,7 @@ public class Converter {
                 ExpressionError.INVALID_DATE.message(e.getMessage()));
           }
         }
-        break;
+        break; 
       case JSON:
         if (value instanceof String) {
           return parseJson((String) value);
@@ -332,6 +335,14 @@ public class Converter {
     }
   }
 
+  public static ZoneId toZoneId(final String zone) throws Exception {
+    try {
+      return ZoneId.of(zone);
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.UNKNOWN_TIMEZONE, zone);
+    }
+  }
+  
   /**
    * Compare this value against another value. If values need to be converted to match the other
    * operands data type, the value with the lower order is converted to the value with the higher
@@ -365,8 +376,8 @@ public class Converter {
     }
 
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      ZonedDateTime dt1 = coerceToDateTime(left);
-      ZonedDateTime dt2 = coerceToDateTime(right);
+      ZonedDateTime dt1 = coerceToDate(left);
+      ZonedDateTime dt2 = coerceToDate(right);
       // Two timestamp are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       if (dt1.isEqual(dt2)) {
@@ -528,17 +539,17 @@ public class Converter {
     return String.valueOf(value);
   }
 
-
   /**
-   * Coerce value to data type DATE.
+   * Coerce value to data type TIMESTAMP.
    * 
    * @param value the value to coerce
    * @return ZonedDateTime
    */
-  public static final ZonedDateTime coerceToDateTime(final Object value) {
+  public static final ZonedDateTime coerceToDate(final Object value) {
     if (value == null) {
       return null;
     }
+    
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
@@ -546,24 +557,14 @@ public class Converter {
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
         DataTypeName.toString(value), DataTypeName.DATE));
   }
-
-  public static final Date coerceToDate(final Object value) {
+  
+  
+  public static final Date convertToDate(final Object value) {
     if (value == null) {
       return null;
     }
     if (value instanceof ZonedDateTime) {
       return Date.from(((ZonedDateTime) value).toInstant());
-    }
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.DATE));
-  }
-
-  public static final java.sql.Timestamp coerceToTimestamp(final Object value) {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof ZonedDateTime) {
-      return java.sql.Timestamp.from(((ZonedDateTime) value).toInstant());
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
         DataTypeName.toString(value), DataTypeName.DATE));
@@ -575,7 +576,6 @@ public class Converter {
    * @param value the value to coerce
    * @return Boolean
    */
-
   public static final Boolean coerceToBoolean(final Object value) {
     if (value == null) {
       return null;

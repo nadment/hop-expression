@@ -137,6 +137,10 @@ TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'US/Pacific'
 
 In some of the timestamp formats, the letter T is used as a separator between the date and time.
 
+The UTC offset form can be further refined to include the regional time zone, ensuring consistency of local time calculations while observing daylight saving time.
+
+NOTE: Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC'). A time zone name is valid if recognized by Java’s ZoneId.of.
+
 === Json
 
 Literal json.
@@ -207,28 +211,28 @@ When there is no ambiguity about the data type of an expression value, it is imp
 |Boolean|Integer|❌|✔|
 |Boolean|Number|❌|✔|
 |Boolean|BigNumber|❌|✔|
-|Boolean|String|✔|✔|TO_CHAR
-|Integer|Boolean|✔|✔|TO_BOOLEAN
+|Boolean|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
+|Integer|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |Integer|Number|✔|✔|
 |Integer|BigNumber|✔|✔|
-|Integer|String|✔|✔|TO_CHAR
-|Number|Boolean|✔|✔|TO_BOOLEAN
+|Integer|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
+|Number|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |Number|Integer|✔|✔|
 |Number|BigNumber|✔|✔|
-|Number|String|✔|✔|TO_CHAR
-|BigNumber|Boolean|✔|✔|TO_BOOLEAN
+|Number|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
+|BigNumber|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |BigNumber|Integer|✔|✔|
 |BigNumber|Number|✔|✔|
-|BigNumber|String|✔|✔|TO_CHAR
-|String|Boolean|✔|✔|TO_BOOLEAN
-|String|Integer|✔|✔|TO_NUMBER
-|String|Number|✔|✔|TO_NUMBER
-|String|BigNumber|✔|✔|TO_NUMBER
-|String|Date|❌|✔|TO_DATE
-|String|Binary|❌|✔|TO_BINARY
-|String|Json|❌|✔|TO_JSON
-|Date|String|❌|✔|TO_CHAR
-|Binary|String|❌|✔|TO_CHAR
+|BigNumber|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
+|String|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
+|String|Integer|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
+|String|Number|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
+|String|BigNumber|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
+|String|Date|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
+|String|Binary|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]
+|String|Json|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_json.adoc[TO_JSON]
+|Date|String|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
+|Binary|String|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 |Json|String|✔|✔|
 |===
 

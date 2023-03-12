@@ -50,6 +50,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -106,7 +107,8 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaNumber("NULL_NUMBER"));
     rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
-    rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESAMP"));
+    rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
+    rowMeta.addValueMeta(new ValueMetaJson("NULL_BINARY"));
     rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
     
     // For implicit cast
@@ -131,7 +133,7 @@ public class ExpressionTest {
       Calendar calendar = Calendar.getInstance();
       calendar.set(1981, 5, 23);
 
-      Object[] row = new Object[29];
+      Object[] row = new Object[30];
       row[0] = "TEST";
       row[1] = "F";
       row[2] = calendar.getTime();
@@ -151,19 +153,20 @@ public class ExpressionTest {
       row[15] = null;
       row[16] = null;
       row[17] = null;
+      row[18] = null;
       
-      row[18] = "True";
-      row[19] = "25";
-      row[20] = "-12.56";
+      row[19] = "True";
+      row[20] = "25";
+      row[21] = "-12.56";
 
 
-      row[21] = 2020L;
-      row[22] = "Paris";
-      row[23] = true;
-      row[24] = 2;
-      row[25] = "SPACE";
-      row[26] = "UNDERSCORE";
-      row[27] = "lower";
+      row[22] = 2020L;
+      row[23] = "Paris";
+      row[24] = true;
+      row[25] = 2;
+      row[26] = "SPACE";
+      row[27] = "UNDERSCORE";
+      row[28] = "lower";
       context.setRow(row);
     }
 
@@ -238,11 +241,6 @@ public class ExpressionTest {
     assertEquals(expected, (String) eval(source, context, null));
   }
 
-  protected void evalEquals(String source, String expected, Consumer<ExpressionContext> consumer)
-      throws Exception {
-    assertEquals(expected, (String) eval(source, null, consumer));
-  }
-
   protected void evalEquals(String source, Long expected) throws Exception {
     assertEquals(expected, (Long) eval(source));
   }
@@ -256,32 +254,38 @@ public class ExpressionTest {
     assertEquals(expected, (BigDecimal) eval(source));
   }
 
-  protected void evalEquals(String source, LocalDate expected) throws Exception {
-    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()), eval(source));
+  protected void evalEquals(String source, Temporal expected) throws Exception {
+    evalEquals(source, expected, null);
   }
 
-  protected void evalEquals(String source, LocalDate expected, ExpressionContext context)
+  protected void evalEquals(String source, Temporal expected, ExpressionContext context)
       throws Exception {
-    assertEquals(expected.atStartOfDay().atZone(ZoneId.systemDefault()),
-        eval(source, context, null));
-  }
-
-  protected void evalEquals(String source, LocalDateTime expected) throws Exception {
-    assertEquals(expected.atZone(ZoneId.systemDefault()), eval(source));
-  }
-
-  protected void evalEquals(String source, ZonedDateTime expected) throws Exception {
-    assertEquals(expected, eval(source));
-  }
-
-  protected void evalEquals(String source, ZonedDateTime expected, ExpressionContext context)
-      throws Exception {
-    assertEquals(expected, eval(source, context, null));
-  }
-
-  protected void evalEquals(String source, ZonedDateTime expected,
-      Consumer<ExpressionContext> consumer) throws Exception {
-    assertEquals(expected, eval(source, null, consumer));
+    
+    Object result = eval(source, context, null);
+    
+    if ( result instanceof LocalDateTime ) {
+      LocalDateTime value = (LocalDateTime) result;
+      
+      if ( expected instanceof LocalDate ) {
+        result = value.toLocalDate();
+      }    
+      else if ( expected instanceof ZonedDateTime ) {
+        result = value.atZone(ZoneId.systemDefault());
+      }
+    }
+    
+    if ( result instanceof ZonedDateTime ) {
+      ZonedDateTime value = (ZonedDateTime) result;
+      
+      if ( expected instanceof LocalDate ) {
+        result = value.toLocalDate();
+      }    
+      else if ( expected instanceof LocalDateTime ) {
+        result = value.toLocalDateTime();
+      }
+    }
+    
+    assertEquals(expected, result);
   }
 
   protected void evalFails(final String source) {
@@ -316,7 +320,7 @@ public class ExpressionTest {
   }
 
   protected void optimize(String e, String expected) throws Exception {
-    assertEquals(expected, (String) optimize(e).toString());
+    assertEquals(expected, optimize(e).toString());
   }
 
   protected void optimizeTrue(String e) throws Exception {
@@ -346,6 +350,10 @@ public class ExpressionTest {
     //returnType("FIELD_STRING||'t'", DataTypeName.STRING);
    // evalEquals("Extract(HOUR from '2020-05-25 23:48:59')", 23);
     //evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
+    //evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
+    //evalEquals("0xF::INTEGER+1", 16);    
+    optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
+
   }
 }
 

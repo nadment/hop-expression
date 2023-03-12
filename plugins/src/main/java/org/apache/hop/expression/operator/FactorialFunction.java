@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -23,31 +25,44 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
- * Return the number of minutes between two timestamps
+ * Returns the factorial value of a numeric expression.
  */
 @FunctionPlugin
-public class MinutesBetweenFunction extends Function {
+public class FactorialFunction extends Function {
 
-  public MinutesBetweenFunction() {
-    super("MINUTES_BETWEEN", true, ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
-        OperatorCategory.DATE, "/docs/minutes_between.html");
+  public FactorialFunction() {
+    super("FACTORIAL", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+        "/docs/factorial.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    ZonedDateTime startDateTime = operands[0].getValue(context, ZonedDateTime.class);
-    if (startDateTime == null)
+    Long value = operands[0].getValue(context, Long.class);
+    if (value == null)
       return null;
-    ZonedDateTime endDateTime = operands[1].getValue(context, ZonedDateTime.class);
-    if (endDateTime == null)
-      return null;
+    
+    int n = value.intValue(); 
+    
+    if (n<0)      
+      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
+    
+    if (n>20) {
+      BigInteger result = BigInteger.ONE;
+      for (int i = 2; i <= n; i++) {
+          result = result.multiply(BigInteger.valueOf(i));
+      }      
+      return new BigDecimal(result);
+    }
 
-    return startDateTime.until(endDateTime, ChronoUnit.MINUTES);
+    long result = 1;
+    for (int i = 2; i <= n; i++) {
+      result = result*i;
+    }
+    return new BigDecimal(result);      
   }
-
 }

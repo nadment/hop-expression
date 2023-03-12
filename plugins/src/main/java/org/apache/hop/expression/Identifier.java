@@ -25,7 +25,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -101,12 +103,12 @@ public final class Identifier implements IExpression {
           Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
           if (timestamp == null)
             return null;
-          return timestamp.toInstant().atZone(ZoneId.systemDefault());          
+          return timestamp.toLocalDateTime().atZone(ZoneId.systemDefault());          
         case IValueMeta.TYPE_DATE:
           Date date = rowMeta.getDate(row, ordinal);
           if (date == null)
             return null;
-          return date.toInstant().atZone(ZoneId.systemDefault());
+          return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         case IValueMeta.TYPE_STRING:
           return rowMeta.getString(row, ordinal);
         case IValueMeta.TYPE_INTEGER:
@@ -169,16 +171,28 @@ public final class Identifier implements IExpression {
           break;
         }
 
-        case IValueMeta.TYPE_TIMESTAMP:
-          // No getTimestamp from RowMeta ???        
+        case IValueMeta.TYPE_TIMESTAMP: {
+          Date value = rowMeta.getDate(row, ordinal);
+          if (value == null) {
+            return null;
+          }
+          if (clazz == LocalDateTime.class) {         
+            return clazz.cast(LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()));
+          }
           
+          return clazz.cast(value.toInstant().atZone(ZoneId.systemDefault()));      
+        }
+        
         case IValueMeta.TYPE_DATE: {
           Date value = rowMeta.getDate(row, ordinal);
           if (value == null) {
             return null;
           }
-
-          return clazz.cast(value.toInstant().atZone(ZoneId.systemDefault()));
+          if (clazz == ZonedDateTime.class) {         
+            return clazz.cast(value.toInstant().atZone(ZoneId.systemDefault()));
+          }
+          
+          return clazz.cast(LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()));
         }
         
         case IValueMeta.TYPE_STRING: {

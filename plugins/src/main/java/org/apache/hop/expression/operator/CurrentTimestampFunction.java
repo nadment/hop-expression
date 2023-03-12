@@ -29,9 +29,9 @@ import org.apache.hop.expression.type.ReturnTypes;
  * The function return the current date and time
  */
 @FunctionPlugin(names = {"NOW"})
-public class CurrentDateTimeFunction extends Function {
+public class CurrentTimestampFunction extends Function {
 
-  public CurrentDateTimeFunction() {
+  public CurrentTimestampFunction() {
     super("CURRENT_TIMESTAMP", false, ReturnTypes.DATE, OperandTypes.NILADIC, OperatorCategory.DATE,
         "/docs/current_timestamp.html");
   }
