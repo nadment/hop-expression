@@ -33,7 +33,7 @@
 		<commons-math3.version>3.6.1</commons-math3.version>
 		<json-path.version>2.7.0</json-path.version>
 		<!-- Third-party UI dependencies -->
-		<org.eclipse.osgi.version>3.18.200</org.eclipse.osgi.version>
+		<org.eclipse.osgi.version>3.18.300</org.eclipse.osgi.version>
 		<org.eclipse.core.runtime.version>3.26.100</org.eclipse.core.runtime.version>
 		<org.eclipse.text.version>3.12.300</org.eclipse.text.version>
 		<org.eclipse.jface.version>3.28.0</org.eclipse.jface.version>
