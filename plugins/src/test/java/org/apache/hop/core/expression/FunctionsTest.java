@@ -27,6 +27,7 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
@@ -535,6 +536,31 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Month(FIELD_INTEGER)");
   }
 
+  @Test
+  public void Date_Diff() throws Exception {
+    evalEquals("Date_Diff(MILLENNIUM, DATE '1001-01-01',DATE '3150-01-01')", 2);
+    evalEquals("Date_Diff(CENTURY, DATE '1001-01-01',DATE '2000-01-01')", 9);
+    evalEquals("Date_Diff(DECADE, DATE '1001-01-01',DATE '2000-01-01')", 99);    
+    evalEquals("Date_Diff(YEAR, TIMESTAMP '2001-01-01 12:00:00',DATE '2000-01-01')", -1);    
+    evalEquals("Date_Diff(YEAR, DATE '2022-12-31',DATE '2024-06-01')", 1);
+    evalEquals("Date_Diff(QUARTER, DATE '2022-12-31',DATE '2024-06-01')", 5);    
+    evalEquals("Date_Diff(MONTH, TIMESTAMP '2001-01-01 12:00:00',DATE '2000-01-01')", -12);
+    evalEquals("Date_Diff(WEEK, TIMESTAMP '2001-01-01 12:00:00',DATE '2000-01-01')", -52);    
+    evalEquals("Date_Diff(DAY, DATE '2021-11-09',DATE '2020-12-28')", -316);
+    evalEquals("Date_Diff(HOUR, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 24);
+    evalEquals("Date_Diff(MINUTE, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 1440);
+    evalEquals("Date_Diff(SECOND, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-02 15:00:59')", 86400);
+    evalEquals("Date_Diff(MILLISECOND, TIMESTAMP '2019-01-01 15:00:59',TIMESTAMP '2019-01-01 15:02:00')", 61000);
+    evalEquals("Date_Diff(MICROSECOND, TIMESTAMP '2019-01-01 15:00:00.000000',TIMESTAMP '2019-01-01 15:00:00.001234')", 1234);
+    evalEquals("Date_Diff(NANOSECOND, TIMESTAMP '2019-01-01 15:00:00.000000000',TIMESTAMP '2019-01-01 15:00:00.123456789')", 123456789);
+    
+    evalNull("Date_Diff(YEAR, NULL_DATE, DATE '2007-11-09')");
+    evalNull("Date_Diff(YEAR, DATE '2007-11-09',NULL_DATE)");
+    evalNull("Date_Diff(YEAR, NULL_DATE, NULL_DATE)");
+    
+    evalFails("Date_Diff(YEAR, DATE '2007-11-09')");
+  }
+  
   @Test
   public void Years_Between() throws Exception {
     evalEquals("Years_Between(TIMESTAMP '2001-01-01 12:00:00',TIMESTAMP '2000-01-01 00:00:00')",

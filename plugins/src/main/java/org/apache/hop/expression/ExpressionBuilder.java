@@ -644,7 +644,7 @@ public class ExpressionBuilder {
           if (str.indexOf(':', 20) > 0)
             pattern = "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM";
           else
-          pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
+            pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
           break;    
         case 34: // 2021-01-01 15:28:59.123456789+0200
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";

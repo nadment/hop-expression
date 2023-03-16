@@ -14,13 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= DATE_TRUNC
+= DATE_DIFF
 
-Truncate a date or datetime value to the start of a given unit of duration. 
+Returns the difference in time unit between two date or timestamp.
 
 == Syntax
 ----
-DATE_TRUNC( unit, {date | timestamp} )
+DATE_DIFF( unit, startDate, endEnd  )
 ----
 
 Supported unit of date and time:
@@ -43,3 +43,10 @@ Supported unit of date and time:
 == Usage
 
 * Returns NULL if one of the arguments is NULL.
+
+== Example
+----
+DATE_DIFF(DAY, DATE '2023-02-01', CURRENT_DATE())
+----
+
+
