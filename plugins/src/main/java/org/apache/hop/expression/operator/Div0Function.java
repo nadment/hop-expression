@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -34,50 +33,23 @@ import java.math.MathContext;
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", true, ReturnTypes.ARG0, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV0", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div0.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
-    if (left == null)
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
+    if (value == null)
       return null;
-    Object right = operands[1].getValue(context);
-    if (right == null)
+    BigDecimal divisor = operands[1].getValue(context, BigDecimal.class);
+    if (divisor == null)
       return null;
 
-    if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = Converter.coerceToBigNumber(right);
-
-      // prevent a division by zero and return zero
-      if (divisor.signum() == 0)
-        return divisor;
-
-      return Converter.coerceToBigNumber(left).divide(Converter.coerceToBigNumber(right), MathContext.DECIMAL128);
-    }
-    if (left instanceof Double || right instanceof Double) {
-      double divisor = Converter.coerceToNumber(right);
-      // prevent a division by zero and return zero
-      if (divisor == 0D)
-        return 0D;
-      return Converter.coerceToNumber(left) / divisor;
-    }
-    if (left instanceof Long || right instanceof Long) {
-      long divisor = Converter.coerceToInteger(right);
-      // prevent a division by zero and return zero
-      if (divisor == 0L)
-        return 0L;
-
-      return Converter.coerceToInteger(left) / divisor;
-    }
-
-    BigDecimal divisor = Converter.coerceToBigNumber(right);
-    // prevent a division by zero and return zero
+    // Prevent a division by zero and return zero
     if (divisor.signum() == 0)
       return divisor;
 
-    return Converter.coerceToBigNumber(left).divide(divisor);
+    return value.divide(divisor, MathContext.DECIMAL128);
   }
-
 }

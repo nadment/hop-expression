@@ -521,14 +521,14 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
   }
   
   /**
-   * TODO: Replace string pattern format operand with a compiled format
+   * Replace string pattern format operand with a compiled format
    */
   protected IExpression simplifyToNumber(IExpressionContext context, Call call) {
     NumberFormat format = NumberFormat.of("TM");
 
     try {
       if (call.getOperandCount() == 2) {
-        String pattern = (String) call.getOperand(1).getValue(context);
+        String pattern = call.getOperand(1).getValue(context, String.class);
         format = NumberFormat.of(pattern);
       }
     } catch (ExpressionException e) {

@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CoalesceFunction extends Function {
 
   public CoalesceFunction() {
-    super("COALESCE", true, ReturnTypes.FIRST_KNOWN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+    super("COALESCE", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.CONDITIONAL, "/docs/coalesce.html");
   }
 

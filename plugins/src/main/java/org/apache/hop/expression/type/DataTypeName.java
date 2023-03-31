@@ -35,6 +35,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public enum DataTypeName {
 
+  ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class),
+  
   /** Unlimited length text */
   STRING(DataTypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, String.class),
 
@@ -60,9 +62,7 @@ public enum DataTypeName {
   BINARY(DataTypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
 
   /** A unknown type */
-  UNKNOWN(DataTypeFamily.NONE, PrecScale.NO_NO, Void.class),
-
-  ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class);
+  UNKNOWN(DataTypeFamily.NONE, PrecScale.NO_NO, Void.class);
 
   public static final List<DataTypeName> STRING_TYPES = List.of(STRING);
   public static final List<DataTypeName> BINARY_TYPES = List.of(BINARY);

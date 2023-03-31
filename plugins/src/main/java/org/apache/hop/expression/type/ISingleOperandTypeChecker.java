@@ -32,13 +32,4 @@ public interface ISingleOperandTypeChecker extends IOperandTypeChecker {
   default boolean checkOperandTypes(Call call) {
     return true;
   }
-
-  // default ISingleOperandTypeChecker and(ISingleOperandTypeChecker checker) {
-  // return OperandTypes.and(this, checker);
-  // }
-  //
-  //
-  // default ISingleOperandTypeChecker or(ISingleOperandTypeChecker checker) {
-  // return OperandTypes.or(this, checker);
-  // }
 }

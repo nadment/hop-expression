@@ -360,12 +360,12 @@ public class DataTypeTest extends ExpressionTest {
         
     // String to Number
     evalTrue("'1.25' = 1.25::NUMBER");
-    evalEquals("2*'1.23'", 2.46);
-    evalEquals("2+'2'", 4);
-    evalEquals("'2'+2", 4);
-    evalEquals("2 + 2 || 2", 42);
+    evalEquals("2.0*'1.23'", 2.46D);
+    evalEquals("2+'2'", 4L);
+    evalEquals("'2'+2", 4L);
+    evalEquals("2 + 2 || 2", 42L);
     evalEquals(" 4 + 4 || '2' ", "82");    
-    evalEquals(" '8' || 1 + 1", 82);
+    evalEquals(" '8' || 1 + 1", 82L);
     
     // Integer to BigNumber
     evalEquals("'-1e-3'::BigNumber * 2", new BigDecimal("-2e-3", MathContext.DECIMAL128));    

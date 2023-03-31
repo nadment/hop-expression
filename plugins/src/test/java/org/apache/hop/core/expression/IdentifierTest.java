@@ -32,8 +32,8 @@ public class IdentifierTest extends ExpressionTest {
   
   @Test
   public void eval() throws Exception {
-    evalEquals("FIELD_INTEGER%2", 0);
-    evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0);
+    evalEquals("FIELD_INTEGER%2", 0L);
+    evalEquals(" \t\n\"FIELD_INTEGER\"%2", 0L);
     evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
     evalEquals("\"IDENTIFIER_UNDERSCORE\"", "UNDERSCORE");
     evalEquals("\"IDENTIFIER lower\"", "lower");
@@ -48,8 +48,8 @@ public class IdentifierTest extends ExpressionTest {
   public void escape() throws Exception {
     // Reserved word
     evalEquals("Upper(\"STRING\")", "PARIS");
-    // DatePart
-    evalEquals("\"YEAR\"", 2020);
+    // Field name like a function name
+    evalEquals("\"YEAR\"", 2020L);
   }
   
   @Test
@@ -59,7 +59,7 @@ public class IdentifierTest extends ExpressionTest {
     writeEquals("\"CASE\"");    
     // Data type name
     writeEquals("\"STRING\"");
-    // Date part name
+    // Time unit name
     writeEquals("\"CENTURY\"");
     // Function name
     writeEquals("\"YEAR\"");

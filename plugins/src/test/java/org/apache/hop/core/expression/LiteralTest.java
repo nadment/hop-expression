@@ -57,10 +57,10 @@ public class LiteralTest extends ExpressionTest {
   public void DataType() throws Exception {
     assertEquals(DataTypeName.BIGNUMBER, Literal.of(DataTypeName.BIGNUMBER).getValue(null));
     
-    evalEquals("Cast(123 as InTeGeR)", 123);
+    evalEquals("Cast(123 as InTeGeR)", 123L);
     
     // Accept DataType quoted like a String
-    evalEquals("Cast(123 as 'INTEGER')", 123);
+    evalEquals("Cast(123 as 'INTEGER')", 123L);
     evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
   }
 
@@ -158,7 +158,7 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456", Literal.of(-123456L).toString());
 
     // Integer
-    evalEquals("-9223372036854775818", Long.MIN_VALUE);
+    evalEquals("-9223372036854775808", Long.MIN_VALUE);
     evalEquals("9223372036854775807", Long.MAX_VALUE);
 
     writeEquals("123456", "123456");
@@ -174,14 +174,14 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456.789", Literal.of(-123456.789D).toString());
 
     // Number
-    evalEquals("+.1", 0.1);
-    evalEquals("-.2", -0.2);
-    evalEquals("-0.2", -0.2);
-    evalEquals("-1.", -1);
-    evalEquals("2.3E2", 2.3E2);
-    evalEquals("2.3E+2", 2.3E2);
-    evalEquals("-2.3E-2", -2.3E-2);
-    evalEquals("-2.3e-2", -2.3E-2);
+    evalEquals("+.1", 0.1D);
+    evalEquals("-.2", -0.2D);
+    evalEquals("-0.2", -0.2D);
+    evalEquals("-1.", -1L);
+    evalEquals("2.3E2", 2.3E2D);
+    evalEquals("2.3E+2", 2.3E2D);
+    evalEquals("-2.3E-2", -2.3E-2D);
+    evalEquals("-2.3e-2", -2.3E-2D);
 
     evalFails("..1");
     evalFails(".0.1");

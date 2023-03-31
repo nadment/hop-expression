@@ -537,11 +537,9 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralNumber(Token token) throws ParseException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
-
-    // if ( number.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0 &&
-    // number.precision()<17 ) {
-    // return Literal.of(number.longValue());
-    // }
+    if ( number.scale()==0 && number.precision()<17 ) {
+      return Literal.of(number.longValueExact());
+    }
 
     return Literal.of(number);
   }
@@ -600,7 +598,7 @@ public class ExpressionBuilder {
 
   /**
    * Parses a date literal.
-   * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
+   * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
     try {
@@ -626,7 +624,7 @@ public class ExpressionBuilder {
   /**
    * Parses a timestamp literal with ISO Formats.
    * 
-   * The parsing is strict and requires months to be less than 12, days to be less than 31, etc.
+   * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
   private Literal parseLiteralTimestamp(Token token) throws ParseException {
     try {

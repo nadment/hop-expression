@@ -82,14 +82,12 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);
 
   /**
-   * Type-inference strategy whereby the result type of a call is the type of
-   * the operand #1.
+   * Type-inference strategy whereby the result type of a call is the type of the operand #1.
    */
   public static final IReturnTypeInference ARG1 = new OrdinalReturnTypeInference(1);
 
   /**
-   * Type-inference strategy whereby the result type of a call is the type of
-   * the operand #2.
+   * Type-inference strategy whereby the result type of a call is the type of the operand #2.
    */
   public static final IReturnTypeInference ARG2 = new OrdinalReturnTypeInference(2);
 
@@ -101,6 +99,16 @@ public final class ReturnTypes {
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
       new LeastRestrictiveReturnTypeInference();
 
+  
+  /**
+   * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with a fallback to {@link #ARG0}.
+   * This rule is used for floor, ceiling.
+   */
+  public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = (context, call) -> {
+    return DataTypeName.INTEGER; 
+  };
+
+  
   public static final IReturnTypeInference CAST = new CastFunctionReturnTypeInference();
 
   public static final IReturnTypeInference ANY =

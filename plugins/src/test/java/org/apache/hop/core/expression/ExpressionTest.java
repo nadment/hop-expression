@@ -37,7 +37,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataTypeName;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -173,24 +172,15 @@ public class ExpressionTest {
 
     return context;
   }
-
   
   protected void returnType(String source, DataTypeName expected) throws Exception {
     ExpressionContext context = createExpressionContext(false);
     IExpression expression = ExpressionBuilder.build(context, source);
     assertEquals(expected, expression.getType());
   }
-
-  protected Object eval(String source) throws Exception {
-    return eval(source, createExpressionContext(true), null);
-  }
-
-  protected Object eval(String source, ExpressionContext context) throws Exception {
-    return eval(source, context, null);
-  }
-
-  protected Object eval(String source, ExpressionContext context,
-      Consumer<ExpressionContext> consumer) throws Exception {
+    
+  protected Object eval(String source, IExpressionContext context,
+      Consumer<IExpressionContext> consumer) throws Exception {
 
     // Create default context
     if (context == null) {
@@ -200,7 +190,6 @@ public class ExpressionTest {
     // Apply context customization
     if (consumer != null)
       consumer.accept(context);
-
     
     try {
       IExpression expression = ExpressionBuilder.build(context, source);
@@ -211,47 +200,70 @@ public class ExpressionTest {
       throw ex;
     }
   }
+  
+  protected Object eval(String source, IExpressionContext context) throws Exception {
 
+    // Create default context
+    if (context == null) {
+      context = createExpressionContext(true);
+    }
+    
+    try {
+      IExpression expression = ExpressionBuilder.build(context, source);
+      
+      return expression.getValue(context);
+    } catch (Exception ex) {
+      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+      throw ex;
+    }
+  }
+
+  protected <T> T eval(String source, final Class<T> clazz) throws Exception {   
+    try {
+      IExpressionContext context = createExpressionContext(true);
+      IExpression expression = ExpressionBuilder.build(context, source);
+      
+      return expression.getValue(context, clazz);
+    } catch (Exception ex) {
+      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
+      throw ex;
+    }
+  }
+  
   protected void evalNull(String source) throws Exception {
-    assertNull(eval(source));
+    assertNull(eval(source, createExpressionContext(true)));
   }
 
   protected void evalTrue(String source) throws Exception {
-    assertEquals(Boolean.TRUE, eval(source));
+    assertEquals(Boolean.TRUE, eval(source, Boolean.class));
   }
 
   protected void evalFalse(String source) throws Exception {
-    assertEquals(Boolean.FALSE, eval(source));
+    assertEquals(Boolean.FALSE, eval(source, Boolean.class));
   }
 
   protected void evalEquals(String source, byte[] expected) throws Exception {
-    assertArrayEquals(expected, (byte[]) eval(source));
+    assertArrayEquals(expected, eval(source, byte[].class));
   }
 
   protected void evalEquals(String source, JsonNode expected) throws Exception {
-    assertEquals(expected, (JsonNode) eval(source));
+    assertEquals(expected, (JsonNode) eval(source, JsonNode.class));
   }
 
   protected void evalEquals(String source, String expected) throws Exception {
-    assertEquals(expected, (String) eval(source));
-  }
-
-  protected void evalEquals(String source, String expected, ExpressionContext context)
-      throws Exception {
-    assertEquals(expected, (String) eval(source, context, null));
+    assertEquals(expected, eval(source, String.class));
   }
 
   protected void evalEquals(String source, Long expected) throws Exception {
-    assertEquals(expected, (Long) eval(source));
+    assertEquals(expected, eval(source, Long.class));
   }
 
-  protected void evalEquals(String source, double expected) throws Exception {
-    Object value = eval(source);
-    assertEquals(expected, Converter.coerceToNumber(value), 0.000000000000001);
+  protected void evalEquals(String source, Double expected) throws Exception {
+    assertEquals(expected, eval(source, Double.class), 0.000000000000001);
   }
 
   protected void evalEquals(String source, BigDecimal expected) throws Exception {
-    assertEquals(expected, (BigDecimal) eval(source));
+    assertEquals(expected, eval(source, BigDecimal.class));
   }
 
   protected void evalEquals(String source, Temporal expected) throws Exception {
@@ -261,7 +273,7 @@ public class ExpressionTest {
   protected void evalEquals(String source, Temporal expected, ExpressionContext context)
       throws Exception {
     
-    Object result = eval(source, context, null);
+    Object result = eval(source, context, c -> {});
     
     if ( result instanceof LocalDateTime ) {
       LocalDateTime value = (LocalDateTime) result;
@@ -289,7 +301,7 @@ public class ExpressionTest {
   }
 
   protected void evalFails(final String source) {
-    assertThrows(ExpressionException.class, () -> eval(source));
+    assertThrows(ExpressionException.class, () -> eval(source, createExpressionContext(true)));
   }
 
   protected void writeEquals(String source) throws Exception {
@@ -352,8 +364,8 @@ public class ExpressionTest {
     //evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
     //evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
     //evalEquals("0xF::INTEGER+1", 16);    
-    optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
-
+    //optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
+    returnType("Greatest(FIELD_NUMBER,456,789)", DataTypeName.NUMBER);
   }
 }
 

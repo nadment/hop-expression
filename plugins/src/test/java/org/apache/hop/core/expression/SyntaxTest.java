@@ -42,8 +42,7 @@ public class SyntaxTest extends ExpressionTest {
     evalTrue(" /* Test block comment */  true ");
     evalTrue(" true /* Test block comment */");
     evalTrue("/*\n * Comment on multi line\n *\n */ True");
-    evalTrue(
-        "/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
+    evalTrue("/*\n * Comment on multi line \n  with nesting: /* nested block comment */ *\n */   True");
 
     // Single line comment
     evalTrue("// Single line comment\nTrue");
@@ -65,9 +64,16 @@ public class SyntaxTest extends ExpressionTest {
   }
 
   @Test
+  public void Tab() throws Exception {
+    evalTrue(" \n\tTrue");
+    evalTrue(" \nTrue\t\r");
+  }
+  
+  @Test
   public void CarriageReturnAndLineFeed() throws Exception {
     evalTrue(" \rTrue");
-    evalTrue(" \nTrue");
+    evalTrue(" \n\tTrue");
+    evalTrue(" \nTrue\n\r");
   }
   
   @Test
@@ -99,18 +105,17 @@ public class SyntaxTest extends ExpressionTest {
     // Arithmetic
     evalEquals("3*5/2",  3*5/2d);
     evalEquals("9/3*3", 9d/3*3);
-    evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5);        
+    evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5L);        
     evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
-    evalEquals("10*2+1", 21);
-    evalEquals("8+5-2*8", 8+5-2*8);
-    evalEquals("8+(5-2)*8",8+(5-2)*8);
-    evalEquals("1+10*2", 1+10*2);
-    evalEquals("10*(2+1)", 30);
-    evalEquals("30/(5+5)", 3);
-    evalEquals("42%(3+2)", 2);
+    evalEquals("10*2+1", 21L);
+    evalEquals("8+5-2*8", 8+5-2*8L);
+    evalEquals("8+(5-2)*8",8L+(5-2)*8L);
+    evalEquals("1+10*2", 1+10*2L);
+    evalEquals("10*(2+1)", 30L);
+    evalEquals("30/(5+5)", 3L);
+    evalEquals("42%(3+2)", 2L);
     evalEquals("1-2+3*4/5/6-7", (((1d - 2d) + (((3d * 4d) / 5d) / 6d)) - 7d));
-    evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0);
-
+    evalEquals("FIELD_INTEGER-(10+3*10+50-2*25)", 0L);
       
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");

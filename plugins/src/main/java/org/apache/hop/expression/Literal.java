@@ -37,11 +37,6 @@ public final class Literal implements IExpression {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
-
-  // public static final Literal NULL_BOOLEAN = new Literal(DataTypeName.BOOLEAN);
-  // public static final Literal NULL_STRING = new Literal(DataTypeName.STRING);
-  // public static final Literal NULL_DATE = new Literal(DataTypeName.DATE);
-
   public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, DataTypeName.INTEGER);
@@ -151,13 +146,13 @@ public final class Literal implements IExpression {
           return clazz.cast(String.valueOf(value));
         }
         if (clazz == Long.class) {
-          return clazz.cast(((Boolean) value) ? 1L : 0L);
+          return clazz.cast(((boolean) value) ? 1L : 0L);
         }
         if (clazz == Double.class) {
-          return clazz.cast(((Boolean) value) ? 1D : 0D);
+          return clazz.cast(((boolean) value) ? 1D : 0D);
         }
         if (clazz == BigDecimal.class) {
-          return clazz.cast(((Boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+          return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
         }
         break;
 

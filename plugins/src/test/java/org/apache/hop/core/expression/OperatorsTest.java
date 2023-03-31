@@ -373,8 +373,8 @@ public class OperatorsTest extends ExpressionTest {
   @Test
   public void Add() throws Exception {
     evalEquals("10+(-0.5)", 9.5);
-    evalEquals("0xF::INTEGER+1", 16);
-    evalEquals("0b00011::INTEGER+0", 3);
+    evalEquals("0xF::INTEGER+1", 16L);
+    evalEquals("0b00011::INTEGER+0", 3L);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
     evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
@@ -398,8 +398,8 @@ public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void Subtract() throws Exception {
-    evalEquals("10-0.5", 9.5);
-    evalEquals("FIELD_INTEGER-0.5", 39.5);
+    evalEquals("10-0.5", 9.5D);
+    evalEquals("FIELD_INTEGER-0.5", 39.5D);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     
     // TODO: Subtraction of days to DATE or TIMESTAMP
@@ -493,9 +493,9 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("CAST(0 as Boolean)");
 
     // Number to Integer
-    evalEquals("CAST(1.25 as Integer)", 1);
+    evalEquals("CAST(1.25 as Integer)", 1L);
     // Oracle truncate to 1 and Snowflake round it to 2
-    evalEquals("CAST(1.75 as Integer)", 1);
+    evalEquals("CAST(1.75 as Integer)", 1L);
 
     // Boolean to String
     evalEquals("CAST(true as String)", "TRUE");
@@ -535,12 +535,12 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST('  -1e-37  ' as Number)", -1e-37d);
 
     // Number to BigNumber
-    evalEquals("CAST(0 as BigNumber)", 0);
-    evalEquals("CAST(1234.456 as BigNumber)", 1234.456);
+    evalEquals("CAST(0 as BigNumber)", 0L);
+    evalEquals("CAST(1234.456 as BigNumber)", 1234.456D);
 
     // String to BigNumber
-    evalEquals("CAST('0' as BigNumber)", 0);
-    evalEquals("CAST('1' As BigNumber)", 1);
+    evalEquals("CAST('0' as BigNumber)", 0L);
+    evalEquals("CAST('1' As BigNumber)", 1L);
     evalEquals("CAST('-1e-37' as BigNumber)", -1e-37d);
     evalEquals("CAST(' -1e-37 ' as BigNumber)", -1e-37d);
     
@@ -556,7 +556,7 @@ public class OperatorsTest extends ExpressionTest {
     // Binary to Integer
     evalEquals("CAST(0x123 as Integer)", 291L);
 
-    evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124);
+    evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L);
 
     evalEquals("CAST(12345678901234567890123456789012345678 as BigNumber)",
         new BigDecimal("12345678901234567890123456789012345678"));
@@ -630,10 +630,10 @@ public class OperatorsTest extends ExpressionTest {
   
   @Test
   public void Positive() throws Exception {
-    evalEquals("+(40)", 40);
-    evalEquals("+(FIELD_INTEGER)", 40);
-    evalEquals("+40", 40);
-    evalEquals("1+ +2", 3);
+    evalEquals("+(40)", 40L);
+    evalEquals("+(FIELD_INTEGER)", 40L);
+    evalEquals("+40", 40L);
+    evalEquals("1+ +2", 3L);
     evalNull("+null");
     
     writeEquals("+FIELD_INTEGER","FIELD_INTEGER");
@@ -641,20 +641,20 @@ public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void Negative() throws Exception {
-    evalEquals("-(1+2)", -3);
-    evalEquals("-FIELD_INTEGER", -40);
-    evalEquals("-FIELD_INTEGER", -40);
-    evalEquals("+40", 40);
-    evalEquals("1+ -2", -1);
+    evalEquals("-(1+2)", -3L);
+    evalEquals("-FIELD_INTEGER", -40L);
+    evalEquals("-FIELD_INTEGER", -40L);
+    evalEquals("+40", 40L);
+    evalEquals("1+ -2", -1L);
     evalNull("-NULL_INTEGER");
     writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
   }
 
   @Test
   public void Mod() throws Exception {
-    evalEquals("15%4", 3);
-    evalEquals("Mod(15,4)", 3);
-    evalEquals("Mod(15.3,4)", 3.3);
+    evalEquals("15%4", 3L);
+    evalEquals("Mod(15,4)", 3L);
+    evalEquals("Mod(15.3,4)", 3.3D);
     evalEquals("Mod(15.3::BIGNUMBER,4)", 3.3);
     evalNull("Mod(NULL_INTEGER,2)");
     evalNull("Mod(2,NULL_INTEGER)");
@@ -698,8 +698,8 @@ public class OperatorsTest extends ExpressionTest {
   @Test
   public void Div0() throws Exception {
     evalEquals("Div0(10,4)", 2.5D);
-    evalEquals("Div0(FIELD_INTEGER,-10)", -4D);    
-    evalEquals("Div0(FIELD_INTEGER,0)", 0);
+    evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);    
+    evalEquals("Div0(FIELD_INTEGER,0)", 0L);
     evalNull("Div0(NULL_INTEGER,1)");
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
@@ -708,17 +708,17 @@ public class OperatorsTest extends ExpressionTest {
   
   @Test
   public void BitNot() throws Exception {
-    evalEquals("~1", -2);
-    evalEquals("~ 1", -2);
-    evalEquals("~0", -1);
-    evalEquals("~4", -5);
-    evalEquals("~65504", -65505);
+    evalEquals("~1", -2L);
+    evalEquals("~ 1", -2L);
+    evalEquals("~0", -1L);
+    evalEquals("~4", -5L);
+    evalEquals("~65504", -65505L);
     evalNull("~NULL_INTEGER");
     evalFails("~");
     evalFails("~ ");
 
     // Alias
-    evalEquals("BIT_NOT(1)", -2);
+    evalEquals("BIT_NOT(1)", -2L);
     
     writeEquals("~FIELD_INTEGER");
     
@@ -727,9 +727,9 @@ public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void BitAnd() throws Exception {
-    evalEquals("BIT_AND(3,2)", 2);
-    evalEquals("3 & 2", 2);
-    evalEquals("100 & 2", 0);
+    evalEquals("BIT_AND(3,2)", 2L);
+    evalEquals("3 & 2", 2L);
+    evalEquals("100 & 2", 0L);
     evalNull("100 & NULL_INTEGER");
     evalNull("NULL_INTEGER & 100");
     evalFails("100&");
@@ -742,9 +742,9 @@ public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void BitOr() throws Exception {
-    evalEquals("BIT_OR(100,2)", 102);
-    evalEquals("100 | 2", 102);
-    evalEquals("3 | 2", 3);
+    evalEquals("BIT_OR(100,2)", 102L);
+    evalEquals("100 | 2", 102L);
+    evalEquals("3 | 2", 3L);
     evalNull("100 | NULL_INTEGER");
     evalNull("NULL_INTEGER | 100");
     evalFails("3|");
@@ -757,9 +757,9 @@ public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void BitXor() throws Exception {
-    evalEquals("BIT_XOR(2,2)", 0);
-    evalEquals("2 ^ 1", 3);
-    evalEquals("100 ^ 2", 102);
+    evalEquals("BIT_XOR(2,2)", 0L);
+    evalEquals("2 ^ 1", 3L);
+    evalEquals("100 ^ 2", 102L);
     evalNull("100 ^ NULL_INTEGER");
     evalNull("NULL_INTEGER ^ 100");
     evalFails("100^");
