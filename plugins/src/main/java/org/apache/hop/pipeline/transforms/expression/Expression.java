@@ -124,7 +124,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       try {
         IExpression expression = data.expressions[index];
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);        
-        outputRowValues[index] = getValue(expression, valueMeta);
+        outputRowValues[index] = processValue(expression, valueMeta);
       } catch (HopException e) {
         String message =
             BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
@@ -147,7 +147,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     return true;
   }
 
-  public Object getValue(IExpression expression, IValueMeta meta) throws HopException {
+  public Object processValue(IExpression expression, IValueMeta meta) throws HopException {
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
         return null;

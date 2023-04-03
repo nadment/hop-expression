@@ -32,12 +32,12 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
 
     if (switchExpression == null) {
       for (IExpression whenOperand : whenTuple) {
-        if (!whenOperand.getType().isSameFamily(DataTypeFamily.BOOLEAN)) {
+        if (!whenOperand.getType().isSameFamily(DataFamily.BOOLEAN)) {
           return false;
         }
       }
     } else {
-      DataTypeName switchType = switchExpression.getType();
+      DataType switchType = switchExpression.getType();
 
       for (IExpression whenOperand : whenTuple) {
         if (!whenOperand.getType().isSameFamily(switchType)) {
@@ -46,14 +46,19 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
       }
     }
 
-    DataTypeName thenType = thenTuple.get(0).getType();
-    for (IExpression thenOperand : thenTuple) {
-      
+    DataType thenType = DataType.UNKNOWN; // = thenTuple.get(0).getType();
+    for (IExpression thenOperand : thenTuple) {     
       // First non null      
-      if ( thenType.isSameFamily(DataTypeName.UNKNOWN) ) {
+      if ( !thenOperand.isNull() ) {
         thenType = thenOperand.getType();
       }
-      
+    } 
+    
+    if ( thenType.isSameFamily(DataFamily.NONE) ) {
+      thenType = elseExpression.getType();
+    }    
+    
+    for (IExpression thenOperand : thenTuple) {     
       if (!( thenOperand.getType().isSameFamily(thenType) || thenOperand.isNull()) ) {
         return false;
       }

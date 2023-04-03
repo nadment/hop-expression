@@ -25,56 +25,55 @@ public final class ReturnTypes {
     // Utility class
   }
 
-  public static final IReturnTypeInference UNKNOWN =
-      new ExplicitReturnTypeInference(DataTypeName.UNKNOWN);
+  /**
+   * Creates an inference rule which returns a type with no precision or scale,
+   * such as {@code DATE}.
+   */
+  public static ExplicitReturnTypeInference explicit(DataType type) {
+    return  new ExplicitReturnTypeInference(type);
+  }
+  
+  public static final IReturnTypeInference UNKNOWN = explicit(DataType.UNKNOWN);
 
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.
    */
-  public static final IReturnTypeInference BOOLEAN =
-      new ExplicitReturnTypeInference(DataTypeName.BOOLEAN);
+  public static final IReturnTypeInference BOOLEAN = explicit(DataType.BOOLEAN);
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY.
    */
-  public static final IReturnTypeInference BINARY =
-      new ExplicitReturnTypeInference(DataTypeName.BINARY);
+  public static final IReturnTypeInference BINARY = explicit(DataType.BINARY);
 
   /**
    * Type-inference strategy whereby the result type of a call is STRING.
    */
-  public static final IReturnTypeInference STRING =
-      new ExplicitReturnTypeInference(DataTypeName.STRING);
+  public static final IReturnTypeInference STRING = explicit(DataType.STRING);
 
   /**
    * Type-inference strategy whereby the result type of a call is INTEGER.
    */
-  public static final IReturnTypeInference INTEGER =
-      new ExplicitReturnTypeInference(DataTypeName.INTEGER);
+  public static final IReturnTypeInference INTEGER = explicit(DataType.INTEGER);
 
   /**
    * Type-inference strategy whereby the result type of a call is NUMBER.
    */
-  public static final IReturnTypeInference NUMBER =
-      new ExplicitReturnTypeInference(DataTypeName.NUMBER);
+  public static final IReturnTypeInference NUMBER = explicit(DataType.NUMBER);
 
   /**
    * Type-inference strategy whereby the result type of a call is BIGNUMBER.
    */
-  public static final IReturnTypeInference BIGNUMBER =
-      new ExplicitReturnTypeInference(DataTypeName.BIGNUMBER);
+  public static final IReturnTypeInference BIGNUMBER = explicit(DataType.BIGNUMBER);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference DATE =
-      new ExplicitReturnTypeInference(DataTypeName.DATE);
+  public static final IReturnTypeInference DATE = explicit(DataType.DATE);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference JSON =
-      new ExplicitReturnTypeInference(DataTypeName.JSON);
+  public static final IReturnTypeInference JSON = explicit(DataType.JSON);
 
   /**
    * Type-inference strategy whereby the result type of a call is the type of the operand #0.
@@ -105,14 +104,19 @@ public final class ReturnTypes {
    * This rule is used for floor, ceiling.
    */
   public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = (context, call) -> {
-    return DataTypeName.INTEGER; 
+    DataType type = call.getOperand(0).getType();
+    
+    if ( type.getScale()>0) {
+      return new DataType(type.getName(), type.getPrecision(), 0); 
+    }
+    
+    return DataType.INTEGER; 
   };
 
   
   public static final IReturnTypeInference CAST = new CastFunctionReturnTypeInference();
 
-  public static final IReturnTypeInference ANY =
-      new ExplicitReturnTypeInference(DataTypeName.ANY);
+  public static final IReturnTypeInference ANY = new ExplicitReturnTypeInference(new DataType(DataName.ANY, DataType.PRECISION_NOT_SPECIFIED, DataType.SCALE_NOT_SPECIFIED));
   
   public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);

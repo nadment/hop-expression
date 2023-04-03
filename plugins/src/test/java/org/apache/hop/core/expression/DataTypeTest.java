@@ -22,8 +22,9 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataTypeFamily;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataFamily;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -38,85 +39,107 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class DataTypeTest extends ExpressionTest {
 
   @Test
-  public void of() throws Exception {
-    assertEquals(DataTypeName.UNKNOWN, DataTypeName.of("UNKNOWN"));
-    assertEquals(DataTypeName.UNKNOWN, DataTypeName.of(Void.class));
+  public void dataName() throws Exception {
+    assertEquals(DataName.UNKNOWN, DataName.lookup("UNKNOWN"));    
+    assertEquals(DataName.UNKNOWN, DataName.lookup("NOP"));
+    assertEquals(DataName.UNKNOWN, DataName.of(null));
+    assertEquals(DataName.UNKNOWN, DataName.of(new Date()));    
+    assertEquals(DataName.UNKNOWN, DataName.of(Void.class));
+    assertEquals(DataName.UNKNOWN, DataName.of(Float.class));
     
-    assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("BOOLEAN"));    
-    assertEquals(DataTypeName.BOOLEAN, DataTypeName.of("Boolean"));
-    assertEquals(DataTypeName.BOOLEAN, DataTypeName.of(Boolean.class));
+    assertEquals(DataName.BOOLEAN, DataName.lookup("BOOLEAN"));    
+    assertEquals(DataName.BOOLEAN, DataName.lookup("Boolean"));
+    assertEquals(DataName.BOOLEAN, DataName.of(Boolean.class));
+    assertEquals(DataName.BOOLEAN, DataName.of(true));
     
-    assertEquals(DataTypeName.STRING, DataTypeName.of("STRING"));
-    assertEquals(DataTypeName.STRING, DataTypeName.of("String"));
-    assertEquals(DataTypeName.STRING, DataTypeName.of(String.class));
+    assertEquals(DataName.STRING, DataName.lookup("STRING"));
+    assertEquals(DataName.STRING, DataName.lookup("String"));
+    assertEquals(DataName.STRING, DataName.of(String.class));
+    assertEquals(DataName.STRING, DataName.of("test"));
     
-    assertEquals(DataTypeName.DATE, DataTypeName.of("DATE"));
-    assertEquals(DataTypeName.DATE, DataTypeName.of(ZonedDateTime.class));
+    assertEquals(DataName.DATE, DataName.lookup("DATE"));
+    assertEquals(DataName.DATE, DataName.of(ZonedDateTime.class));
+    assertEquals(DataName.DATE, DataName.of(ZonedDateTime.now()));  
     
-    assertEquals(DataTypeName.NUMBER, DataTypeName.of("NUMBER"));
-    assertEquals(DataTypeName.NUMBER, DataTypeName.of(Double.class));
+    assertEquals(DataName.NUMBER, DataName.lookup("NUMBER"));
+    assertEquals(DataName.NUMBER, DataName.of(Double.class));
+    assertEquals(DataName.NUMBER, DataName.of(1D));
     
-    assertEquals(DataTypeName.BIGNUMBER, DataTypeName.of("BIGNUMBER"));
-    assertEquals(DataTypeName.BIGNUMBER, DataTypeName.of(BigDecimal.class));
+    assertEquals(DataName.BIGNUMBER, DataName.lookup("BIGNUMBER"));
+    assertEquals(DataName.BIGNUMBER, DataName.of(BigDecimal.class));
+    assertEquals(DataName.BIGNUMBER, DataName.of(BigDecimal.ONE));
     
-    assertEquals(DataTypeName.BINARY, DataTypeName.of("BINARY"));
-    assertEquals(DataTypeName.BINARY, DataTypeName.of(byte[].class));
+    assertEquals(DataName.BINARY, DataName.lookup("BINARY"));
+    assertEquals(DataName.BINARY, DataName.of(byte[].class));
+    assertEquals(DataName.BINARY, DataName.of(new byte[] {0x78}));
     
-    assertEquals(DataTypeName.JSON, DataTypeName.of("Json"));
-    assertEquals(DataTypeName.JSON, DataTypeName.of(JsonNode.class));
+    assertEquals(DataName.JSON, DataName.lookup("Json"));
+    assertEquals(DataName.JSON, DataName.of(JsonNode.class));
+    assertEquals(DataName.JSON, DataName.of(Converter.parseJson("{\"name\":\"Smith\"}")));
     
-    assertEquals(DataTypeName.INTEGER, DataTypeName.of("INTEGER"));
-    assertEquals(DataTypeName.INTEGER, DataTypeName.of(Long.class));
+    assertEquals(DataName.INTEGER, DataName.lookup("INTEGER"));
+    assertEquals(DataName.INTEGER, DataName.of(Long.class));
+    assertEquals(DataName.INTEGER, DataName.of(1L));
     
-    assertNull(DataTypeName.of((String) null));
-    assertNull(DataTypeName.of("NOP"));
-    assertNull(DataTypeName.of(Float.class));
-    assertNull(DataTypeName.of(Date.class));
+    assertEquals(DataName.TIMEUNIT, DataName.lookup("TIMEUNIT"));
+    assertEquals(DataName.TIMEUNIT, DataName.of(TimeUnit.class));
+    assertEquals(DataName.TIMEUNIT, DataName.of(TimeUnit.CENTURY));
   }
 
   @Test
-  public void from() throws Exception {
-    assertEquals("UNKNOWN", DataTypeName.toString(null));
-    assertEquals("UNKNOWN", DataTypeName.toString(new Date()));    
-    assertEquals("BOOLEAN", DataTypeName.toString(true));
-    assertEquals("STRING", DataTypeName.toString("test"));
-    assertEquals("INTEGER", DataTypeName.toString(1L));
-    assertEquals("NUMBER", DataTypeName.toString(1D));
-    assertEquals("BIGNUMBER", DataTypeName.toString(BigDecimal.ONE));
-    assertEquals("BINARY", DataTypeName.toString(new byte[] {0x78}));
-    assertEquals("DATE", DataTypeName.toString(ZonedDateTime.now()));    
-    assertEquals("JSON", DataTypeName.toString(Converter.parseJson("{\"name\":\"Smith\"}")));
-    assertEquals("TIMEUNIT", DataTypeName.toString(TimeUnit.CENTURY));
+  public void dataTypeOf() throws Exception {
+    assertEquals(DataType.UNKNOWN, DataType.of(null));
+    assertEquals(DataType.UNKNOWN, DataType.of(DataFamily.BOOLEAN));
+    assertEquals(DataType.BOOLEAN, DataType.of(true));
+    assertEquals(DataType.STRING, DataType.of("test"));
+    assertEquals(DataType.NUMBER, DataType.of(123.456D));
+    assertEquals(DataType.NUMBER(38,0), DataType.of(123.456D));
+    assertEquals(DataType.BIGNUMBER(9,3), DataType.of(BigDecimal.valueOf(123456123,3)));
+    assertEquals(DataType.DATE, DataType.of(ZonedDateTime.now()));
+    assertEquals(DataType.TIMEUNIT, DataType.of(TimeUnit.CENTURY));
   }
+
 
   @Test
   public void family() throws Exception {
-    assertTrue(DataTypeFamily.ANY.isSameFamily(DataTypeFamily.BINARY));
-    assertTrue(DataTypeFamily.BINARY.isSameFamily(DataTypeFamily.ANY));
+    assertTrue(DataFamily.ANY.isSameFamily(DataFamily.BINARY));
+    assertTrue(DataType.BINARY.isSameFamily(DataFamily.ANY));
     
-    assertTrue(DataTypeFamily.BINARY.isSameFamily(DataTypeFamily.BINARY));
-    assertFalse(DataTypeFamily.BINARY.isSameFamily(DataTypeFamily.NUMERIC));
-    assertEquals(DataTypeFamily.BINARY, DataTypeName.BINARY.getFamily());
-    assertEquals(DataTypeFamily.BOOLEAN, DataTypeName.BOOLEAN.getFamily());
-    assertEquals(DataTypeFamily.TEMPORAL, DataTypeName.DATE.getFamily());
-    assertEquals(DataTypeFamily.JSON, DataTypeName.JSON.getFamily());
-    assertEquals(DataTypeFamily.NUMERIC, DataTypeName.INTEGER.getFamily());
-    assertEquals(DataTypeFamily.NUMERIC, DataTypeName.NUMBER.getFamily());
-    assertEquals(DataTypeFamily.NUMERIC, DataTypeName.BIGNUMBER.getFamily());
-    assertEquals(DataTypeFamily.STRING, DataTypeName.STRING.getFamily());
+    assertTrue(DataType.BINARY.isSameFamily(DataFamily.BINARY));
+    assertFalse(DataType.BINARY.isSameFamily(DataFamily.NUMERIC));
+    
+    assertTrue(DataType.BINARY.isSameFamily(DataFamily.ANY));
+    assertFalse(DataType.BINARY.isSameFamily(DataFamily.NONE));
+    
+    assertTrue(DataType.BINARY.isSameFamily(DataFamily.BINARY));
+    assertTrue(DataType.BOOLEAN.isSameFamily(DataFamily.BOOLEAN));
+    assertTrue(DataType.DATE.isSameFamily(DataFamily.TEMPORAL));
+    assertTrue(DataType.INTEGER.isSameFamily(DataFamily.NUMERIC));
+    assertTrue(DataType.NUMBER.isSameFamily(DataFamily.NUMERIC));
+    assertTrue(DataType.BIGNUMBER.isSameFamily(DataFamily.NUMERIC));
+    assertTrue(DataType.STRING.isSameFamily(DataFamily.STRING));
+    
+    assertEquals(DataFamily.BINARY, DataType.BINARY.getFamily());
+    assertEquals(DataFamily.BOOLEAN, DataType.BOOLEAN.getFamily());
+    assertEquals(DataFamily.TEMPORAL, DataType.DATE.getFamily());
+    assertEquals(DataFamily.JSON, DataType.JSON.getFamily());
+    assertEquals(DataFamily.NUMERIC, DataType.INTEGER.getFamily());
+    assertEquals(DataFamily.NUMERIC, DataType.NUMBER.getFamily());
+    assertEquals(DataFamily.NUMERIC, DataType.BIGNUMBER.getFamily());
+    assertEquals(DataFamily.STRING, DataType.STRING.getFamily());
   }
 
   @Test
   public void javaClass() throws Exception {
-    assertEquals(byte[].class, DataTypeName.BINARY.getJavaClass());
-    assertEquals(Boolean.class, DataTypeName.BOOLEAN.getJavaClass());
-    assertEquals(Long.class, DataTypeName.INTEGER.getJavaClass());
-    assertEquals(Double.class, DataTypeName.NUMBER.getJavaClass());
-    assertEquals(BigDecimal.class, DataTypeName.BIGNUMBER.getJavaClass());
-    assertEquals(String.class, DataTypeName.STRING.getJavaClass());
-    assertEquals(ZonedDateTime.class, DataTypeName.DATE.getJavaClass());
-    assertEquals(JsonNode.class, DataTypeName.JSON.getJavaClass());
-    assertEquals(Void.class, DataTypeName.UNKNOWN.getJavaClass());
+    assertEquals(byte[].class, DataName.BINARY.getJavaClass());
+    assertEquals(Boolean.class, DataName.BOOLEAN.getJavaClass());
+    assertEquals(Long.class, DataName.INTEGER.getJavaClass());
+    assertEquals(Double.class, DataName.NUMBER.getJavaClass());
+    assertEquals(BigDecimal.class, DataName.BIGNUMBER.getJavaClass());
+    assertEquals(String.class, DataName.STRING.getJavaClass());
+    assertEquals(ZonedDateTime.class, DataName.DATE.getJavaClass());
+    assertEquals(JsonNode.class, DataName.JSON.getJavaClass());
+    assertEquals(Void.class, DataName.UNKNOWN.getJavaClass());
   }
 
   @Test
@@ -133,33 +156,33 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToBoolean() throws Exception {
-    assertNull(Converter.cast(null, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast(3L, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast(1L, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast(1D, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast(true, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast(BigDecimal.ONE, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast("1", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast("T", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast("True", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast("Y", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast("Yes", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.TRUE, Converter.cast("ON", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast(0L, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast(0D, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast(false, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast(BigDecimal.ZERO, DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast("0", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast("F", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast("False", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast("N", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast("No", DataTypeName.BOOLEAN));
-    assertEquals(Boolean.FALSE, Converter.cast("Off", DataTypeName.BOOLEAN));
-    assertThrows(IllegalArgumentException.class, () -> Converter.cast("3", DataTypeName.BOOLEAN));
-    assertThrows(IllegalArgumentException.class, () -> Converter.cast("MO", DataTypeName.BOOLEAN));
-    assertThrows(IllegalArgumentException.class, () -> Converter.cast("BAD", DataTypeName.BOOLEAN));
-    assertThrows(IllegalArgumentException.class, () -> Converter.cast("TRUL", DataTypeName.BOOLEAN));
-    assertThrows(IllegalArgumentException.class, () -> Converter.cast("FILSE", DataTypeName.BOOLEAN));
+    assertNull(Converter.cast(null, DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast(3L, DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast(1L, DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast(1D, DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast(true, DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast(BigDecimal.ONE, DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast("1", DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast("T", DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast("True", DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast("Y", DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast("Yes", DataType.BOOLEAN));
+    assertEquals(Boolean.TRUE, Converter.cast("ON", DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast(0L, DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast(0D, DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast(false, DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast(BigDecimal.ZERO, DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast("0", DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast("F", DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast("False", DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast("N", DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast("No", DataType.BOOLEAN));
+    assertEquals(Boolean.FALSE, Converter.cast("Off", DataType.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("3", DataType.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("MO", DataType.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("BAD", DataType.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("TRUL", DataType.BOOLEAN));
+    assertThrows(IllegalArgumentException.class, () -> Converter.cast("FILSE", DataType.BOOLEAN));
   }
 
   @Test
@@ -172,14 +195,14 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToBinary() throws Exception {
-    assertNull(Converter.cast(null, DataTypeName.BINARY));
-    //assertEquals(new byte[] {0xF, 0xC}, Converter.cast(new byte[] {0xF, 0xC}, DataTypeName.BINARY));
+    assertNull(Converter.cast(null, DataType.BINARY));
+    //assertEquals(new byte[] {0xF, 0xC}, Converter.cast(new byte[] {0xF, 0xC}, DataType.BINARY));
 
-    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(true, DataTypeName.BINARY));
-    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(1L, DataTypeName.BINARY));
-    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(1D, DataTypeName.BINARY));
-    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(BigDecimal.ONE, DataTypeName.BINARY));
-    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(ZonedDateTime.now(), DataTypeName.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(true, DataType.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(1L, DataType.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(1D, DataType.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(BigDecimal.ONE, DataType.BINARY));
+    assertThrows(IllegalArgumentException.class, () ->  Converter.cast(ZonedDateTime.now(), DataType.BINARY));
   }
 
   @Test
@@ -197,9 +220,9 @@ public class DataTypeTest extends ExpressionTest {
   public void castToDate() throws Exception {
     ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
     
-    assertNull(Converter.cast(null, DataTypeName.DATE));
-    assertEquals(date, Converter.cast("2022-12-28", DataTypeName.DATE));
-    assertEquals(date, Converter.cast("2022-12-28", DataTypeName.DATE, "YYYY-MM-DD"));
+    assertNull(Converter.cast(null, DataType.DATE));
+    assertEquals(date, Converter.cast("2022-12-28", DataType.DATE));
+    assertEquals(date, Converter.cast("2022-12-28", DataType.DATE, "YYYY-MM-DD"));
   }
   
   @Test
@@ -216,16 +239,16 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToString() throws Exception {
-    assertNull(Converter.cast(null, DataTypeName.STRING));
-    assertEquals("TRUE", Converter.cast(true, DataTypeName.STRING));
-    assertEquals("FALSE", Converter.cast(false, DataTypeName.STRING));
-    assertEquals("0", Converter.cast(0L, DataTypeName.STRING));
-    assertEquals("1", Converter.cast(1L, DataTypeName.STRING));
-    assertEquals("0", Converter.cast(0D, DataTypeName.STRING));
-    assertEquals("1.2", Converter.cast(1.2D, DataTypeName.STRING));
-    assertEquals("0", Converter.cast(BigDecimal.ZERO, DataTypeName.STRING));
-    assertEquals("1", Converter.cast(BigDecimal.ONE, DataTypeName.STRING));
-    assertEquals("ABCD��", Converter.cast("ABCD��".getBytes(StandardCharsets.UTF_8), DataTypeName.STRING));
+    assertNull(Converter.cast(null, DataType.STRING));
+    assertEquals("TRUE", Converter.cast(true, DataType.STRING));
+    assertEquals("FALSE", Converter.cast(false, DataType.STRING));
+    assertEquals("0", Converter.cast(0L, DataType.STRING));
+    assertEquals("1", Converter.cast(1L, DataType.STRING));
+    assertEquals("0", Converter.cast(0D, DataType.STRING));
+    assertEquals("1.2", Converter.cast(1.2D, DataType.STRING));
+    assertEquals("0", Converter.cast(BigDecimal.ZERO, DataType.STRING));
+    assertEquals("1", Converter.cast(BigDecimal.ONE, DataType.STRING));
+    assertEquals("ABCD��", Converter.cast("ABCD��".getBytes(StandardCharsets.UTF_8), DataType.STRING));
   }
 
   @Test
@@ -247,19 +270,19 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToInteger() throws Exception {
-    assertNull(Converter.cast(null, DataTypeName.INTEGER));
-    assertEquals(1L, Converter.cast(true, DataTypeName.INTEGER));
-    assertEquals(0L, Converter.cast(false, DataTypeName.INTEGER));
-    assertEquals(0L, Converter.cast(0L, DataTypeName.INTEGER));
-    assertEquals(3L, Converter.cast(3L, DataTypeName.INTEGER));
-    assertEquals(0L, Converter.cast(0.0D, DataTypeName.INTEGER));
-    assertEquals(3L, Converter.cast(3.3D, DataTypeName.INTEGER));
-    assertEquals(0L, Converter.cast(BigDecimal.ZERO, DataTypeName.INTEGER));
-    assertEquals(1L, Converter.cast(BigDecimal.ONE, DataTypeName.INTEGER));
-    assertEquals(3L, Converter.cast(BigDecimal.valueOf(3.125), DataTypeName.INTEGER));
-    assertEquals(5L, Converter.cast("5.9", DataTypeName.INTEGER));
-    assertEquals(-5L, Converter.cast("-5.2", DataTypeName.INTEGER));
-    assertEquals(15L, Converter.cast(new byte[] {0xF}, DataTypeName.INTEGER));
+    assertNull(Converter.cast(null, DataType.INTEGER));
+    assertEquals(1L, Converter.cast(true, DataType.INTEGER));
+    assertEquals(0L, Converter.cast(false, DataType.INTEGER));
+    assertEquals(0L, Converter.cast(0L, DataType.INTEGER));
+    assertEquals(3L, Converter.cast(3L, DataType.INTEGER));
+    assertEquals(0L, Converter.cast(0.0D, DataType.INTEGER));
+    assertEquals(3L, Converter.cast(3.3D, DataType.INTEGER));
+    assertEquals(0L, Converter.cast(BigDecimal.ZERO, DataType.INTEGER));
+    assertEquals(1L, Converter.cast(BigDecimal.ONE, DataType.INTEGER));
+    assertEquals(3L, Converter.cast(BigDecimal.valueOf(3.125), DataType.INTEGER));
+    assertEquals(5L, Converter.cast("5.9", DataType.INTEGER));
+    assertEquals(-5L, Converter.cast("-5.2", DataType.INTEGER));
+    assertEquals(15L, Converter.cast(new byte[] {0xF}, DataType.INTEGER));
   }
 
   @Test
@@ -282,20 +305,20 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToNumber() throws Exception {
-    assertNull(Converter.cast(null, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(1D), Converter.cast(true, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(0D), Converter.cast(false, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(0D), Converter.cast(0L, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(3D), Converter.cast(3L, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(1D), Converter.cast(BigDecimal.ONE, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(0D), Converter.cast(BigDecimal.ZERO, DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(0.5D), Converter.cast("0.5", DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(0.5D), Converter.cast(".5", DataTypeName.NUMBER));
-    assertEquals(Double.valueOf(-2.3E+2D), Converter.cast(-2.3E+2D, DataTypeName.NUMBER));
-    assertEquals(15D, Converter.cast(new byte[] {0xF}, DataTypeName.NUMBER));
+    assertNull(Converter.cast(null, DataType.NUMBER));
+    assertEquals(Double.valueOf(1D), Converter.cast(true, DataType.NUMBER));
+    assertEquals(Double.valueOf(0D), Converter.cast(false, DataType.NUMBER));
+    assertEquals(Double.valueOf(0D), Converter.cast(0L, DataType.NUMBER));
+    assertEquals(Double.valueOf(3D), Converter.cast(3L, DataType.NUMBER));
+    assertEquals(Double.valueOf(1D), Converter.cast(BigDecimal.ONE, DataType.NUMBER));
+    assertEquals(Double.valueOf(0D), Converter.cast(BigDecimal.ZERO, DataType.NUMBER));
+    assertEquals(Double.valueOf(0.5D), Converter.cast("0.5", DataType.NUMBER));
+    assertEquals(Double.valueOf(0.5D), Converter.cast(".5", DataType.NUMBER));
+    assertEquals(Double.valueOf(-2.3E+2D), Converter.cast(-2.3E+2D, DataType.NUMBER));
+    assertEquals(15D, Converter.cast(new byte[] {0xF}, DataType.NUMBER));
 
     assertThrows(IllegalArgumentException.class,
-        () -> Converter.cast(ZonedDateTime.now(), DataTypeName.NUMBER));
+        () -> Converter.cast(ZonedDateTime.now(), DataType.NUMBER));
   }
 
   @Test
@@ -320,32 +343,32 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToBigNumber() throws Exception {
-    assertNull(Converter.cast(null, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, Converter.cast(false, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, Converter.cast(0L, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, Converter.cast(0D, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, Converter.cast("0", DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ZERO, Converter.cast(new byte[] {0x00}, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, Converter.cast(true, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, Converter.cast(1L, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, Converter.cast(1D, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, Converter.cast("1", DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.ONE, Converter.cast(new byte[] {0x01}, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.valueOf(-356L), Converter.cast(-356L, DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.valueOf(-3.56E2D), Converter.cast(-3.56E+2D, DataTypeName.BIGNUMBER));
-    assertEquals(new BigDecimal("0.000"), Converter.cast("0.000", DataTypeName.BIGNUMBER));
-    assertEquals(new BigDecimal("-3.56E2"), Converter.cast("-3.56E+2", DataTypeName.BIGNUMBER));
-    assertEquals(BigDecimal.valueOf(15), Converter.cast(new byte[] {0xF}, DataTypeName.BIGNUMBER));
+    assertNull(Converter.cast(null, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ZERO, Converter.cast(false, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ZERO, Converter.cast(0L, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ZERO, Converter.cast(0D, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ZERO, Converter.cast("0", DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ZERO, Converter.cast(new byte[] {0x00}, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ONE, Converter.cast(true, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ONE, Converter.cast(1L, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ONE, Converter.cast(1D, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ONE, Converter.cast("1", DataType.BIGNUMBER));
+    assertEquals(BigDecimal.ONE, Converter.cast(new byte[] {0x01}, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.valueOf(-356L), Converter.cast(-356L, DataType.BIGNUMBER));
+    assertEquals(BigDecimal.valueOf(-3.56E2D), Converter.cast(-3.56E+2D, DataType.BIGNUMBER));
+    assertEquals(new BigDecimal("0.000"), Converter.cast("0.000", DataType.BIGNUMBER));
+    assertEquals(new BigDecimal("-3.56E2"), Converter.cast("-3.56E+2", DataType.BIGNUMBER));
+    assertEquals(BigDecimal.valueOf(15), Converter.cast(new byte[] {0xF}, DataType.BIGNUMBER));
 
     assertThrows(IllegalArgumentException.class,
-        () -> Converter.cast(ZonedDateTime.now(), DataTypeName.BIGNUMBER));
+        () -> Converter.cast(ZonedDateTime.now(), DataType.BIGNUMBER));
   }
 
   @Test
   public void castToUnknown() throws Exception {
-    // assertThrows(IllegalArgumentException.class, () -> Converter.cast(null, DataTypeName.UNKNOWN));
-    // assertThrows(IllegalArgumentException.class, () -> Converter.to(true, DataTypeName.UNKNOWN));
-    // assertThrows(IllegalArgumentException.class, () -> Converter.to("Test", DataTypeName.UNKNOWN));
+    // assertThrows(IllegalArgumentException.class, () -> Converter.cast(null, DataType.UNKNOWN));
+    // assertThrows(IllegalArgumentException.class, () -> Converter.to(true, DataType.UNKNOWN));
+    // assertThrows(IllegalArgumentException.class, () -> Converter.to("Test", DataType.UNKNOWN));
     // assertThrows(IllegalArgumentException.class, () -> Converter.to(BigDecimal.ZERO,
     // DataTypeName.UNKNOWN));
   }
@@ -356,14 +379,13 @@ public class DataTypeTest extends ExpressionTest {
     evalTrue("1::BIGNUMBER = 1::INTEGER");    
     evalTrue("0::BIGNUMBER = 0::NUMBER");
     evalTrue("1::NUMBER = 1::INTEGER");
-    
-        
+            
     // String to Number
     evalTrue("'1.25' = 1.25::NUMBER");
     evalEquals("2.0*'1.23'", 2.46D);
     evalEquals("2+'2'", 4L);
     evalEquals("'2'+2", 4L);
-    evalEquals("2 + 2 || 2", 42L);
+    evalEquals("2 + 2 || 2", "42");
     evalEquals(" 4 + 4 || '2' ", "82");    
     evalEquals(" '8' || 1 + 1", 82L);
     

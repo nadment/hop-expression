@@ -37,6 +37,6 @@ public class TypeOfFunction extends Function {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    return operands[0].getType().name();
+    return operands[0].getType().getName().name();
   }
 }

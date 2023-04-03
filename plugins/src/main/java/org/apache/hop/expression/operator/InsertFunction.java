@@ -24,7 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataTypeFamily;
+import org.apache.hop.expression.type.DataFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -39,10 +39,10 @@ import java.io.IOException;
 public class InsertFunction extends Function {
 
   public static final IOperandTypeChecker OTC = OperandTypes.or(
-      OperandTypes.family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC,
-          DataTypeFamily.STRING),
-      OperandTypes.family(DataTypeFamily.BINARY, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC,
-          DataTypeFamily.BINARY));
+      OperandTypes.family(DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC,
+          DataFamily.STRING),
+      OperandTypes.family(DataFamily.BINARY, DataFamily.NUMERIC, DataFamily.NUMERIC,
+          DataFamily.BINARY));
 
   public InsertFunction() {
     super("INSERT", true, ReturnTypes.ARG0, OTC, OperatorCategory.STRING, "/docs/insert.html");

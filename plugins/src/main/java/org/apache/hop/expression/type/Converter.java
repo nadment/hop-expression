@@ -27,7 +27,6 @@ import java.text.ParseException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.Objects;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,12 +41,12 @@ public class Converter {
    */
   private Converter() {}
 
-  public static Object cast(Object value, final DataTypeName type) {
+  public static Object cast(Object value, final DataType type) {
     return cast(value, type, null);
   }
 
   /**
-   * Convert a value to the specified type {@link DataTypeName} with a pattern.
+   * Convert a value to the specified type {@link DataType} with a pattern.
    *
    * @param value the value to convert
    * @param type the data type of the returned value
@@ -55,19 +54,19 @@ public class Converter {
    *        numeric, or null if none
    * @return the converted value
    */
-  public static final Object cast(final Object value, final DataTypeName type, String pattern) {
+  public static final Object cast(final Object value, final DataType type, String pattern) {
 
-    Objects.requireNonNull(type);
+    //Objects.requireNonNull(type);
 
     if (value == null) {
       return null;
     }
 
-    if (type.getJavaClass().isInstance(value)) {
+    if (type.getName().getJavaClass().isInstance(value)) {
       return value;
     }
 
-    switch (type) {
+    switch (type.getName()) {
       case BOOLEAN:
         if (value instanceof Number) {
           Number number = (Number) value;
@@ -176,7 +175,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataTypeName.toString(value), type));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.of(value), type));
   }
 
   public static final BigDecimal parseBigNumber(final String str) {
@@ -216,7 +215,7 @@ public class Converter {
   public static Long toInteger(final byte[] bytes) {
     if (bytes.length > 8)
       throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(DataTypeName.BINARY, bytes, DataTypeName.INTEGER));
+          .message(DataName.BINARY, bytes, DataName.INTEGER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -228,7 +227,7 @@ public class Converter {
   public static Double toNumber(final byte[] bytes) {
     if (bytes.length > 8)
       throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(DataTypeName.BINARY, bytes, DataTypeName.NUMBER));
+          .message(DataName.BINARY, bytes, DataName.NUMBER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -240,7 +239,7 @@ public class Converter {
   public static BigDecimal toBigNumber(final byte[] bytes) {
     if (bytes.length > 8)
       throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(DataTypeName.BINARY, bytes, DataTypeName.BIGNUMBER));
+          .message(DataName.BINARY, bytes, DataName.BIGNUMBER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
@@ -290,7 +289,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(str, DataTypeName.STRING, DataTypeName.BOOLEAN));
+        ExpressionError.UNSUPPORTED_COERCION.message(str, DataName.STRING, DataName.BOOLEAN));
   }
 
   /**
@@ -439,7 +438,7 @@ public class Converter {
       return parseNumber((String) value);
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.NUMBER));
+        DataName.of(value), DataName.NUMBER));
   }
 
   /**
@@ -478,7 +477,7 @@ public class Converter {
       return parseBigNumber((String) value);
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.BIGNUMBER));
+        DataName.of(value), DataName.BIGNUMBER));
   }
 
   /**
@@ -508,7 +507,7 @@ public class Converter {
     // }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.INTEGER));
+        DataName.of(value), DataName.INTEGER));
   }
 
   /**
@@ -553,7 +552,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.DATE));
+        DataName.of(value), DataName.DATE));
   }
   
   
@@ -565,7 +564,7 @@ public class Converter {
       return Date.from(((ZonedDateTime) value).toInstant());
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.DATE));
+        DataName.of(value), DataName.DATE));
   }
 
   /**
@@ -585,7 +584,7 @@ public class Converter {
       return ((Number) value).intValue() != 0;
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.BOOLEAN));
+        DataName.of(value), DataName.BOOLEAN));
   }
 
   /**
@@ -606,7 +605,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.BINARY));
+        DataName.of(value), DataName.BINARY));
   }
 
   /**
@@ -627,7 +626,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataTypeName.toString(value), DataTypeName.JSON));
+        DataName.of(value), DataName.JSON));
   }
 
 }

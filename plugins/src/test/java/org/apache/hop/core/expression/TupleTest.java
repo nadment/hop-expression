@@ -23,7 +23,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 
 public class TupleTest extends ExpressionTest {
@@ -38,10 +38,10 @@ public class TupleTest extends ExpressionTest {
     Tuple tuple5 = new Tuple(Literal.TRUE, Literal.FALSE);
     
     assertEquals(Kind.TUPLE, tuple1.getKind());
-    assertEquals(DataTypeName.INTEGER, tuple1.getType());
-    assertEquals(DataTypeName.INTEGER, tuple4.getType());
-    assertEquals(DataTypeName.UNKNOWN, tuple3.getType());
-    assertEquals(DataTypeName.BOOLEAN, tuple5.getType());
+    assertEquals(DataType.INTEGER, tuple1.getType());
+    assertEquals(DataType.INTEGER, tuple4.getType());
+    assertEquals(DataType.UNKNOWN, tuple3.getType());
+    assertEquals(DataType.BOOLEAN, tuple5.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
     assertEquals(tuple1, tuple2);

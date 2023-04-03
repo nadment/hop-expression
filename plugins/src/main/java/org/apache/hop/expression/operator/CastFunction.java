@@ -23,27 +23,21 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 
 /**
- * Converts a value of one data type into another data type <code>::</code> or <code>
- * CAST(value AS type [FORMAT format])</code>.
+ * Converts a value of one data type into another data type <code>CAST(value AS type [FORMAT format])</code>.
+ * 
+ * @see CastOperator
  */
 @FunctionPlugin
 public class CastFunction extends Function {
 
-  // Function
   public CastFunction() {
-    super("CAST", true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT,
-        OperatorCategory.CONVERSION, "/docs/cast.html");
-  }
-
-  // Operator
-  public CastFunction(String name) {
-    super("CAST", name, 40, true, true, ReturnTypes.CAST, OperandTypes.ANY_DATATYPE_OPTIONAL_TEXT,
+    super("CAST", true, ReturnTypes.CAST, OperandTypes.CAST_FUNCTION,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
@@ -53,7 +47,7 @@ public class CastFunction extends Function {
     if (value == null)
       return null;
 
-    DataTypeName type = operands[1].getValue(context, DataTypeName.class);
+    DataType type = operands[1].getValue(context, DataType.class);
 
     String format = null;
     if (operands.length == 3) {

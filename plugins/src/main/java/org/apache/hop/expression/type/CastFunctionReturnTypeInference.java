@@ -26,11 +26,11 @@ public class CastFunctionReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataTypeName getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(IExpressionContext context, Call call) {
     try {
-      return (DataTypeName) call.getOperand(1).getValue(context);
+      return call.getOperand(1).getValue(context, DataType.class);
     } catch (Exception e) {
-      return DataTypeName.UNKNOWN;
+      return DataType.UNKNOWN;
     }
   }
 }

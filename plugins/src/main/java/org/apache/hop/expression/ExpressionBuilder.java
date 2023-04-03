@@ -16,8 +16,9 @@ package org.apache.hop.expression;
 
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.type.DataTypeFamily;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataFamily;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.util.Characters;
@@ -514,13 +515,13 @@ public class ExpressionBuilder {
       if (isThenNext(Id.PLUS)) {
         // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
         // - } <integer>
-        if (expression.getType().isSameFamily(DataTypeFamily.TEMPORAL)) {
+        if (expression.getType().getName().isSameFamily(DataFamily.TEMPORAL)) {
          expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
         } else {
           expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
         }
       } else if (isThenNext(Id.MINUS)) {
-        if (expression.getType().isSameFamily(DataTypeFamily.TEMPORAL)) {
+        if (expression.getType().getName().isSameFamily(DataFamily.TEMPORAL)) {
           expression = new Call(Operators.ADD_DAYS, expression,
               new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
         } else {
@@ -1055,8 +1056,28 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
     try {
-      DataTypeName datatype = DataTypeName.of(token.text());
-      return Literal.of(datatype);
+      DataName name = DataName.valueOf(token.text().toUpperCase());
+      int precision = name.getMaxPrecision();
+      int scale = 0;
+      
+      if (isThenNext(Id.LPARENTHESIS)) {
+        
+        // Precision
+        token = this.next();
+        precision = Integer.parseInt(token.text());
+        
+        // Scale
+        if (isThenNext(Id.COMMA)) {
+          token = this.next();
+          scale = Integer.parseInt(token.text());          
+        }
+        
+        if (isNotThenNext(Id.RPARENTHESIS)) {
+          throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+        }
+      }
+      
+      return Literal.of(new DataType(name, precision, scale));
     } catch (RuntimeException e) {
       throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()),
           token.start());
@@ -1377,7 +1398,7 @@ public class ExpressionBuilder {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (DataTypeName.exist(name)) {
+          if (DataName.exist(name)) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 
@@ -1395,7 +1416,7 @@ public class ExpressionBuilder {
    * Validate and optimize the expression.
    *
    * @param context the context
-   * @param expression the expression to compile
+   * @param expression the expression to validate
    * @return the optimized expression
    */
   protected IExpression validate(final IExpressionContext context, IExpression expression)
@@ -1448,7 +1469,7 @@ public class ExpressionBuilder {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, identifier);
     }
 
-    DataTypeName type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
+    DataType type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
 
     return new Identifier(identifier.getName(), type, indexOfValue);
   }

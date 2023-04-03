@@ -24,24 +24,24 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
   @Override
   public boolean checkOperandTypes(Call call) {
-    DataTypeName search = call.getOperand(0).getType();
-    DataTypeName result = firstNonNull(call.getOperands()).getType();
+    DataType search = call.getOperand(0).getType();
+    DataType result = firstNonNull(call.getOperands()).getType();
 
     int count = ((call.getOperandCount() - 1) / 2) * 2;
     for (int i = 1; i < count; i += 2) {
-      if (!search.isSameFamily(call.getOperand(i).getType())) {
+      if (!search.isSameFamily(call.getOperand(i).getType().getFamily())) {
         return false;
       }
 
       IExpression operandResult = call.getOperand(i + 1);
-      if (!(result.isSameFamily(operandResult.getType()) || operandResult.isNull())) {
+      if (!(result.isSameFamily(operandResult.getType().getFamily()) || operandResult.isNull())) {
         return false;
       }
     }
 
     // Check type if function has a default value
     if ((call.getOperandCount() - 1) > count
-        && !result.isSameFamily(call.getOperand(count + 1).getType())) {
+        && !result.isSameFamily(call.getOperand(count + 1).getType().getFamily())) {
       return false;
     }
 

@@ -14,7 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -80,7 +80,7 @@ public class OperatorsTest extends ExpressionTest {
 
     writeEquals("FIELD_INTEGER=40");
     
-    returnType("FIELD_INTEGER=40", DataTypeName.BOOLEAN);
+    returnType("FIELD_INTEGER=40", DataType.BOOLEAN);
   }
 
   @Test
@@ -119,7 +119,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("10!=FIELD_INTEGER");
     
-    returnType("FIELD_INTEGER<>40", DataTypeName.BOOLEAN);  
+    returnType("FIELD_INTEGER<>40", DataType.BOOLEAN);  
   }
 
   @Test
@@ -153,7 +153,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("10>FIELD_INTEGER");
     
-    returnType("'bar' > 'foo'", DataTypeName.BOOLEAN);
+    returnType("'bar' > 'foo'", DataType.BOOLEAN);
   }
 
   @Test
@@ -186,7 +186,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_INTEGER>=80");
     
-    returnType("'bar' >= 'foo'", DataTypeName.BOOLEAN);
+    returnType("'bar' >= 'foo'", DataType.BOOLEAN);
   }
 
   @Test
@@ -219,7 +219,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_INTEGER<80");
     
-    returnType("'bar' < 'foo'", DataTypeName.BOOLEAN);
+    returnType("'bar' < 'foo'", DataType.BOOLEAN);
   }
 
   @Test
@@ -252,7 +252,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_INTEGER<=5");
     
-    returnType("'bar' <= 'foo'", DataTypeName.BOOLEAN);
+    returnType("'bar' <= 'foo'", DataType.BOOLEAN);
   }
 
   @Test
@@ -280,7 +280,7 @@ public class OperatorsTest extends ExpressionTest {
    
     writeEquals("FIELD_INTEGER IN (10,20,30,40)");
     
-    returnType("FIELD_INTEGER IN (10,20,30,40)", DataTypeName.BOOLEAN);
+    returnType("FIELD_INTEGER IN (10,20,30,40)", DataType.BOOLEAN);
   }
 
   @Test
@@ -299,8 +299,8 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("FIELD_BOOLEAN IS TRUE");
     writeEquals("FIELD_BOOLEAN IS NOT TRUE","FIELD_BOOLEAN IS FALSE");
     
-    returnType("FIELD_BOOLEAN IS TRUE", DataTypeName.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT TRUE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS TRUE", DataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT TRUE", DataType.BOOLEAN);
   }
 
   @Test
@@ -319,8 +319,8 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("FIELD_BOOLEAN IS FALSE");
     writeEquals("FIELD_BOOLEAN IS NOT FALSE","FIELD_BOOLEAN IS TRUE");
     
-    returnType("FIELD_BOOLEAN IS FALSE", DataTypeName.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT FALSE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS FALSE", DataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT FALSE", DataType.BOOLEAN);
   }
 
   @Test
@@ -338,8 +338,8 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("FIELD_BOOLEAN IS NULL");
     writeEquals("FIELD_BOOLEAN IS NOT NULL");
     
-    returnType("FIELD_BOOLEAN IS NULL", DataTypeName.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT NULL", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NULL", DataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT NULL", DataType.BOOLEAN);
   }
   
   @Test
@@ -366,8 +366,8 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("FIELD_BOOLEAN IS DISTINCT FROM TRUE");
     writeEquals("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE");
     
-    returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", DataTypeName.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", DataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", DataType.BOOLEAN);
   }
   
   @Test
@@ -455,7 +455,7 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND 20");
     writeEquals("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
     
-    returnType("5 between 3 and 5", DataTypeName.BOOLEAN);
+    returnType("5 between 3 and 5", DataType.BOOLEAN);
   }
 
   @Test
@@ -601,9 +601,10 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("CAST(FIELD_BINARY AS BINARY)", "CAST(FIELD_BINARY AS BINARY)");
     writeEquals("FIELD_INTEGER::NUMBER", "FIELD_INTEGER::NUMBER");
     
-    returnType("CAST(3 as BOOLEAN)", DataTypeName.BOOLEAN);
-    returnType("CAST('3' as INTEGER)", DataTypeName.INTEGER);  
-    returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataTypeName.DATE);
+    returnType("CAST(3 as BOOLEAN)", DataType.BOOLEAN);
+    returnType("CAST('3' as INTEGER)", DataType.INTEGER);
+    returnType("CAST('3' as NUMBER(5,0))", DataType.NUMBER(5, 0));
+    returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataType.DATE);
   }
 
   @Test
@@ -722,7 +723,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("~FIELD_INTEGER");
     
-    returnType("~FIELD_INTEGER", DataTypeName.INTEGER);
+    returnType("~FIELD_INTEGER", DataType.INTEGER);
   }
 
   @Test
@@ -737,7 +738,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_INTEGER&4");
     
-    returnType("FIELD_INTEGER&4", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER&4", DataType.INTEGER);
   }
 
   @Test
@@ -752,7 +753,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_INTEGER|4");
     
-    returnType("FIELD_INTEGER|4", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER|4", DataType.INTEGER);
   }
 
   @Test
@@ -767,7 +768,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_INTEGER^4");
     
-    returnType("FIELD_INTEGER^4", DataTypeName.INTEGER);
+    returnType("FIELD_INTEGER^4", DataType.INTEGER);
   }
 
   @Test
@@ -784,7 +785,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("NOT FIELD_BOOLEAN");
     
-    returnType("NOT FIELD_BOOLEAN", DataTypeName.BOOLEAN);
+    returnType("NOT FIELD_BOOLEAN", DataType.BOOLEAN);
   }
 
   @Test
@@ -808,7 +809,7 @@ public class OperatorsTest extends ExpressionTest {
     
     writeEquals("FIELD_BOOLEAN OR NULL_BOOLEAN");
     
-    returnType("false OR FIELD_BOOLEAN", DataTypeName.BOOLEAN);
+    returnType("false OR FIELD_BOOLEAN", DataType.BOOLEAN);
   }
 
   @Test
@@ -833,7 +834,7 @@ public class OperatorsTest extends ExpressionTest {
 
     writeEquals("FIELD_BOOLEAN AND NULL_BOOLEAN");
     
-    returnType("false AND FIELD_BOOLEAN", DataTypeName.BOOLEAN);
+    returnType("false AND FIELD_BOOLEAN", DataType.BOOLEAN);
   }
 
   @Test
@@ -848,7 +849,7 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("'test' ILIKE 'TEST' escape NULL_STRING");
     evalNull("NULL_STRING ILIKE '%T%'");
     
-    returnType("'amigo' ILIKE 'a%o' ESCAPE '@'", DataTypeName.BOOLEAN);
+    returnType("'amigo' ILIKE 'a%o' ESCAPE '@'", DataType.BOOLEAN);
   }
 
   @Test
@@ -914,7 +915,7 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("FIELD_STRING LIKE 'ADD%'","STARTSWITH(FIELD_STRING,'ADD')");
     writeEquals("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
     
-    returnType("'amigo' like 'a%o'", DataTypeName.BOOLEAN);
+    returnType("'amigo' like 'a%o'", DataType.BOOLEAN);
   }
 
   @Test
@@ -959,6 +960,8 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("case FIELD_INTEGER when 10 then 10 when 20 then 20 else -1 end", -1L);
     evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end");
 
+    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end");
+        
     // Missing 'END'
     evalFails("case when FIELD_INTEGER=40 then 10 else 50");
 

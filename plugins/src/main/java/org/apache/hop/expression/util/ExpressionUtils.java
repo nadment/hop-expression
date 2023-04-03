@@ -30,8 +30,8 @@ import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.DataTypeName;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
@@ -74,31 +74,31 @@ public class ExpressionUtils {
     return "";
   }
 
-  public static DataTypeName createDataType(IValueMeta valueMeta) {
+  public static DataType createDataType(IValueMeta valueMeta) {
     switch (valueMeta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
-        return DataTypeName.BOOLEAN;
+        return DataType.BOOLEAN;
       case IValueMeta.TYPE_DATE:
       case IValueMeta.TYPE_TIMESTAMP:
-        return DataTypeName.DATE;
+        return DataType.DATE;
       case IValueMeta.TYPE_STRING:
-        return DataTypeName.STRING;
+        return new DataType(DataName.STRING, valueMeta.getLength());
       case IValueMeta.TYPE_INTEGER:
-        return DataTypeName.INTEGER;
+        return DataType.INTEGER;
       case IValueMeta.TYPE_NUMBER:
-        return DataTypeName.NUMBER;
-      case IValueMeta.TYPE_BIGNUMBER:
-        return DataTypeName.BIGNUMBER;
+        return new DataType(DataName.NUMBER, valueMeta.getLength(), valueMeta.getPrecision());
+      case IValueMeta.TYPE_BIGNUMBER:        
+        return new DataType(DataName.BIGNUMBER, valueMeta.getLength(), valueMeta.getPrecision());     
       case ValueMetaJson.TYPE_JSON:
-        return DataTypeName.JSON;
+        return DataType.JSON;
       case IValueMeta.TYPE_BINARY:
-        return DataTypeName.BINARY;
+        return DataType.BINARY;
       default:
-        return DataTypeName.UNKNOWN;
+        return DataType.UNKNOWN;
     }
   }
 
-  public static IValueMeta createValueMeta(final String name, final DataTypeName type) {
+  public static IValueMeta createValueMeta(final String name, final DataName type) {
 
     if (name == null) {
       throw new IllegalArgumentException("Name must not be null");

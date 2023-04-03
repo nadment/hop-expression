@@ -37,7 +37,9 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -173,7 +175,7 @@ public class ExpressionTest {
     return context;
   }
   
-  protected void returnType(String source, DataTypeName expected) throws Exception {
+  protected void returnType(String source, DataType expected) throws Exception {
     ExpressionContext context = createExpressionContext(false);
     IExpression expression = ExpressionBuilder.build(context, source);
     assertEquals(expected, expression.getType());
@@ -322,7 +324,7 @@ public class ExpressionTest {
     IExpression expression = ExpressionBuilder.build(context, e);
 
     String color = ANSI_YELLOW;
-    if ( expression.getType()==DataTypeName.UNKNOWN) {
+    if ( expression.getType()==DataType.UNKNOWN) {
       color = ANSI_RED;
     }
 
@@ -354,18 +356,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','HEX'),'HEX')", "Apache Hop");
-    //evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
-    // evalEquals("TO_CHAR(TO_BINARY('Apache Hop','BASE64'),'BASE64')", "Apache Hop");    
-    //evalFails("Week(NULL_BOOLEAN)");
-    //writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
-    //returnType("FIELD_STRING||'t'", DataTypeName.STRING);
-   // evalEquals("Extract(HOUR from '2020-05-25 23:48:59')", 23);
-    //evalEquals("Extract(MILLENNIUM from Timestamp '2020-05-25 23:48:59')", 3);
-    //evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
-    //evalEquals("0xF::INTEGER+1", 16);    
-    //optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
-    returnType("Greatest(FIELD_NUMBER,456,789)", DataTypeName.NUMBER);
+    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end");
   }
 }
 

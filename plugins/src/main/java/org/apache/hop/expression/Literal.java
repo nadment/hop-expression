@@ -15,7 +15,8 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
@@ -36,13 +37,13 @@ public final class Literal implements IExpression {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  public static final Literal NULL = new Literal(null, DataTypeName.UNKNOWN);
-  public static final Literal TRUE = new Literal(Boolean.TRUE, DataTypeName.BOOLEAN);
-  public static final Literal FALSE = new Literal(Boolean.FALSE, DataTypeName.BOOLEAN);
-  public static final Literal ZERO = new Literal(0L, DataTypeName.INTEGER);
-  public static final Literal ONE = new Literal(1L, DataTypeName.INTEGER);
-
-  public static Literal of(Object value) {
+  public static final Literal NULL = new Literal(null, DataType.UNKNOWN);
+  public static final Literal TRUE = new Literal(Boolean.TRUE, DataType.BOOLEAN);
+  public static final Literal FALSE = new Literal(Boolean.FALSE, DataType.BOOLEAN);
+  public static final Literal ZERO = new Literal(0L, DataType.INTEGER);
+  public static final Literal ONE = new Literal(1L, DataType.INTEGER);
+  
+  public static Literal of(final Object value) {
     if (value == null)
       return NULL;
 
@@ -56,7 +57,7 @@ public final class Literal implements IExpression {
         return ZERO;
       if (BigDecimal.ONE.compareTo(number) == 0)
         return ONE;
-      return new Literal(number, DataTypeName.BIGNUMBER);
+      return new Literal(number, DataType.BIGNUMBER);
     }
 
     if (value instanceof Double) {
@@ -65,7 +66,7 @@ public final class Literal implements IExpression {
         return ZERO;
       if (number == 1D)
         return ONE;
-      return new Literal(number, DataTypeName.NUMBER);
+      return new Literal(number, DataType.NUMBER);
     }
 
     if (value instanceof Long) {
@@ -74,7 +75,7 @@ public final class Literal implements IExpression {
         return ZERO;
       if (number == 1L)
         return ONE;
-      return new Literal(number, DataTypeName.INTEGER);
+      return new Literal(number, DataType.INTEGER);
     }
 
     if (value instanceof Integer) {
@@ -83,42 +84,47 @@ public final class Literal implements IExpression {
         return ZERO;
       if (number == 1)
         return ONE;
-      return new Literal(number.longValue(), DataTypeName.INTEGER);
+      return new Literal(number.longValue(), DataType.INTEGER);
     }
 
     if (value instanceof String) {
-      return new Literal(value, DataTypeName.STRING);
+      return new Literal(value, DataType.STRING);
     }
 
     if (value instanceof byte[]) {
-      return new Literal(value, DataTypeName.BINARY);
+      return new Literal(value, DataType.BINARY);
     }
 
     if (value instanceof ZonedDateTime) {
-      return new Literal(value, DataTypeName.DATE);
+      return new Literal(value, DataType.DATE);
     }
 
     if (value instanceof JsonNode) {
-      return new Literal(value, DataTypeName.JSON);
+      return new Literal(value, DataType.JSON);
     }
 
+    if (value instanceof TimeUnit) {
+      return new Literal(value, DataType.TIMEUNIT);
+    }
+    
     // Special case for optimization
-    return new Literal(value, DataTypeName.UNKNOWN);
+    return new Literal(value, DataType.UNKNOWN);
   }
 
   /**
-   * The data type of this literal, as reported by {@link #getType}.
+   * The data type of this literal.
    */
-  private final DataTypeName type;
+  private final DataType type;
 
-  private Object value;
-
-  private Literal(final DataTypeName type) {
-    this.value = null;
-    this.type = type;
-  }
+  /**
+   * The value of this literal.
+   */
+  private final Object value;
   
-  private Literal(final Object value, final DataTypeName type) {
+  /**
+   * For internal use only
+   */
+  public Literal(final Object value, final DataType type) {
     this.value = value;
     this.type = type;
   }
@@ -139,7 +145,7 @@ public final class Literal implements IExpression {
     if (value == null)
       return null;
 
-    switch (type) {
+    switch (type.getName()) {
 
       case BOOLEAN:
         if (clazz == String.class) {
@@ -235,13 +241,14 @@ public final class Literal implements IExpression {
         break;
 
       case DATE:
+      case TIMEUNIT:
       case ANY:
       case UNKNOWN:
         break;
     }
 
     throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-        DataTypeName.toString(value), DataTypeName.of(clazz));
+        DataName.of(value), DataName.of(clazz));
   }
 
   @Override
@@ -255,7 +262,7 @@ public final class Literal implements IExpression {
   }
 
   @Override
-  public DataTypeName getType() {
+  public DataType getType() {
     return type;
   }
 
@@ -299,7 +306,7 @@ public final class Literal implements IExpression {
 
   @Override
   public void unparse(StringWriter writer) {
-    switch (type) {
+    switch (type.getName()) {
       case STRING:
         writer.append('\'');
         String str = (String) value;

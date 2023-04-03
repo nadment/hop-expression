@@ -19,7 +19,6 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.TimeUnit;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -33,60 +32,65 @@ import com.fasterxml.jackson.databind.JsonNode;
  * If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
-public enum DataTypeName {
-
-  ANY(DataTypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class),
+public enum DataName {
+  
+  ANY(DataFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 0, Object.class),
   
   /** Unlimited length text */
-  STRING(DataTypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, String.class),
-
+  STRING(DataFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, String.class),
+  
   /** Boolean (true or false) */
-  BOOLEAN(DataTypeFamily.BOOLEAN, PrecScale.NO_NO, Boolean.class),
+  BOOLEAN(DataFamily.BOOLEAN, PrecScale.NO_NO, 1, Boolean.class),
 
   /** Signed long (64-bit) integer */
-  INTEGER(DataTypeFamily.NUMERIC, PrecScale.NO_NO, Long.class),
+  INTEGER(DataFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
 
   /** Double precision floating point number */
-  NUMBER(DataTypeFamily.NUMERIC, PrecScale.NO_NO, Double.class),
+  NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO, 38, Double.class),
 
   /** Unlimited precision number */
-  BIGNUMBER(DataTypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
-      BigDecimal.class),
+  BIGNUMBER(DataFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
 
   /** Date-time value with nanosecond precision and time zone */
-  DATE(DataTypeFamily.TEMPORAL, PrecScale.NO_NO, ZonedDateTime.class),
+  DATE(DataFamily.TEMPORAL, PrecScale.NO_NO, 0, ZonedDateTime.class),
   
-  JSON(DataTypeFamily.JSON, PrecScale.NO_NO, JsonNode.class),
+  JSON(DataFamily.JSON, PrecScale.NO_NO, 0, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(DataTypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
+  BINARY(DataFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class),
 
+  /** A time unit type */
+  TIMEUNIT(DataFamily.NONE, PrecScale.NO_NO, 0, TimeUnit.class),
+  
   /** A unknown type */
-  UNKNOWN(DataTypeFamily.NONE, PrecScale.NO_NO, Void.class);
+  UNKNOWN(DataFamily.NONE, PrecScale.NO_NO, 0, Void.class);
 
-  public static final List<DataTypeName> STRING_TYPES = List.of(STRING);
-  public static final List<DataTypeName> BINARY_TYPES = List.of(BINARY);
-  public static final List<DataTypeName> BOOLEAN_TYPES = List.of(BOOLEAN);
-  public static final List<DataTypeName> NUMERIC_TYPES = List.of(INTEGER, NUMBER, BIGNUMBER);
-  public static final List<DataTypeName> TEMPORAL_TYPES = List.of(DATE);
-  public static final List<DataTypeName> JSON_TYPES = List.of(JSON);
-  public static final List<DataTypeName> ALL_TYPES = List.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
+  protected static final Set<DataName> STRING_TYPES = Set.of(STRING);
+  protected static final Set<DataName> BINARY_TYPES = Set.of(BINARY);
+  protected static final Set<DataName> BOOLEAN_TYPES = Set.of(BOOLEAN);
+  protected static final Set<DataName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER, BIGNUMBER);
+  protected static final Set<DataName> TEMPORAL_TYPES = Set.of(DATE);
+  protected static final Set<DataName> JSON_TYPES = Set.of(JSON);
+  protected static final Set<DataName> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
 
   /**
    * Indicating allowable precision/scale combinations.
    */
   private final int signature;
 
-  private final DataTypeFamily family;
+  private final DataFamily family;
 
   private final Class<?> javaClass;
+  
+  private final int precisionMax;
 
   public static final Set<String> ALL_NAMES =
       Set.of("BigNumber", "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
-  private DataTypeName(DataTypeFamily family, int signature, Class<?> javaClass) {
+  private DataName(DataFamily family, int signature, int precisionMax,Class<?> javaClass) {
     this.family = family;
     this.signature = signature;
+    this.precisionMax = precisionMax;
     this.javaClass = javaClass;
   }
 
@@ -95,30 +99,30 @@ public enum DataTypeName {
   }
 
   /**
-   * Gets the {@link DataTypeFamily} containing this DataTypeName.
+   * Gets the {@link DataFamily} containing this DataTypeName.
    */
-  public DataTypeFamily getFamily() {
+  public DataFamily getFamily() {
     return family;
   }
 
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(DataTypeName type) {
+  public boolean isSameFamily(DataName type) {
     return this.family.isSameFamily(type.getFamily());
   }
 
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(DataTypeFamily family) {
+  public boolean isSameFamily(DataFamily family) {
     return this.family.isSameFamily(family);
   }
 
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isCompatibleWithCoercion(DataTypeFamily family) {
+  public boolean isCompatibleWithCoercion(DataFamily family) {
     return this.family.isCompatibleWithCoercion(family);
   }
 
@@ -145,61 +149,44 @@ public enum DataTypeName {
   }
 
   /**
-   * Looks up a type name from its name.
+   * Looks up a data name from its name.
    *
-   * @return Type name, or null if not found
+   * @return Type name, or 'UNKNOWN' if not found
    */
-  public static DataTypeName of(final String name) {
-    for (DataTypeName type : DataTypeName.values()) {
+  public static DataName lookup(final String name) {
+    for (DataName type : DataName.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
     }
-    return null;
+    return UNKNOWN;
   }
 
   /**
-   * Search a type name for a java class.
+   * Search a data name for a value or a java class.
    *
-   * @return Type name, or null if not found
+   * @return The {@link DataName}, 'UNKNOWN' if not found
    */
-  public static DataTypeName of(final Class<?> clazz) {
-    for (DataTypeName type : DataTypeName.values()) {
-      if (type.javaClass.equals(clazz)) {
-        return type;
+  public static DataName of(final Object value) {
+    if (value == null)
+      return UNKNOWN;
+    
+    Class<?> clazz = value.getClass();
+    
+    if ( value instanceof Class) {
+      clazz = (Class<?>) value;
+    }
+    
+    for (DataName name : DataName.values()) {
+      
+      // Ignore ANY
+      if ( name.equals(ANY) ) continue;
+      
+      if (name.javaClass.isAssignableFrom(clazz)) {
+        return name;
       }
     }
-    return null;
-  }
-  
-  /**
-   * Search a type name for a value.
-   *
-   * @return The name of data type or 'UNKNOWN' if not found
-   */
-  public static String toString(final Object value) {
-    if (value == null)
-      return UNKNOWN.name();
-    if (value instanceof Boolean)
-      return BOOLEAN.name();
-    if (value instanceof String)
-      return STRING.name();
-    if (value instanceof BigDecimal)
-      return BIGNUMBER.name();
-    if (value instanceof Double)
-      return NUMBER.name();
-    if (value instanceof Long)
-      return INTEGER.name();
-    if (value instanceof ZonedDateTime)
-      return DATE.name();
-    if (value instanceof JsonNode)
-      return JSON.name();
-    if (value instanceof byte[])
-      return BINARY.name();
-    if (value instanceof TimeUnit)
-      return "TIMEUNIT";
-    
-    return UNKNOWN.name();
+    return UNKNOWN;
   }
 
   /**
@@ -209,11 +196,15 @@ public enum DataTypeName {
    * @return
    */
   public static boolean exist(final String name) {
-    for (DataTypeName type : DataTypeName.values()) {
-      if (type.name().equalsIgnoreCase(name)) {
+    for (DataName value : DataName.values()) {
+      if (value.name().equalsIgnoreCase(name)) {
         return true;
       }
     }
     return false;
+  }
+
+  public int getMaxPrecision() {
+    return precisionMax;
   }
 }

@@ -33,7 +33,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -153,8 +153,7 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
           throw new ExpressionException("Not an aggregation expression");
         }
 
-        DataTypeName type = expression.getType();
-
+        DataType type = expression.getType();
         IValueMeta valueMeta = ExpressionUtils.createValueMeta(field.getName(), type);
         valueMeta.setOrigin(transformName);
         valueMeta.setStorageType(IValueMeta.STORAGE_TYPE_NORMAL);

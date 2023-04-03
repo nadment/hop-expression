@@ -17,7 +17,8 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -33,25 +34,25 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public final class Call implements IExpression {
 
-  protected final DataTypeName type;
+  protected final DataType type;
   protected final Operator operator;
   protected final IExpression[] operands;
 
   public Call(Operator operator, IExpression... operands) {
-    this(DataTypeName.UNKNOWN, operator, operands);
+    this(DataType.UNKNOWN, operator, operands);
   }
 
   public Call(Operator operator, Collection<IExpression> operands) {
-    this(DataTypeName.UNKNOWN, operator, operands);
+    this(DataType.UNKNOWN, operator, operands);
   }
 
-  public Call(DataTypeName type, Operator operator, IExpression... operands) {
+  public Call(DataType type, Operator operator, IExpression... operands) {
     this.type = Objects.requireNonNull(type, "data type is null");
     this.operator = Objects.requireNonNull(operator, "operator is null");
     this.operands = Objects.requireNonNull(operands);
   }
 
-  public Call(DataTypeName type, Operator operator, Collection<IExpression> operands) {
+  public Call(DataType type, Operator operator, Collection<IExpression> operands) {
     this.type = Objects.requireNonNull(type, "data type is null");
     this.operator = Objects.requireNonNull(operator, "operator is null");
     this.operands = Objects.requireNonNull(operands).toArray(new IExpression[0]);
@@ -75,7 +76,7 @@ public final class Call implements IExpression {
    * Data type is unknown before optimization.
    */
   @Override
-  public DataTypeName getType() {
+  public DataType getType() {
     return type;
   }
 
@@ -131,7 +132,7 @@ public final class Call implements IExpression {
       if (value == null)
         return null;
 
-      switch (type) {
+      switch (type.getName()) {
 
         case BOOLEAN:
           if (clazz == String.class) {
@@ -228,12 +229,13 @@ public final class Call implements IExpression {
 
         case DATE:
         case ANY:
+        case TIMEUNIT:
         case UNKNOWN:
           break;
       }
       
       throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-          DataTypeName.toString(value), DataTypeName.of(clazz));
+          DataName.of(value), DataName.of(clazz));
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());

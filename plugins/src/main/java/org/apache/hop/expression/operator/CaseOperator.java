@@ -31,7 +31,7 @@ import java.io.StringWriter;
 public class CaseOperator extends Operator {
 
   public CaseOperator() {
-    super("CASE", 120, true, true, ReturnTypes.UNKNOWN, OperandTypes.CASE,
+    super("CASE", 120, true, true, ReturnTypes.UNKNOWN, OperandTypes.CASE_OPERATOR,
         OperatorCategory.CONDITIONAL, "/docs/case.html");
   }
 
@@ -46,7 +46,7 @@ public class CaseOperator extends Operator {
     if (switchExpression == null) {
       for (IExpression whenOperand : whenTuple) {
         Boolean predicat = whenOperand.getValue(context, Boolean.class);
-        if (predicat) {
+        if (predicat!=null && predicat) {
           return thenTuple.get(index).getValue(context);
         }
         index++;

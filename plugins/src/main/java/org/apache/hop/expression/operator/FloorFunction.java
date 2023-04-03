@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,20 +34,16 @@ import java.math.RoundingMode;
 public class FloorFunction extends Function {
 
   public FloorFunction() {
-    super("FLOOR", true, ReturnTypes.ARG0_OR_EXACT_NO_SCALE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("FLOOR", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/floor.html");
   }
 
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
-    if (value instanceof Long)
-      return value;
-    if (value instanceof BigDecimal) {
-      return Converter.coerceToBigNumber(value).setScale(0, RoundingMode.FLOOR);
-    }
-    return FastMath.floor(Converter.coerceToNumber(value));
+    
+    return Converter.coerceToBigNumber(value).setScale(0, RoundingMode.FLOOR);
   }
 }

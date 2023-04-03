@@ -28,7 +28,7 @@ public class OrdinalReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataTypeName getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(IExpressionContext context, Call call) {
     return call.getOperand(ordinal).getType();
   }
 }

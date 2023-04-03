@@ -27,17 +27,17 @@ import java.util.function.Predicate;
 public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
 
   private final IOperandCountRange range;
-  private final List<DataTypeFamily> families;
+  private final List<DataFamily> families;
   private final Predicate<Integer> optional;
 
-  FamilyOperandTypeChecker(DataTypeFamily family, IOperandCountRange range) {
+  FamilyOperandTypeChecker(DataFamily family, IOperandCountRange range) {
     super();
     this.families = List.of(family);
     this.optional = i -> false;
     this.range = range;
   }
 
-  FamilyOperandTypeChecker(List<DataTypeFamily> families, Predicate<Integer> optional) {
+  FamilyOperandTypeChecker(List<DataFamily> families, Predicate<Integer> optional) {
     this.families = families;
     this.optional = optional;
 
@@ -61,7 +61,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     // Variadic
     if (families.size() != range.getMax()) {
       for (IExpression operand : call.getOperands()) {
-        if (!operand.getType().isCompatibleWithCoercion(families.get(0))) {
+        if (!operand.getType().getName().isCompatibleWithCoercion(families.get(0))) {
           return false;
         }
       }
@@ -72,7 +72,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     else {
       for (int i = 0; i < call.getOperandCount(); i++) {
         if (i == families.size()
-            || !call.getOperand(i).getType().isCompatibleWithCoercion(families.get(i))) {
+            || !call.getOperand(i).getType().getName().isCompatibleWithCoercion(families.get(i))) {
           return false;
         }
       }
@@ -93,6 +93,6 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
 
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
-    return operand.getType().isCompatibleWithCoercion(families.get(0));
+    return operand.getType().getName().isCompatibleWithCoercion(families.get(0));
   }
 }

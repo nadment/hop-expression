@@ -17,7 +17,8 @@
 package org.apache.hop.expression;
 
 
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.util.NumberFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,7 +39,7 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression apply(IExpressionContext context, Call call) {
+  public IExpression apply(final IExpressionContext context, Call call) {
     try {
       Operator operator = call.getOperator();
 
@@ -48,7 +49,7 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
         operands.add(expression.accept(context, this));
       }
       call = new Call(operator, operands);
-
+      
       // If operator is deterministic try to evaluate the call
       if (operator.isDeterministic()) {
         try {
@@ -70,7 +71,13 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
           }
           if (literal) {
             Object value = call.getValue(context);
-            return Literal.of(value);
+            DataType type = operator.getReturnTypeInference().getReturnType(context, call);
+            
+            // Some operator don't known return type like JSON_VALUE.
+            if ( DataName.ANY.equals(type.getName()) ) {
+              type = DataType.of(value);
+            }
+            return new Literal(value, type);
           }
         } catch (Exception e) {
           // Ignore and continue
@@ -96,7 +103,7 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
   }
 
   // Operator optimization
-  protected IExpression simplify(IExpressionContext context, Call call) throws ExpressionException {
+  protected IExpression simplify(final IExpressionContext context, final Call call) throws ExpressionException {
 
     if (call.is(Operators.BOOLNOT)) {
       return this.simplifyBoolNot(context, call);
@@ -587,7 +594,7 @@ public class Optimizer implements IExpressionVisitor<IExpression> {
 
   protected Call inferenceReturnType(IExpressionContext context, Call call) {
     Operator operator = call.getOperator();
-    DataTypeName type = operator.getReturnTypeInference().getReturnType(context, call);
+    DataType type = operator.getReturnTypeInference().getReturnType(context, call);
     return new Call(type, operator, call.getOperands());
   }
 

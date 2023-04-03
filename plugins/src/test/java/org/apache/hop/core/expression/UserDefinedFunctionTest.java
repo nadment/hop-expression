@@ -19,24 +19,20 @@ import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataName;
 import org.junit.Test;
+import java.time.LocalDate;
 
 public class UserDefinedFunctionTest extends ExpressionTest {
  
   @Test
-  public void test() throws Exception {
+  public void testString() throws Exception {
       UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
       meta.setName("UCASE");
       meta.setDescription("UDF test");
       meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
-      meta.getArguments().add(new FunctionArgument("v0", DataTypeName.STRING));
-      meta.getArguments().add(new FunctionArgument("v1", DataTypeName.INTEGER));
-      
-      //meta.getArguments().add(new Argument("v2", DataTypeName.DATE));
-      //meta.getArguments().add(new Argument("v3", DataTypeName.BOOLEAN));
-      //meta.getArguments().add(new Argument("v4", DataTypeName.NUMBER));
-      //meta.getArguments().add(new Argument("v5", DataTypeName.BIGNUMBER));
+      meta.getArguments().add(new FunctionArgument("v0", DataName.STRING));
+      meta.getArguments().add(new FunctionArgument("v1", DataName.INTEGER));
     
       assertEquals("UCASE", meta.getName());
       assertEquals("UDF test", meta.getDescription());
@@ -51,4 +47,24 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       evalFails("UCASE(1,2,3)");
       // TODO: check DataType
   }
+
+  @Test
+  public void testDate() throws Exception {
+      UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+      meta.setName("DATE_FROM_ID");
+      meta.setSource("case when v0 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");
+      meta.getArguments().add(new FunctionArgument("v0", DataName.DATE));
+      
+      UserDefinedFunction udf = new UserDefinedFunction(meta);      
+      FunctionRegistry.register(udf.getName(), udf);
+      
+      evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5));
+      evalNull("DATE_FROM_ID(null)");
+      evalFails("DATE_FROM_ID()");
+      evalFails("DATE_FROM_ID(1,2,3)");
+      // TODO: check DataType
+  }
+
+  
+  //
 }

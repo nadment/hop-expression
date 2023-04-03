@@ -16,9 +16,9 @@
  */
 package org.apache.hop.expression.type;
 
-import java.util.List;
+import java.util.Set;
 
-public enum DataTypeFamily {
+public enum DataFamily {
   // Primary
   BINARY, NUMERIC, TEMPORAL, BOOLEAN, STRING, JSON,
   // Secondary
@@ -44,35 +44,35 @@ public enum DataTypeFamily {
     }
   }
 
-  /** Returns the collection of {@link DataTypeName}s included in this family. */
-  public List<DataTypeName> getDataTypeNames() {
+  /** Returns the collection of {@link DataName}s included in this family. */
+  public Set<DataName> getDataTypeNames() {
     switch (this) {
       case BOOLEAN:
-        return DataTypeName.BOOLEAN_TYPES;
+        return DataName.BOOLEAN_TYPES;
       case BINARY:
-        return DataTypeName.BINARY_TYPES;
+        return DataName.BINARY_TYPES;
       case NUMERIC:
-        return DataTypeName.NUMERIC_TYPES;
+        return DataName.NUMERIC_TYPES;
       case STRING:
-        return DataTypeName.STRING_TYPES;
+        return DataName.STRING_TYPES;
       case TEMPORAL:
-        return DataTypeName.TEMPORAL_TYPES;
+        return DataName.TEMPORAL_TYPES;
       case JSON:
-        return DataTypeName.JSON_TYPES;
+        return DataName.JSON_TYPES;
       case ANY:
-        return DataTypeName.ALL_TYPES;
+        return DataName.ALL_TYPES;
       default:
-        return List.of();
+        return Set.of();
     }
   }
 
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(final DataTypeFamily... families) {
+  public boolean isSameFamily(final DataFamily... families) {
     if (families == null)
       return false;
-    for (DataTypeFamily family : families) {
+    for (DataFamily family : families) {
       if (ANY == this || family == ANY || this == family)
         return true;
     }
@@ -82,7 +82,7 @@ public enum DataTypeFamily {
   /**
    * Returns whether type are in same type family with implicit coercion.
    */
-  public boolean isCompatibleWithCoercion(final DataTypeFamily family) {
+  public boolean isCompatibleWithCoercion(final DataFamily family) {
     if (family == null)
       return false;
 

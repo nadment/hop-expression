@@ -17,7 +17,7 @@
 package org.apache.hop.expression;
 
 
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataType;
 import java.io.StringWriter;
 
 /**
@@ -41,9 +41,9 @@ public interface IExpression {
   /**
    * Returns the data type of expression.
    *
-   * @return a {@link DataTypeName} value
+   * @return a {@link DataType} value
    */
-  public DataTypeName getType();
+  public DataType getType();
 
   /**
    * Check if the expression is a call to this operator or an alias of this operator.

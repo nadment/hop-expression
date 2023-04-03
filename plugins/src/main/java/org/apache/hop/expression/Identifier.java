@@ -18,7 +18,8 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataTypeName;
+import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -37,17 +38,17 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public final class Identifier implements IExpression {
   private final String name;
-  private final DataTypeName type;
+  private final DataType type;
   private final int ordinal;
 
-  public Identifier(final String name, final DataTypeName type, int ordinal) {
+  public Identifier(final String name, final DataType type, int ordinal) {
     this.name = Objects.requireNonNull(name, "name is null");
     this.type = Objects.requireNonNull(type, "data type is null");
     this.ordinal = ordinal;
   }
 
   public Identifier(final String name) {
-    this(name, DataTypeName.UNKNOWN, -1);
+    this(name, DataType.UNKNOWN, -1);
   }
 
   @Override
@@ -65,7 +66,7 @@ public final class Identifier implements IExpression {
   }
 
   @Override
-  public DataTypeName getType() {
+  public DataType getType() {
     return type;
   }
 
@@ -108,7 +109,7 @@ public final class Identifier implements IExpression {
           Date date = rowMeta.getDate(row, ordinal);
           if (date == null)
             return null;
-          return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+          return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         case IValueMeta.TYPE_STRING:
           return rowMeta.getString(row, ordinal);
         case IValueMeta.TYPE_INTEGER:
@@ -336,7 +337,7 @@ public final class Identifier implements IExpression {
   public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionBuilder.isReservedWord(name)
-        || FunctionRegistry.isFunction(name) || DataTypeName.exist(name) || TimeUnit.exist(name)) {
+        || FunctionRegistry.isFunction(name) || DataName.exist(name) || TimeUnit.exist(name)) {
       writer.append('\"');
       writer.append(name);
       writer.append('\"');

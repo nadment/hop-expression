@@ -24,14 +24,14 @@ import org.apache.hop.expression.IExpressionContext;
  */
 public class ExplicitReturnTypeInference implements IReturnTypeInference {
 
-  private final DataTypeName type;
+  private final DataType type;
 
-  public ExplicitReturnTypeInference(DataTypeName type) {
+  public ExplicitReturnTypeInference(DataType type) {
     this.type = type;
   }
 
   @Override
-  public DataTypeName getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(IExpressionContext context, Call call) {
     return type;
   }
 }

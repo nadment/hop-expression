@@ -42,6 +42,6 @@ public class BitCountFunction extends Function {
     if (value == null)
       return null;
 
-    return Long.bitCount(value);
+    return Long.valueOf(Long.bitCount(value));
   }
 }

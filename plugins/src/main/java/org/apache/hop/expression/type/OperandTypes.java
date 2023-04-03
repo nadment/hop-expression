@@ -33,7 +33,7 @@ public final class OperandTypes {
    * Creates a checker that passes if each operand is a member of a
    * corresponding family.
    */
-  public static FamilyOperandTypeChecker family(DataTypeFamily... families) {
+  public static FamilyOperandTypeChecker family(DataFamily... families) {
     return new FamilyOperandTypeChecker(List.of(families), i -> false);
   }
 
@@ -41,7 +41,7 @@ public final class OperandTypes {
    * Creates a checker that passes if all operand is a member of a
    * corresponding family.
    */
-  public static FamilyOperandTypeChecker family(DataTypeFamily family, IOperandCountRange range) {
+  public static FamilyOperandTypeChecker family(DataFamily family, IOperandCountRange range) {
     return new FamilyOperandTypeChecker(family, range);
   }
 
@@ -78,7 +78,7 @@ public final class OperandTypes {
   /**
    * Operand type-checking strategy type must be a data type.
    */
-  public static final IOperandTypeChecker DATATYPE = literal(DataTypeName.class);
+  public static final IOperandTypeChecker DATATYPE = literal(DataType.class);
 
   /**
    * Operand type-checking strategy type must be a time unit.
@@ -95,18 +95,15 @@ public final class OperandTypes {
    */
   public static final IOperandTypeChecker NILADIC = family();
 
-  public static final IOperandTypeChecker ANY = family(DataTypeFamily.ANY);
+  public static final IOperandTypeChecker ANY = family(DataFamily.ANY);
   public static final IOperandTypeChecker ANY_OPTIONAL_BOOLEAN =
-      family(DataTypeFamily.ANY, DataTypeFamily.BOOLEAN).optional(i -> i == 1);
-  public static final IOperandTypeChecker ANY_ANY = family(DataTypeFamily.ANY, DataTypeFamily.ANY);
+      family(DataFamily.ANY, DataFamily.BOOLEAN).optional(i -> i == 1);
+  public static final IOperandTypeChecker ANY_ANY = family(DataFamily.ANY, DataFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY =
-      family(DataTypeFamily.ANY, DataTypeFamily.ANY, DataTypeFamily.ANY);
-  public static final IOperandTypeChecker ANY_DATATYPE = OperandTypes
-      .sequence(OperandTypes.ANY, OperandTypes.DATATYPE);
-  public static final IOperandTypeChecker ANY_DATATYPE_OPTIONAL_TEXT = OperandTypes
-      .sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
+      family(DataFamily.ANY, DataFamily.ANY, DataFamily.ANY);
+
   public static final IOperandTypeChecker OPTIONAL_ANY =
-      family(DataTypeFamily.ANY).optional(i -> i == 0);
+      family(DataFamily.ANY).optional(i -> i == 0);
 
 
   /**
@@ -138,53 +135,54 @@ public final class OperandTypes {
   public static final IOperandTypeChecker AT_LEAST_TREE_SAME_VARIADIC =
       new SameOperandTypeChecker(OperandCountRange.between(3, -1));
 
-  public static final IOperandTypeChecker BOOLEAN = family(DataTypeFamily.BOOLEAN);
+  public static final IOperandTypeChecker BOOLEAN = family(DataFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
-      family(DataTypeFamily.BOOLEAN, DataTypeFamily.BOOLEAN);
+      family(DataFamily.BOOLEAN, DataFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =
-      family(DataTypeFamily.BOOLEAN, DataTypeFamily.ANY, DataTypeFamily.ANY);
+      family(DataFamily.BOOLEAN, DataFamily.ANY, DataFamily.ANY);
   // TODO: Create BOOLEAN_SAME_SAME
   // public static final IOperandTypeChecker BOOLEAN_SAME_SAME = family(List.of(BOOLEAN,
   // SAME_SAME));
 
 
-  public static final IOperandTypeChecker BINARY = family(DataTypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY = family(DataFamily.BINARY);
   public static final IOperandTypeChecker BINARY_VARIADIC =
-      family(DataTypeFamily.BINARY, OperandCountRange.between(1, -1));
+      family(DataFamily.BINARY, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker BINARY_BINARY_VARIADIC =
-      family(DataTypeFamily.BINARY, OperandCountRange.between(2, -1));
+      family(DataFamily.BINARY, OperandCountRange.between(2, -1));
   public static final IOperandTypeChecker BINARY_BINARY =
-      family(DataTypeFamily.BINARY, DataTypeFamily.BINARY);
+      family(DataFamily.BINARY, DataFamily.BINARY);
   public static final IOperandTypeChecker BINARY_NUMERIC =
-      family(DataTypeFamily.BINARY, DataTypeFamily.NUMERIC);
+      family(DataFamily.BINARY, DataFamily.NUMERIC);
   public static final IOperandTypeChecker BINARY_OPTIONAL_TEXT =
       sequence(OperandTypes.BINARY, OperandTypes.TEXT).optional(i -> i == 1);
-  
-  public static final IOperandTypeChecker NUMERIC = family(DataTypeFamily.NUMERIC);
+
+  public static final IOperandTypeChecker NUMERIC = family(DataFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC =
-      family(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);
+      family(DataFamily.NUMERIC, DataFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC =
-      family(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);
+      family(DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC =
-      family(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC).optional(i -> i == 6);
+      family(DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.NUMERIC,
+          DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.NUMERIC).optional(i -> i == 6);
   public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING =
-      family(DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i == 1);
+      family(DataFamily.NUMERIC, DataFamily.STRING).optional(i -> i == 1);
   public static final IOperandTypeChecker NUMERIC_OPTIONAL_NUMERIC =
-      family(DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC).optional(i -> i == 1);
+      family(DataFamily.NUMERIC, DataFamily.NUMERIC).optional(i -> i == 1);
   public static final IOperandTypeChecker NUMERIC_OPTIONAL_TEXT =
       sequence(OperandTypes.NUMERIC, OperandTypes.TEXT).optional(i -> i == 1);
   public static final IOperandTypeChecker OPTIONAL_NUMERIC =
-      family(DataTypeFamily.NUMERIC).optional(i -> i == 0);
+      family(DataFamily.NUMERIC).optional(i -> i == 0);
 
-  public static final IOperandTypeChecker DATE = family(DataTypeFamily.TEMPORAL);
+  public static final IOperandTypeChecker DATE = family(DataFamily.TEMPORAL);
   public static final IOperandTypeChecker DATE_DATE =
-      family(DataTypeFamily.TEMPORAL, DataTypeFamily.TEMPORAL);
+      family(DataFamily.TEMPORAL, DataFamily.TEMPORAL);
   public static final IOperandTypeChecker DATE_NUMERIC =
-      family(DataTypeFamily.TEMPORAL, DataTypeFamily.NUMERIC);
+      family(DataFamily.TEMPORAL, DataFamily.NUMERIC);
   public static final IOperandTypeChecker DATE_STRING =
-      family(DataTypeFamily.TEMPORAL, DataTypeFamily.STRING);
+      family(DataFamily.TEMPORAL, DataFamily.STRING);
   public static final IOperandTypeChecker DATE_OPTIONAL_STRING =
-      family(DataTypeFamily.TEMPORAL, DataTypeFamily.STRING).optional(i -> i == 1);
+      family(DataFamily.TEMPORAL, DataFamily.STRING).optional(i -> i == 1);
   public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT =
       sequence(DATE, TIMEUNIT).optional(i -> i == 1);
   public static final IOperandTypeChecker DATE_OPTIONAL_TEXT =
@@ -192,63 +190,54 @@ public final class OperandTypes {
 
   public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT, DATE);
   public static final IOperandTypeChecker TIMEUNIT_DATE_DATE = sequence(TIMEUNIT, DATE, DATE);
-  
-  public static final IOperandTypeChecker STRING = family(DataTypeFamily.STRING);
+
+  public static final IOperandTypeChecker STRING = family(DataFamily.STRING);
   public static final IOperandTypeChecker STRING_VARIADIC =
-      family(DataTypeFamily.STRING, OperandCountRange.between(1, -1));
+      family(DataFamily.STRING, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker STRING_STRING_VARIADIC =
-      family(DataTypeFamily.STRING, OperandCountRange.between(2, -1));
+      family(DataFamily.STRING, OperandCountRange.between(2, -1));
   public static final IOperandTypeChecker STRING_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING);
+      family(DataFamily.STRING, DataFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC);
-  public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC = family(
-      DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC);
+  public static final IOperandTypeChecker STRING_STRING_NUMERIC_NUMERIC =
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC);
+      family(DataFamily.STRING, DataFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_NUMERIC_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC);
+      family(DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_OPTIONAL_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC).optional(i -> i == 1);
+      family(DataFamily.STRING, DataFamily.NUMERIC).optional(i -> i == 1);
   public static final IOperandTypeChecker STRING_OPTIONAL_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING).optional(i -> i == 1);
+      family(DataFamily.STRING, DataFamily.STRING).optional(i -> i == 1);
   public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC)
-          .optional(i -> i == 2);
+      family(DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC).optional(i -> i == 2);
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.STRING)
-          .optional(i -> i == 2);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.STRING).optional(i -> i == 2);
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC)
-          .optional(i -> i == 2);
-  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC,
-          DataTypeFamily.NUMERIC).optional(i -> i >= 2);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC).optional(i -> i == 2);
+  public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC = 
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC).optional(i -> i >= 2);
   public static final IOperandTypeChecker STRING_NUMERIC_OPTIONAL_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.NUMERIC, DataTypeFamily.STRING)
-          .optional(i -> i == 2);
+      family(DataFamily.STRING, DataFamily.NUMERIC, DataFamily.STRING).optional(i -> i == 2);
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC,
-          DataTypeFamily.STRING).optional(i -> i >= 2);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC, DataFamily.STRING).optional(i -> i >= 2);
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC,
-          DataTypeFamily.NUMERIC, DataTypeFamily.STRING).optional(i -> i >= 2);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.STRING).optional(i -> i >= 2);
   public static final IOperandTypeChecker STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_NUMERIC_STRING =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.NUMERIC,
-          DataTypeFamily.NUMERIC, DataTypeFamily.NUMERIC, DataTypeFamily.STRING)
-              .optional(i -> i >= 2);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.STRING).optional(i -> i >= 2);
   public static final IOperandTypeChecker STRING_DATE =
-      family(DataTypeFamily.STRING, DataTypeFamily.TEMPORAL);
-  
+      family(DataFamily.STRING, DataFamily.TEMPORAL);
   public static final IOperandTypeChecker STRING_STRING_DATE =
-      family(DataTypeFamily.STRING, DataTypeFamily.STRING, DataTypeFamily.TEMPORAL);
+      family(DataFamily.STRING, DataFamily.STRING, DataFamily.TEMPORAL);
 
-  public static final IOperandTypeChecker JSON = family(DataTypeFamily.JSON);
-  public static final IOperandTypeChecker JSON_STRING =
-      family(DataTypeFamily.JSON, DataTypeFamily.STRING);
+  public static final IOperandTypeChecker JSON = family(DataFamily.JSON);
+  public static final IOperandTypeChecker JSON_STRING = family(DataFamily.JSON, DataFamily.STRING);
 
-  public static final IOperandTypeChecker CASE = new CaseOperatorOperandTypeChecker();
-  public static final IOperandTypeChecker DECODE = new DecodeFunctionOperandTypeChecker();
+  public static final IOperandTypeChecker CASE_OPERATOR = new CaseOperatorOperandTypeChecker();
+  public static final IOperandTypeChecker CAST_OPERATOR = OperandTypes.sequence(OperandTypes.ANY, OperandTypes.DATATYPE);
+  public static final IOperandTypeChecker CAST_FUNCTION = OperandTypes.sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
+  public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
 }

@@ -16,13 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -35,22 +33,17 @@ import java.math.RoundingMode;
 public class CeilingFunction extends Function {
 
   public CeilingFunction() {
-    super("CEILING", true, ReturnTypes.ARG0_OR_EXACT_NO_SCALE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("CEILING", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/ceiling.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
-    if (value instanceof Long)
-      return value;
-    if (value instanceof BigDecimal) {
-      return Converter.coerceToBigNumber(value).setScale(0, RoundingMode.CEILING);
-    }
-    return FastMath.ceil(Converter.coerceToNumber(value));
-  }
 
+    return value.setScale(0, RoundingMode.CEILING);
+  }
 }

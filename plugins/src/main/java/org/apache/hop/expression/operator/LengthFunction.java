@@ -43,7 +43,7 @@ public class LengthFunction extends Function {
     if (value == null)
       return value;
     if (value instanceof byte[]) {
-      return ((byte[]) value).length;
+      return Long.valueOf(((byte[]) value).length);
     }
     return Long.valueOf(Converter.coerceToString(value).length());
   }
