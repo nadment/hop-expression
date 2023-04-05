@@ -237,7 +237,6 @@ public final class OperandTypes {
   public static final IOperandTypeChecker JSON_STRING = family(DataFamily.JSON, DataFamily.STRING);
 
   public static final IOperandTypeChecker CASE_OPERATOR = new CaseOperatorOperandTypeChecker();
-  public static final IOperandTypeChecker CAST_OPERATOR = OperandTypes.sequence(OperandTypes.ANY, OperandTypes.DATATYPE);
-  public static final IOperandTypeChecker CAST_FUNCTION = OperandTypes.sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
+  public static final IOperandTypeChecker CAST_OPERATOR = OperandTypes.sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
   public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
 }
