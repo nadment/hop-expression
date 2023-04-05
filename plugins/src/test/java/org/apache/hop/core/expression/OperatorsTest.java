@@ -73,9 +73,11 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("NULL_BOOLEAN = NULL_BOOLEAN");
     evalNull("NULL_STRING = NULL_STRING");
     evalNull("NULL_INTEGER = NULL_INTEGER");
+    evalNull("NULL_INTEGER = 1");
+    evalNull("FIELD_INTEGER=NULL");
     
     evalFails("FIELD_INTEGER=");
-    evalFails("FIELD_INTEGER=NULL");
+    
     evalFails(" = FIELD_INTEGER ");
 
     writeEquals("FIELD_INTEGER=40");

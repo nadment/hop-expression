@@ -18,42 +18,34 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Tuple;
 
-/**
- * Operand type-checking strategy which checks all operand types must be the same.
- */
-public class SameOperandTypeChecker implements IOperandTypeChecker {
-  private final IOperandCountRange range;
+public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
-  public SameOperandTypeChecker(IOperandCountRange range) {
-    this.range = range;
+  public CaseOperatorReturnTypeInference() {
+    super();
   }
 
   @Override
-  public boolean checkOperandTypes(Call call) {
-    int nOperandsActual = range.getMax();
-    if (nOperandsActual == -1) {
-      nOperandsActual = call.getOperandCount();
-    }
-
-    DataFamily firstFamily = null;
-    for (int i = 0; i < nOperandsActual; i++) {
-      IExpression operand = call.getOperand(i);
-      DataType type = operand.getType();
-      if (firstFamily != null) {
-        if (!type.isSameFamily(firstFamily)  ) {
-          return false;
-        }
-      } else {
-        firstFamily = type.getFamily();
+  public DataType getReturnType(IExpressionContext context, Call call) {
+    // Least restrictive then expression
+    Tuple thenTuple = (Tuple) call.getOperand(2);
+    DataType result = null;
+    for (IExpression operand : thenTuple) {                
+      if ( !operand.isNull() ) {
+        DataType type = operand.getType();        
+        if (result==null || type.getName().ordinal() > result.getName().ordinal()) {
+          result = type;
+        }      
       }
+    } 
+
+    // Else data type
+    if ( result==null ) {    
+      result = call.getOperand(3).getType();
     }
-
-    return true;
-  }
-
-  @Override
-  public IOperandCountRange getOperandCountRange() {
-    return range;
+    
+    return result;
   }
 }

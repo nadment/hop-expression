@@ -43,14 +43,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @FunctionPlugin
 public class JsonObjectFunction extends Function {
 
-  public static final IOperandTypeChecker OTC = new JsonObjectOperandTypeChecker();
+  public static final IOperandTypeChecker OTC = new JsonObjectFunctionOperandTypeChecker();
 
   private static final EnumSet<DataFamily> VALUE_TYPES =
       EnumSet.of(DataFamily.STRING, DataFamily.BOOLEAN, DataFamily.NUMERIC);
 
-  public static class JsonObjectOperandTypeChecker implements IOperandTypeChecker {
+  public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {
 
-    public JsonObjectOperandTypeChecker() {}
+    public JsonObjectFunctionOperandTypeChecker() {}
 
     @Override
     public boolean checkOperandTypes(Call call) {

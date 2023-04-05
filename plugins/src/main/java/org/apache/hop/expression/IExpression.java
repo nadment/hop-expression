@@ -107,6 +107,8 @@ public interface IExpression {
    */
   public <T extends Object> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException;
   
+  public IExpression validate(final IExpressionContext context) throws ExpressionException;
+  
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.

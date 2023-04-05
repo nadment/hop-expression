@@ -19,6 +19,8 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.IOperandCountRange;
+import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -34,7 +36,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public final class Call implements IExpression {
 
-  protected final DataType type;
+  protected DataType type;
   protected final Operator operator;
   protected final IExpression[] operands;
 
@@ -73,7 +75,7 @@ public final class Call implements IExpression {
   }
 
   /**
-   * Data type is unknown before optimization.
+   * Data type is unknown before validation.
    */
   @Override
   public DataType getType() {
@@ -240,6 +242,64 @@ public final class Call implements IExpression {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());
     }
+  }
+  
+
+  /**
+   * Validate a call.
+   * 
+   * @param context The context against which the expression will be validated.
+   * @param call Call
+   */
+  public IExpression validate(IExpressionContext context)  throws ExpressionException {
+
+    // Validate all operands
+    for (int i=0; i<operands.length;i++ ) {
+      IExpression operand = operands[i];
+      if ( operand!=null) {
+        this.operands[i] = operand.validate(context);
+      }
+    }
+
+    // Check the number of operands expected
+    IOperandCountRange operandCountRange = operator.getOperandCountRange();
+    if (!operandCountRange.isValid(this.getOperandCount())) {
+      if (getOperandCount() < operandCountRange.getMin()) {
+        throw new ExpressionException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator));
+      }
+      if (getOperandCount() > operandCountRange.getMax()) {
+        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator));
+      }
+    }
+
+    // Check operand types expected
+    IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
+    if (!operandTypeChecker.checkOperandTypes(this)) {
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
+    }
+
+    // Replace arguments in User Defined Function by the operands of the call.
+    if (operator instanceof UserDefinedFunction) {
+      UserDefinedFunction udf = (UserDefinedFunction) operator;
+      
+      IExpression expression;
+      try {
+        IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
+        expression = ExpressionBuilder.build(udfContext, udf.getSource());        
+        
+        // Replace function arguments with real operands
+        expression = expression.accept(context, new UserDefinedFunctionResolver(this.operands));        
+      } catch (Exception e) {
+        throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
+      }
+      
+      return expression.validate(context);
+    }
+
+    // Inference return type
+    this.type = operator.getReturnTypeInference().getReturnType(context, this);
+    
+    return this;
   }
   
   @Override

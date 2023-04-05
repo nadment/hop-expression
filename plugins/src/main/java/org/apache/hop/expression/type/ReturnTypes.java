@@ -114,7 +114,8 @@ public final class ReturnTypes {
   };
 
   
-  public static final IReturnTypeInference CAST = new CastFunctionReturnTypeInference();
+  public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
+  public static final IReturnTypeInference CAST_OPERATOR = new CastOperatorReturnTypeInference();
 
   public static final IReturnTypeInference ANY = new ExplicitReturnTypeInference(new DataType(DataName.ANY, DataType.PRECISION_NOT_SPECIFIED, DataType.SCALE_NOT_SPECIFIED));
   

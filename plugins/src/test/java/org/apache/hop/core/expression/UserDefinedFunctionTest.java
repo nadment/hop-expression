@@ -42,7 +42,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       FunctionRegistry.register(udf.getName(), udf);
       
       evalEquals("UCASE('abcd',3)", "ABC");
-      evalEquals("UCASE(null,2)", "*");
+      evalEquals("UCASE(NULL_STRING,2)", "*");
       evalFails("UCASE()");
       evalFails("UCASE(1,2,3)");
       // TODO: check DataType

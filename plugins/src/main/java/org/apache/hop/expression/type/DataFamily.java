@@ -100,6 +100,7 @@ public enum DataFamily {
       case JSON:
         return family.isSameFamily(JSON, STRING);
       case ANY:
+      case NONE:
         return true;
       default:
         return false;

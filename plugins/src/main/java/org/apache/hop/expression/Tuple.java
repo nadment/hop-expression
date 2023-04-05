@@ -16,8 +16,10 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.DataType;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
@@ -161,7 +163,16 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     }
     writer.append(')');
   }
-
+  
+  @Override
+  public IExpression validate(final IExpressionContext context) throws ExpressionException {
+    List<IExpression> elements = new ArrayList<>(size());
+    for (IExpression expression : this) {
+      elements.add(expression.validate(context));
+    }
+    return new Tuple(elements);
+  }
+  
   public Stream<IExpression> stream() {
     return Stream.of(values);
   }

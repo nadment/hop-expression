@@ -37,7 +37,7 @@ import java.io.StringWriter;
 public class CastFunction extends Function {
 
   public CastFunction() {
-    super("CAST", true, ReturnTypes.CAST, OperandTypes.CAST_FUNCTION,
+    super("CAST", true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_FUNCTION,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 

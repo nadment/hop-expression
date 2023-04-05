@@ -19,9 +19,9 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpressionContext;
 
-public class CastFunctionReturnTypeInference implements IReturnTypeInference {
+public class CastOperatorReturnTypeInference implements IReturnTypeInference {
 
-  public CastFunctionReturnTypeInference() {
+  public CastOperatorReturnTypeInference() {
     super();
   }
 

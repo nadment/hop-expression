@@ -400,6 +400,16 @@ public final class Literal implements IExpression {
     }
     return (char) ('A' - 10 + digit);
   }
+  
+  /**
+   * Validate a literal.
+   * 
+   * @param context The context against which the expression will be validated.
+   */
+  @Override
+  public IExpression validate(final IExpressionContext context) throws ExpressionException {
+    return this;
+  }
 
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {

@@ -14,16 +14,12 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.DataFamily;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.IOperandCountRange;
-import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -69,7 +65,22 @@ public class ExpressionBuilder {
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
       IExpression expression = builder.parse();
-      return builder.validate(context, expression);
+      
+      if (expression == null)
+        return expression;
+
+      // Validate
+      expression = expression.validate(context);
+      
+      // Optimize
+      Optimizer optimizer = new Optimizer();
+      IExpression original;
+      do {
+        original = expression;
+        expression = expression.accept(context, optimizer);
+      } while (!expression.equals(original));
+
+      return expression;    
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);
     } catch (IllegalArgumentException e) {
@@ -1410,138 +1421,6 @@ public class ExpressionBuilder {
       }
     }
     return null;
-  }
-
-  /**
-   * Validate and optimize the expression.
-   *
-   * @param context the context
-   * @param expression the expression to validate
-   * @return the optimized expression
-   */
-  protected IExpression validate(final IExpressionContext context, IExpression expression)
-      throws ExpressionException {
-
-    if (expression == null)
-      return expression;
-
-    // Validate
-    switch (expression.getKind()) {
-      case CALL:
-        expression = validateCall(context, (Call) expression);
-        break;
-      case IDENTIFIER:
-        expression = validateIdentifier(context, (Identifier) expression);
-        break;
-      case LITERAL:
-        expression = validateLiteral(context, (Literal) expression);
-        break;
-      case TUPLE:
-        expression = validateTuple(context, (Tuple) expression);
-        break;
-    }
-
-    // Optimize
-    Optimizer optimizer = new Optimizer();
-    IExpression original;
-    do {
-      original = expression;
-      expression = expression.accept(context, optimizer);
-    } while (!expression.equals(original));
-
-    return expression;
-  }
-
-  /**
-   * Validate a identifier.
-   * 
-   * <ul>
-   * <li>Resolve index in IRowMeta</li>
-   * <li>Determine data type of a value in row.</li>
-   * </ul>
-   */
-  protected IExpression validateIdentifier(final IExpressionContext context,
-      final Identifier identifier) throws ExpressionException {
-    IRowMeta rowMeta = context.getRowMeta();
-
-    int indexOfValue = rowMeta.indexOfValue(identifier.getName());
-    if (indexOfValue < 0) {
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, identifier);
-    }
-
-    DataType type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
-
-    return new Identifier(identifier.getName(), type, indexOfValue);
-  }
-
-  /**
-   * Validate a literal.
-   * 
-   * @param context The context against which the expression will be validated.
-   * @param literal Literal
-   */
-  protected IExpression validateLiteral(final IExpressionContext context, final Literal literal) {
-    return literal;
-  }
-
-  protected IExpression validateTuple(IExpressionContext context, Tuple tuple)
-      throws ExpressionException {
-    List<IExpression> elements = new ArrayList<>(tuple.size());
-    for (IExpression expression : tuple) {
-      elements.add(validate(context, expression));
-    }
-    return new Tuple(elements);
-  }
-
-  /**
-   * Validate a call.
-   * 
-   * @param context The context against which the expression will be validated.
-   * @param call Call
-   */
-  protected IExpression validateCall(IExpressionContext context, Call call)
-      throws ExpressionException {
-
-    Operator operator = call.getOperator();
-
-    // Validate all operands
-    List<IExpression> operands = new ArrayList<>();
-    for (IExpression expression : call.getOperands()) {
-      operands.add(validate(context, expression));
-    }
-    call = new Call(operator, operands);
-
-
-    // Check the number of operands expected
-    IOperandCountRange operandCountRange = operator.getOperandCountRange();
-    if (!operandCountRange.isValid(call.getOperandCount())) {
-      if (call.getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator));
-      }
-      if (call.getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator));
-      }
-    }
-
-    // Check operand types expected
-    IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
-    if (!operandTypeChecker.checkOperandTypes(call)) {
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
-    }
-
-    // Replace arguments in User Defined Function by the operands of the call.
-    if (operator instanceof UserDefinedFunction) {
-      UserDefinedFunction udf = (UserDefinedFunction) operator;
-      try {
-        IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
-        IExpression expression = ExpressionBuilder.build(udfContext, udf.getSource());
-        return expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
-      } catch (Exception e) {
-        throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
-      }
-    }
-
-    return call;
   }
 }
 

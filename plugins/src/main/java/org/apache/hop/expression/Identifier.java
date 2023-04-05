@@ -20,6 +20,7 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -328,6 +329,28 @@ public final class Identifier implements IExpression {
     throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
   }
 
+  /**
+   * Validate a identifier.
+   * 
+   * <ul>
+   * <li>Resolve index in IRowMeta</li>
+   * <li>Determine data type of a value in row.</li>
+   * </ul>
+   */
+  @Override
+  public IExpression validate(final IExpressionContext context) throws ExpressionException {
+    IRowMeta rowMeta = context.getRowMeta();
+
+    int indexOfValue = rowMeta.indexOfValue(name);
+    if (indexOfValue < 0) {
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
+    }
+
+    DataType type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
+
+    return new Identifier(name, type, indexOfValue);
+  }
+  
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
