@@ -111,6 +111,8 @@ public enum ExpressionError {
   //
   UNSUPPORTED_JSON_TYPE("Expression.UnsupportedJsonType"),
   //
+  UNSUPPORTED_ARRAY_TYPE("Expression.UnsupportedArrayType"),
+  //
   UNKNOWN_DATATYPE("Expression.UnknownDataType"),
   //
   UNKNOWN_TIMEZONE("Expression.UnknownTimeZone"),

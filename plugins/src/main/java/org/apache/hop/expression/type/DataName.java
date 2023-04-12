@@ -33,6 +33,10 @@ import com.fasterxml.jackson.databind.JsonNode;
  * order is converted to the value with the higher order.
  */
 public enum DataName {
+
+  
+  /** A unknown type */
+  UNKNOWN(DataFamily.NONE, PrecScale.NO_NO, 0, Void.class),
   
   ANY(DataFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 0, Object.class),
   
@@ -60,10 +64,8 @@ public enum DataName {
   BINARY(DataFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class),
 
   /** A time unit type */
-  TIMEUNIT(DataFamily.NONE, PrecScale.NO_NO, 0, TimeUnit.class),
-  
-  /** A unknown type */
-  UNKNOWN(DataFamily.NONE, PrecScale.NO_NO, 0, Void.class);
+  TIMEUNIT(DataFamily.NONE, PrecScale.NO_NO, 0, TimeUnit.class);
+
 
   protected static final Set<DataName> STRING_TYPES = Set.of(STRING);
   protected static final Set<DataName> BINARY_TYPES = Set.of(BINARY);

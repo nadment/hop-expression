@@ -59,23 +59,24 @@ public class JsonValueFunction extends Function {
     String path = operands[1].getValue(context, String.class);
     if (path == null)
       return null;
-    
-    JsonPath jsonPath;
 
     try {
-      jsonPath = JsonPath.compile(path);
-
+      JsonPath jsonPath = JsonPath.compile(path);
       JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-
+    
       if (result.isNull())
         return null;
+      if (result.isTextual())
+        return result.textValue();
       if (result.isNumber())
         return result.decimalValue();
       if (result.isBoolean())
         return result.booleanValue();
-      if (result.isTextual())
-        return result.textValue();
-      return result;
+      if (result.isArray())
+        throw new ExpressionException(ExpressionError.UNSUPPORTED_ARRAY_TYPE, path);
+      return result;      
+    } catch (ExpressionException e) {
+      throw e;
     } catch (PathNotFoundException e) {
       throw new ExpressionException(ExpressionError.JSON_PATH_NOT_FOUND, path);
     } catch (Exception e) {

@@ -605,7 +605,9 @@ public class OperatorsTest extends ExpressionTest {
     
     returnType("CAST(3 as BOOLEAN)", DataType.BOOLEAN);
     returnType("CAST('3' as INTEGER)", DataType.INTEGER);
-    returnType("CAST('3' as NUMBER(5,0))", DataType.NUMBER(5, 0));
+    returnType("CAST('123' as INTEGER(3))", DataType.INTEGER(3));
+    returnType("CAST('3.123' as NUMBER(5,0))", DataType.NUMBER(5, 0));
+    returnType("CAST('3.123' as BIGNUMBER(5,12))", DataType.BIGNUMBER(5, 12));
     returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataType.DATE);
   }
 
@@ -929,10 +931,14 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("'TEST'||NULL_STRING", "TEST");
     evalEquals("NULL_STRING||'TEST'", "TEST");
     
+    returnType("NULL_STRING||'TEST'", DataType.STRING);
+    
     // Binary
     evalEquals("0x1F || NULL_BINARY || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
     evalEquals("NULL_BINARY || 0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
     evalEquals("0x1F || 0x2A3B || NULL_BINARY", new byte[]{0x1F, 0x2A, 0x3B});
+
+    returnType("0x2A3B || NULL_BINARY", DataType.BINARY);
     
     // Integer
     evalEquals("4 || 2", "42");
@@ -967,11 +973,20 @@ public class OperatorsTest extends ExpressionTest {
     // Missing 'END'
     evalFails("case when FIELD_INTEGER=40 then 10 else 50");
 
+    // Incompatible return type
+    evalFails("case when FIELD_INTEGER=40 then 10 else 'Error'");
+    evalFails("case FIELD_INTEGER when 10 then 'X' when 'T' then 'Test' else 'Error'");    
+    
     // Implicit ELSE NULL
     writeEquals("CASE WHEN FIELD_INTEGER=40 THEN 10 END", "CASE WHEN FIELD_INTEGER=40 THEN 10 ELSE NULL END");
 
     writeEquals("CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END");
     writeEquals("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
+    
+    returnType("CASE WHEN FIELD_INTEGER IS NULL THEN '-' ELSE FIELD_STRING END", DataType.STRING);
+    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", DataType.NUMBER);
+    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE TO_NUMBER(TO_CHAR(FIELD_INTEGER,'YYYYMMDD')) END", DataType.BIGNUMBER);
+    
   }
 }
 

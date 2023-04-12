@@ -229,8 +229,60 @@ public final class Call implements IExpression {
           }
           break;
 
-        case DATE:
         case ANY:
+          // JSon function return type ANY
+          if ( value instanceof String ) {
+            if (clazz == Boolean.class) {
+              return clazz.cast(Converter.parseBoolean((String) value));
+            }
+            if (clazz == Long.class) {
+              return clazz.cast(Converter.parseInteger((String) value));
+            }
+            if (clazz == Double.class) {
+              return clazz.cast(Converter.parseNumber((String) value));
+            }
+            if (clazz == BigDecimal.class) {
+              return clazz.cast(Converter.parseBigNumber((String) value));
+            }
+            if (clazz == byte[].class) {
+              return clazz.cast(((String) value).getBytes(StandardCharsets.UTF_8));
+            }
+            if (clazz == JsonNode.class) {
+              return clazz.cast(Converter.parseJson((String) value));
+            }
+          }
+          if ( value instanceof BigDecimal ) {
+            if (clazz == Boolean.class) {
+              return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
+            }
+            if (clazz == Long.class) {
+              return clazz.cast(((BigDecimal) value).longValue());
+            }
+            if (clazz == Double.class) {
+              return clazz.cast(((BigDecimal) value).doubleValue());
+            }
+            if (clazz == String.class) {
+              return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
+            }
+          }
+          if ( value instanceof Boolean ) {
+            if (clazz == String.class) {
+              return clazz.cast(String.valueOf(value));
+            }
+            if (clazz == Long.class) {
+              return clazz.cast(((Boolean) value) ? 1L : 0L);
+            }
+            if (clazz == Double.class) {
+              return clazz.cast(((Boolean) value) ? 1D : 0D);
+            }
+            if (clazz == BigDecimal.class) {
+              return clazz.cast(((Boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+            }
+          }
+          
+          
+          break;
+        case DATE:
         case TIMEUNIT:
         case UNKNOWN:
           break;

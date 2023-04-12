@@ -189,7 +189,7 @@ public class DataType {
     if (precision >= 0 && precision != name.getMaxPrecision()) {
       builder.append('(');
       builder.append(this.precision);
-      if (scale >= 0) {
+      if (scale >= 0 && name!=DataName.INTEGER) {
         builder.append(',');
         builder.append(this.scale);
       }

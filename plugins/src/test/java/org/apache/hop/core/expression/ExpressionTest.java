@@ -354,7 +354,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end");
+    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE TO_NUMBER(TO_CHAR(FIELD_INTEGER,'YYYYMMDD')) END", DataType.BIGNUMBER);
   }
 }
 
