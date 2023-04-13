@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * 
+ * Returns characters from a string by searching it for a regular expression pattern.
  */
 @FunctionPlugin
 public class RegexpSubstrFunction extends Function {
@@ -101,7 +101,4 @@ public class RegexpSubstrFunction extends Function {
       throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
     }
   }
-
-
-
 }

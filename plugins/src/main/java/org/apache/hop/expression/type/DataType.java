@@ -73,18 +73,6 @@ public class DataType {
     BIGNUMBER = new DataType(DataName.BIGNUMBER, DataName.BIGNUMBER.getMaxPrecision(), 0);
     TIMEUNIT = new DataType(DataName.TIMEUNIT);
   }
-
-  public static DataType INTEGER(final int precision) {
-    return new DataType(DataName.INTEGER, precision);
-  }
-
-  public static DataType NUMBER(final int precision, final int scale) {
-    return new DataType(DataName.NUMBER, precision, scale);
-  }
-
-  public static DataType BIGNUMBER(final int precision, final int scale) {
-    return new DataType(DataName.BIGNUMBER, precision, scale);
-  }
   
   private final DataName name;
   private final int precision;
@@ -218,7 +206,7 @@ public class DataType {
       return STRING;
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value; 
-      return BIGNUMBER(number.precision(), number.scale());
+      return new DataType(DataName.BIGNUMBER, number.precision(), number.scale());
     }
     if (value instanceof Double)
       return NUMBER;

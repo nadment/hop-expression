@@ -141,13 +141,13 @@ public final class Call implements IExpression {
             return clazz.cast(String.valueOf(value));
           }
           if (clazz == Long.class) {
-            return clazz.cast(((Boolean) value) ? 1L : 0L);
+            return clazz.cast(((boolean) value) ? 1L : 0L);
           }
           if (clazz == Double.class) {
-            return clazz.cast(((Boolean) value) ? 1D : 0D);
+            return clazz.cast(((boolean) value) ? 1D : 0D);
           }
           if (clazz == BigDecimal.class) {
-            return clazz.cast(((Boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+            return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
           }
           break;
 
@@ -270,13 +270,13 @@ public final class Call implements IExpression {
               return clazz.cast(String.valueOf(value));
             }
             if (clazz == Long.class) {
-              return clazz.cast(((Boolean) value) ? 1L : 0L);
+              return clazz.cast(((boolean) value) ? 1L : 0L);
             }
             if (clazz == Double.class) {
-              return clazz.cast(((Boolean) value) ? 1D : 0D);
+              return clazz.cast(((boolean) value) ? 1D : 0D);
             }
             if (clazz == BigDecimal.class) {
-              return clazz.cast(((Boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+              return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
             }
           }
           

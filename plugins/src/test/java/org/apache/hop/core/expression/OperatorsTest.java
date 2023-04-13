@@ -14,6 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -605,9 +606,9 @@ public class OperatorsTest extends ExpressionTest {
     
     returnType("CAST(3 as BOOLEAN)", DataType.BOOLEAN);
     returnType("CAST('3' as INTEGER)", DataType.INTEGER);
-    returnType("CAST('123' as INTEGER(3))", DataType.INTEGER(3));
-    returnType("CAST('3.123' as NUMBER(5,0))", DataType.NUMBER(5, 0));
-    returnType("CAST('3.123' as BIGNUMBER(5,12))", DataType.BIGNUMBER(5, 12));
+    returnType("CAST('123' as INTEGER(3))", new DataType(DataName.INTEGER,3));
+    returnType("CAST('3.123' as NUMBER(5,0))", new DataType(DataName.NUMBER,5,0));
+    returnType("CAST('3.123' as BIGNUMBER(5,12))", new DataType(DataName.BIGNUMBER,5, 12));
     returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DataType.DATE);
   }
 

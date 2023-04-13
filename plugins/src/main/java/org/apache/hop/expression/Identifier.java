@@ -346,9 +346,9 @@ public final class Identifier implements IExpression {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
     }
 
-    DataType type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
+    DataType valueType = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
 
-    return new Identifier(name, type, indexOfValue);
+    return new Identifier(name, valueType, indexOfValue);
   }
   
   @Override

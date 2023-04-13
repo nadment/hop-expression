@@ -29,10 +29,8 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
-import java.util.Locale;
 
 /**
  * Extracts the specified date or time part from a date, time, or timestamp.

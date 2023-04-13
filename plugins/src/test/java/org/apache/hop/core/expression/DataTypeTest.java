@@ -93,8 +93,8 @@ public class DataTypeTest extends ExpressionTest {
     assertEquals(DataType.BOOLEAN, DataType.of(true));
     assertEquals(DataType.STRING, DataType.of("test"));
     assertEquals(DataType.NUMBER, DataType.of(123.456D));
-    assertEquals(DataType.NUMBER(38,0), DataType.of(123.456D));
-    assertEquals(DataType.BIGNUMBER(9,3), DataType.of(BigDecimal.valueOf(123456123,3)));
+    assertEquals(new DataType(DataName.NUMBER,38,0), DataType.of(123.456D));
+    assertEquals(new DataType(DataName.BIGNUMBER,9,3), DataType.of(BigDecimal.valueOf(123456123,3)));
     assertEquals(DataType.DATE, DataType.of(ZonedDateTime.now()));
     assertEquals(DataType.TIMEUNIT, DataType.of(TimeUnit.CENTURY));
   }

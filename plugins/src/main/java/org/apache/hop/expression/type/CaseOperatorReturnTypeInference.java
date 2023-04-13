@@ -41,7 +41,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
     // Else data type
     DataType elseType = call.getOperand(3).getType();
-    if (elseType.getName().ordinal() > result.getName().ordinal()) {
+    if (result==null || elseType.getName().ordinal() > result.getName().ordinal()) {
       result = elseType;
     }
 

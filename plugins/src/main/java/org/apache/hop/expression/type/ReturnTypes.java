@@ -32,8 +32,6 @@ public final class ReturnTypes {
   public static ExplicitReturnTypeInference explicit(DataType type) {
     return  new ExplicitReturnTypeInference(type);
   }
-  
-  public static final IReturnTypeInference UNKNOWN = explicit(DataType.UNKNOWN);
 
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.

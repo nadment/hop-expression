@@ -77,8 +77,8 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   @Override
   public DataType getType() {
     // Returns the first known data type of values.
-    for (IExpression v : values) {
-      DataType type = v.getType();
+    for (IExpression expression : values) {
+      DataType type = expression.getType();
       if (type != DataType.UNKNOWN)
         return type;
     }
@@ -89,8 +89,8 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   @Override
   public int getCost() {
     int cost = 1;
-    for (IExpression e : values) {
-      cost += e.getCost();
+    for (IExpression expression : values) {
+      cost += expression.getCost();
     }
     return cost;
   }
