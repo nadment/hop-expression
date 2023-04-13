@@ -81,7 +81,6 @@ public class ConcatFunction extends Function {
     }
 
     // Concat String
-    // TODO: Preload array
     StringBuilder builder = new StringBuilder();
     for (IExpression operand : operands) {
       String value = operand.getValue(context, String.class);

@@ -23,6 +23,8 @@ Adds or subtracts a specified number of months to a date or timestamp.
 ADD_MONTHS( date, integer )
 ----
 
+Returns:: Date
+
 == Usage
 
 * Decimals are rounded before adding that number.

@@ -23,6 +23,8 @@ Adds or subtracts a specified number of minutes to a date or timestamp.
 ADD_MINUTES( timestamp, integer )
 ----
 
+Returns:: Date
+
 == Usage
 
 * Decimals are rounded before adding that number.

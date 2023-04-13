@@ -52,10 +52,10 @@ public class DecompressFunction extends Function {
     if (bytes == null)
       return null;
 
-    String algorithm = "SNAPPY";
+    // String algorithm = "SNAPPY";
+    // CompressionInputStream cis = provider.createInputStream(new ByteArrayInputStream(bytes));    
     
     ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);
-    // CompressionInputStream cis = provider.createInputStream(new ByteArrayInputStream(bytes));
     GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));
 
     final byte[] buffer = new byte[8024];

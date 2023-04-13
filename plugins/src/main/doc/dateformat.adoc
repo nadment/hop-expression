@@ -58,7 +58,7 @@ under the License.
 |SSSSS||Seconds in day 
 |TS||Short time format 
 |TZD||Daylight savings time zone abbreviation 
-|TZR||Time zone region information
+|TZR||Time zone region
 |TZH||Time zone hour. Can be prefixed by +/- for sign.
 |TZM||Time zone minute
 |X||Local radix character

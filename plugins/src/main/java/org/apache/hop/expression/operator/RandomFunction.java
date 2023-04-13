@@ -45,7 +45,7 @@ public class RandomFunction extends Function {
 
     if (operands.length == 1) {
       Long seed = operands[0].getValue(context, Long.class);
-      // FIXME: What if multi random in the same with different SEED ?
+      // FIXME: What if multi random in the same context with different SEED ?
       random.setSeed(seed);
     }
     return random.nextDouble();

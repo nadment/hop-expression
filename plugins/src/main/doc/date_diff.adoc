@@ -40,6 +40,8 @@ Supported unit of date and time:
 - MICROSECOND
 - NANOSECOND
 
+Returns:: Integer
+
 == Usage
 
 * Returns NULL if one of the arguments is NULL.

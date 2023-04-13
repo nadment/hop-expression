@@ -189,6 +189,7 @@ public final class OperandTypes {
       sequence(OperandTypes.DATE, OperandTypes.TEXT).optional(i -> i == 1);
 
   public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT, DATE);
+  public static final IOperandTypeChecker TIMEUNIT_NUMERIC_DATE = sequence(TIMEUNIT, NUMERIC, DATE);
   public static final IOperandTypeChecker TIMEUNIT_DATE_DATE = sequence(TIMEUNIT, DATE, DATE);
 
   public static final IOperandTypeChecker STRING = family(DataFamily.STRING);

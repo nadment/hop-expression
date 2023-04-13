@@ -70,6 +70,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/crc32.adoc[CRC32]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/csc.adoc[CSC]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date.adoc[DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_add.adoc[DATE_ADD]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_diff.adoc[DATE_DIFF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_trunc.adoc[DATE_TRUNC]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/day.adoc[DAY]

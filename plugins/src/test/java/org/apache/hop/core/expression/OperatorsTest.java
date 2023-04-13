@@ -353,8 +353,8 @@ public class OperatorsTest extends ExpressionTest {
     
     evalFalse("NULL_BOOLEAN IS NOT DISTINCT FROM true");
     evalTrue("NULL_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN");
-    
-    // TODO: evalFalse("NULL_INTEGER IS DISTINCT FROM NULL");
+    evalFalse("NULL_INTEGER IS DISTINCT FROM NULL");
+    evalTrue("NULL_INTEGER IS NOT DISTINCT FROM NULL");
     
     evalFalse("DATE '2019-01-01' IS DISTINCT FROM DATE '2019-01-01'");
     evalTrue("DATE '2019-01-01' IS NOT DISTINCT FROM DATE '2019-01-01'");
@@ -642,6 +642,10 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("+null");
     
     writeEquals("+FIELD_INTEGER","FIELD_INTEGER");
+    
+    returnType("+FIELD_INTEGER", DataType.INTEGER);
+    returnType("+FIELD_NUMBER", DataType.NUMBER);
+    returnType("+FIELD_BIGNUMBER", DataType.BIGNUMBER);
   }
 
   @Test
@@ -653,6 +657,10 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("1+ -2", -1L);
     evalNull("-NULL_INTEGER");
     writeEquals("-FIELD_INTEGER","-FIELD_INTEGER");
+    
+    returnType("-FIELD_INTEGER", DataType.INTEGER);
+    returnType("-FIELD_NUMBER", DataType.NUMBER);
+    returnType("-FIELD_BIGNUMBER", DataType.BIGNUMBER);
   }
 
   @Test
@@ -698,6 +706,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("40/0");
         
     writeEquals("FIELD_INTEGER/4");
+    
+    returnType("FIELD_INTEGER/4", DataType.BIGNUMBER);
   }
 
   @Test
@@ -709,6 +719,8 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
     evalFails("Div0(40)");
+    
+    returnType("Div0(FIELD_INTEGER,2)", DataType.BIGNUMBER);
   }
   
   @Test
@@ -930,6 +942,9 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_STRING='TES'||NULL_STRING||'T'");
     evalEquals("'TEST'||NULL_STRING", "TEST");
     evalEquals("NULL_STRING||'TEST'", "TEST");
+    evalEquals("4 || 2", "42");
+    evalEquals("4 || '2'", "42");
+    evalNull("NULL_STRING||NULL_STRING");
     
     returnType("NULL_STRING||'TEST'", DataType.STRING);
     
@@ -940,11 +955,6 @@ public class OperatorsTest extends ExpressionTest {
 
     returnType("0x2A3B || NULL_BINARY", DataType.BINARY);
     
-    // Integer
-    evalEquals("4 || 2", "42");
-    
-    evalNull("NULL_STRING||NULL_STRING");
-
     writeEquals("FIELD_STRING||'TEST'");
   }
 

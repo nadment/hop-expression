@@ -22,6 +22,9 @@ Creates a date from individual numeric components.
 ----
 DATE( year, month, day )
 ----
+
+Returns:: Date
+
 The literal value with ISO format provides alternative syntax.
 ----
 DATE 'YYYY-MM-DD'

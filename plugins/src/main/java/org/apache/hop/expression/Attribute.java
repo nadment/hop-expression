@@ -31,6 +31,7 @@ public enum Attribute {
   }
 
   /** Returns the value of this attribute in a given context. */
+  @SuppressWarnings("unchecked")
   public <T> T get(IExpressionContext context) {
     // noinspection unchecked
     return (T) clazz.cast(context.getAttribute(id));

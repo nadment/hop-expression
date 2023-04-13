@@ -53,8 +53,6 @@ Return type:: Integer
 |NANOSECOND||The nanosecond
 |QUARTER||The quarter of the year (1-4)
 |SECOND||The second (and fractional seconds)
-|TIMEZONE_ABBR||Time zone region abbreviated
-|TIMEZONE_REGION||The time zone region
 |TIMEZONE_HOUR||The hour of the time zone offset
 |TIMEZONE_MINUTE||The minute of the time zone offset
 |WEEKOFYEAR|WEEK|The aligned week of year (01-53) where week 1 starts on the first day of the year.

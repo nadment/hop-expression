@@ -41,11 +41,7 @@ import java.util.Locale;
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
-
-  private static final DateTimeFormatter zoneAbbreviationFormatter = DateTimeFormatter.ofPattern("zzz", Locale.ENGLISH);
-  
-  // TODO: Return type can be INTEGER or STRING
-  
+    
   public ExtractFunction() {
     super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, OperatorCategory.DATE,
         "/docs/extract.html");
@@ -106,10 +102,6 @@ public class ExtractFunction extends Function {
         return Long.valueOf(datetime.getNano());
       case EPOCH:
         return datetime.toEpochSecond();
-      case TIMEZONE_ABBR:
-        return zoneAbbreviationFormatter.format(datetime);
-      case TIMEZONE_REGION:
-        return datetime.getZone().getId();
       case TIMEZONE_HOUR:
         return Long.valueOf(datetime.getOffset().getTotalSeconds() / (60 * 60));
       case TIMEZONE_MINUTE:

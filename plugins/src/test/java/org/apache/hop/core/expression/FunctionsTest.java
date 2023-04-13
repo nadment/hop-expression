@@ -741,7 +741,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Add_Years(DATE '2019-11-15',3)", LocalDate.of(2022, Month.NOVEMBER, 15));
     // the resulting month has fewer days
     evalEquals("Add_Years(DATE '2020-02-29',1)", LocalDate.of(2021, Month.FEBRUARY, 28));
-    
+      
     evalNull("Add_Years(NULL_DATE,140)");
     evalNull("Add_Years(DATE '2019-01-15',NULL_INTEGER)");
     
@@ -752,8 +752,9 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Add_Months() throws Exception {
     evalEquals("Add_Months(DATE '2019-01-15',1)", LocalDate.of(2019, Month.FEBRUARY, 15));
-    evalEquals("Add_Months(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.NOVEMBER, 15));
+    evalEquals("Add_Months(DATE '2019-01-15',-2)", LocalDate.of(2018, Month.NOVEMBER, 15));    
     evalEquals("Add_Months(DATE '2019-11-15',3)", LocalDate.of(2020, Month.FEBRUARY, 15));
+    
     // the resulting month has fewer days
     evalEquals("Add_Months(DATE '2019-01-31',1)", LocalDate.of(2019, Month.FEBRUARY, 28));
     evalNull("Add_Months(NULL_DATE,140)");
@@ -765,6 +766,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Add_Weeks() throws Exception {
     evalEquals("Add_Weeks(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 22));
     evalEquals("Add_Weeks(DATE '2019-01-15',-3)", LocalDate.of(2018, Month.DECEMBER, 25));
+    
     evalNull("Add_Weeks(NULL_DATE,140)");
     evalNull("Add_Weeks(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Weeks(DATE '2019-01-15')");
@@ -775,6 +777,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Add_Days(DATE '2019-01-15',1)", LocalDate.of(2019, Month.JANUARY, 16));
     evalEquals("Add_Days(DATE '2019-01-15',-20)", LocalDate.of(2018, Month.DECEMBER, 26));
     evalEquals("Add_Days(TIMESTAMP '2021-01-01 15:28:59+0200',20)", ZonedDateTime.of(2021, 1, 21, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(2, 0)));
+    
     evalNull("Add_Days(NULL_DATE,140)");
     evalNull("Add_Days(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Days(DATE '2019-01-15')");
@@ -807,6 +810,18 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Add_Seconds(DATE '2019-01-15')");
   }
 
+  @Test
+  public void Date_Add() throws Exception {
+    evalEquals("DATE_ADD(YEAR,1,DATE '2020-02-29')", LocalDate.of(2021, Month.FEBRUARY, 28));
+    evalEquals("DATE_ADD(MONTH,3,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
+    evalEquals("DATE_ADD(WEEK,-3,DATE '2019-01-15')", LocalDate.of(2018, Month.DECEMBER, 25));
+    evalEquals("DATE_ADD(DAY,-20,DATE '2019-01-15')", LocalDate.of(2018, Month.DECEMBER, 26));
+    evalEquals("DATE_ADD(HOUR,1,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
+    evalEquals("DATE_ADD(MINUTE,20,DATE '2019-01-15')",LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
+    evalEquals("DATE_ADD(SECOND,140,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
+   // TODO: evalEquals("DATE_ADD(NANOSECOND,23,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 000000023));
+  }
+  
   @Test
   public void Hour() throws Exception {
     evalEquals("Hour(TIMESTAMP '2019-01-01 15:28:59')", 15L);
@@ -2896,15 +2911,13 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Extract(MILLISECOND from TIMESTAMP '2020-05-25 00:00:01.123456')", 123L);
     evalEquals("Extract(MICROSECOND from TIMESTAMP '2020-05-25 00:00:01.123456')", 123456L);
     evalEquals("Extract(NANOSECOND from TIMESTAMP '2020-05-25 00:00:01.123456')", 123456000L);
-    evalEquals("Extract(TIMEZONE_ABBR from TIMESTAMP '2021-01-01 15:28:59')", "UTC");
-    evalEquals("Extract(TIMEZONE_ABBR from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Europe/Paris')", "CET");
-    evalEquals("Extract(TIMEZONE_ABBR from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Asia/Manila')", "PST");
-    evalEquals("Extract(TIMEZONE_ABBR from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Asia/Tokyo')", "JST");
-    evalEquals("Extract(TIMEZONE_REGION from TIMESTAMP '2021-01-01 15:28:59')", "UTC");
-    evalEquals("Extract(TIMEZONE_REGION from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Europe/Paris')", "Europe/Paris");
+    evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59')", 0L);
+    evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Europe/Paris')", 1L);
+    evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Asia/Manila')", 8L);
     evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59 +02:00')", 2L);
     evalEquals("Extract(TIMEZONE_HOUR from TIMESTAMP '2021-01-01 15:28:59 -04:00')", -4L);
     evalEquals("Extract(TIMEZONE_MINUTE from TIMESTAMP '2021-01-01 15:28:59 +01:28')", 28L);
+    evalEquals("Extract(TIMEZONE_MINUTE from TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'Asia/Tokyo')", 0L);
 
     evalNull("Extract(SECOND from NULL_DATE)");
 

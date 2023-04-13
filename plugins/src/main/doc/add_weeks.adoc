@@ -23,6 +23,8 @@ Adds or subtracts a specified number of weeks to a date or timestamp.
 ADD_WEEKS( date, integer )
 ----
 
+Returns:: Date
+
 == Usage
 
 * Decimals are rounded before adding that number.

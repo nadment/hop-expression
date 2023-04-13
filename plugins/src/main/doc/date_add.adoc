@@ -14,26 +14,33 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= ADD_DAYS
+= DATE_ADD
 
-Adds or subtracts a specified number of days to a date or timestamp.
-		
+Adds or subtracts a specified number of time unit to a date or timestamp. 
+
 == Syntax
 ----
-ADD_DAYS( date, integer )
+DATE_ADD( unit, value, {date | timestamp} )
 ----
+
+Supported unit of date and time:
+
+- YEAR
+- MONTH 
+- WEEK        
+- DAY
+- HOUR
+- MINUTE
+- SECOND
+- NANOSECOND
 
 Returns:: Date
 
 == Usage
 
-* Decimals are rounded before adding that number.
-* The number of days, can be a positive or negative integer to either add or subtract days, respectively.
 * Returns NULL if one of the arguments is NULL.
-* Expression also supports the addition and subtraction of days to DATE values, in the form of { + | - } <integer>.
 
 == Example
 ----
-ADD_DAYS( Date '2022-05-24', -4 )
-Date '2022-05-24' - 4
+DATE_ADD(DAY, 5, DATE '2023-02-01')
 ----
