@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class IfNullFunction extends Function {
 
   public IfNullFunction() {
-    super("IFNULL", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.ANY_ANY,
+    super("IFNULL", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.SAME_SAME,
         OperatorCategory.CONDITIONAL, "/docs/ifnull.html");
   }
 

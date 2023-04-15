@@ -31,9 +31,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class IfFunction extends Function {
 
   public IfFunction() {
-    super("IF", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_ANY_ANY,
+    super("IF", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_SAME_SAME,
         OperatorCategory.CONDITIONAL, "/docs/if.html");
-    // TODO: OperandTypes.BOOLEAN_SAME_SAME
   }
 
   @Override

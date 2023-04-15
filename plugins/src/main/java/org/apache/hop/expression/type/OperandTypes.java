@@ -125,7 +125,7 @@ public final class OperandTypes {
    */
   public static final IOperandTypeChecker SAME_VARIADIC =
       new SameOperandTypeChecker(OperandCountRange.any());
-
+  
   /**
    * Operand type-checking strategy where any positive number of operands must all be
    * in the same type family.
@@ -140,10 +140,8 @@ public final class OperandTypes {
       family(DataFamily.BOOLEAN, DataFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =
       family(DataFamily.BOOLEAN, DataFamily.ANY, DataFamily.ANY);
-  // TODO: Create BOOLEAN_SAME_SAME
-  // public static final IOperandTypeChecker BOOLEAN_SAME_SAME = family(List.of(BOOLEAN,
-  // SAME_SAME));
-
+  public static final IOperandTypeChecker BOOLEAN_SAME_SAME = BOOLEAN_ANY_ANY.and(
+      new SameOperandTypeChecker(OperandCountRange.of(3),1));
 
   public static final IOperandTypeChecker BINARY = family(DataFamily.BINARY);
   public static final IOperandTypeChecker BINARY_VARIADIC =

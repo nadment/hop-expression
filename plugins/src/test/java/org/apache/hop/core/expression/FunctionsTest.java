@@ -101,10 +101,12 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("If(True,'True','False')", "True");
     evalEquals("If(False,'True','False')", "False");
     evalNull("If(NULL_BOOLEAN,'A','B')");
+    
     evalFails("If()");
     evalFails("If(true)");
     evalFails("If(true,2)");
-
+    evalFails("If(true,2,'2')");
+    
     returnType("If(FIELD_BOOLEAN,'A','B')", DataType.STRING);
     returnType("If(FIELD_BOOLEAN,1,2)", DataType.INTEGER);
   }

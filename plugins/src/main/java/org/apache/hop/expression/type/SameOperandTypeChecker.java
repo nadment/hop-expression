@@ -24,24 +24,30 @@ import org.apache.hop.expression.IExpression;
  */
 public class SameOperandTypeChecker implements IOperandTypeChecker {
   private final IOperandCountRange range;
-
+  private final int start;
+  
   public SameOperandTypeChecker(IOperandCountRange range) {
-    this.range = range;
+    this(range,0);    
   }
 
+  public SameOperandTypeChecker(IOperandCountRange range, int start) {    
+    this.range = range;
+    this.start = start;
+  }
+  
   @Override
-  public boolean checkOperandTypes(Call call) {
-    int nOperandsActual = range.getMax();
-    if (nOperandsActual == -1) {
-      nOperandsActual = call.getOperandCount();
+  public boolean checkOperandTypes(final Call call) {
+    int max = range.getMax();
+    if (max == -1) {
+      max = call.getOperandCount();
     }
-
+   
     DataFamily firstFamily = null;
-    for (int i = 0; i < nOperandsActual; i++) {
+    for (int i = start; i < max; i++) {
       IExpression operand = call.getOperand(i);
       DataType type = operand.getType();
       if (firstFamily != null) {
-        if (!type.isSameFamily(firstFamily)  ) {
+        if (!type.isSameFamily(firstFamily)) {
           return false;
         }
       } else {
