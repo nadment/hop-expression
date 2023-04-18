@@ -613,23 +613,23 @@ public class ExpressionBuilder {
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
   private Literal parseLiteralDate(Token token) throws ParseException {
+    DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
     try {
-      DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.INVALID_DATE.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
     }
   }
 
   /** Parses a time literal. */
   private Literal parseLiteralTime(Token token) throws ParseException {
+    DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
     try {
-      DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.INVALID_TIME.message(token.text()), token.start());
+      throw new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
     }
   }
 
@@ -714,7 +714,7 @@ public class ExpressionBuilder {
 
       return Literal.of(datetime);
     } catch (ZoneRulesException e) {
-      throw new ParseException(ExpressionError.UNKNOWN_TIMEZONE.message(token.text()),
+      throw new ParseException(ExpressionError.INVALID_TIMEZONE.message(token.text()),
           token.start());
     } catch (Exception e) {
       throw new ParseException(ExpressionError.INVALID_TIMESTAMP.message(token.text()),

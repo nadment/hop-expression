@@ -16,14 +16,11 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.expression.ExpressionError;
 import java.math.BigDecimal;
 import java.text.ParseException;
 
 public class CompositeNumberFormat extends NumberFormat {
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
   private final String pattern;
   private final SimpleNumberFormat[] formats;
 
@@ -47,8 +44,11 @@ public class CompositeNumberFormat extends NumberFormat {
       }
     }
 
-    throw new ParseException(
-        BaseMessages.getString(PKG, "Expression.UnparsableNumber", text, pattern), 0);
+    throw new ParseException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT.message(text, pattern), 0);
   }
 
+  @Override
+  public String toString() {
+    return pattern;
+  }
 }

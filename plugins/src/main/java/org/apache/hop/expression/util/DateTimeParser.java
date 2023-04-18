@@ -54,6 +54,10 @@ import java.time.ZonedDateTime;
   public boolean isTimeZoneOffset = false;
   public ZoneId zoneId = null;
 
+  protected boolean isAllCharParsed() {
+    return index==text.length();
+  }
+  
   protected char parseChar() {
 
     if (index == text.length())

@@ -382,7 +382,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
 
-    // TODO: Addition of days to DATE or TIMESTAMP
+    // Addition of days to DATE or TIMESTAMP
     evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
     evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
     evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
@@ -405,7 +405,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER-0.5", 39.5D);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     
-    // TODO: Subtraction of days to DATE or TIMESTAMP
+    // Subtraction of days to DATE or TIMESTAMP
     evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
     evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
     evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
@@ -413,6 +413,7 @@ public class OperatorsTest extends ExpressionTest {
     //evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     //evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 
+    // TODO: Diff of two date
     //evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
     //evalEquals("DATE '2019-02-23'-DATE '2019-02-25'", -2);
     //evalEquals("DATE '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
@@ -586,10 +587,14 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("'1234'::");
     evalFails("CAST('bad' AS)");
     evalFails("CAST('2020-01-01' AS NULL)");
-    evalFails("CAST(1234 AS STRING FORMAT )");
+    evalFails("CAST(1234 AS STRING FORMAT )");    
     evalFails("CAST(DATE '2019-02-25' AS String FORMAT )");
     evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)");
 
+    // Erreur parsing
+    evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
+    evalFails("CAST('2023-01' AS DATE FORMAT 'YYYY-MM-DD')");
+    
     // Unknown data type
     evalFails("Cast(123 as Nill)");
 

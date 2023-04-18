@@ -18,9 +18,14 @@ import java.time.ZonedDateTime;
 import java.util.Random;
 
 public enum Attribute {
-  CURRENT_TIMEZONE("timezone", String.class), CURRENT_TIMESTAMP("current_timestamp",
-      ZonedDateTime.class), CURRENT_DATE("current_data",
-          ZonedDateTime.class), RANDOM("random", Random.class);
+  //
+  CURRENT_TIMEZONE("$timezone", String.class),
+  //
+  CURRENT_TIMESTAMP("$current_timestamp", ZonedDateTime.class),
+  //
+  CURRENT_DATE("$current_date", ZonedDateTime.class),
+  // No seed random
+  RANDOM("$rand", Random.class);
 
   public final String id;
   public final Class<?> clazz;

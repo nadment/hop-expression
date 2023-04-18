@@ -19,11 +19,11 @@ import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoField;
@@ -270,10 +270,10 @@ import java.util.Locale;
      * @param calendar calendar to be appended
      * @throws Exception if an error occurs.
      */
-    public abstract void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception;
+    public void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception {      
+    };
 
-    public void parse(DateTimeParser parser) throws ParseException {
-
+    public void parse(DateTimeParser parser) {
     }
   }
 
@@ -291,7 +291,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       parser.index += value.length();
     }
   }
@@ -310,11 +310,11 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       char c = parser.parseChar();
       if (exactMode && ch != c) {
         // TODO: Translate
-        throw new ParseException("Parse date error", parser.index);
+        throw new DateTimeParseException("Parse date error", parser.text, parser.index);
       }
     }
   }
@@ -337,7 +337,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(DateTimeParser parser) throws ParseException {
+    public void parse(DateTimeParser parser) {
       String str = parser.parseString(AD_BC);
       if (str != null) {
         if (str.charAt(0) == 'B') {
@@ -424,7 +424,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       int index = parser.index;
 
       int len = 0;
@@ -444,7 +444,7 @@ import java.util.Locale;
         }
       }
 
-      throw new ParseException("Invalid roman month when parsing date with format RM", index);
+      throw new DateTimeParseException("Invalid roman month when parsing date with format RM", parser.text, index);
     }
   }
 
@@ -466,7 +466,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       String str = parser.parseString(AM_PM);
       if (str != null) {
         if (str.charAt(0) == 'P')
@@ -487,7 +487,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       int i = parser.index;
       char ch;
       while (i < parser.text.length()) {
@@ -531,7 +531,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
 
       // Skip space
       // int i = parser.position.getIndex();
@@ -557,7 +557,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       parser.timeZoneMinute = parser.parseInt(2);
       parser.isTimeZoneOffset = true;
     }
@@ -607,6 +607,23 @@ import java.util.Locale;
     }
   }
 
+  private static class SpaceFormat extends Format {
+    public SpaceFormat() {
+      super(true, true);
+    }
+    
+    public void parse(final DateTimeParser parser) {
+      // Skip space
+      int length = parser.text.length();
+      while( parser.index<length ) {
+        if ( !Characters.isSpace(parser.text.charAt(parser.index)) ) {
+          return;
+        }
+        parser.index++;
+      }
+    }
+  }
+  
   private static class JulianDayFormat extends Format {
     /** The offset from Julian to EPOCH DAY. */
     private static final long JULIAN_DAY_OFFSET = 2440588L;
@@ -662,7 +679,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       parser.hour = parser.parseInt(2);
       parser.isHourFormat12 = false;
     }
@@ -727,7 +744,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       if (exactMode) {
         parser.month = parser.parseExactInt(2);
       } else
@@ -741,7 +758,7 @@ import java.util.Locale;
       parser.isEpochDay = false;
     }
 
-    public void parseNameOfMonth(final DateTimeParser parser) throws ParseException {
+    public void parseNameOfMonth(final DateTimeParser parser)  {
       // Rule to try alternate format MONTH
       int index = parser.index;
       int month = 1;
@@ -765,7 +782,7 @@ import java.util.Locale;
         month++;
       }
 
-      throw new ParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"), index);
+      throw new DateTimeParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"), parser.text, index);
     }
   }
 
@@ -814,7 +831,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       parser.dayOfYear = parser.parseInt(3);
       parser.isDayOfYear = true;
       parser.isEpochDay = false;
@@ -897,7 +914,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       parser.year = parser.parseSignedInt(5);
       parser.isEpochDay = false;
     }
@@ -945,14 +962,17 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
-      if (length == 4) {
-        parser.year = parser.parseInt(4);
-      } else {
-        int year = parser.parseInt(2);
+    public void parse(final DateTimeParser parser) {
+      
+      if ( this.exactMode ) {
+        parser.year = parser.parseExactInt(length);
+      }
+      else if (length == 2) {
+        int year = parser.parseExactInt(2);
         year += (year < twoDigitYearStart - 1900) ? 2000 : 1900;
         parser.year = year;
-
+      } else {
+        parser.year = parser.parseInt(length);
       }
 
       parser.isEpochDay = false;
@@ -987,7 +1007,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
 
       int year = parser.parseInt(length);
 
@@ -1131,7 +1151,7 @@ import java.util.Locale;
     }
 
     @Override
-    public void parse(final DateTimeParser parser) throws ParseException {
+    public void parse(final DateTimeParser parser) {
       super.parseNameOfMonth(parser);
     }
   }
@@ -1196,7 +1216,7 @@ import java.util.Locale;
         index += 2;
         continue;
       }
-
+      
       // Special characters
       char ch = pattern.charAt(index);
       if (" =/\\\\-_:,.;()".indexOf(ch) >= 0) {
@@ -1204,7 +1224,7 @@ import java.util.Locale;
         index++;
         continue;
       }
-
+      
       // Literal text
       if (ch == '"') {
         index++;
@@ -1566,23 +1586,23 @@ import java.util.Locale;
           ExpressionError.INVALID_DATE_FORMAT.message(pattern, index));
     }
 
+    if ( !exactMode ) {
+      list.add(new SpaceFormat());
+    } 
+    
     return list.toArray(new Format[0]);
   }
 
-  public ZonedDateTime parse(String text) throws ParseException {
+  public ZonedDateTime parse(final String text) {
 
     DateTimeParser parser = new DateTimeParser(text);
-
-    // start at the first not white space symbol
-    // for (int start = position.getIndex(); start < text.length(); start++) {
-    // if (!Character.isSpaceChar(text.charAt(start))) {
-    // position.setIndex(start);
-    // break;
-    // }
-    // }
-
     for (Format format : formats) {
       format.parse(parser);
+    }
+
+    if (!parser.isAllCharParsed()) {
+      throw new DateTimeParseException(
+          ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, parser.index);
     }
 
     // Build the date
@@ -1590,7 +1610,6 @@ import java.util.Locale;
   }
 
   /**
-   * <p>
    * See also TO_CHAR(datetime) and datetime format models in the Oracle documentation.
    *
    * @param value the date-time value to format
@@ -1607,11 +1626,6 @@ import java.util.Locale;
     } catch (Exception e) {
       throw new RuntimeException("Error formating datetime " + value + " with pattern " + pattern);
     }
-  }
-
-  protected final ParseException createUnparsableDate(final String text, int index) {
-    return new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern),
-        index);
   }
 
   @Override
@@ -1664,5 +1678,10 @@ import java.util.Locale;
       buffer.append('0');
     }
     buffer.append(s);
+  }
+  
+  @Override
+  public String toString() {
+    return pattern;
   }
 }

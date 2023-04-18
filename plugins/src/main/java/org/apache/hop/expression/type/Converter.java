@@ -23,7 +23,6 @@ import org.apache.hop.expression.util.JsonComparator;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -150,12 +149,12 @@ public class Converter {
         return coerceToString(value);
       case DATE:
         if (value instanceof String) {
-          try {
+         // try {
             return DateTimeFormat.of(pattern).parse((String) value);
-          } catch (ParseException e) {
-            throw new IllegalArgumentException(
-                ExpressionError.INVALID_DATE.message(e.getMessage()));
-          }
+//          } catch (ParseException e) {
+//            throw new IllegalArgumentException(
+//                ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(value, pattern),e);
+//          }
         }
         break; 
       case JSON:
@@ -336,7 +335,7 @@ public class Converter {
     try {
       return ZoneId.of(zone);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.UNKNOWN_TIMEZONE, zone);
+      throw new ExpressionException(ExpressionError.INVALID_TIMEZONE, zone);
     }
   }
   

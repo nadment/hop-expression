@@ -67,7 +67,7 @@ public enum ExpressionError {
   //
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   //
-  INVALID_DATE("Expression.InvalidDate"),
+  //INVALID_DATE("Expression.InvalidDate"),
   //
   INVALID_TIMEUNIT("Expression.InvalidTimeUnit"),
   //
@@ -76,6 +76,8 @@ public enum ExpressionError {
   INVALID_TIME("Expression.InvalidTime"),
   //
   INVALID_TIMESTAMP("Expression.InvalidTimestamp"),
+  //
+  INVALID_TIMEZONE("Expression.InvalidTimeZone"),
   //
   INVALID_INTEGER("Expression.InvalidInteger"),
   //
@@ -112,10 +114,6 @@ public enum ExpressionError {
   UNSUPPORTED_JSON_TYPE("Expression.UnsupportedJsonType"),
   //
   UNSUPPORTED_ARRAY_TYPE("Expression.UnsupportedArrayType"),
-  //
-  UNKNOWN_DATATYPE("Expression.UnknownDataType"),
-  //
-  UNKNOWN_TIMEZONE("Expression.UnknownTimeZone"),
   //
   CONVERSION_ERROR("Expression.ConversionError"),
   //

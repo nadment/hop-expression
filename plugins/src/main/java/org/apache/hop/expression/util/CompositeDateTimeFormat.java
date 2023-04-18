@@ -16,14 +16,11 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.i18n.BaseMessages;
-import java.text.ParseException;
+import org.apache.hop.expression.ExpressionError;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 
 public class CompositeDateTimeFormat extends DateTimeFormat {
-  protected static final Class<?> PKG = IExpression.class; // for i18n purposes
-
   private final String pattern;
   private final ZonedDateTimeFormat[] formats;
 
@@ -38,7 +35,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
   }
 
   @Override
-  public ZonedDateTime parse(String text) throws ParseException {
+  public ZonedDateTime parse(String text) {
     for (DateTimeFormat format : formats) {
       try {
         return format.parse(text);
@@ -47,8 +44,7 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
       }
     }
 
-    throw new ParseException(
-        BaseMessages.getString(PKG, "Expression.UnparsableDate", text, pattern), 0);
+    throw new DateTimeParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, 0);
   }
 
   @Override

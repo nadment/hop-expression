@@ -18,13 +18,13 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.core.variables.Variables;
-import java.security.SecureRandom;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class ExpressionContext extends Variables implements IExpressionContext {
 
@@ -92,14 +92,14 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     this.setAttribute(Attribute.CURRENT_TIMEZONE, ZoneId.systemDefault().getId());
     this.setAttribute(Attribute.CURRENT_TIMESTAMP, now);
     this.setAttribute(Attribute.CURRENT_DATE, now.truncatedTo(ChronoUnit.DAYS));
-    this.setAttribute(Attribute.RANDOM, new SecureRandom());
+    this.setAttribute(Attribute.RANDOM, new Random());
   }
 
   protected void setAttribute(Attribute attribute, Object value) {
     attributes.put(attribute.id, value);
   }
 
-  protected void setAttribute(String id, Object value) {
+  public void setAttribute(String id, Object value) {
     attributes.put(id, value);
   }
 

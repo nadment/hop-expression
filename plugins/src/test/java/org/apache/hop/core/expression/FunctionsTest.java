@@ -21,7 +21,6 @@ import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -106,6 +105,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("If(true)");
     evalFails("If(true,2)");
     evalFails("If(true,2,'2')");
+    evalFails("If(Date '2023-01-01',1,2)");
     
     returnType("If(FIELD_BOOLEAN,'A','B')", DataType.STRING);
     returnType("If(FIELD_BOOLEAN,1,2)", DataType.INTEGER);
@@ -205,8 +205,8 @@ public class FunctionsTest extends ExpressionTest {
   public void Current_Date() throws Exception {
     ExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_DATE.get(context);
-    evalEquals("Today()", today, context);
-    evalEquals("Current_Date()", today, context);
+    evalEquals(context, "Today()", today);
+    evalEquals(context, "Current_Date()", today);
 
     evalFails("Today(Null)");
 
@@ -217,8 +217,8 @@ public class FunctionsTest extends ExpressionTest {
   public void Current_Timestamp() throws Exception {
     ExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.get(context);
-    evalEquals("Now()", today, context);
-    evalEquals("Current_Timestamp()", today, context);
+    evalEquals(context, "Now()", today);
+    evalEquals(context, "Current_Timestamp()", today);
 
     evalFails("Now(Null)");
 
@@ -433,8 +433,7 @@ public class FunctionsTest extends ExpressionTest {
     
     evalFails("Upper()");   
 
-    // Alias
-    // evalEquals("UCase('test')", "TEST");
+    returnType("Upper('test')", DataType.STRING);
   }
 
   @Test
@@ -445,6 +444,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
     evalNull("InitCap(NULL_STRING)");
     evalFails("InitCap()");
+    returnType("InitCap('test')", DataType.STRING);
   }
 
   @Test
@@ -477,6 +477,8 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)");
     evalFails("Instr()");
+    
+    returnType("Instr('CORPORATE FLOOR','OR')", DataType.INTEGER);
   }
 
   @Test
@@ -523,6 +525,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("MonthName(DATE '2019-12-28')", "December");
     evalNull("MonthName(NULL_DATE)");
     evalFails("MonthName()");
+    
+    returnType("MonthName(DATE '2019-01-01')", DataType.STRING);
   }
 
   @Test
@@ -531,6 +535,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("DayName(DATE '2019-12-28')", "Saturday");
     evalNull("DayName(NULL_DATE)");
     evalFails("DayName()");
+    
+    returnType("DayName(DATE '2019-01-01')", DataType.STRING);
   }
 
   @Test
@@ -541,6 +547,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Month(NULL_DATE)");
     evalFails("Month()");
     evalFails("Month(FIELD_INTEGER)");
+    
+    returnType("Month(DATE '2019-01-01')", DataType.INTEGER);
   }
 
   @Test
@@ -821,7 +829,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("DATE_ADD(HOUR,1,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 1, 0, 0, 0));
     evalEquals("DATE_ADD(MINUTE,20,DATE '2019-01-15')",LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
     evalEquals("DATE_ADD(SECOND,140,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
-   // TODO: evalEquals("DATE_ADD(NANOSECOND,23,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 000000023));
+    evalEquals("DATE_ADD(NANOSECOND,23,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 23));
   }
   
   @Test
@@ -896,6 +904,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Split_Part('127.1.2.3','.',NULL_INTEGER)");
 
     evalFails("Split_Part('127.1.2.3','.')");
+    
+    returnType("Split_Part('127.1.2.3','.',1)", DataType.STRING);
   }
 
   @Test
@@ -1034,6 +1044,8 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Atan2()");
     evalFails("Atan2(1)");
     evalFails("Atan2(FIELD_STRING)");
+    
+    returnType("Atan2(0,3)", DataType.NUMBER);
   }
 
   @Test
@@ -1043,6 +1055,8 @@ public class FunctionsTest extends ExpressionTest {
     
     evalFails("Atanh()");
     evalFails("Atanh(FIELD_STRING)");
+    
+    returnType("Atanh(0.2)", DataType.NUMBER);
   }
 
   @Test
@@ -1335,6 +1349,9 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Left(NULL_STRING,4)");
     evalNull("Left('TEST',NULL_INTEGER)");
     evalFails("Left()");
+    
+    returnType("Left('TEST FROM',4)", DataType.STRING);
+    returnType("Left(0x1234567890, 2)", DataType.BINARY);
   }
 
   @Test
@@ -1360,6 +1377,9 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Right(NULL_STRING,4)");
     evalNull("Right('TEST',NULL_INTEGER)");
     evalFails("Right()");
+    
+    returnType("Right('TEST FROM',4)", DataType.STRING);
+    returnType("Right(0x1234567890, 2)", DataType.BINARY);
   }
 
   @Test
@@ -1925,6 +1945,11 @@ public class FunctionsTest extends ExpressionTest {
         LocalDateTime.of(2019, Month.FEBRUARY, 13, 15, 34, 56));
 
     evalEquals("To_Date('01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals("To_Date(' 01/02/2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals("To_Date('01/02/2020 ','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals("To_Date('01/ 02/2020 ','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalEquals("To_Date('01/ 2/2020 ','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    
     evalEquals("To_Date('01/II/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
     evalEquals("To_Date('01/VII/2020','DD/RM/YYYY')", LocalDate.of(2020, Month.JULY, 1));
 
@@ -1936,11 +1961,11 @@ public class FunctionsTest extends ExpressionTest {
 
     ExpressionContext context = createExpressionContext();
     context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
-    evalEquals("To_Date('01/02/69','DD/MM/YY')", LocalDate.of(2069, 2, 1), context);
+    evalEquals(context, "To_Date('01/02/69','DD/MM/YY')", LocalDate.of(2069, 2, 1));
     context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
-    evalEquals("To_Date('01/02/70','DD/MM/YY')", LocalDate.of(1970, 2, 1), context);
+    evalEquals(context, "To_Date('01/02/70','DD/MM/YY')", LocalDate.of(1970, 2, 1));
     context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1), context);
+    evalEquals(context, "To_Date('01/02/80','DD/MM/YY')", LocalDate.of(2080, 2, 1));
 
     // TO VERIFY
     evalEquals("To_Date('01-jan-4710bc','dd-mon-yyyybc')", LocalDate.of(-4709, 1, 1));
@@ -2002,13 +2027,11 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("To_Date('1721426','J')", LocalDate.of(1, 1, 1));
     evalEquals("To_Date('1001426','J')", LocalDate.of(-1971, 9, 16));
 
-
-    // FX
-    // evalEquals("To_Date('15/ 02 /2020','DD/MM/YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
-    // evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')");
+    // FX    
+    evalFails("To_Date('15/ Feb /2020','FXDD/MM/YYYY')");
     evalFails("To_Date('1-02-2020','FXDD/MM/YYYY')");
-    // evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
-    // evalEquals("To_Date('1/02/2020','FXFMDD-MON-YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
+    evalFails("To_Date('1/02/2020','FXDD/MM/YYYY')");
+    //evalEquals("To_Date('1/02/2020','FXFMDD-MON-YYYY')", LocalDate.of(2020, Month.FEBRUARY, 1));
 
     // Is interpreted as 10 February 2003
     // evalEquals("To_Date('06-2003-MON','WW-YYYY-DY')", LocalDate.of(2003, 2, 10));
@@ -2168,6 +2191,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Date_Trunc(DAYOFMONTH, DATE '2020-05-25')", LocalDate.of(2020, Month.MAY, 25));
     evalEquals("Date_Trunc(QUARTER, DATE '2020-05-25')", LocalDate.of(2020, Month.APRIL, 1));
     evalEquals("Date_Trunc(WEEK, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
+    evalEquals("Date_Trunc(WEEK, DATE '2021-01-01')", LocalDate.of(2020, Month.DECEMBER, 28));   
     evalEquals("Date_Trunc(WEEKOFYEAR, DATE '2020-05-28')", LocalDate.of(2020, Month.MAY, 25));
     
     evalNull("Date_Trunc(DAY, NULL_TIMESTAMP)");
@@ -2712,16 +2736,29 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Random() throws Exception {
+    evalTrue("Random()>0");
+    
+    // Keep the same context
+    ExpressionContext context = this.createExpressionContext(true);
 
-    Random random = new SecureRandom();
-    random.setSeed(180);
-    // Hard to test, not the same on each JVM
-    // evalEquals("Rand(180)", random.nextDouble());
-    evalTrue("Random(0)>0");
-    evalTrue("Random(180)>0");
+    // Warning Random implementation is not the same on each JVM
+    Random random2 = new Random(2);
+    Random random6 = new Random(6);
+    
+    evalEquals(context, "Random(2)", random2.nextDouble());
+    evalEquals(context, "Random(2)", random2.nextDouble());
+    evalEquals(context, "Random(6)", random6.nextDouble());
+    evalEquals(context, "Random(2)", random2.nextDouble());
+    evalEquals(context, "Random(6)", random6.nextDouble());
+    evalEquals(context, "Random(2)", random2.nextDouble());
 
+    evalFails("Random('test')");
+    evalFails("Random(1,2)");
+    
     // Alias
-    // evalTrue("Rand()>0");
+    evalTrue("Rand()>0");
+    
+    returnType("Random()", DataType.NUMBER);
   }
 
   @Test
@@ -2750,6 +2787,8 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Bit_Get()");
     evalFails("Bit_Get(123)");
+    
+    returnType("Bit_Get(3,4)", DataType.BOOLEAN);
   }
 
   @Test
@@ -2762,6 +2801,8 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Bit_Count()");
     evalFails("Bit_Count(1,2)");
+    
+    returnType("Bit_Count(31)", DataType.INTEGER);
   }
 
   @Test
@@ -2781,6 +2822,8 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Bit_Set()");
     evalFails("Bit_Set(123)");
+    
+    returnType("Bit_Set(16,1)", DataType.INTEGER);
   }
 
   @Test
@@ -2798,6 +2841,8 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Bit_Clear()");
     evalFails("Bit_Clear(123)");
+    
+    returnType("Bit_Clear(3,1)", DataType.INTEGER);
   }
 
   @Test
@@ -2829,6 +2874,8 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Bit_Shift()");
     evalFails("Bit_Shift(123)");
     evalFails("Bit_Shift(DATE '2022-11-25', 3)");
+    
+    returnType("Bit_Shift(1,4)", DataType.INTEGER);
   }
 
   @Test
@@ -2850,6 +2897,8 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Bit_Rotate()");
     evalFails("Bit_Rotate(123)");
+    
+    returnType("Bit_Rotate(1,4)", DataType.INTEGER);
   }
 
   @Test
@@ -2864,8 +2913,6 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Count() throws Exception {
-
-
     evalFails("Count()");
     evalFails("Count(DISTINCT )");
     evalFails("Count(1,2)");
@@ -2935,8 +2982,6 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Date_Part(HOUR,TIMESTAMP '2020-05-25 23:48:59')", 23L);
 
     returnType("EXTRACT(CENTURY FROM FIELD_DATE)", DataType.INTEGER);
-    // TODO: 
-    //returnType("EXTRACT(TIMEZONE_REGION FROM FIELD_DATE)", DataTypeName.STRING);
   }
 
   @Test
@@ -2953,4 +2998,5 @@ public class FunctionsTest extends ExpressionTest {
     returnType("Position('abc' IN 'abcdefgh')", DataType.INTEGER);
   }
 }
+
 

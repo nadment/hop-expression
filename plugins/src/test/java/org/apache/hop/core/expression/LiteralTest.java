@@ -123,6 +123,8 @@ public class LiteralTest extends ExpressionTest {
     evalFalse("'No'::Boolean");
     evalNull("NULL");
     
+    evalFails("'YEP'::Boolean");
+    
     writeEquals("TRUE", "TRUE");
     
     returnType("TRUE and TRUE", DataType.BOOLEAN);
@@ -151,10 +153,13 @@ public class LiteralTest extends ExpressionTest {
 
   @Test
   public void Integer() throws Exception {
-    assertEquals(Literal.ZERO, Literal.of(0));
     assertEquals(Literal.ZERO, Literal.of(0L));
-    assertEquals(Literal.ONE, Literal.of(1));
     assertEquals(Literal.ONE, Literal.of(1L));
+    
+    // For internal use int.class are supported
+    assertEquals(Literal.ZERO, Literal.of(0));
+    assertEquals(Literal.ONE, Literal.of(1));
+    
     assertEquals("-123456", Literal.of(-123456L).toString());
 
     // Integer
@@ -214,14 +219,18 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.of(datetime), Literal.of(datetime));
 
     evalEquals("DaTe '2021-02-25'", LocalDate.of(2021, 2, 25));
-    evalEquals("DATE '21-02-25'", LocalDate.of(21, 2, 25));
 
     // Fails because literal use exact mode
     evalFails("DATE '2021-Feb-25'");
     evalFails("DATE '2021-2-25'");
     evalFails("DATE '2021-02-2'");
+    evalFails("DATE ' 2021-02-02'");
+    evalFails("DATE '2021-02-02 '");
+    evalFails("DATE '2021 -02-02'");
+    evalFails("DATE '2021- 02-02'");
     evalFails("DATE '2021-02-32'");
-  //TODO: evalFails("DATE '21-02-25'");
+    evalFails("DATE '21-02-25'");
+    evalFails("DATE '201-02-25'");
     
     writeEquals("DATE '2021-02-25'");
 
@@ -294,6 +303,11 @@ public class LiteralTest extends ExpressionTest {
     writeEquals("TIMESTAMP '2021-12-01 12:01:01.999999 +02:00'");
     writeEquals("TIMESTAMP '2021-12-01 12:01:01.999999999 +02:00'");
     writeEquals("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'Europe/Paris'");   
+        
+    evalFails("TIMESTAMP '21-02-25 23:59:59.999999999'");
+    evalFails("TIMESTAMP '2021-01-01 15:28:59.123456789' AT TIME ZONE 'test'");
+    
+    // TODO: evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'");
     
     returnType("TIMESTAMP '2021-12-01 12:01:01'", DataType.DATE);
     returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DataType.DATE);

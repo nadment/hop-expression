@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -29,7 +30,7 @@ import java.util.Random;
 /**
  * Return a random number between 0 (inclusive) and 1 (exclusive).
  */
-@FunctionPlugin
+@FunctionPlugin(names = "RAND")
 public class RandomFunction extends Function {
 
   public RandomFunction() {
@@ -41,13 +42,20 @@ public class RandomFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
 
-    Random random = Attribute.RANDOM.get(context);
-
     if (operands.length == 1) {
-      Long seed = operands[0].getValue(context, Long.class);
-      // FIXME: What if multi random in the same context with different SEED ?
-      random.setSeed(seed);
+      Long seed = operands[0].getValue(context, Long.class);     
+      String name = "$rand"+seed;
+      Random random = (Random) context.getAttribute(name);
+      if ( random==null) {
+        random = new Random();
+        random.setSeed(seed); 
+        ((ExpressionContext) context).setAttribute(name, random);
+      }
+      
+      return random.nextDouble();
     }
+    
+    Random random = Attribute.RANDOM.get(context);
     return random.nextDouble();
   }
 }

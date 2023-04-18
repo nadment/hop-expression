@@ -259,7 +259,7 @@ public abstract class DateTimeFormat extends BaseFormat {
     return new ZonedDateTimeFormat(pattern);
   }
 
-  public abstract ZonedDateTime parse(String text) throws ParseException;
+  public abstract ZonedDateTime parse(String text);
 
   /**
    * <p>

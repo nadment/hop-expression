@@ -36,7 +36,6 @@ import java.util.regex.PatternSyntaxException;
 @FunctionPlugin
 public class RegexpSubstrFunction extends Function {
 
-  // TODO: Check operands type
   public RegexpSubstrFunction() {
     super("REGEXP_SUBSTR", true, ReturnTypes.STRING,
         OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_STRING, OperatorCategory.STRING,

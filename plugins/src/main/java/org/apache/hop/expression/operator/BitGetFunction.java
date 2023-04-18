@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitGetFunction extends Function {
 
   public BitGetFunction() {
-    super("BIT_GET", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+    super("BIT_GET", true, ReturnTypes.BOOLEAN, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_get.html");
   }
 
