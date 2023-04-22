@@ -17,8 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -27,6 +25,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
+import java.time.ZonedDateTime;
 
 /**
  * Converts a string expression to a date value.
@@ -35,7 +34,11 @@ import org.apache.hop.expression.util.DateTimeFormat;
 public class ToDateFunction extends Function {
 
   public ToDateFunction() {
-    super("TO_DATE", true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_STRING,
+    this("TO_DATE");
+  }
+
+  protected ToDateFunction(final String id) {
+    super(id, true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_date.html");
   }
 
@@ -46,21 +49,23 @@ public class ToDateFunction extends Function {
     if (value == null)
       return null;
 
-    String format = null;
+    String pattern = null;
     if (operands.length > 1) {
-      format = operands[1].getValue(context, String.class);
+      pattern = operands[1].getValue(context, String.class);
     } else {
-      format = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+      pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
     }
 
-    try {
-      int twoDigitYearStart = Integer
-          .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
-      DateTimeFormat formatter = DateTimeFormat.of(format);
-      formatter.setTwoDigitYearStart(twoDigitYearStart);
-      return formatter.parse(value);
-    } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, this.getName(), e.getMessage());
-    }
+
+    int twoDigitYearStart = Integer
+        .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+    DateTimeFormat format = DateTimeFormat.of(pattern);
+    format.setTwoDigitYearStart(twoDigitYearStart);
+
+    return parse(value, format);
+  }
+
+  public ZonedDateTime parse(String value, DateTimeFormat format) throws Exception {
+    return format.parse(value);
   }
 }

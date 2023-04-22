@@ -14,14 +14,19 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_NUMBER
+= TO_NUMBER, TRY_TO_NUMBER
 
 Converts a string into a number.
 
 == Syntax
 ----
 TO_NUMBER( string [, format ] )
+TRY_TO_NUMBER( string [, format ] )
 ----
+
+Return:: BigNumber
+
+If the conversion is not possible, TO_NUMBER raises an error and TRY_TO_NUMBER returns a NULL value.
 
 == Usage
 

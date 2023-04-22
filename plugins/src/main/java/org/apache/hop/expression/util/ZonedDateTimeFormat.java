@@ -1182,7 +1182,6 @@ import java.util.Locale;
 
   public ZonedDateTimeFormat(final String pattern) {
     this(pattern, Locale.getDefault());
-    this.formats = formats();
   }
 
   public ZonedDateTimeFormat(final String pattern, final Locale locale) {

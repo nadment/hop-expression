@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
@@ -37,7 +38,11 @@ import java.util.Base64;
 public class ToBinaryFunction extends Function {
 
   public ToBinaryFunction() {
-    super("TO_BINARY", true, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_STRING,
+    this("TO_BINARY");
+  }
+  
+  public ToBinaryFunction(final String id) {
+    super(id, true, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_binary.html");
   }
 
@@ -53,21 +58,32 @@ public class ToBinaryFunction extends Function {
       format = operands[1].getValue(context, String.class);  
     }    
     
-    if ( format==null ) {
-      return null;
-    }
-    format = format.toUpperCase(); 
-    
-    if ( format.equals("HEX")) {
-      return Hex.decodeHex(value);
-    }
-    if ( format.equals("BASE64")) {
-      return Base64.getDecoder().decode(value);
-    }    
-    if ( format.equals("UTF-8") || format.equals("UTF8")) {
-      return value.getBytes(StandardCharsets.UTF_8);
+    if (format != null) {
+      format = format.toUpperCase();
+
+      if (format.equals("HEX")) {
+        return formatHex(value);
+      }
+      if (format.equals("BASE64")) {
+        return formatBase64(value);
+      }
+      if (format.equals("UTF-8") || format.equals("UTF8")) {
+        return formatUtf8(value);
+      }
     }
     
     throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+  }
+  
+  protected byte[] formatHex(String value) throws DecoderException {
+    return Hex.decodeHex(value);
+  }
+  
+  protected byte[] formatBase64(String value) {
+    return Base64.getDecoder().decode(value);
+  }
+    
+  protected byte[] formatUtf8(String value) {
+    return value.getBytes(StandardCharsets.UTF_8);
   }
 }

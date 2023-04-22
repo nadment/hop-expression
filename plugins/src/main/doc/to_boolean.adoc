@@ -14,23 +14,28 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_BOOLEAN
+= TO_BOOLEAN, TRY_TO_BOOLEAN
 
 Converts the input text or numeric expression to a Boolean value.
 
 == Syntax
 ----
 TO_BOOLEAN( {string | numeric} )
+TRY_TO_BOOLEAN( {string | numeric} )
 ----
 
 Return:: Boolean
 
 == Usage
 
+If the conversion is not possible, TO_BOOLEAN raises an error and TRY_TO_BOOLEAN returns a NULL value.
+
 For a text expression, string must be::
-* 'true', 't', 'yes', 'y', 'on', '1' return TRUE.
-* 'false', 'f', 'no', 'n', 'off', '0' return FALSE.
-*  All other strings return an error.
+
+* 'true', 't', 'yes', 'y', 'on', '1' return TRUE
+* 'false', 'f', 'no', 'n', 'off', '0' return FALSE
+* TO_BOOLEAN return an error for all other strings
+* TRY_TO_BOOLEAN return NULL for all other strings
 
 Strings are case-insensitive.
 

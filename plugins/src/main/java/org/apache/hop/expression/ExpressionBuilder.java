@@ -1015,6 +1015,7 @@ public class ExpressionBuilder {
     // Function with custom syntax
     switch(token.text()) {
       case "CAST":
+      case "TRY_CAST":
         return parseFunctionCast(token, function);
       case "EXTRACT":
         return parseFunctionExtract(token, function);

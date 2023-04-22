@@ -14,6 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.commons.lang.math.JVMRandom;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.type.Converter;
@@ -21,6 +22,7 @@ import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -35,52 +37,99 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Abort() throws Exception {
-    evalFails("Abort('Custom error message')");
+    evalFails("ABORT('Custom error message')");
   }
 
   @Test
-  public void Try() throws Exception {
-
-    // Division by zero
-    evalNull("TRY(10/0)");
+  public void TryCast() throws Exception {
 
     // String to Boolean
-    evalTrue("TRY(CAST('Yes' as Boolean))");
-    evalFalse("TRY(CAST('False' as Boolean))");
-    evalNull("TRY(CAST('Fake' as Boolean))");
+    evalTrue("TRY_CAST('Yes' as Boolean)");
+    evalFalse("TRY_CAST('False' as Boolean)");
+    evalNull("TRY_CAST('Fake' as Boolean)");
 
     // Number to Boolean
-    evalTrue("TRY(CAST(1 as Boolean))");
-    evalTrue("TRY(CAST(-12.1 as Boolean))");
-    evalNull("TRY(CAST('test' as Boolean))");
+    evalTrue("TRY_CAST(1 as Boolean)");
+    evalTrue("TRY_CAST(-12.1 as Boolean)");
+    evalNull("TRY_CAST('test' as Boolean)");
 
     // Date to String
-    evalEquals("TRY(CAST(DATE '2019-02-25' AS STRING FORMAT 'DD/MM/YYYY'))", "25/02/2019");
-    evalNull("TRY(CAST('2019-99-25' AS DATE))");
-    evalNull("TRY(CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD'))");
-    evalNull("TRY(CAST(NULL_STRING AS DATE))");
-    evalNull("Try(To_Date('2019-13-13','YYYY-MM-DD'))");
-    evalEquals("Try(To_Date('2019-02-13','YYYY-MM-DD'))", LocalDate.of(2019, 2, 13));
+    evalEquals("TRY_CAST(DATE '2019-02-25' AS STRING FORMAT 'DD/MM/YYYY')", "25/02/2019");
+    evalNull("TRY_CAST('2019-99-25' AS DATE)");
+    evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
+    evalNull("TRY_CAST(NULL_STRING AS DATE)");
 
     // Bad syntax
-    evalFails("TRY(CAST('2020-01-021' AS NULL))");
-    evalFails("TRY(CAST('2020-01-021' AS DATE FORMAT NULL))");
-    evalFails("TRY(CAST('bad' AS))");
-    evalFails("TRY(CAST(1234 AS STRING FORMAT ))");
-    evalFails("TRY(CAST(DATE '2019-02-25' AS String FORMAT ))");
+    evalFails("TRY_CAST('2020-01-021' AS NULL)");
+    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT NULL_STRING)");
+    evalFails("TRY_CAST('bad' AS)");
+    evalFails("TRY_CAST(1234 AS STRING FORMAT )");
+    evalFails("TRY_CAST(DATE '2019-02-25' AS String FORMAT )");
 
     // Bad data type
-    evalFails("Try(Cast(123 as Nill))");
+    evalFails("Try_Cast(123 as Nill)");
 
-    writeEquals("TRY(CAST(FIELD_BINARY AS BINARY))");
-    writeEquals("TRY(CAST(FIELD_INTEGER AS NUMBER))");
-    writeEquals("TRY(CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD'))");
+    // Bad format
+    // TODO: evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')");
+    
+    writeEquals("TRY_CAST(FIELD_BINARY AS BINARY)");
+    writeEquals("TRY_CAST(FIELD_INTEGER AS NUMBER)");
+    writeEquals("TRY_CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD')");
 
-    returnType("Try(TRUE)", DataType.BOOLEAN);
-    returnType("Try('String')", DataType.STRING);
-    returnType("Try(DATE '2020-07-01')", DataType.DATE);
+    returnType("TRY_CAST('TRUE' as BOOLEAN)", DataType.BOOLEAN);
+    returnType("TRY_CAST('String' as STRING)", DataType.STRING);
+    returnType("TRY_CAST('2020-07-01' as DATE)", DataType.DATE);
   }
 
+  @Test
+  public void TryToBinary() throws Exception {
+    evalEquals("TRY_TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes());    
+    evalEquals("TRY_TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
+    evalNull("TRY_TO_BINARY('Z4','HEX')");
+    
+    evalEquals("TRY_TO_BINARY(BASE64_ENCODE('Apache Hop'),'BASE64')", "Apache Hop".getBytes());
+    evalEquals("TRY_TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
+    
+    evalEquals("TRY_TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
+    
+    evalNull("TRY_TO_BINARY(NULL_STRING)");
+    
+    evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)");
+    evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')");    
+    evalFails("TRY_TO_BINARY()");
+  }
+  
+  @Test
+  public void TryToBoolean() throws Exception {
+    evalTrue("TRY_TO_BOOLEAN('True')");
+    evalFalse("TRY_TO_BOOLEAN('falSE')");
+    evalNull("TRY_TO_BOOLEAN('test')");
+    evalFails("TRY_TO_BOOLEAN()");
+    returnType("TRY_TO_BOOLEAN('True')", DataType.BOOLEAN);
+  }
+
+  @Test
+  public void TryToNumber() throws Exception {
+    evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D);   
+    
+    // Return NULL if parsing failed
+    evalNull("TRY_TO_NUMBER('54Z67z12', '999999D99')");
+
+    // Failed if format is bad 
+    evalFails("TRY_TO_BINARY('5467.12', '11.99')");
+  }
+  
+  @Test
+  public void TryToDate() throws Exception {    
+    evalEquals("TRY_TO_DATE('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));    
+    
+    // Return NULL if parsing failed
+    evalNull("TRY_TO_DATE('2019-13-13','YYYY-MM-DD')");
+    
+    // Failed if format is bad 
+    evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
+  }  
+  
   @Test
   public void Coalesce() throws Exception {
     evalEquals("Coalesce(1,2,3)", 1L);
@@ -1461,8 +1510,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
     
     evalNull("TO_BINARY(NULL_STRING)");
-    evalNull("TO_BINARY('Apache Hop',NULL_STRING)");
     
+    evalFails("TO_BINARY('Apache Hop',NULL_STRING)");    
     evalFails("TO_BINARY()");
   }
 
@@ -2742,9 +2791,9 @@ public class FunctionsTest extends ExpressionTest {
     ExpressionContext context = this.createExpressionContext(true);
 
     // Warning Random implementation is not the same on each JVM
-    Random random2 = new Random(2);
+    Random random2 = new Random(2);    
     Random random6 = new Random(6);
-    
+        
     evalEquals(context, "Random(2)", random2.nextDouble());
     evalEquals(context, "Random(2)", random2.nextDouble());
     evalEquals(context, "Random(6)", random6.nextDouble());
@@ -2998,5 +3047,6 @@ public class FunctionsTest extends ExpressionTest {
     returnType("Position('abc' IN 'abcdefgh')", DataType.INTEGER);
   }
 }
+
 
 

@@ -14,16 +14,20 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TO_DATE
+= TO_DATE, TRY_TO_DATE
 
 Converts a string into a date.
-
 == Syntax
 ----
 TO_DATE( string [, format ] )
+TRY_TO_DATE( string [, format ] )
 ----
 
+Return:: Date
+
 == Usage
+
+If the conversion is not possible, TO_DATE raises an error and TRY_TO_DATE returns a NULL value. 
 
 include::dateformat.adoc[]
 

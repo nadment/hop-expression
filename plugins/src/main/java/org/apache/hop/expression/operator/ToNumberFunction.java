@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -25,6 +24,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.NumberFormat;
+import java.math.BigDecimal;
 
 /**
  * Converts a string expression to a number value.
@@ -33,7 +33,11 @@ import org.apache.hop.expression.util.NumberFormat;
 public class ToNumberFunction extends Function {
 
   public ToNumberFunction() {
-    super("TO_NUMBER", true, ReturnTypes.BIGNUMBER, OperandTypes.STRING_OPTIONAL_STRING,
+    this("TO_NUMBER");
+  }
+  
+  protected ToNumberFunction(final String id) {
+    super(id, true, ReturnTypes.BIGNUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
 
@@ -42,17 +46,19 @@ public class ToNumberFunction extends Function {
     String value = operands[0].getValue(context, String.class);
     if (value == null)
       return null;
-
-    try {     
-      String format = "TM";
+    
+      String pattern = "TM";
 
       // With format
       if (operands.length == 2) {
-        format = operands[1].getValue(context, String.class);
+        pattern = operands[1].getValue(context, String.class);
       }
-      return NumberFormat.of(format).parse(value);
-    } catch (Exception e) {
-      throw new ExpressionException(e.getMessage());
-    }
+      
+      NumberFormat format = NumberFormat.of(pattern);      
+      return parse(value, format);
+  }
+  
+  public BigDecimal parse(String value, NumberFormat format) throws Exception {
+    return format.parse(value);
   }
 }

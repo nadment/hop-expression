@@ -181,11 +181,7 @@ public final class OperandTypes {
       family(DataFamily.TEMPORAL, DataFamily.STRING);
   public static final IOperandTypeChecker DATE_OPTIONAL_STRING =
       family(DataFamily.TEMPORAL, DataFamily.STRING).optional(i -> i == 1);
-  public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT =
-      sequence(DATE, TIMEUNIT).optional(i -> i == 1);
-  public static final IOperandTypeChecker DATE_OPTIONAL_TEXT =
-      sequence(OperandTypes.DATE, OperandTypes.TEXT).optional(i -> i == 1);
-
+    
   public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT, DATE);
   public static final IOperandTypeChecker TIMEUNIT_NUMERIC_DATE = sequence(TIMEUNIT, NUMERIC, DATE);
   public static final IOperandTypeChecker TIMEUNIT_DATE_DATE = sequence(TIMEUNIT, DATE, DATE);
@@ -232,6 +228,13 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING_STRING_DATE =
       family(DataFamily.STRING, DataFamily.STRING, DataFamily.TEMPORAL);
 
+  public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT =
+      sequence(DATE, TIMEUNIT).optional(i -> i == 1);
+  public static final IOperandTypeChecker DATE_OPTIONAL_TEXT =
+      sequence(DATE, TEXT).optional(i -> i == 1);
+  public static final IOperandTypeChecker STRING_OPTIONAL_TEXT =
+      sequence(STRING, TEXT).optional(i -> i == 1);
+  
   public static final IOperandTypeChecker JSON = family(DataFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(DataFamily.JSON, DataFamily.STRING);
 

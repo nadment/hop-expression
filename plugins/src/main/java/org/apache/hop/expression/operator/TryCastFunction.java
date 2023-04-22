@@ -14,40 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Converts a string or numeric expression to a boolean value.
+ * Converts a value of one data type into another data type <code>TRY_CAST(value AS type [FORMAT format])</code>.
+ * 
+ * @see CastOperator
  */
 @FunctionPlugin
-public class ToBooleanFunction extends Function {
-
-  public ToBooleanFunction() {
-    this("TO_BOOLEAN");
+public class TryCastFunction extends CastFunction {
+  
+  public TryCastFunction() {
+    super("TRY_CAST");
   }
   
-  protected ToBooleanFunction(final String id) {
-    super(id, true, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
-        "/docs/to_boolean.html");
-  }
-
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws Exception {
-    Object value = operands[0].getValue(context);
-    if (value == null)
+  protected Object cast(final Object value, final DataType type, final String format) {
+    try {
+      return Converter.cast(value, type, format);
+    } catch (RuntimeException e) {
       return null;
-
-    return Converter.cast(value, DataType.BOOLEAN, null);
+    }
   }
 }

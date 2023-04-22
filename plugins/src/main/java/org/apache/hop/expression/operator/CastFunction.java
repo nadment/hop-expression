@@ -37,7 +37,11 @@ import java.io.StringWriter;
 public class CastFunction extends Function {
 
   public CastFunction() {
-    super("CAST", true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
+    this("CAST");
+  }
+  
+  protected CastFunction(final String id) {
+    super(id, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
@@ -54,12 +58,17 @@ public class CastFunction extends Function {
       format = operands[2].getValue(context, String.class);
     }
 
+    return cast(value, type, format);
+  }
+  
+  protected Object cast(Object value, DataType type, String format) {
     return Converter.cast(value, type, format);
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("CAST(");
+    writer.append(this.getName());
+    writer.append('(');
     operands[0].unparse(writer);
     writer.append(" AS ");
     writer.append(operands[1].toString());

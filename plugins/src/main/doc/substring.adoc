@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SUBSTR[ING]
+= SUBSTRING, SUBSTR
 
 Returns the portion of the string from string, starting from the character/byte specified by start, with optionally limited	length.
 		

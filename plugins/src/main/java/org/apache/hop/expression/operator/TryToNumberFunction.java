@@ -14,32 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.NumberFormat;
+import java.math.BigDecimal;
 
 /**
- * This function returns the value of expression. If an error occurs, null is returned.
+ * Converts a string expression to a number value.
  */
 @FunctionPlugin
-public class TryFunction extends Function {
-
-  public TryFunction() {
-    super("TRY", true, ReturnTypes.ARG0, OperandTypes.ANY, OperatorCategory.SPECIAL,
-        "/docs/try.html");
+public class TryToNumberFunction extends ToNumberFunction {
+  
+  public TryToNumberFunction() {
+    super("TRY_TO_NUMBER");
   }
-
+  
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-
+  public BigDecimal parse(final String value, final NumberFormat format) {
     try {
-      return operands[0].getValue(context);
+      return format.parse(value);
     } catch (Exception e) {
       return null;
     }

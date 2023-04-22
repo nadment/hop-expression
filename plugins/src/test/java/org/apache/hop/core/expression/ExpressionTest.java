@@ -47,7 +47,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
@@ -350,7 +349,8 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //evalFails("DATE '21-02-25'");
-    evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
+    //evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
+    evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
   }
 }
 
