@@ -107,7 +107,14 @@ public interface IExpression {
    */
   public <T extends Object> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException;
   
-  public IExpression validate(final IExpressionContext context) throws ExpressionException;
+  /**
+   * Validate and compile the expression
+   * 
+   * @param context The context against which the expression will be validated.
+   * @return 
+   * @throws ExpressionException if an error occurs.
+   */
+  public IExpression validate(IExpressionContext context) throws ExpressionException;
   
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}

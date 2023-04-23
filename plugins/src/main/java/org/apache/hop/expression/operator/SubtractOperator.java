@@ -16,10 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -40,6 +44,32 @@ public class SubtractOperator extends Operator {
         OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/subtract.html");
   }
 
+  /**
+   * Simplify arithmetic subtract
+   */
+  @Override
+  public IExpression compile(IExpressionContext context, Call call)
+      throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // x-0 => x
+    if (Literal.ZERO.equals(right)) {
+      return left;
+    }
+    // 0-x => -x
+    if (Literal.ZERO.equals(left)) {
+      return new Call(Operators.NEGATIVE, right);
+    }
+
+    // x-(-z) => x+z
+    if (right.is(Operators.NEGATIVE)) {
+      Call negative = (Call) right;
+      return new Call(Operators.ADD, left, negative.getOperand(0));
+    }
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);

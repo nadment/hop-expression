@@ -138,8 +138,8 @@ public class OptimizerTest extends ExpressionTest {
     optimizeTrue("'25' in ('1','25','66')");
     optimizeTrue("25.8 between 18 and 32");
     optimizeTrue("Trim(' test ')='test'");
-    optimize("Day(Date '2019-02-15')", "15");
-    optimize("Day(Date(2019,2,15))", "15");
+    optimize("DAY(DATE '2019-02-15')", "15");
+    optimize("DAY(DATE_FROM_PARTS(2019,2,15))", "15");
   }
 
   @Test

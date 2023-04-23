@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -23,11 +24,13 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 
 /**
@@ -49,7 +52,34 @@ public class ConcatFunction extends Function {
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Combine chained concat operator and remove NULL
+    ArrayList<IExpression> operands = new ArrayList<>();
+    for (IExpression expression : call.getOperands()) {
+      if (expression.is(Operators.CONCAT)) {
+        Call childCall = (Call) expression;
+        for (IExpression child : childCall.getOperands()) {
+          if (!child.isNull()) {
+            operands.add(child);
+          }
+        }
+      } else if (!expression.isNull()) {
+        operands.add(expression);
+      }
+    }
+
+    // If only 1 expression, nothing to concat
+    if (operands.size() == 1) {
+      return operands.get(0);
+    }
+
+    return new Call(Operators.CONCAT, operands);
+  }
+
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
 

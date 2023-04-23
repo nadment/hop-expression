@@ -16,8 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -34,6 +38,44 @@ public class BoolAndOperator extends Operator {
         OperatorCategory.LOGICAL, "/docs/booland.html");
   }
 
+  /**
+   * Simplifies AND expressions whose answer can be determined without evaluating both sides.
+   */
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    boolean left = true;
+    boolean right = true;
+
+    if (call.getOperand(0).is(Kind.LITERAL)) {
+      Boolean value = call.getOperand(0).getValue(context, Boolean.class);
+      if (value == null)
+        return Literal.NULL;
+      if (value == Boolean.FALSE)
+        left = false;
+    }
+
+    if (call.getOperand(1).is(Kind.LITERAL)) {
+      Boolean value = call.getOperand(1).getValue(context, Boolean.class);
+      if (value == null)
+        return Literal.NULL;
+      if (value == Boolean.FALSE)
+        right = false;
+    }
+
+    // FALSE AND x => FALSE
+    // x AND FALSE => FALSE
+    if (!left || !right) {
+      return Literal.FALSE;
+    }
+
+    // x AND x => x
+    if (call.getOperand(0).equals(call.getOperand(1))) {
+      return call.getOperand(0);
+    }
+
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Boolean left = operands[0].getValue(context, Boolean.class);

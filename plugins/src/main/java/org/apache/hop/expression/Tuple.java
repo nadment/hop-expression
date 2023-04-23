@@ -166,6 +166,8 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   
   @Override
   public IExpression validate(final IExpressionContext context) throws ExpressionException {
+    
+    // Validate all elements
     List<IExpression> elements = new ArrayList<>(size());
     for (IExpression expression : this) {
       elements.add(expression.validate(context));

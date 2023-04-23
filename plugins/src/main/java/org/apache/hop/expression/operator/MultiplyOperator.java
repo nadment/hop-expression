@@ -16,10 +16,15 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,6 +43,32 @@ public class MultiplyOperator extends Operator {
         OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 
+  /**
+   * Simplify arithmetic multiply
+   */
+  @Override
+  public IExpression compile(IExpressionContext context, Call call)
+      throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // x*1 => x
+    if (Literal.ONE.equals(left)) {
+      return right;
+    }
+
+    // Pull up literal
+    if (left.is(Kind.LITERAL) && right.is(Operators.MULTIPLY)) {
+      Call child = (Call) right;
+      if (child.getOperand(0).is(Kind.LITERAL)) {
+        IExpression operation = new Call(Operators.MULTIPLY, left, child.getOperand(0));
+        Literal literal = Literal.of(operation.getValue(context));
+        return new Call(Operators.MULTIPLY, literal, child.getOperand(1));
+      }
+    }
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {

@@ -280,7 +280,6 @@ public final class Call implements IExpression {
             }
           }
           
-          
           break;
         case DATE:
         case TIMEUNIT:
@@ -303,11 +302,13 @@ public final class Call implements IExpression {
    * @param context The context against which the expression will be validated.
    * @param call Call
    */
-  public IExpression validate(IExpressionContext context)  throws ExpressionException {
+  public IExpression validate(final IExpressionContext context)  throws ExpressionException {
 
     // Validate all operands
     for (int i=0; i<operands.length;i++ ) {
       IExpression operand = operands[i];
+      
+      // Some operand can be null
       if ( operand!=null) {
         this.operands[i] = operand.validate(context);
       }
@@ -329,29 +330,59 @@ public final class Call implements IExpression {
     if (!operandTypeChecker.checkOperandTypes(this)) {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
     }
-
-    // Replace arguments in User Defined Function by the operands of the call.
-    if (operator instanceof UserDefinedFunction) {
-      UserDefinedFunction udf = (UserDefinedFunction) operator;
-      
-      IExpression expression;
-      try {
-        IExpressionContext udfContext = new ExpressionContext(context, udf.createRowMeta());
-        expression = ExpressionBuilder.build(udfContext, udf.getSource());        
         
-        // Replace function arguments with real operands
-        expression = expression.accept(context, new UserDefinedFunctionResolver(this.operands));        
-      } catch (Exception e) {
-        throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, udf.getName());
-      }
-      
-      return expression.validate(context);
-    }
+    // If operator is deterministic try to evaluate the call
+    if (operator.isDeterministic()) {
+      try {
+        boolean literal = true;
 
-    // Inference return type
-    this.type = operator.getReturnTypeInference().getReturnType(context, this);
+        for (IExpression operand : operands) {
+          if (operand == null)
+            continue;
+          //
+          if (operand instanceof Tuple) {
+            for (IExpression expression : (Tuple) operand) {
+              if (!expression.is(Kind.LITERAL)) {
+                literal = false;
+              }
+            }
+          } else if (!operand.is(Kind.LITERAL)) {
+            literal = false;
+          }
+        }
+        if (literal) {
+          Object value = this.getValue(context);
+          DataType type = operator.getReturnTypeInference().getReturnType(context, this);
+          
+          // Some operator don't known return type like JSON_VALUE.
+          if ( DataName.ANY.equals(type.getName()) ) {
+            type = DataType.of(value);
+          }
+          return new Literal(value, type);
+        }
+      } catch (Exception e) {
+        // Ignore and continue
+      }
+    }
     
-    return this;
+    Call call = this;
+    
+    // If operator is symmetrical reorganize operands
+    if (operator.isSymmetrical()) {
+      call = reorganizeSymmetrical(context);
+    }
+    
+    IExpression expression = call.getOperator().compile(context, call);
+    
+    // Inference return type
+    if ( expression.is(Kind.CALL)) {
+      call = (Call) expression;
+      DataType type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
+      
+      return new Call(type, call.getOperator(), call.getOperands());
+    }
+    
+    return expression;
   }
   
   @Override
@@ -363,7 +394,7 @@ public final class Call implements IExpression {
   public boolean is(final Operator other) {
     return operator.is(other);
   }
-
+  
   @Override
   public boolean equals(Object other) {
     if (other instanceof Call) {
@@ -389,5 +420,52 @@ public final class Call implements IExpression {
     StringWriter writer = new StringWriter();
     unparse(writer);
     return writer.toString();
+  }
+  
+  /**
+   * Reorganize symmetrical operator
+   * 
+   * <ul>
+   * <li>Move low cost operand to the left</li>
+   * <li>Go up an operand if low cost</li>
+   * <li>Order identifier by name (only useful for test)</li>
+   * </ul>
+   */
+  protected Call reorganizeSymmetrical(IExpressionContext context) {
+   // Operator operator = call.getOperator();
+    IExpression left = this.getOperand(0);
+    IExpression right = this.getOperand(1);
+
+    // Move low cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return new Call(operator, right, left);
+    }
+
+    // Order identifier by name
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
+      if (((Identifier) left).getName().compareTo(((Identifier) right).getName()) > 0) {
+        return new Call(operator, right, left);
+      }
+    }
+
+    if (right.is(operator)) {
+      Call subCall = (Call) right;
+      IExpression subLeft = subCall.getOperand(0);
+      IExpression subRight = subCall.getOperand(1);
+
+      // Go up left operand if low cost
+      if (subLeft.getCost() < left.getCost()) {
+        return new Call(operator, subLeft, new Call(operator, left, subRight));
+      }
+
+      // Order identifier by name
+      if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)) {
+        if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) > 0) {
+          return new Call(operator, subLeft, new Call(operator, left, subRight));
+        }
+      }
+    }
+
+    return this;
   }
 }

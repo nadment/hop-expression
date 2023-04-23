@@ -69,17 +69,12 @@ public class ExpressionBuilder {
       if (expression == null)
         return expression;
 
-      // Validate
-      expression = expression.validate(context);
-      
-      // Optimize
-      Optimizer optimizer = new Optimizer();
       IExpression original;
       do {
         original = expression;
-        expression = expression.accept(context, optimizer);
+        expression = expression.validate(context);
       } while (!expression.equals(original));
-
+      
       return expression;    
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);

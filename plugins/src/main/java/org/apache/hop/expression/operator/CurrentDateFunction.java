@@ -39,7 +39,6 @@ public class CurrentDateFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-
     return Attribute.CURRENT_DATE.get(context);
   }
 }

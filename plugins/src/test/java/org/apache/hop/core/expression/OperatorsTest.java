@@ -265,7 +265,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_INTEGER not in (1,2,3)");
     
     evalTrue("2.5 IN (1,2.5,3)");
-    evalTrue("'2' in (null,1,2,FIELD_INTEGER)");
+    evalTrue("2 in (NULL_INTEGER,1,2,FIELD_INTEGER)");
     evalTrue("TRUE IN (FALSE,NULL_BOOLEAN,TRUE)");
     evalTrue("DATE '2019-01-01' in (DATE '2019-04-01',DATE '2019-01-01',DATE '2019-03-06')");
     evalTrue("DATE '2019-01-01' in (TIMESTAMP '2019-04-01 00:00:00',DATE '2019-01-01',DATE '2019-03-06')");
@@ -273,10 +273,10 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("2 in (1,2.5,3)");
 
     evalTrue("2 in (null,1,2,3)");
-    evalFalse("2 in (null,null,null)");
-    evalFalse("1 not in (null,1)");
+    evalFalse("2 in (NULL_INTEGER,NULL_NUMBER)");
+    evalFalse("1 not in (NULL_INTEGER,1)");
     evalNull("NULL_INTEGER in (1,2,3)");
-    evalNull("NULL_INTEGER in (1,2,3,null)");
+    evalNull("NULL_INTEGER in (1,2,3,NULL_INTEGER)");
 
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");

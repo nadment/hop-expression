@@ -16,15 +16,21 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Logical <code>IN</code> operator tests for a value's membership in a list of values. The IN
@@ -45,8 +51,45 @@ import java.io.StringWriter;
 public class InOperator extends Operator {
 
   public InOperator() {
-    super("IN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.NO_CHECK,
+    super("IN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.COMPARISON, "/docs/in.html");
+  }
+  
+  /**
+   * Simplifies IN expressions list of elements.
+   * 1. Remove duplicate expressions in list.
+   * 2. Sort expressions on cost.
+   */
+  @Override
+  public IExpression compile(IExpressionContext context, Call call)
+      throws ExpressionException {
+    List<IExpression> list = new ArrayList<>();
+
+    IExpression value = call.getOperand(0);
+    Tuple tuple = (Tuple) call.getOperand(1);
+    
+    // Remove null and duplicate element in list
+    for (IExpression expression : tuple) {
+
+      if (expression.isNull()) {
+        continue;
+      }
+
+      // B in (A,B,C) return B=B;
+      if ( value.equals(expression) ) {
+        return new Call(Operators.EQUAL, value, expression);
+      }
+      
+      // If this element is not present in new list then add it
+      if (!list.contains(expression)) {
+        list.add(expression);
+      }
+    }
+
+    // Sort list on cost
+    list.sort(Comparator.comparing(IExpression::getCost));
+
+    return new Call(this, call.getOperand(0), new Tuple(list));
   }
 
   @Override

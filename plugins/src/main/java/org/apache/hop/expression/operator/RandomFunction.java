@@ -16,12 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -41,21 +42,23 @@ public class RandomFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-
-    if (operands.length == 1) {
-      Long seed = operands[0].getValue(context, Long.class);     
-      String name = "$rand"+seed;
-      Random random = (Random) context.getAttribute(name);
-      if ( random==null) {
-        random = new Random();
-        random.setSeed(seed); 
-        ((ExpressionContext) context).setAttribute(name, random);
-      }
-      
-      return random.nextDouble();
-    }
     
-    Random random = Attribute.RANDOM.get(context);
-    return random.nextDouble();
+      Random random = operands[0].getValue(context, Random.class);         
+      return random.nextDouble();    
+  }
+  
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call) {
+    Random random = new Random();
+    if (call.getOperandCount() == 1) {
+      try {
+        Long seed = call.getOperand(0).getValue(context, Long.class);
+        random.setSeed(seed);
+      } catch (ExpressionException e) {
+        return call;
+      }                 
+    }
+        
+    return new Call(call.getOperator(), Literal.of(random));
   }
 }

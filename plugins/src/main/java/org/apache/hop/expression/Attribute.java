@@ -15,23 +15,18 @@
 package org.apache.hop.expression;
 
 import java.time.ZonedDateTime;
-import java.util.Random;
 
 public enum Attribute {
   //
-  CURRENT_TIMEZONE("$timezone", String.class),
+  CURRENT_TIMEZONE(String.class),
   //
-  CURRENT_TIMESTAMP("$current_timestamp", ZonedDateTime.class),
+  CURRENT_TIMESTAMP(ZonedDateTime.class),
   //
-  CURRENT_DATE("$current_date", ZonedDateTime.class),
-  // No seed random
-  RANDOM("$rand", Random.class);
+  CURRENT_DATE(ZonedDateTime.class);
 
-  public final String id;
-  public final Class<?> clazz;
+  private final Class<?> clazz;
 
-  Attribute(String name, Class<?> clazz) {
-    this.id = name;
+  Attribute(Class<?> clazz) {
     this.clazz = clazz;
   }
 
@@ -39,6 +34,6 @@ public enum Attribute {
   @SuppressWarnings("unchecked")
   public <T> T get(IExpressionContext context) {
     // noinspection unchecked
-    return (T) clazz.cast(context.getAttribute(id));
+    return (T) clazz.cast(context.getAttribute(name()));
   }
 }

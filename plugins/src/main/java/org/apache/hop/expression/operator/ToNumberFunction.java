@@ -16,10 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -40,25 +43,36 @@ public class ToNumberFunction extends Function {
     super(id, true, ReturnTypes.BIGNUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
+  
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
+    String pattern = "TM";
 
+    // With specified format
+    if (call.getOperandCount() == 2) {
+      pattern = call.getOperand(1).getValue(context, String.class);
+    }
+
+    // Compile format to check it
+    NumberFormat.of(pattern);     
+    
+    return new Call(call.getOperator(), call.getOperand(0), Literal.of(pattern));
+  }
+   
+  @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     String value = operands[0].getValue(context, String.class);
     if (value == null)
       return null;
-    
-      String pattern = "TM";
 
-      // With format
-      if (operands.length == 2) {
-        pattern = operands[1].getValue(context, String.class);
-      }
-      
-      NumberFormat format = NumberFormat.of(pattern);      
-      return parse(value, format);
+    String pattern = operands[1].getValue(context, String.class);
+
+    NumberFormat format = NumberFormat.of(pattern);
+    return parse(value, format);
   }
   
-  public BigDecimal parse(String value, NumberFormat format) throws Exception {
+  protected  BigDecimal parse(final String value, final NumberFormat format) throws Exception {
     return format.parse(value);
   }
 }

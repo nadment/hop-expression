@@ -14,23 +14,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TIMESTAMP
+= DATE_FROM_PARTS
 
-Creates a timestamp from individual numeric components.
+Creates a date from individual numeric components.
 		
 == Syntax
 ----
-TIMESTAMP( year, month, day, hour, minute, second [, nanosecond] )
+DATE_FROM_PARTS( year, month, day )
 ----
+
+Returns:: Date
+
 The literal value with ISO format provides alternative syntax.
 ----
-TIMESTAMP 'YYYY-MM-DD HH.MM.SS'
+DATE 'YYYY-MM-DD'
 ----
 
 == Usage
 
-* If day<1 or day>31 then month is adjusted: Date(2020, 6, 50) >> 2020 JULY 21
-* If month<1 or month>12 then year is adjusted: Date(2020,19,1) >> 2021 JULY 01
-* If hour<0 or hour>23 then day is adjusted
-* If minute<0 or minute>59 then hour is adjusted
-* If second<0 or second>59 then minute is adjusted
+DATE_FROM_PARTS is typically used to handle values in “normal” ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
+
+* If day<1 or day>31 then date month is adjusted: Date(2020, 6, 50) >> 2020 JUNE 21
+* If month<1 or month>12 then date year is adjusted: Date(2020,19,1) >> 2021 JUNE 01

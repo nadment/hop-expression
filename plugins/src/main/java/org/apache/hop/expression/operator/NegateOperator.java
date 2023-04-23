@@ -16,12 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -34,6 +36,19 @@ public class NegateOperator extends Operator {
   public NegateOperator() {
     super("NEGATE", "-", 30, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/negate.html");
+  }
+
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression operand = call.getOperand(0);
+
+    // -(-(x)) => x
+    if (operand.is(Operators.NEGATIVE)) {
+      return ((Call) operand).getOperand(0);
+    }
+
+    return call;
   }
 
   @Override

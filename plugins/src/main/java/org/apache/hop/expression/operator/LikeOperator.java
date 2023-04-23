@@ -16,10 +16,16 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -43,9 +49,79 @@ import java.util.regex.Pattern;
  */
 public class LikeOperator extends Operator {
 
+  static final Pattern startsWith = Pattern.compile("^([^_%]+)%$");
+  static final Pattern endsWith = Pattern.compile("^%([^_%]+)$");
+  static final Pattern contains = Pattern.compile("^%([^_%]+)%$");
+  static final Pattern equalTo = Pattern.compile("^[^_%]*$");
+
+  
   public LikeOperator() {
     super("LIKE", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
         OperatorCategory.COMPARISON, "/docs/like.html");
+  }
+  
+  /**
+   * Simplifies LIKE expressions that do not need full regular expressions to evaluate the
+   * condition. For example, when the expression is just checking to see if a string starts with a
+   * given pattern.
+   */
+  @Override
+  public IExpression compile(IExpressionContext context, Call call)
+      throws ExpressionException {
+    // Optimize NULL LIKE FIELD to NULL
+    IExpression value = call.getOperand(0);
+    if (value == Literal.NULL)
+      return Literal.NULL;
+
+    IExpression v1 = call.getOperand(1);
+    if (v1.is(Kind.LITERAL)) {
+      String pattern = v1.getValue(context, String.class);
+
+      // Optimize FIELD LIKE NULL to NULL
+      if (pattern == null)
+        return Literal.NULL;
+
+      if (call.getOperandCount() == 3) {
+        String escape = call.getOperand(2).getValue(context, String.class);
+        if (escape == null)
+          return Literal.NULL;
+
+        // For now don't optimize if special escape char
+        return call;
+      }
+
+      // Optimize "x LIKE '%'" to "x = x"
+      if ("%".equals(pattern)) {
+        return new Call(Operators.EQUAL, value, value);
+      }
+
+      // Optimize the common case of FIELD LIKE '%foo%' to CONTAINS(FIELD,'foo')
+      // Try contains before starts and ends
+      if (contains.matcher(pattern).find()) {
+        String search = pattern.replace("%", "");
+        return new Call(FunctionRegistry.getFunction("CONTAINS"), value, Literal.of(search));
+      }
+
+      // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')
+      if (startsWith.matcher(pattern).find()) {
+        String search = pattern.replace("%", "");
+        return new Call(FunctionRegistry.getFunction("STARTSWITH"), value, Literal.of(search));
+      }
+
+      // Optimize the common case of FIELD LIKE '%foo' to ENDSWITH(FIELD,'foo')
+      if (endsWith.matcher(pattern).find()) {
+        String search = pattern.replace("%", "");
+        return new Call(FunctionRegistry.getFunction("ENDSWITH"), value, Literal.of(search));
+      }
+
+      // Optimize FIELD LIKE 'Hello' to FIELD='Hello'
+      if (equalTo.matcher(pattern).find()) {
+        String search = pattern.replace("%", "");
+        return new Call(Operators.EQUAL, value, Literal.of(search));
+      }
+    }
+
+    return call;
   }
 
   @Override

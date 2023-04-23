@@ -300,44 +300,49 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
-  public void Date() throws Exception {
-    evalEquals("Date(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
-    evalEquals("Date(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
-    evalEquals("Date(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
-    evalEquals("Date(2020,-6,1)", LocalDate.of(2019, Month.JULY, 1));
-    evalEquals("Date(2020,-1,1)", LocalDate.of(2019, Month.DECEMBER, 1));
-    evalEquals("Date(2020, 6, 50)", LocalDate.of(2020, Month.JULY, 21));
+  public void DateFromParts() throws Exception {
+    evalEquals("DATE_FROM_PARTS(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
+    evalEquals("DATE_FROM_PARTS(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
+    evalEquals("DATE_FROM_PARTS(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
+    evalEquals("DATE_FROM_PARTS(2020, 0, 1)", LocalDate.of(2019, Month.DECEMBER, 1));
+    evalEquals("DATE_FROM_PARTS(2020,-1,1)", LocalDate.of(2019, Month.NOVEMBER, 1));
+    evalEquals("DATE_FROM_PARTS(2020,-2, 1)", LocalDate.of(2019, Month.OCTOBER, 1));
+    evalEquals("DATE_FROM_PARTS(2020,-6,1)", LocalDate.of(2019, Month.JUNE, 1));
+    evalEquals("DATE_FROM_PARTS(2020, 6, 50)", LocalDate.of(2020, Month.JULY, 20));    
+    evalEquals("DATE_FROM_PARTS(2020, 2, 0)", LocalDate.of(2020, Month.JANUARY, 31));
+    evalEquals("DATE_FROM_PARTS(2020, 2, -1)", LocalDate.of(2020, Month.JANUARY, 30));
+    
+    evalNull("DATE_FROM_PARTS(NULL_INTEGER,-1,1)");
+    evalNull("DATE_FROM_PARTS(2020,NULL_INTEGER,1)");
+    evalNull("DATE_FROM_PARTS(2020,-1,NULL_INTEGER)");
 
-    evalNull("Date(NULL_INTEGER,-1,1)");
-    evalNull("Date(2020,NULL_INTEGER,1)");
-    evalNull("Date(2020,-1,NULL_INTEGER)");
+    evalFails("DATE_FROM_PARTS()");
+    evalFails("DATE_FROM_PARTS(2020)");
+    evalFails("DATE_FROM_PARTS(2020,15)");
+    evalFails("DATE_FROM_PARTS(2020,1,1,1)");
 
-    evalFails("Date()");
-    evalFails("Date(2020)");
-    evalFails("Date(2020,15)");
-    evalFails("Date(2020,1,1,1)");
-
-    returnType("Date(2019,01,1)", DataType.DATE);
+    returnType("DATE_FROM_PARTS(2019,01,1)", DataType.DATE);
   }
 
   @Test
   public void Timestamp() throws Exception {
-    evalEquals("Timestamp(2019,01,1,23,15,59)", LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59));
-    evalEquals("Timestamp(2020,-6,1,23,15,59)", LocalDateTime.of(2019, Month.JULY, 1, 23, 15, 59));
-    evalEquals("Timestamp(2020,-1,1,23,15,59)", LocalDateTime.of(2019, Month.DECEMBER, 1, 23, 15, 59));
-    evalEquals("Timestamp(2020,6,50,23,15,59)", LocalDateTime.of(2020, Month.JULY, 21, 23, 15, 59));
-    evalEquals("Timestamp(2020,6,50,23,15,59,123456789)", LocalDateTime.of(2020, Month.JULY, 21, 23, 15, 59, 123456789));
+    evalEquals("TIMESTAMP_FROM_PARTS(2019,01,1,23,15,59)", LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59));
+    evalEquals("TIMESTAMP_FROM_PARTS(2020,-6,1,23,15,59)", LocalDateTime.of(2019, Month.JUNE, 1, 23, 15, 59));
+    evalEquals("TIMESTAMP_FROM_PARTS(2020,0,1,23,15,59)", LocalDateTime.of(2019, Month.DECEMBER, 1, 23, 15, 59));
+    evalEquals("TIMESTAMP_FROM_PARTS(2020,-1,1,23,15,59)", LocalDateTime.of(2019, Month.NOVEMBER, 1, 23, 15, 59));
+    evalEquals("TIMESTAMP_FROM_PARTS(2020,6,50,23,15,59)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59));
+    evalEquals("TIMESTAMP_FROM_PARTS(2020,6,50,23,15,59,123456789)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456789));
 
-    evalNull("Timestamp(NULL_INTEGER,-1,1,23,15,59)");
-    evalNull("Timestamp(2020,NULL_INTEGER,1,23,15,59)");
-    evalNull("Timestamp(2020,-1,NULL_INTEGER,23,15,59)");
+    evalNull("TIMESTAMP_FROM_PARTS(NULL_INTEGER,-1,1,23,15,59)");
+    evalNull("TIMESTAMP_FROM_PARTS(2020,NULL_INTEGER,1,23,15,59)");
+    evalNull("TIMESTAMP_FROM_PARTS(2020,-1,NULL_INTEGER,23,15,59)");
 
-    evalFails("Timestamp()");
-    evalFails("Timestamp(2020)");
-    evalFails("Timestamp(2020,15)");
-    evalFails("Timestamp(2020,1,1,23,15,59,123456789,9999)");
+    evalFails("TIMESTAMP_FROM_PARTS()");
+    evalFails("TIMESTAMP_FROM_PARTS(2020)");
+    evalFails("TIMESTAMP_FROM_PARTS(2020,15)");
+    evalFails("TIMESTAMP_FROM_PARTS(2020,1,1,23,15,59,123456789,9999)");
 
-    returnType("Timestamp(2019,01,1,23,15,59)", DataType.DATE);
+    returnType("TIMESTAMP_FROM_PARTS(2019,01,1,23,15,59)", DataType.DATE);
   }
   
   @Test
@@ -1508,6 +1513,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("TO_BINARY('QXBhY2hlIEhvcA==','BASE64')", "Apache Hop".getBytes());
     
     evalEquals("TO_BINARY('Apache Hop','UtF-8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
+    evalEquals("TO_BINARY('Apache Hop','UtF8')", "Apache Hop".getBytes(StandardCharsets.UTF_8));
     
     evalNull("TO_BINARY(NULL_STRING)");
     
@@ -1756,7 +1762,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("To_Char(DATE '2019-07-23','B.C.')", "A.D.");
     evalEquals("To_Char(DATE '2019-07-23','B.c.')", "A.d.");
     evalEquals("To_Char(DATE '2019-07-23','b.c.')", "a.d.");
-    evalEquals("To_Char(Date(-10,07,23),'b.c.')", "b.c.");
+    evalEquals("To_Char(DATE_FROM_PARTS(-10,07,23),'b.c.')", "b.c.");
 
     // Punctuation is reproduced in the result
     evalEquals("To_Char(DATE '2019-07-23','dd/mm/yyyy')", "23/07/2019");
@@ -2101,7 +2107,7 @@ public class FunctionsTest extends ExpressionTest {
 
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
 
-    evalNull("To_Date(NULL_STRING)");
+    evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
   }
 
   @Test
@@ -2786,27 +2792,23 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Random() throws Exception {
     evalTrue("Random()>0");
-    
+
     // Keep the same context
     ExpressionContext context = this.createExpressionContext(true);
 
     // Warning Random implementation is not the same on each JVM
-    Random random2 = new Random(2);    
+    Random random2 = new Random(2);
     Random random6 = new Random(6);
-        
-    evalEquals(context, "Random(2)", random2.nextDouble());
-    evalEquals(context, "Random(2)", random2.nextDouble());
-    evalEquals(context, "Random(6)", random6.nextDouble());
+
     evalEquals(context, "Random(2)", random2.nextDouble());
     evalEquals(context, "Random(6)", random6.nextDouble());
-    evalEquals(context, "Random(2)", random2.nextDouble());
 
     evalFails("Random('test')");
     evalFails("Random(1,2)");
-    
+
     // Alias
     evalTrue("Rand()>0");
-    
+
     returnType("Random()", DataType.NUMBER);
   }
 

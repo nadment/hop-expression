@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
@@ -25,6 +26,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -47,31 +49,50 @@ public class ToBinaryFunction extends Function {
   }
 
   @Override
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    String pattern = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
+    
+    // Default format
+    if (pattern == null) {
+      pattern = "HEX";
+    }
+
+    // With specified format
+    if (call.getOperandCount() == 2) {
+      pattern = call.getOperand(1).getValue(context, String.class);
+    }
+
+    pattern = pattern.toUpperCase();
+    
+    if ( pattern.equals("UTF8") ) pattern = "UTF-8";
+    
+    if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF-8")
+        || pattern.equals("UTF8"))) {
+      throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
+    }
+
+    return new Call(call.getOperator(), call.getOperand(0), Literal.of(pattern));
+  }
+  
+  @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     String value = operands[0].getValue(context, String.class);
     if (value == null)
       return null;
-    
-    String format = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
-    if (operands.length > 1) {
-      format = operands[1].getValue(context, String.class);  
-    }    
-    
-    if (format != null) {
-      format = format.toUpperCase();
 
-      if (format.equals("HEX")) {
-        return formatHex(value);
-      }
-      if (format.equals("BASE64")) {
-        return formatBase64(value);
-      }
-      if (format.equals("UTF-8") || format.equals("UTF8")) {
-        return formatUtf8(value);
-      }
+    String format = operands[1].getValue(context, String.class);
+    if (format.equals("HEX")) {
+      return formatHex(value);
     }
-    
+    if (format.equals("BASE64")) {
+      return formatBase64(value);
+    }
+    if (format.equals("UTF-8")) {
+      return formatUtf8(value);
+    }
+
     throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
   }
   

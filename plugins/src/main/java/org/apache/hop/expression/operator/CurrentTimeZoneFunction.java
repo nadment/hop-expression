@@ -40,7 +40,6 @@ public class CurrentTimeZoneFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-
     return Attribute.CURRENT_TIMEZONE.get(context);
   }
 

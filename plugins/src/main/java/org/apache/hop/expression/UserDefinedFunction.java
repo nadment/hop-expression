@@ -33,6 +33,20 @@ public class UserDefinedFunction extends Function {
     this.meta = meta;
   }
 
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    try {
+      IExpressionContext ctx = new ExpressionContext(context, createRowMeta());
+      IExpression expression = ExpressionBuilder.build(ctx, getSource());
+
+      // Replace function arguments with real operands
+      expression = expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
+      return expression.validate(context);
+    } catch (Exception e) {
+      throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, getName());
+    }
+  }
+  
   @Override
   public Object eval(IExpressionContext context, IExpression[] operands) {
     throw new RuntimeException(ExpressionError.INTERNAL_ERROR.toString());

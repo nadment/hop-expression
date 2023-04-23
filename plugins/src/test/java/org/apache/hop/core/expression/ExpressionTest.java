@@ -350,7 +350,7 @@ public class ExpressionTest {
     Locale.setDefault(new Locale("fr", "BE"));
     //evalFails("DATE '21-02-25'");
     //evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
-    evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
+    evalTrue("Random()>0");
   }
 }
 

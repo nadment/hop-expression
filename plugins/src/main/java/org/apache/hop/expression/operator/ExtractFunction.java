@@ -17,14 +17,17 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -45,6 +48,18 @@ public class ExtractFunction extends Function {
         "/docs/extract.html");
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Replace EXTRACT with the corresponding function YEAR, DAY, HOUR... only if without time zone
+    TimeUnit unit = call.getOperand(0).getValue(context, TimeUnit.class);
+    Function function = FunctionRegistry.getFunction(unit.name());
+    if (function != null && !(function instanceof UserDefinedFunction)) {
+      return new Call(function, call.getOperand(1));
+    }
+
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
 

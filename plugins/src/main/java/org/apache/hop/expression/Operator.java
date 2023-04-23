@@ -236,6 +236,10 @@ public abstract class Operator implements Comparable<Operator> {
   public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception;
 
+  public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
+    return call;
+  }
+  
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
   @Override

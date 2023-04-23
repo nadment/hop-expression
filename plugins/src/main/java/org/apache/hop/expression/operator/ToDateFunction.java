@@ -16,11 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -41,7 +44,22 @@ public class ToDateFunction extends Function {
     super(id, true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_date.html");
   }
+  
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
+    String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
 
+    // With specified format
+    if (call.getOperandCount() == 2) {
+      pattern = call.getOperand(1).getValue(context, String.class);
+    }
+
+    // Compile format to check it
+    DateTimeFormat.of(pattern); 
+    
+    return new Call(call.getOperator(), call.getOperand(0), Literal.of(pattern));
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
@@ -49,13 +67,7 @@ public class ToDateFunction extends Function {
     if (value == null)
       return null;
 
-    String pattern = null;
-    if (operands.length > 1) {
-      pattern = operands[1].getValue(context, String.class);
-    } else {
-      pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
-    }
-
+    String pattern = operands[1].getValue(context, String.class);
 
     int twoDigitYearStart = Integer
         .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));

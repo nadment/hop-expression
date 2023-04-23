@@ -16,8 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -34,6 +38,36 @@ public class BoolOrOperator extends Operator {
         OperatorCategory.LOGICAL, "/docs/boolor.html");
   }
 
+  /**
+   * Simplifies OR expressions whose answer can be determined without evaluating both sides.
+   */
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    if (call.getOperand(0).is(Kind.LITERAL)) {
+      Boolean value = call.getOperand(0).getValue(context, Boolean.class);
+      if (value == null)
+        return call.getOperand(1);
+      if (value == Boolean.TRUE)
+        return Literal.TRUE;
+    }
+
+    if (call.getOperand(1).is(Kind.LITERAL)) {
+      Boolean value = call.getOperand(1).getValue(context, Boolean.class);
+      if (value == null)
+        return call.getOperand(0);
+      if (value == Boolean.TRUE)
+        return Literal.TRUE;
+    }
+
+    // x OR x => x
+    if (call.getOperand(0).equals(call.getOperand(1))) {
+      return call.getOperand(0);
+    }
+
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Boolean left = operands[0].getValue(context, Boolean.class);

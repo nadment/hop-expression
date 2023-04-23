@@ -16,10 +16,15 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -40,6 +45,30 @@ public class AddOperator extends Operator {
         OperatorCategory.MATHEMATICAL, "/docs/add.html");
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call)
+      throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // x+0 => x
+    if (Literal.ZERO.equals(left)) {
+      return right;
+    }
+
+    // Pull up literal
+    if (left.is(Kind.LITERAL) && right.is(Operators.ADD)) {
+      Call child = (Call) right;
+      if (child.getOperand(0).is(Kind.LITERAL)) {
+        IExpression expression = new Call(Operators.ADD, left, child.getOperand(0));
+        Literal literal = Literal.of(expression.getValue(context));
+        return new Call(Operators.ADD, literal, child.getOperand(1));
+      }
+    }
+
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);
