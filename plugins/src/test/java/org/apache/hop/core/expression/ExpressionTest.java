@@ -350,7 +350,7 @@ public class ExpressionTest {
     Locale.setDefault(new Locale("fr", "BE"));
     //evalFails("DATE '21-02-25'");
     //evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
-    evalTrue("Random()>0");
+    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", 29L);
   }
 }
 

@@ -47,5 +47,4 @@ public class StringDecodeFunction extends Function {
 
     return StringEscapeUtils.unescapeJava(value);
   }
-
 }

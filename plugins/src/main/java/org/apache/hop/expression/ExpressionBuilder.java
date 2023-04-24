@@ -551,7 +551,7 @@ public class ExpressionBuilder {
     return Literal.of(number);
   }
 
-  private Literal parseLiteralBinaryHexa(Token token) throws ParseException {
+  private Literal parseLiteralBinaryHexa(Token token) {
     String str = token.text();
     if (str.length() % 2 > 0)
       str = '0' + str;
@@ -575,7 +575,7 @@ public class ExpressionBuilder {
     return Literal.of(bytes);
   }
 
-  private Literal parseLiteralBinaryBit(Token token) throws ParseException {
+  private Literal parseLiteralBinaryBit(Token token) {
 
     String str = token.text();
     BitSet bitset = new BitSet(str.length());
@@ -1144,8 +1144,8 @@ public class ExpressionBuilder {
 
         case '-': {
           // Single line comment --
-          if (position + 1 < source.length()) {
-            if (source.charAt(position + 1) == '-') {
+          if (position + 1 < source.length() && source.charAt(position + 1) == '-') {
+            
               int start = position;
               position++;
               while (position < source.length()) {
@@ -1155,7 +1155,6 @@ public class ExpressionBuilder {
                 position++;
               }
               return new Token(Id.COMMENT, start, position, source.substring(start, position));
-            }
           }
 
           // Minus sign

@@ -33,6 +33,7 @@ public class UserDefinedFunction extends Function {
     this.meta = meta;
   }
 
+  @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     try {

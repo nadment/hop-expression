@@ -313,7 +313,7 @@ public class Converter {
   }
 
   public static String toString(final BigDecimal value) {
-    return NumberFormat.of("TM").format((BigDecimal) value);
+    return NumberFormat.of("TM").format(value);
   }
 
   /**

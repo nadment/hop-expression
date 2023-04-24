@@ -352,13 +352,13 @@ public final class Call implements IExpression {
         }
         if (literal) {
           Object value = this.getValue(context);
-          DataType type = operator.getReturnTypeInference().getReturnType(context, this);
+          DataType dataType = operator.getReturnTypeInference().getReturnType(context, this);
           
           // Some operator don't known return type like JSON_VALUE.
-          if ( DataName.ANY.equals(type.getName()) ) {
-            type = DataType.of(value);
+          if ( DataName.ANY.equals(dataType.getName()) ) {
+            dataType = DataType.of(value);
           }
-          return new Literal(value, type);
+          return new Literal(value, dataType);
         }
       } catch (Exception e) {
         // Ignore and continue
@@ -369,7 +369,7 @@ public final class Call implements IExpression {
     
     // If operator is symmetrical reorganize operands
     if (operator.isSymmetrical()) {
-      call = reorganizeSymmetrical(context);
+      call = reorganizeSymmetrical();
     }
     
     IExpression expression = call.getOperator().compile(context, call);
@@ -377,13 +377,15 @@ public final class Call implements IExpression {
     // Inference return type
     if ( expression.is(Kind.CALL)) {
       call = (Call) expression;
-      DataType type = call.getOperator().getReturnTypeInference().getReturnType(context, call);
-      
-      return new Call(type, call.getOperator(), call.getOperands());
+      call.inferenceType(context);
     }
     
     return expression;
   }
+  
+  protected void inferenceType(final IExpressionContext context) {
+    this.type = this.operator.getReturnTypeInference().getReturnType(context, this);
+  } 
   
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
@@ -431,7 +433,7 @@ public final class Call implements IExpression {
    * <li>Order identifier by name (only useful for test)</li>
    * </ul>
    */
-  protected Call reorganizeSymmetrical(IExpressionContext context) {
+  protected Call reorganizeSymmetrical() {
    // Operator operator = call.getOperator();
     IExpression left = this.getOperand(0);
     IExpression right = this.getOperand(1);
