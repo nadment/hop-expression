@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
@@ -43,6 +44,7 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Objects.hash(null, DataType.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is((Kind)null));    
     assertFalse(Literal.NULL.is((Operator)null));
+    assertTrue(Literal.NULL.isConstant());
     assertNotEquals(Literal.NULL,null);
     assertNotEquals(Literal.NULL,Literal.ZERO);
     assertNull(Literal.NULL.getValue(createExpressionContext()));

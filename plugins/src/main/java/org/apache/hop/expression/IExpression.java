@@ -55,30 +55,39 @@ public interface IExpression {
   /**
    * Check if this expression will always return the NULL value.
    *
-   * @return if the expression is constant NULL value
+   * @return {@code true} if the expression is constant NULL value
    */
   public default boolean isNull() {
     return false;
   }
 
   /**
-   * Check if this expression will always return the TRUE value.
-   *
-   * @return if the expression is TRUE
+   * Check if this expression will always return the same result when invoked and has no side effect.
+   * 
+   * @return {@code true} if this is a constant expression.  
    */
-  public default boolean isAlwaysTrue() {
+  public default boolean isConstant() {
     return false;
-  }
+  };
   
-  /**
-   * Check if this expression will always return the FALSE value.
-   *
-   * @return if the expression is FALSE
-   */
-  public default boolean isAlwaysFalse() {
-    return false;
-  }
-  
+//  /**
+//   * Check if this expression will always return the TRUE value.
+//   *
+//   * @return {@code true} if the expression is TRUE
+//   */
+//  public default boolean isAlwaysTrue() {
+//    return false;
+//  }
+//  
+//  /**
+//   * Check if this expression will always return the FALSE value.
+//   *
+//   * @return {@code true} if the expression is FALSE
+//   */
+//  public default boolean isAlwaysFalse() {
+//    return false;
+//  }
+//  
   
   /**
    * Estimate the cost to process the expression, used when optimizing the expression.

@@ -349,8 +349,7 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //evalFails("DATE '21-02-25'");
-    //evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
-    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", 29L);
+    //evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");    
   }
 }
 

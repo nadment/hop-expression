@@ -94,7 +94,11 @@ public class OptimizerTest extends ExpressionTest {
     
     // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
-
+  @Test
+  public void testConstantOpoerator() throws Exception {
+    optimize("PI()", "3.141592653589793");    
+  }
+  
   @Test
   public void testDeterministicRule() throws Exception {
     optimize("CONCAT('TES','T')", "'TEST'");

@@ -1145,16 +1145,15 @@ public class ExpressionBuilder {
         case '-': {
           // Single line comment --
           if (position + 1 < source.length() && source.charAt(position + 1) == '-') {
-            
-              int start = position;
+            int start = position;
+            position++;
+            while (position < source.length()) {
+              c = source.charAt(position);
+              if (c == '\r' || c == '\n')
+                break;
               position++;
-              while (position < source.length()) {
-                c = source.charAt(position);
-                if (c == '\r' || c == '\n')
-                  break;
-                position++;
-              }
-              return new Token(Id.COMMENT, start, position, source.substring(start, position));
+            }
+            return new Token(Id.COMMENT, start, position, source.substring(start, position));
           }
 
           // Minus sign

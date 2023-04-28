@@ -155,11 +155,13 @@ public abstract class Operator implements Comparable<Operator> {
 
   /**
    * Returns whether this function is an aggregate function.
+   * 
+   * @return {@code true} if this is a aggregate function. 
    */
   public boolean isAggregate() {
     return false;
   }
-
+  
   /**
    * Return type inference strategy.
    * 

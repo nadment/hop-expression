@@ -184,4 +184,15 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     return new Iterator();
   }
 
+  @Override
+  public boolean isConstant() {
+    for (IExpression expression : values) {
+      if (!expression.isConstant()) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
 }

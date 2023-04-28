@@ -330,41 +330,25 @@ public final class Call implements IExpression {
     if (!operandTypeChecker.checkOperandTypes(this)) {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
     }
-        
-    // If operator is deterministic try to evaluate the call
-    if (operator.isDeterministic()) {
-      try {
-        boolean literal = true;
 
-        for (IExpression operand : operands) {
-          if (operand == null)
-            continue;
-          //
-          if (operand instanceof Tuple) {
-            for (IExpression expression : (Tuple) operand) {
-              if (!expression.is(Kind.LITERAL)) {
-                literal = false;
-              }
-            }
-          } else if (!operand.is(Kind.LITERAL)) {
-            literal = false;
-          }
+    // If operator is deterministic and all operands are constant
+    if (isConstant()) {
+      try {
+        Object value = getValue(context);
+
+        inferenceType(context);
+
+        // Some operator don't known return type like JSON_VALUE.
+        if (DataName.ANY.equals(type.getName())) {
+          type = DataType.of(value);
         }
-        if (literal) {
-          Object value = this.getValue(context);
-          DataType dataType = operator.getReturnTypeInference().getReturnType(context, this);
-          
-          // Some operator don't known return type like JSON_VALUE.
-          if ( DataName.ANY.equals(dataType.getName()) ) {
-            dataType = DataType.of(value);
-          }
-          return new Literal(value, dataType);
-        }
+
+        return new Literal(value, type);
       } catch (Exception e) {
         // Ignore and continue
       }
     }
-    
+        
     Call call = this;
     
     // If operator is symmetrical reorganize operands
@@ -469,5 +453,24 @@ public final class Call implements IExpression {
     }
 
     return this;
+  }
+
+  @Override
+  public boolean isConstant() {
+    // If operator is deterministic and all operands are constant
+    if (operator.isDeterministic()) {
+      for (IExpression operand : operands) {
+        if (operand == null) {
+          continue;
+        }
+        if (!operand.isConstant()) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
+
+    return false;
   }
 }

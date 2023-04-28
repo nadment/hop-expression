@@ -416,13 +416,18 @@ public final class Literal implements IExpression {
     return visitor.apply(context, this);
   }
 
-  @Override
-  public boolean isAlwaysTrue() {
-    return Boolean.TRUE.equals(value);
-  }
+//  @Override
+//  public boolean isAlwaysTrue() {
+//    return Boolean.TRUE.equals(value);
+//  }
+//
+//  @Override
+//  public boolean isAlwaysFalse() {
+//    return Boolean.FALSE.equals(value);
+//  }
 
   @Override
-  public boolean isAlwaysFalse() {
-    return Boolean.FALSE.equals(value);
+  public boolean isConstant() {
+    return true;
   }
 }
