@@ -44,7 +44,7 @@ import java.time.temporal.IsoFields;
 public class ExtractFunction extends Function {
     
   public ExtractFunction() {
-    super("EXTRACT", true, ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, OperatorCategory.DATE,
+    super("EXTRACT", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, OperatorCategory.DATE,
         "/docs/extract.html");
   }
 

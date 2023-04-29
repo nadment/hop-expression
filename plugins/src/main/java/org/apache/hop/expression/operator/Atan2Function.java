@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Atan2Function extends Function {
 
   public Atan2Function() {
-    super("ATAN2", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("ATAN2", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.TRIGONOMETRY, "/docs/atan2.html");
   }
 

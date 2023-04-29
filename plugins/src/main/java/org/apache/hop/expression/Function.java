@@ -30,23 +30,22 @@ public abstract class Function extends Operator {
    * @param id The unique identifier of the function
    * @param name The name of function
    */
-  protected Function(String id, boolean isDeterministic, IReturnTypeInference returnTypeInference,
+  protected Function(String id, IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    super(id, id, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category,
+    super(id, id, 10, true, returnTypeInference, operandTypeChecker, category,
         documentationUrl);
   }
 
-  protected Function(String id, String name, boolean isDeterministic,
-      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
+  protected Function(String id, String name, IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
       String category, String documentationUrl) {
-    super(id, name, 10, true, isDeterministic, returnTypeInference, operandTypeChecker, category,
+    super(id, name, 10, true, returnTypeInference, operandTypeChecker, category,
         documentationUrl);
   }
 
   protected Function(String id, String name, int precedence, boolean isLeftAssociative,
-      boolean isDeterministic, IReturnTypeInference returnTypeInference,
+      IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    super(id, name, precedence, isLeftAssociative, isDeterministic, returnTypeInference,
+    super(id, name, precedence, isLeftAssociative, returnTypeInference,
         operandTypeChecker, category, documentationUrl);
   }
 

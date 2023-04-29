@@ -33,7 +33,7 @@ import java.time.ZoneId;
 public class DateFromPartsFunction extends Function {
 
   public DateFromPartsFunction() {
-    super("DATE_FROM_PARTS", true, ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC,
+    super("DATE_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC,
         OperatorCategory.DATE, "/docs/date_from_parts.html");
   }
 

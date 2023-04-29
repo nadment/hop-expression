@@ -34,7 +34,7 @@ public class SoundexFunction extends Function {
   private static final Soundex SOUNDEX = new Soundex();
 
   public SoundexFunction() {
-    super("SOUNDEX", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("SOUNDEX", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/soundex.html");
   }
 

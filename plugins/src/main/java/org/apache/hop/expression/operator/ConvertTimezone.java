@@ -34,7 +34,7 @@ import java.time.ZonedDateTime;
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
-    super("CONVERT_TIMEZONE", true, ReturnTypes.DATE, OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), OperatorCategory.DATE, "/docs/convert_timezone.html");
+    super("CONVERT_TIMEZONE", ReturnTypes.DATE, OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), OperatorCategory.DATE, "/docs/convert_timezone.html");
   }
 
   @Override

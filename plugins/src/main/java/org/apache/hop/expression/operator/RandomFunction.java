@@ -35,10 +35,15 @@ import java.util.Random;
 public class RandomFunction extends Function {
 
   public RandomFunction() {
-    super("RANDOM", false, ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC,
+    super("RANDOM", ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/random.html");
   }
-
+  
+  @Override
+  public boolean isDeterministic() {
+    return false;
+  }
+    
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {

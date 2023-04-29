@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentDateFunction extends Function {
 
   public CurrentDateFunction() {
-    super("CURRENT_DATE", false, ReturnTypes.DATE, OperandTypes.NILADIC, OperatorCategory.DATE,
+    super("CURRENT_DATE", ReturnTypes.DATE, OperandTypes.NILADIC, OperatorCategory.DATE,
         "/docs/current_date.html");
   }
 
@@ -41,4 +41,6 @@ public class CurrentDateFunction extends Function {
       throws Exception {
     return Attribute.CURRENT_DATE.get(context);
   }
+  
+  
 }

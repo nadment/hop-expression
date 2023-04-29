@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TrimFunction extends Function {
 
   public TrimFunction() {
-    super("TRIM", true, ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
+    super("TRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
         OperatorCategory.STRING, "/docs/trim.html");
   }
 

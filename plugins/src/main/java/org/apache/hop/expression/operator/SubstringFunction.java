@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SubstringFunction extends Function {
 
   public SubstringFunction() {
-    super("SUBSTRING", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_NUMERIC,
+    super("SUBSTRING", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_NUMERIC,
         OperatorCategory.STRING, "/docs/substring.html");
   }
 

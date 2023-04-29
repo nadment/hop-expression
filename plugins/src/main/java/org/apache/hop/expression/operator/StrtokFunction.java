@@ -44,7 +44,7 @@ public class StrtokFunction extends Function {
       .or(OperandTypes.STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC);
 
   public StrtokFunction() {
-    super("STRTOK", true, ReturnTypes.STRING, OTC, OperatorCategory.STRING, "/docs/strtok.html");
+    super("STRTOK", ReturnTypes.STRING, OTC, OperatorCategory.STRING, "/docs/strtok.html");
   }
 
   @Override

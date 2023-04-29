@@ -34,7 +34,7 @@ import java.time.ZonedDateTime;
 public class SecondFunction extends Function {
 
   public SecondFunction() {
-    super("SECOND", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("SECOND", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/second.html");
   }
 

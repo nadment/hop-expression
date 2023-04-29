@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class NotEqualOperator extends Operator {
 
   public NotEqualOperator() {
-    super("NOT_EQUAL", "!=", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("NOT_EQUAL", "!=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON, "/docs/not_equal.html");
   }
 

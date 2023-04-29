@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class HexDecodeFunction extends Function {
 
   public HexDecodeFunction() {
-    super("HEX_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING, "/docs/hex_decode.html");
+    super("HEX_DECODE", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING, "/docs/hex_decode.html");
   }
 
   @Override

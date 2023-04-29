@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AsciiFunction extends Function {
 
   public AsciiFunction() {
-    super("ASCII", true, ReturnTypes.INTEGER, OperandTypes.STRING, OperatorCategory.STRING,
+    super("ASCII", ReturnTypes.INTEGER, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/ascii.html");
   }
 

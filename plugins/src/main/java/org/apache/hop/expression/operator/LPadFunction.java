@@ -37,7 +37,7 @@ public class LPadFunction extends Function {
   private static final int PAD_LIMIT = 8192;
 
   public LPadFunction() {
-    super("LPAD", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+    super("LPAD", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
         OperatorCategory.STRING, "/docs/lpad.html");
   }
 

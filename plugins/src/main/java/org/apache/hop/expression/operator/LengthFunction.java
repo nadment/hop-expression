@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class LengthFunction extends Function {
 
   public LengthFunction() {
-    super("LENGTH", true, ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("LENGTH", ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/length.html");
   }
 

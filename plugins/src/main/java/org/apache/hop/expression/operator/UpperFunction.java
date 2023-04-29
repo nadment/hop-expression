@@ -34,7 +34,7 @@ import java.util.Locale;
 public class UpperFunction extends Function {
 
   public UpperFunction() {
-    super("UPPER", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/upper.html");
   }
 

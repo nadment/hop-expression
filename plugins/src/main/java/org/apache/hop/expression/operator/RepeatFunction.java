@@ -35,7 +35,7 @@ import java.io.IOException;
 public class RepeatFunction extends Function {
 
   public RepeatFunction() {
-    super("REPEAT", true, ReturnTypes.STRING,
+    super("REPEAT", ReturnTypes.STRING,
         OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), OperatorCategory.STRING,
         "/docs/repeat.html");
   }

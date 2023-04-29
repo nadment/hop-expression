@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class RadiansFunction extends Function {
 
   public RadiansFunction() {
-    super("RADIANS", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("RADIANS", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/radians.html");
   }
 

@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class DayOfYearFunction extends Function {
 
   public DayOfYearFunction() {
-    super("DAYOFYEAR", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("DAYOFYEAR", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/dayofyear.html");
   }
 

@@ -34,7 +34,7 @@ import java.io.StringWriter;
 public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
-    super("BOOLOR", "OR", 180, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
+    super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL, "/docs/boolor.html");
   }
 

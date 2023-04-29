@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class IsoDayOfWeekFunction extends Function {
 
   public IsoDayOfWeekFunction() {
-    super("ISODAYOFWEEK", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("ISODAYOFWEEK", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/isodayofweek.html");
   }
 

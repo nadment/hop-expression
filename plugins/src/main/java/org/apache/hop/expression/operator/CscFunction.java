@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CscFunction extends Function {
 
   public CscFunction() {
-    super("CSC", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super("CSC", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
         "/docs/csc.html");
   }
 

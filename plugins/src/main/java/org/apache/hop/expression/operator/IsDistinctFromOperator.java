@@ -33,7 +33,7 @@ import java.io.StringWriter;
 public class IsDistinctFromOperator extends Operator {
 
   public IsDistinctFromOperator() {
-    super("IS DISTINCT FROM", 10, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("IS DISTINCT FROM", 10, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON, "/docs/is-distinct-from.html");
   }
 

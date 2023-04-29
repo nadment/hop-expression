@@ -35,7 +35,7 @@ import java.util.Locale;
 public class MonthName extends Function {
 
   public MonthName() {
-    super("MONTHNAME", true, ReturnTypes.STRING, OperandTypes.DATE, OperatorCategory.DATE,
+    super("MONTHNAME", ReturnTypes.STRING, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/monthname.html");
   }
 

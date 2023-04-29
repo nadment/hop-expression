@@ -14,15 +14,15 @@
  */
 package org.apache.hop.core.expression;
 
-import org.apache.commons.lang.math.JVMRandom;
+import static org.junit.Assert.assertFalse;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -2791,6 +2791,8 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Random() throws Exception {
+    assertFalse(FunctionRegistry.getFunction("RANDOM").isDeterministic());
+    
     evalTrue("Random()>0");
 
     // Keep the same context
@@ -2812,6 +2814,12 @@ public class FunctionsTest extends ExpressionTest {
     returnType("Random()", DataType.NUMBER);
   }
 
+  
+  @Test
+  public void Uuid() throws Exception {
+    assertFalse(FunctionRegistry.getFunction("UUID").isDeterministic());
+    returnType("UUID()", DataType.STRING);
+  }
   @Test
   public void Compress() throws Exception {
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");

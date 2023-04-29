@@ -271,7 +271,7 @@ import java.util.Locale;
      * @throws Exception if an error occurs.
      */
     public void append(StringBuilder buffer, ZonedDateTime datetime) throws Exception {      
-    };
+    }
 
     public void parse(DateTimeParser parser) {
     }

@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TranslateFunction extends Function {
 
   public TranslateFunction() {
-    super("TRANSLATE", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_STRING,
+    super("TRANSLATE", ReturnTypes.STRING, OperandTypes.STRING_STRING_STRING,
         OperatorCategory.STRING, "/docs/translate.html");
   }
 

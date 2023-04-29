@@ -41,14 +41,14 @@ public class ConcatFunction extends Function {
 
   // Function
   public ConcatFunction() {
-    super("CONCAT", true, ReturnTypes.FIRST_KNOWN,
+    super("CONCAT", ReturnTypes.FIRST_KNOWN,
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }
 
   // Operator
   public ConcatFunction(String name) {
-    super("CONCAT", name, 110, true, true, ReturnTypes.FIRST_KNOWN,
+    super("CONCAT", name, 110, true, ReturnTypes.FIRST_KNOWN,
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }

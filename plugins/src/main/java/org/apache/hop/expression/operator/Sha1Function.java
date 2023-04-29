@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Sha1Function extends Function {
 
   public Sha1Function() {
-    super("SHA1", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("SHA1", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC, "/docs/sha1.html");
   }
 

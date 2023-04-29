@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Nvl2Function extends Function {
 
   public Nvl2Function() {
-    super("NVL2", true, ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_SAME_SAME,
+    super("NVL2", ReturnTypes.ARG1_OR_ARG2, OperandTypes.BOOLEAN_SAME_SAME,
         OperatorCategory.CONDITIONAL, "/docs/nvl2.html");
   }
 

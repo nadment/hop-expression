@@ -41,7 +41,7 @@ public class AddOperator extends Operator {
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   public AddOperator() {
-    super("ADD", "+", 100, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("ADD", "+", 100, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/add.html");
   }
 

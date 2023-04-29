@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CbrtFunction extends Function {
 
   public CbrtFunction() {
-    super("CBRT", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("CBRT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/cbrt.html");
   }
 

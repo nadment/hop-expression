@@ -34,7 +34,7 @@ import java.time.temporal.TemporalAdjusters;
 public class NextDayFunction extends Function {
 
   public NextDayFunction() {
-    super("NEXT_DAY", true, ReturnTypes.DATE, OperandTypes.DATE_STRING, OperatorCategory.DATE,
+    super("NEXT_DAY", ReturnTypes.DATE, OperandTypes.DATE_STRING, OperatorCategory.DATE,
         "/docs/next_day.html");
   }
 

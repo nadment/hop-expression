@@ -40,7 +40,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {
-    super("SPLIT_PART", true, ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC,
+    super("SPLIT_PART", ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC,
         OperatorCategory.STRING, "/docs/split_part.html");
   }
 

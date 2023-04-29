@@ -34,7 +34,7 @@ import java.util.Locale;
 public class LowerFunction extends Function {
 
   public LowerFunction() {
-    super("LOWER", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("LOWER", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/lower.html");
   }
 

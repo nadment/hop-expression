@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class LeastFunction extends Function {
 
   public LeastFunction() {
-    super("LEAST", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+    super("LEAST", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.CONDITIONAL, "/docs/least.html");
   }
 

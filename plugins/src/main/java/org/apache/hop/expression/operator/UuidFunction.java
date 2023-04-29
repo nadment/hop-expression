@@ -32,7 +32,7 @@ import java.util.UUID;
 public class UuidFunction extends Function {
 
   public UuidFunction() {
-    super("UUID", false, ReturnTypes.STRING, OperandTypes.NILADIC, OperatorCategory.STRING,
+    super("UUID", ReturnTypes.STRING, OperandTypes.NILADIC, OperatorCategory.STRING,
         "/docs/uuid.html");
   }
 
@@ -41,5 +41,10 @@ public class UuidFunction extends Function {
       throws Exception {
 
     return UUID.randomUUID().toString();
+  }
+
+  @Override
+  public boolean isDeterministic() {
+    return false;
   }
 }

@@ -79,7 +79,7 @@ public class JsonObjectFunction extends Function {
 
 
   public JsonObjectFunction() {
-    super("JSON_OBJECT", true, ReturnTypes.JSON, OTC, OperatorCategory.JSON,
+    super("JSON_OBJECT", ReturnTypes.JSON, OTC, OperatorCategory.JSON,
         "/docs/json_object.html");
   }
 

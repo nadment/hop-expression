@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
 public class UrlDecodeFunction extends Function {
 
   public UrlDecodeFunction() {
-    super("URL_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("URL_DECODE", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/url_decode.html");
   }
 

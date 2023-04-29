@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SquareFunction extends Function {
 
   public SquareFunction() {
-    super("SQUARE", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("SQUARE", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/square.html");
   }
 

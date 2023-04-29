@@ -44,7 +44,7 @@ public class RegexpReplaceFunction extends Function {
       .optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", true, ReturnTypes.STRING, OTC, OperatorCategory.STRING,
+    super("REGEXP_REPLACE", ReturnTypes.STRING, OTC, OperatorCategory.STRING,
         "/docs/regexp_replace.html");
   }
 

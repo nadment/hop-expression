@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitClearFunction extends Function {
 
   public BitClearFunction() {
-    super("BIT_CLEAR", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+    super("BIT_CLEAR", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_clear.html");
   }
 

@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class InstrFunction extends Function {
 
   public InstrFunction() {
-    super("INSTR", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC,
+    super("INSTR", ReturnTypes.INTEGER, OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC,
         OperatorCategory.STRING, "/docs/instr.html");
   }
 

@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class PowerFunction extends Function {
 
   public PowerFunction() {
-    super("POWER", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("POWER", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/power.html");
   }
 

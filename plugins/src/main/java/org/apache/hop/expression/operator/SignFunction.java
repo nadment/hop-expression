@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SignFunction extends Function {
 
   public SignFunction() {
-    super("SIGN", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("SIGN", ReturnTypes.INTEGER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/sign.html");
   }
 

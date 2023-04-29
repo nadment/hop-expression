@@ -45,7 +45,7 @@ public class InsertFunction extends Function {
           DataFamily.BINARY));
 
   public InsertFunction() {
-    super("INSERT", true, ReturnTypes.ARG0, OTC, OperatorCategory.STRING, "/docs/insert.html");
+    super("INSERT", ReturnTypes.ARG0, OTC, OperatorCategory.STRING, "/docs/insert.html");
   }
 
   @Override

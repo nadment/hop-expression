@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TanhFunction extends Function {
 
   public TanhFunction() {
-    super("TANH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super("TANH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
         "/docs/tanh.html");
   }
 

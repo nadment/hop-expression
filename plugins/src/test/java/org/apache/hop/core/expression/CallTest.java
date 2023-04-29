@@ -31,16 +31,17 @@ public class CallTest extends ExpressionTest {
   public void test() throws Exception {
     Call call1 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
     Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
-    Call call3 = new Call(DataType.INTEGER, Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
+    Call call3 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
+    
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
     assertTrue(call1.is(Kind.CALL));
     assertTrue(call1.is(Operators.ADD));
     //assertEquals(call1.hashCode(), call2.hashCode()); 
     assertEquals(2, call1.getOperandCount());
-    // Unknown before optimization
+    // Data type is unknown before validation
     assertEquals(DataType.UNKNOWN, call1.getType());
-    assertEquals(DataType.INTEGER, call3.getType());
+    assertEquals(DataType.UNKNOWN, call3.getType());
     assertNotEquals(call1, null);   
     assertEquals("3+5", call1.toString());    
   }

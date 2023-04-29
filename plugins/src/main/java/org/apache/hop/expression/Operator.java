@@ -49,8 +49,6 @@ public abstract class Operator implements Comparable<Operator> {
    */
   private final int rightPrecedence;
 
-  private final boolean isDeterministic;
-
   /** Used to infer the return type of a call to this operator. */
   private final IReturnTypeInference returnTypeInference;
 
@@ -78,25 +76,24 @@ public abstract class Operator implements Comparable<Operator> {
    * @param category The category to group operator
    */
   protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
-      boolean isDeterministic, IReturnTypeInference returnTypeInference,
+      IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
-    this.id = Objects.requireNonNull(id, "id is null");
-    this.name = Objects.requireNonNull(name, "name is null");
+    this.id = Objects.requireNonNull(id, "id");
+    this.name = Objects.requireNonNull(name, "name");
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
-    this.isDeterministic = isDeterministic;
-    this.returnTypeInference = returnTypeInference;
-    this.operandTypeChecker = operandTypeChecker;
+    this.returnTypeInference = Objects.requireNonNull(returnTypeInference,"return type inference");
+    this.operandTypeChecker = Objects.requireNonNull(operandTypeChecker,"operand type checker");
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;
     this.documentation = ExpressionUtils.loadDocumention(id, documentationUrl);
     this.description = ExpressionUtils.findDocumentionDescription(documentation);
   }
 
-  protected Operator(String id, int precedence, boolean isLeftAssociative, boolean isDeterministic,
+  protected Operator(String id, int precedence, boolean isLeftAssociative, 
       IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
       String category, String documentationUrl) {
-    this(id, id, precedence, isLeftAssociative, isDeterministic, returnTypeInference,
+    this(id, id, precedence, isLeftAssociative, returnTypeInference,
         operandTypeChecker, category, documentationUrl);
   }
 
@@ -139,10 +136,10 @@ public abstract class Operator implements Comparable<Operator> {
   /**
    * Whether the operator always returns the same result for the same parameters.
    *
-   * @return true if it does
+   * @return {@code true} if this is a deterministric function
    */
   public boolean isDeterministic() {
-    return isDeterministic;
+    return true;
   }
 
   /**

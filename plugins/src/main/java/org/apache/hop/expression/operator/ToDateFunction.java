@@ -41,7 +41,7 @@ public class ToDateFunction extends Function {
   }
 
   protected ToDateFunction(final String id) {
-    super(id, true, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT,
+    super(id, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_date.html");
   }
   

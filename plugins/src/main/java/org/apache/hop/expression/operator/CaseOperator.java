@@ -31,7 +31,7 @@ import java.io.StringWriter;
 public class CaseOperator extends Operator {
 
   public CaseOperator() {
-    super("CASE", 120, true, true, ReturnTypes.CASE_OPERATOR, OperandTypes.CASE_OPERATOR,
+    super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, OperandTypes.CASE_OPERATOR,
         OperatorCategory.CONDITIONAL, "/docs/case.html");
   }
 

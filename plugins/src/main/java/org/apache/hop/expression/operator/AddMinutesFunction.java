@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class AddMinutesFunction extends Function {
 
   public AddMinutesFunction() {
-    super("ADD_MINUTES", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+    super("ADD_MINUTES", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
         "/docs/add_minutes.html");
   }
 

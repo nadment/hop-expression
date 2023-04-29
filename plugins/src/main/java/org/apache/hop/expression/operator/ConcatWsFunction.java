@@ -35,7 +35,7 @@ public class ConcatWsFunction extends Function {
 
   // Function
   public ConcatWsFunction() {
-    super("CONCAT_WS", true, ReturnTypes.FIRST_KNOWN,
+    super("CONCAT_WS", ReturnTypes.FIRST_KNOWN,
         OperandTypes.or(OperandTypes.STRING_STRING_VARIADIC, OperandTypes.BINARY_BINARY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat_ws.html");
   }

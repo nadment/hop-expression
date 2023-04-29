@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AsinhFunction extends Function {
 
   public AsinhFunction() {
-    super("ASINH", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super("ASINH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
         "/docs/asinh.html");
   }
 

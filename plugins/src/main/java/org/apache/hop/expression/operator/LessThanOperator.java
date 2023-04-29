@@ -33,7 +33,7 @@ import java.io.StringWriter;
 public class LessThanOperator extends Operator {
 
   public LessThanOperator() {
-    super("LESS_THAN", "<", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("LESS_THAN", "<", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON, "/docs/less_than.html");
   }
 

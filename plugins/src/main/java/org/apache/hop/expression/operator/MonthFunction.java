@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class MonthFunction extends Function {
 
   public MonthFunction() {
-    super("MONTH", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("MONTH", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/month.html");
   }
 

@@ -36,7 +36,7 @@ public class RPadFunction extends Function {
   private static final int PAD_LIMIT = 8192;
 
   public RPadFunction() {
-    super("RPAD", true, ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+    super("RPAD", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
         OperatorCategory.STRING, "/docs/rpad.html");
   }
 

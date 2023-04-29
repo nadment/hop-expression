@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ReverseFunction extends Function {
 
   public ReverseFunction() {
-    super("REVERSE", true, ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/reverse.html");
   }
 

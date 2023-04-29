@@ -44,7 +44,7 @@ public class ToBinaryFunction extends Function {
   }
   
   public ToBinaryFunction(final String id) {
-    super(id, true, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
+    super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_binary.html");
   }
 

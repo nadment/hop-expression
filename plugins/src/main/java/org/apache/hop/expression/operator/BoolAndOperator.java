@@ -34,7 +34,7 @@ import java.io.StringWriter;
 public class BoolAndOperator extends Operator {
 
   public BoolAndOperator() {
-    super("BOOLAND", "AND", 160, true, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
+    super("BOOLAND", "AND", 160, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL, "/docs/booland.html");
   }
 

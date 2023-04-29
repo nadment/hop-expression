@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class RTrimFunction extends Function {
 
   public RTrimFunction() {
-    super("RTRIM", true, ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
+    super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
         OperatorCategory.STRING, "/docs/rtrim.html");
   }
 

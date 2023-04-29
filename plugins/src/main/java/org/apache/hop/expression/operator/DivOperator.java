@@ -38,7 +38,7 @@ import java.math.MathContext;
 public class DivOperator extends Operator {
 
   public DivOperator() {
-    super("DIV", "/", 50, true, true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV", "/", 50, true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div.html");
   }
 

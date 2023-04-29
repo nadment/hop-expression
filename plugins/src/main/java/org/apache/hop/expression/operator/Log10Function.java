@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Log10Function extends Function {
 
   public Log10Function() {
-    super("LOG10", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super("LOG10", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
         "/docs/log10.html");
   }
 

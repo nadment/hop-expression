@@ -40,7 +40,7 @@ public class ToNumberFunction extends Function {
   }
   
   protected ToNumberFunction(final String id) {
-    super(id, true, ReturnTypes.BIGNUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
+    super(id, ReturnTypes.BIGNUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
   

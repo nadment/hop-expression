@@ -37,7 +37,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Sha256Function extends Function {
 
   public Sha256Function() {
-    super("SHA256", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("SHA256", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC, "/docs/sha256.html");
   }
 

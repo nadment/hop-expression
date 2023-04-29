@@ -33,7 +33,7 @@ import java.time.temporal.IsoFields;
 public class IsoYearFunction extends Function {
 
   public IsoYearFunction() {
-    super("ISOYEAR", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("ISOYEAR", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/isoyear.html");
   }
 

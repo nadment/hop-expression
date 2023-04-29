@@ -36,7 +36,7 @@ public class NormalizeFunction extends Function {
 
 
   public NormalizeFunction() {
-    super("NORMALIZE", true, ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
+    super("NORMALIZE", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
         OperatorCategory.STRING, "/docs/normalize.html");
   }
 

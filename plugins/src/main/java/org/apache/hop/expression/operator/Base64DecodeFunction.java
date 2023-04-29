@@ -37,7 +37,7 @@ import java.util.Base64.Decoder;
 public class Base64DecodeFunction extends Function {
 
   public Base64DecodeFunction() {
-    super("BASE64_DECODE", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("BASE64_DECODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/base64_decode.html");
   }
 

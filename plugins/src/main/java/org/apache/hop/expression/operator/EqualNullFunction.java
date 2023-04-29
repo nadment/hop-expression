@@ -40,7 +40,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {
-    super("EQUAL_NULL", true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("EQUAL_NULL", ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON, "/docs/equal_null.html");
   }
 

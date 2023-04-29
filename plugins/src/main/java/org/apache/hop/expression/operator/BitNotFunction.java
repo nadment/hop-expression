@@ -34,12 +34,12 @@ import java.io.StringWriter;
 public class BitNotFunction extends Function {
 
   public BitNotFunction() {
-    super("BIT_NOT", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC, OperatorCategory.BITWISE,
+    super("BIT_NOT", ReturnTypes.INTEGER, OperandTypes.NUMERIC, OperatorCategory.BITWISE,
         "/docs/bit_not.html");
   }
 
   public BitNotFunction(String name) {
-    super("BIT_NOT", name, 40, true, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
+    super("BIT_NOT", name, 40, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_not.html");
   }
 

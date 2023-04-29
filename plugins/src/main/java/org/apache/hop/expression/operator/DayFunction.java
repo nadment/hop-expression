@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class DayFunction extends Function {
 
   public DayFunction() {
-    super("DAY", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("DAY", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/day.html");
   }
 

@@ -41,7 +41,7 @@ public class BetweenOperator extends Operator {
   public final Between between;
 
   public BetweenOperator(Between between) {
-    super("BETWEEN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.SAME_SAME_SAME,
+    super("BETWEEN", 120, true, ReturnTypes.BOOLEAN, OperandTypes.SAME_SAME_SAME,
         OperatorCategory.COMPARISON, "/docs/between.html");
     this.between = between;
   }

@@ -36,7 +36,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Sha384Function extends Function {
 
   public Sha384Function() {
-    super("SHA384", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("SHA384", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC, "/docs/sha384.html");
   }
 

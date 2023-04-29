@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class YearFunction extends Function {
 
   public YearFunction() {
-    super("YEAR", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("YEAR", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/year.html");
   }
 

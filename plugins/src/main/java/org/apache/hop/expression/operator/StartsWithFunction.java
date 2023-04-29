@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class StartsWithFunction extends Function {
 
   public StartsWithFunction() {
-    super("STARTSWITH", true, ReturnTypes.BOOLEAN,
+    super("STARTSWITH", ReturnTypes.BOOLEAN,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), OperatorCategory.COMPARISON,
         "/docs/startswith.html");
   }

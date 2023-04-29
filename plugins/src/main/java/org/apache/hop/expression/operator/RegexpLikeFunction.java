@@ -37,7 +37,7 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpLikeFunction extends Function {
 
   public RegexpLikeFunction() {
-    super("REGEXP_LIKE", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
+    super("REGEXP_LIKE", ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
         OperatorCategory.COMPARISON, "/docs/regexp_like.html");
   }
 

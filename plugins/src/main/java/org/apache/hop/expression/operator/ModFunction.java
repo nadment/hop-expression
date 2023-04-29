@@ -38,12 +38,12 @@ import java.math.BigDecimal;
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("MOD", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 
   public ModFunction(String name) {
-    super("MOD", name, 50, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("MOD", name, 50, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 

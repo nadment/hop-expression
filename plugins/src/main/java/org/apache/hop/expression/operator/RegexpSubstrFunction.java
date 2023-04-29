@@ -37,7 +37,7 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpSubstrFunction extends Function {
 
   public RegexpSubstrFunction() {
-    super("REGEXP_SUBSTR", true, ReturnTypes.STRING,
+    super("REGEXP_SUBSTR", ReturnTypes.STRING,
         OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_STRING, OperatorCategory.STRING,
         "/docs/regexp_substr.html");
   }

@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class DayOfWeekFunction extends Function {
 
   public DayOfWeekFunction() {
-    super("DAYOFWEEK", true, ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("DAYOFWEEK", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
         "/docs/dayofweek.html");
   }
 

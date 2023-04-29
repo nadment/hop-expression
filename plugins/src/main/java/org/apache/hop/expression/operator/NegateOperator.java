@@ -34,7 +34,7 @@ import java.io.StringWriter;
  */
 public class NegateOperator extends Operator {
   public NegateOperator() {
-    super("NEGATE", "-", 30, true, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC,
+    super("NEGATE", "-", 30, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/negate.html");
   }
 

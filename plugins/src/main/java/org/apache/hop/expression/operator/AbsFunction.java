@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AbsFunction extends Function {
 
   public AbsFunction() {
-    super("ABS", true, ReturnTypes.ARG0, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("ABS", ReturnTypes.ARG0, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/abs.html");
   }
 

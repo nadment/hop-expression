@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
@@ -36,28 +37,18 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public final class Call implements IExpression {
 
-  protected DataType type;
+  protected DataType type = DataType.UNKNOWN;
   protected final Operator operator;
   protected final IExpression[] operands;
 
   public Call(Operator operator, IExpression... operands) {
-    this(DataType.UNKNOWN, operator, operands);
+    this.operator = requireNonNull(operator, "operator");
+    this.operands = requireNonNull(operands, "operands");
   }
 
   public Call(Operator operator, Collection<IExpression> operands) {
-    this(DataType.UNKNOWN, operator, operands);
-  }
-
-  public Call(DataType type, Operator operator, IExpression... operands) {
-    this.type = Objects.requireNonNull(type, "data type is null");
-    this.operator = Objects.requireNonNull(operator, "operator is null");
-    this.operands = Objects.requireNonNull(operands);
-  }
-
-  public Call(DataType type, Operator operator, Collection<IExpression> operands) {
-    this.type = Objects.requireNonNull(type, "data type is null");
-    this.operator = Objects.requireNonNull(operator, "operator is null");
-    this.operands = Objects.requireNonNull(operands).toArray(new IExpression[0]);
+    this.operator = requireNonNull(operator, "operator");
+    this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);
   }
 
   @Override
@@ -302,7 +293,7 @@ public final class Call implements IExpression {
    * @param context The context against which the expression will be validated.
    * @param call Call
    */
-  public IExpression validate(final IExpressionContext context)  throws ExpressionException {
+  public IExpression validate(final IExpressionContext context) throws ExpressionException {
 
     // Validate all operands
     for (int i=0; i<operands.length;i++ ) {
@@ -348,7 +339,11 @@ public final class Call implements IExpression {
         // Ignore and continue
       }
     }
-        
+    
+    return compile(context);
+  }
+  
+  protected IExpression compile(final IExpressionContext context) throws ExpressionException {
     Call call = this;
     
     // If operator is symmetrical reorganize operands
@@ -418,7 +413,6 @@ public final class Call implements IExpression {
    * </ul>
    */
   protected Call reorganizeSymmetrical() {
-   // Operator operator = call.getOperator();
     IExpression left = this.getOperand(0);
     IExpression right = this.getOperand(1);
 
@@ -457,7 +451,7 @@ public final class Call implements IExpression {
 
   @Override
   public boolean isConstant() {
-    // If operator is deterministic and all operands are constant
+    // A call is constant if the operator is deterministic and all operands are constant
     if (operator.isDeterministic()) {
       for (IExpression operand : operands) {
         if (operand == null) {
@@ -466,11 +460,9 @@ public final class Call implements IExpression {
         if (!operand.isConstant()) {
           return false;
         }
-      }
-      
+      }      
       return true;
     }
-
     return false;
   }
 }

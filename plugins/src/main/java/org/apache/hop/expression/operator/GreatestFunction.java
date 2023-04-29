@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class GreatestFunction extends Function {
 
   public GreatestFunction() {
-    super("GREATEST", true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+    super("GREATEST", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.CONDITIONAL, "/docs/greatest.html");
   }
 

@@ -32,7 +32,7 @@ import java.util.zip.CRC32C;
 public class Crc32Function extends Function {
 
   public Crc32Function() {
-    super("CRC32", true, ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("CRC32", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.CRYPTOGRAPHIC, "/docs/crc32.html");
   }
 

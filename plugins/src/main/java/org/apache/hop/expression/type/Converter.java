@@ -55,8 +55,6 @@ public class Converter {
    */
   public static final Object cast(final Object value, final DataType type, String pattern) {
 
-    //Objects.requireNonNull(type);
-
     if (value == null) {
       return null;
     }
@@ -149,12 +147,7 @@ public class Converter {
         return coerceToString(value);
       case DATE:
         if (value instanceof String) {
-         // try {
-            return DateTimeFormat.of(pattern).parse((String) value);
-//          } catch (ParseException e) {
-//            throw new IllegalArgumentException(
-//                ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(value, pattern),e);
-//          }
+          return DateTimeFormat.of(pattern).parse((String) value);
         }
         break; 
       case JSON:

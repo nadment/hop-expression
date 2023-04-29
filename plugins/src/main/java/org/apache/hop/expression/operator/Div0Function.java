@@ -36,7 +36,7 @@ import java.math.MathContext;
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV0", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div0.html");
   }
 

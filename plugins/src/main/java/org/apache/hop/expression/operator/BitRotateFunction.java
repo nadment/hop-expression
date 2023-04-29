@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitRotateFunction extends Function {
 
   public BitRotateFunction() {
-    super("BIT_ROTATE", true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+    super("BIT_ROTATE", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.BITWISE, "/docs/bit_rotate.html");
   }
 

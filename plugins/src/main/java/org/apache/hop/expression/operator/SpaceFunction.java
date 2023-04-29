@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SpaceFunction extends Function {
 
   public SpaceFunction() {
-    super("SPACE", true, ReturnTypes.STRING, OperandTypes.NUMERIC, OperatorCategory.STRING,
+    super("SPACE", ReturnTypes.STRING, OperandTypes.NUMERIC, OperatorCategory.STRING,
         "/docs/space.html");
   }
 

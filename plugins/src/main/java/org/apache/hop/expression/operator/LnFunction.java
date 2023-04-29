@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class LnFunction extends Function {
 
   public LnFunction() {
-    super("LN", true, ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
+    super("LN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.TRIGONOMETRY,
         "/docs/ln.html");
   }
 

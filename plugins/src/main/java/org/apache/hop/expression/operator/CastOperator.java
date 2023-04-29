@@ -35,7 +35,7 @@ import java.io.StringWriter;
 public class CastOperator extends Operator {
 
   public CastOperator() {
-    super("CAST", "::", 40, true, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
+    super("CAST", "::", 40, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 

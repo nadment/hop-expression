@@ -40,7 +40,7 @@ public class SubtractOperator extends Operator {
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   public SubtractOperator() {
-    super("SUBTRACT", "-", 100, true, true, ReturnTypes.LEAST_RESTRICTIVE,
+    super("SUBTRACT", "-", 100, true, ReturnTypes.LEAST_RESTRICTIVE,
         OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/subtract.html");
   }
 

@@ -41,7 +41,7 @@ public class CastFunction extends Function {
   }
   
   protected CastFunction(final String id) {
-    super(id, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
+    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 

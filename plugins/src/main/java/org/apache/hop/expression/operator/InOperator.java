@@ -51,7 +51,7 @@ import java.util.List;
 public class InOperator extends Operator {
 
   public InOperator() {
-    super("IN", 120, true, true, ReturnTypes.BOOLEAN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+    super("IN", 120, true, ReturnTypes.BOOLEAN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         OperatorCategory.COMPARISON, "/docs/in.html");
   }
   

@@ -35,7 +35,7 @@ import java.time.ZonedDateTime;
 public class DateAddFunction extends Function {
 
   public DateAddFunction() {
-    super("DATE_ADD", true, ReturnTypes.DATE, OperandTypes.TIMEUNIT_NUMERIC_DATE, OperatorCategory.DATE,
+    super("DATE_ADD", ReturnTypes.DATE, OperandTypes.TIMEUNIT_NUMERIC_DATE, OperatorCategory.DATE,
         "/docs/date_add.html");
   }
 

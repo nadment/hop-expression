@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class DecodeFunction extends Function {
 
   public DecodeFunction() {
-    super("DECODE", true, ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, OperatorCategory.CONDITIONAL,
+    super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, OperatorCategory.CONDITIONAL,
         "/docs/decode.html");
   }
 

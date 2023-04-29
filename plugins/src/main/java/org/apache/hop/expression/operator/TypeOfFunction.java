@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TypeOfFunction extends Function {
 
   public TypeOfFunction() {
-    super("TYPEOF", true, ReturnTypes.STRING, OperandTypes.ANY, OperatorCategory.SPECIAL,
+    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, OperatorCategory.SPECIAL,
         "/docs/typeof.html");
   }
 

@@ -28,7 +28,7 @@ public class UserDefinedFunction extends Function {
   private UserDefinedFunctionMeta meta;
 
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
-    super(meta.getName(), true, ReturnTypes.ANY,
+    super(meta.getName(), ReturnTypes.ANY,
         new UserDefinedFunctionOperandTypeChecker(meta), OperatorCategory.UDF, "/docs/udf.html");
     this.meta = meta;
   }

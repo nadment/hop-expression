@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import static java.util.Objects.requireNonNull;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
@@ -43,8 +44,8 @@ public final class Identifier implements IExpression {
   private final int ordinal;
 
   public Identifier(final String name, final DataType type, int ordinal) {
-    this.name = Objects.requireNonNull(name, "name is null");
-    this.type = Objects.requireNonNull(type, "data type is null");
+    this.name = requireNonNull(name, "name");
+    this.type = requireNonNull(type, "data type");
     this.ordinal = ordinal;
   }
 

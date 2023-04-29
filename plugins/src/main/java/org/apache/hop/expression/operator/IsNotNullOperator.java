@@ -30,7 +30,7 @@ import java.io.StringWriter;
 public class IsNotNullOperator extends Operator {
 
   public IsNotNullOperator() {
-    super("IS NOT NULL", 140, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
+    super("IS NOT NULL", 140, true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
         OperatorCategory.COMPARISON, "/docs/is-null.html");
   }
 

@@ -33,7 +33,7 @@ import java.time.ZoneId;
 public class TimestampFromPartsFunction extends Function {
 
   public TimestampFromPartsFunction() {
-    super("TIMESTAMP_FROM_PARTS", true, ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC,
+    super("TIMESTAMP_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC,
         OperatorCategory.DATE, "/docs/timestamp_from_parts.html");
   }
 

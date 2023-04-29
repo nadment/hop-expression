@@ -33,7 +33,7 @@ import java.math.RoundingMode;
 public class TruncateFunction extends Function {
 
   public TruncateFunction() {
-    super("TRUNCATE", true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_OPTIONAL_NUMERIC,
+    super("TRUNCATE", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_OPTIONAL_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/truncate.html");
   }
 

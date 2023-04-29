@@ -33,7 +33,7 @@ import java.time.temporal.ChronoUnit;
 public class HoursBetweenFunction extends Function {
 
   public HoursBetweenFunction() {
-    super("HOURS_BETWEEN", true, ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
+    super("HOURS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
         OperatorCategory.DATE, "/docs/hours_between.html");
   }
 

@@ -33,7 +33,7 @@ import java.io.StringWriter;
 public class EqualOperator extends Operator {
 
   public EqualOperator() {
-    super("EQUAL", "=", 130, true, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON, "/docs/equal.html");
   }
 

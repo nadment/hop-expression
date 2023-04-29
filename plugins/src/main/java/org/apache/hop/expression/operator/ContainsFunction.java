@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ContainsFunction extends Function {
 
   public ContainsFunction() {
-    super("CONTAINS", true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING,
+    super("CONTAINS", ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING,
         OperatorCategory.COMPARISON, "/docs/contains.html");
   }
 

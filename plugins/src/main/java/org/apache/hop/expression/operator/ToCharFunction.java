@@ -42,7 +42,7 @@ public class ToCharFunction extends Function {
 
   public ToCharFunction() {
     super(
-        "TO_CHAR", true, ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT
+        "TO_CHAR", ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT
             .or(OperandTypes.DATE_OPTIONAL_TEXT).or(OperandTypes.BINARY_OPTIONAL_TEXT),
         OperatorCategory.CONVERSION, "/docs/to_char.html");
   }

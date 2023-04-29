@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class AddWeeksFunction extends Function {
 
   public AddWeeksFunction() {
-    super("ADD_WEEKS", true, ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+    super("ADD_WEEKS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
         "/docs/add_weeks.html");
   }
 
