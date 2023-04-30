@@ -23,8 +23,8 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
@@ -55,28 +55,22 @@ public class ConcatFunction extends Function {
   
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
-    // Combine chained concat operator and remove NULL
-    ArrayList<IExpression> operands = new ArrayList<>();
-    for (IExpression expression : call.getOperands()) {
-      if (expression.is(Operators.CONCAT)) {
-        Call childCall = (Call) expression;
-        for (IExpression child : childCall.getOperands()) {
-          if (!child.isNull()) {
-            operands.add(child);
-          }
-        }
-      } else if (!expression.isNull()) {
-        operands.add(expression);
-      }
+   
+    // Combine chained CONCAT operator and remove NULL
+    ArrayList<IExpression> operands = new ArrayList<>();    
+    for (IExpression operand : getChainedOperands(call, true)) {
+      if (operand.isNull()) continue;
+      operands.add(operand);
     }
-
-    // If only 1 expression, nothing to concat
-    if (operands.size() == 1) {
-      return operands.get(0);
+    
+    switch (operands.size()) {
+      case 0: // Nothing to concat
+        return Literal.NULL;
+      case 1: // Concat(X) => X
+        return operands.get(0);
+      default:
+        return new Call(call.getOperator(), operands);
     }
-
-    return new Call(Operators.CONCAT, operands);
   }
 
   

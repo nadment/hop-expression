@@ -18,20 +18,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
-import java.util.List;
 
 public class CallTest extends ExpressionTest {
  
   @Test
   public void test() throws Exception {
-    Call call1 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
-    Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
-    Call call3 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
+    Call call1 = new Call(Operators.ADD, Literal.of(3), Literal.of(5));
+    Call call2 = new Call(Operators.ADD, Literal.of(3), Literal.of(5));
+    Call call3 = new Call(Operators.ADD, Literal.of(3), Literal.of(6));
+    
+    Call call4 = new Call(Operators.ADD, Literal.of(3), new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
+    Call call5 = new Call(Operators.ADD, Literal.of(3), new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
     
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
@@ -43,6 +46,9 @@ public class CallTest extends ExpressionTest {
     assertEquals(DataType.UNKNOWN, call1.getType());
     assertEquals(DataType.UNKNOWN, call3.getType());
     assertNotEquals(call1, null);   
-    assertEquals("3+5", call1.toString());    
+    assertEquals("3+5", call1.toString());
+    assertEquals(call1, call2);
+    assertEquals(call4, call5);
+    assertNotEquals(call1, call3); 
   }
 }

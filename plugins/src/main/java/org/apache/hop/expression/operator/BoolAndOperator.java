@@ -24,9 +24,11 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
+import java.util.Stack;
 
 /**
  * Logical conjunction <code>AND</code> operator.
@@ -48,16 +50,12 @@ public class BoolAndOperator extends Operator {
 
     if (call.getOperand(0).is(Kind.LITERAL)) {
       Boolean value = call.getOperand(0).getValue(context, Boolean.class);
-      if (value == null)
-        return Literal.NULL;
       if (value == Boolean.FALSE)
         left = false;
     }
 
     if (call.getOperand(1).is(Kind.LITERAL)) {
       Boolean value = call.getOperand(1).getValue(context, Boolean.class);
-      if (value == null)
-        return Literal.NULL;
       if (value == Boolean.FALSE)
         right = false;
     }
@@ -67,14 +65,29 @@ public class BoolAndOperator extends Operator {
     if (!left || !right) {
       return Literal.FALSE;
     }
-
-    // x AND x => x
-    if (call.getOperand(0).equals(call.getOperand(1))) {
-      return call.getOperand(0);
+   
+    // x AND x => x    
+    // x AND y AND x => x AND y   
+    Stack<IExpression> operands = this.getChainedOperands(call, false);
+    if ( operands.size()==1 ) return operands.pop();
+    IExpression expression  = operands.pop();
+    while (!operands.isEmpty()) {      
+      call = new Call(Operators.BOOLAND, operands.pop(), expression); 
+      call.inferenceType(context);  
+      expression = call;
     }
-
-    return call;
+    
+    
+    // TODO: Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
+    //Stack<IExpression> notNullOperands = this.getChainedOperands(call, e -> e.is(Operators.IS_NOT_NULL));
+    //Stack<IExpression> comparisonOperands = this.getChainedOperands(call, e -> e.is(Operators.EQUAL) || e.is(Operators.LESS_THAN));
+    
+    return expression;
   }
+  
+  
+  
+  
   
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {

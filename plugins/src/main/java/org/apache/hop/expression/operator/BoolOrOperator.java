@@ -24,9 +24,11 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
+import java.util.Stack;
 
 /**
  * Logical disjunction <code>OR</code> operator.
@@ -34,7 +36,7 @@ import java.io.StringWriter;
 public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
-    super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
+    super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_VARIADIC,
         OperatorCategory.LOGICAL, "/docs/boolor.html");
   }
 
@@ -46,26 +48,31 @@ public class BoolOrOperator extends Operator {
 
     if (call.getOperand(0).is(Kind.LITERAL)) {
       Boolean value = call.getOperand(0).getValue(context, Boolean.class);
-      if (value == null)
-        return call.getOperand(1);
       if (value == Boolean.TRUE)
         return Literal.TRUE;
     }
 
     if (call.getOperand(1).is(Kind.LITERAL)) {
       Boolean value = call.getOperand(1).getValue(context, Boolean.class);
-      if (value == null)
-        return call.getOperand(0);
       if (value == Boolean.TRUE)
         return Literal.TRUE;
     }
 
-    // x OR x => x
-    if (call.getOperand(0).equals(call.getOperand(1))) {
-      return call.getOperand(0);
+    // X <> A OR X <> B => X IS NOT NULL or NULL
+    
+    // Remove duplicate
+    // x OR x => x    
+    // x OR y OR x => x OR y   
+    Stack<IExpression> operands = this.getChainedOperands(call, false);
+    if ( operands.size()==1 ) return operands.pop();
+    IExpression operand  = operands.pop();
+    while (!operands.isEmpty()) {      
+      call = new Call(Operators.BOOLOR, operands.pop(), operand ); 
+      call.inferenceType(context);  
+      operand = call;
     }
-
-    return call;
+    
+    return operand;
   }
   
   @Override
@@ -85,7 +92,7 @@ public class BoolOrOperator extends Operator {
     }
     return Boolean.logicalOr(left, right);
   }
-
+  
   @Override
   public boolean isSymmetrical() {
     return true;

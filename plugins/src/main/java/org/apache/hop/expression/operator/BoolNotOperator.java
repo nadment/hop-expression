@@ -75,13 +75,21 @@ public class BoolNotOperator extends Operator {
     if (operand.is(Operators.BOOLNOT)) {
       return ((Call) operand).getOperand(0);
     }
-    // NOT(x IS TRUE) => x IS FALSE
+    // NOT(x IS TRUE) => x IS NOT TRUE
     if (operand.is(Operators.IS_TRUE)) {
-      return new Call(Operators.IS_FALSE, ((Call) operand).getOperands());
+      return new Call(Operators.IS_NOT_TRUE, ((Call) operand).getOperands());
     }
-    // NOT(x IS FALSE) => x IS TRUE
-    if (operand.is(Operators.IS_FALSE)) {
+    // NOT(x IS NOT TRUE) => x IS TRUE
+    if (operand.is(Operators.IS_NOT_TRUE)) {
       return new Call(Operators.IS_TRUE, ((Call) operand).getOperands());
+    }
+    // NOT(x IS FALSE) => x IS NOT FALSE
+    if (operand.is(Operators.IS_FALSE)) {
+      return new Call(Operators.IS_NOT_FALSE, ((Call) operand).getOperands());
+    }
+    // NOT(x IS NOT FALSE) => x IS FALSE
+    if (operand.is(Operators.IS_NOT_FALSE)) {
+      return new Call(Operators.IS_FALSE, ((Call) operand).getOperands());
     }
     // NOT(x IS NULL) => x IS NOT NULL
     if (operand.is(Operators.IS_NULL)) {

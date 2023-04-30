@@ -17,6 +17,8 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -63,6 +65,20 @@ public class CastFunction extends Function {
   
   protected Object cast(Object value, DataType type, String format) {
     return Converter.cast(value, type, format);
+  }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    call.inferenceType(context);
+    
+    // Remove lossless cast
+    IExpression operand = call.getOperand(0);
+    if (call.getType().equals(operand.getType())) {
+      return operand;
+    }
+    
+    return call; 
   }
 
   @Override

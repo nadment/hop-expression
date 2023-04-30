@@ -362,7 +362,7 @@ public final class Call implements IExpression {
     return expression;
   }
   
-  protected void inferenceType(final IExpressionContext context) {
+  public void inferenceType(final IExpressionContext context) {
     this.type = this.operator.getReturnTypeInference().getReturnType(context, this);
   } 
   

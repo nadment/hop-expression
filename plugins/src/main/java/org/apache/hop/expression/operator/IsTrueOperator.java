@@ -39,10 +39,8 @@ public class IsTrueOperator extends Operator {
       throws Exception {
     Object value = operands[0].getValue(context);
 
-    if (value == Boolean.TRUE) {
-      return Boolean.TRUE;
-    }
-    return Boolean.FALSE;
+    // NULL is never TRUE
+    return value==Boolean.TRUE;
   }
 
   @Override

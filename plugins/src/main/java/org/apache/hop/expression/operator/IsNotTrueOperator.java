@@ -25,13 +25,13 @@ import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 
 /**
- * An operator describing the <code>IS FALSE</code> operator.
+ * An operator describing the <code>IS NOT TRUE</code> operator.
  */
-public class IsFalseOperator extends Operator {
+public class IsNotTrueOperator extends Operator {
 
-  public IsFalseOperator() {
-    super("IS FALSE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        OperatorCategory.COMPARISON, "/docs/is-false.html");
+  public IsNotTrueOperator() {
+    super("IS NOT TRUE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
+        OperatorCategory.COMPARISON, "/docs/is-true.html");
   }
 
   @Override
@@ -39,13 +39,13 @@ public class IsFalseOperator extends Operator {
       throws Exception {
     Object value = operands[0].getValue(context);
 
-    // NULL is never FALSE
-    return value == Boolean.FALSE;
+    // NULL is always NOT TRUE
+    return value != Boolean.TRUE;
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append(" IS FALSE");
+    writer.append(" IS NOT TRUE");
   }
 }

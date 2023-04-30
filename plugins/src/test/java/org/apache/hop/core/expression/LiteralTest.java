@@ -36,7 +36,12 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class LiteralTest extends ExpressionTest {
-
+  @Test
+  public void testEquals() throws Exception {
+    assertEquals(Literal.of(5), Literal.of(5));
+    assertEquals(Literal.of("test"), Literal.of("test"));
+  }
+  
   @Test
   public void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());

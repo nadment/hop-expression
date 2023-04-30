@@ -238,9 +238,9 @@ public class ExpressionBuilder {
       Token token = next();
       switch (token.id()) {
         case TRUE:
-          return new Call((not) ? Operators.IS_FALSE : Operators.IS_TRUE, expression);
+          return new Call((not) ? Operators.IS_NOT_TRUE : Operators.IS_TRUE, expression);
         case FALSE:
-          return new Call((not) ? Operators.IS_TRUE : Operators.IS_FALSE, expression);
+          return new Call((not) ? Operators.IS_NOT_FALSE : Operators.IS_FALSE, expression);
         case NULL:
           return new Call((not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
         case DISTINCT:

@@ -383,8 +383,9 @@ public final class Identifier implements IExpression {
       return false;
     if (getClass() != o.getClass())
       return false;
-
-    return name.equals(((Identifier) o).name);
+    
+    Identifier other = (Identifier) o;    
+    return this.name.equals(other.name) && this.type.equals(other.type) && this.ordinal==other.ordinal;
   }
 
   @Override

@@ -136,6 +136,7 @@ public final class OperandTypes {
       new SameOperandTypeChecker(OperandCountRange.between(3, -1));
 
   public static final IOperandTypeChecker BOOLEAN = family(DataFamily.BOOLEAN);
+  public static final IOperandTypeChecker BOOLEAN_VARIADIC = family(DataFamily.BOOLEAN, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
       family(DataFamily.BOOLEAN, DataFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =

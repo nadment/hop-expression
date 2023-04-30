@@ -17,17 +17,21 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
+import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 
 public class IdentifierTest extends ExpressionTest {
    
   @Test
   public void test() throws Exception {
-    Identifier identifier = new Identifier("NAME");
-    assertEquals("NAME", identifier.getName());
-    assertEquals(new Identifier("NAME"), identifier);
-    assertEquals(new Identifier("NAME").hashCode(), identifier.hashCode());
-    assertNotEquals(identifier,null);    
+    Identifier identifier1 = new Identifier("NAME");
+    Identifier identifier2 = new Identifier("NAME");
+    Identifier identifier3 = new Identifier("NAME", DataType.STRING, 3);
+    assertEquals("NAME", identifier1.getName());
+    assertEquals(identifier1, identifier2);
+    assertEquals(identifier1.hashCode(), identifier2.hashCode());
+    assertNotEquals(identifier1,null);    
+    assertNotEquals(identifier1,identifier3);
   }
   
   @Test

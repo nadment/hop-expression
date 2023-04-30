@@ -16,10 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -49,6 +53,20 @@ public class GreaterThanOperator extends Operator {
     return Converter.compare(left, right) > 0;
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Simplify "x > x" to "NULL AND x IS NULL"
+    if (left.equals(right)) {
+      return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
+    }
+   
+    return call; 
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

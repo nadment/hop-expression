@@ -19,18 +19,18 @@ import org.junit.Test;
 public class OptimizerTest extends ExpressionTest {
 
   @Test
-  public void testSimplifyInRule() throws Exception {
+  public void testSimplifyIn() throws Exception {
     optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')"); 
     
     // Value in the expression list
-    optimize("FIELD_INTEGER in (1,2,FIELD_INTEGER)","FIELD_INTEGER=FIELD_INTEGER");
-    optimize("FIELD_STRING in ('XX',FIELD_STRING,'ZZ')","FIELD_STRING=FIELD_STRING");
+    optimize("FIELD_INTEGER in (1,2,FIELD_INTEGER)","NULL OR FIELD_INTEGER IS NOT NULL");
+    optimize("FIELD_STRING in ('XX',FIELD_STRING,'ZZ')","NULL OR FIELD_STRING IS NOT NULL");
   }
 
   @Test
-  public void testSimplifyLikeRule() throws Exception {
-    optimize("FIELD_STRING LIKE '%'", "FIELD_STRING=FIELD_STRING");
+  public void testSimplifyLike() throws Exception {
+    optimize("FIELD_STRING LIKE '%'", "NULL OR FIELD_STRING IS NOT NULL");
     optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
@@ -38,7 +38,7 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
-  public void testSimplifyExtractRule() throws Exception {
+  public void testSimplifyExtract() throws Exception {
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
     optimize("EXTRACT(ISOYEAR FROM FIELD_DATE)", "ISOYEAR(FIELD_DATE)");
     optimize("EXTRACT(MONTH FROM FIELD_DATE)", "MONTH(FIELD_DATE)");
@@ -55,7 +55,7 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
-  public void testSimplifyBooleanRule() throws Exception {
+  public void testSimplifyBoolean() throws Exception {
     optimizeFalse("not true");
     optimizeTrue("not false");
     optimizeTrue("not not true");
@@ -65,7 +65,13 @@ public class OptimizerTest extends ExpressionTest {
     optimize("not(FIELD_INTEGER>=5)", "FIELD_INTEGER<5");
     optimize("not(FIELD_INTEGER<5)", "FIELD_INTEGER>=5");
     optimize("not(FIELD_INTEGER<=5)", "FIELD_INTEGER>5");
-
+    optimize("NOT (FIELD_BOOLEAN IS TRUE)", "FIELD_BOOLEAN IS NOT TRUE");
+    optimize("NOT (FIELD_BOOLEAN IS NOT TRUE)", "FIELD_BOOLEAN IS TRUE");
+    optimize("NOT (FIELD_BOOLEAN IS FALSE)", "FIELD_BOOLEAN IS NOT FALSE");
+    optimize("NOT (FIELD_BOOLEAN IS NOT FALSE)", "FIELD_BOOLEAN IS FALSE");
+    optimize("NOT (FIELD_BOOLEAN IS NOT NULL)", "FIELD_BOOLEAN IS NULL");
+    optimize("NOT (FIELD_BOOLEAN IS NULL)", "FIELD_BOOLEAN IS NOT NULL");
+    
     optimizeTrue("true or true");
     optimizeTrue("true or false");
     optimizeTrue("false or true");
@@ -80,27 +86,38 @@ public class OptimizerTest extends ExpressionTest {
     optimize("false or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
     optimize("FIELD_BOOLEAN or false", "FALSE OR FIELD_BOOLEAN");
     optimize("FIELD_BOOLEAN or FIELD_BOOLEAN", "FIELD_BOOLEAN");
-
+    optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN", "FIELD_BOOLEAN OR NULL_BOOLEAN OR FIELD_INTEGER>0");
+    
     optimizeTrue("true and true");
     optimizeFalse("true and false");
     optimizeFalse("false and true");
     optimizeFalse("false and false");
     optimizeFalse("false and FIELD_BOOLEAN");
     optimizeFalse("FIELD_BOOLEAN and false");
-    optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");    
+    optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");       
+    optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN", "FIELD_BOOLEAN AND NULL_BOOLEAN AND FIELD_INTEGER>0");
     
     optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
     optimizeTrue("EQUAL_NULL(FIELD_STRING, FIELD_STRING)");
+    optimizeTrue("EQUAL_NULL(FIELD_INTEGER, FIELD_INTEGER)");
     
+    optimize("FIELD_STRING=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING>=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING<=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING!=FIELD_STRING","NULL AND FIELD_STRING IS NULL");
+    optimize("FIELD_STRING>FIELD_STRING","NULL AND FIELD_STRING IS NULL");
+    optimize("FIELD_STRING<FIELD_STRING","NULL AND FIELD_STRING IS NULL");
+        
+    // TODO: optimize("A IS NOT NULL AND A>5","A>5");
     // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
   }
   @Test
-  public void testConstantOpoerator() throws Exception {
+  public void testConstantOperator() throws Exception {
     optimize("PI()", "3.141592653589793");    
   }
   
   @Test
-  public void testDeterministicRule() throws Exception {
+  public void testDeterministic() throws Exception {
     optimize("CONCAT('TES','T')", "'TEST'");
 
     optimize("'A'||'B'", "'AB'");
@@ -112,13 +129,8 @@ public class OptimizerTest extends ExpressionTest {
     optimize("-(10+2)", "-12");
     optimize("-(0)", "0");
 
-    optimize("NOT (FIELD_BOOLEAN IS TRUE)", "FIELD_BOOLEAN IS FALSE");
-    optimize("NOT (FIELD_BOOLEAN IS NOT TRUE)", "FIELD_BOOLEAN IS TRUE");
-    optimize("NOT (FIELD_BOOLEAN IS FALSE)", "FIELD_BOOLEAN IS TRUE");
-    optimize("NOT (FIELD_BOOLEAN IS NOT FALSE)", "FIELD_BOOLEAN IS FALSE");
-    optimize("NOT (FIELD_BOOLEAN IS NOT NULL)", "FIELD_BOOLEAN IS NULL");
-    optimize("NOT (FIELD_BOOLEAN IS NULL)", "FIELD_BOOLEAN IS NOT NULL");
-
+    optimizeFalse("(CASE WHEN FALSE THEN 1 ELSE 2 END) IS NULL");
+    
     optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("false and true or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
     optimizeFalse("false and FIELD_BOOLEAN");
@@ -138,7 +150,8 @@ public class OptimizerTest extends ExpressionTest {
     optimizeFalse("2 between 3 and (5+1)");
 
     optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
-
+    optimize("'2021-02-08'::DATE", "DATE '2021-02-08'");  
+    
     optimizeTrue("'25' in ('1','25','66')");
     optimizeTrue("25.8 between 18 and 32");
     optimizeTrue("Trim(' test ')='test'");
@@ -147,7 +160,7 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
-  public void testCombineConcatsRule() throws Exception {
+  public void testCombineConcats() throws Exception {
     // Same syntax but cost reduced
     optimize("'A'||FIELD_STRING||FIELD_STRING||'C'", "'A'||FIELD_STRING||FIELD_STRING||'C'");
     optimize("'A'||FIELD_STRING||NULL_STRING||'C'", "'A'||FIELD_STRING||NULL_STRING||'C'");
@@ -155,7 +168,7 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
-  public void testArithmeticRule() throws Exception {
+  public void testArithmetic() throws Exception {
 
     optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
@@ -177,7 +190,17 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
+  public void testCoalesce() throws Exception {
+    optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
+    optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER)");
+  }
+  
+  @Test
   public void testChainedCast() throws Exception {
+    
+    optimize("CAST(FIELD_STRING AS STRING)", "FIELD_STRING");
+    optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
+    
     //optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS BIGNUMBER)", "123456");
   }
 }

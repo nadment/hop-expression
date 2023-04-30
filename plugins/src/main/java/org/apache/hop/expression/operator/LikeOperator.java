@@ -70,8 +70,8 @@ public class LikeOperator extends Operator {
       throws ExpressionException {
     // Optimize NULL LIKE FIELD to NULL
     IExpression value = call.getOperand(0);
-    if (value == Literal.NULL)
-      return Literal.NULL;
+    if (value.isNull())
+      return value;
 
     IExpression v1 = call.getOperand(1);
     if (v1.is(Kind.LITERAL)) {

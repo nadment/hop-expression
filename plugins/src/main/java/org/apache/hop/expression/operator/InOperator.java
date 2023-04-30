@@ -75,9 +75,9 @@ public class InOperator extends Operator {
         continue;
       }
 
-      // B in (A,B,C) return B=B;
+      // Simplify B in (A,B,C) to B=B
       if ( value.equals(expression) ) {
-        return new Call(Operators.EQUAL, value, expression);
+        return new Call(Operators.EQUAL, value, value);
       }
       
       // If this element is not present in new list then add it

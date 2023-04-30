@@ -21,6 +21,8 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.util.ExpressionUtils;
 import java.io.StringWriter;
 import java.util.Objects;
+import java.util.Stack;
+import java.util.function.Predicate;
 
 /**
  * Operators may be binary, unary, functions, special syntactic constructs like CASE ... WHEN ...
@@ -262,5 +264,38 @@ public abstract class Operator implements Comparable<Operator> {
   @Override
   public String toString() {
     return id;
+  }
+  
+  protected Stack<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
+    return getChainedOperands(call, new Stack<IExpression>(), predicate);
+  }
+  
+  private Stack<IExpression> getChainedOperands(Call call, Stack<IExpression> operands, Predicate<IExpression> predicate) {   
+    for (IExpression operand: call.getOperands()) {      
+      if ( operand.is(call.getOperator()) ) {
+        getChainedOperands((Call) operand, operands, predicate); 
+      }          
+      if ( predicate.test(operand) ) {
+        operands.push(operand);
+      }      
+    }
+    
+    return operands;
+  }
+  
+  protected Stack<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
+    return getChainedOperands(call, new Stack<IExpression>(), allowDuplicate);
+  }
+  
+  private Stack<IExpression> getChainedOperands(Call call, Stack<IExpression> operands, boolean allowDuplicate) {   
+    for (IExpression operand: call.getOperands()) {      
+      if ( operand.is(call.getOperator()) ) {
+        getChainedOperands((Call) operand, operands, allowDuplicate); 
+      } else if ( allowDuplicate || !operands.contains(operand) ) {        
+        operands.push(operand);
+      }
+    }
+    
+    return operands;
   }
 }

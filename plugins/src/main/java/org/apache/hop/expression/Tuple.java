@@ -128,9 +128,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public boolean equals(Object other) {
-    if (other == null)
-      return false;
-
     if (other instanceof Tuple) {
       Tuple o = (Tuple) other;
       return Arrays.equals(values, o.values);

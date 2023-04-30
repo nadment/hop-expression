@@ -284,9 +284,6 @@ public final class Literal implements IExpression {
 
   @Override
   public boolean equals(Object other) {
-    if (other == null)
-      return false;
-
     if (other instanceof Literal) {
       Literal o = (Literal) other;
       if (value == null) {

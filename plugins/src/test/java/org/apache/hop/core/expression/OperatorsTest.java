@@ -67,8 +67,8 @@ public class OperatorsTest extends ExpressionTest {
     
     // NULL is not equal ( = ) to anything not even to another NULL.
     evalNull("1 = NULL_INTEGER");
-    evalNull("NULL_BOOLEAN = true");
-    evalNull("NULL_BOOLEAN = false");  
+    evalFalse("NULL_BOOLEAN = true");
+    evalFalse("NULL_BOOLEAN = false");  
     
     
     evalNull("NULL_BOOLEAN = NULL_BOOLEAN");
@@ -293,14 +293,15 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("FIELD_BOOLEAN is True");
     evalFalse("NULL_BOOLEAN IS True");  
     evalTrue("False IS NOT TRUE");      
-    evalFalse("NULL_STRING is True");
+    evalFalse("NULL_BOOLEAN is True");
+    evalTrue("NULL_BOOLEAN IS NOT True");
     
     evalFails("NOM IS ");
     evalFails("IS TRUE");
     evalFails("IS NOT TRUE");
     
     writeEquals("FIELD_BOOLEAN IS TRUE");
-    writeEquals("FIELD_BOOLEAN IS NOT TRUE","FIELD_BOOLEAN IS FALSE");
+    writeEquals("FIELD_BOOLEAN IS NOT TRUE");
     
     returnType("FIELD_BOOLEAN IS TRUE", DataType.BOOLEAN);
     returnType("FIELD_BOOLEAN IS NOT TRUE", DataType.BOOLEAN);
@@ -311,16 +312,14 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("True IS NOT False");
     evalFalse("True IS False");
     evalTrue("False IS False");
-    evalFalse("NULL_BOOLEAN IS False");
-    evalFalse("NULL_BOOLEAN IS NOT False");    
-    evalFalse("NULL_BOOLEAN IS False");
-    evalFalse("NULL_BOOLEAN IS NOT False");
+    evalFalse("NULL_BOOLEAN IS False");        
+    evalTrue("NULL_BOOLEAN IS NOT False");
 
     evalFails("IS FALSE");
     evalFails("IS NOT FALSE");
     
     writeEquals("FIELD_BOOLEAN IS FALSE");
-    writeEquals("FIELD_BOOLEAN IS NOT FALSE","FIELD_BOOLEAN IS TRUE");
+    writeEquals("FIELD_BOOLEAN IS NOT FALSE");
     
     returnType("FIELD_BOOLEAN IS FALSE", DataType.BOOLEAN);
     returnType("FIELD_BOOLEAN IS NOT FALSE", DataType.BOOLEAN);
@@ -606,7 +605,7 @@ public class OperatorsTest extends ExpressionTest {
 
     writeEquals("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
     writeEquals("CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')", "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')");
-    writeEquals("CAST(FIELD_BINARY AS BINARY)", "CAST(FIELD_BINARY AS BINARY)");
+    writeEquals("CAST(FIELD_STRING AS BINARY)", "CAST(FIELD_STRING AS BINARY)");
     writeEquals("FIELD_INTEGER::NUMBER", "FIELD_INTEGER::NUMBER");
     
     returnType("CAST(3 as BOOLEAN)", DataType.BOOLEAN);

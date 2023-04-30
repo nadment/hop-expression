@@ -16,10 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -50,6 +54,35 @@ public class EqualOperator extends Operator {
       return null;
     }
     return Converter.compare(left, right) == 0;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+
+    // Simplify "x = x" to "NULL OR x IS NOT NULL"
+    if (left.equals(right)) {
+      return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
+    }
+
+    // Simplify "x = TRUE" to "x IS TRUE"
+    if (left.equals(Literal.TRUE)) {
+      return new Call(Operators.IS_TRUE, right);      
+    }
+    if (right.equals(Literal.TRUE)) {
+      return new Call(Operators.IS_TRUE, left);      
+    }
+    // Simplify "x = FALSE" to "x IS FALSE"
+    if (left.equals(Literal.FALSE)) {
+      return new Call(Operators.IS_FALSE, right);      
+    }
+    if (right.equals(Literal.FALSE)) {
+      return new Call(Operators.IS_FALSE, left);      
+    }
+    
+    return call;
   }
 
   @Override

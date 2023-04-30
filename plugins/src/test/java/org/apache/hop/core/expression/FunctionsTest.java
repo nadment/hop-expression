@@ -72,9 +72,9 @@ public class FunctionsTest extends ExpressionTest {
     // Bad format
     // TODO: evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')");
     
-    writeEquals("TRY_CAST(FIELD_BINARY AS BINARY)");
+    writeEquals("TRY_CAST(FIELD_STRING AS BINARY)");
     writeEquals("TRY_CAST(FIELD_INTEGER AS NUMBER)");
-    writeEquals("TRY_CAST(FIELD_DATE AS DATE FORMAT 'YYYY-MM-DD')");
+    writeEquals("TRY_CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')");
 
     returnType("TRY_CAST('TRUE' as BOOLEAN)", DataType.BOOLEAN);
     returnType("TRY_CAST('String' as STRING)", DataType.STRING);

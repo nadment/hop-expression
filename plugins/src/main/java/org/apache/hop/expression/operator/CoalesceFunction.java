@@ -16,13 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The COALESCE function returns the first of its arguments that is not null. Null is returned
@@ -46,5 +51,25 @@ public class CoalesceFunction extends Function {
     }
 
     return null;
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    
+    // Remove duplicate but keep order
+    final List<IExpression> operands = new ArrayList<>();
+    for (IExpression operand : call.getOperands()) {
+      if (operand.isNull() || operands.contains(operand) ) continue;
+      operands.add(operand);
+    }
+
+    switch (operands.size()) {
+      case 0: // Nothing to coalesce
+        return Literal.NULL;
+      case 1: // Coalesce(X) => X
+        return operands.get(0);
+      default:
+        return new Call(call.getOperator(), operands);
+    }
   }
 }

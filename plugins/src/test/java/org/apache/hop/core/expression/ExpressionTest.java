@@ -348,7 +348,8 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    //evalFails("DATE '21-02-25'");    
+    //optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN", "FIELD_BOOLEAN OR NULL_BOOLEAN OR FIELD_INTEGER>0");
+    //optimize("IS NOT NULL(x) AND x < 5", "x < 5");
   }
 }
 
