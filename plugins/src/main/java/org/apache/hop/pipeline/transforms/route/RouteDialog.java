@@ -315,15 +315,15 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
       TableItem item = wRoutes.table.getItem(i);
       Route target = meta.getRoutes().get(i);
       if (target != null) {
-        item.setText(1, Const.NVL(target.getCondition(), "")); // The value
-        item.setText(2, Const.NVL(target.getTransformName(), ""));
+        item.setText(1, Const.nullToEmpty(target.getCondition())); // The value
+        item.setText(2, Const.nullToEmpty(target.getTransformName()));
       }
     }
     wRoutes.removeEmptyRows();
     wRoutes.setRowNums();
     wRoutes.optWidth(true);
 
-    wDefaultTarget.setText(Const.NVL(meta.getDefaultTargetTransformName(), ""));
+    wDefaultTarget.setText(Const.nullToEmpty(meta.getDefaultTargetTransformName()));
 
     wTransformName.selectAll();
     wTransformName.setFocus();

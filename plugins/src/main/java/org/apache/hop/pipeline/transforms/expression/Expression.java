@@ -159,10 +159,16 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         return expression.getValue(data.context, Long.class);
       case IValueMeta.TYPE_DATE: {
         ZonedDateTime date = expression.getValue(data.context, ZonedDateTime.class);
-        return Date.from(date.toInstant());
+        if (date==null ) {
+          return null;
+        }        
+        return Date.from(date.toInstant());             
       }
       case IValueMeta.TYPE_TIMESTAMP: {
         ZonedDateTime date = expression.getValue(data.context, ZonedDateTime.class);
+        if (date==null ) {
+          return null;
+        }
         return Timestamp.from(date.toInstant());
       }
       case IValueMeta.TYPE_BIGNUMBER:

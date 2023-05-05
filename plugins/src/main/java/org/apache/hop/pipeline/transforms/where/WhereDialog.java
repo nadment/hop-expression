@@ -14,6 +14,7 @@
  */
 package org.apache.hop.pipeline.transforms.where;
 
+import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.plugins.IPlugin;
 import org.apache.hop.core.plugins.PluginRegistry;
@@ -104,7 +105,7 @@ public class WhereDialog extends BaseTransformDialog implements ITransformDialog
   }
 
   protected void setWidgetsContent(final WhereMeta meta) {
-    this.wEditor.setText(meta.getCondition());
+    this.wEditor.setText(Const.nullToEmpty(meta.getCondition()));
   }
 
   protected void getWidgetsContent(final WhereMeta meta) {

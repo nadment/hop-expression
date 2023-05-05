@@ -126,9 +126,9 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     for (ExpressionField value : meta.getFields()) {
 
       TableItem item = wTableFields.getTable().getItem(i++);
-      item.setText(1, Const.NVL(value.getName(), ""));
-      item.setText(2, Const.NVL(value.getExpression(), ""));
-      item.setText(3, Const.NVL(value.getType(), ""));
+      item.setText(1, Const.nullToEmpty(value.getName()));
+      item.setText(2, Const.nullToEmpty(value.getExpression()));
+      item.setText(3, Const.nullToEmpty(value.getType()));
       if (value.getLength() >= 0) {
         item.setText(4, String.valueOf(value.getLength()));
       }
