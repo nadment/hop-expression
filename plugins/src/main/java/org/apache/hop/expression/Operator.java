@@ -275,7 +275,7 @@ public abstract class Operator implements Comparable<Operator> {
       if ( operand.is(call.getOperator()) ) {
         getChainedOperands((Call) operand, operands, predicate); 
       }          
-      if ( predicate.test(operand) ) {
+      else if ( predicate.test(operand) ) {
         operands.push(operand);
       }      
     }

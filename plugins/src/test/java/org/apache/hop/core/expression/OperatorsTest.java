@@ -606,7 +606,7 @@ public class OperatorsTest extends ExpressionTest {
     writeEquals("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
     writeEquals("CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')", "CAST(TO_CHAR(FIELD_DATE,'YYYYMMDD') AS DATE FORMAT 'YYYYMMDD')");
     writeEquals("CAST(FIELD_STRING AS BINARY)", "CAST(FIELD_STRING AS BINARY)");
-    writeEquals("FIELD_INTEGER::NUMBER", "FIELD_INTEGER::NUMBER");
+    writeEquals("FIELD_INTEGER::NUMBER", "CAST(FIELD_INTEGER AS NUMBER)");
     
     returnType("CAST(3 as BOOLEAN)", DataType.BOOLEAN);
     returnType("CAST('3' as INTEGER)", DataType.INTEGER);

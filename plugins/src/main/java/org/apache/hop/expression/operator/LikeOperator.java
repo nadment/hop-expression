@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -73,9 +72,8 @@ public class LikeOperator extends Operator {
     if (value.isNull())
       return value;
 
-    IExpression v1 = call.getOperand(1);
-    if (v1.is(Kind.LITERAL)) {
-      String pattern = v1.getValue(context, String.class);
+    if (call.getOperand(1).isConstant()) {
+      String pattern = call.getOperand(1).getValue(context, String.class);
 
       // Optimize FIELD LIKE NULL to NULL
       if (pattern == null)

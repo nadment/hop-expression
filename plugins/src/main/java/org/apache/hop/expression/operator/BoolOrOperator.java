@@ -20,7 +20,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -46,13 +45,13 @@ public class BoolOrOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    if (call.getOperand(0).is(Kind.LITERAL)) {
+    if (call.getOperand(0).isConstant()) {
       Boolean value = call.getOperand(0).getValue(context, Boolean.class);
       if (value == Boolean.TRUE)
         return Literal.TRUE;
     }
 
-    if (call.getOperand(1).is(Kind.LITERAL)) {
+    if (call.getOperand(1).isConstant()) {
       Boolean value = call.getOperand(1).getValue(context, Boolean.class);
       if (value == Boolean.TRUE)
         return Literal.TRUE;

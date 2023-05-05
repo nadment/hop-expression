@@ -19,6 +19,26 @@ import org.junit.Test;
 public class OptimizerTest extends ExpressionTest {
 
   @Test
+  public void testSimplifyCast() throws Exception {
+    // Boolean
+    optimize("CAST(FIELD_BOOLEAN AS BOOLEAN)", "FIELD_BOOLEAN");
+    optimize("CAST(FIELD_STRING AS BOOLEAN)", "TO_BOOLEAN(FIELD_STRING)");
+    optimize("FIELD_STRING::BOOLEAN", "TO_BOOLEAN(FIELD_STRING)");    
+    
+    // Json
+    optimize("CAST(FIELD_JSON AS JSON)", "FIELD_JSON");
+    //optimize("CAST(FIELD_STRING AS JSON)", "TO_JSON(FIELD_STRING)");
+    //optimize("FIELD_STRING::JSON", "TO_JSON(FIELD_STRING)");    
+    
+    
+//    optimize("CAST(FIELD_STRING AS STRING)", "FIELD_STRING");
+//    optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
+    
+//    optimize("CAST(FIELD_STRING AS DATE)", "TO_DATE(FIELD_STRING)");
+//    optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')", "TO_DATE(FIELD_STRING,'YYYY-MM-DD')");
+  }
+  
+  @Test
   public void testSimplifyIn() throws Exception {
     optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')"); 
@@ -96,11 +116,7 @@ public class OptimizerTest extends ExpressionTest {
     optimizeFalse("FIELD_BOOLEAN and false");
     optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");       
     optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN", "FIELD_BOOLEAN AND NULL_BOOLEAN AND FIELD_INTEGER>0");
-    
-    optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
-    optimizeTrue("EQUAL_NULL(FIELD_STRING, FIELD_STRING)");
-    optimizeTrue("EQUAL_NULL(FIELD_INTEGER, FIELD_INTEGER)");
-    
+        
     optimize("FIELD_STRING=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
     optimize("FIELD_STRING>=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
     optimize("FIELD_STRING<=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
@@ -108,9 +124,38 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_STRING>FIELD_STRING","NULL AND FIELD_STRING IS NULL");
     optimize("FIELD_STRING<FIELD_STRING","NULL AND FIELD_STRING IS NULL");
         
-    // TODO: optimize("A IS NOT NULL AND A>5","A>5");
-    // TODO: optimize("(A IS NOT NULL OR B) AND A IS NOT NULL","A IS NOT NULL");
+    optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN>5");
+    optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN=5");
+    optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN<>5");
+    optimize("FIELD_BOOLEAN>5 AND FIELD_BOOLEAN IS NOT NULL AND FIELD_BOOLEAN>5","FIELD_BOOLEAN>5");
+    
+    //optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
   }
+  
+  @Test
+  public void testComparisonBoolean() throws Exception {
+    optimize("FIELD_BOOLEAN = TRUE", "FIELD_BOOLEAN IS TRUE");
+    optimize("TRUE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
+    optimize("FIELD_BOOLEAN >= TRUE", "FIELD_BOOLEAN IS TRUE");
+    optimize("TRUE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
+    optimize("FIELD_BOOLEAN <= TRUE", "FIELD_BOOLEAN IS TRUE");
+    optimize("TRUE <=FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
+    
+    optimize("FIELD_BOOLEAN = FALSE", "FIELD_BOOLEAN IS FALSE");
+    optimize("FALSE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    optimize("FIELD_BOOLEAN >= FALSE", "FIELD_BOOLEAN IS FALSE");
+    optimize("FALSE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    optimize("FIELD_BOOLEAN <= FALSE", "FIELD_BOOLEAN IS FALSE");
+    optimize("FALSE <= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+  }
+  
+  @Test
+  public void testEqualNull() throws Exception {
+    optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
+    optimizeTrue("EQUAL_NULL(FIELD_STRING, FIELD_STRING)");
+    optimizeTrue("EQUAL_NULL(FIELD_INTEGER, FIELD_INTEGER)");
+  }
+  
   @Test
   public void testConstantOperator() throws Exception {
     optimize("PI()", "3.141592653589793");    
@@ -197,9 +242,7 @@ public class OptimizerTest extends ExpressionTest {
   
   @Test
   public void testChainedCast() throws Exception {
-    
-    optimize("CAST(FIELD_STRING AS STRING)", "FIELD_STRING");
-    optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
+
     
     //optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS BIGNUMBER)", "123456");
   }

@@ -33,6 +33,10 @@ public class TryCastFunction extends CastFunction {
     super("TRY_CAST");
   }
   
+  protected boolean isTry() {
+    return true;  
+  }
+  
   @Override
   protected Object cast(final Object value, final DataType type, final String format) {
     try {

@@ -43,7 +43,7 @@ public class NegateOperator extends Operator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
 
-    // -(-(x)) => x
+    // Simplify "-(-(x))" to "x"
     if (operand.is(Operators.NEGATIVE)) {
       return ((Call) operand).getOperand(0);
     }

@@ -20,7 +20,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -57,9 +56,9 @@ public class AddOperator extends Operator {
     }
 
     // Pull up literal
-    if (left.is(Kind.LITERAL) && right.is(Operators.ADD)) {
+    if (left.isConstant() && right.is(Operators.ADD)) {
       Call child = (Call) right;
-      if (child.getOperand(0).is(Kind.LITERAL)) {
+      if (child.getOperand(0).isConstant()) {
         IExpression expression = new Call(Operators.ADD, left, child.getOperand(0));
         Literal literal = Literal.of(expression.getValue(context));
         return new Call(Operators.ADD, literal, child.getOperand(1));

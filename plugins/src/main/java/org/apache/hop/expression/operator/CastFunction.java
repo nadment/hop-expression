@@ -21,6 +21,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
@@ -67,16 +68,43 @@ public class CastFunction extends Function {
     return Converter.cast(value, type, format);
   }
   
+  protected boolean isTry() {
+    return false;  
+  }
+  
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     call.inferenceType(context);
+    DataType type = call.getType();
     
     // Remove lossless cast
     IExpression operand = call.getOperand(0);
     if (call.getType().equals(operand.getType())) {
       return operand;
     }
+    
+    // Translate to function
+    switch(type.getFamily()) {
+      case BOOLEAN:
+        return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_BOOLEAN":"TO_BOOLEAN"), call.getOperand(0));
+      case NUMERIC:
+        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_NUMBER":"TO_NUMBER"), call.getOperand(0));
+        break;
+      case TEMPORAL:
+        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_DATE":"TO_DATE"), call.getOperand(0));
+        break;
+      case STRING:
+        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_CHAR":"TO_CHAR"), call.getOperand(0));
+        break;
+      case BINARY:
+        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_BINARY":"TO_BINARY"), call.getOperand(0));
+        break;
+      case JSON:
+        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_JSON":"TO_JSON"), call.getOperand(0));
+      default:
+        break;
+    } 
     
     return call; 
   }

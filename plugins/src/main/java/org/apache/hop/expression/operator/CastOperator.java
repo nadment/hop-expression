@@ -17,6 +17,9 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -38,7 +41,12 @@ public class CastOperator extends Operator {
     super("CAST", "::", 40, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
-
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    return new Call(FunctionRegistry.getFunction("CAST"), call.getOperands());
+  }
+    
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object value = operands[0].getValue(context);

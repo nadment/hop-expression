@@ -28,6 +28,9 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -48,13 +51,13 @@ public class BoolAndOperator extends Operator {
     boolean left = true;
     boolean right = true;
 
-    if (call.getOperand(0).is(Kind.LITERAL)) {
+    if (call.getOperand(0).isConstant()) {
       Boolean value = call.getOperand(0).getValue(context, Boolean.class);
       if (value == Boolean.FALSE)
         left = false;
     }
 
-    if (call.getOperand(1).is(Kind.LITERAL)) {
+    if (call.getOperand(1).isConstant()) {
       Boolean value = call.getOperand(1).getValue(context, Boolean.class);
       if (value == Boolean.FALSE)
         right = false;
@@ -65,29 +68,76 @@ public class BoolAndOperator extends Operator {
     if (!left || !right) {
       return Literal.FALSE;
     }
-   
+
+    // Remove duplicate
     // x AND x => x    
     // x AND y AND x => x AND y   
-    Stack<IExpression> operands = this.getChainedOperands(call, false);
-    if ( operands.size()==1 ) return operands.pop();
-    IExpression expression  = operands.pop();
-    while (!operands.isEmpty()) {      
-      call = new Call(Operators.BOOLAND, operands.pop(), expression); 
+    Stack<IExpression> conditions = this.getChainedOperands(call, false);
+
+
+//    final Map<IExpression, Range<?>> ranges = new HashMap<>();
+    final List<IExpression> nullOperands = new ArrayList<>();
+    final List<IExpression> notNullOperands = new ArrayList<>();
+    final List<IExpression> strongOperands = new ArrayList<>();
+    
+    for (IExpression condition : conditions) {
+      if (condition.is(Kind.CALL)) {
+        call = (Call) condition;
+        if (call.is(Operators.IS_NULL)) {
+          nullOperands.add(call.getOperand(0));
+        }
+        if (call.is(Operators.IS_NOT_NULL)) {
+          notNullOperands.add(call.getOperand(0));
+        }
+        
+//        if (call.is(Operators.LESS_THAN) && call.getOperand(0).isConstant() ) {          
+//          
+//          Object value = call.getOperand(0).getValue(context);
+//          
+//          Range<IExpression> range = ranges.get(call);
+//          
+//          if ( range==null) {                       
+//            ranges.put(call, Range.lessThan(value));
+//          }
+//        }
+     
+        if (Operators.is(call, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN, Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN, Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
+          if (call.getOperand(0).is(Kind.IDENTIFIER)) {
+            strongOperands.add(call.getOperand(0));
+          }
+          if (call.getOperand(1).is(Kind.IDENTIFIER)) {
+            strongOperands.add(call.getOperand(1));
+          }
+        }
+      }
+    }
+    
+    // IS NULL(x) AND x < 5  - not satisfiable
+    if (!Collections.disjoint(nullOperands, strongOperands)) {
+      return Literal.FALSE;
+    }      
+
+    // Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
+    for (IExpression operand : notNullOperands) {
+      if (strongOperands.contains(operand)) {
+        for (IExpression condition : conditions ) {
+          if( condition.is(Operators.IS_NOT_NULL) && ((Call)condition).getOperand(0)==operand) { 
+            conditions.remove(condition);
+          }
+        }
+      }
+    }
+    
+    // Rebuild conjunctions if more than 1 condition    
+    IExpression expression  = conditions.pop();
+    while (!conditions.isEmpty()) {      
+      call = new Call(Operators.BOOLAND, conditions.pop(), expression); 
       call.inferenceType(context);  
       expression = call;
     }
     
-    
-    // TODO: Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
-    //Stack<IExpression> notNullOperands = this.getChainedOperands(call, e -> e.is(Operators.IS_NOT_NULL));
-    //Stack<IExpression> comparisonOperands = this.getChainedOperands(call, e -> e.is(Operators.EQUAL) || e.is(Operators.LESS_THAN));
-    
     return expression;
-  }
-  
-  
-  
-  
+  } 
   
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {

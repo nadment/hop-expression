@@ -20,7 +20,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -58,9 +57,9 @@ public class MultiplyOperator extends Operator {
     }
 
     // Pull up literal
-    if (left.is(Kind.LITERAL) && right.is(Operators.MULTIPLY)) {
+    if (left.isConstant() && right.is(Operators.MULTIPLY)) {
       Call child = (Call) right;
-      if (child.getOperand(0).is(Kind.LITERAL)) {
+      if (child.getOperand(0).isConstant()) {
         IExpression operation = new Call(Operators.MULTIPLY, left, child.getOperand(0));
         Literal literal = Literal.of(operation.getValue(context));
         return new Call(Operators.MULTIPLY, literal, child.getOperand(1));

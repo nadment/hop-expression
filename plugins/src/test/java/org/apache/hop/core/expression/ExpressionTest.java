@@ -37,6 +37,7 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -89,7 +90,6 @@ public class ExpressionTest {
 
     IRowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING"));
-    rowMeta.addValueMeta(new ValueMetaString("SEX2"));
     rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE2"));
     rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER"));
     rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER"));
@@ -98,7 +98,8 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaTimestamp("FIELD_TIMESTAMP"));
     rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
     rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
-
+    rowMeta.addValueMeta(new ValueMetaJson("FIELD_JSON"));
+    
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
     rowMeta.addValueMeta(new ValueMetaBoolean("NULL_BOOLEAN"));
@@ -107,7 +108,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBigNumber("NULL_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("NULL_DATE"));
     rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
-    rowMeta.addValueMeta(new ValueMetaJson("NULL_BINARY"));
+    rowMeta.addValueMeta(new ValueMetaBinary("NULL_BINARY"));
     rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
 
     // For implicit cast
@@ -134,15 +135,15 @@ public class ExpressionTest {
 
       Object[] row = new Object[30];
       row[0] = "TEST";
-      row[1] = "F";
-      row[2] = calendar.getTime();
-      row[3] = 40L;
-      row[4] = -5.12D;
-      row[5] = BigDecimal.valueOf(123456.789);
-      row[6] = calendar.getTime();
-      row[7] = Timestamp.valueOf("2023-02-28 22:11:01");
-      row[8] = true;
-      row[9] = "TEST".getBytes();
+      row[1] = calendar.getTime();
+      row[2] = 40L;
+      row[3] = -5.12D;
+      row[4] = BigDecimal.valueOf(123456.789);
+      row[5] = calendar.getTime();
+      row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
+      row[7] = true;
+      row[8] = "TEST".getBytes();
+      row[9] = Converter.parseJson("{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
       row[10] = null;
       row[11] = null;
@@ -349,7 +350,9 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN", "FIELD_BOOLEAN OR NULL_BOOLEAN OR FIELD_INTEGER>0");
-    //optimize("IS NOT NULL(x) AND x < 5", "x < 5");
+    //optimize("FIELD_INTEGER IS NULL AND FIELD_INTEGER < 5", "FALSE");
+    optimize("FIELD_INTEGER IS NOT NULL AND FIELD_INTEGER < 5", "FIELD_INTEGER<5");
+    //optimize("CAST(FIELD_STRING AS BOOLEAN)", "TO_BOOLEAN(FIELD_STRING)");
   }
 }
 

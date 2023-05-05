@@ -150,5 +150,14 @@ public class Operators {
     return set;
   }
 
+  public static boolean is(IExpression expression, Operator... operators) {
+    for (Operator o : operators) {
+      if ( expression.is(o)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   private Operators() {}
 }
