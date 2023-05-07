@@ -515,8 +515,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Instr('CORPORATE FLOOR','OR',3, 3)", 0L);
 
     evalEquals("Instr('CORPORATE FLOOR','O',-1)", 14L);
-    evalEquals("Instr('CORPORATE FLOOR','O',-2)", 14L);
-    evalEquals("Instr('CORPORATE FLOOR','O',-3)", 13L);
+    evalEquals("Instr('CORPORATE FLOOR','O',-2)", 13L);
+    evalEquals("Instr('CORPORATE FLOOR','O',-3)", 5L);
     evalEquals("Instr('CORPORATE FLOOR','O',-4)", 5L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-1)", 14L);
     evalEquals("Instr('CORPORATE FLOOR','OR',-3)", 5L);
@@ -530,6 +530,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Instr(NULL_STRING,NULL_STRING)");
 
     evalFails("Instr('CORPORATE FLOOR','OR',-3, 0)");
+    evalFails("Instr('CORPORATE FLOOR','OR',0)");
     evalFails("Instr()");
     
     returnType("Instr('CORPORATE FLOOR','OR')", DataType.INTEGER);

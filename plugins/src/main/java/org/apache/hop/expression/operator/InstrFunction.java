@@ -58,10 +58,12 @@ public class InstrFunction extends Function {
     if (operands.length >= 3) {
       start = operands[2].getValue(context, Long.class).intValue();
 
-      if (start > 0) {
-        start -= 1;
+      if (start == 0) {
+        throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);        
       }
 
+      start -= 1;
+      
       // The occurence to find, must be positive
       if (operands.length == 4) {
         occurence = operands[3].getValue(context, Long.class).intValue();
