@@ -114,9 +114,15 @@ public class OptimizerTest extends ExpressionTest {
     optimizeFalse("false and false");
     optimizeFalse("false and FIELD_BOOLEAN");
     optimizeFalse("FIELD_BOOLEAN and false");
+    
+    // Duplicate predicate
     optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");       
     optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN", "FIELD_BOOLEAN AND NULL_BOOLEAN AND FIELD_INTEGER>0");
-        
+    optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN AND (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN AND 2*FIELD_INTEGER>1");
+    optimize("FIELD_INTEGER=1 OR FIELD_BOOLEAN OR FIELD_INTEGER=1", "FIELD_BOOLEAN OR FIELD_INTEGER=1");
+    optimize("(FIELD_INTEGER*2>1) OR FIELD_BOOLEAN OR (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN OR 2*FIELD_INTEGER>1");
+    
+    // Simplify comparison with same term
     optimize("FIELD_STRING=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
     optimize("FIELD_STRING>=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
     optimize("FIELD_STRING<=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
@@ -124,10 +130,18 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_STRING>FIELD_STRING","NULL AND FIELD_STRING IS NULL");
     optimize("FIELD_STRING<FIELD_STRING","NULL AND FIELD_STRING IS NULL");
         
+    // Simplify IS NULL
     optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN>5");
     optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN=5");
     optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN<>5");
+    
+    // Simplify IS NOT NULL
     optimize("FIELD_BOOLEAN>5 AND FIELD_BOOLEAN IS NOT NULL AND FIELD_BOOLEAN>5","FIELD_BOOLEAN>5");
+    
+    // Not satisfiable equality constant
+    optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN AND FIELD_INTEGER=2");
+    optimizeFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN AND NULL_INTEGER=2");
+
     
     //optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
   }
