@@ -162,12 +162,20 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
   
   @Override
-  public IExpression validate(final IExpressionContext context) throws ExpressionException {
-    
+  public void validate(final IExpressionContext context) throws ExpressionException {
     // Validate all elements
+    for (IExpression expression : this) {
+      expression.validate(context);
+    }
+  }
+  
+  @Override
+  public IExpression compile(final IExpressionContext context) throws ExpressionException {
+    
+    // Compile all elements
     List<IExpression> elements = new ArrayList<>(size());
     for (IExpression expression : this) {
-      elements.add(expression.validate(context));
+      elements.add(expression.compile(context));
     }
     return new Tuple(elements);
   }

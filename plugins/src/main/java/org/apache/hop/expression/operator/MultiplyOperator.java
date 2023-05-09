@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
@@ -42,29 +43,36 @@ public class MultiplyOperator extends Operator {
         OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 
-  /**
-   * Simplify arithmetic multiply
-   */
   @Override
   public IExpression compile(IExpressionContext context, Call call)
       throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // x*1 => x
+    // Simplify arithmetic "1 * A" to "A"
     if (Literal.ONE.equals(left)) {
       return right;
     }
 
-    // Pull up literal
+    // Simplify arithmetic "(-A) * (-B)" to "A * B"
+    if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
+      return new Call(Operators.MULTIPLY, ((Call) left).getOperand(0), ((Call) right).getOperand(0));
+    }
+
+    // Simplify arithmetic "A * A" to "SQUARE(A)"
+    if (left.equals(right)) {
+      return new Call(FunctionRegistry.getFunction("SQUARE"), left);
+    }    
+    
+    // Pull up literal "1 * (1 * A)" to "(1 * 1) * A
     if (left.isConstant() && right.is(Operators.MULTIPLY)) {
       Call child = (Call) right;
       if (child.getOperand(0).isConstant()) {
         IExpression operation = new Call(Operators.MULTIPLY, left, child.getOperand(0));
-        Literal literal = Literal.of(operation.getValue(context));
-        return new Call(Operators.MULTIPLY, literal, child.getOperand(1));
+        return new Call(Operators.MULTIPLY, operation, child.getOperand(1));
       }
     }
+
     return call;
   }
   

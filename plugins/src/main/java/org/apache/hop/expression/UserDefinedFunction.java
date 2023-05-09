@@ -32,7 +32,7 @@ public class UserDefinedFunction extends Function {
         new UserDefinedFunctionOperandTypeChecker(meta), OperatorCategory.UDF, "/docs/udf.html");
     this.meta = meta;
   }
-
+  
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
@@ -42,7 +42,9 @@ public class UserDefinedFunction extends Function {
 
       // Replace function arguments with real operands
       expression = expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
-      return expression.validate(context);
+      expression.validate(context);
+      
+      return expression;
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, getName());
     }

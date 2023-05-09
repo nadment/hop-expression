@@ -40,8 +40,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public final class Identifier implements IExpression {
   private final String name;
-  private final DataType type;
-  private final int ordinal;
+  private DataType type;
+  private int ordinal;
 
   public Identifier(final String name, final DataType type, int ordinal) {
     this.name = requireNonNull(name, "name");
@@ -331,7 +331,7 @@ public final class Identifier implements IExpression {
   }
 
   /**
-   * Validate a identifier.
+   * Compile a identifier.
    * 
    * <ul>
    * <li>Resolve index in IRowMeta</li>
@@ -339,7 +339,27 @@ public final class Identifier implements IExpression {
    * </ul>
    */
   @Override
-  public IExpression validate(final IExpressionContext context) throws ExpressionException {
+  public void validate(final IExpressionContext context) throws ExpressionException {
+    IRowMeta rowMeta = context.getRowMeta();
+
+    int indexOfValue = rowMeta.indexOfValue(name);
+    if (indexOfValue < 0) {
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
+    }
+
+    this.ordinal = indexOfValue;
+    this.type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
+  }
+  
+  /**
+   * Compile a identifier.
+   * 
+   * <ul>
+   * <li>Resolve index in IRowMeta</li>
+   * <li>Determine data type of a value in row.</li>
+   * </ul>
+   */
+  public IExpression compile(final IExpressionContext context) throws ExpressionException {
     IRowMeta rowMeta = context.getRowMeta();
 
     int indexOfValue = rowMeta.indexOfValue(name);
@@ -351,6 +371,7 @@ public final class Identifier implements IExpression {
 
     return new Identifier(name, valueType, indexOfValue);
   }
+  
   
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {

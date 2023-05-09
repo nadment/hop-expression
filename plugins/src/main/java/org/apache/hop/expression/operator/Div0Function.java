@@ -24,13 +24,18 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
 /**
+ * Arithmetic division function.
+ * <br>
+ * <strong>Syntax:</strong> <code>DIV0(x,y)</code>
  * 
+ * @see {@link DivOperator}
  */
 @FunctionPlugin
 public class Div0Function extends Function {
@@ -39,18 +44,21 @@ public class Div0Function extends Function {
     super("DIV0", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div0.html");
   }
-
-  /**
-   * Simplify arithmetic divide
-   */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // x/1 => x
+    // Simplify arithmetic "DIV0(A,1)" to "A"
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);
     }
+    
+    // Simplify arithmetic "DIV0(-A,-B)" to "DIV0(A,B)"
+    if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
+      return new Call(call.getOperator(), ((Call) left).getOperand(0), ((Call) right).getOperand(0));
+    }
+    
     return call;
   }
   

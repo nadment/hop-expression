@@ -285,7 +285,6 @@ public final class Call implements IExpression {
           e.getMessage());
     }
   }
-  
 
   /**
    * Validate a call.
@@ -293,15 +292,13 @@ public final class Call implements IExpression {
    * @param context The context against which the expression will be validated.
    * @param call Call
    */
-  public IExpression validate(final IExpressionContext context) throws ExpressionException {
+  public void validate(final IExpressionContext context) throws ExpressionException {
 
     // Validate all operands
-    for (int i=0; i<operands.length;i++ ) {
-      IExpression operand = operands[i];
-      
+    for (IExpression operand : operands) {
       // Some operand can be null
       if ( operand!=null) {
-        this.operands[i] = operand.validate(context);
+        operand.validate(context);
       }
     }
 
@@ -321,7 +318,22 @@ public final class Call implements IExpression {
     if (!operandTypeChecker.checkOperandTypes(this)) {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
     }
-
+    
+    inferenceType(context);
+  }
+  
+  public IExpression compile(final IExpressionContext context) throws ExpressionException {
+    
+    // Compile all operands
+    for (int i=0; i<operands.length;i++ ) {
+      IExpression operand = operands[i];
+      
+      // Some operand can be null
+      if ( operand!=null) {
+        this.operands[i] = operand.compile(context);
+      }
+    }
+    
     // If operator is deterministic and all operands are constant
     if (isConstant()) {
       try {
@@ -340,10 +352,7 @@ public final class Call implements IExpression {
       }
     }
     
-    return compile(context);
-  }
-  
-  protected IExpression compile(final IExpressionContext context) throws ExpressionException {
+    
     Call call = this;
     
     // If operator is symmetrical reorganize operands

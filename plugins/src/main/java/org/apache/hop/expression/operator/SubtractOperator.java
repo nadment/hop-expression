@@ -53,20 +53,22 @@ public class SubtractOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // x-0 => x
+    // Simplify arithmetic A-0 => A
     if (Literal.ZERO.equals(right)) {
       return left;
     }
-    // 0-x => -x
+    
+    // Simplify arithmetic 0-A => -A
     if (Literal.ZERO.equals(left)) {
       return new Call(Operators.NEGATIVE, right);
     }
 
-    // x-(-z) => x+z
+    // Simplify arithmetic A-(-B) => A+B
     if (right.is(Operators.NEGATIVE)) {
       Call negative = (Call) right;
       return new Call(Operators.ADD, left, negative.getOperand(0));
     }
+
     return call;
   }
   

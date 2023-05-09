@@ -147,7 +147,7 @@ public class OptimizerTest extends ExpressionTest {
   }
   
   @Test
-  public void testComparisonBoolean() throws Exception {
+  public void testPredicate() throws Exception {
     optimize("FIELD_BOOLEAN = TRUE", "FIELD_BOOLEAN IS TRUE");
     optimize("TRUE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
     optimize("FIELD_BOOLEAN >= TRUE", "FIELD_BOOLEAN IS TRUE");
@@ -229,30 +229,60 @@ public class OptimizerTest extends ExpressionTest {
   @Test
   public void testArithmetic() throws Exception {
 
+    // Negative
     optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
+    optimize("-(FIELD_INTEGER-FIELD_NUMBER)", "FIELD_NUMBER-FIELD_INTEGER");
+    
+    // Additive
     optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
+    optimize("4+FIELD_INTEGER+1", "5+FIELD_INTEGER");
     optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
-    optimize("FIELD_INTEGER-0", "FIELD_INTEGER");
-    optimize("0-FIELD_INTEGER", "-FIELD_INTEGER");
-    optimize("FIELD_INTEGER-(0-FIELD_INTEGER)", "FIELD_INTEGER+FIELD_INTEGER");
-    optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
-    optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
-
-    optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
-    optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
     optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
     optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
-    optimize("4+FIELD_INTEGER+1", "5+FIELD_INTEGER");
+    optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
+    
+    // Subtract
+    optimize("FIELD_INTEGER-0", "FIELD_INTEGER");
+    optimize("0-FIELD_INTEGER", "-FIELD_INTEGER");    
+    optimize("FIELD_INTEGER-(0-FIELD_INTEGER)", "FIELD_INTEGER+FIELD_INTEGER");
+    optimize("FIELD_INTEGER-(-FIELD_NUMBER)", "FIELD_INTEGER+FIELD_NUMBER");
+    
+    // Multiply
+    optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
+    optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
+    optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
+    optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
     optimize("4*FIELD_INTEGER*0.5", "2.0*FIELD_INTEGER");
+    optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
+    optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
+    
+    // Divide
     optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
+    optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
     optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
+    optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
+    optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
+    
+    // Power
+    optimize("POWER(FIELD_INTEGER,1)", "FIELD_INTEGER");    
   }
 
+  @Test
+  public void testBiwise() throws Exception {    // 
+    optimize("~(~FIELD_INTEGER)", "FIELD_INTEGER");    
+  }
+  
   @Test
   public void testCoalesce() throws Exception {
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER)");
   }
+  
+  @Test
+  public void testConstantFunction() throws Exception {
+    optimize("PI()", "3.141592653589793");
+    optimize("EXP(1)", "2.718281828459045");
+  }  
   
   @Test
   public void testChainedCast() throws Exception {

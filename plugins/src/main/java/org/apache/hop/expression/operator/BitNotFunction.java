@@ -16,11 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -43,6 +46,18 @@ public class BitNotFunction extends Function {
         OperatorCategory.BITWISE, "/docs/bit_not.html");
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression operand = call.getOperand(0);
+
+    // Simplify reverses itself "~(~(A))" to "A"
+    if (operand.is(Operators.BITNOT)) {
+      return ((Call) operand).getOperand(0);
+    }
+    
+    return call;
+  }  
+  
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Long value = operands[0].getValue(context, Long.class);

@@ -433,7 +433,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("5 between 3 and 5");
     evalFalse("5 between 5 and 3");
     evalTrue("FIELD_INTEGER between symmetric 50 and 30");
-    evalTrue("-1 between -3+1 and 5");
+    evalTrue("FIELD_INTEGER between -3+27 and 50");
     evalTrue("'the' between 'that' and 'then'");
     evalFalse("1 between 3 and 5");
     evalTrue("FIELD_INTEGER between 39.999 and 40.0001");

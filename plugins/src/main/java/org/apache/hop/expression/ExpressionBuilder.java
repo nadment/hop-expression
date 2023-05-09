@@ -69,10 +69,12 @@ public class ExpressionBuilder {
       if (expression == null)
         return expression;
 
+      expression.validate(context);
+
       IExpression original;
       do {
         original = expression;
-        expression = expression.validate(context);
+        expression = expression.compile(context);
       } while (!expression.equals(original));
       
       return expression;    

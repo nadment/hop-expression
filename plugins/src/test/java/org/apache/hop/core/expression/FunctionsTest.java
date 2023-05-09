@@ -1294,7 +1294,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Square() throws Exception {
-    evalEquals("Square(1)", 1L);
+    evalEquals("Square(1)", 1.0);
     evalEquals("Square(-5)", 25L);
     evalEquals("Square(STRING_INTEGER)", 25L*25L);
     evalFails("Square()");

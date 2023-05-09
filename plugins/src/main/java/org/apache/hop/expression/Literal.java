@@ -404,10 +404,14 @@ public final class Literal implements IExpression {
    * @param context The context against which the expression will be validated.
    */
   @Override
-  public IExpression validate(final IExpressionContext context) throws ExpressionException {
-    return this;
+  public void validate(final IExpressionContext context) throws ExpressionException {   
   }
 
+  @Override
+  public IExpression compile(final IExpressionContext context) throws ExpressionException {   
+    return this;
+  }
+  
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);

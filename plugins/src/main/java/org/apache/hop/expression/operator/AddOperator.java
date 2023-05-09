@@ -50,11 +50,17 @@ public class AddOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // x+0 => x
+    // Simplify arithmetic "0 + A" => "A"
     if (Literal.ZERO.equals(left)) {
       return right;
     }
 
+    // Simplify arithmetic "A + (-B)" => "A - B"
+    if (right.is(Operators.NEGATIVE)) {
+      Call negate = (Call) right;      
+      return new Call(Operators.SUBTRACT, left, negate.getOperand(0));
+    }
+    
     // Pull up literal
     if (left.isConstant() && right.is(Operators.ADD)) {
       Call child = (Call) right;
