@@ -64,6 +64,22 @@ public class GreaterThanOperator extends Operator {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
     }
    
+    // Simplify "3 > X+1" to "3-1 > X"
+    if (left.isConstant() && right.is(Operators.ADD) ) {
+      Call child = (Call) right;
+      if ( child.getOperand(0).isConstant() ) {
+        return new Call(call.getOperator(), new Call(Operators.SUBTRACT,left,child.getOperand(0)), child.getOperand(1));
+      }
+    }
+    
+    // Simplify "X+1 > 3" to "X > 3-1"
+    if (left.is(Operators.ADD) && right.isConstant()) {
+      Call child = (Call) left;
+      if ( child.getOperand(0).isConstant() ) {
+        return new Call(call.getOperator(), child.getOperand(1), new Call(Operators.SUBTRACT,right,child.getOperand(0)));
+      }
+    }
+    
     return call; 
   }
   

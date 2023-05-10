@@ -29,12 +29,17 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 
-/** Comparison not equals operator '<code>!=</code>'. */
+/** Comparison not equals operator '<code>!=</code>' or '<code><></code>'. */
 public class NotEqualOperator extends Operator {
 
-  public NotEqualOperator() {
-    super("NOT_EQUAL", "!=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+  public NotEqualOperator(final String name) {
+    super("NOT_EQUAL", name, 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
         OperatorCategory.COMPARISON, "/docs/not_equal.html");
+  }
+
+  @Override
+  public boolean isSymmetrical() {
+    return true;
   }
 
   @Override
@@ -61,14 +66,23 @@ public class NotEqualOperator extends Operator {
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
     }
-   
-    return call; 
+
+    // Simplify "3 != X+1" to "3-1 != X"
+    if (left.isConstant() && right.is(Operators.ADD)) {
+      Call child = (Call) right;
+      if (child.getOperand(0).isConstant()) {
+        return new Call(call.getOperator(), new Call(Operators.SUBTRACT, left, child.getOperand(0)),
+            child.getOperand(1));
+      }
+    }
+    
+    return call;
   }
   
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append("!=");
+    writer.append(getName());
     operands[1].unparse(writer);
   }
 }

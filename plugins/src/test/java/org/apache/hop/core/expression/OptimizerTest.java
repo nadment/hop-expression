@@ -51,7 +51,7 @@ public class OptimizerTest extends ExpressionTest {
   @Test
   public void testSimplifyLike() throws Exception {
     optimize("FIELD_STRING LIKE '%'", "NULL OR FIELD_STRING IS NOT NULL");
-    optimize("FIELD_STRING LIKE 'Hello'", "FIELD_STRING='Hello'");
+    optimize("FIELD_STRING LIKE 'Hello'", "'Hello'=FIELD_STRING");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
     optimize("FIELD_STRING LIKE '%Hello%'", "CONTAINS(FIELD_STRING,'Hello')");
@@ -119,7 +119,7 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");       
     optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN", "FIELD_BOOLEAN AND NULL_BOOLEAN AND FIELD_INTEGER>0");
     optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN AND (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN AND 2*FIELD_INTEGER>1");
-    optimize("FIELD_INTEGER=1 OR FIELD_BOOLEAN OR FIELD_INTEGER=1", "FIELD_BOOLEAN OR FIELD_INTEGER=1");
+    optimize("FIELD_INTEGER=1 OR FIELD_BOOLEAN OR FIELD_INTEGER=1", "FIELD_BOOLEAN OR 1=FIELD_INTEGER");
     optimize("(FIELD_INTEGER*2>1) OR FIELD_BOOLEAN OR (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN OR 2*FIELD_INTEGER>1");
     
     // Simplify comparison with same term
@@ -268,12 +268,26 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
+  public void testArithmeticComparisons() throws Exception {    
+    optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");    
+    optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1>3", "FIELD_INTEGER>2");
+    optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
+    optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1<3", "FIELD_INTEGER<2");
+    optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1<=3", "FIELD_INTEGER<=2");
+    optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
+  }
+
+  @Test
   public void testBiwise() throws Exception {    // 
     optimize("~(~FIELD_INTEGER)", "FIELD_INTEGER");    
   }
   
   @Test
-  public void testCoalesce() throws Exception {
+  public void testCombineCoalesce() throws Exception {
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER)");
   }

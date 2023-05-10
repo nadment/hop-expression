@@ -353,7 +353,7 @@ public class ExpressionTest {
     //optimize("FIELD_INTEGER IS NULL AND FIELD_INTEGER < 5", "FALSE");
     //optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN AND FIELD_INTEGER=2");
     //optimize("FIELD_INTEGER IS NOT NULL AND FIELD_INTEGER < 5", "FIELD_INTEGER<5");
-    evalTrue("FIELD_INTEGER between -3+27 and 50");
+    optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
   }
 }
 

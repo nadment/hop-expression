@@ -81,7 +81,7 @@ public class OperatorsTest extends ExpressionTest {
     
     evalFails(" = FIELD_INTEGER ");
 
-    writeEquals("FIELD_INTEGER=40");
+    writeEquals("FIELD_INTEGER=40","40=FIELD_INTEGER");
     
     returnType("FIELD_INTEGER=40", DataType.BOOLEAN);
   }
@@ -993,9 +993,9 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("case FIELD_INTEGER when 10 then 'X' when 'T' then 'Test' else 'Error'");    
     
     // Implicit ELSE NULL
-    writeEquals("CASE WHEN FIELD_INTEGER=40 THEN 10 END", "CASE WHEN FIELD_INTEGER=40 THEN 10 ELSE NULL END");
+    writeEquals("CASE WHEN FIELD_INTEGER=40 THEN 10 END", "CASE WHEN 40=FIELD_INTEGER THEN 10 ELSE NULL END");
 
-    writeEquals("CASE WHEN FIELD_INTEGER=40 THEN TRUE ELSE FALSE END");
+    writeEquals("CASE WHEN 40=FIELD_INTEGER THEN TRUE ELSE FALSE END");
     writeEquals("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
     
     returnType("CASE WHEN FIELD_INTEGER IS NULL THEN '-' ELSE FIELD_STRING END", DataType.STRING);

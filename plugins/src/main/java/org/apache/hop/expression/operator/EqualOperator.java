@@ -42,6 +42,11 @@ public class EqualOperator extends Operator {
   }
 
   @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+  
+  @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     // Treats NULLs as unknown values
     // NULL is not equal ( = ) to anything—not even to another NULL.
@@ -81,10 +86,18 @@ public class EqualOperator extends Operator {
     if (right.equals(Literal.FALSE)) {
       return new Call(Operators.IS_FALSE, left);      
     }
+
+    // Simplify "3 = X+1" to "3-1 = X"
+    if (left.isConstant() && right.is(Operators.ADD) ) {
+      Call child = (Call) right;
+      if ( child.getOperand(0).isConstant() ) {
+        return new Call(call.getOperator(), new Call(Operators.SUBTRACT,left,child.getOperand(0)), child.getOperand(1));
+      }
+    }
     
     return call;
   }
-
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

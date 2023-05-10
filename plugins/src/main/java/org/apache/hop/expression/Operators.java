@@ -48,7 +48,6 @@ import org.apache.hop.expression.operator.IsNullOperator;
 import org.apache.hop.expression.operator.IsTrueOperator;
 import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
-import org.apache.hop.expression.operator.LessThanOrGreaterThanOperator;
 import org.apache.hop.expression.operator.LikeOperator;
 import org.apache.hop.expression.operator.ListAggFunction;
 import org.apache.hop.expression.operator.ListAggFunction.ListAgg;
@@ -98,8 +97,8 @@ public class Operators {
   public static final Operator BETWEEN_ASYMMETRIC = new BetweenOperator(Between.ASYMMETRIC);
   public static final Operator BETWEEN_SYMMETRIC = new BetweenOperator(Between.SYMMETRIC);
   public static final Operator EQUAL = new EqualOperator();
-  public static final Operator NOT_EQUAL = new NotEqualOperator();
-  public static final Operator LESS_THAN_OR_GREATER_THAN = new LessThanOrGreaterThanOperator();
+  public static final Operator NOT_EQUAL = new NotEqualOperator("!=");
+  public static final Operator LESS_THAN_OR_GREATER_THAN = new NotEqualOperator("<>");
   public static final Operator LESS_THAN = new LessThanOperator();
   public static final Operator LESS_THAN_OR_EQUAL = new LessThanOrEqualOperator();
   public static final Operator GREATER_THAN = new GreaterThanOperator();
