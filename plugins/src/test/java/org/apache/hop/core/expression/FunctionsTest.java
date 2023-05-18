@@ -1143,7 +1143,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Cos(NULL_NUMBER)");
     evalFails("Cos()");
     evalFails("Cos(0,1)");
-
+    returnType("Cos(1)", DataType.NUMBER);
   }
 
   @Test
@@ -1153,6 +1153,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Cosh(NULL_NUMBER)");
     evalFails("Cosh()");
     evalFails("Cosh(0,1)");
+    returnType("Cosh(1.234)", DataType.NUMBER);
   }
 
   @Test
@@ -1163,6 +1164,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Sin(NULL_NUMBER)");
     evalFails("Sin()");
     evalFails("Sin(0,1)");
+    returnType("Sin(1)", DataType.NUMBER);
   }
 
   @Test
@@ -1173,6 +1175,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Sinh()");
     evalFails("Sinh(FIELD_STRING)");
     evalFails("Sinh(0,1)");
+    returnType("Sinh(0)", DataType.NUMBER);
   }
 
   @Test
@@ -1184,6 +1187,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Cot()");
     evalFails("Cot(FIELD_STRING)");
     evalFails("Cot(1,0)");
+    returnType("Cot(1)", DataType.NUMBER);
   }
 
   @Test
@@ -1195,6 +1199,19 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Csc()");
     evalFails("Csc(FIELD_STRING)");
     evalFails("Csc(1,0)");
+    returnType("Csc(Pi()/2)", DataType.NUMBER);
+  }
+  
+  @Test
+  public void Sec() throws Exception {
+    evalEquals("Sec(Pi())", -1D);
+
+    evalNull("Sec(NULL_INTEGER)");
+    evalFails("Sec(0)");
+    evalFails("Sec()");
+    evalFails("Sec(FIELD_STRING)");
+    evalFails("Sec(1,0)");
+    returnType("Sec(Pi())", DataType.NUMBER);
   }
 
   @Test
@@ -1204,6 +1221,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Tan(NULL_NUMBER)");
     evalFails("Tan()");
     evalFails("Tan(0,1)");
+    returnType("Tan(0)", DataType.NUMBER);
   }
 
   @Test
@@ -1213,6 +1231,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Tanh(NULL_INTEGER)");
     evalFails("Tanh()");
     evalFails("Tanh(0,1)");
+    returnType("Tanh(0)", DataType.NUMBER);
   }
 
   @Test
@@ -1273,6 +1292,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Sign(1,2)");
     
     evalNull("Sign(NULL_INTEGER)");
+    returnType("Sign(0.3)", DataType.INTEGER);
   }
 
   @Test

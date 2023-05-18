@@ -152,6 +152,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/round.adoc[ROUND]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/rpad.adoc[RPAD]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/rtrim.adoc[RTRIM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sec.adoc[SEC]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/second.adoc[SECOND]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/seconds_between.adoc[SECONDS_BETWEEN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sha1.adoc[SHA1]
