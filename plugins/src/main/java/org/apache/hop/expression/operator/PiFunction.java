@@ -40,7 +40,7 @@ public class PiFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return Literal.of(Math.PI);
+    return Literal.PI;
   }
   
   @Override

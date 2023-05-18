@@ -29,13 +29,18 @@ public class OptimizerTest extends ExpressionTest {
     optimize("CAST(FIELD_JSON AS JSON)", "FIELD_JSON");
     //optimize("CAST(FIELD_STRING AS JSON)", "TO_JSON(FIELD_STRING)");
     //optimize("FIELD_STRING::JSON", "TO_JSON(FIELD_STRING)");    
-    
-    
+        
 //    optimize("CAST(FIELD_STRING AS STRING)", "FIELD_STRING");
 //    optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
     
 //    optimize("CAST(FIELD_STRING AS DATE)", "TO_DATE(FIELD_STRING)");
 //    optimize("CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')", "TO_DATE(FIELD_STRING,'YYYY-MM-DD')");
+  }
+  
+  
+  @Test
+  public void testChainedCast() throws Exception {
+    //optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS BIGNUMBER)", "123456");
   }
   
   @Test
@@ -75,23 +80,28 @@ public class OptimizerTest extends ExpressionTest {
   }
 
   @Test
-  public void testSimplifyBoolean() throws Exception {
+  public void testSimplifyBoolNot() throws Exception {
     optimizeFalse("not true");
     optimizeTrue("not false");
     optimizeTrue("not not true");
     optimizeFalse("not not false");
     optimize("NOT(NOT(FIELD_BOOLEAN))", "FIELD_BOOLEAN");
-    optimize("not(FIELD_INTEGER>5)", "FIELD_INTEGER<=5");
-    optimize("not(FIELD_INTEGER>=5)", "FIELD_INTEGER<5");
-    optimize("not(FIELD_INTEGER<5)", "FIELD_INTEGER>=5");
-    optimize("not(FIELD_INTEGER<=5)", "FIELD_INTEGER>5");
+    optimize("not(FIELD_INTEGER>5)", "5>=FIELD_INTEGER");
+    optimize("not(FIELD_INTEGER>=5)", "5>FIELD_INTEGER");
+    optimize("not(FIELD_INTEGER<5)", "5<=FIELD_INTEGER");
+    optimize("not(FIELD_INTEGER<=5)", "5<FIELD_INTEGER");
     optimize("NOT (FIELD_BOOLEAN IS TRUE)", "FIELD_BOOLEAN IS NOT TRUE");
     optimize("NOT (FIELD_BOOLEAN IS NOT TRUE)", "FIELD_BOOLEAN IS TRUE");
     optimize("NOT (FIELD_BOOLEAN IS FALSE)", "FIELD_BOOLEAN IS NOT FALSE");
     optimize("NOT (FIELD_BOOLEAN IS NOT FALSE)", "FIELD_BOOLEAN IS FALSE");
     optimize("NOT (FIELD_BOOLEAN IS NOT NULL)", "FIELD_BOOLEAN IS NULL");
     optimize("NOT (FIELD_BOOLEAN IS NULL)", "FIELD_BOOLEAN IS NOT NULL");
-    
+        
+    //optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
+  }
+  
+  @Test
+  public void testSimplifyBoolAnd() throws Exception {
     optimizeTrue("true or true");
     optimizeTrue("true or false");
     optimizeTrue("false or true");
@@ -106,8 +116,7 @@ public class OptimizerTest extends ExpressionTest {
     optimize("false or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
     optimize("FIELD_BOOLEAN or false", "FALSE OR FIELD_BOOLEAN");
     optimize("FIELD_BOOLEAN or FIELD_BOOLEAN", "FIELD_BOOLEAN");
-    optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN", "FIELD_BOOLEAN OR NULL_BOOLEAN OR FIELD_INTEGER>0");
-    
+    optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN", "FIELD_BOOLEAN OR NULL_BOOLEAN OR 0<FIELD_INTEGER");    
     optimizeTrue("true and true");
     optimizeFalse("true and false");
     optimizeFalse("false and true");
@@ -117,37 +126,44 @@ public class OptimizerTest extends ExpressionTest {
     
     // Duplicate predicate
     optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");       
-    optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN", "FIELD_BOOLEAN AND NULL_BOOLEAN AND FIELD_INTEGER>0");
-    optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN AND (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN AND 2*FIELD_INTEGER>1");
+    optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN", "FIELD_BOOLEAN AND NULL_BOOLEAN AND 0<FIELD_INTEGER");
+    optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN AND (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN AND 1<2*FIELD_INTEGER");
     optimize("FIELD_INTEGER=1 OR FIELD_BOOLEAN OR FIELD_INTEGER=1", "FIELD_BOOLEAN OR 1=FIELD_INTEGER");
-    optimize("(FIELD_INTEGER*2>1) OR FIELD_BOOLEAN OR (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN OR 2*FIELD_INTEGER>1");
+    optimize("(FIELD_INTEGER*2>1) OR FIELD_BOOLEAN OR (2*FIELD_INTEGER>1)", "FIELD_BOOLEAN OR 1<2*FIELD_INTEGER");
     
-    // Simplify comparison with same term
-    optimize("FIELD_STRING=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
-    optimize("FIELD_STRING>=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
-    optimize("FIELD_STRING<=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
-    optimize("FIELD_STRING!=FIELD_STRING","NULL AND FIELD_STRING IS NULL");
-    optimize("FIELD_STRING>FIELD_STRING","NULL AND FIELD_STRING IS NULL");
-    optimize("FIELD_STRING<FIELD_STRING","NULL AND FIELD_STRING IS NULL");
-        
     // Simplify IS NULL
     optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN>5");
     optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN=5");
     optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN<>5");
     
     // Simplify IS NOT NULL
-    optimize("FIELD_BOOLEAN>5 AND FIELD_BOOLEAN IS NOT NULL AND FIELD_BOOLEAN>5","FIELD_BOOLEAN>5");
+    optimize("FIELD_BOOLEAN>5 AND FIELD_BOOLEAN IS NOT NULL AND FIELD_BOOLEAN>5","5<FIELD_BOOLEAN");
     
     // Not satisfiable equality constant
     optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN AND FIELD_INTEGER=2");
     optimizeFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN AND NULL_INTEGER=2");
 
-    
-    //optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
   }
   
   @Test
-  public void testPredicate() throws Exception {
+  public void testSimplifyBoolOr() throws Exception {
+    // Duplicate predicate
+    optimize("FIELD_BOOLEAN OR FIELD_BOOLEAN", "FIELD_BOOLEAN");  
+
+    // "x < a OR x = a" to "x <= a"
+    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER=1", "1>=FIELD_INTEGER");
+    // "x < a OR x != a" to "x != a"  
+    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");
+    // "x < a OR x > a" to "x != a"   
+    optimize("FIELD_INTEGER<1 OR FIELD_INTEGER>1", "1!=FIELD_INTEGER");    
+    // "x > a OR x != a" to "x != a"  
+    optimize("FIELD_INTEGER>1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");    
+    // "x > a OR x = a" to "x >= a"
+    optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "1<=FIELD_INTEGER");
+  }
+  
+  @Test
+  public void testComparison() throws Exception {
     optimize("FIELD_BOOLEAN = TRUE", "FIELD_BOOLEAN IS TRUE");
     optimize("TRUE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
     optimize("FIELD_BOOLEAN >= TRUE", "FIELD_BOOLEAN IS TRUE");
@@ -161,6 +177,15 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FALSE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
     optimize("FIELD_BOOLEAN <= FALSE", "FIELD_BOOLEAN IS FALSE");
     optimize("FALSE <= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    
+    // Simplify comparison with same term
+    optimize("FIELD_STRING=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING>=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING<=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING!=FIELD_STRING","NULL AND FIELD_STRING IS NULL");
+    optimize("FIELD_STRING>FIELD_STRING","NULL AND FIELD_STRING IS NULL");
+    optimize("FIELD_STRING<FIELD_STRING","NULL AND FIELD_STRING IS NULL");
+        
   }
   
   @Test
@@ -272,24 +297,28 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
     optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");    
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
-    optimize("FIELD_INTEGER+1>3", "FIELD_INTEGER>2");
-    optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
+    optimize("FIELD_INTEGER+1>3", "2<FIELD_INTEGER");
+    optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
     optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
-    optimize("FIELD_INTEGER+1<3", "FIELD_INTEGER<2");
+    optimize("FIELD_INTEGER+1<3", "2>FIELD_INTEGER");
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
-    optimize("FIELD_INTEGER+1<=3", "FIELD_INTEGER<=2");
+    optimize("FIELD_INTEGER+1<=3", "2>=FIELD_INTEGER");
     optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
   }
 
   @Test
-  public void testBiwise() throws Exception {    // 
+  public void testBitwise() throws Exception {    // 
     optimize("~(~FIELD_INTEGER)", "FIELD_INTEGER");    
   }
   
   @Test
-  public void testCombineCoalesce() throws Exception {
+  public void testSimplifyCoalesce() throws Exception {
+    // Duplicate coalesce
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER)");
+    
+    // Flatten
+    optimize("COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,COALESCE(FIELD_NUMBER,2)))", "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
   }
   
   @Test
@@ -299,9 +328,43 @@ public class OptimizerTest extends ExpressionTest {
   }  
   
   @Test
-  public void testChainedCast() throws Exception {
-
+  public void testFunctionRepetition() throws Exception {
+    optimize("LTRIM(LTRIM(FIELD_STRING))", "LTRIM(FIELD_STRING)");
+    optimize("RTRIM(RTRIM(FIELD_STRING))", "RTRIM(FIELD_STRING)");
+    optimize("TRIM(TRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("TRIM(LTRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("TRIM(RTRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("RTRIM(TRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("LTRIM(TRIM(FIELD_STRING))", "TRIM(FIELD_STRING)");
+    optimize("UPPER(UPPER(FIELD_STRING))", "UPPER(FIELD_STRING)");
+    optimize("UPPER(LOWER(FIELD_STRING))", "UPPER(FIELD_STRING)");
+    optimize("LOWER(LOWER(FIELD_STRING))", "LOWER(FIELD_STRING)");
+    optimize("LOWER(UPPER(FIELD_STRING))", "LOWER(FIELD_STRING)");
+    optimize("ABS(ABS(FIELD_INTEGER))", "ABS(FIELD_INTEGER)");
+    optimize("SIGN(SIGN(FIELD_INTEGER))", "SIGN(FIELD_INTEGER)");
+    optimize("CEILING(CEILING(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
+    optimize("FLOOR(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
+    optimize("ROUND(ROUND(FIELD_NUMBER))", "ROUND(FIELD_NUMBER)");
+//    optimize("TRUNC(TRUNC(FIELD_NUMBER))", "TRUNC(FIELD_NUMBER)");
+  }  
     
-    //optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS BIGNUMBER)", "123456");
+  @Test
+  public void testSimplifyCase() throws Exception {
+    // Flatten search case
+    optimize("CASE WHEN FIELD_INTEGER=1 THEN 1 ELSE CASE WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END END", "CASE WHEN 1=FIELD_INTEGER THEN 1 WHEN 2=FIELD_NUMBER THEN 2 ELSE 3 END");
+        
+    // "CASE WHEN x IS NULL THEN y ELSE x END" to "IFNULL(x, y)"
+    optimize("CASE WHEN FIELD_STRING IS NULL THEN 'TEST' ELSE FIELD_STRING END","IFNULL(FIELD_STRING,'TEST')");
+    
+    // "CASE WHEN x = y THEN NULL ELSE x END" to "NULLIF(x, y)"
+    optimize("CASE WHEN FIELD_INTEGER=FIELD_NUMBER THEN NULL ELSE FIELD_INTEGER END","NULLIF(FIELD_INTEGER,FIELD_NUMBER)");
+    optimize("CASE WHEN FIELD_INTEGER=FIELD_NUMBER THEN NULL ELSE FIELD_NUMBER END","NULLIF(FIELD_NUMBER,FIELD_INTEGER)");
+    
+    // "CASE WHEN x IS NOT NULL THEN y ELSE z END" to "NVL2(x, y, z)"
+    optimize("CASE WHEN FIELD_INTEGER IS NOT NULL THEN FIELD_STRING ELSE 'TEST' END","NVL2(FIELD_INTEGER,FIELD_STRING,'TEST')");
+    
+    // "CASE WHEN x IS NULL THEN y ELSE z END" to "NVL2(x, z, y)"
+    optimize("CASE WHEN FIELD_INTEGER IS NULL THEN FIELD_STRING ELSE 'TEST' END","NVL2(FIELD_INTEGER,'TEST',FIELD_STRING)");
   }
+
 }

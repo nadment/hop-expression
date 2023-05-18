@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -45,5 +47,16 @@ public class CeilingFunction extends Function {
       return null;
 
     return value.setScale(0, RoundingMode.CEILING);
+  }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+   
+    // Remove function repetition
+    if ( call.getOperand(0).is(call.getOperator())) {
+      return call.getOperand(0);
+    }
+    
+    return call;
   }
 }

@@ -56,18 +56,16 @@ public class AddOperator extends Operator {
     }
 
     // Simplify arithmetic "A + (-B)" => "A - B"
-    if (right.is(Operators.NEGATIVE)) {
-      Call negate = (Call) right;      
-      return new Call(Operators.SUBTRACT, left, negate.getOperand(0));
+    if (right.is(Operators.NEGATIVE)) {      
+      return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
     }
     
     // Pull up literal
     if (left.isConstant() && right.is(Operators.ADD)) {
-      Call child = (Call) right;
-      if (child.getOperand(0).isConstant()) {
-        IExpression expression = new Call(Operators.ADD, left, child.getOperand(0));
+      if (right.asCall().getOperand(0).isConstant()) {
+        IExpression expression = new Call(Operators.ADD, left, right.asCall().getOperand(0));
         Literal literal = Literal.of(expression.getValue(context));
-        return new Call(Operators.ADD, literal, child.getOperand(1));
+        return new Call(Operators.ADD, literal, right.asCall().getOperand(1));
       }
     }
 

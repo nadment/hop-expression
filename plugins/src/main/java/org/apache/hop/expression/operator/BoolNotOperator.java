@@ -57,47 +57,47 @@ public class BoolNotOperator extends Operator {
 
     // NOT(l > r) => l <= r
     if (operand.is(Operators.GREATER_THAN)) {
-      return new Call(Operators.LESS_THAN_OR_EQUAL, ((Call) operand).getOperands());
+      return new Call(Operators.LESS_THAN_OR_EQUAL, operand.asCall().getOperands());
     }
     // NOT(l >= r) => l < r
     if (operand.is(Operators.GREATER_THAN_OR_EQUAL)) {
-      return new Call(Operators.LESS_THAN, ((Call) operand).getOperands());
+      return new Call(Operators.LESS_THAN, operand.asCall().getOperands());
     }
     // NOT(l < r) => l >= r
     if (operand.is(Operators.LESS_THAN)) {
-      return new Call(Operators.GREATER_THAN_OR_EQUAL, ((Call) operand).getOperands());
+      return new Call(Operators.GREATER_THAN_OR_EQUAL, operand.asCall().getOperands());
     }
     // NOT(l <= r) => l > r
     if (operand.is(Operators.LESS_THAN_OR_EQUAL)) {
-      return new Call(Operators.GREATER_THAN, ((Call) operand).getOperands());
+      return new Call(Operators.GREATER_THAN, operand.asCall().getOperands());
     }
     // NOT(NOT(x)) => x
     if (operand.is(Operators.BOOLNOT)) {
-      return ((Call) operand).getOperand(0);
+      return operand.asCall().getOperand(0);
     }
     // NOT(x IS TRUE) => x IS NOT TRUE
     if (operand.is(Operators.IS_TRUE)) {
-      return new Call(Operators.IS_NOT_TRUE, ((Call) operand).getOperands());
+      return new Call(Operators.IS_NOT_TRUE, operand.asCall().getOperands());
     }
     // NOT(x IS NOT TRUE) => x IS TRUE
     if (operand.is(Operators.IS_NOT_TRUE)) {
-      return new Call(Operators.IS_TRUE, ((Call) operand).getOperands());
+      return new Call(Operators.IS_TRUE, operand.asCall().getOperands());
     }
     // NOT(x IS FALSE) => x IS NOT FALSE
     if (operand.is(Operators.IS_FALSE)) {
-      return new Call(Operators.IS_NOT_FALSE, ((Call) operand).getOperands());
+      return new Call(Operators.IS_NOT_FALSE, operand.asCall().getOperands());
     }
     // NOT(x IS NOT FALSE) => x IS FALSE
     if (operand.is(Operators.IS_NOT_FALSE)) {
-      return new Call(Operators.IS_FALSE, ((Call) operand).getOperands());
+      return new Call(Operators.IS_FALSE, operand.asCall().getOperands());
     }
     // NOT(x IS NULL) => x IS NOT NULL
     if (operand.is(Operators.IS_NULL)) {
-      return new Call(Operators.IS_NOT_NULL, ((Call) operand).getOperands());
+      return new Call(Operators.IS_NOT_NULL, operand.asCall().getOperands());
     }
     // NOT(x IS NOT NULL) => x IS NULL
     if (operand.is(Operators.IS_NOT_NULL)) {
-      return new Call(Operators.IS_NULL, ((Call) operand).getOperands());
+      return new Call(Operators.IS_NULL, operand.asCall().getOperands());
     }
 
     return call;

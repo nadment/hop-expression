@@ -55,12 +55,23 @@ public class CoalesceFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    
-    // Remove duplicate but keep order
+
+    // Remove null and duplicate but keep order
     final List<IExpression> operands = new ArrayList<>();
     for (IExpression operand : call.getOperands()) {
-      if (operand.isNull() || operands.contains(operand) ) continue;
-      operands.add(operand);
+      if (operand.isNull() || operands.contains(operand)) {
+        continue;
+      }
+
+      // Flatten chained coalesce
+      if (operand.is(call.getOperator())) {
+        for (IExpression o : operand.asCall().getOperands()) {
+          operands.add(o);
+        }       
+      }
+      else {
+        operands.add(operand);
+      }
     }
 
     switch (operands.size()) {

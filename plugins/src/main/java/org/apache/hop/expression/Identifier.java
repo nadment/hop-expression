@@ -410,6 +410,11 @@ public final class Identifier implements IExpression {
   }
 
   @Override
+  public Identifier asIdentifier() {
+    return this;
+  } 
+  
+  @Override
   public String toString() {
     return this.name;
   }

@@ -56,7 +56,7 @@ public class Div0Function extends Function {
     
     // Simplify arithmetic "DIV0(-A,-B)" to "DIV0(A,B)"
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
-      return new Call(call.getOperator(), ((Call) left).getOperand(0), ((Call) right).getOperand(0));
+      return new Call(call.getOperator(), left.asCall().getOperand(0), right.asCall().getOperand(0));
     }
     
     return call;

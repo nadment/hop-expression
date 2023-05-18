@@ -64,9 +64,8 @@ public class SubtractOperator extends Operator {
     }
 
     // Simplify arithmetic A-(-B) => A+B
-    if (right.is(Operators.NEGATIVE)) {
-      Call negative = (Call) right;
-      return new Call(Operators.ADD, left, negative.getOperand(0));
+    if (right.is(Operators.NEGATIVE)) {      
+      return new Call(Operators.ADD, left, right.asCall().getOperand(0));
     }
 
     return call;

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -59,30 +60,43 @@ public class GreaterThanOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Normalize low cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return new Call(Operators.LESS_THAN, right, left);
+    }
+
+    // Normalize the order of identifier by name
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
+      if (left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+        return new Call(Operators.LESS_THAN, right, left);
+      }
+    }
+
     // Simplify "x > x" to "NULL AND x IS NULL"
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
     }
-   
+
     // Simplify "3 > X+1" to "3-1 > X"
-    if (left.isConstant() && right.is(Operators.ADD) ) {
-      Call child = (Call) right;
-      if ( child.getOperand(0).isConstant() ) {
-        return new Call(call.getOperator(), new Call(Operators.SUBTRACT,left,child.getOperand(0)), child.getOperand(1));
+    if (left.isConstant() && right.is(Operators.ADD)) {
+      if (right.asCall().getOperand(0).isConstant()) {
+        return new Call(call.getOperator(),
+            new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
+            right.asCall().getOperand(1));
       }
     }
-    
+
     // Simplify "X+1 > 3" to "X > 3-1"
     if (left.is(Operators.ADD) && right.isConstant()) {
-      Call child = (Call) left;
-      if ( child.getOperand(0).isConstant() ) {
-        return new Call(call.getOperator(), child.getOperand(1), new Call(Operators.SUBTRACT,right,child.getOperand(0)));
+      if (left.asCall().getOperand(0).isConstant()) {
+        return new Call(call.getOperator(), left.asCall().getOperand(1),
+            new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));
       }
     }
-    
-    return call; 
+
+    return call;
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

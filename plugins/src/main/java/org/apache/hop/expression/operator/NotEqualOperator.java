@@ -29,7 +29,9 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 
-/** Comparison not equals operator '<code>!=</code>' or '<code><></code>'. */
+/** 
+ * Comparison not equals operator '<code>!=</code>' or '<code><></code>'.
+ */
 public class NotEqualOperator extends Operator {
 
   public NotEqualOperator(final String name) {
@@ -69,10 +71,9 @@ public class NotEqualOperator extends Operator {
 
     // Simplify "3 != X+1" to "3-1 != X"
     if (left.isConstant() && right.is(Operators.ADD)) {
-      Call child = (Call) right;
-      if (child.getOperand(0).isConstant()) {
-        return new Call(call.getOperator(), new Call(Operators.SUBTRACT, left, child.getOperand(0)),
-            child.getOperand(1));
+      if (right.asCall().getOperand(0).isConstant()) {
+        return new Call(call.getOperator(), new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
+            right.asCall().getOperand(1));
       }
     }
     

@@ -17,6 +17,7 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
 
 public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
@@ -30,7 +31,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     Tuple thenTuple = (Tuple) call.getOperand(2);
     IExpression elseExpression = call.getOperand(3);
 
-    if (switchExpression == null) {
+    if (switchExpression == Literal.NULL) {
       for (IExpression whenOperand : whenTuple) {
         if (!whenOperand.getType().isSameFamily(DataFamily.BOOLEAN) ) {
           return false;

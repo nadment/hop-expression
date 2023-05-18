@@ -45,7 +45,7 @@ public class EqualOperator extends Operator {
   public boolean isSymmetrical() {
     return true;
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     // Treats NULLs as unknown values
@@ -74,30 +74,30 @@ public class EqualOperator extends Operator {
 
     // Simplify "x = TRUE" to "x IS TRUE"
     if (left.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, right);      
+      return new Call(Operators.IS_TRUE, right);
     }
     if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, left);      
+      return new Call(Operators.IS_TRUE, left);
     }
     // Simplify "x = FALSE" to "x IS FALSE"
     if (left.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, right);      
+      return new Call(Operators.IS_FALSE, right);
     }
     if (right.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, left);      
+      return new Call(Operators.IS_FALSE, left);
     }
 
     // Simplify "3 = X+1" to "3-1 = X"
-    if (left.isConstant() && right.is(Operators.ADD) ) {
-      Call child = (Call) right;
-      if ( child.getOperand(0).isConstant() ) {
-        return new Call(call.getOperator(), new Call(Operators.SUBTRACT,left,child.getOperand(0)), child.getOperand(1));
-      }
+    if (left.isConstant() && right.is(Operators.ADD)
+        && right.asCall().getOperand(0).isConstant()) {
+      return new Call(call.getOperator(),
+          new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
+          right.asCall().getOperand(1));
     }
-    
+
     return call;
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

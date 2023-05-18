@@ -750,17 +750,17 @@ public class ExpressionBuilder {
 
   /** Case When Then Else End ) */
   private IExpression parseCase() throws ParseException {
-    IExpression valueExpression = null;
+    IExpression valueExpression = Literal.NULL;
     IExpression elseExpression = Literal.NULL;
     List<IExpression> whenList = new ArrayList<>();
     List<IExpression> thenList = new ArrayList<>();
 
-    // Form Switch value
+    // Simple case
     if (!is(Id.WHEN)) {
       valueExpression = this.parseLogicalOr();
     }
 
-    // Form multi boolean condition
+    // Search condition case
     while (isThenNext(Id.WHEN)) {
       whenList.add(this.parseLogicalOr());
       if (isNotThenNext(Id.THEN)) {

@@ -2990,7 +2990,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("CountIf(FIELD_DATE)");
     evalFails("CountIf(1,2)");
     returnType("CountIf(FIELD_INTEGER>=10)", DataType.INTEGER);
-    writeEquals("COUNTIF(FIELD_INTEGER>=10)");
+    writeEquals("COUNTIF(FIELD_INTEGER>=10)","COUNTIF(10<=FIELD_INTEGER)");
   }
 
   @Test

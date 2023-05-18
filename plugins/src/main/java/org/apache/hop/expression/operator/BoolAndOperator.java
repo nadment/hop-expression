@@ -55,18 +55,17 @@ public class BoolAndOperator extends Operator {
     boolean left = true;
     boolean right = true;
 
+    // Simplify trivial FALSE
     if (call.getOperand(0).isConstant()) {
       Boolean value = call.getOperand(0).getValue(context, Boolean.class);
       if (value == Boolean.FALSE)
         left = false;
     }
-
     if (call.getOperand(1).isConstant()) {
       Boolean value = call.getOperand(1).getValue(context, Boolean.class);
       if (value == Boolean.FALSE)
         right = false;
     }
-
     // FALSE AND x => FALSE
     // x AND FALSE => FALSE
     if (!left || !right) {
@@ -87,7 +86,7 @@ public class BoolAndOperator extends Operator {
     
     for (IExpression condition : conditions) {
       if (condition.is(Kind.CALL)) {
-        call = (Call) condition;
+        call = condition.asCall();
         if (call.is(Operators.IS_NULL)) {
           nullTerms.add(call.getOperand(0));
         }
@@ -96,10 +95,10 @@ public class BoolAndOperator extends Operator {
         }
         if (call.is(Operators.EQUAL)) {
           if (call.getOperand(0).is(Kind.LITERAL)) {
-            equalsLiterals.put(call.getOperand(1), Pair.of(call, (Literal) call.getOperand(0)));
+            equalsLiterals.put(call.getOperand(1), Pair.of(call, call.getOperand(0).asLiteral()));
           }
           if (call.getOperand(1).is(Kind.LITERAL)) {
-            equalsLiterals.put(call.getOperand(0), Pair.of(call, (Literal) call.getOperand(1)));
+            equalsLiterals.put(call.getOperand(0), Pair.of(call, call.getOperand(1).asLiteral()));
           }
         }
         
@@ -151,7 +150,7 @@ public class BoolAndOperator extends Operator {
     for (IExpression operand : notNullTerms) {
       if (strongTerms.contains(operand)) {
         for (IExpression condition : conditions ) {
-          if( condition.is(Operators.IS_NOT_NULL) && ((Call)condition).getOperand(0)==operand) { 
+          if( condition.is(Operators.IS_NOT_NULL) && condition.asCall().getOperand(0).equals(operand) ) { 
             conditions.remove(condition);
           }
         }

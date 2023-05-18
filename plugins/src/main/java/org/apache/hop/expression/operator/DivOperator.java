@@ -60,7 +60,7 @@ public class DivOperator extends Operator {
     
     // Simplify arithmetic "(-A) / (-B)" to "A / B"
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
-      return new Call(Operators.DIVIDE, ((Call) left).getOperand(0), ((Call) right).getOperand(0));
+      return new Call(Operators.DIVIDE, left.asCall().getOperand(0), right.asCall().getOperand(0));
     }
     
     return call;

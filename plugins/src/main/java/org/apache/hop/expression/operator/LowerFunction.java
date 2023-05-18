@@ -16,8 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
@@ -47,4 +50,15 @@ public class LowerFunction extends Function {
     return value.toLowerCase(Locale.getDefault());
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression operand = call.getOperand(0);
+
+    // Repetitions of functions that do not have any effects on the result
+    if ( operand.is(call.getOperator()) || operand.is(FunctionRegistry.getFunction("UPPER")) ) {
+      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+    }
+    
+    return call;
+  }
 }

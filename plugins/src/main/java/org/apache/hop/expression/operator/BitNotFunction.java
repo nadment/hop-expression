@@ -52,7 +52,7 @@ public class BitNotFunction extends Function {
 
     // Simplify reverses itself "~(~(A))" to "A"
     if (operand.is(Operators.BITNOT)) {
-      return ((Call) operand).getOperand(0);
+      return operand.asCall().getOperand(0);
     }
     
     return call;

@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -50,52 +51,62 @@ public class LessThanOrEqualOperator extends Operator {
 
     return Converter.compare(left, right) <= 0;
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Normalize
+    if (left.getCost() > right.getCost()) {
+      return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
+    }
+    // Normalize, order identifier by name
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
+      if (left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+        return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
+      }
+    }
+
     // Simplify "x <= x" to "NULL OR x IS NOT NULL"
     if (left.equals(right)) {
       return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
     }
-    
+
     // Simplify "x <= TRUE" to "x IS TRUE"
     if (left.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, right);      
+      return new Call(Operators.IS_TRUE, right);
     }
     if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, left);      
+      return new Call(Operators.IS_TRUE, left);
     }
     // Simplify "x <= FALSE" to "x IS FALSE"
     if (left.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, right);      
+      return new Call(Operators.IS_FALSE, right);
     }
     if (right.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, left);      
+      return new Call(Operators.IS_FALSE, left);
     }
-    
+
     // Simplify "3 <= X+1" to "3-1 <= X"
-    if (left.isConstant() && right.is(Operators.ADD) ) {
-      Call child = (Call) right;
-      if ( child.getOperand(0).isConstant() ) {
-        return new Call(call.getOperator(), new Call(Operators.SUBTRACT,left,child.getOperand(0)), child.getOperand(1));
-      }
+    if (left.isConstant() && right.is(Operators.ADD)
+        && right.asCall().getOperand(0).isConstant()) {
+      return new Call(call.getOperator(),
+          new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
+          right.asCall().getOperand(1));
     }
-    
+
     // Simplify "X+1 <= 3" to "X <= 3-1"
-    if (left.is(Operators.ADD) && right.isConstant()) {
-      Call child = (Call) left;
-      if ( child.getOperand(0).isConstant() ) {
-        return new Call(call.getOperator(), child.getOperand(1), new Call(Operators.SUBTRACT,right,child.getOperand(0)));
-      }
+    if (left.is(Operators.ADD) && right.isConstant()
+        && left.asCall().getOperand(0).isConstant()) {
+      return new Call(call.getOperator(), left.asCall().getOperand(1),
+          new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));
     }
-    
-    return call; 
+
+    return call;
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

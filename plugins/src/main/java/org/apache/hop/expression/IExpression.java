@@ -143,6 +143,33 @@ public interface IExpression {
   public abstract <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor);
 
   /**
+   * Casts and returns this expression as a {@code Call} if it is of kind {@code CALL}
+   *
+   * @return this instance cast to a class
+   */  
+  public default Call asCall() {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+  } 
+
+  /**
+   * Casts and returns this expression as a {@code Literal} if it is of kind {@code LITERAL}
+   *
+   * @return this instance cast to a class
+   */
+  public default Literal asLiteral() {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+  } 
+
+  /**
+   * Casts and returns this expression as a {@code Identifier} if it is of kind {@code IDENTIFIER}
+   *
+   * @return this instance cast to a class
+   */  
+  public default Identifier asIdentifier() {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+  } 
+  
+  /**
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.
    */

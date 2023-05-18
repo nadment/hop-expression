@@ -296,10 +296,7 @@ public final class Call implements IExpression {
 
     // Validate all operands
     for (IExpression operand : operands) {
-      // Some operand can be null
-      if ( operand!=null) {
         operand.validate(context);
-      }
     }
 
     // Check the number of operands expected
@@ -386,6 +383,11 @@ public final class Call implements IExpression {
   }
   
   @Override
+  public Call asCall() {
+    return this;
+  } 
+  
+  @Override
   public boolean equals(Object other) {
     if (other instanceof Call) {
       Call call = (Call) other;
@@ -411,6 +413,7 @@ public final class Call implements IExpression {
     unparse(writer);
     return writer.toString();
   }
+
   
   /**
    * Reorganize symmetrical operator
@@ -425,22 +428,21 @@ public final class Call implements IExpression {
     IExpression left = this.getOperand(0);
     IExpression right = this.getOperand(1);
 
-    // Move low cost operand to the left
+    // Normalize, move low cost operand to the left
     if (left.getCost() > right.getCost()) {
       return new Call(operator, right, left);
     }
 
-    // Order identifier by name
+    // Normalize, order identifier by name
     if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
-      if (((Identifier) left).getName().compareTo(((Identifier) right).getName()) > 0) {
+      if ( left.asIdentifier().getName().compareTo( right.asIdentifier().getName()) > 0) {
         return new Call(operator, right, left);
       }
     }
 
     if (right.is(operator)) {
-      Call subCall = (Call) right;
-      IExpression subLeft = subCall.getOperand(0);
-      IExpression subRight = subCall.getOperand(1);
+      IExpression subLeft = right.asCall().getOperand(0);
+      IExpression subRight = right.asCall().getOperand(1);
 
       // Go up left operand if low cost
       if (subLeft.getCost() < left.getCost()) {
@@ -449,7 +451,7 @@ public final class Call implements IExpression {
 
       // Order identifier by name
       if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)) {
-        if (((Identifier) left).getName().compareTo(((Identifier) subLeft).getName()) > 0) {
+        if (left.asIdentifier().getName().compareTo(subLeft.asIdentifier().getName()) > 0) {
           return new Call(operator, subLeft, new Call(operator, left, subRight));
         }
       }

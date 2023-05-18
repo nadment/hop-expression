@@ -17,6 +17,8 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -44,5 +46,15 @@ public class RoundFunctionFunction extends Function {
       return value;
     return FastMath.round(value);
   }
-
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+   
+    // Remove function repetition
+    if ( call.getOperand(0).is(call.getOperator())) {
+      return call.getOperand(0);
+    }
+    
+    return call;
+  }  
 }

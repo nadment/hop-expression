@@ -42,7 +42,8 @@ public final class Literal implements IExpression {
   public static final Literal FALSE = new Literal(Boolean.FALSE, DataType.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, DataType.INTEGER);
   public static final Literal ONE = new Literal(1L, DataType.INTEGER);
-  
+  public static final Literal PI = new Literal(Math.PI, DataType.NUMBER);
+
   public static Literal of(final Object value) {
     if (value == null)
       return NULL;
@@ -294,6 +295,10 @@ public final class Literal implements IExpression {
     return false;
   }
 
+  public Literal asLiteral() {
+    return this;
+  }
+  
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();

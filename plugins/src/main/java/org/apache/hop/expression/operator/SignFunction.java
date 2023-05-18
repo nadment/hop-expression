@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -46,4 +48,14 @@ public class SignFunction extends Function {
       return 0L;
     return (value > 0) ? 1L : -1L;
   }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Idempotent function repetition
+    if ( call.getOperand(0).is(call.getOperator())) {
+      return call.getOperand(0);
+    }
+    
+    return call;
+  }  
 }

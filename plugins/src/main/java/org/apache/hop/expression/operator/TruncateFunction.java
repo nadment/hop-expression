@@ -56,5 +56,4 @@ public class TruncateFunction extends Function {
       scale = value.scale();
     return value.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
   }
-
 }
