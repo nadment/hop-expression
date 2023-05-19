@@ -86,6 +86,11 @@ public class InOperator extends Operator {
       }
     }
 
+    //  "x IN (a)" to "x = a"
+    if ( list.size()==1 ) {
+      return new Call(Operators.EQUAL, value, list.get(0)); 
+    }
+    
     // Sort list on cost
     list.sort(Comparator.comparing(IExpression::getCost));
 

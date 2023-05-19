@@ -48,6 +48,9 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')"); 
     
+    // Normalize IN list with single element to comparison
+    optimize("FIELD_STRING in ('1','1',NULL)", "'1'=FIELD_STRING");
+    
     // Value in the expression list
     optimize("FIELD_INTEGER in (1,2,FIELD_INTEGER)","NULL OR FIELD_INTEGER IS NOT NULL");
     optimize("FIELD_STRING in ('XX',FIELD_STRING,'ZZ')","NULL OR FIELD_STRING IS NOT NULL");
@@ -61,7 +64,7 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
     optimize("FIELD_STRING LIKE '%Hello%'", "CONTAINS(FIELD_STRING,'Hello')");
   }
-
+  
   @Test
   public void testSimplifyExtract() throws Exception {
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
@@ -86,17 +89,18 @@ public class OptimizerTest extends ExpressionTest {
     optimizeTrue("not not true");
     optimizeFalse("not not false");
     optimize("NOT(NOT(FIELD_BOOLEAN))", "FIELD_BOOLEAN");
-    optimize("not(FIELD_INTEGER>5)", "5>=FIELD_INTEGER");
-    optimize("not(FIELD_INTEGER>=5)", "5>FIELD_INTEGER");
-    optimize("not(FIELD_INTEGER<5)", "5<=FIELD_INTEGER");
-    optimize("not(FIELD_INTEGER<=5)", "5<FIELD_INTEGER");
+    optimize("NOT(FIELD_INTEGER>5)", "5>=FIELD_INTEGER");
+    optimize("NOT(FIELD_INTEGER>=5)", "5>FIELD_INTEGER");
+    optimize("NOT(FIELD_INTEGER<5)", "5<=FIELD_INTEGER");
+    optimize("NOT(FIELD_INTEGER<=5)", "5<FIELD_INTEGER");
     optimize("NOT (FIELD_BOOLEAN IS TRUE)", "FIELD_BOOLEAN IS NOT TRUE");
     optimize("NOT (FIELD_BOOLEAN IS NOT TRUE)", "FIELD_BOOLEAN IS TRUE");
     optimize("NOT (FIELD_BOOLEAN IS FALSE)", "FIELD_BOOLEAN IS NOT FALSE");
     optimize("NOT (FIELD_BOOLEAN IS NOT FALSE)", "FIELD_BOOLEAN IS FALSE");
     optimize("NOT (FIELD_BOOLEAN IS NOT NULL)", "FIELD_BOOLEAN IS NULL");
     optimize("NOT (FIELD_BOOLEAN IS NULL)", "FIELD_BOOLEAN IS NOT NULL");
-        
+    optimize("NOT (FIELD_BOOLEAN IS DISTINCT FROM NULL_BOOLEAN)", "FIELD_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN");
+    optimize("NOT (FIELD_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN)", "FIELD_BOOLEAN IS DISTINCT FROM NULL_BOOLEAN");
     //optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
   }
   
@@ -185,7 +189,12 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_STRING!=FIELD_STRING","NULL AND FIELD_STRING IS NULL");
     optimize("FIELD_STRING>FIELD_STRING","NULL AND FIELD_STRING IS NULL");
     optimize("FIELD_STRING<FIELD_STRING","NULL AND FIELD_STRING IS NULL");
-        
+
+    // The DISTINCT predicate is a verbose way of NULL safe comparisons
+    optimize("FIELD_STRING IS DISTINCT FROM NULL","FIELD_STRING IS NOT NULL");
+    optimize("NULL IS DISTINCT FROM FIELD_STRING","FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING IS NOT DISTINCT FROM NULL","FIELD_STRING IS NULL");
+    optimize("NULL IS NOT DISTINCT FROM FIELD_STRING","FIELD_STRING IS NULL");
   }
   
   @Test

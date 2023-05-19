@@ -16,10 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -45,6 +49,23 @@ public class IsNotDistinctFromOperator extends Operator {
     return Converter.compare(v0, v1) == 0;
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+    
+    // The DISTINCT predicate is a verbose way of NULL safe comparisons.
+    // If one of the operands is NULL, then it can be simplified to the NULL predicate. 
+    if ( left==Literal.NULL ) {
+      return new Call(Operators.IS_NULL, right);
+    }
+    if ( right==Literal.NULL ) {
+      return new Call(Operators.IS_NULL, left);
+    }
+    
+    return call;
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

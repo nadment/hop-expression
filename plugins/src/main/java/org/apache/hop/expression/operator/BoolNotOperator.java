@@ -45,7 +45,6 @@ public class BoolNotOperator extends Operator {
     super("BOOLNOT", "NOT", 150, false, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
         OperatorCategory.LOGICAL, "/docs/boolnot.html");
   }
-
   
   /**
    * Simplifies by removing unnecessary `Not` operator
@@ -99,7 +98,15 @@ public class BoolNotOperator extends Operator {
     if (operand.is(Operators.IS_NOT_NULL)) {
       return new Call(Operators.IS_NULL, operand.asCall().getOperands());
     }
-
+    // NOT(x IS NOT DISTINCT FROM y) => x IS DISTINCT FROM y
+    if (operand.is(Operators.IS_NOT_DISTINCT_FROM)) {
+      return new Call(Operators.IS_DISTINCT_FROM, operand.asCall().getOperands());
+    }
+    // NOT(x IS DISTINCT FROM y) => x IS NOT DISTINCT FROM y
+    if (operand.is(Operators.IS_DISTINCT_FROM)) {
+      return new Call(Operators.IS_NOT_DISTINCT_FROM, operand.asCall().getOperands());
+    }
+    
     return call;
   }
   
