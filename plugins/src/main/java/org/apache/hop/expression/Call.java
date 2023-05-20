@@ -279,7 +279,7 @@ public final class Call implements IExpression {
       }
       
       throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-          DataName.of(value), DataName.of(clazz));
+          DataName.from(value), DataName.from(clazz));
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());

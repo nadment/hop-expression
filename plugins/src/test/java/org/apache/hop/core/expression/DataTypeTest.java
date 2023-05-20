@@ -40,50 +40,51 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void dataName() throws Exception {
-    assertEquals(DataName.UNKNOWN, DataName.lookup("UNKNOWN"));    
-    assertEquals(DataName.UNKNOWN, DataName.lookup("NOP"));
-    assertEquals(DataName.UNKNOWN, DataName.of(null));
-    assertEquals(DataName.UNKNOWN, DataName.of(new Date()));    
-    assertEquals(DataName.UNKNOWN, DataName.of(Void.class));
-    assertEquals(DataName.UNKNOWN, DataName.of(Float.class));
+    assertEquals(DataName.UNKNOWN, DataName.of("UNKNOWN"));    
+    assertEquals(DataName.UNKNOWN, DataName.from(null));
+    assertEquals(DataName.UNKNOWN, DataName.from(new Date()));    
+    assertEquals(DataName.UNKNOWN, DataName.from(Void.class));
+    assertEquals(DataName.UNKNOWN, DataName.from(Float.class));
     
-    assertEquals(DataName.BOOLEAN, DataName.lookup("BOOLEAN"));    
-    assertEquals(DataName.BOOLEAN, DataName.lookup("Boolean"));
-    assertEquals(DataName.BOOLEAN, DataName.of(Boolean.class));
-    assertEquals(DataName.BOOLEAN, DataName.of(true));
+    assertEquals(DataName.BOOLEAN, DataName.of("BOOLEAN"));    
+    assertEquals(DataName.BOOLEAN, DataName.of("Boolean"));
+    assertEquals(DataName.BOOLEAN, DataName.from(Boolean.class));
+    assertEquals(DataName.BOOLEAN, DataName.from(true));
     
-    assertEquals(DataName.STRING, DataName.lookup("STRING"));
-    assertEquals(DataName.STRING, DataName.lookup("String"));
-    assertEquals(DataName.STRING, DataName.of(String.class));
-    assertEquals(DataName.STRING, DataName.of("test"));
+    assertEquals(DataName.STRING, DataName.of("STRING"));
+    assertEquals(DataName.STRING, DataName.of("String"));
+    assertEquals(DataName.STRING, DataName.from(String.class));
+    assertEquals(DataName.STRING, DataName.from("test"));
     
-    assertEquals(DataName.DATE, DataName.lookup("DATE"));
-    assertEquals(DataName.DATE, DataName.of(ZonedDateTime.class));
-    assertEquals(DataName.DATE, DataName.of(ZonedDateTime.now()));  
+    assertEquals(DataName.DATE, DataName.of("DATE"));
+    assertEquals(DataName.DATE, DataName.from(ZonedDateTime.class));
+    assertEquals(DataName.DATE, DataName.from(ZonedDateTime.now()));  
     
-    assertEquals(DataName.NUMBER, DataName.lookup("NUMBER"));
-    assertEquals(DataName.NUMBER, DataName.of(Double.class));
-    assertEquals(DataName.NUMBER, DataName.of(1D));
+    assertEquals(DataName.NUMBER, DataName.of("NUMBER"));
+    assertEquals(DataName.NUMBER, DataName.from(Double.class));
+    assertEquals(DataName.NUMBER, DataName.from(1D));
     
-    assertEquals(DataName.BIGNUMBER, DataName.lookup("BIGNUMBER"));
-    assertEquals(DataName.BIGNUMBER, DataName.of(BigDecimal.class));
-    assertEquals(DataName.BIGNUMBER, DataName.of(BigDecimal.ONE));
+    assertEquals(DataName.BIGNUMBER, DataName.of("BIGNUMBER"));
+    assertEquals(DataName.BIGNUMBER, DataName.from(BigDecimal.class));
+    assertEquals(DataName.BIGNUMBER, DataName.from(BigDecimal.ONE));
     
-    assertEquals(DataName.BINARY, DataName.lookup("BINARY"));
-    assertEquals(DataName.BINARY, DataName.of(byte[].class));
-    assertEquals(DataName.BINARY, DataName.of(new byte[] {0x78}));
+    assertEquals(DataName.BINARY, DataName.of("BINARY"));
+    assertEquals(DataName.BINARY, DataName.from(byte[].class));
+    assertEquals(DataName.BINARY, DataName.from(new byte[] {0x78}));
     
-    assertEquals(DataName.JSON, DataName.lookup("Json"));
-    assertEquals(DataName.JSON, DataName.of(JsonNode.class));
-    assertEquals(DataName.JSON, DataName.of(Converter.parseJson("{\"name\":\"Smith\"}")));
+    assertEquals(DataName.JSON, DataName.of("Json"));
+    assertEquals(DataName.JSON, DataName.from(JsonNode.class));
+    assertEquals(DataName.JSON, DataName.from(Converter.parseJson("{\"name\":\"Smith\"}")));
     
-    assertEquals(DataName.INTEGER, DataName.lookup("INTEGER"));
-    assertEquals(DataName.INTEGER, DataName.of(Long.class));
-    assertEquals(DataName.INTEGER, DataName.of(1L));
+    assertEquals(DataName.INTEGER, DataName.of("INTEGER"));
+    assertEquals(DataName.INTEGER, DataName.from(Long.class));
+    assertEquals(DataName.INTEGER, DataName.from(1L));
     
-    assertEquals(DataName.TIMEUNIT, DataName.lookup("TIMEUNIT"));
-    assertEquals(DataName.TIMEUNIT, DataName.of(TimeUnit.class));
-    assertEquals(DataName.TIMEUNIT, DataName.of(TimeUnit.CENTURY));
+    assertEquals(DataName.TIMEUNIT, DataName.of("TIMEUNIT"));
+    assertEquals(DataName.TIMEUNIT, DataName.from(TimeUnit.class));
+    assertEquals(DataName.TIMEUNIT, DataName.from(TimeUnit.CENTURY));
+    
+    assertNull(DataName.of("NOP"));
   }
 
   @Test

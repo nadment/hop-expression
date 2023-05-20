@@ -1054,18 +1054,18 @@ public class ExpressionBuilder {
   }
 
   private Literal parseLiteralTimeUnit(Token token) throws ParseException {
-    try {
-      TimeUnit unit = TimeUnit.of(token.text());
-      return Literal.of(unit);
-    } catch (RuntimeException e) {
-      throw new ParseException(ExpressionError.INVALID_TIMEUNIT.message(token.text()),
-          token.start());
-    }
+     TimeUnit unit = TimeUnit.of(token.text());
+     
+     if ( unit==null) {
+       throw new ParseException(ExpressionError.INVALID_TIMEUNIT.message(token.text()),
+           token.start());
+     }     
+     return Literal.of(unit);
   }
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
     try {
-      DataName name = DataName.valueOf(token.text().toUpperCase());
+      DataName name = DataName.of(token.text());
       int precision = name.getMaxPrecision();
       int scale = 0;
       
@@ -1405,11 +1405,11 @@ public class ExpressionBuilder {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (DataName.exist(name)) {
+          if (DataName.of(name)!=null) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 
-          if (TimeUnit.exist(name)) {
+          if (TimeUnit.of(name)!=null) {
             return new Token(Id.LITERAL_TIMEUNIT, start, position, name);
           }
 

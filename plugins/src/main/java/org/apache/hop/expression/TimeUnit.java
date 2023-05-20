@@ -15,8 +15,9 @@
 package org.apache.hop.expression;
 
 /**
- * A time unit can be used with functions such as EXTRACT, FIRST_DAY...
- * It describes a part of a date / datetime value
+ * Enumeration of time units.
+ * <br>
+ * A time unit can be used with functions such as {@code EXTRACT}, {@code FIRST_DAY}...
  */
 public enum TimeUnit {
   /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
@@ -114,12 +115,10 @@ public enum TimeUnit {
   }
 
   /**
-   * Create date part for the given name or throws exception if not exist.
-   * <p>
-   * This method ignore case and search alias too
+   * Returns a {@link TimeUnit} with a given name or alias (ignore case).
    *
-   * @param name
-   * @return DatePart
+   * @param name The name of the time unit
+   * @return Time unit, or null if not valid
    */
   public static TimeUnit of(final String name) {
     for (TimeUnit unit : TimeUnit.values()) {
@@ -134,26 +133,6 @@ public enum TimeUnit {
       }
     }
 
-    throw new IllegalArgumentException(ExpressionError.INVALID_TIMEUNIT.message(name));
-  }
-
-  /**
-   * Check if date part exist.
-   * 
-   * @param name the name to check
-   * @return
-   */
-  public static boolean exist(final String name) {
-    for (TimeUnit unit : TimeUnit.values()) {
-      if (unit.name().equalsIgnoreCase(name)) {
-        return true;
-      }
-      for (String alias : unit.alias) {
-        if (alias.equalsIgnoreCase(name)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return null;
   }
 }

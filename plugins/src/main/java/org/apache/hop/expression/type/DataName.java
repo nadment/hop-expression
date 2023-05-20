@@ -110,13 +110,6 @@ public enum DataName {
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(DataName type) {
-    return this.family.isSameFamily(type.getFamily());
-  }
-
-  /**
-   * Returns whether type are in same type family.
-   */
   public boolean isSameFamily(DataFamily family) {
     return this.family.isSameFamily(family);
   }
@@ -149,27 +142,29 @@ public enum DataName {
         precision ? (scale ? PrecScale.YES_YES : PrecScale.YES_NO) : (scale ? 0 : PrecScale.NO_NO);
     return (signature & mask) != 0;
   }
-
+  
   /**
-   * Looks up a data name from its name.
+   * Returns a {@link DataName} with a given name (ignore case).
    *
-   * @return Type name, or 'UNKNOWN' if not found
+   * @param name The name of the data name
+   * @return data name, or null if not valid
    */
-  public static DataName lookup(final String name) {
+  public static DataName of(final String name) {
     for (DataName type : DataName.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
     }
-    return UNKNOWN;
+    return null;
   }
 
+  
   /**
    * Search a data name for a value or a java class.
    *
    * @return The {@link DataName}, 'UNKNOWN' if not found
    */
-  public static DataName of(final Object value) {
+  public static DataName from(final Object value) {
     if (value == null)
       return UNKNOWN;
     
@@ -189,21 +184,6 @@ public enum DataName {
       }
     }
     return UNKNOWN;
-  }
-
-  /**
-   * Check if data type exist.
-   * 
-   * @param name the name to check
-   * @return
-   */
-  public static boolean exist(final String name) {
-    for (DataName value : DataName.values()) {
-      if (value.name().equalsIgnoreCase(name)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public int getMaxPrecision() {

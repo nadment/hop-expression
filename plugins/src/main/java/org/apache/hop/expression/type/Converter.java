@@ -167,7 +167,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.of(value), type));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), type));
   }
 
   public static final BigDecimal parseBigNumber(final String str) {
@@ -430,7 +430,7 @@ public class Converter {
       return parseNumber((String) value);
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.NUMBER));
+        DataName.from(value), DataName.NUMBER));
   }
 
   /**
@@ -469,7 +469,7 @@ public class Converter {
       return parseBigNumber((String) value);
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.BIGNUMBER));
+        DataName.from(value), DataName.BIGNUMBER));
   }
 
   /**
@@ -499,7 +499,7 @@ public class Converter {
     // }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.INTEGER));
+        DataName.from(value), DataName.INTEGER));
   }
 
   /**
@@ -544,7 +544,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.DATE));
+        DataName.from(value), DataName.DATE));
   }
   
   
@@ -556,7 +556,7 @@ public class Converter {
       return Date.from(((ZonedDateTime) value).toInstant());
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.DATE));
+        DataName.from(value), DataName.DATE));
   }
 
   /**
@@ -576,7 +576,7 @@ public class Converter {
       return ((Number) value).intValue() != 0;
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.BOOLEAN));
+        DataName.from(value), DataName.BOOLEAN));
   }
 
   /**
@@ -597,7 +597,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.BINARY));
+        DataName.from(value), DataName.BINARY));
   }
 
   /**
@@ -618,7 +618,7 @@ public class Converter {
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.of(value), DataName.JSON));
+        DataName.from(value), DataName.JSON));
   }
 
 }

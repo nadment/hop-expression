@@ -382,7 +382,7 @@ public final class Identifier implements IExpression {
   public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionBuilder.isReservedWord(name)
-        || FunctionRegistry.isFunction(name) || DataName.exist(name) || TimeUnit.exist(name)) {
+        || FunctionRegistry.isFunction(name) || DataName.of(name)!=null || TimeUnit.of(name)!=null) {
       writer.append('\"');
       writer.append(name);
       writer.append('\"');

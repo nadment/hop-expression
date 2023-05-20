@@ -249,7 +249,7 @@ public final class Literal implements IExpression {
     }
 
     throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-        DataName.of(value), DataName.of(clazz));
+        DataName.from(value), DataName.from(clazz));
   }
 
   @Override

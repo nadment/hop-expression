@@ -57,20 +57,18 @@ public final class Pair<T1 extends Object, T2 extends Object> {
     return "<" + left + ", " + right + ">";
   }
 
+  @Override public int hashCode() {
+    int l = (left == null) ? 0 : left.hashCode();
+    int r = (right == null) ? 0 : right.hashCode();
+    return ((l << 4) | l) ^ r;
+  }
+
+  
   @Override
   public boolean equals(Object obj) {
     return this == obj
         || (obj instanceof Pair)
-        && Objects.equals(this.left, ((Pair) obj).left)
-        && Objects.equals(this.right, ((Pair) obj).right);
+        && Objects.equals(this.left, ((Pair<?, ?>) obj).left)
+        && Objects.equals(this.right, ((Pair<?, ?>) obj).right);
   }
-
-
-  @Override
-  public int hashCode() {
-    int keyHash = left == null ? 0 : left.hashCode();
-    int valueHash = right == null ? 0 : right.hashCode();
-    return keyHash ^ valueHash;
-  }
-
 }

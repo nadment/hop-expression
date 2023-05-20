@@ -17,8 +17,7 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import org.apache.hop.expression.TimeUnit;
 import org.junit.Test;
 
@@ -42,12 +41,6 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.ISOYEAR, TimeUnit.of("IsoYEAR"));
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
     assertNotEquals(TimeUnit.of("HOUR"), null);
-    assertThrows(IllegalArgumentException.class, () -> TimeUnit.of("NOP"));
+    assertNull(TimeUnit.of("NOP"));
   }
-  
-  @Test
-  public void exist() throws Exception {
-    assertTrue(TimeUnit.exist("MONTH"));
-    assertTrue(TimeUnit.exist("DAYOFYEAR"));
-  } 
 }
