@@ -39,13 +39,12 @@ import java.math.BigDecimal;
 public class MultiplyOperator extends Operator {
 
   public MultiplyOperator() {
-    super("MULTIPLY", "*", 50, true, ReturnTypes.LEAST_RESTRICTIVE,
-        OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
+    super("MULTIPLY", "*", 50, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+        OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -56,25 +55,25 @@ public class MultiplyOperator extends Operator {
 
     // Simplify arithmetic "(-A) * (-B)" to "A * B"
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
-      return new Call(Operators.MULTIPLY, left.asCall().getOperand(0), right.asCall().getOperand(0));
+      return new Call(Operators.MULTIPLY, left.asCall().getOperand(0),
+          right.asCall().getOperand(0));
     }
 
     // Simplify arithmetic "A * A" to "SQUARE(A)"
     if (left.equals(right)) {
       return new Call(FunctionRegistry.getFunction("SQUARE"), left);
-    }    
-    
+    }
+
     // Pull up literal "1 * (1 * A)" to "(1 * 1) * A
-    if (left.isConstant() && right.is(Operators.MULTIPLY)) {      
-      if (right.asCall().getOperand(0).isConstant()) {
-        IExpression operation = new Call(Operators.MULTIPLY, left, right.asCall().getOperand(0));
-        return new Call(Operators.MULTIPLY, operation, right.asCall().getOperand(1));
-      }
+    if (left.isConstant() && right.is(Operators.MULTIPLY)
+        && right.asCall().getOperand(0).isConstant()) {
+      IExpression operation = new Call(Operators.MULTIPLY, left, right.asCall().getOperand(0));
+      return new Call(Operators.MULTIPLY, operation, right.asCall().getOperand(1));
     }
 
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {

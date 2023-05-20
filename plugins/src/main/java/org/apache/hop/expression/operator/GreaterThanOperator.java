@@ -66,10 +66,9 @@ public class GreaterThanOperator extends Operator {
     }
 
     // Normalize the order of identifier by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
-      if (left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-        return new Call(Operators.LESS_THAN, right, left);
-      }
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+      return new Call(Operators.LESS_THAN, right, left);
     }
 
     // Simplify "x > x" to "NULL AND x IS NULL"
@@ -78,20 +77,16 @@ public class GreaterThanOperator extends Operator {
     }
 
     // Simplify "3 > X+1" to "3-1 > X"
-    if (left.isConstant() && right.is(Operators.ADD)) {
-      if (right.asCall().getOperand(0).isConstant()) {
-        return new Call(call.getOperator(),
-            new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
-            right.asCall().getOperand(1));
-      }
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+      return new Call(call.getOperator(),
+          new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
+          right.asCall().getOperand(1));
     }
 
     // Simplify "X+1 > 3" to "X > 3-1"
-    if (left.is(Operators.ADD) && right.isConstant()) {
-      if (left.asCall().getOperand(0).isConstant()) {
-        return new Call(call.getOperator(), left.asCall().getOperand(1),
-            new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));
-      }
+    if (left.is(Operators.ADD) && right.isConstant() && left.asCall().getOperand(0).isConstant()) {
+      return new Call(call.getOperator(), left.asCall().getOperand(1),
+          new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));
     }
 
     return call;

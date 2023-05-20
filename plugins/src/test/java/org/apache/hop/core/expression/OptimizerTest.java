@@ -164,6 +164,12 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_INTEGER>1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");    
     // "x > a OR x = a" to "x >= a"
     optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "1<=FIELD_INTEGER");
+    
+    // Simplify "X=1 OR X=2 OR X=3" to X IN (1,2,3)
+    optimize("FIELD_INTEGER=1 OR FIELD_INTEGER=2 OR FIELD_INTEGER=3 ", "FIELD_INTEGER IN (3,1,2)");
+    optimize("FIELD_INTEGER=1 OR FIELD_INTEGER in (2,3)", "FIELD_INTEGER IN (1,2,3)");
+    optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (1,2,3,4)");
+    optimize("FIELD_STRING='1' OR NULL_INTEGER in (1,2)", "'1'=FIELD_STRING OR NULL_INTEGER IN (1,2)");
   }
   
   @Test
@@ -322,6 +328,9 @@ public class OptimizerTest extends ExpressionTest {
   
   @Test
   public void testSimplifyCoalesce() throws Exception {
+    optimize("COALESCE(NULL)", "NULL");
+    optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
+    
     // Duplicate coalesce
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER)");

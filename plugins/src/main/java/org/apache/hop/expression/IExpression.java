@@ -68,7 +68,7 @@ public interface IExpression {
    */
   public default boolean isConstant() {
     return false;
-  };
+  }
   
 //  /**
 //   * Check if this expression will always return the TRUE value.
@@ -143,7 +143,7 @@ public interface IExpression {
   public abstract <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor);
 
   /**
-   * Casts and returns this expression as a {@code Call} if it is of kind {@code CALL}
+   * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
    *
    * @return this instance cast to a class
    */  
@@ -152,7 +152,7 @@ public interface IExpression {
   } 
 
   /**
-   * Casts and returns this expression as a {@code Literal} if it is of kind {@code LITERAL}
+   * Casts and returns this expression as a {@link Literal} if it is of kind {@code LITERAL}
    *
    * @return this instance cast to a class
    */
@@ -161,11 +161,21 @@ public interface IExpression {
   } 
 
   /**
-   * Casts and returns this expression as a {@code Identifier} if it is of kind {@code IDENTIFIER}
+   * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
    *
    * @return this instance cast to a class
    */  
   public default Identifier asIdentifier() {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+  } 
+  
+
+  /**
+   * Casts and returns this expression as a {@link Tuple} if it is of kind {@code TUPLE}
+   *
+   * @return this instance cast to a class
+   */  
+  public default Tuple asTuple() {
     throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
   } 
   

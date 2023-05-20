@@ -32,7 +32,8 @@ public class TryCastFunction extends CastFunction {
   public TryCastFunction() {
     super("TRY_CAST");
   }
-  
+
+  @Override
   protected boolean isTry() {
     return true;  
   }

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
@@ -36,6 +37,9 @@ public class TupleTest extends ExpressionTest {
     Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
     Tuple tuple4 = new Tuple(Literal.NULL, Literal.ZERO, Literal.NULL);
     Tuple tuple5 = new Tuple(Literal.TRUE, Literal.FALSE);
+    Tuple tuple6 = new Tuple(Literal.of("A"), Literal.of("B"));
+    Tuple tuple7 = new Tuple(Literal.of("A"), Literal.of("B"));
+    Tuple tuple8 = new Tuple(Literal.of("A"), new Identifier("B"));
     
     assertEquals(Kind.TUPLE, tuple1.getKind());
     assertEquals(DataType.INTEGER, tuple1.getType());
@@ -44,9 +48,13 @@ public class TupleTest extends ExpressionTest {
     assertEquals(DataType.BOOLEAN, tuple5.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
+    assertTrue(tuple1.isConstant());
+    assertFalse(tuple8.isConstant());
     assertEquals(tuple1, tuple2);
+    assertEquals(tuple6, tuple7);
     assertNotEquals(tuple1, null);
     assertNotEquals(tuple1, tuple3);
+    assertNotEquals(tuple7, tuple8);
     assertEquals(tuple1.hashCode(), tuple2.hashCode());    
     assertEquals("(1,0,NULL)", tuple1.toString());
 

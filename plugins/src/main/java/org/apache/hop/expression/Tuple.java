@@ -190,6 +190,11 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   @Override
+  public Tuple asTuple() {
+    return this;
+  }
+  
+  @Override
   public boolean isConstant() {
     for (IExpression expression : values) {
       if (!expression.isConstant()) {

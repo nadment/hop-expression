@@ -45,8 +45,7 @@ public class AddOperator extends Operator {
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -56,22 +55,20 @@ public class AddOperator extends Operator {
     }
 
     // Simplify arithmetic "A + (-B)" => "A - B"
-    if (right.is(Operators.NEGATIVE)) {      
+    if (right.is(Operators.NEGATIVE)) {
       return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
     }
-    
+
     // Pull up literal
-    if (left.isConstant() && right.is(Operators.ADD)) {
-      if (right.asCall().getOperand(0).isConstant()) {
-        IExpression expression = new Call(Operators.ADD, left, right.asCall().getOperand(0));
-        Literal literal = Literal.of(expression.getValue(context));
-        return new Call(Operators.ADD, literal, right.asCall().getOperand(1));
-      }
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
+      IExpression expression = new Call(Operators.ADD, left, right.asCall().getOperand(0));
+      Literal literal = Literal.of(expression.getValue(context));
+      return new Call(Operators.ADD, literal, right.asCall().getOperand(1));
     }
 
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Object left = operands[0].getValue(context);

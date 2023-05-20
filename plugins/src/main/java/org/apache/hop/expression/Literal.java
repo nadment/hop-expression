@@ -294,7 +294,8 @@ public final class Literal implements IExpression {
     }
     return false;
   }
-
+  
+  @Override
   public Literal asLiteral() {
     return this;
   }
@@ -410,8 +411,9 @@ public final class Literal implements IExpression {
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {   
+    // Nothing to validate
   }
-
+  
   @Override
   public IExpression compile(final IExpressionContext context) throws ExpressionException {   
     return this;

@@ -28,6 +28,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 /**
  * Converts a string expression to a number value.
@@ -72,7 +73,7 @@ public class ToNumberFunction extends Function {
     return parse(value, format);
   }
   
-  protected  BigDecimal parse(final String value, final NumberFormat format) throws Exception {
+  protected  BigDecimal parse(final String value, final NumberFormat format) throws ParseException {
     return format.parse(value);
   }
 }

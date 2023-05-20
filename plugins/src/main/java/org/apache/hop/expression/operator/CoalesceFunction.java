@@ -27,6 +27,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -65,9 +66,7 @@ public class CoalesceFunction extends Function {
 
       // Flatten chained coalesce
       if (operand.is(call.getOperator())) {
-        for (IExpression o : operand.asCall().getOperands()) {
-          operands.add(o);
-        }       
+        operands.addAll(Arrays.asList(operand.asCall().getOperands()));
       }
       else {
         operands.add(operand);

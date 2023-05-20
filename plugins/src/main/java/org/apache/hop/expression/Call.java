@@ -117,7 +117,7 @@ public final class Call implements IExpression {
   public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
     try {
       Object value = operator.eval(context, operands);
-      
+
       if (clazz.isInstance(value)) {
         return clazz.cast(value);
       }
@@ -222,7 +222,7 @@ public final class Call implements IExpression {
 
         case ANY:
           // JSon function return type ANY
-          if ( value instanceof String ) {
+          if (value instanceof String) {
             if (clazz == Boolean.class) {
               return clazz.cast(Converter.parseBoolean((String) value));
             }
@@ -242,7 +242,7 @@ public final class Call implements IExpression {
               return clazz.cast(Converter.parseJson((String) value));
             }
           }
-          if ( value instanceof BigDecimal ) {
+          if (value instanceof BigDecimal) {
             if (clazz == Boolean.class) {
               return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
             }
@@ -256,7 +256,7 @@ public final class Call implements IExpression {
               return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
             }
           }
-          if ( value instanceof Boolean ) {
+          if (value instanceof Boolean) {
             if (clazz == String.class) {
               return clazz.cast(String.valueOf(value));
             }
@@ -270,14 +270,14 @@ public final class Call implements IExpression {
               return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
             }
           }
-          
+
           break;
         case DATE:
         case TIMEUNIT:
         case UNKNOWN:
           break;
       }
-      
+
       throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
           DataName.from(value), DataName.from(clazz));
     } catch (Exception e) {
@@ -292,11 +292,12 @@ public final class Call implements IExpression {
    * @param context The context against which the expression will be validated.
    * @param call Call
    */
+  @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
 
     // Validate all operands
     for (IExpression operand : operands) {
-        operand.validate(context);
+      operand.validate(context);
     }
 
     // Check the number of operands expected
@@ -315,22 +316,22 @@ public final class Call implements IExpression {
     if (!operandTypeChecker.checkOperandTypes(this)) {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
     }
-    
+
     inferenceType(context);
   }
-  
+
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
-    
+
     // Compile all operands
-    for (int i=0; i<operands.length;i++ ) {
+    for (int i = 0; i < operands.length; i++) {
       IExpression operand = operands[i];
-      
+
       // Some operand can be null
-      if ( operand!=null) {
+      if (operand != null) {
         this.operands[i] = operand.compile(context);
       }
     }
-    
+
     // If operator is deterministic and all operands are constant
     if (isConstant()) {
       try {
@@ -348,30 +349,29 @@ public final class Call implements IExpression {
         // Ignore and continue
       }
     }
-    
-    
+
     Call call = this;
-    
+
     // If operator is symmetrical reorganize operands
     if (operator.isSymmetrical()) {
       call = reorganizeSymmetrical();
     }
-    
+
     IExpression expression = call.getOperator().compile(context, call);
-    
+
     // Inference return type
-    if ( expression.is(Kind.CALL)) {
+    if (expression.is(Kind.CALL)) {
       call = (Call) expression;
       call.inferenceType(context);
     }
-    
+
     return expression;
   }
-  
+
   public void inferenceType(final IExpressionContext context) {
     this.type = this.operator.getReturnTypeInference().getReturnType(context, this);
-  } 
-  
+  }
+
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
@@ -381,12 +381,12 @@ public final class Call implements IExpression {
   public boolean is(final Operator other) {
     return operator.is(other);
   }
-  
+
   @Override
   public Call asCall() {
     return this;
-  } 
-  
+  }
+
   @Override
   public boolean equals(Object other) {
     if (other instanceof Call) {
@@ -414,7 +414,7 @@ public final class Call implements IExpression {
     return writer.toString();
   }
 
-  
+
   /**
    * Reorganize symmetrical operator
    * 
@@ -434,10 +434,9 @@ public final class Call implements IExpression {
     }
 
     // Normalize, order identifier by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)) {
-      if ( left.asIdentifier().getName().compareTo( right.asIdentifier().getName()) > 0) {
-        return new Call(operator, right, left);
-      }
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+      return new Call(operator, right, left);
     }
 
     if (right.is(operator)) {
@@ -450,10 +449,9 @@ public final class Call implements IExpression {
       }
 
       // Order identifier by name
-      if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)) {
-        if (left.asIdentifier().getName().compareTo(subLeft.asIdentifier().getName()) > 0) {
-          return new Call(operator, subLeft, new Call(operator, left, subRight));
-        }
+      if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)
+          && left.asIdentifier().getName().compareTo(subLeft.asIdentifier().getName()) > 0) {
+        return new Call(operator, subLeft, new Call(operator, left, subRight));
       }
     }
 
@@ -471,7 +469,7 @@ public final class Call implements IExpression {
         if (!operand.isConstant()) {
           return false;
         }
-      }      
+      }
       return true;
     }
     return false;

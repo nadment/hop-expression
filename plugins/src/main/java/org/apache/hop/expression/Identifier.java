@@ -359,6 +359,7 @@ public final class Identifier implements IExpression {
    * <li>Determine data type of a value in row.</li>
    * </ul>
    */
+  @Override
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
     IRowMeta rowMeta = context.getRowMeta();
 

@@ -267,7 +267,7 @@ public abstract class Operator implements Comparable<Operator> {
   }
   
   protected Stack<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
-    return getChainedOperands(call, new Stack<IExpression>(), predicate);
+    return getChainedOperands(call, new Stack<>(), predicate);
   }
   
   private Stack<IExpression> getChainedOperands(Call call, Stack<IExpression> operands, Predicate<IExpression> predicate) {   

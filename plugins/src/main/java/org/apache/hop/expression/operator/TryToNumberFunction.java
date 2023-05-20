@@ -20,6 +20,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 /**
  * Converts a string expression to a number value.
@@ -35,7 +36,7 @@ public class TryToNumberFunction extends ToNumberFunction {
   public BigDecimal parse(final String value, final NumberFormat format) {
     try {
       return format.parse(value);
-    } catch (Exception e) {
+    } catch (ParseException e) {
       return null;
     }
   }

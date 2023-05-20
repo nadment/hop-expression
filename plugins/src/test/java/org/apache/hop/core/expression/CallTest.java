@@ -15,6 +15,7 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Call;
@@ -22,6 +23,7 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.DataType;
 import org.junit.Test;
 
@@ -36,10 +38,15 @@ public class CallTest extends ExpressionTest {
     Call call4 = new Call(Operators.ADD, Literal.of(3), new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
     Call call5 = new Call(Operators.ADD, Literal.of(3), new Call(Operators.ADD, Literal.of(3), new Identifier("Field")));
     
+    Call call6 = new Call(Operators.IN, new Identifier("Field"), new Tuple(Literal.of(1), Literal.of(2)));
+    Call call7 = new Call(Operators.IN, new Identifier("Field"), new Tuple(Literal.of(1), Literal.of(2)));
+    
     assertEquals(Kind.CALL, call1.getKind());
     assertEquals(call1, call2);
     assertTrue(call1.is(Kind.CALL));
     assertTrue(call1.is(Operators.ADD));
+    assertTrue(call1.isConstant());
+    assertFalse(call4.isConstant());
     //assertEquals(call1.hashCode(), call2.hashCode()); 
     assertEquals(2, call1.getOperandCount());
     // Data type is unknown before validation
@@ -49,6 +56,7 @@ public class CallTest extends ExpressionTest {
     assertEquals("3+5", call1.toString());
     assertEquals(call1, call2);
     assertEquals(call4, call5);
+    assertEquals(call6, call7);
     assertNotEquals(call1, call3); 
   }
 }

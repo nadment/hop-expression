@@ -250,6 +250,8 @@ public class ExpressionBuilder {
             return new Call((not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
                 expression, parseLogicalNot());
           }
+          throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Operators.IS_DISTINCT_FROM),
+              this.getPosition());
         default:
           throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
               this.getPosition());

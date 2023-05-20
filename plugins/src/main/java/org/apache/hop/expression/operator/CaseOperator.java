@@ -91,19 +91,17 @@ public class CaseOperator extends Operator {
       //
       // When a searched CASE expression nests another CASE expression in its ELSE clause, that can
       // be flattened into the top level CASE expression.
-      if (elseTerm.is(Operators.CASE)) {
-        if (elseTerm.asCall().getOperand(0) == Literal.NULL) {
-          List<IExpression> whenOperands = new ArrayList<>();
-          whenTerm.forEach(whenOperands::add);
-          ((Tuple) elseTerm.asCall().getOperand(1)).forEach(whenOperands::add);
+      if (elseTerm.is(Operators.CASE) && elseTerm.asCall().getOperand(0) == Literal.NULL) {
+        List<IExpression> whenOperands = new ArrayList<>();
+        whenTerm.forEach(whenOperands::add);
+        elseTerm.asCall().getOperand(1).asTuple().forEach(whenOperands::add);
 
-          List<IExpression> thenOperands = new ArrayList<>();
-          thenTerm.forEach(thenOperands::add);
-          ((Tuple) elseTerm.asCall().getOperand(2)).forEach(thenOperands::add);
+        List<IExpression> thenOperands = new ArrayList<>();
+        thenTerm.forEach(thenOperands::add);
+        elseTerm.asCall().getOperand(2).asTuple().forEach(thenOperands::add);
 
-          return new Call(Operators.CASE, Literal.NULL, new Tuple(whenOperands),
-              new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
-        }
+        return new Call(Operators.CASE, Literal.NULL, new Tuple(whenOperands),
+            new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
       }
 
       // Search CASE expressions with one condition can be turned into COALESCE, NULLIF, NVL2
@@ -113,21 +111,23 @@ public class CaseOperator extends Operator {
         IExpression thenTerm0 = thenTerm.get(0);
 
         // "CASE WHEN x IS NULL THEN y ELSE x END" to "IFNULL(x, y)"
-        if (whenTerm0.is(Operators.IS_NULL) && whenTerm0.asCall().getOperand(0).equals(elseTerm) ) {
-          return new Call(FunctionRegistry.getFunction("IFNULL"),
-              whenTerm0.asCall().getOperand(0), thenTerm0);
+        if (whenTerm0.is(Operators.IS_NULL) && whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
+          return new Call(FunctionRegistry.getFunction("IFNULL"), whenTerm0.asCall().getOperand(0),
+              thenTerm0);
         }
 
         // "CASE WHEN x = y THEN NULL ELSE x END" to "NULLIF(x, y)"
         if (whenTerm0.is(Operators.EQUAL) && thenTerm0 == Literal.NULL) {
-          
-          if ( whenTerm0.asCall().getOperand(0).equals(elseTerm)) {          
-            return new Call(FunctionRegistry.getFunction("NULLIF"), whenTerm0.asCall().getOperand(0), whenTerm0.asCall().getOperand(1));
+
+          if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
+            return new Call(FunctionRegistry.getFunction("NULLIF"),
+                whenTerm0.asCall().getOperand(0), whenTerm0.asCall().getOperand(1));
           }
 
-          if ( whenTerm0.asCall().getOperand(1).equals(elseTerm)) {          
-            return new Call(FunctionRegistry.getFunction("NULLIF"), whenTerm0.asCall().getOperand(1), whenTerm0.asCall().getOperand(0));
-          }         
+          if (whenTerm0.asCall().getOperand(1).equals(elseTerm)) {
+            return new Call(FunctionRegistry.getFunction("NULLIF"),
+                whenTerm0.asCall().getOperand(1), whenTerm0.asCall().getOperand(0));
+          }
         }
 
         // "CASE WHEN x IS NOT NULL THEN y ELSE z END" to "NVL2(x, y, z)"
