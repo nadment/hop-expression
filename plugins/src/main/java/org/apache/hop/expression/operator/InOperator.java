@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
@@ -67,6 +68,11 @@ public class InOperator extends Operator {
 
     IExpression value = call.getOperand(0);
     Tuple tuple = (Tuple) call.getOperand(1);
+    
+    // NULL left side expression is always NULL
+    if ( value==Literal.NULL ) { 
+      return Literal.NULL;
+    }
     
     // Remove null and duplicate element in list
     for (IExpression expression : tuple) {

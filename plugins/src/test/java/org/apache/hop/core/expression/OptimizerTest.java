@@ -48,6 +48,9 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')"); 
     
+    // IN with a NULL left side expression is always NULL
+    optimize("NULL in ('1','2','1',NULL,null)", "NULL");
+    
     // Normalize IN list with single element to comparison
     optimize("FIELD_STRING in ('1','1',NULL)", "'1'=FIELD_STRING");
     
