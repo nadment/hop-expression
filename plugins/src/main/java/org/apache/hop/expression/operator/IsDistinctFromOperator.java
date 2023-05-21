@@ -43,16 +43,21 @@ public class IsDistinctFromOperator extends Operator {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object v0 = operands[0].getValue(context);
-    Object v1 = operands[1].getValue(context);
+    Object left = operands[0].getValue(context);
+    Object right = operands[1].getValue(context);
 
-    return Converter.compare(v0, v1) != 0;
+    return Converter.compare(left, right) != 0;
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
+    
+    // Simplify same expressions.
+    if (left.equals(right)) {
+      return Literal.FALSE;
+    }  
     
     // The DISTINCT predicate is a verbose way of NULL safe comparisons.
     // If one of the operands is NULL, then it can be simplified to the NULL predicate. 

@@ -72,6 +72,11 @@ public class LessThanOperator extends Operator {
       return new Call(Operators.GREATER_THAN, right, left);
     }
 
+    // Simplify "x < NULL" to "NULL"
+    if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
+      return Literal.NULL;
+    }  
+    
     // Simplify "x < x" to "NULL AND x IS NULL"
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));

@@ -14,6 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.hop.expression.Literal;
 import org.junit.Test;
 
 public class OptimizerTest extends ExpressionTest {
@@ -42,6 +43,23 @@ public class OptimizerTest extends ExpressionTest {
   public void testChainedCast() throws Exception {
     //optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS BIGNUMBER)", "123456");
   }
+
+  @Test
+  public void testSimplifyIsDistinctFrom() throws Exception {
+    optimizeTrue("FIELD_INTEGER IS NOT DISTINCT FROM FIELD_INTEGER");
+    optimizeFalse("FIELD_INTEGER IS DISTINCT FROM FIELD_INTEGER");
+    optimize("NULL_INTEGER IS DISTINCT FROM NULL","NULL_INTEGER IS NOT NULL");
+    optimize("NULL_INTEGER IS NOT DISTINCT FROM NULL","NULL_INTEGER IS NULL");
+  }
+  
+  @Test
+  public void testSimplifyEqualNull() throws Exception {
+    optimizeTrue("EQUAL_NULL(FIELD_INTEGER,FIELD_INTEGER)");
+
+    optimize("EQUAL_NULL(FIELD_INTEGER,NULL)","FIELD_INTEGER IS NULL");
+    optimize("EQUAL_NULL(NULL,FIELD_INTEGER)","FIELD_INTEGER IS NULL");
+  }
+  
   
   @Test
   public void testSimplifyIn() throws Exception {
@@ -182,7 +200,7 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN >= TRUE", "FIELD_BOOLEAN IS TRUE");
     optimize("TRUE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
     optimize("FIELD_BOOLEAN <= TRUE", "FIELD_BOOLEAN IS TRUE");
-    optimize("TRUE <=FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
+    optimize("TRUE <= FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
     
     optimize("FIELD_BOOLEAN = FALSE", "FIELD_BOOLEAN IS FALSE");
     optimize("FALSE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
@@ -190,6 +208,12 @@ public class OptimizerTest extends ExpressionTest {
     optimize("FALSE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
     optimize("FIELD_BOOLEAN <= FALSE", "FIELD_BOOLEAN IS FALSE");
     optimize("FALSE <= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    
+    optimize("FIELD_STRING = NULL", "NULL");
+    optimize("FIELD_STRING > NULL", "NULL");
+    optimize("FIELD_STRING >= NULL", "NULL");
+    optimize("FIELD_STRING < NULL", "NULL");
+    optimize("FIELD_STRING <= NULL", "NULL");   
     
     // Simplify comparison with same term
     optimize("FIELD_STRING=FIELD_STRING","NULL OR FIELD_STRING IS NOT NULL");

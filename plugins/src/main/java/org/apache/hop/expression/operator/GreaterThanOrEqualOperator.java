@@ -70,12 +70,15 @@ public class GreaterThanOrEqualOperator extends Operator {
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(Operators.LESS_THAN_OR_EQUAL, right, left);
     }
-
+    
+    // Simplify "x >= NULL" to "NULL"
+    if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
+      return Literal.NULL;
+    }  
     // Simplify "x >= x" to "NULL OR x IS NOT NULL"
     if (left.equals(right)) {
       return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
     }
-
     // Simplify "x >= TRUE" to "x IS TRUE"
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, right);

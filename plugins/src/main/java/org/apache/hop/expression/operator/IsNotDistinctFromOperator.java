@@ -53,9 +53,14 @@ public class IsNotDistinctFromOperator extends Operator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
+        
+    // Simplify same expressions.
+    if (left.equals(right)) {
+      return Literal.TRUE;
+    }        
     
     // The DISTINCT predicate is a verbose way of NULL safe comparisons.
-    // If one of the operands is NULL, then it can be simplified to the NULL predicate. 
+    // If one of the operands is NULL, then it can be simplified to the IS NULL predicate. 
     if ( left==Literal.NULL ) {
       return new Call(Operators.IS_NULL, right);
     }

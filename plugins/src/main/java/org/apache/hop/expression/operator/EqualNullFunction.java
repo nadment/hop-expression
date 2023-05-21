@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -55,10 +56,21 @@ public class EqualNullFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    // Merge same expressions.
-    if (call.getOperand(0).equals(call.getOperand(1))) {
+    IExpression left = call.getOperand(0);
+    IExpression right = call.getOperand(1);
+    
+    // Simplify same expressions.
+    if (left.equals(right)) {
       return Literal.TRUE;
+    }        
+    // Simplify if one of the operands is NULL, then it can be simplified to the IS NULL predicate.
+    if ( left==Literal.NULL ) {
+      return new Call(Operators.IS_NULL, right);
     }
+    if ( right==Literal.NULL ) {
+      return new Call(Operators.IS_NULL, left);
+    }
+    
     return call;
   }
 }
