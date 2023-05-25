@@ -88,9 +88,9 @@ public class LikeOperator extends Operator {
         return call;
       }
 
-      // Optimize "x LIKE '%'" to "x = x"
+      // Optimize "x LIKE '%'" to "x IS NOT NULL"
       if ("%".equals(pattern)) {
-        return new Call(Operators.EQUAL, value, value);
+        return new Call(Operators.IS_NOT_NULL, value);
       }
 
       // Optimize the common case of FIELD LIKE '%foo%' to CONTAINS(FIELD,'foo')

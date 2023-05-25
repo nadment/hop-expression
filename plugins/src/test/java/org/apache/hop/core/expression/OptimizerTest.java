@@ -14,7 +14,6 @@
  */
 package org.apache.hop.core.expression;
 
-import org.apache.hop.expression.Literal;
 import org.junit.Test;
 
 public class OptimizerTest extends ExpressionTest {
@@ -79,7 +78,7 @@ public class OptimizerTest extends ExpressionTest {
 
   @Test
   public void testSimplifyLike() throws Exception {
-    optimize("FIELD_STRING LIKE '%'", "NULL OR FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING LIKE '%'", "FIELD_STRING IS NOT NULL");
     optimize("FIELD_STRING LIKE 'Hello'", "'Hello'=FIELD_STRING");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");
@@ -173,7 +172,8 @@ public class OptimizerTest extends ExpressionTest {
   @Test
   public void testSimplifyBoolOr() throws Exception {
     // Duplicate predicate
-    optimize("FIELD_BOOLEAN OR FIELD_BOOLEAN", "FIELD_BOOLEAN");  
+    optimize("FIELD_BOOLEAN OR FIELD_BOOLEAN", "FIELD_BOOLEAN");
+    optimize("FIELD_INTEGER=2 OR FIELD_INTEGER=2", "2=FIELD_INTEGER");  
 
     // "x < a OR x = a" to "x <= a"
     optimize("FIELD_INTEGER<1 OR FIELD_INTEGER=1", "1>=FIELD_INTEGER");
