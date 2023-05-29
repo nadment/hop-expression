@@ -309,7 +309,11 @@ public final class Literal implements IExpression {
 
   @Override
   public void unparse(StringWriter writer) {
-    switch (type.getName()) {
+    
+    if (value == null) {
+      writer.append("NULL");
+    }
+    else switch (type.getName()) {
       case STRING:
         writer.append('\'');
         String str = (String) value;
@@ -323,11 +327,7 @@ public final class Literal implements IExpression {
         writer.append('\'');
         break;
       case BOOLEAN:
-        if (value == null) {
-          writer.append("NULL");
-        } else {
-          writer.append(((boolean) value) ? "TRUE" : "FALSE");
-        }
+        writer.append(((boolean) value) ? "TRUE" : "FALSE");
         break;
       case BINARY:
         writer.append("0x");
@@ -390,11 +390,7 @@ public final class Literal implements IExpression {
         }
         break;
       case UNKNOWN:
-        if (value == null) {
-          writer.append("NULL");
-        } else {
-          writer.append(String.valueOf(value));
-        }
+        writer.append(String.valueOf(value));
         break;
       default:
         writer.append(Converter.coerceToString(value));

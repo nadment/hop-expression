@@ -58,14 +58,18 @@ public class BoolAndOperator extends Operator {
     // Simplify trivial FALSE
     if (call.getOperand(0).isConstant()) {
       Boolean value = call.getOperand(0).getValue(context, Boolean.class);
-      if (value == Boolean.FALSE)
+      if (value == Boolean.FALSE) {
         left = false;
+      }
     }
     if (call.getOperand(1).isConstant()) {
       Boolean value = call.getOperand(1).getValue(context, Boolean.class);
-      if (value == Boolean.FALSE)
+      if (value == Boolean.FALSE) {
         right = false;
+      }
     }
+    
+    // FALSE as soon as any operand is FALSE   
     // FALSE AND x => FALSE
     // x AND FALSE => FALSE
     if (!left || !right) {
@@ -175,13 +179,18 @@ public class BoolAndOperator extends Operator {
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Boolean left = operands[0].getValue(context, Boolean.class);
-    if (left == null) {
-      return null;
+    if (left == Boolean.FALSE) {
+      return left;
     }
     Boolean right = operands[1].getValue(context, Boolean.class);
-    if (right == null) {
+    if (right == Boolean.FALSE) {
+      return right;
+    }
+    
+    if (left==null || right == null) {
       return null;
     }
+    
     return Boolean.logicalAnd(left, right);
   }
 

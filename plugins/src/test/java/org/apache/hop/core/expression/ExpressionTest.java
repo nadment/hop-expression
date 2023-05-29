@@ -311,35 +311,39 @@ public class ExpressionTest {
     assertEquals(result, writer.toString());
   }
 
-  protected IExpression optimize(String e) throws Exception {
-    IExpressionContext context = createExpressionContext(false);
-    IExpression expression = ExpressionBuilder.build(context, e);
+  protected IExpression optimize(String source) {
+    try {
+      IExpressionContext context = createExpressionContext(false);
+      IExpression expression = ExpressionBuilder.build(context, source);
 
-    String color = ANSI_YELLOW;
-    if (expression.getType() == DataType.UNKNOWN) {
-      color = ANSI_RED;
+      String color = ANSI_YELLOW;
+      if (expression.getType() == DataType.UNKNOWN) {
+        color = ANSI_RED;
+      }
+      System.out.println(
+          source + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color + expression + ANSI_RESET);
+
+      return expression;
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-
-    System.out.println(
-        e + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color + expression + ANSI_RESET);
-
-    return expression;
   }
 
-  protected void optimize(String e, String expected) throws Exception {
-    assertEquals(expected, optimize(e).toString());
+  protected void optimize(String source, String expected) {
+    assertEquals(expected, optimize(source).toString());
   }
 
-  protected void optimizeTrue(String e) throws Exception {
-    assertEquals("TRUE", optimize(e).toString());
+  protected void optimizeTrue(String source) {
+    assertEquals("TRUE", optimize(source).toString());
   }
 
-  protected void optimizeFalse(String e) throws Exception {
-    assertEquals("FALSE", optimize(e).toString());
+  protected void optimizeFalse(String source) {
+    assertEquals("FALSE", optimize(source).toString());
   }
 
-  protected void optimizeNull(String e) throws Exception {
-    assertEquals("NULL", optimize(e).toString());
+  protected void optimizeNull(String source) {
+    assertEquals("NULL", optimize(source).toString());
   }
 
   @Test
@@ -349,12 +353,8 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    //optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN", "FIELD_BOOLEAN OR NULL_BOOLEAN OR FIELD_INTEGER>0");
-    //optimize("FIELD_INTEGER IS NULL AND FIELD_INTEGER < 5", "FALSE");
-    //optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN AND FIELD_INTEGER=2");
-    //optimize("FIELD_INTEGER IS NOT NULL AND FIELD_INTEGER < 5", "FIELD_INTEGER<5");
-    optimize("NULL in ('1','2','1',NULL,null)", "NULL");
-
+    evalEquals("NullIfZero(1)", 1L);
+    //optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
   }
 }
 

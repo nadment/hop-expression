@@ -203,7 +203,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("-2.3E");
     evalFails("-2.3E--2");
 
-    writeEquals("-2.3E-2", "-.023");
+    writeEquals("-2.3E-2", "-0.023");
   }
 
   @Test

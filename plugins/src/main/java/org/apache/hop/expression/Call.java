@@ -324,20 +324,18 @@ public final class Call implements IExpression {
 
     // Compile all operands
     for (int i = 0; i < operands.length; i++) {
-      IExpression operand = operands[i];
-
-      // Some operand can be null
-      if (operand != null) {
-        this.operands[i] = operand.compile(context);
-      }
+      this.operands[i] = operands[i].compile(context);
     }
 
-    // If operator is deterministic and all operands are constant
-    if (isConstant()) {
+    // If operator is deterministic and all operands are constant try to evaluate
+    if (this.isConstant()) {
       try {
         Object value = getValue(context);
-
         inferenceType(context);
+
+        if (value == null) {
+          return Literal.NULL;
+        }
 
         // Some operator don't known return type like JSON_VALUE.
         if (DataName.ANY.equals(type.getName())) {
@@ -346,7 +344,7 @@ public final class Call implements IExpression {
 
         return new Literal(value, type);
       } catch (Exception e) {
-        // Ignore and continue
+        // Ignore error like division by zero "X IN (1,3/0)" and continue
       }
     }
 

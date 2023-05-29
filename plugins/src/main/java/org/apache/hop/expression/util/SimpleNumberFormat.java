@@ -688,13 +688,14 @@ final class SimpleNumberFormat extends NumberFormat {
     if (pattern == null || pattern.equals("TM")) {
       String s = number.toPlainString();
 
-      if (s.startsWith("0.")) {
-        // we want ".1" not "0.1"
-        return s.substring(1);
-      } else if (s.startsWith("-0.")) {
-        // we want "-.1" not "-0.1"
-        return "-" + s.substring(2);
-      }
+      // TODO: To be compatible with SQL
+      // if (s.startsWith("0.")) {
+      // we want ".1" not "0.1"
+      // return s.substring(1);
+      // } else if (s.startsWith("-0.")) {
+      // we want "-.1" not "-0.1"
+      // return "-" + s.substring(2);
+      // }
 
       return s;
     }

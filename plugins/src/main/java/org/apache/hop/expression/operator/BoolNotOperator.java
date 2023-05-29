@@ -54,6 +54,14 @@ public class BoolNotOperator extends Operator {
 
     IExpression operand = call.getOperand(0);
 
+    // NOT(l = r) => l <> r
+    if (operand.is(Operators.EQUAL)) {
+      return new Call(Operators.NOT_EQUAL, operand.asCall().getOperands());
+    }
+    // NOT(l <> r) => l = r
+    if (operand.is(Operators.NOT_EQUAL)) {
+      return new Call(Operators.EQUAL, operand.asCall().getOperands());
+    }
     // NOT(l > r) => l <= r
     if (operand.is(Operators.GREATER_THAN)) {
       return new Call(Operators.LESS_THAN_OR_EQUAL, operand.asCall().getOperands());

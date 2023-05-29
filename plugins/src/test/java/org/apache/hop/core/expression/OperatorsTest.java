@@ -281,6 +281,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("2 in (1,2.5,)");
     evalFails("2 in ()");
    
+    // TODO: assertExpressionExceptionThrownBy(() -> eval("3 in (2, 4, 3, 5 / 0)")).hasErrorCode(DIVISION_BY_ZERO);
+    
     writeEquals("FIELD_INTEGER IN (10,20,30,40)");
     
     returnType("FIELD_INTEGER IN (10,20,30,40)", DataType.BOOLEAN);
@@ -521,7 +523,7 @@ public class OperatorsTest extends ExpressionTest {
     // Number to String
     evalEquals("CAST(123.6 as String)", "123.6");
     evalEquals("123.6::String", "123.6");
-    evalEquals("CAST(0.45 AS STRING)", ".45");
+    evalEquals("CAST(0.45 AS STRING)", "0.45");
     evalEquals("CAST(0.45 AS STRING FORMAT 'FM000.00')", "000.45");
     evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1234 ");
 

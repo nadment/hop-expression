@@ -195,6 +195,7 @@ public class FunctionsTest extends ExpressionTest {
   public void NullIf() throws Exception {
     evalEquals("NullIf(1,NULL_INTEGER)", 1L);
     evalNull("NullIf(1,1)");
+    evalNull("NULLIF(0.1,0.1)");
     evalNull("NullIf(NULL_INTEGER,1)");
     evalNull("NullIf('TEST','TEST')");
     evalNull("NullIf(DATE '2019-01-01',DATE '2019-01-01')");
@@ -207,13 +208,14 @@ public class FunctionsTest extends ExpressionTest {
   public void ZeroIfNull() throws Exception {
     evalEquals("ZeroIfNull(1)", 1L);
     evalEquals("ZeroIfNull(NULL_INTEGER)", 0L);
-
     evalFails("ZeroIfNull()");
     evalFails("ZeroIfNull(1,2)");
   }
 
   @Test
   public void NullIfZero() throws Exception {
+    //evalEquals("NULLIFZERO(0.1)", BigDecimal.valueOf(1L,1));
+    evalEquals("NULLIFZERO(0.1)", 0.1);
     evalEquals("NullIfZero(1)", 1L);
     evalNull("NullIfZero(0)");
     evalNull("NullIfZero(0.000)");
@@ -1648,7 +1650,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("TO_CHAR(NULL_NUMBER)");
 
     // Default format
-    evalEquals("TO_CHAR(0.45)", ".45");
+    evalEquals("TO_CHAR(0.45)", "0.45");
     evalEquals("TO_CHAR(12923)", "12923");
 
     // Format fixed length with decimal

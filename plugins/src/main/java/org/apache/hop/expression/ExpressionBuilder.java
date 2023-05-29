@@ -732,7 +732,7 @@ public class ExpressionBuilder {
     if (isThenNext(Id.LPARENTHESIS)) {
 
       do {
-        IExpression value = parsePrimary();
+        IExpression value = parseAdditive();
         list.add(value);
 
         if (isThenNext(Id.COMMA)) {

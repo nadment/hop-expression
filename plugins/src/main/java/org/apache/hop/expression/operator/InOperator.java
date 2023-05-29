@@ -66,12 +66,19 @@ public class InOperator extends Operator {
       throws ExpressionException {
     List<IExpression> list = new ArrayList<>();
 
-    IExpression value = call.getOperand(0);
-    Tuple tuple = (Tuple) call.getOperand(1);
-    
-    // NULL left side expression is always NULL
-    if ( value==Literal.NULL ) { 
+    IExpression reference = call.getOperand(0);
+    Tuple tuple = call.getOperand(1).asTuple();
+        
+    // NULL if left side expression is always NULL
+    if ( reference==Literal.NULL ) { 
       return Literal.NULL;
+    }
+    
+    // Try to evaluate all operands to detect error like division by zero X IN (1,2,3/0)
+    if (call.isConstant()) {
+      for (IExpression o : tuple) {
+        o.getValue(context);
+      }
     }
     
     // Remove null and duplicate element in list
@@ -82,8 +89,8 @@ public class InOperator extends Operator {
       }
 
       // Simplify B in (A,B,C) to B=B
-      if ( value.equals(expression) ) {
-        return new Call(Operators.EQUAL, value, value);
+      if ( reference.equals(expression) ) {
+        return new Call(Operators.EQUAL, reference, reference);
       }
       
       // If this element is not present in new list then add it
@@ -94,7 +101,7 @@ public class InOperator extends Operator {
 
     //  "x IN (a)" to "x = a"
     if ( list.size()==1 ) {
-      return new Call(Operators.EQUAL, value, list.get(0)); 
+      return new Call(Operators.EQUAL, reference, list.get(0)); 
     }
     
     // Sort list on cost
