@@ -18,7 +18,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
 
 /**
@@ -41,7 +40,7 @@ public class TryCastFunction extends CastFunction {
   @Override
   protected Object cast(final Object value, final DataType type, final String format) {
     try {
-      return Converter.cast(value, type, format);
+      return type.cast(value, format);
     } catch (RuntimeException e) {
       return null;
     }

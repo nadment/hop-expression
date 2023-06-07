@@ -29,7 +29,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
  * Arithmetic division operator.
@@ -41,7 +40,7 @@ import java.math.MathContext;
 public class DivOperator extends Operator {
 
   public DivOperator() {
-    super("DIV", "/", 50, true, ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV", "/", 50, true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div.html");
   }
 
@@ -79,7 +78,7 @@ public class DivOperator extends Operator {
     if (divisor.signum() == 0)
       throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
     
-    return value.divide(divisor, MathContext.DECIMAL128);
+    return value.divide(divisor, DECIMAL128);
   }
 
   @Override

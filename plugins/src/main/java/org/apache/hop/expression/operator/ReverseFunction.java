@@ -21,9 +21,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
@@ -44,7 +45,7 @@ public class ReverseFunction extends Function {
       return null;
 
     if (value instanceof byte[]) {
-      byte[] data = Converter.coerceToBinary(value);
+      byte[] data = BinaryDataType.coerce(value);
       byte[] result = new byte[data.length];
       for (int i = data.length - 1, j = 0; i >= 0; i--, j++) {
         result[j] = data[i];
@@ -52,7 +53,7 @@ public class ReverseFunction extends Function {
       return result;
     }
 
-    StringBuilder builder = new StringBuilder(Converter.coerceToString(value)).reverse();
+    StringBuilder builder = new StringBuilder(StringDataType.coerce(value)).reverse();
     return builder.toString();
   }
 }

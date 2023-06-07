@@ -22,10 +22,11 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.IOperandTypeChecker;
+import org.apache.hop.expression.type.IntegerDataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 
 /**
  * Splits a string on the specified list of delimiter characters and returns the part at the
@@ -65,9 +66,9 @@ public class StrtokFunction extends Function {
         return null;
 
       if (v1 instanceof Number) {
-        index = Converter.coerceToInteger(v1).intValue();
+        index = IntegerDataType.coerce(v1).intValue();
       } else {
-        delimiter = Converter.coerceToString(v1);
+        delimiter = StringDataType.coerce(v1);
       }
     } else if (operands.length == 3) {
       delimiter = operands[1].getValue(context, String.class);

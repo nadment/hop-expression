@@ -25,7 +25,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -51,7 +51,7 @@ public class GreaterThanOperator extends Operator {
       return null;
     }
 
-    return Converter.compare(left, right) > 0;
+    return Comparison.compare(left, right) > 0;
   }
 
   @Override

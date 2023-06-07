@@ -14,21 +14,27 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BooleanDataType;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.DateDataType;
+import org.apache.hop.expression.type.IntegerDataType;
+import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.NumberDataType;
+import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  * Constant value in a expression.
@@ -37,12 +43,11 @@ public final class Literal implements IExpression {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  public static final Literal NULL = new Literal(null, DataType.UNKNOWN);
-  public static final Literal TRUE = new Literal(Boolean.TRUE, DataType.BOOLEAN);
-  public static final Literal FALSE = new Literal(Boolean.FALSE, DataType.BOOLEAN);
-  public static final Literal ZERO = new Literal(0L, DataType.INTEGER);
-  public static final Literal ONE = new Literal(1L, DataType.INTEGER);
-  public static final Literal PI = new Literal(Math.PI, DataType.NUMBER);
+  public static final Literal NULL = new Literal(null, UnknownDataType.UNKNOWN);
+  public static final Literal TRUE = new Literal(Boolean.TRUE, BooleanDataType.BOOLEAN);
+  public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanDataType.BOOLEAN);
+  public static final Literal ZERO = new Literal(0L, IntegerDataType.INTEGER);
+  public static final Literal ONE = new Literal(1L, IntegerDataType.INTEGER);
 
   public static Literal of(final Object value) {
     if (value == null)
@@ -54,11 +59,16 @@ public final class Literal implements IExpression {
 
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-      if (BigDecimal.ZERO.compareTo(number) == 0)
+      if (BigDecimal.ZERO.compareTo(number) == 0) {
         return ZERO;
-      if (BigDecimal.ONE.compareTo(number) == 0)
+      }
+      if (BigDecimal.ONE.compareTo(number) == 0) {
         return ONE;
-      return new Literal(number, DataType.BIGNUMBER);
+      }
+      if (BigDecimalMath.isLongValue(number)) {
+        return new Literal(number.longValueExact(), IntegerDataType.INTEGER);
+      }
+      return new Literal(number, new NumberDataType(DataName.NUMBER.getMaxPrecision(), number.scale()));
     }
 
     if (value instanceof Double) {
@@ -67,7 +77,7 @@ public final class Literal implements IExpression {
         return ZERO;
       if (number == 1D)
         return ONE;
-      return new Literal(number, DataType.NUMBER);
+      return new Literal(BigDecimal.valueOf(number), NumberDataType.NUMBER);
     }
 
     if (value instanceof Long) {
@@ -76,7 +86,7 @@ public final class Literal implements IExpression {
         return ZERO;
       if (number == 1L)
         return ONE;
-      return new Literal(number, DataType.INTEGER);
+      return new Literal(number, IntegerDataType.INTEGER);
     }
 
     if (value instanceof Integer) {
@@ -85,31 +95,27 @@ public final class Literal implements IExpression {
         return ZERO;
       if (number == 1)
         return ONE;
-      return new Literal(number.longValue(), DataType.INTEGER);
+      return new Literal(number.longValue(), IntegerDataType.INTEGER);
     }
 
     if (value instanceof String) {
-      return new Literal(value, DataType.STRING);
+      return new Literal(value, StringDataType.STRING);
     }
 
     if (value instanceof byte[]) {
-      return new Literal(value, DataType.BINARY);
+      return new Literal(value, BinaryDataType.BINARY);
     }
 
     if (value instanceof ZonedDateTime) {
-      return new Literal(value, DataType.DATE);
+      return new Literal(value, DateDataType.DATE);
     }
 
     if (value instanceof JsonNode) {
-      return new Literal(value, DataType.JSON);
+      return new Literal(value, JsonDataType.JSON);
     }
 
-    if (value instanceof TimeUnit) {
-      return new Literal(value, DataType.TIMEUNIT);
-    }
-    
-    // Special case for optimization
-    return new Literal(value, DataType.UNKNOWN);
+    // Special internal case TimeUnit, DataType, Random
+    return new Literal(value, UnknownDataType.UNKNOWN);
   }
 
   /**
@@ -155,9 +161,6 @@ public final class Literal implements IExpression {
         if (clazz == Long.class) {
           return clazz.cast(((boolean) value) ? 1L : 0L);
         }
-        if (clazz == Double.class) {
-          return clazz.cast(((boolean) value) ? 1D : 0D);
-        }
         if (clazz == BigDecimal.class) {
           return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
         }
@@ -165,34 +168,31 @@ public final class Literal implements IExpression {
 
       case STRING:
         if (clazz == Boolean.class) {
-          return clazz.cast(Converter.parseBoolean((String) value));
+          return clazz.cast(BooleanDataType.convert((String) value));
         }
         if (clazz == Long.class) {
-          return clazz.cast(Converter.parseInteger((String) value));
-        }
-        if (clazz == Double.class) {
-          return clazz.cast(Converter.parseNumber((String) value));
+          return clazz.cast(IntegerDataType.convert((String) value));
         }
         if (clazz == BigDecimal.class) {
-          return clazz.cast(Converter.parseBigNumber((String) value));
+          return clazz.cast(NumberDataType.convert((String) value));
         }
         if (clazz == byte[].class) {
-          return clazz.cast(((String) value).getBytes(StandardCharsets.UTF_8));
+          return clazz.cast(BinaryDataType.convert((String) value));
         }
         if (clazz == JsonNode.class) {
-          return clazz.cast(Converter.parseJson((String) value));
+          return clazz.cast(JsonDataType.convert((String) value));
         }
         break;
 
-      case INTEGER:
-        if (clazz == Boolean.class) {
-          return clazz.cast(((Long) value) != 0);
-        }
-        if (clazz == Double.class) {
-          return clazz.cast(Double.valueOf((Long) value));
+      case INTEGER:        
+        if (clazz == Long.class) {
+          return clazz.cast((Long) value);
         }
         if (clazz == BigDecimal.class) {
           return clazz.cast(BigDecimal.valueOf((Long) value));
+        }
+        if (clazz == Boolean.class) {
+          return clazz.cast(((Long) value) != 0);
         }
         if (clazz == String.class) {
           return clazz.cast(String.valueOf(value));
@@ -201,43 +201,25 @@ public final class Literal implements IExpression {
 
       case NUMBER:
         if (clazz == Boolean.class) {
-          return clazz.cast(((Double) value) != 0);
-        }
-        if (clazz == Long.class) {
-          return clazz.cast(((Double) value).longValue());
-        }
-        if (clazz == BigDecimal.class) {
-          return clazz.cast(BigDecimal.valueOf((Double) value));
-        }
-        if (clazz == String.class) {
-          return clazz.cast(String.valueOf(value));
-        }
-        break;
-
-      case BIGNUMBER:
-        if (clazz == Boolean.class) {
           return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
         }
         if (clazz == Long.class) {
           return clazz.cast(((BigDecimal) value).longValue());
         }
-        if (clazz == Double.class) {
-          return clazz.cast(((BigDecimal) value).doubleValue());
-        }
-        if (clazz == String.class) {
-          return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
+       if (clazz == String.class) {
+          return clazz.cast(StringDataType.convert((BigDecimal) value));
         }
         break;
 
       case BINARY:
         if (clazz == String.class) {
-          return clazz.cast(new String((byte[]) value, StandardCharsets.UTF_8));
+          return clazz.cast(StringDataType.convert((byte[]) value));
         }
         break;
 
       case JSON:
         if (clazz == String.class) {
-          return clazz.cast(Converter.parseJson((String) value));
+          return clazz.cast(JsonDataType.convert((String) value));
         }
         break;
 
@@ -329,6 +311,12 @@ public final class Literal implements IExpression {
       case BOOLEAN:
         writer.append(((boolean) value) ? "TRUE" : "FALSE");
         break;
+      case INTEGER:
+        writer.append(((Long) value).toString());
+        break;        
+      case NUMBER:
+        writer.append(StringDataType.convert((BigDecimal) value));
+        break;        
       case BINARY:
         writer.append("0x");
         for (byte b : (byte[]) value) {
@@ -393,7 +381,7 @@ public final class Literal implements IExpression {
         writer.append(String.valueOf(value));
         break;
       default:
-        writer.append(Converter.coerceToString(value));
+        writer.append(String.valueOf(value));
     }
   }
 

@@ -25,7 +25,6 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -64,8 +63,8 @@ public class CastFunction extends Function {
     return cast(value, type, format);
   }
   
-  protected Object cast(Object value, DataType type, String format) {
-    return Converter.cast(value, type, format);
+  protected Object cast(final Object value, final DataType type, final String format) {
+    return type.cast(value, format);
   }
   
   protected boolean isTry() {
@@ -73,7 +72,7 @@ public class CastFunction extends Function {
   }
   
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+  public IExpression compile(final IExpressionContext context, Call call) throws ExpressionException {
 
     call.inferenceType(context);
     DataType type = call.getType();

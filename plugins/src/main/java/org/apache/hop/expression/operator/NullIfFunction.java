@@ -24,7 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -45,7 +45,7 @@ public class NullIfFunction extends Function {
     Object value = operands[0].getValue(context);
     Object compare = operands[1].getValue(context);
 
-    if (Converter.compare(value, compare) == 0)
+    if (Comparison.compare(value, compare) == 0)
       return null;
 
     return value;

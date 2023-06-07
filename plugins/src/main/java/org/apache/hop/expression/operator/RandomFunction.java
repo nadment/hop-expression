@@ -26,7 +26,10 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.Random;
+
 
 /**
  * Return a random number between 0 (inclusive) and 1 (exclusive).
@@ -48,22 +51,36 @@ public class RandomFunction extends Function {
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
     
-      Random random = operands[0].getValue(context, Random.class);         
-      return random.nextDouble();    
+      Random random = operands[1].getValue(context, Random.class);         
+      return BigDecimal.valueOf(random.nextDouble());    
   }
   
   @Override
   public IExpression compile(final IExpressionContext context, final Call call) {
-    Random random = new Random();
+    if (call.getOperandCount() == 0) {
+      return new Call(call.getOperator(), Literal.NULL, Literal.of(new Random()));
+    }
     if (call.getOperandCount() == 1) {
       try {
         Long seed = call.getOperand(0).getValue(context, Long.class);
+        Random random = new Random();
         random.setSeed(seed);
+        return new Call(call.getOperator(), call.getOperand(0), Literal.of(random));
       } catch (ExpressionException e) {
-        return call;
+        // Ignore
       }                 
     }
-        
-    return new Call(call.getOperator(), Literal.of(random));
+
+    return call;
+  }
+  
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    writer.append(this.getName());
+    writer.append('(');
+    if ( operands.length>0 && !operands[0].isNull() ) {
+      operands[0].unparse(writer);
+    }
+    writer.append(')');
   }
 }

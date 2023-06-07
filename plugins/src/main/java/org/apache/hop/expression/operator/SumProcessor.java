@@ -17,24 +17,28 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.Converter;
+import java.math.BigDecimal;
 
 /** Returns the sum of all values in the expression. Null values are ignored. */
 public class SumProcessor implements IExpressionProcessor {
 
-  private double sum;
+  private BigDecimal sum;
 
   public SumProcessor() {
-    sum = 0D;
+    sum = null;
   }
 
   @Override
   public void process(IExpressionContext context, IExpression[] operands) throws Exception {
 
-    Object value = operands[0].getValue(context);
-
+    BigDecimal value = operands[0].getValue(context,BigDecimal.class);
     if (value != null) {
-      sum += Converter.coerceToNumber(value);
+      if ( sum==null ) {
+        sum = value;
+      }
+      else {
+        sum = sum.add(value);
+      }
     }
   }
 

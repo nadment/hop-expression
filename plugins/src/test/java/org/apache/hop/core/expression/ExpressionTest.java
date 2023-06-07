@@ -37,8 +37,9 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -56,7 +57,9 @@ import java.util.Locale;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ExpressionTest {
-
+  
+  protected static final BigDecimal PI = new BigDecimal("3.141592653589793238462643383279503");
+  
   protected static final String ANSI_RESET = "\u001B[0m";
   protected static final String ANSI_BLACK = "\u001B[30m";
   protected static final String ANSI_RED = "\u001B[31m";
@@ -143,7 +146,7 @@ public class ExpressionTest {
       row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
       row[7] = true;
       row[8] = "TEST".getBytes();
-      row[9] = Converter.parseJson("{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+      row[9] = JsonDataType.convert("{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
       row[10] = null;
       row[11] = null;
@@ -250,12 +253,12 @@ public class ExpressionTest {
 
   protected void evalEquals(ExpressionContext context, String source, Double expected)
       throws Exception {
-    assertEquals(expected, eval(context, source, Double.class));
+    BigDecimal result = eval(context, source, BigDecimal.class);
+    assertEquals(BigDecimal.valueOf(expected).stripTrailingZeros(), result.stripTrailingZeros());
   }
 
   protected void evalEquals(String source, Double expected) throws Exception {
-    assertEquals(expected, eval(createExpressionContext(true), source, Double.class),
-        0.000000000000001);
+    evalEquals(createExpressionContext(true), source, expected);
   }
 
   protected void evalEquals(String source, BigDecimal expected) throws Exception {
@@ -298,33 +301,19 @@ public class ExpressionTest {
     assertThrows(ExpressionException.class, () -> eval(createExpressionContext(true), source));
   }
 
-  protected void writeEquals(String source) throws Exception {
-    writeEquals(source, source);
-  }
-
-  protected void writeEquals(String source, String result) throws Exception {
-    IExpressionContext context = createExpressionContext(false);
-    IExpression expression = ExpressionBuilder.build(context, source);
-
-    StringWriter writer = new StringWriter();
-    expression.unparse(writer);
-    assertEquals(result, writer.toString());
-  }
-
   protected IExpression optimize(String source) {
     try {
       IExpressionContext context = createExpressionContext(false);
       IExpression expression = ExpressionBuilder.build(context, source);
 
       String color = ANSI_YELLOW;
-      if (expression.getType() == DataType.UNKNOWN) {
+      if (expression.getType() == UnknownDataType.UNKNOWN) {
         color = ANSI_RED;
       }
       System.out.println(
           source + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color + expression + ANSI_RESET);
 
       return expression;
-
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -353,8 +342,16 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("NullIfZero(1)", 1L);
-    //optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
+
+    //evalEquals("CAST(1.25 as Integer)", 1L);
+    //assertEquals(new BigDecimal("1.23456"), Converter.cast("1.23456", new NumberDataType()));
+    evalNull("TRY_TO_BOOLEAN('test')");
+    
+//    evalEquals("1.23456::Number", 1.23456);
+//    evalEquals("1.23456::Number(4)", 1.234);
+//    evalEquals("1.23456::Number(10,2)", 1.234);
+//    evalEquals("1.23456::Number(10,0)", 1L);
+//    evalEquals("1.23456::Number(10,6)", new BigDecimal("1.234560"));
   }
 }
 

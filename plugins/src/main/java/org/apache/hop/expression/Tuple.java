@@ -15,6 +15,7 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,11 +80,11 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     // Returns the first known data type of values.
     for (IExpression expression : values) {
       DataType type = expression.getType();
-      if (type != DataType.UNKNOWN)
+      if (type != UnknownDataType.UNKNOWN)
         return type;
     }
 
-    return DataType.UNKNOWN;
+    return UnknownDataType.UNKNOWN;
   }
 
   @Override

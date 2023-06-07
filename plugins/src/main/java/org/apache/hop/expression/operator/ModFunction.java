@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -38,47 +37,29 @@ import java.math.BigDecimal;
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("MOD", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 
   public ModFunction(String name) {
-    super("MOD", name, 50, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("MOD", name, 50, true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
-    if (left == null)
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
+    if (value == null)
       return null;
-    Object right = operands[1].getValue(context);
-    if (right == null)
+    BigDecimal divisor = operands[1].getValue(context, BigDecimal.class);
+    if (divisor == null)
       return null;
 
-    if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      BigDecimal divisor = Converter.coerceToBigNumber(right);
-      // prevent a division by zero ..
-      if (divisor.signum() == 0)
-        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
-      return Converter.coerceToBigNumber(left).remainder(divisor);
-    }
-    if (left instanceof Double || right instanceof Double) {
-      double divisor = Converter.coerceToNumber(right);
-      // prevent a division by zero ..
-      if (divisor == 0L)
-        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
-      return Converter.coerceToNumber(left) % divisor;
-    }
-    if (left instanceof Long || right instanceof Long) {
-      long divisor = Converter.coerceToInteger(right);
-      // prevent a division by zero ..
-      if (divisor == 0L)
-        throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
-      return Converter.coerceToInteger(left) % divisor;
-    }
+    // Prevent a division by zero ..
+    if (divisor.signum() == 0)
+      throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
 
-    return Converter.coerceToBigNumber(left).remainder(Converter.coerceToBigNumber(right));
+    return value.remainder(divisor);
   }
 
   @Override

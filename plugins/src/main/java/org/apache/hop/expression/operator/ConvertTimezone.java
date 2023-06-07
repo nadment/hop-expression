@@ -21,9 +21,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -40,8 +40,8 @@ public class ConvertTimezone extends Function {
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     if ( operands.length==3 ) {
-      ZoneId zoneSource = Converter.toZoneId(operands[0].getValue(context, String.class));
-      ZoneId zoneTarget = Converter.toZoneId(operands[1].getValue(context, String.class));      
+      ZoneId zoneSource = DateTimeFormat.toZoneId(operands[0].getValue(context, String.class));
+      ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[1].getValue(context, String.class));      
       ZonedDateTime value = operands[2].getValue(context, ZonedDateTime.class);
       
       if (value == null)
@@ -49,7 +49,7 @@ public class ConvertTimezone extends Function {
       
       return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
     } else {
-      ZoneId zoneTarget = Converter.toZoneId(operands[0].getValue(context, String.class));    
+      ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[0].getValue(context, String.class));    
       ZonedDateTime value = operands[1].getValue(context, ZonedDateTime.class);
       
       if (value == null)

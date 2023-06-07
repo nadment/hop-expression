@@ -21,9 +21,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 
 /**
  * The function returns TRUE if the first value starts with second value. Both values must be data
@@ -52,8 +53,8 @@ public class StartsWithFunction extends Function {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = Converter.coerceToBinary(v0);
-      byte[] prefix = Converter.coerceToBinary(v1);
+      byte[] data = BinaryDataType.coerce(v0);
+      byte[] prefix = BinaryDataType.coerce(v1);
       if (prefix.length > data.length) {
         return Boolean.TRUE;
       } else {
@@ -67,6 +68,6 @@ public class StartsWithFunction extends Function {
       return Boolean.TRUE;
     }
 
-    return Converter.coerceToString(v0).startsWith(Converter.coerceToString(v1));
+    return StringDataType.coerce(v0).startsWith(StringDataType.coerce(v1));
   }
 }

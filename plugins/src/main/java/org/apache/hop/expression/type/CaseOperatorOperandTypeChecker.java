@@ -47,7 +47,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
       }
     }
 
-    DataType thenType = DataType.UNKNOWN;
+    DataType thenType = UnknownDataType.UNKNOWN;
     for (IExpression thenOperand : thenTuple) {     
       // First non null      
       if ( !thenOperand.isNull() ) {

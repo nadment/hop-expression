@@ -23,8 +23,13 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.BooleanDataType;
+import org.apache.hop.expression.type.DateDataType;
+import org.apache.hop.expression.type.IntegerDataType;
+import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.NumberDataType;
+import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,7 +51,7 @@ public class LiteralTest extends ExpressionTest {
   public void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Literal.NULL, Literal.of(null));
-    assertEquals(Objects.hash(null, DataType.UNKNOWN), Literal.NULL.hashCode());
+    assertEquals(Objects.hash(null, UnknownDataType.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is((Kind)null));    
     assertFalse(Literal.NULL.is((Operator)null));
     assertTrue(Literal.NULL.isConstant());
@@ -62,13 +67,10 @@ public class LiteralTest extends ExpressionTest {
   }
 
   public void DataType() throws Exception {
-    assertEquals(DataType.BIGNUMBER, Literal.of(DataType.BIGNUMBER).getValue(null));
+    assertEquals(NumberDataType.NUMBER, Literal.of(NumberDataType.NUMBER).getValue(null));
     
     evalEquals("Cast(123 as InTeGeR)", 123L);
     
-    // Accept DataType quoted like a String
-    evalEquals("Cast(123 as 'INTEGER')", 123L);
-    evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
   }
 
   @Test
@@ -86,9 +88,9 @@ public class LiteralTest extends ExpressionTest {
     // Empty string
     evalEquals("''", "");
 
-    writeEquals("'Test ''Bla'' string'");
+    optimize("'Test ''Bla'' string'");
     
-    returnType("FIELD_STRING", DataType.STRING);
+    returnType("FIELD_STRING", StringDataType.STRING);
   }
   
 
@@ -106,9 +108,9 @@ public class LiteralTest extends ExpressionTest {
     // Considers numeric values 5.0 and 5 as equals.
     evalTrue("JSON '{\"name\":\"John\",\"age\":5}'=JSON '{\"name\":\"John\",\"age\":5.0}'");
     
-    writeEquals("JSON '{\"name\":\"John\",\"age\":5.0}'","JSON '{\"name\":\"John\",\"age\":5.0}'");
+    optimize("JSON '{\"name\":\"John\",\"age\":5.0}'","JSON '{\"name\":\"John\",\"age\":5.0}'");
     
-    returnType("JSON '{\"name\":\"John\",\"age\":5}'", DataType.JSON);
+    returnType("JSON '{\"name\":\"John\",\"age\":5}'", JsonDataType.JSON);
   }
 
   @Test
@@ -119,8 +121,8 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.FALSE, Literal.of(false));
     assertEquals(Literal.FALSE.hashCode(), Literal.of(false).hashCode());
 
-    assertEquals("TRUE", Converter.coerceToString(Literal.TRUE));
-    assertEquals("FALSE", Converter.coerceToString(Literal.FALSE));
+    assertEquals("TRUE", String.valueOf(Literal.TRUE));
+    assertEquals("FALSE", String.valueOf(Literal.FALSE));
 
     evalTrue("True");
     evalTrue("True");
@@ -132,9 +134,9 @@ public class LiteralTest extends ExpressionTest {
     
     evalFails("'YEP'::Boolean");
     
-    writeEquals("TRUE", "TRUE");
+    optimize("TRUE", "TRUE");
     
-    returnType("TRUE and TRUE", DataType.BOOLEAN);
+    returnType("TRUE and TRUE", BooleanDataType.BOOLEAN);
   }
 
   @Test
@@ -150,12 +152,11 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("0b00000010::INTEGER", 2L);
     evalEquals("0b011::INTEGER", 3L);
     evalEquals("0b000000011111111::INTEGER", 255L);
-    evalEquals("0b00001010101010101010101010101101010101010101010101010101010101010101::NUMBER",
-        6.1489146933895936E18);
+    evalEquals("0b00001010101010101010101010101101010101010101010101010101010101010101::NUMBER", 6148914693389593258L);
     evalFails("0B010101");
     evalFails("0B010501");
 
-    writeEquals("0x12AF", "0x12AF");
+    optimize("0x12AF", "0x12AF");
   }
 
   @Test
@@ -164,8 +165,8 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.ONE, Literal.of(1L));
     
     // For internal use int.class are supported
-    assertEquals(Literal.ZERO, Literal.of(0));
-    assertEquals(Literal.ONE, Literal.of(1));
+    assertEquals(Literal.ZERO, Literal.of(0L));
+    assertEquals(Literal.ONE, Literal.of(1L));
     
     assertEquals("-123456", Literal.of(-123456L).toString());
 
@@ -173,16 +174,16 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("-9223372036854775808", Long.MIN_VALUE);
     evalEquals("9223372036854775807", Long.MAX_VALUE);
 
-    writeEquals("123456", "123456");
+    optimize("123456", "123456");
     
-    returnType("FIELD_INTEGER", DataType.INTEGER);
+    returnType("FIELD_INTEGER", IntegerDataType.INTEGER);
   }
 
   @Test
   public void Number() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0D));  
     assertEquals(Literal.ONE, Literal.of(1D));   
-    assertEquals(Double.valueOf(2.2), Literal.of(2.2D).getValue(null));
+    assertEquals(BigDecimal.valueOf(2.2), Literal.of(2.2D).getValue(null));
     assertEquals("-123456.789", Literal.of(-123456.789D).toString());
 
     // Number
@@ -190,8 +191,8 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("-.2", -0.2D);
     evalEquals("-0.2", -0.2D);
     evalEquals("-1.", -1L);
-    evalEquals("2.3E2", 2.3E2D);
-    evalEquals("2.3E+2", 2.3E2D);
+    evalEquals("2.3E2", 230L);
+    evalEquals("2.3E+2", 230L);
     evalEquals("-2.3E-2", -2.3E-2D);
     evalEquals("-2.3e-2", -2.3E-2D);
 
@@ -203,7 +204,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("-2.3E");
     evalFails("-2.3E--2");
 
-    writeEquals("-2.3E-2", "-0.023");
+    optimize("-2.3E-2", "-0.023");
   }
 
   @Test
@@ -239,9 +240,9 @@ public class LiteralTest extends ExpressionTest {
     evalFails("DATE '21-02-25'");
     evalFails("DATE '201-02-25'");
     
-    writeEquals("DATE '2021-02-25'");
+    optimize("DATE '2021-02-25'");
 
-    returnType("DATE '2021-02-25'", DataType.DATE);
+    returnType("DATE '2021-02-25'", DateDataType.DATE);
   }
 
   @Test
@@ -301,24 +302,24 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("TIMESTAMP '0001-01-1 00:00:00'", ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.systemDefault()));
     evalEquals("TIMESTAMP '9999-12-31 23:59:59.999999999'", ZonedDateTime.of(9999, 12, 31, 23, 59, 59, 999999999, ZoneOffset.systemDefault()));
 
-    writeEquals("TIMESTAMP '9999-12-31 23:59:59'");
-    writeEquals("TIMESTAMP '9999-12-31 23:59:59.999'");
-    writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999'");
-    writeEquals("TIMESTAMP '9999-12-31 23:59:59.999999999'");
-    writeEquals("TIMESTAMP '2021-12-01 12:01:01 +02:00'");
-    writeEquals("TIMESTAMP '2021-12-01 12:01:01.999 +02:00'");
-    writeEquals("TIMESTAMP '2021-12-01 12:01:01.999999 +02:00'");
-    writeEquals("TIMESTAMP '2021-12-01 12:01:01.999999999 +02:00'");
-    writeEquals("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'Europe/Paris'");   
+    optimize("TIMESTAMP '9999-12-31 23:59:59'");
+    optimize("TIMESTAMP '9999-12-31 23:59:59.999'");
+    optimize("TIMESTAMP '9999-12-31 23:59:59.999999'");
+    optimize("TIMESTAMP '9999-12-31 23:59:59.999999999'");
+    optimize("TIMESTAMP '2021-12-01 12:01:01 +02:00'");
+    optimize("TIMESTAMP '2021-12-01 12:01:01.999 +02:00'");
+    optimize("TIMESTAMP '2021-12-01 12:01:01.999999 +02:00'");
+    optimize("TIMESTAMP '2021-12-01 12:01:01.999999999 +02:00'");
+    optimize("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'Europe/Paris'");   
         
     evalFails("TIMESTAMP '21-02-25 23:59:59.999999999'");
     evalFails("TIMESTAMP '2021-01-01 15:28:59.123456789' AT TIME ZONE 'test'");
     
     // TODO: evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'");
     
-    returnType("TIMESTAMP '2021-12-01 12:01:01'", DataType.DATE);
-    returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DataType.DATE);
-    returnType("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'", DataType.DATE);
+    returnType("TIMESTAMP '2021-12-01 12:01:01'", DateDataType.DATE);
+    returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DateDataType.DATE);
+    returnType("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'", DateDataType.DATE);
   }
 }
 

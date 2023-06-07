@@ -24,7 +24,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.NumberDataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -46,14 +46,11 @@ public class AbsFunction extends Function {
     if (value == null)
       return value;
 
-    if (value instanceof Double) {
-      return FastMath.abs((double) value);
-    }
     if (value instanceof Long) {
       return FastMath.abs((long) value);
     }
 
-    return Converter.coerceToBigNumber(value).abs();
+    return NumberDataType.coerce(value).abs();
   }
   
   @Override

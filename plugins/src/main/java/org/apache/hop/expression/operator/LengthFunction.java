@@ -21,9 +21,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 
 /**
  * The function returns the number of characters of the specified string or binary.
@@ -45,6 +45,6 @@ public class LengthFunction extends Function {
     if (value instanceof byte[]) {
       return Long.valueOf(((byte[]) value).length);
     }
-    return Long.valueOf(Converter.coerceToString(value).length());
+    return Long.valueOf(StringDataType.coerce(value).length());
   }
 }

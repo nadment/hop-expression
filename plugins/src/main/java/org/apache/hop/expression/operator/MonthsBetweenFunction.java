@@ -23,6 +23,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -47,7 +48,13 @@ public class MonthsBetweenFunction extends Function {
     if (endDateTime == null)
       return null;
 
+    // Remove time
+    //startDateTime = startDateTime.truncatedTo(ChronoUnit.DAYS);
+    //endDateTime = endDateTime.truncatedTo(ChronoUnit.DAYS);
+    
     long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
-    return days / 31d;
+    
+    // All months have 31 days
+    return BigDecimal.valueOf(days / 31d);
   }
 }

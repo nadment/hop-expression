@@ -686,7 +686,7 @@ final class SimpleNumberFormat extends NumberFormat {
 
     // Text-minimal number
     if (pattern == null || pattern.equals("TM")) {
-      String s = number.toPlainString();
+      String s = number.stripTrailingZeros().toPlainString();
 
       // TODO: To be compatible with SQL
       // if (s.startsWith("0.")) {

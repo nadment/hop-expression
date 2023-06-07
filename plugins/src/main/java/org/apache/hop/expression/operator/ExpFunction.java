@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -25,10 +24,10 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
+import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  * Returns the exponential value of a numeric expression.
@@ -36,6 +35,8 @@ import java.math.BigDecimal;
 @FunctionPlugin
 public class ExpFunction extends Function {
 
+  private static final Literal E = Literal.of(BigDecimalMath.e(DECIMAL128));
+  
   public ExpFunction() {
     super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/exp.html");
@@ -47,7 +48,7 @@ public class ExpFunction extends Function {
 
     // Simplify arithmetic "EXP(1)" to Euler number "E"
     if (Literal.ONE.equals(call.getOperand(0))) {
-      return new Literal(BigDecimal.valueOf(Math.E), DataType.NUMBER);
+      return E;
     }
 
     return call;
@@ -56,10 +57,9 @@ public class ExpFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
-    return FastMath.exp(value);
+    return BigDecimalMath.exp(value, DECIMAL128);
   }
-
 }

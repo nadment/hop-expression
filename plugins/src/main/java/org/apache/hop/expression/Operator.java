@@ -20,6 +20,7 @@ import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.util.ExpressionUtils;
 import java.io.StringWriter;
+import java.math.MathContext;
 import java.util.Objects;
 import java.util.Stack;
 import java.util.function.Predicate;
@@ -33,6 +34,9 @@ import java.util.function.Predicate;
  */
 public abstract class Operator implements Comparable<Operator> {
 
+
+  protected static final MathContext DECIMAL128 = MathContext.DECIMAL128;
+  
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;
 

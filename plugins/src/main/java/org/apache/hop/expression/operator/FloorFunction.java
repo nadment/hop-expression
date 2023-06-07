@@ -23,7 +23,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -36,7 +35,7 @@ import java.math.RoundingMode;
 public class FloorFunction extends Function {
 
   public FloorFunction() {
-    super("FLOOR", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("FLOOR", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/floor.html");
   }
 
@@ -46,7 +45,7 @@ public class FloorFunction extends Function {
     if (value == null)
       return null;
     
-    return Converter.coerceToBigNumber(value).setScale(0, RoundingMode.FLOOR);
+    return value.setScale(0, RoundingMode.FLOOR);
   }
   
   @Override

@@ -24,11 +24,11 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+
 
 /**
  * Arithmetic addition operator.
@@ -37,10 +37,8 @@ import java.math.BigDecimal;
  */
 public class AddOperator extends Operator {
 
-  protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
-
   public AddOperator() {
-    super("ADD", "+", 100, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("ADD", "+", 100, true, ReturnTypes.ADD_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/add.html");
   }
 
@@ -71,24 +69,14 @@ public class AddOperator extends Operator {
 
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
+    BigDecimal left = operands[0].getValue(context, BigDecimal.class);
     if (left == null)
       return null;
-    Object right = operands[1].getValue(context);
+    BigDecimal right = operands[1].getValue(context, BigDecimal.class);
     if (right == null)
       return null;
 
-    if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return Converter.coerceToBigNumber(left).add(Converter.coerceToBigNumber(right));
-    }
-    if (left instanceof Double || right instanceof Double) {
-      return Converter.coerceToNumber(left) + Converter.coerceToNumber(right);
-    }
-    if (left instanceof Long || right instanceof Long) {
-      return Converter.coerceToInteger(left) + Converter.coerceToInteger(right);
-    }
-
-    return Converter.coerceToBigNumber(left).add(Converter.coerceToBigNumber(right));
+    return left.add(right);
   }
 
   @Override

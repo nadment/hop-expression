@@ -30,10 +30,10 @@ public class ReturnTypeInferenceChain implements IReturnTypeInference {
   public DataType getReturnType(IExpressionContext context, Call call) {
     for (IReturnTypeInference rule : rules) {
       DataType type = rule.getReturnType(context, call);
-      if (type != DataType.UNKNOWN) {
+      if (type != UnknownDataType.UNKNOWN) {
         return type;
       }
     }
-    return DataType.UNKNOWN;
+    return UnknownDataType.UNKNOWN;
   }
 }

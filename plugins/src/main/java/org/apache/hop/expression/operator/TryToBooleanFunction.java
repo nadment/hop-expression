@@ -19,8 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.type.Converter;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.BooleanDataType;
 
 /**
  * Converts a string or numeric expression to a boolean value.
@@ -32,6 +31,12 @@ public class TryToBooleanFunction extends ToBooleanFunction {
     super("TRY_TO_BOOLEAN");
   }
 
+//  @Override
+//  public IExpression compile(final IExpressionContext context, final Call call)
+//      throws ExpressionException {
+//    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_BOOLEAN"), call.getOperands()));
+//  }
+  
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
@@ -39,8 +44,7 @@ public class TryToBooleanFunction extends ToBooleanFunction {
       Object value = operands[0].getValue(context);
       if (value == null)
         return null;
-
-      return Converter.cast(value, DataType.BOOLEAN, null);
+      return BooleanDataType.BOOLEAN.cast(value, null);
     } catch (Exception e) {
       return null;
     }

@@ -21,9 +21,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 
 /**
  * The function extracts a number of characters from a string (starting from right)
@@ -63,7 +63,7 @@ public class RightFunction extends Function {
       return result;
     }
 
-    String str = Converter.coerceToString(v0);
+    String str = StringDataType.coerce(v0);
     if (str.length() <= length) {
       return str;
     }

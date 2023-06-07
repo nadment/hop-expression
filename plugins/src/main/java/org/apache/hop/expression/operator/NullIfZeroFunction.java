@@ -35,7 +35,7 @@ import java.math.BigDecimal;
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {
-    super("NULLIFZERO", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.CONDITIONAL,
+    super("NULLIFZERO", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.CONDITIONAL,
         "/docs/nullifzero.html");
   }
 
@@ -44,18 +44,19 @@ public class NullIfZeroFunction extends Function {
       throws Exception {
     BigDecimal value = operands[0].getValue(context, BigDecimal.class);
 
-    if (value == BigDecimal.ZERO)
+    if (value.signum() == 0) {
       return null;
+    }
 
     return value;
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    if ( call.getOperand(0)==Literal.ZERO ) {
+    if (call.getOperand(0) == Literal.ZERO) {
       return Literal.NULL;
     }
-    
+
     return call;
   }
 }

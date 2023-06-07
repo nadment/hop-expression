@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,9 +25,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.math.BigDecimal;
+import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
- * Returns the specified base logarithm of a numeric value.
+ * Calculates the specified base logarithm of a numeric value.
  */
 @FunctionPlugin
 public class LogFunction extends Function {
@@ -41,17 +42,17 @@ public class LogFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Double base = operands[0].getValue(context, Double.class);
+    BigDecimal base = operands[0].getValue(context, BigDecimal.class);
     if (base == null)
       return null;
 
-    Double value = operands[1].getValue(context, Double.class);
+    BigDecimal value = operands[1].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
     
-    if (value <= 0)
+    if (value.signum() <= 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 
-    return FastMath.log(value) / FastMath.log(base);
+    return BigDecimalMath.log(value, DECIMAL128).divide(BigDecimalMath.log(base, DECIMAL128), DECIMAL128);
   }
 }

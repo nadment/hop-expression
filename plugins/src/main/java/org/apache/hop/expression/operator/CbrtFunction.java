@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -24,6 +23,8 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.math.BigDecimal;
+import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  * Returns the cubic root of a numeric expression.
@@ -32,7 +33,9 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class CbrtFunction extends Function {
-
+    
+  private static final BigDecimal TREE = BigDecimal.valueOf(3);
+  
   public CbrtFunction() {
     super("CBRT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/cbrt.html");
@@ -41,9 +44,10 @@ public class CbrtFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
-    return FastMath.cbrt(value);
+  
+    return BigDecimalMath.root(value, TREE, DECIMAL128);
   }
 }

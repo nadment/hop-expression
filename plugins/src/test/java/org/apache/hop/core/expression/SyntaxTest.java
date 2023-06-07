@@ -104,7 +104,7 @@ public class SyntaxTest extends ExpressionTest {
 
     // Arithmetic
     evalEquals("3*5/2",  3*5/2d);
-    evalEquals("9/3*3", 9d/3*3);
+    evalEquals("9/3*3", 9L/3L*3L);
     evalEquals("1 + 2 * 3 * 4 + 5", 1 + 2 * 3 * 4 + 5L);        
     evalEquals("1-2+3*4/5/6-7", 1 - 2 + 3 * 4d / 5d / 6d - 7);
     evalEquals("10*2+1", 21L);
@@ -132,7 +132,11 @@ public class SyntaxTest extends ExpressionTest {
     evalTrue(" 3 > 5 IS FALSE");
 
     // BETWEEN, IN, LIKE have higher precedence than comparison
-    // evalFalse("5 between 4>=4 and 6<=6");
+    //evalFalse("5 between 4>=4 and 6<=6");
+    
+    // The cast operator has higher precedence than the unary minus (negation) operator,
+    // so the statement is interpreted as -(0.0::NUMBER::BOOLEAN)
+    evalFails("-0.0::NUMBER::BOOLEAN");
   }
 
   @Test

@@ -26,6 +26,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.math.BigDecimal;
 
 /**
  * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
@@ -41,12 +42,14 @@ public class AcosFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
-    if (value == null)
+    BigDecimal number = operands[0].getValue(context, BigDecimal.class);
+    if (number == null)
       return null;    
+    
+    double value = number.doubleValue();    
     if (value < -1.0 || value > 1.0) {
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
     }
-    return FastMath.acos(value);
+    return BigDecimal.valueOf(FastMath.acos(value));
   }
 }

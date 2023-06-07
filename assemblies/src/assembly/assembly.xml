@@ -51,9 +51,10 @@
 		</dependencySet>
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>			
 			<includes>
 					<include>com.jayway.jsonpath:json-path:jar</include>			
+				  <include>ch.obermuhlner:big-math</include>
 				  <include>org.eclipse.platform:org.eclipse.osgi:jar</include>
 			    <include>org.eclipse.platform:org.eclipse.core.jobs:jar</include>
 			    <include>org.eclipse.platform:org.eclipse.core.runtime:jar</include>

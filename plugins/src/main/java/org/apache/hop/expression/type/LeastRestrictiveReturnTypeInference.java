@@ -30,7 +30,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
   public DataType getReturnType(final IExpressionContext context, final Call call) {
 
     if ( call.getOperandCount()==0 ) 
-      return DataType.UNKNOWN; 
+      return UnknownDataType.UNKNOWN; 
     
     DataType result = null;
     for (IExpression operand : call.getOperands()) {

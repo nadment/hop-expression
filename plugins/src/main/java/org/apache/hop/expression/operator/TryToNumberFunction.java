@@ -32,6 +32,12 @@ public class TryToNumberFunction extends ToNumberFunction {
     super("TRY_TO_NUMBER");
   }
   
+//  @Override
+//  public IExpression compile(final IExpressionContext context, final Call call)
+//      throws ExpressionException {
+//    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperands()));
+//  }
+  
   @Override
   public BigDecimal parse(final String value, final NumberFormat format) {
     try {

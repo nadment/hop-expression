@@ -28,17 +28,17 @@ public enum DataFamily {
   public DataType getDefaultDataType() {
     switch (this) {
       case BOOLEAN:
-        return DataType.BOOLEAN;
+        return BooleanDataType.BOOLEAN;
       case BINARY:
-        return DataType.BINARY;
+        return BinaryDataType.BINARY;
       case STRING:
-        return DataType.STRING;
+        return StringDataType.STRING;
       case TEMPORAL:
-        return DataType.DATE;
+        return DateDataType.DATE;
       case NUMERIC:
-        return DataType.BIGNUMBER;
+        return NumberDataType.NUMBER;
       case JSON:
-        return DataType.JSON;
+        return JsonDataType.JSON;
       default:
         return null;
     }

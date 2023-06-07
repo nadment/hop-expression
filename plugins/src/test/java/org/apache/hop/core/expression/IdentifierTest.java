@@ -17,7 +17,7 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.StringDataType;
 import org.junit.Test;
 
 public class IdentifierTest extends ExpressionTest {
@@ -26,7 +26,7 @@ public class IdentifierTest extends ExpressionTest {
   public void test() throws Exception {
     Identifier identifier1 = new Identifier("NAME");
     Identifier identifier2 = new Identifier("NAME");
-    Identifier identifier3 = new Identifier("NAME", DataType.STRING, 3);
+    Identifier identifier3 = new Identifier("NAME", StringDataType.STRING, 3);
     assertEquals("NAME", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());
@@ -58,17 +58,17 @@ public class IdentifierTest extends ExpressionTest {
   
   @Test
   public void write() throws Exception {
-    writeEquals("FIELD_STRING");
+    optimize("FIELD_STRING");
     // Reserved word
-    writeEquals("\"CASE\"");    
+    optimize("\"CASE\"");    
     // Data type name
-    writeEquals("\"STRING\"");
+    optimize("\"STRING\"");
     // Time unit name
-    writeEquals("\"CENTURY\"");
+    optimize("\"CENTURY\"");
     // Function name
-    writeEquals("\"YEAR\"");
+    optimize("\"YEAR\"");
     // Contains space
-    writeEquals("Trim(\"IDENTIFIER SPACE\")","TRIM(\"IDENTIFIER SPACE\")");
+    optimize("Trim(\"IDENTIFIER SPACE\")","TRIM(\"IDENTIFIER SPACE\")");
   }
 }
 

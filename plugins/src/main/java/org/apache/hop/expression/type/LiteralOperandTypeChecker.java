@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Kind;
-import org.apache.hop.expression.Literal;
 
 /**
  * Operand type-checking strategy which checks operand type must be a literal with the specified
@@ -35,10 +34,8 @@ public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
   @Override
   public boolean checkSingleOperandType(IExpression operand) {
     if (operand.is(Kind.LITERAL)) {
-      Literal literal = (Literal) operand;
-      if (javaClass.equals(literal.getJavaClass())) {
-        return true;
-      }
+      Class<?> cls = operand.asLiteral().getJavaClass();      
+      return javaClass.isAssignableFrom(cls);
     }
     return false;
   }

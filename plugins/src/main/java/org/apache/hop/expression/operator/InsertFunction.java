@@ -23,11 +23,12 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.DataFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -78,7 +79,7 @@ public class InsertFunction extends Function {
       try {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         buffer.write(bytes, 0, start);
-        buffer.write(Converter.coerceToBinary(v3));
+        buffer.write(BinaryDataType.coerce(v3));
         buffer.write(bytes, start + length, bytes.length - start - length);
         return buffer.toByteArray();
       } catch (IOException e) {
@@ -86,7 +87,7 @@ public class InsertFunction extends Function {
       }
     }
 
-    String str = Converter.coerceToString(v0);
+    String str = StringDataType.coerce(v0);
     int start = Math.min(Math.max(0, position - 1), str.length());
 
     length = Math.min(length, str.length());
@@ -95,7 +96,7 @@ public class InsertFunction extends Function {
 
     StringBuilder builder = new StringBuilder();
     builder.append(str.substring(0, start));
-    builder.append(Converter.coerceToString(v3));
+    builder.append(StringDataType.coerce(v3));
     builder.append(str.substring(start + length));
     return builder.toString();
   }

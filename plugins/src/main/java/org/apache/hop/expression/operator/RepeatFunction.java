@@ -21,9 +21,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -64,7 +64,7 @@ public class RepeatFunction extends Function {
       }
     }
 
-    String value = Converter.coerceToString(v0);
+    String value = StringDataType.coerce(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);

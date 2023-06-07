@@ -25,7 +25,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.DateDataType;
+import org.apache.hop.expression.type.NumberDataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -65,14 +67,14 @@ public class ToCharFunction extends Function {
         pattern = "TM";
       }
 
-      return NumberFormat.of(pattern).format(Converter.coerceToBigNumber(value));
+      return NumberFormat.of(pattern).format(NumberDataType.coerce(value));
     }
 
     if (value instanceof ZonedDateTime) {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
-      return DateTimeFormat.of(pattern).format(Converter.coerceToDate(value));
+      return DateTimeFormat.of(pattern).format(DateDataType.coerce(value));
     }
 
     if (pattern == null) {
@@ -80,7 +82,7 @@ public class ToCharFunction extends Function {
     } else
       pattern = pattern.toUpperCase();
 
-    byte[] bytes = Converter.coerceToBinary(value);
+    byte[] bytes = BinaryDataType.coerce(value);
 
     if (pattern.equals("HEX")) {
       return Hex.encodeHexString(bytes);

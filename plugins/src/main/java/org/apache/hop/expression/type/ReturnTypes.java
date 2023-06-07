@@ -33,45 +33,43 @@ public final class ReturnTypes {
     return  new ExplicitReturnTypeInference(type);
   }
 
+  
+  public static final IReturnTypeInference ANY = explicit(UnknownDataType.ANY);
+  
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.
    */
-  public static final IReturnTypeInference BOOLEAN = explicit(DataType.BOOLEAN);
+  public static final IReturnTypeInference BOOLEAN = explicit(BooleanDataType.BOOLEAN);
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY.
    */
-  public static final IReturnTypeInference BINARY = explicit(DataType.BINARY);
+  public static final IReturnTypeInference BINARY = explicit(BinaryDataType.BINARY);
 
   /**
    * Type-inference strategy whereby the result type of a call is STRING.
    */
-  public static final IReturnTypeInference STRING = explicit(DataType.STRING);
+  public static final IReturnTypeInference STRING = explicit(StringDataType.STRING);
 
   /**
    * Type-inference strategy whereby the result type of a call is INTEGER.
    */
-  public static final IReturnTypeInference INTEGER = explicit(DataType.INTEGER);
+  public static final IReturnTypeInference INTEGER = explicit(IntegerDataType.INTEGER);
 
   /**
    * Type-inference strategy whereby the result type of a call is NUMBER.
    */
-  public static final IReturnTypeInference NUMBER = explicit(DataType.NUMBER);
-
-  /**
-   * Type-inference strategy whereby the result type of a call is BIGNUMBER.
-   */
-  public static final IReturnTypeInference BIGNUMBER = explicit(DataType.BIGNUMBER);
+  public static final IReturnTypeInference NUMBER = explicit(NumberDataType.NUMBER);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference DATE = explicit(DataType.DATE);
+  public static final IReturnTypeInference DATE = explicit(DateDataType.DATE);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference JSON = explicit(DataType.JSON);
+  public static final IReturnTypeInference JSON = explicit(JsonDataType.JSON);
 
   /**
    * Type-inference strategy whereby the result type of a call is the type of the operand #0.
@@ -105,17 +103,17 @@ public final class ReturnTypes {
     DataType type = call.getOperand(0).getType();
     
     if ( type.getScale()>0) {
-      return new DataType(type.getName(), type.getPrecision(), 0); 
+      return new NumberDataType(type.getPrecision(), 0); 
     }
     
-    return DataType.INTEGER; 
+    return IntegerDataType.INTEGER; 
   };
 
-  
+  public static final IReturnTypeInference TRY = new TryReturnTypeInference();
+  public static final IReturnTypeInference ADD_OPERATOR = new AddOperatorReturnTypeInference();
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
   public static final IReturnTypeInference CAST_OPERATOR = new CastOperatorReturnTypeInference();
-
-  public static final IReturnTypeInference ANY = new ExplicitReturnTypeInference(new DataType(DataName.ANY, DataType.PRECISION_NOT_SPECIFIED, DataType.SCALE_NOT_SPECIFIED));
+  public static final IReturnTypeInference IF_FUNCTION = new IfFunctionReturnTypeInference();
   
   public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);

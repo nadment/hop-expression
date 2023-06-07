@@ -27,11 +27,18 @@ import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
-import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BooleanDataType;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.DateDataType;
+import org.apache.hop.expression.type.IntegerDataType;
+import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.NumberDataType;
+import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
@@ -77,24 +84,23 @@ public class ExpressionUtils {
   public static DataType createDataType(IValueMeta valueMeta) {
     switch (valueMeta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
-        return DataType.BOOLEAN;
+        return BooleanDataType.BOOLEAN;
       case IValueMeta.TYPE_DATE:
       case IValueMeta.TYPE_TIMESTAMP:
-        return DataType.DATE;
+        return DateDataType.DATE;
       case IValueMeta.TYPE_STRING:
-        return new DataType(DataName.STRING, valueMeta.getLength());
+        return new StringDataType(valueMeta.getLength());
       case IValueMeta.TYPE_INTEGER:
-        return DataType.INTEGER;
+        return IntegerDataType.INTEGER;
       case IValueMeta.TYPE_NUMBER:
-        return new DataType(DataName.NUMBER, valueMeta.getLength(), valueMeta.getPrecision());
       case IValueMeta.TYPE_BIGNUMBER:        
-        return new DataType(DataName.BIGNUMBER, valueMeta.getLength(), valueMeta.getPrecision());     
+        return new NumberDataType(valueMeta.getLength(), valueMeta.getPrecision());     
       case ValueMetaJson.TYPE_JSON:
-        return DataType.JSON;
+        return JsonDataType.JSON;
       case IValueMeta.TYPE_BINARY:
-        return DataType.BINARY;
+        return new BinaryDataType(valueMeta.getLength());
       default:
-        return DataType.UNKNOWN;
+        return UnknownDataType.UNKNOWN;
     }
   }
 
@@ -113,8 +119,6 @@ public class ExpressionUtils {
       case INTEGER: // Max 2.147.483.647
         return new ValueMetaInteger(name, 9, 0);
       case NUMBER:
-        return new ValueMetaNumber(name, -1, -1);
-      case BIGNUMBER:
         return new ValueMetaBigNumber(name, -1, -1);
       case STRING:
         return new ValueMetaString(name, -1, -1);
@@ -143,8 +147,8 @@ public class ExpressionUtils {
       case INTEGER:
         return new ValueMetaInteger(name);
       case NUMBER:
-        return new ValueMetaNumber(name, type.getPrecision(), type.getScale());
-      case BIGNUMBER:
+//        return new ValueMetaNumber(name, type.getPrecision(), type.getScale());
+     // case BIGNUMBER:
         return new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
       case STRING:
         return new ValueMetaString(name, type.getPrecision(), type.getScale());

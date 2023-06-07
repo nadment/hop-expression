@@ -24,7 +24,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -55,7 +54,7 @@ public class CastOperator extends Operator {
 
     DataType type = operands[1].getValue(context, DataType.class);
 
-    return Converter.cast(value, type);
+    return type.cast(value, null);
   }
 
   @Override

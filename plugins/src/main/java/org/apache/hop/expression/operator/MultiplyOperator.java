@@ -25,7 +25,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -39,7 +38,7 @@ import java.math.BigDecimal;
 public class MultiplyOperator extends Operator {
 
   public MultiplyOperator() {
-    super("MULTIPLY", "*", 50, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC_NUMERIC,
+    super("MULTIPLY", "*", 50, true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 
@@ -77,24 +76,14 @@ public class MultiplyOperator extends Operator {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Object left = operands[0].getValue(context);
+    BigDecimal left = operands[0].getValue(context, BigDecimal.class);
     if (left == null)
       return null;
-    Object right = operands[1].getValue(context);
+    BigDecimal right = operands[1].getValue(context, BigDecimal.class);
     if (right == null)
       return null;
 
-    if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return Converter.coerceToBigNumber(left).multiply(Converter.coerceToBigNumber(right));
-    }
-    if (left instanceof Double || right instanceof Double) {
-      return Converter.coerceToNumber(left) * Converter.coerceToNumber(right);
-    }
-    if (left instanceof Long || right instanceof Long) {
-      return Converter.coerceToInteger(left) * Converter.coerceToInteger(right);
-    }
-
-    return Converter.coerceToBigNumber(left).multiply(Converter.coerceToBigNumber(right));
+    return left.multiply(right, DECIMAL128);
   }
 
   @Override

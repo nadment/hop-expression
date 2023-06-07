@@ -24,16 +24,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
- * Returns the square of a numeric expression.
+ * Calculates the square of a numeric expression.
  */
 @FunctionPlugin
 public class SquareFunction extends Function {
 
   public SquareFunction() {
-    super("SQUARE", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("SQUARE", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/square.html");
   }
 
@@ -44,6 +43,6 @@ public class SquareFunction extends Function {
     if (value == null)
       return null;   
     
-    return value.multiply(value, MathContext.DECIMAL128);
+    return value.multiply(value, DECIMAL128);
   }
 }

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
@@ -26,9 +25,11 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.math.BigDecimal;
+import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
- * Returns the trigonometric cotangent of the angle in radians specified by float expression.
+ * Calculates the trigonometric cotangent of the angle in radians specified by float expression.
  */
 @FunctionPlugin
 public class CotFunction extends Function {
@@ -41,13 +42,13 @@ public class CotFunction extends Function {
   @Override
   public Object eval(final IExpressionContext context, final IExpression[] operands)
       throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
+    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
     if (value == null)
       return null;
 
-    if (value == 0)
+    if (value.signum() == 0)
       throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
-
-    return FastMath.cos(value) / FastMath.sin(value);
+    
+    return BigDecimalMath.cot(value, DECIMAL128);    
   }
 }

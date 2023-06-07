@@ -28,7 +28,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 /**
  * Arithmetic division function.
@@ -41,7 +40,7 @@ import java.math.MathContext;
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV0", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div0.html");
   }
   @Override
@@ -75,6 +74,6 @@ public class Div0Function extends Function {
     if (divisor.signum() == 0)
       return divisor;
 
-    return value.divide(divisor, MathContext.DECIMAL128);
+    return value.divide(divisor, DECIMAL128);
   }
 }

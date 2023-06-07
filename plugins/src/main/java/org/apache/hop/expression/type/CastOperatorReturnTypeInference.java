@@ -30,7 +30,7 @@ public class CastOperatorReturnTypeInference implements IReturnTypeInference {
     try {
       return call.getOperand(1).getValue(context, DataType.class);
     } catch (Exception e) {
-      return DataType.UNKNOWN;
+      return UnknownDataType.UNKNOWN;
     }
   }
 }

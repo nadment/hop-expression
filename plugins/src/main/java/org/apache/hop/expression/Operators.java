@@ -56,6 +56,7 @@ import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegateOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
+import org.apache.hop.expression.operator.TryOperator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -122,6 +123,7 @@ public class Operators {
   // -------------------------------------------------------------
   // SPECIAL OPERATORS with custom or alternative syntax, or optimized
   // -------------------------------------------------------------
+  public static final Operator TRY = new TryOperator();
   public static final Operator CAST = new CastOperator();
   public static final Function CONCAT = new ConcatFunction("||");  
   public static final Function EXTRACT = new ExtractFunction();

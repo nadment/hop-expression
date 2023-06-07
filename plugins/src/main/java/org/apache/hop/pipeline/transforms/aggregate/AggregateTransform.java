@@ -32,13 +32,15 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.DataName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import org.apache.hop.pipeline.transforms.aggregate.AggregateData.AggregateKey;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -54,6 +56,19 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
+  
+  public Date convertToDate(final Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof ZonedDateTime) {
+      return Date.from(((ZonedDateTime) value).toInstant());
+    }
+    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
+        DataName.from(value), DataName.DATE));
+  }
+
+  
   @Override
   public boolean processRow() throws HopException {
 
@@ -195,10 +210,10 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         // Value meta doesn't support ZonedDateTime
         switch (data.aggregateMeta.getValueMeta(i).getType()) {
           case IValueMeta.TYPE_DATE:
-            value = Converter.convertToDate(value);
+            value = convertToDate(value);
             break;
           case IValueMeta.TYPE_TIMESTAMP:
-            value = Converter.convertToDate(value);
+            value = convertToDate(value);
             break;
           default:
         }
@@ -209,6 +224,9 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       putRow(data.outputRowMeta, outputRow);
     }
 
+  
+
+    
     // If we need to give back one row ?
     // This means we give back 0 for COUNT function, null for everything else
     //

@@ -20,7 +20,8 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.type.DataName;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.DateDataType;
+import org.apache.hop.expression.type.StringDataType;
 import org.junit.Test;
 import java.time.LocalDate;
 
@@ -47,7 +48,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       evalFails("UCASE()");
       evalFails("UCASE(1,2,3)");
       
-      returnType("UCASE('abcd',3)", DataType.STRING);
+      returnType("UCASE('abcd',3)", StringDataType.STRING);
   }
 
   @Test
@@ -65,6 +66,6 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       evalFails("DATE_FROM_ID()");
       evalFails("DATE_FROM_ID(1,2,3)");
 
-      returnType("DATE_FROM_ID(20230105)", DataType.DATE);
+      returnType("DATE_FROM_ID(20230105)", DateDataType.DATE);
   }
 }

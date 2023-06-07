@@ -35,7 +35,7 @@ import java.math.RoundingMode;
 public class CeilingFunction extends Function {
 
   public CeilingFunction() {
-    super("CEILING", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("CEILING", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/ceiling.html");
   }
 

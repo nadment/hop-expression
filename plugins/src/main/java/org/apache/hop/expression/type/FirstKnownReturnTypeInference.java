@@ -30,7 +30,7 @@ public class FirstKnownReturnTypeInference implements IReturnTypeInference {
   public DataType getReturnType(IExpressionContext context, Call call) {
     for (IExpression operand : call.getOperands()) {
       DataType type = operand.getType();
-      if (type != DataType.UNKNOWN)
+      if (type != UnknownDataType.UNKNOWN)
         return type;
     }
 

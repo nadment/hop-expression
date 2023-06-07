@@ -16,82 +16,35 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.ExpressionError;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class DataType {
+public abstract class DataType {
 
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
-  
-  /**
-   * BOOLEAN type.
-   */
-  public static final DataType BOOLEAN;
+    
+  protected final DataName name;
+  protected final int precision;
+  protected final int scale;
+  private String signature;
 
-  /**
-   * Default BINARY type with default parameters.
-   */
-  public static final DataType BINARY;
-  
-  /**
-   * Default DATE type with parameters.
-   */
-  public static final DataType DATE;
-
-  /**
-   * Default STRING type with max precision.
-   */
-  public static final DataType STRING;
-
-  /**
-   * JSON type.
-   */
-  public static final DataType JSON;
-
-  /**
-   * Default INTEGER type with max precision.
-   */
-  public static final DataType INTEGER;
-  public static final DataType NUMBER;
-  public static final DataType BIGNUMBER;
-  public static final DataType TIMEUNIT;
-  public static final DataType UNKNOWN;
-
-  static {
-    UNKNOWN = new DataType(DataName.UNKNOWN);
-    BOOLEAN = new DataType(DataName.BOOLEAN, DataName.BOOLEAN.getMaxPrecision(), 0);
-    BINARY = new DataType(DataName.BINARY);
-    DATE = new DataType(DataName.DATE, PRECISION_NOT_SPECIFIED, 9);
-    JSON = new DataType(DataName.JSON);
-    STRING = new DataType(DataName.STRING, DataName.STRING.getMaxPrecision(), 0);
-    INTEGER = new DataType(DataName.INTEGER, DataName.INTEGER.getMaxPrecision(), 0);
-    NUMBER = new DataType(DataName.NUMBER, DataName.NUMBER.getMaxPrecision(), 0);
-    BIGNUMBER = new DataType(DataName.BIGNUMBER, DataName.BIGNUMBER.getMaxPrecision(), 0);
-    TIMEUNIT = new DataType(DataName.TIMEUNIT);
-  }
-  
-  private final DataName name;
-  private final int precision;
-  private final int scale;
-  private String digest;
-
-  private DataType(final DataName name) {
+  protected DataType(final DataName name) {
     this(name, PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED);
   }
 
-  public DataType(final DataName name, final int precision) {
+  protected DataType(final DataName name, final int precision) {
     this(name, precision, SCALE_NOT_SPECIFIED);
   }
   
-  public DataType(final DataName name, final int precision, final int scale) {
+  protected DataType(final DataName name, final int precision, final int scale) {
     this.name = Objects.requireNonNull(name);
     this.precision = precision;
     this.scale = scale;
-    this.digest = generate();
+    this.signature = generate();
   }
 
   /**
@@ -154,12 +107,12 @@ public class DataType {
   public boolean equals(Object obj) {
     return this == obj
         || obj instanceof DataType
-          && Objects.equals(this.digest, ((DataType) obj).digest);
+          && Objects.equals(this.signature, ((DataType) obj).signature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(digest);
+    return Objects.hashCode(signature);
   }
   
   /**
@@ -187,41 +140,52 @@ public class DataType {
     return builder.toString();
   }
   
+  
+  /**
+   * Convert a value to the specified type {@link DataType} with a pattern.
+   *
+   * @param value the value to convert
+   * @param pattern the optional pattern to use for conversion to string when value is date or
+   *        numeric, or null if none
+   * @return the converted value
+   */
+  public Object cast(final Object value, String pattern) {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+  }
+  
   @Override
   public String toString() {
-    return digest;
+    return signature;
   }
   
   /**
-   * Return a data type for a value.
+   * Return a default data type for a value.
    *
    * @return The data type or 'UNKNOWN' if not found
    */
   public static DataType of(final Object value) {
     if (value == null)
-      return UNKNOWN;
+      return UnknownDataType.UNKNOWN;
     if (value instanceof Boolean)
-      return BOOLEAN;
+      return BooleanDataType.BOOLEAN;
     if (value instanceof String)
-      return STRING;
+      return StringDataType.STRING;
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value; 
-      return new DataType(DataName.BIGNUMBER, number.precision(), number.scale());
+      return new NumberDataType(number.precision(), number.scale());
     }
     if (value instanceof Double)
-      return NUMBER;
+      return NumberDataType.NUMBER;
     if (value instanceof Long)
-      return INTEGER;
+      return IntegerDataType.INTEGER;
     if (value instanceof ZonedDateTime)
-      return DATE;
+      return DateDataType.DATE;
     if (value instanceof JsonNode)
-      return JSON;
+      return JsonDataType.JSON;
     if (value instanceof byte[])
-      return BINARY;
-    if (value instanceof TimeUnit)
-      return TIMEUNIT;
+      return BinaryDataType.BINARY;
     
-    return UNKNOWN;
+    return UnknownDataType.UNKNOWN;
   }
 }
 

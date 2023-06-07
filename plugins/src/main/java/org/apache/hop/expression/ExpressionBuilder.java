@@ -15,9 +15,16 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
+import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BooleanDataType;
 import org.apache.hop.expression.type.DataFamily;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.DateDataType;
+import org.apache.hop.expression.type.IntegerDataType;
+import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.NumberDataType;
+import org.apache.hop.expression.type.StringDataType;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -65,7 +72,7 @@ public class ExpressionBuilder {
     ExpressionBuilder builder = new ExpressionBuilder(source);
     try {
       IExpression expression = builder.parse();
-      
+
       if (expression == null)
         return expression;
 
@@ -76,8 +83,8 @@ public class ExpressionBuilder {
         original = expression;
         expression = expression.compile(context);
       } while (!expression.equals(original));
-      
-      return expression;    
+
+      return expression;
     } catch (ParseException e) {
       throw createException(source, e.getErrorOffset(), e);
     } catch (IllegalArgumentException e) {
@@ -250,7 +257,8 @@ public class ExpressionBuilder {
             return new Call((not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
                 expression, parseLogicalNot());
           }
-          throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Operators.IS_DISTINCT_FROM),
+          throw new ParseException(
+              ExpressionError.INVALID_OPERATOR.message(Operators.IS_DISTINCT_FROM),
               this.getPosition());
         default:
           throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
@@ -526,7 +534,7 @@ public class ExpressionBuilder {
         // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
         // - } <integer>
         if (expression.getType().getName().isSameFamily(DataFamily.TEMPORAL)) {
-         expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
+          expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
         } else {
           expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
         }
@@ -535,8 +543,8 @@ public class ExpressionBuilder {
           expression = new Call(Operators.ADD_DAYS, expression,
               new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
         } else {
-         expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
-       }
+          expression = new Call(Operators.SUBTRACT, expression, this.parseBitwiseOr());
+        }
       } else if (isThenNext(Id.CONCAT)) {
         expression = new Call(Operators.CONCAT, expression, this.parseBitwiseOr());
       } else
@@ -548,9 +556,11 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralNumber(Token token) throws ParseException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
-    if ( number.scale()==0 && number.precision()<17 ) {
-      return Literal.of(number.longValueExact());
-    }
+
+    // if ( number.scale()==0 && number.precision()<17 ) {
+    // if ( BigDecimalMath.isLongValue(number) ) {
+    // return new Literal(DataType.INTEGER, number.longValueExact());
+    // }
 
     return Literal.of(number);
   }
@@ -617,7 +627,8 @@ public class ExpressionBuilder {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
+      throw new ParseException(
+          ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
     }
   }
 
@@ -628,7 +639,8 @@ public class ExpressionBuilder {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
+      throw new ParseException(
+          ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
     }
   }
 
@@ -641,7 +653,7 @@ public class ExpressionBuilder {
     try {
       String pattern;
       String str = token.text();
-      
+
       // TODO: Move to an AUTO format
       int length = str.length();
       switch (length) {
@@ -654,7 +666,7 @@ public class ExpressionBuilder {
             pattern = "YYYY-MM-DD HH24:MI:SS.FF6 TZH:TZM";
           else
             pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
-          break;    
+          break;
         case 34: // 2021-01-01 15:28:59.123456789+0200
           pattern = "YYYY-MM-DD HH24:MI:SS.FF9TZHTZM";
           break;
@@ -818,10 +830,11 @@ public class ExpressionBuilder {
     return new Call(function, operands);
   }
 
-  /** 
+  /**
    * Parse function POSITION(<expression> IN <expression>)
    */
-  private IExpression parseFunctionPosition(Token token, final Function function) throws ParseException {
+  private IExpression parseFunctionPosition(Token token, final Function function)
+      throws ParseException {
 
     List<IExpression> operands = new ArrayList<>();
 
@@ -849,7 +862,8 @@ public class ExpressionBuilder {
    * FIRST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    * LAST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    */
-  private IExpression parseFunctionFirstLastValue(Token token, final Function function) throws ParseException {
+  private IExpression parseFunctionFirstLastValue(Token token, final Function function)
+      throws ParseException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
@@ -882,7 +896,8 @@ public class ExpressionBuilder {
   }
 
   /** EXTRACT(<part> FROM <expression>) */
-  private IExpression parseFunctionExtract(Token token, final Function function) throws ParseException {
+  private IExpression parseFunctionExtract(Token token, final Function function)
+      throws ParseException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
@@ -939,7 +954,8 @@ public class ExpressionBuilder {
   /**
    * LISTAGG([DISTINCT] <expression> [, delimiter] )
    */
-  private IExpression parseFunctionListAgg(Token token, final Function function) throws ParseException {
+  private IExpression parseFunctionListAgg(Token token, final Function function)
+      throws ParseException {
 
     AggregateFunction aggregator = Operators.LISTAGG_ALL;
 
@@ -969,7 +985,8 @@ public class ExpressionBuilder {
   }
 
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
-  private IExpression parseFunctionJsonObject(Token token, final Function function) throws ParseException {
+  private IExpression parseFunctionJsonObject(Token token, final Function function)
+      throws ParseException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
@@ -1010,9 +1027,9 @@ public class ExpressionBuilder {
   private IExpression parseFunction(Token token) throws ParseException {
 
     Function function = FunctionRegistry.getFunction(token.text());
-    
+
     // Function with custom syntax
-    switch(token.text()) {
+    switch (token.text()) {
       case "CAST":
       case "TRY_CAST":
         return parseFunctionCast(token, function);
@@ -1030,7 +1047,7 @@ public class ExpressionBuilder {
       case "JSON_OBJECT":
         return this.parseFunctionJsonObject(token, function);
     }
-    
+
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
@@ -1056,43 +1073,70 @@ public class ExpressionBuilder {
   }
 
   private Literal parseLiteralTimeUnit(Token token) throws ParseException {
-     TimeUnit unit = TimeUnit.of(token.text());
-     
-     if ( unit==null) {
-       throw new ParseException(ExpressionError.INVALID_TIMEUNIT.message(token.text()),
-           token.start());
-     }     
-     return Literal.of(unit);
+    TimeUnit unit = TimeUnit.of(token.text());
+
+    if (unit == null) {
+      throw new ParseException(ExpressionError.INVALID_TIMEUNIT.message(token.text()),
+          token.start());
+    }
+    return Literal.of(unit);
   }
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
-    try {
-      DataName name = DataName.of(token.text());
+
+    DataName name = DataName.of(token.text());
+    if (name != null) {
       int precision = name.getMaxPrecision();
-      int scale = 0;
+      int scale = DataType.SCALE_NOT_SPECIFIED;
+      boolean precisionFound = false;
+      boolean scaleFound = false;
       
       if (isThenNext(Id.LPARENTHESIS)) {
-        
+
         // Precision
         token = this.next();
         precision = Integer.parseInt(token.text());
+        precisionFound = true;
         
         // Scale
         if (isThenNext(Id.COMMA)) {
           token = this.next();
-          scale = Integer.parseInt(token.text());          
+          scale = Integer.parseInt(token.text());
+          scaleFound = true;
         }
-        
+
         if (isNotThenNext(Id.RPARENTHESIS)) {
-          throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+          throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(),
+              token.start());
         }
       }
-      
-      return Literal.of(new DataType(name, precision, scale));
-    } catch (RuntimeException e) {
-      throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()),
-          token.start());
+
+      switch (name) {
+        case BOOLEAN:
+          if ( precisionFound ) break;
+          return Literal.of(BooleanDataType.BOOLEAN);
+        case INTEGER:
+          if ( precisionFound ) break;
+          return Literal.of(IntegerDataType.INTEGER);
+        case NUMBER:
+          return Literal.of(new NumberDataType(precision, scale));
+        case STRING:
+          if ( scaleFound ) break;
+          return Literal.of(new StringDataType(precision));
+        case BINARY:
+          if ( scaleFound ) break;
+          return Literal.of(new BinaryDataType(precision));
+        case DATE:
+          if ( precisionFound ) break;
+          return Literal.of(DateDataType.DATE);
+        case JSON:
+          if ( precisionFound ) break;
+          return Literal.of(JsonDataType.JSON);
+        default:
+      }
     }
+
+    throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()), token.start());
   }
 
   /** Parses an expression string to return the individual tokens. */
@@ -1407,11 +1451,11 @@ public class ExpressionBuilder {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (DataName.of(name)!=null) {
+          if (DataName.of(name) != null) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 
-          if (TimeUnit.of(name)!=null) {
+          if (TimeUnit.of(name) != null) {
             return new Token(Id.LITERAL_TIMEUNIT, start, position, name);
           }
 

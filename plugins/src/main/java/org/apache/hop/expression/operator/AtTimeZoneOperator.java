@@ -21,9 +21,9 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
 
@@ -46,7 +46,7 @@ public class AtTimeZoneOperator extends Operator {
       return null;
 
     String zone = operands[1].getValue(context, String.class);
-    return value.withZoneSameLocal(Converter.toZoneId(zone));
+    return value.withZoneSameLocal(DateTimeFormat.toZoneId(zone));
   }
 
   @Override

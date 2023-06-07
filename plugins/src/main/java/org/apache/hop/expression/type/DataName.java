@@ -50,10 +50,10 @@ public enum DataName {
   INTEGER(DataFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
 
   /** Double precision floating point number */
-  NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO, 38, Double.class),
+  //NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO, 38, Double.class),
 
   /** Unlimited precision number */
-  BIGNUMBER(DataFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
+  NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
 
   /** Date-time value with nanosecond precision and time zone */
   DATE(DataFamily.TEMPORAL, PrecScale.NO_NO, 0, ZonedDateTime.class),
@@ -70,10 +70,10 @@ public enum DataName {
   protected static final Set<DataName> STRING_TYPES = Set.of(STRING);
   protected static final Set<DataName> BINARY_TYPES = Set.of(BINARY);
   protected static final Set<DataName> BOOLEAN_TYPES = Set.of(BOOLEAN);
-  protected static final Set<DataName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER, BIGNUMBER);
+  protected static final Set<DataName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
   protected static final Set<DataName> TEMPORAL_TYPES = Set.of(DATE);
   protected static final Set<DataName> JSON_TYPES = Set.of(JSON);
-  protected static final Set<DataName> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, BIGNUMBER, DATE, BINARY, JSON);
+  protected static final Set<DataName> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
 
   /**
    * Indicating allowable precision/scale combinations.

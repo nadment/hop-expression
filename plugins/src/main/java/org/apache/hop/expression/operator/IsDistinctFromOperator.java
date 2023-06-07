@@ -24,7 +24,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -46,7 +46,7 @@ public class IsDistinctFromOperator extends Operator {
     Object left = operands[0].getValue(context);
     Object right = operands[1].getValue(context);
 
-    return Converter.compare(left, right) != 0;
+    return Comparison.compare(left, right) != 0;
   }
 
   @Override

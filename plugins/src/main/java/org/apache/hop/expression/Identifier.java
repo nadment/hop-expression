@@ -18,9 +18,15 @@ import static java.util.Objects.requireNonNull;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BooleanDataType;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.IntegerDataType;
+import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.NumberDataType;
+import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
@@ -50,7 +56,7 @@ public final class Identifier implements IExpression {
   }
 
   public Identifier(final String name) {
-    this(name, DataType.UNKNOWN, -1);
+    this(name, UnknownDataType.UNKNOWN, -1);
   }
 
   @Override
@@ -117,7 +123,7 @@ public final class Identifier implements IExpression {
         case IValueMeta.TYPE_INTEGER:
           return rowMeta.getInteger(row, ordinal);
         case IValueMeta.TYPE_NUMBER:
-          return rowMeta.getNumber(row, ordinal);
+          //return rowMeta.getNumber(row, ordinal);
         case IValueMeta.TYPE_BIGNUMBER:
           return rowMeta.getBigNumber(row, ordinal);
         case ValueMetaJson.TYPE_JSON:
@@ -165,9 +171,6 @@ public final class Identifier implements IExpression {
 //          if (clazz == Long.class) {
 //            return clazz.cast(value ? 1L : 0L);
 //          }
-//          if (clazz == Double.class) {
-//            return clazz.cast(value ? 1D : 0D);
-//          }
 //          if (clazz == BigDecimal.class) {
 //            return clazz.cast(value ? BigDecimal.ONE : BigDecimal.ZERO);
 //          }
@@ -207,22 +210,19 @@ public final class Identifier implements IExpression {
             return clazz.cast(value);
           }
           if (clazz == Boolean.class) {         
-            return clazz.cast(Converter.parseBoolean(value));
+            return clazz.cast(BooleanDataType.convert(value));
           }
           if (clazz == Long.class) {
-            return clazz.cast(Converter.parseInteger(value));
-          }
-          if (clazz == Double.class) {
-            return clazz.cast(Converter.parseNumber(value));
+            return clazz.cast(IntegerDataType.convert(value));
           }
           if (clazz == BigDecimal.class) {
-            return clazz.cast(Converter.parseBigNumber(value));
+            return clazz.cast(NumberDataType.convert(value));
           }
           if (clazz == byte[].class) {
-            return clazz.cast(value.getBytes(StandardCharsets.UTF_8));
+            return clazz.cast(BinaryDataType.convert(value));
           }
           if (clazz == JsonNode.class) {
-            return clazz.cast(Converter.parseJson(value));
+            return clazz.cast(JsonDataType.convert(value));
           }        
           break;
         }
@@ -234,9 +234,6 @@ public final class Identifier implements IExpression {
           }
           if (clazz == Long.class) {
             return clazz.cast(value);
-          }
-          if (clazz == Double.class) {
-            return clazz.cast(Double.valueOf(value));
           }
           if (clazz == BigDecimal.class) {
             return clazz.cast(BigDecimal.valueOf(value));
@@ -254,9 +251,6 @@ public final class Identifier implements IExpression {
           Double value = rowMeta.getNumber(row, ordinal);
           if (value == null) {
             return null;
-          }
-          if (clazz == Double.class) {
-            return clazz.cast(value);
           }
           if (clazz == Long.class) {
             return clazz.cast(value.longValue());
@@ -283,9 +277,6 @@ public final class Identifier implements IExpression {
           if (clazz == Long.class) {
             return clazz.cast(value.longValue());
           }
-          if (clazz == Double.class) {
-            return clazz.cast(value.doubleValue());
-          }
           if (clazz == Boolean.class) {
             return clazz.cast(value.unscaledValue()!=BigInteger.ZERO);
           }
@@ -301,7 +292,7 @@ public final class Identifier implements IExpression {
             return clazz.cast(value);
           }
           if (clazz == String.class) {
-            return clazz.cast(Converter.toString((JsonNode) value));
+            return clazz.cast(StringDataType.convert((JsonNode) value));
           }
           break;
         }
@@ -363,14 +354,14 @@ public final class Identifier implements IExpression {
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
     IRowMeta rowMeta = context.getRowMeta();
 
-    int indexOfValue = rowMeta.indexOfValue(name);
-    if (indexOfValue < 0) {
+    int index = rowMeta.indexOfValue(name);
+    if (index < 0) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
     }
 
-    DataType valueType = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
+    DataType type = ExpressionUtils.createDataType(rowMeta.getValueMeta(index));
 
-    return new Identifier(name, valueType, indexOfValue);
+    return new Identifier(name, type, index);
   }
   
   

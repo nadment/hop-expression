@@ -154,7 +154,11 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       case IValueMeta.TYPE_STRING:
         return expression.getValue(data.context, String.class);
       case IValueMeta.TYPE_NUMBER:
-        return expression.getValue(data.context, Double.class);
+        BigDecimal number = expression.getValue(data.context, BigDecimal.class);
+        if (number==null ) {
+          return null;
+        }
+        return number.doubleValue();
       case IValueMeta.TYPE_INTEGER:
         return expression.getValue(data.context, Long.class);
       case IValueMeta.TYPE_DATE: {

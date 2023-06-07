@@ -24,7 +24,9 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.BooleanDataType;
+import org.apache.hop.expression.type.IntegerDataType;
+import org.apache.hop.expression.type.UnknownDataType;
 import org.junit.Test;
 
 public class TupleTest extends ExpressionTest {
@@ -35,17 +37,17 @@ public class TupleTest extends ExpressionTest {
     Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);    
     Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
     Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
-    Tuple tuple4 = new Tuple(Literal.NULL, Literal.ZERO, Literal.NULL);
+    Tuple tuple4 = new Tuple(Literal.NULL, Literal.ZERO, Literal.NULL);    
     Tuple tuple5 = new Tuple(Literal.TRUE, Literal.FALSE);
     Tuple tuple6 = new Tuple(Literal.of("A"), Literal.of("B"));
     Tuple tuple7 = new Tuple(Literal.of("A"), Literal.of("B"));
     Tuple tuple8 = new Tuple(Literal.of("A"), new Identifier("B"));
     
     assertEquals(Kind.TUPLE, tuple1.getKind());
-    assertEquals(DataType.INTEGER, tuple1.getType());
-    assertEquals(DataType.INTEGER, tuple4.getType());
-    assertEquals(DataType.UNKNOWN, tuple3.getType());
-    assertEquals(DataType.BOOLEAN, tuple5.getType());
+    assertEquals(IntegerDataType.INTEGER, tuple1.getType());
+    assertEquals(IntegerDataType.INTEGER, tuple4.getType());
+    assertEquals(UnknownDataType.UNKNOWN, tuple3.getType());
+    assertEquals(BooleanDataType.BOOLEAN, tuple5.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
     assertTrue(tuple1.isConstant());

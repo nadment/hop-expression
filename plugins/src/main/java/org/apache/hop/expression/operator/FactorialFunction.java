@@ -29,13 +29,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Returns the factorial value of a numeric expression.
+ * Calculates the factorial value of a numeric expression.
  */
 @FunctionPlugin
 public class FactorialFunction extends Function {
 
   public FactorialFunction() {
-    super("FACTORIAL", ReturnTypes.BIGNUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("FACTORIAL", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/factorial.html");
   }
 

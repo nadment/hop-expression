@@ -21,7 +21,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Converter;
+import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -47,7 +47,7 @@ public class LeastFunction extends Function {
       // null is always smaller
       if (value == null)
         continue;
-      if (result == null || Converter.compare(value, result) < 0) {
+      if (result == null || Comparison.compare(value, result) < 0) {
         result = value;
       }
     }
