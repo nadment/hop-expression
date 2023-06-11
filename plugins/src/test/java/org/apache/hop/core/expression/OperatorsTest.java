@@ -46,6 +46,7 @@ public class OperatorsTest extends ExpressionTest {
     
     // Binary
     evalTrue("0b11110000 = 0xF0");
+    evalTrue("BINARY 'FF22C' = BINARY 'ff22c'");
     
     // Boolean
     evalTrue("true = true");
@@ -153,7 +154,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("(4+2)>10-9");
     evalTrue("FIELD_INTEGER>10");
     evalFalse("5>5");
-    evalFalse("0xF5>0xFE");
+    evalFalse("BINARY 'F5'>BINARY 'FE'");
     
     evalFalse("false > true");
     evalFalse("false > false");
@@ -326,7 +327,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("TRUE IN (FALSE,NULL_BOOLEAN,TRUE)");
     evalTrue("DATE '2019-01-01' in (DATE '2019-04-01',DATE '2019-01-01',DATE '2019-03-06')");
     evalTrue("DATE '2019-01-01' in (TIMESTAMP '2019-04-01 00:00:00',DATE '2019-01-01',DATE '2019-03-06')");
-    evalTrue("0x0123456789 in (0x9876,0x0123456789,0x3698)");
+    evalTrue("BINARY '0123456789' in (BINARY '9876',BINARY '0123456789',BINARY '3698')");
     evalFalse("2 in (1,2.5,3)");
 
     evalTrue("2 in (null,1,2,3)");
@@ -488,7 +489,7 @@ public class OperatorsTest extends ExpressionTest {
   @Test
   public void Add() throws Exception {
     evalEquals("10+(-0.5)", 9.5);
-    evalEquals("0xF::INTEGER+1", 16L);
+    evalEquals("BINARY 'F'::INTEGER+1", 16L);
     evalEquals("0b00011::INTEGER+0", 3L);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
     evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
@@ -677,20 +678,20 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST('1234.567' as Integer)", 1234L);
     
     // Binary
-    evalEquals("CAST(0x123 as Integer)", 291L);
+    evalEquals("CAST(BINARY '123' as Integer)", 291L);
     
     // Null
     evalNull("CAST(NULL as Integer)");
     evalNull("CAST(NULL_INTEGER as Integer)");
     
+    // Accept DataType quoted like a String
+    evalEquals("Cast(123 as 'INTEGER')", 123L);
+    
     // Unsupported conversion
     evalFails("CAST(DATE '2019-02-25' AS INTEGER)");
     
     optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
-    
-    // Accept DataType quoted like a String
-    evalEquals("Cast(123 as 'INTEGER')", 123L);
-    
+  
     // Return type
     returnType("CAST('3' as INTEGER)", new IntegerDataType());
     returnType("CAST(FIELD_NUMBER as INTEGER)", new IntegerDataType());
@@ -741,6 +742,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
     optimize("FIELD_INTEGER::NUMBER", "CAST(FIELD_INTEGER AS NUMBER)");
 
+    
     // TODO: Chained cast
     // optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS NUMBER)", "123456");
 
@@ -782,12 +784,20 @@ public class OperatorsTest extends ExpressionTest {
     // Null
     evalNull("CAST(NULL as STRING)");
     evalNull("CAST(NULL_STRING as String)");
-        
-    // The result value does not fit in the type
-    //evalFails("CAST(1234 AS string(3))");
-    //evalFails("CAST(DATE '2013-02-02' AS string(9))");
-    
+            
     optimize("CAST(FIELD_STRING AS STRING)", "FIELD_STRING");
+    optimize("CAST(TRUE AS STRING)", "'TRUE'");
+    optimize("CAST(FALSE AS STRING(5))", "'FALSE'");
+    optimize("CAST(123456 AS STRING(6))", "'123456'");
+    optimize("CAST(123456.1 AS STRING(8))", "'123456.1'");
+    optimize("CAST(DATE '2013-02-02' AS STRING(10))", "'2013-02-02'"); 
+    
+    // Cast from data type to string fails because the result value does not fit in the type.
+    // So the expression is not modified    
+    optimize("CAST(FALSE AS STRING(3))", "CAST(FALSE AS STRING(3))");
+    optimize("CAST(123456 AS STRING(3))", "CAST(123456 AS STRING(3))");
+    optimize("CAST(123456.1 AS STRING(3))", "CAST(123456.1 AS STRING(3))");
+    optimize("CAST(DATE '2013-02-02' AS STRING(3))", "CAST(DATE '2013-02-02' AS STRING(3))");    
   }
   
   @Test
@@ -800,7 +810,7 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("CAST(NULL as Date)");
     evalNull("CAST(NULL_DATE as Date)");
     
-    // Erreur parsing
+    // Erreur parsing format
     evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
     evalFails("CAST('2023-01' AS DATE FORMAT 'YYYY-MM-DD')");
     
@@ -813,6 +823,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("Cast('2021-02-08' as DATE)", "DATE '2021-02-08'");
     optimize("'2021-02-08'::DATE", "DATE '2021-02-08'");
     
+
     // Return type
     returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DateDataType.DATE);
   }
@@ -1090,6 +1101,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("NOT");
     
     optimize("NOT FIELD_BOOLEAN");
+    optimize("NOT NOT FIELD_BOOLEAN","FIELD_BOOLEAN");
+    optimize("NOT NOT NOT FIELD_BOOLEAN","NOT FIELD_BOOLEAN");
     optimizeFalse("not true");
     optimizeTrue("not false");
     optimizeTrue("not not true");
@@ -1359,11 +1372,11 @@ public class OperatorsTest extends ExpressionTest {
     returnType("NULL_STRING||'TEST'", StringDataType.STRING);
     
     // Binary
-    evalEquals("0x1F || NULL_BINARY || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
-    evalEquals("NULL_BINARY || 0x1F || 0x2A3B", new byte[]{0x1F, 0x2A, 0x3B});
-    evalEquals("0x1F || 0x2A3B || NULL_BINARY", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("BINARY '1F' || NULL_BINARY || BINARY '2A3B'", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("NULL_BINARY || BINARY '1F' || BINARY '2A3B'", new byte[]{0x1F, 0x2A, 0x3B});
+    evalEquals("BINARY '1F' || BINARY '2A3B' || NULL_BINARY", new byte[]{0x1F, 0x2A, 0x3B});
 
-    returnType("0x2A3B || NULL_BINARY", BinaryDataType.BINARY);
+    returnType("BINARY '2A3B' || NULL_BINARY", BinaryDataType.BINARY);
     
     optimize("FIELD_STRING||'TEST'");
   }

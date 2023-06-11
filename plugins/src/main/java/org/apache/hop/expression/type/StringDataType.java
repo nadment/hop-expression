@@ -31,20 +31,20 @@ public final class StringDataType extends DataType {
   /**
    * Default STRING type with max precision.
    */
-  public static final StringDataType STRING = new StringDataType(PRECISION_NOT_SPECIFIED);   
-  
+  public static final StringDataType STRING = new StringDataType(PRECISION_NOT_SPECIFIED);
+
   public StringDataType(int precision) {
     super(DataName.STRING, precision);
   }
-  
+
   public StringDataType(int precision, int scale) {
     super(DataName.STRING, precision, scale);
   }
-  
+
   public String cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link StringDataType} with a pattern.
    *
@@ -58,39 +58,64 @@ public final class StringDataType extends DataType {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof String) {
       String str = (String) value;
 
       // adjust length
-      if ( this.precision<str.length()) {
-        str = str.substring(0,this.precision);
+      if (this.precision < str.length()) {
+        str = str.substring(0, this.precision);
       }
-      
+
       return str;
     }
     if (value instanceof Boolean) {
-      return convert((boolean) value);
+      String result = convert((boolean) value);      
+      if (checkPrecision(result)) {
+        return result;
+      }
+
+      throw new IllegalArgumentException(
+          ExpressionError.CONVERSION_ERROR.message(BooleanDataType.BOOLEAN, value, this));
     }
-    if (value instanceof Number) {
+    else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
-      return NumberFormat.of(pattern).format(NumberDataType.coerce(value));
+      BigDecimal number = NumberDataType.coerce(value);
+      String result = NumberFormat.of(pattern).format(number);
+      if ( checkPrecision(result)) {
+        return result;
+      }
+      throw new IllegalArgumentException(
+          ExpressionError.CONVERSION_ERROR.message(NumberDataType.NUMBER, value, this));
     }
     if (value instanceof ZonedDateTime) {
       if (pattern == null)
         pattern = "YYYY-MM-DD";
-      return DateTimeFormat.of(pattern).format((ZonedDateTime) value);
+      String result =  DateTimeFormat.of(pattern).format((ZonedDateTime) value);
+      
+      if (checkPrecision(result)) {
+        return result;
+      }
+      throw new IllegalArgumentException(
+          ExpressionError.CONVERSION_ERROR.message(DateDataType.DATE, value, this));
     }
-    
+
     if (value instanceof byte[]) {
       return new String((byte[]) value, StandardCharsets.UTF_8);
     }
 
-    return String.valueOf(value);    
+    return String.valueOf(value);
   }
-  
+
+
+  protected boolean checkPrecision(String result) {
+    if ( result==null) return true;
+    
+    return this.precision < 0 || this.precision >= result.length();
+  }
+
   /**
    * Coerce value to data type STRING
    * 
@@ -116,7 +141,7 @@ public final class StringDataType extends DataType {
 
     return String.valueOf(value);
   }
-  
+
   public static String convert(final boolean value) {
     return value ? "TRUE" : "FALSE";
   }
@@ -128,7 +153,7 @@ public final class StringDataType extends DataType {
   public static String convert(final byte[] bytes) {
     return new String(bytes, StandardCharsets.UTF_8);
   }
-  
+
   /**
    * Convert Json value to String.
    * 

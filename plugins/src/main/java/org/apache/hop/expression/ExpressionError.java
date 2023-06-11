@@ -20,17 +20,17 @@ import org.apache.hop.i18n.BaseMessages;
  * Enumeration of the error which can be used in expression exception.
  */
 public enum ExpressionError {
-  //
+  /** Internal error {0} */
   INTERNAL_ERROR("Expression.InternalError"),
-  //
+  /** Syntax error at line {0} column {1}:  {2} */
   SYNTAX_ERROR("Expression.SyntaxError"),
-  //
+  /** {0} {1} */
   OPERATOR_ERROR("Expression.OperatorError"),
   //
   CONTEXT_ERROR("Expression.ContextError"),
-  //
+  /** Division by zero */
   DIVISION_BY_ZERO("Expression.DivisionByZero"),
-  //
+  /** Illegal argument to the operator ''{0}'' */
   ILLEGAL_ARGUMENT("Expression.IllegalArgument"),
   //
   ILLEGAL_ARGUMENT_TYPE("Expression.IllegalArgumentType"),
@@ -50,7 +50,7 @@ public enum ExpressionError {
   MISSING_LEFT_PARENTHESIS("Expression.MissingLeftParenthesis"),
   //
   UNBALANCE_PARENTHESIS("Expression.UnbalancedParenthesis"),
-  //
+  /** Unexpected character ''{0}''*/
   UNEXPECTED_CHARACTER("Expression.UnexpectedCharacter"),
   //
   UNEXPECTED_END_OF_EXPRESSION("Expression.UnexpectedEndOfExpression"),
@@ -64,7 +64,7 @@ public enum ExpressionError {
   VARIABLE_VALUE_ERROR("Expression.InvalidVariable"),
   //
   INVALID_OPERATOR("Expression.InvalidOperator"),
-  //
+  /** Invalid Boolean ''{0}'' */
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   //
   //INVALID_DATE("Expression.InvalidDate"),
@@ -114,12 +114,14 @@ public enum ExpressionError {
   UNSUPPORTED_JSON_TYPE("Expression.UnsupportedJsonType"),
   //
   UNSUPPORTED_ARRAY_TYPE("Expression.UnsupportedArrayType"),
-  //
+  /** Error converting {0} value ''{1}'' to data type {2} */
   CONVERSION_ERROR("Expression.ConversionError"),
   //
   UNPARSABLE_DATE_WITH_FORMAT("Expression.UnparsableDateWithFormat"),
   //
   UNPARSABLE_NUMBER_WITH_FORMAT("Expression.UnparsableNumberWithFormat"),
+  //
+  UNPARSABLE_BINARY("Expression.UnparsableBinary"),
   //
   REGEXP_REPLACE_ERROR("Expression.RegexpReplaceError");
 
@@ -129,7 +131,7 @@ public enum ExpressionError {
     this.message = message;
   }
 
-  public String message() {
+  public String toString() {
     return BaseMessages.getString(ExpressionError.class, message);
   }
 

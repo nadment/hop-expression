@@ -1455,8 +1455,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Greatest() throws Exception {
     evalEquals("Greatest(5,2,NULL_INTEGER,9,4)", 9L);
     evalEquals("Greatest('B','A','C')", "C");
-    evalEquals("Greatest(0x12,0x1F,0x0A)", new byte[] {0x1F});
-
+    evalEquals("Greatest(BINARY '12', BINARY '1F',BINARY '0A')", new byte[] {0x1F});
     evalEquals("Greatest(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
         LocalDate.of(2021, 12, 6));
     evalTrue("Greatest(false,true,false)");
@@ -1475,7 +1474,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Least() throws Exception {
     evalEquals("Least(5,2,NULL_INTEGER,9,4)", 2L);
     evalEquals("Least('B','A','C')", "A");
-    evalEquals("Least(0x12,0x1F,0x0A)", new byte[] {0x0A});
+    evalEquals("Least(BINARY '12',BINARY '1F',BINARY '0A')", new byte[] {0x0A});
     evalEquals("Least(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
         LocalDate.of(1990, 12, 8));
     evalFalse("Least(false,true,false)");
@@ -1496,8 +1495,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Length('TEST')", 4L);
 
     // Binary
-    evalEquals("Length(0xF0FA)", 2L);
-    evalEquals("Length(0x0F0FA)", 3L);
+    evalEquals("Length(BINARY 'F0FA')", 2L);
+    evalEquals("Length(BINARY '0F0FA')", 3L);
 
     evalNull("Length(NULL_STRING)");
     evalFails("Length()");
@@ -1512,21 +1511,21 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Left('',1)", "");
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
-    evalEquals("Left(0x1234567890, 2)", new byte[] {0x12, 0x34});
+    evalEquals("Left(BINARY '1234567890', 2)", new byte[] {0x12, 0x34});
     evalNull("Left(NULL_STRING,4)");
     evalNull("Left('TEST',NULL_INTEGER)");
     evalFails("Left()");
     
     returnType("Left('TEST FROM',4)", StringDataType.STRING);
-    returnType("Left(0x1234567890, 2)", BinaryDataType.BINARY);
+    returnType("Left(BINARY '1234567890', 2)", BinaryDataType.BINARY);
   }
 
   @Test
   public void Insert() throws Exception {
     evalEquals("Insert('abcd', 2, 1, 'qw')", "aqwcd");
     evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
-    evalEquals("Insert(0x1234::BINARY, 2, 0, 0x56::BINARY)", new byte[] {0x12, 0x56, 0x34});
-    evalEquals("Insert(0x1234, 0, 0, 0x56)", new byte[] {0x56, 0x12, 0x34});
+    evalEquals("Insert(BINARY '1234', 2, 0, BINARY '56')", new byte[] {0x12, 0x56, 0x34});
+    evalEquals("Insert(BINARY '1234', 0, 0, BINARY '56')", new byte[] {0x56, 0x12, 0x34});
     evalNull("Insert(NULL_STRING, 2, 1, 'qw')");
     evalNull("Insert('abcd', NULL_INTEGER, 1, 'qw')");
     evalNull("Insert('abcd', 2, NULL_INTEGER, 'qw')");
@@ -1540,20 +1539,20 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Right('',1)", "");
     evalEquals("Right('TEST',10)", "TEST");
     evalEquals("Right('TEST',-1)", "");
-    evalEquals("Right(0x1234567890, 2)", new byte[] {0x78, (byte) 0x90});
+    evalEquals("Right(BINARY '1234567890', 2)", new byte[] {0x78, (byte) 0x90});
     evalNull("Right(NULL_STRING,4)");
     evalNull("Right('TEST',NULL_INTEGER)");
     evalFails("Right()");
     
     returnType("Right('TEST FROM',4)", StringDataType.STRING);
-    returnType("Right(0x1234567890, 2)", BinaryDataType.BINARY);
+    returnType("Right(BINARY '1234567890', 2)", BinaryDataType.BINARY);
   }
 
   @Test
   public void Repeat() throws Exception {
     evalEquals("Repeat('ABCD',3)", "ABCDABCDABCD");
     evalEquals("Repeat('ABCDEFCD',0)", "");
-    evalEquals("Repeat(0x1234,3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
+    evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
     evalNull("Repeat(NULL_STRING,2)");
     evalNull("Repeat('ABCD',NULL_INTEGER)");
     evalFails("Repeat()");
@@ -1576,10 +1575,9 @@ public class FunctionsTest extends ExpressionTest {
     evalTrue("To_Boolean('on')");
     evalTrue("To_Boolean('1')");
     evalTrue("To_Boolean(5)");
-    evalTrue("To_Boolean(2.3::Number)");
-    evalTrue("To_Boolean(-2.3::Number)");
     evalTrue("To_Boolean(-1)");
-
+    evalTrue("To_Boolean(2.3)");
+    evalTrue("To_Boolean(-2.3)");
     evalFalse("To_Boolean('False')");
     evalFalse("To_Boolean('off')");
     evalFalse("To_Boolean('NO')");
@@ -2080,9 +2078,9 @@ public class FunctionsTest extends ExpressionTest {
         "2020-12-03 01:02:03.123456");
 
     // Binary
-    evalEquals("TO_CHAR(0x41706163686520486f70,'HEX')", "41706163686520486f70");
-    evalEquals("TO_CHAR(0x41706163686520486f70,'BASE64')", "QXBhY2hlIEhvcA==");
-    evalEquals("TO_CHAR(0x41706163686520486f70,'UTF-8')", "Apache Hop");
+    evalEquals("TO_CHAR(BINARY '41706163686520486f70','HEX')", "41706163686520486f70");
+    evalEquals("TO_CHAR(BINARY '41706163686520486f70','BASE64')", "QXBhY2hlIEhvcA==");
+    evalEquals("TO_CHAR(BINARY '41706163686520486f70','UTF-8')", "Apache Hop");
         
     // String
     evalEquals("TO_CHAR('Apache Hop','HEX')","41706163686520486f70");
@@ -2412,9 +2410,9 @@ public class FunctionsTest extends ExpressionTest {
     evalFalse("StartsWith('-TEST FROM','TES')");
 
     // Binary
-    evalTrue("StartsWith(0xFAA12345,0xfA)");;
-    evalFalse("StartsWith(0xFAA12345,0xEE)");
-    evalFalse("StartsWith(0x12345,0x123456)");
+    evalTrue("StartsWith(BINARY 'FAA12345',BINARY 'fA')");;
+    evalFalse("StartsWith(BINARY 'FAA12345',BINARY 'EE')");
+    evalFalse("StartsWith(BINARY '12345',BINARY '123456')");
 
     evalNull("StartsWith(NULL_STRING,'ROMA')");
     evalNull("StartsWith('TEST FROM',NULL_STRING)");
@@ -2430,9 +2428,9 @@ public class FunctionsTest extends ExpressionTest {
     evalFalse("EndsWith('TEST FROM','ROMA')");
 
     // Binary
-    evalTrue("EndsWith(0xFAA12345,0x2345)");
-    evalFalse("EndsWith(0xFAA12345,0x88)");
-    evalFalse("EndsWith(0x12345,0xFFFF12345)");
+    evalTrue("EndsWith(BINARY 'FAA12345',BINARY '2345')");
+    evalFalse("EndsWith(BINARY 'FAA12345',BINARY '88')");
+    evalFalse("EndsWith(BINARY '12345',BINARY 'FFFF12345')");
 
     evalNull("EndsWith(NULL_STRING,'ROMA')");
     evalNull("EndsWith('TEST FROM',NULL_STRING)");
@@ -2573,7 +2571,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Concat('a',NULL_STRING)", "a");
 
     // Binary
-    evalEquals("Concat(0x1F,0x2A3B)", new byte[] {0x1F, 0x2A, 0x3B});
+    evalEquals("Concat(BINARY '1F',BINARY '2A3B')", new byte[] {0x1F, 0x2A, 0x3B});
 
     evalNull("Concat(NULL_STRING,NULL_STRING)");
 
@@ -2592,7 +2590,7 @@ public class FunctionsTest extends ExpressionTest {
     optimize("CONCAT('A',CONCAT(FIELD_STRING,CONCAT(FIELD_STRING,'C')||'D'))", "'A'||FIELD_STRING||FIELD_STRING||'C'||'D'");
     
     returnType("FIELD_STRING||'t'", StringDataType.STRING);
-    returnType("Concat(0x1F,0x2A3B)", BinaryDataType.BINARY);
+    returnType("Concat(BINARY '1F',BINARY '2A3B')", BinaryDataType.BINARY);
   }
 
   @Test
@@ -2605,11 +2603,11 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("CONCAT_WS(',','a',NULL_STRING,'b')", "a,b");
 
     // Binary
-    evalEquals("CONCAT_WS(0x1F,0x2A3B,0x4D,0x5E)", new byte[] {0x2A, 0x3B, 0x1F, 0x4D, 0x1F, 0x5E});
+    evalEquals("CONCAT_WS(BINARY '1F',BINARY '2A3B',BINARY '4D',BINARY '5E')", new byte[] {0x2A, 0x3B, 0x1F, 0x4D, 0x1F, 0x5E});
 
     evalNull("CONCAT_WS(NULL_STRING,'FIRST')");
     evalNull("CONCAT_WS('a',NULL_STRING)");
-    evalNull("CONCAT_WS(0x1F,NULL_STRING,NULL_STRING)");
+    evalNull("CONCAT_WS(BINARY '1F',NULL_STRING,NULL_STRING)");
 
     evalFails("CONCAT_WS()");
     evalFails("CONCAT_WS(',')");
@@ -2618,7 +2616,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("CONCAT_WS(NOM,0x2A3B)");
 
     returnType("CONCAT_WS(',','A','B')", StringDataType.STRING);
-    returnType("CONCAT_WS(0x1F,0x2A3B)", BinaryDataType.BINARY);
+    returnType("CONCAT_WS(BINARY '1F',BINARY '2A3B')", BinaryDataType.BINARY);
   }
 
   @Test
@@ -2868,7 +2866,7 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Crc32() throws Exception {
     evalEquals("CRC32('Apache Hop')", "dbb81b5e");
-    evalEquals("CRC32(0x123456789ABCDEF)", "2f720f20");
+    evalEquals("CRC32(BINARY '123456789ABCDEF')", "2f720f20");
     evalNull("CRC32(NULL_STRING)");
     evalFails("CRC32()");
 
@@ -2878,7 +2876,7 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void MD5() throws Exception {
     evalEquals("MD5('Test')", "0cbc6611f5540bd0809a388dc95a615b");
-    evalEquals("MD5(0x123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF)",
+    evalEquals("MD5(BINARY '123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF')",
         "99c415050a2cddbeb525670345ff0aee");
     evalNull("MD5(NULL_STRING)");
     evalFails("MD5()");

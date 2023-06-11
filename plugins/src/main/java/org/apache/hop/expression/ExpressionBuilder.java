@@ -29,11 +29,11 @@ import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -42,10 +42,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class ExpressionBuilder {
 
-  private static final Set<String> RESERVED_WORDS = Set.of("AND", "AS", "ASYMMETRIC", "AT",
-      "BETWEEN", "CASE", "DATE", "DISTINCT", "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM",
-      "IGNORE", "ILIKE", "IN", "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT",
-      "RLIKE", "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN", "ZONE");
+  private static final Set<String> RESERVED_WORDS =
+      Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
+          "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "JSON",
+          "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN",
+          "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -103,7 +104,8 @@ public class ExpressionBuilder {
       } else
         column++;
     }
-    return new ExpressionException(ExpressionError.SYNTAX_ERROR, line, column, e.getMessage());
+    return new ExpressionException(ExpressionError.SYNTAX_ERROR, offset + 1, line, column,
+        e.getMessage());
   }
 
   protected ExpressionBuilder(final String source) {
@@ -218,7 +220,7 @@ public class ExpressionBuilder {
    * Parse logical NOT expression
    *
    * <p>
-   * [NOT] RelationalExpression
+   * [NOT] IdentityExpression
    */
   private IExpression parseLogicalNot() throws ParseException {
 
@@ -230,7 +232,7 @@ public class ExpressionBuilder {
   }
 
   /**
-   * Parse IS expression
+   * Parse identity expression
    *
    * <p>
    * RelationalExpression IS [NOT] TRUE|FALSE|NULL
@@ -447,17 +449,18 @@ public class ExpressionBuilder {
         return new Identifier(token.text());
       case LITERAL_STRING:
         return parseLiteralString(token);
-      case LITERAL_NUMBER:
-        return parseLiteralNumber(token);
-      case LITERAL_BINARY_HEX:
-        return parseLiteralBinaryHexa(token);
-      case LITERAL_BINARY_BIT:
-        return parseLiteralBinaryBit(token);
+      case LITERAL_NUMERIC_DECIMAL:
+        return parseLiteralNumericDecimal(token);
+      case LITERAL_NUMERIC_HEXA:
+        return parseLiteralNumericHexa(token);
+      case LITERAL_NUMERIC_BINARY:
+        return parseLiteralNumericBinary(token);
+      case LITERAL_NUMERIC_OCTAL:
+        return parseLiteralNumericOctal(token);
       case LITERAL_TIMEUNIT:
         return parseLiteralTimeUnit(token);
       case LITERAL_DATATYPE:
         return parseLiteralDataType(token);
-      // Date can be Literal or DataType
       case DATE:
         token = next();
         if (token == null)
@@ -473,6 +476,11 @@ public class ExpressionBuilder {
         if (token == null)
           break;
         return parseLiteralTimestamp(token);
+      case BINARY:
+        token = next();
+        if (token == null)
+          break;
+        return parseLiteralBinary(token);
       case JSON:
         token = next();
         if (token == null)
@@ -554,7 +562,7 @@ public class ExpressionBuilder {
     return expression;
   }
 
-  private Literal parseLiteralNumber(Token token) throws ParseException {
+  private Literal parseLiteralNumericDecimal(Token token) throws ParseException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
 
     // if ( number.scale()==0 && number.precision()<17 ) {
@@ -565,56 +573,53 @@ public class ExpressionBuilder {
     return Literal.of(number);
   }
 
-  private Literal parseLiteralBinaryHexa(Token token) {
-    String str = token.text();
-    if (str.length() % 2 > 0)
-      str = '0' + str;
-    byte[] bytes = new byte[str.length() / 2];
-    for (int i = 0; i < bytes.length; i++) {
-      int start = i * 2;
-      bytes[i] = (byte) Integer.parseInt(str.substring(start, start + 2), 16);
+  private Literal parseLiteralBinary(Token token) throws ParseException {
+    try {
+      String str = token.text();
+      if (str.length() % 2 > 0)
+        str = '0' + str;
+      byte[] bytes = new byte[str.length() / 2];
+      for (int i = 0; i < bytes.length; i++) {
+        int start = i * 2;
+        bytes[i] = (byte) Integer.parseInt(str.substring(start, start + 2), 16);
+      }
+
+      // Return as BINARY
+      return Literal.of(bytes);
+    } catch (Exception e) {
+      throw new ParseException(ExpressionError.UNPARSABLE_BINARY.message(token.text()),
+          token.start());
     }
-
-    // Return as INTEGER
-    // if ( bytes.length<=8 ) {
-    // long result = 0;
-    // for (int i = 0; i < bytes.length; i++) {
-    // result <<= Byte.SIZE;
-    // result |= (bytes[i] & 0xFF);
-    // }
-    // return Literal.of(result);
-    // }
-
-    // Return as BINARY
-    return Literal.of(bytes);
   }
 
-  private Literal parseLiteralBinaryBit(Token token) {
-
+  private Literal parseLiteralNumericHexa(Token token) {
     String str = token.text();
-    BitSet bitset = new BitSet(str.length());
-
-    int length = str.length();
-    for (int i = length - 1; i >= 0; i--) {
-      if (str.charAt(i) == '1') {
-        bitset.set(length - i - 1);
-      }
+    BigInteger value = new BigInteger(str.substring(2), 16);
+    try {
+      return Literal.of(value.longValueExact());
+    } catch (ArithmeticException e) {
+      return Literal.of(new BigDecimal(value));
     }
+  }
 
-    byte[] bytes = bitset.toByteArray();
+  private Literal parseLiteralNumericOctal(Token token) {
+    String str = token.text();
+    BigInteger value = new BigInteger(str.substring(2), 8);
+    try {
+      return Literal.of(value.longValueExact());
+    } catch (ArithmeticException e) {
+      return Literal.of(new BigDecimal(value));
+    }
+  }
 
-    // Return as INTEGER
-    // if ( bytes.length<=8 ) {
-    // long result = 0;
-    // for (int i = 0; i < bytes.length; i++) {
-    // result <<= Byte.SIZE;
-    // result |= (bytes[i] & 0xFF);
-    // }
-    // return Literal.of(result);
-    // }
-
-    // Return as BINARY
-    return Literal.of(bytes);
+  private Literal parseLiteralNumericBinary(Token token) {
+    String str = token.text();
+    BigInteger value = new BigInteger(str.substring(2), 2);
+    try {
+      return Literal.of(value.longValueExact());
+    } catch (ArithmeticException e) {
+      return Literal.of(new BigDecimal(value));
+    }
   }
 
   /**
@@ -1090,14 +1095,14 @@ public class ExpressionBuilder {
       int scale = DataType.SCALE_NOT_SPECIFIED;
       boolean precisionFound = false;
       boolean scaleFound = false;
-      
+
       if (isThenNext(Id.LPARENTHESIS)) {
 
         // Precision
         token = this.next();
         precision = Integer.parseInt(token.text());
         precisionFound = true;
-        
+
         // Scale
         if (isThenNext(Id.COMMA)) {
           token = this.next();
@@ -1113,24 +1118,30 @@ public class ExpressionBuilder {
 
       switch (name) {
         case BOOLEAN:
-          if ( precisionFound ) break;
+          if (precisionFound)
+            break;
           return Literal.of(BooleanDataType.BOOLEAN);
         case INTEGER:
-          if ( precisionFound ) break;
+          if (precisionFound)
+            break;
           return Literal.of(IntegerDataType.INTEGER);
         case NUMBER:
           return Literal.of(new NumberDataType(precision, scale));
         case STRING:
-          if ( scaleFound ) break;
+          if (scaleFound)
+            break;
           return Literal.of(new StringDataType(precision));
         case BINARY:
-          if ( scaleFound ) break;
+          if (scaleFound)
+            break;
           return Literal.of(new BinaryDataType(precision));
         case DATE:
-          if ( precisionFound ) break;
+          if (precisionFound)
+            break;
           return Literal.of(DateDataType.DATE);
         case JSON:
-          if ( precisionFound ) break;
+          if (precisionFound)
+            break;
           return Literal.of(JsonDataType.JSON);
         default:
       }
@@ -1254,7 +1265,7 @@ public class ExpressionBuilder {
               return new Token(Id.NOT_EQUAL, start);
             }
           }
-          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message('!'), start);
+          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(c), start);
         }
 
 
@@ -1268,7 +1279,7 @@ public class ExpressionBuilder {
               return new Token(Id.CAST, start);
             }
           }
-          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(':'), start);
+          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(c), start);
         }
 
         // possible start of '/*' or '//' comment
@@ -1351,10 +1362,9 @@ public class ExpressionBuilder {
               return new Token(Id.IDENTIFIER, start, position, value);
             }
           }
-          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(), start);
+          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(c), start);
         }
 
-        case '.': // Number without zero .1
         case '0':
         case '1':
         case '2':
@@ -1364,64 +1374,179 @@ public class ExpressionBuilder {
         case '6':
         case '7':
         case '8':
-        case '9': {
-          int start = position++;
+        case '9':
+        case '.': // Number without zero .1
+        {
+          int start = position;
+          char previous;
+          boolean error = false;
 
-          // Hexadecimal number 0xABCDEF
-          if (c == '0' && position < source.length() && (source.charAt(position) == 'x')) {
-            do {
-              position++;
-            } while (position < source.length() && Characters.isHexDigit(source.charAt(position)));
+          if (c == '0' && position + 1 < source.length()) {
+            c = source.charAt(position + 1);
 
-            return new Token(Id.LITERAL_BINARY_HEX, start, position,
-                source.substring(start + 2, position));
-          }
+            // Literal hexadecimal number 0xABC_DEF
+            if (c == 'x' || c == 'X') {
+              position += 2;
+              previous = c;
+              while (position < source.length()) {
+                c = source.charAt(position);
+                if (Characters.isHexDigit(c) || c == '_') {
+                  position++;
+                  if (c == '_' && c == previous)
+                    error = true;
+                  previous = c;
+                } else {
+                  break;
+                }
+              }
 
-          // Binary number 0b01101011
-          if (c == '0' && position < source.length() && (source.charAt(position) == 'b')) {
-            do {
-              position++;
-            } while (position < source.length()
-                && (source.charAt(position) == '0' || source.charAt(position) == '1'));
+              String str = source.substring(start, position);
+              // Empty, consecutive underscore or last char is underscore
+              if (str.length() == 2 || previous == '_' || error) {
+                throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+              }
 
-            return new Token(Id.LITERAL_BINARY_BIT, start, position,
-                source.substring(start + 2, position));
+              return new Token(Id.LITERAL_NUMERIC_HEXA, start, position, str.replace("_", ""));
+            }
+
+            // Literal binary number 0b0110_1011
+            if (source.charAt(position + 1) == 'b' || source.charAt(position + 1) == 'B') {
+              position += 2;
+              previous = c;
+              while (position < source.length()) {
+                c = source.charAt(position);
+                if (Characters.isBitDigit(c) || c == '_') {
+                  position++;
+                  if (c == '_' && c == previous)
+                    error = true;
+                  previous = c;
+                } else {
+                  break;
+                }
+              }
+
+              String str = source.substring(start, position);
+              // Empty, consecutive underscore or last char is underscore
+              if (str.length() == 2 || previous == '_' || error) {
+                throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+              }
+
+              return new Token(Id.LITERAL_NUMERIC_BINARY, start, position, str.replace("_", ""));
+            }
+
+            // Literal octal number 0o1234567
+            if (source.charAt(position + 1) == 'o' || source.charAt(position + 1) == 'O') {
+              position += 2;
+              previous = c;
+              while (position < source.length()) {
+                c = source.charAt(position);
+                if (Characters.isOctDigit(c) || c == '_') {
+                  position++;
+                  if (c == '_' && c == previous)
+                    error = true;
+                  previous = c;
+                } else {
+                  break;
+                }
+              }
+
+              String str = source.substring(start, position);
+              // Empty, consecutive underscore or last char is underscore
+              if (str.length() == 2 || previous == '_' || error) {
+                throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+              }
+
+              return new Token(Id.LITERAL_NUMERIC_OCTAL, start, position, str.replace("_", ""));
+            }
           }
 
           // Integer part
-          while (position < source.length() && Characters.isDigit(source.charAt(position))) {
-            position++;
+          previous = c;
+          while (position < source.length()) {
+            c = source.charAt(position);
+            if (Characters.isDigit(c) || c == '_') {
+              position++;
+              if (c == '_' && c == previous)
+                error = true;
+              previous = c;
+            } else {
+              break;
+            }
+          }
+
+          // Last char should not be a underscore
+          if (previous == '_') {
+            error = true;
           }
 
           // Use dot for decimal separator
-          if (position < source.length() && source.charAt(position) == '.') {
-            position++;
+          if (position < source.length() && c == '.') {
+            c = source.charAt(position++);
+            previous = '_';
           }
 
           // Decimal part
-          while (position < source.length() && Characters.isDigit(source.charAt(position))) {
-            position++;
+          while (position < source.length()) {
+            c = source.charAt(position);
+            if (Characters.isDigit(c) || c == '_') {
+              position++;
+              if (c == '_' && c == previous)
+                error = true;
+              previous = c;
+            } else {
+              break;
+            }
+          }
+
+          // Last char should not be a underscore
+          if (previous == '_') {
+            error = true;
           }
 
           // Exponentiation part
-          if (position < source.length() && Characters.isExponent(source.charAt(position))) {
+          if (position < source.length() && Characters.isExponent(c)) {
             position++;
-
-            if (position < source.length()
-                && (source.charAt(position) == '+' || source.charAt(position) == '-')) {
-              position++;
+            if (position < source.length()) {
+              c = source.charAt(position);
+              if (c == '+' || c == '-') {
+                c = source.charAt(position++);
+              }
             }
-            while (position < source.length() && Characters.isDigit(source.charAt(position))) {
-              position++;
+
+            previous = '_';
+            int digit = 0;
+            while (position < source.length()) {
+              c = source.charAt(position);
+              if (Characters.isDigit(c) || c == '_') {
+                position++;
+                if (Characters.isDigit(c))
+                  digit++;
+                if (c == '_' && c == previous)
+                  error = true;
+                previous = c;
+              } else {
+                break;
+              }
+            }
+
+            if (previous == '_' || digit == 0) {
+              error = true;
             }
           }
 
-          return new Token(Id.LITERAL_NUMBER, start, position, source.substring(start, position));
+          String str = source.substring(start, position);
+          // Empty, consecutive underscore or last char is underscore
+          if (str.length() == 0 || previous == '_' || error) {
+            throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+          }
+
+          // Literal decimal number
+          return new Token(Id.LITERAL_NUMERIC_DECIMAL, start, position, str.replace("_", ""));
         }
 
         default:
           if (Characters.isSpace(c) || c == '\n' || c == '\r') {
-            ++position;
+            position++;
             continue;
           }
 

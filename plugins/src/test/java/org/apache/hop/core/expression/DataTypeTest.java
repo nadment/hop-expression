@@ -374,6 +374,7 @@ public class DataTypeTest extends ExpressionTest {
   public void coercionImplicit() throws Exception {
     // Coercion Number
     evalTrue("1::NUMBER = 1::INTEGER");    
+    evalTrue("0x1F::NUMBER = 0x1F::INTEGER");
     evalTrue("0::NUMBER = 0::NUMBER");
     evalTrue("1::NUMBER = 1::INTEGER");
             
@@ -386,10 +387,9 @@ public class DataTypeTest extends ExpressionTest {
     evalEquals(" 4 + 4 || '2' ", "82");    
     evalEquals(" '8' || 1 + 1", 82L);
     
-    // Integer to BigNumber
-    evalEquals("'-1e-3'::Number * 2", new BigDecimal("-2e-3", MathContext.DECIMAL32));    
-    // Number to BigNumber
-    evalEquals("'-1e-3'::Number * 0.5", new BigDecimal("-5e-4", MathContext.DECIMAL32));
+    // Integer to Number
+    evalEquals("'-2e-3'::Number * 2", new BigDecimal("-4e-3", MathContext.DECIMAL32));    
+    evalEquals("'-4e-4'::Number * 0.5", new BigDecimal("-0.00020", MathContext.DECIMAL32));
   }
 
   @Test

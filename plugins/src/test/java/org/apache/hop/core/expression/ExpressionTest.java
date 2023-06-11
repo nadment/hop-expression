@@ -39,6 +39,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.StringDataType;
 import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -46,6 +47,7 @@ import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -345,13 +347,14 @@ public class ExpressionTest {
 
     //evalEquals("CAST(1.25 as Integer)", 1L);
     //assertEquals(new BigDecimal("1.23456"), Converter.cast("1.23456", new NumberDataType()));
-    evalNull("TRY_TO_BOOLEAN('test')");
-    
-//    evalEquals("1.23456::Number", 1.23456);
-//    evalEquals("1.23456::Number(4)", 1.234);
-//    evalEquals("1.23456::Number(10,2)", 1.234);
-//    evalEquals("1.23456::Number(10,0)", 1L);
-//    evalEquals("1.23456::Number(10,6)", new BigDecimal("1.234560"));
+  //  optimize("CAST(123456.1 AS STRING(8))", "CAST(123456.1 AS STRING(8))");
+//    evalEquals("1_234", 1234L);
+ //   evalEquals("1", 1L);
+    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", new BigDecimal(new BigInteger("4585589214852587255525691234567890abcDEF",16)));
+    //evalFails("0x_2F");
+    //evalFails("0x_2F");
+        
+    //evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
   }
 }
 

@@ -276,17 +276,17 @@ public final class Call implements IExpression {
     IOperandCountRange operandCountRange = operator.getOperandCountRange();
     if (!operandCountRange.isValid(this.getOperandCount())) {
       if (getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(ExpressionError.NOT_ENOUGH_ARGUMENT.message(operator));
+        throw new ExpressionException(ExpressionError.NOT_ENOUGH_ARGUMENT, operator);
       }
       if (getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT.message(operator));
+        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT, operator);
       }
     }
 
     // Check operand types expected
     IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
     if (!operandTypeChecker.checkOperandTypes(this)) {
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE.message(operator));
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE, operator);
     }
 
     inferenceType(context);

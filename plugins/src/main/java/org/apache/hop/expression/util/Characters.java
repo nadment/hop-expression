@@ -27,22 +27,33 @@ public class Characters {
 
   private static final byte IS_DIGIT = 0x01;
 
-  private static final byte IS_HEXDIGIT = 0x02;
+
+
+  private static final byte IS_HEX_DIGIT = 0x02;
 
   private static final byte IS_ALPHA = 0x04;
 
   private static final byte IS_DELIMITER = 0x08;
 
+  private static final byte IS_OCT_DIGIT = 0x10;
+
+  private static final byte IS_BIT = 0x20;
 
   static {
+    FLAGS['0'] |= IS_BIT;
+    FLAGS['1'] |= IS_BIT;
+
     for (int ch = '0'; ch <= '9'; ch++) {
-      FLAGS[ch] |= IS_DIGIT | IS_HEXDIGIT;
+      FLAGS[ch] |= IS_DIGIT | IS_HEX_DIGIT;
+    }
+    for (int ch = '0'; ch <= '7'; ch++) {
+      FLAGS[ch] |= IS_OCT_DIGIT;
     }
     for (int ch = 'A'; ch <= 'F'; ch++) {
-      FLAGS[ch] |= IS_HEXDIGIT;
+      FLAGS[ch] |= IS_HEX_DIGIT;
     }
     for (int ch = 'a'; ch <= 'f'; ch++) {
-      FLAGS[ch] |= IS_HEXDIGIT;
+      FLAGS[ch] |= IS_HEX_DIGIT;
     }
     for (int ch = 'A'; ch <= 'Z'; ch++) {
       FLAGS[ch] |= IS_ALPHA;
@@ -73,11 +84,26 @@ public class Characters {
     return (FLAGS[ch] & IS_DIGIT) != 0;
   }
 
+  public static boolean isBitDigit(char ch) {
+    if (ch > 255) {
+      return false;
+    }
+    return (FLAGS[ch] & IS_BIT) != 0;
+  }
+
+
   public static boolean isHexDigit(char ch) {
     if (ch > 255) {
       return false;
     }
-    return (FLAGS[ch] & IS_HEXDIGIT) != 0;
+    return (FLAGS[ch] & IS_HEX_DIGIT) != 0;
+  }
+
+  public static boolean isOctDigit(char ch) {
+    if (ch > 255) {
+      return false;
+    }
+    return (FLAGS[ch] & IS_OCT_DIGIT) != 0;
   }
 
   /**
@@ -136,6 +162,4 @@ public class Characters {
   public static boolean isExponent(char ch) {
     return ch == 'e' || ch == 'E';
   }
-
-
 }

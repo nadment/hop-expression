@@ -48,16 +48,22 @@ public class Token {
     LPARENTHESIS("("),
     /** Right parenthesis */
     RPARENTHESIS(")"),
-    /** Literal number. */
-    LITERAL_NUMBER,
-    /** Literal hex binary 0x1234567890ABCDEF */
-    LITERAL_BINARY_HEX,
-    /** Literal bit binary 0b1101010101 */
-    LITERAL_BINARY_BIT,
+    /** Literal decimal number. */
+    LITERAL_NUMERIC_DECIMAL,
+    /** Literal hexadecimal number  0x1234567890ABCDEF */
+    LITERAL_NUMERIC_HEXA,
+    /** Literal bit number 0b1101010101 */
+    LITERAL_NUMERIC_BINARY,
+    /** Literal octal number 0o1234567 */
+    LITERAL_NUMERIC_OCTAL,
+    /** Literal binary X'1ABC3F' */
+    LITERAL_BINARY,
     /** Literal string. */
     LITERAL_STRING,
-    /** The "DATE" word for literal date. */
+    /** The "DATE" word for literal date or data type. */
     DATE,
+    /** The "BINARY" word for literal binary. */
+    BINARY,
     /** The "JSON" word for literal JSON. */
     JSON,
     /** The BETWEEN ASYMMETRIC operator */
@@ -144,7 +150,7 @@ public class Token {
      * LISTAGG( [DISTINCT] string [, delimiter])
      */
     DISTINCT,
-    /** Data type element NUMBER, BOOLEAN,... */
+    /** Data type element DATE, NUMBER, BOOLEAN,... */
     LITERAL_DATATYPE,
     /** Time unit element DAY, MONTH, QUARTER, MINUTE, ... */
     LITERAL_TIMEUNIT;

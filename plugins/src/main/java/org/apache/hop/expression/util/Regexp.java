@@ -34,7 +34,7 @@ public class Regexp {
     if (escapeStr != null) {
 
       if (escapeStr.length() != 1) {
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, escapeStr.toString());
+        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, escapeStr);
       }
 
       escapeChar = escapeStr.charAt(0);

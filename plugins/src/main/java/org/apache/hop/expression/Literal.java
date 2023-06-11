@@ -318,11 +318,12 @@ public final class Literal implements IExpression {
         writer.append(StringDataType.convert((BigDecimal) value));
         break;        
       case BINARY:
-        writer.append("0x");
+        writer.append("BINARY '");
         for (byte b : (byte[]) value) {
           writer.append(byteToHex((b >> 4) & 0xF));
           writer.append(byteToHex(b & 0xF));
         }
+        writer.append('\'');
         break;
       case DATE: {
         //ZonedDateTime datetime = ((LocalDateTime) value).atZone(ZoneId.systemDefault());

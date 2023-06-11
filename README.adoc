@@ -50,8 +50,8 @@ case
   else To_Char([YEAR]+1,'FM9999') || ' XXX '
 end
 ----
-* Supports 8 data types: `Boolean` `Integer` `Number` `BigNumber` `String` `Date` `Binary` `Json` 
-* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `Date` '2022-04-25', `Timestamp` '2022-04-25 05:28:59', `Json` '{"name":"John"}'
+* Supports 8 data types: `Boolean` `Integer` `Number` `String` `Date` `Binary` `Json` 
+* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `Date` '2022-04-25', `Timestamp` '2022-04-25 05:28:59',  `Binary` 'FA6CB', `Json` '{"name":"John"}'
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`

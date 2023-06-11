@@ -72,40 +72,66 @@ false
 
 === Integer
 
-Integer literals can be either positive numbers or negative numbers, but do not contain decimals.
+Integer literals can be either positive numbers or negative numbers with a minimum value of `-2^31` and a maximum value of `2^31-1`, but do not contain decimals. Support hexadecimal, octal, and binary notations and can have embedded underscore `_` characters to improve readability.
+
+Decimal integers are a sequence of decimal digits [0-9].
 ----
+013
 536
 +536
 -536
+1_500_000_000
 ----
 
-=== Number and BigNumber
+Hexadecimal integers are a sequence of hexadecimal digits [0-9A-Fa-f] preceded by a `0x` or `0X`. 
+----
+0xAE
+0X12Ef
+0xFF69_048A_EFDD_010E
+----
 
-Literals can be either positive numbers or negative numbers and contain decimals. In addition, scientific notation can be used.
+Octal integers are a sequence of octal digits [0-7] preceded by a `0o` or `0O`. 
+----
+0o1234567
+0O123_4567
+----
+
+Binary integers are a sequence of binary digits [0-1] preceded by a `0b` or `0B`. 
+----
+0b1000001011110
+0B1_0000_0101_1110
+0b_1001_0001
+----
+
+NOTE: A numeric literal that is outside the range of the INTEGER type is assigned to NUMBER(n, 0), where n is the number of digits in the literal, excluding leading zeros. 
+
+NOTE: The use of underscores is restricted to one underscore between digits or prefixes.
+
+=== Number
+
+Literals can be either positive numbers or negative numbers and contain decimals. In addition, scientific notation can be used. Can have embedded underscore `_` characters to improve readability.
+
 ----
 24.7
 +0.5
 -24.7
+3e2
 0.5E-2
 1e10
+1_000.123e-1_0
 ----
 
 NOTE: The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
+NOTE: Leading, trailing and double underscores will produce an error.
 
 === Binary
 
-Binary can be a sequence of hexadecimal digits with `0x` prefix.
-----
-0xAE
-0x12Ef
-0x69048AEFDD010E
-----
-Or also be composed by 0 and 1 digits with `0b` prefix. 
-----
-0b1000001011110
-----
+Binary literals of the word BINARY followed by a hexadecimal notation surrounded by single quotes `'`.
 
-NOTE:  A leading `0x` is case-sensitive and cannot be written as `0X`, but the case of the digits does not matter.
+----
+BINARY 'ac6F'
+BINARY '4b657276656E'
+----
 
 === Date
 
@@ -113,6 +139,7 @@ Date literals consist of the word DATE followed by a 10 characters string litera
 
 ----
 DATE '2020-05-18'
+'2020-05-18'::DATE
 ----
 
 The parsing is strict and requires months to be less than 12, days to be less than 31.
@@ -210,24 +237,16 @@ When there is no ambiguity about the data type of an expression value, it is imp
 |From|To|Coerce|Cast|Function
 |Boolean|Integer|❌|✔|
 |Boolean|Number|❌|✔|
-|Boolean|BigNumber|❌|✔|
 |Boolean|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 |Integer|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |Integer|Number|✔|✔|
-|Integer|BigNumber|✔|✔|
 |Integer|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 |Number|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |Number|Integer|✔|✔|
-|Number|BigNumber|✔|✔|
 |Number|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
-|BigNumber|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
-|BigNumber|Integer|✔|✔|
-|BigNumber|Number|✔|✔|
-|BigNumber|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 |String|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |String|Integer|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
 |String|Number|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
-|String|BigNumber|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
 |String|Date|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
 |String|Binary|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]
 |String|Json|❌|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_json.adoc[TO_JSON]
