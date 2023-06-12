@@ -163,9 +163,6 @@ public final class Call implements IExpression {
           break;
 
         case INTEGER:
-          if (clazz == Long.class) {
-            return clazz.cast(Long.valueOf((Long) value));
-          }
           if (clazz == Boolean.class) {
             return clazz.cast(((Long) value) != 0);
           }
@@ -315,7 +312,6 @@ public final class Call implements IExpression {
         }
 
         return new Literal(value, type);
-        //return Literal.of(value);
       } catch (Exception e) {
         // Ignore error like division by zero "X IN (1,3/0)" and continue
       }

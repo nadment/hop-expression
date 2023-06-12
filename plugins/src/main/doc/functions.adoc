@@ -29,6 +29,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_seconds.adoc[ADD_SECONDS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_weeks.adoc[ADD_WEEKS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_years.adoc[ADD_YEARS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/any_value.adoc[ANY_VALUE] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ascii.adoc[ASCII]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/asin.adoc[ASIN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/asinh.adoc[ASINH]

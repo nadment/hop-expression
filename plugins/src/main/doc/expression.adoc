@@ -255,7 +255,7 @@ When there is no ambiguity about the data type of an expression value, it is imp
 |Json|String|✔|✔|
 |===
 
-* Numeric types can be coerced to a wider numeric type. For example, an INTEGER expression can be coerced to a NUMBER, which can be coerced to a BIGNUMBER.
+* Numeric types can be coerced to a wider numeric type. For example, an INTEGER expression can be coerced to a NUMBER.
 * A STRING containing a number can be coerced to a numeric type.
 * A STRING containing a boolean value can be coerced to a BOOLEAN. Valid boolean values are true, false, yes, no, on, off. Comparison is case-insensitive.
 * A STRING containing an ISO-8601 formatted date string can be coerced to TIMESTAMP.

@@ -39,13 +39,11 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.StringDataType;
 import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -259,6 +257,11 @@ public class ExpressionTest {
     assertEquals(BigDecimal.valueOf(expected).stripTrailingZeros(), result.stripTrailingZeros());
   }
 
+  protected void evalEquals(String source, BigInteger expected)
+      throws Exception {
+    assertEquals(new BigDecimal(expected), eval(createExpressionContext(true), source, BigDecimal.class));
+  }
+  
   protected void evalEquals(String source, Double expected) throws Exception {
     evalEquals(createExpressionContext(true), source, expected);
   }
@@ -350,7 +353,7 @@ public class ExpressionTest {
   //  optimize("CAST(123456.1 AS STRING(8))", "CAST(123456.1 AS STRING(8))");
 //    evalEquals("1_234", 1234L);
  //   evalEquals("1", 1L);
-    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", new BigDecimal(new BigInteger("4585589214852587255525691234567890abcDEF",16)));
+    evalEquals("0xFFFF_EEEE_0000_AAA0",  new BigDecimal(new BigInteger("FFFFEEEE0000AAA0",16)));
     //evalFails("0x_2F");
     //evalFails("0x_2F");
         

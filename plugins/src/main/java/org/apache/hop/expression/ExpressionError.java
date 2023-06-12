@@ -130,7 +130,8 @@ public enum ExpressionError {
   ExpressionError(final String message) {
     this.message = message;
   }
-
+  
+  @Override
   public String toString() {
     return BaseMessages.getString(ExpressionError.class, message);
   }

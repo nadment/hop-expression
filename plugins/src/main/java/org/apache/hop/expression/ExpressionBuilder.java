@@ -595,7 +595,7 @@ public class ExpressionBuilder {
   private Literal parseLiteralNumericHexa(Token token) {
     String str = token.text();
     BigInteger value = new BigInteger(str.substring(2), 16);
-    try {
+   try {
       return Literal.of(value.longValueExact());
     } catch (ArithmeticException e) {
       return Literal.of(new BigDecimal(value));
@@ -1509,7 +1509,7 @@ public class ExpressionBuilder {
             if (position < source.length()) {
               c = source.charAt(position);
               if (c == '+' || c == '-') {
-                c = source.charAt(position++);
+                position++;
               }
             }
 

@@ -1,28 +1,80 @@
 
-Expr ::=  Literal
-         |Identifier                
-         |ParenthesizedExpr
-         |OperatorCall
-         |CaseExpr
+TermExpression :=  Literal
+         				|Identifier                
+         				|ParenthesizedExpression
+         				|OperatorCall
+         				|CaseExpression
 
-Literal ::=  BooleanLiteral  
+Literal :=  BooleanLiteral  
 						|StringLiteral
             |IntegerLiteral
             |NumberLiteral
-            |BigNumberLiteral
             |BinaryLiteral
+            |JsonLiteral
             |"NULL"
             |"TRUE"
             |"FALSE"
 
-ParenthesizedExpr ::= ("(" Expr ")") | Expr
+ParenthesizedExpression := ("(" LogicalOrExpression ")") | LogicalOrExpression
 
-OperatorCall ::= UnaryOperator Expr | Expr BinaryOperator Expr | Function
+OperatorCall := UnaryOperator Expr | Expr BinaryOperator Expr | Function
 
-Function ::= Name "(" Expr ("," Expr)* ")"
+Function := Name "(" LogicalOrExpression ("," LogicalOrExpression)* ")"
 
-CaseExpr ::= SimpleCaseExpr | SearchedCaseExpr
+CaseExpression := SimpleCaseExpression | SearchedCaseExpression
 
-SimpleCaseExpr ::= "CASE" Expr ("WHEN" Expr "THEN" Expr)+ ("ELSE" Expr)? "END"
+SimpleCaseExpression := "CASE" Expr ("WHEN" Expr "THEN" Expr)+ ("ELSE" Expr)? "END"
 
-SearchedCaseExpr ::= "CASE" ("WHEN" Expr "THEN" Expr)+ ("ELSE" Expr)? "END"
+SearchedCaseExpression := "CASE" ("WHEN" Expr "THEN" Expr)+ ("ELSE" Expr)? "END"
+
+LogicalOrExpression := LogicalAndOrExpression ( OR LogicalAndExpression )*
+
+LogicalAndExpression := LogicalNotExpression ( AND LogicalNotExpression )*
+
+LogicalNotExpression := [NOT] LogicalNotExpression
+												IdentityExpression
+
+IdentityExpression := ComparisonExpression IS [NOT] 
+												TRUE
+												|FALSE
+												|NULL
+												|DISTINCT FROM LogicalNotExpression 
+
+ComparisonExpression :=
+    RelationalExpression = RelationalExpression
+    RelationalExpression < RelationalExpression
+    RelationalExpression <= RelationalExpression
+    RelationalExpression > RelationalExpression
+    RelationalExpression >= RelationalExpression
+    RelationalExpression <> RelationalExpression
+
+RelationalExpression :=	AdditiveExpression [NOT] 
+											  	LIKE
+												  IN
+												  BETWEEN
+
+AdditiveExpression :=
+    FactorExpression
+    AdditiveExpression + FactorExpression
+    AdditiveExpression - FactorExpression
+    
+FactorExpression :=
+    UnaryExpression
+    BitwiseNotExpression * UnaryExpression
+    BitwiseNotExpression / UnaryExpression
+    BitwiseNotExpression % UnaryExpression
+    
+UnaryExpression :=
+    - UnaryExpression
+    + UnaryExpression
+    ComplementExpression
+    CastExpression
+
+BitwiseAndExpression := UnaryExpression ( & UnaryExpression)*  
+BitwiseOrExpression := BitwiseXorExpression ( | BitwiseXorExpression )*
+BitwiseXorExpression := BitwiseAndExpression ( ^ BitwiseAndExpression )*
+BitwiseNotExpression := ( UnaryExpression )*
+
+
+
+    

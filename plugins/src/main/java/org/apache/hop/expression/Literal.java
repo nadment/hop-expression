@@ -185,9 +185,6 @@ public final class Literal implements IExpression {
         break;
 
       case INTEGER:        
-        if (clazz == Long.class) {
-          return clazz.cast((Long) value);
-        }
         if (clazz == BigDecimal.class) {
           return clazz.cast(BigDecimal.valueOf((Long) value));
         }

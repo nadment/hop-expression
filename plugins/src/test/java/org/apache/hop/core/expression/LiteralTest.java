@@ -179,15 +179,15 @@ public class LiteralTest extends ExpressionTest {
     evalFails("1__23");
     
     // Hexadecimal
-    evalEquals("0x1eee_FFFF", 518979583L);
-    evalEquals("0x123_4567_890ab_cDEF", 1311768467294899695L);
-    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", new BigDecimal(new BigInteger("4585589214852587255525691234567890abcDEF",16)));
-    
-    evalEquals("0X1F", 31L);
-    evalEquals("0x0F", 15L);
-    evalEquals("0x0_F", 15L);
-    evalEquals("0x_0F", 15L);    
-    evalEquals("0xF", 15L);
+    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL);
+    evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
+    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", new BigInteger("4585589214852587255525691234567890abcDEF",16));
+    evalEquals("0xFFFF_EEEE_0000_AAA0", 0xFFFF_EEEE_0000_AAA0L);
+    evalEquals("0X1F", 0x1FL);
+    evalEquals("0x0F", 0xFL);
+    evalEquals("0x0_F", 0xFL);
+    evalEquals("0x_0F", 0xFL);    
+    evalEquals("0xF", 0xFL);
     evalFails("0x");
     evalFails("0xG");    
     evalFails("0xF2_");
@@ -205,14 +205,14 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0O12__345");
 
     // Binary
-    evalEquals("0b10", 2L);
-    evalEquals("0b00000010", 2L);
-    evalEquals("0b011", 3L);
-    evalEquals("0b000000011111111", 255L);
+    evalEquals("0b10", 0b10L);
+    evalEquals("0b00000010", 0b10L);
+    evalEquals("0b011", 0b11L);
+    evalEquals("0b000000011111111", 0b000000011111111L);
     evalEquals("0b1010000101000101101000010100010110100001010001011010000101000101", 0b1010000101000101101000010100010110100001010001011010000101000101L);
-    evalEquals("0B010101", 21L);
-    evalEquals("0B0_1_0101", 21L);
-    evalEquals("0B_0001_0101", 21L);    
+    evalEquals("0B010101", 0b010101L);
+    evalEquals("0B0_1_0101", 0b010101L);
+    evalEquals("0B_0001_0101", 0b010101L);    
     evalFails("0b");
     evalFails("0b2");    
     evalFails("0b1001_");
@@ -222,6 +222,7 @@ public class LiteralTest extends ExpressionTest {
     optimize("0X1F", "31");
 
     returnType("FIELD_INTEGER", IntegerDataType.INTEGER);
+    returnType("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", NumberDataType.NUMBER);
   }
 
   @Test
@@ -234,35 +235,23 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456.789", Literal.of(-123456.789D).toString());
     assertEquals("-123456.789", Literal.of(BigDecimal.valueOf(-123456.789)).toString());
 
-
-    evalEquals("15167890123456789012345678901234567890",
-        new BigDecimal("15167890123456789012345678901234567890"));
-
     // Number decimal
     evalEquals("+.1", 0.1D);
     evalEquals("-.2", -0.2D);
     evalEquals("-0.2", -0.2D);
+    evalEquals(".000_005", 0.000005D);
+    evalEquals("15167890123456789012345678901234567890",
+        new BigDecimal("15167890123456789012345678901234567890"));
 
+    // Number exponent
     evalEquals("2.3E2", 230L);
     evalEquals("2.3E+2", 230L);
     evalEquals("2_0.3_1E+2", 2031L);
     evalEquals("-2.3E-2", -2.3E-2D);
     evalEquals("-2.3e-2", -2.3E-2D);
-    evalEquals(".000_005", 0.000005D);
     evalEquals("1_000.5e0_1", 10005D);
-    
-    
-    // Number hexadecimal
-    
-    // Number octal
-
-    // Number binary
-    
-    
-    
-    evalFails("-1.");
-    evalFails("..1");
-    evalFails(".0.1");
+      
+    // Underscore
     evalFails("1__2");
     evalFails("0.0__1");
     evalFails("2E2E2");
@@ -279,6 +268,9 @@ public class LiteralTest extends ExpressionTest {
     evalFails("-2.3E2_");
     evalFails("-2.3E1__2");
     
+    evalFails("-1.");
+    evalFails("..1");
+    evalFails(".0.1");
 
     optimize("-2.3E-2", "-0.023");
   }
