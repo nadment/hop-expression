@@ -37,7 +37,7 @@ import java.math.BigDecimal;
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("MOD", ReturnTypes.MOD_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 

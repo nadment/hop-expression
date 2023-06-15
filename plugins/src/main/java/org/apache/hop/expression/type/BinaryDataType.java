@@ -27,7 +27,7 @@ public final class BinaryDataType extends DataType {
   public static final BinaryDataType BINARY = new BinaryDataType();
   
   public BinaryDataType() {
-    super(DataName.BINARY, PRECISION_NOT_SPECIFIED);
+    super(DataName.BINARY, DataName.BINARY.getMaxPrecision());
   } 
     
   public BinaryDataType(int precision) {

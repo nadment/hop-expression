@@ -24,11 +24,11 @@ public final class IntegerDataType extends DataType {
   public static final IntegerDataType INTEGER = new IntegerDataType(DataName.INTEGER.getMaxPrecision());
 
   public IntegerDataType() {
-    super(DataName.INTEGER, PRECISION_NOT_SPECIFIED);
+    super(DataName.INTEGER, DataName.INTEGER.getMaxPrecision(), 0);
   }
   
   protected IntegerDataType(int precision) {
-    super(DataName.INTEGER, precision);
+    super(DataName.INTEGER, precision, 0);
   }
     
   public Long cast(final Object value) {

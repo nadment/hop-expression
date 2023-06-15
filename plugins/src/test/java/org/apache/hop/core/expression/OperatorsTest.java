@@ -521,6 +521,11 @@ public class OperatorsTest extends ExpressionTest {
     optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
     optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
     optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
+    
+    returnType("FIELD_NUMBER+FIELD_INTEGER", new NumberDataType(20));
+    returnType("1::NUMBER(4,1)+3::NUMBER(1,2)", new NumberDataType(6,2));
+    returnType("1::NUMBER(38,10)+3::NUMBER(38,5)", new NumberDataType(38,10));
+    returnType("1::NUMBER(14,2)+3::NUMBER(14,2)", new NumberDataType(15,2));
   }
 
   @Test
@@ -963,6 +968,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("Mod(3)");
     
     optimize("FIELD_INTEGER%4");
+    
+
   }
   
   @Test
@@ -984,6 +991,9 @@ public class OperatorsTest extends ExpressionTest {
     optimize("4*FIELD_INTEGER*0.5", "2*FIELD_INTEGER");
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
     optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
+
+    returnType("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(1,2)", new NumberDataType(5,3));
+    returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(38,3));
   }
 
   @Test
@@ -1008,6 +1018,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
     
     returnType("FIELD_INTEGER/4", NumberDataType.NUMBER);
+    returnType("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(1,2)", new NumberDataType(6,2));
   }
 
   @Test
@@ -1413,7 +1424,7 @@ public class OperatorsTest extends ExpressionTest {
     optimizeFalse("(CASE WHEN FALSE THEN 1 ELSE 2 END) IS NULL");
     
     // Implicit ELSE NULL
-    optimize("CASE WHEN FIELD_INTEGER=40 THEN 10 ELSE NULL END", "CASE WHEN 40=FIELD_INTEGER THEN 10 END");
+    optimize("CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 ELSE NULL END", "CASE WHEN 40<FIELD_INTEGER THEN 10 WHEN 20<FIELD_INTEGER THEN 5 END");
     optimize("CASE WHEN 40=FIELD_INTEGER THEN TRUE ELSE FALSE END");
     
     // Flatten search case
@@ -1437,7 +1448,10 @@ public class OperatorsTest extends ExpressionTest {
     // "CASE WHEN x IS NULL THEN y ELSE z END" to "NVL2(x, z, y)"
     optimize("CASE WHEN FIELD_INTEGER IS NULL THEN FIELD_STRING ELSE 'TEST' END",
         "NVL2(FIELD_INTEGER,'TEST',FIELD_STRING)");
-    
+
+    // Search case to simple case: CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
+    // optimize("CASE WHEN FIELD_INTEGER=1 THEN 2 END", "CASE 1 WHEN FIELD_INTEGER THEN 2");
+
     returnType("CASE WHEN FIELD_INTEGER IS NULL THEN '-' ELSE FIELD_STRING END", StringDataType.STRING);
     returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", IntegerDataType.INTEGER);
     returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", NumberDataType.NUMBER);

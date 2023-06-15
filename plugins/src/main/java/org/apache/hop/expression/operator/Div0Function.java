@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV0", ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div0.html");
   }
   @Override
@@ -72,7 +72,7 @@ public class Div0Function extends Function {
 
     // Prevent a division by zero and return zero
     if (divisor.signum() == 0)
-      return divisor;
+      return BigDecimal.ZERO;
 
     return value.divide(divisor, DECIMAL128);
   }

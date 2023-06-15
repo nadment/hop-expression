@@ -19,25 +19,30 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpressionContext;
 
-public class AddOperatorReturnTypeInference implements IReturnTypeInference {
+/**
+ * Calculate return type precision and scale for x + y and x - y
+ */
+public class AdditiveOperatorReturnTypeInference implements IReturnTypeInference {
 
-  public AddOperatorReturnTypeInference() {
+  public AdditiveOperatorReturnTypeInference() {
     super();
   }
 
   @Override
   public DataType getReturnType(IExpressionContext context, Call call) {
-    DataType type1 = call.getOperand(0).getType();
-    DataType type2 = call.getOperand(1).getType();
-    
-    int s1 = type1.getScale();
-    int s2 = type2.getScale();
-    int s = Math.max(s1, s2);
+    DataType x = call.getOperand(0).getType();
+    DataType y = call.getOperand(1).getType();
 
-    int p1 = type1.getPrecision();
-    int p2 = type2.getPrecision();
-    int p = Math.max(p1 - s1, p2 - s2) + s + 1;
-    
+    // Return type scale
+    int xs = x.getScale();
+    int ys = y.getScale();
+    int s = Math.max(xs, ys);
+
+    // Return type precision
+    int xp = x.getPrecision();
+    int yp = y.getPrecision();
+    int p = Math.min(DataName.NUMBER.getMaxPrecision(), Math.max(xp - xs, yp - ys) + s + 1);
+
     return new NumberDataType(p, s);
   }
 }

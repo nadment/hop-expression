@@ -36,35 +36,32 @@ public enum DataName {
 
   
   /** A unknown type */
-  UNKNOWN(DataFamily.NONE, PrecScale.NO_NO, 0, Void.class),
+  UNKNOWN(DataFamily.NONE, PrecScale.NO_NO, -1, Void.class),
   
-  ANY(DataFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 0, Object.class),
+  ANY(DataFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, -1, Object.class),
   
   /** Unlimited length text */
   STRING(DataFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, String.class),
   
   /** Boolean (true or false) */
-  BOOLEAN(DataFamily.BOOLEAN, PrecScale.NO_NO, 1, Boolean.class),
+  BOOLEAN(DataFamily.BOOLEAN, PrecScale.NO_NO, -1, Boolean.class),
 
   /** Signed long (64-bit) integer */
   INTEGER(DataFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
-
-  /** Double precision floating point number */
-  //NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO, 38, Double.class),
 
   /** Unlimited precision number */
   NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
 
   /** Date-time value with nanosecond precision and time zone */
-  DATE(DataFamily.TEMPORAL, PrecScale.NO_NO, 0, ZonedDateTime.class),
+  DATE(DataFamily.TEMPORAL, PrecScale.NO_NO, -1, ZonedDateTime.class),
   
-  JSON(DataFamily.JSON, PrecScale.NO_NO, 0, JsonNode.class),
+  JSON(DataFamily.JSON, PrecScale.NO_NO, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(DataFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class),
 
   /** A time unit type */
-  TIMEUNIT(DataFamily.NONE, PrecScale.NO_NO, 0, TimeUnit.class);
+  TIMEUNIT(DataFamily.NONE, PrecScale.NO_NO, -1, TimeUnit.class);
 
 
   protected static final Set<DataName> STRING_TYPES = Set.of(STRING);

@@ -109,7 +109,13 @@ NOTE: The use of underscores is restricted to one underscore between digits or p
 
 === Number
 
-Literals can be either positive numbers or negative numbers and contain decimals. In addition, scientific notation can be used. Can have embedded underscore `_` characters to improve readability.
+Literals can be either positive numbers or negative numbers and contain decimals. 
+
+The precision of a number is the total count of significant digits in the whole number, that is, the number of digits to both sides of the decimal point. The scale of a number is the count of decimal digits in the fractional part, to the right of the decimal point.
+The maximum supported precision is 38.
+
+In addition, scientific notation can be used.
+Can have embedded underscore `_` characters to improve readability.
 
 ----
 24.7

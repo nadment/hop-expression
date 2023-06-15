@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 public class DivOperator extends Operator {
 
   public DivOperator() {
-    super("DIV", "/", 50, true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("DIV", "/", 50, true, ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div.html");
   }
 

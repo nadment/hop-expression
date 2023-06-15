@@ -19,7 +19,6 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Tuple;
 
 public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
@@ -29,10 +28,9 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public DataType getReturnType(IExpressionContext context, Call call) {
-    // Least restrictive then expression
-    Tuple thenTuple = (Tuple) call.getOperand(2);
+    // Least restrictive then expression    
     DataType result = null;
-    for (IExpression operand : thenTuple) {
+    for (IExpression operand : call.getOperand(2).asTuple()) {
       DataType type = operand.getType();
       if (result == null || type.getName().ordinal() > result.getName().ordinal()) {
         result = type;

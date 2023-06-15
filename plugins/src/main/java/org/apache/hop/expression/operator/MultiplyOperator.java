@@ -38,7 +38,7 @@ import java.math.BigDecimal;
 public class MultiplyOperator extends Operator {
 
   public MultiplyOperator() {
-    super("MULTIPLY", "*", 50, true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("MULTIPLY", "*", 50, true, ReturnTypes.MULTIPLY_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 

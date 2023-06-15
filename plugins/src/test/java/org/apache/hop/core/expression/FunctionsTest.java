@@ -177,7 +177,7 @@ public class FunctionsTest extends ExpressionTest {
     
     returnType("If(FIELD_BOOLEAN,'A','B')", StringDataType.STRING);
     returnType("If(FIELD_BOOLEAN,1,2)", IntegerDataType.INTEGER);
-    returnType("If(FIELD_BOOLEAN,2,2.3)", NumberDataType.NUMBER);
+    returnType("If(FIELD_BOOLEAN,2,2.3)", new NumberDataType(38,1));
     returnType("If(FIELD_BOOLEAN,Date '2023-01-01',Date '2023-02-01')", DateDataType.DATE);
   }
 

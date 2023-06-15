@@ -39,6 +39,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.JsonDataType;
+import org.apache.hop.expression.type.NumberDataType;
 import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -353,7 +354,10 @@ public class ExpressionTest {
   //  optimize("CAST(123456.1 AS STRING(8))", "CAST(123456.1 AS STRING(8))");
 //    evalEquals("1_234", 1234L);
  //   evalEquals("1", 1L);
-    evalEquals("0xFFFF_EEEE_0000_AAA0",  new BigDecimal(new BigInteger("FFFFEEEE0000AAA0",16)));
+  //  returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(37,3));
+    optimize("CASE WHEN FIELD_INTEGER=1 THEN 1 ELSE CASE WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END END",
+        "CASE WHEN 1=FIELD_INTEGER THEN 1 WHEN 2=FIELD_NUMBER THEN 2 ELSE 3 END");
+    
     //evalFails("0x_2F");
     //evalFails("0x_2F");
         

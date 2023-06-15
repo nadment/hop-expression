@@ -110,7 +110,10 @@ public final class ReturnTypes {
   };
 
   public static final IReturnTypeInference TRY = new TryReturnTypeInference();
-  public static final IReturnTypeInference ADD_OPERATOR = new AddOperatorReturnTypeInference();
+  public static final IReturnTypeInference ADDITIVE_OPERATOR = new AdditiveOperatorReturnTypeInference();
+  public static final IReturnTypeInference MULTIPLY_OPERATOR = new MultiplyOperatorReturnTypeInference();  
+  public static final IReturnTypeInference DIVIDE_OPERATOR = new DivideOperatorReturnTypeInference();
+  public static final IReturnTypeInference MOD_OPERATOR = new ModOperatorReturnTypeInference();
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
   public static final IReturnTypeInference CAST_OPERATOR = new CastOperatorReturnTypeInference();
   public static final IReturnTypeInference IF_FUNCTION = new IfFunctionReturnTypeInference();

@@ -38,7 +38,7 @@ import java.math.BigDecimal;
 public class AddOperator extends Operator {
 
   public AddOperator() {
-    super("ADD", "+", 100, true, ReturnTypes.ADD_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
+    super("ADD", "+", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/add.html");
   }
 

@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
+import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.ExpressionError;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -26,11 +27,11 @@ public abstract class DataType {
 
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
-    
+
   protected final DataName name;
   protected final int precision;
   protected final int scale;
-  private String signature;
+  private final String signature;
 
   protected DataType(final DataName name) {
     this(name, PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED);
@@ -39,12 +40,16 @@ public abstract class DataType {
   protected DataType(final DataName name, final int precision) {
     this(name, precision, SCALE_NOT_SPECIFIED);
   }
-  
-  protected DataType(final DataName name, final int precision, final int scale) {
-    this.name = Objects.requireNonNull(name);
+
+  protected DataType(final DataName name, int precision, int scale) {
+    this.name = requireNonNull(name);
     this.precision = precision;
     this.scale = scale;
     this.signature = generate();
+
+    if (precision > name.getMaxPrecision()) {
+      throw new IllegalArgumentException("Precision out of range");
+    }
   }
 
   /**
@@ -64,7 +69,7 @@ public abstract class DataType {
   public DataFamily getFamily() {
     return name.getFamily();
   }
-  
+
   public boolean isSameFamily(DataFamily family) {
     return name.getFamily().isSameFamily(family);
   }
@@ -72,7 +77,7 @@ public abstract class DataType {
   public boolean isSameFamily(DataType type) {
     return name.getFamily().isSameFamily(type.getFamily());
   }
-  
+
   /**
    * Gets the precision of this type.
    *
@@ -94,7 +99,7 @@ public abstract class DataType {
   }
 
   /**
-   * Gets the scale of this type. 
+   * Gets the scale of this type.
    * Returns {@link #SCALE_NOT_SPECIFIED} (-1) if scale is not valid for this type.
    *
    * @return number of digits of scale
@@ -102,35 +107,30 @@ public abstract class DataType {
   public int getScale() {
     return scale;
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || obj instanceof DataType
-          && Objects.equals(this.signature, ((DataType) obj).signature);
+        || obj instanceof DataType && Objects.equals(this.signature, ((DataType) obj).signature);
   }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(signature);
   }
-  
+
   /**
    * Generates a string representation of this type.
    *
    * @return The string representation
    */
   private String generate() {
-    if (this.precision == PRECISION_NOT_SPECIFIED && this.scale == SCALE_NOT_SPECIFIED) {
-      return name.name();
-    }
-
     StringBuilder builder = new StringBuilder();
     builder.append(name.toString());
-    if (precision >= 0 && precision != name.getMaxPrecision()) {
+    if (precision > 0 && (precision != name.getMaxPrecision() || scale > 0)) {
       builder.append('(');
       builder.append(this.precision);
-      if (scale >= 0 && name!=DataName.INTEGER) {
+      if (scale > 0) {
         builder.append(',');
         builder.append(this.scale);
       }
@@ -139,8 +139,8 @@ public abstract class DataType {
 
     return builder.toString();
   }
-  
-  
+
+
   /**
    * Convert a value to the specified type {@link DataType} with a pattern.
    *
@@ -152,12 +152,12 @@ public abstract class DataType {
   public Object cast(final Object value, String pattern) {
     throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
   }
-  
+
   @Override
   public String toString() {
     return signature;
   }
-  
+
   /**
    * Return a default data type for a value.
    *
@@ -171,7 +171,7 @@ public abstract class DataType {
     if (value instanceof String)
       return StringDataType.STRING;
     if (value instanceof BigDecimal) {
-      BigDecimal number = (BigDecimal) value; 
+      BigDecimal number = (BigDecimal) value;
       return new NumberDataType(number.precision(), number.scale());
     }
     if (value instanceof Double)
@@ -184,7 +184,7 @@ public abstract class DataType {
       return JsonDataType.JSON;
     if (value instanceof byte[])
       return BinaryDataType.BINARY;
-    
+
     return UnknownDataType.UNKNOWN;
   }
 }

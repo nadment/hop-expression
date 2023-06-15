@@ -14,15 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.hop.expression.type;
 
-public final class UnknownDataType extends DataType {
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpressionContext;
+/**
+ * Calculate return type precision and scale for x / y
+ */
+public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
 
-  public static final UnknownDataType UNKNOWN = new UnknownDataType(DataName.UNKNOWN);
-  public static final UnknownDataType ANY = new UnknownDataType(DataName.ANY);
-  
-  private UnknownDataType(DataName name) {
-    super(name);
-  } 
+  public DivideOperatorReturnTypeInference() {
+    super();
+  }
+
+  @Override
+  public DataType getReturnType(IExpressionContext context, Call call) {
+    DataType x = call.getOperand(0).getType();
+    DataType y = call.getOperand(1).getType();
+
+    // Return type scale
+    int xs = x.getScale();
+    int ys = y.getScale();
+    int s = Math.max(xs, ys);
+    
+    // Return type precision
+    int xp = x.getPrecision();
+    int yp = y.getPrecision();
+    int p = Math.min(DataName.NUMBER.getMaxPrecision(), xp + ys + Math.max(0, yp - xs));
+        
+    return new NumberDataType(p, s);
+  }
 }

@@ -31,14 +31,14 @@ public final class StringDataType extends DataType {
   /**
    * Default STRING type with max precision.
    */
-  public static final StringDataType STRING = new StringDataType(PRECISION_NOT_SPECIFIED);
+  public static final StringDataType STRING = new StringDataType(DataName.STRING.getMaxPrecision());
 
+  public StringDataType() {
+    super(DataName.STRING);
+  }
+  
   public StringDataType(int precision) {
     super(DataName.STRING, precision);
-  }
-
-  public StringDataType(int precision, int scale) {
-    super(DataName.STRING, precision, scale);
   }
 
   public String cast(final Object value) {

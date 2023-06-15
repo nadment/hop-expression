@@ -106,7 +106,7 @@ public class CaseOperator extends Operator {
             new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
       }
 
-      // Search CASE expressions with one condition can be turned into COALESCE, NULLIF, NVL2
+      // Search CASE expressions with one condition can be turned into COALESCE, NULLIF, NVL2 or simple case
       //
       if (whenTerm.size() == 1) {
         IExpression whenTerm0 = whenTerm.get(0);
@@ -143,6 +143,12 @@ public class CaseOperator extends Operator {
           return new Call(FunctionRegistry.getFunction("NVL2"), whenTerm0.asCall().getOperand(0),
               elseTerm, thenTerm0);
         }
+        
+        // CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
+        // Not always compatible with flatten search case
+        // if (whenTerm0.is(Operators.EQUAL)) {
+        //   return new Call(Operators.CASE, whenTerm0.asCall().getOperand(0), new Tuple(whenTerm0.asCall().getOperand(1)), thenTerm, elseTerm);         
+        // }
       }
     }
 
