@@ -27,6 +27,8 @@ public final class BooleanDataType extends DataType {
     super(DataName.BOOLEAN, PRECISION_NOT_SPECIFIED);
   } 
   
+  
+  @Override
   public Boolean cast(final Object value) {
     return cast(value, null);
   }
@@ -40,12 +42,11 @@ public final class BooleanDataType extends DataType {
    * @return the converted value
    */
   @Override
-  public Boolean cast(final Object value, String pattern) {
+  public Boolean cast(final Object value, final String pattern) {
 
     if (value == null) {
       return null;
-    }
-    
+    }    
     if (value instanceof Boolean) {
       return (Boolean) value;
     }
@@ -81,7 +82,7 @@ public final class BooleanDataType extends DataType {
         DataName.from(value), DataName.BOOLEAN));
   }
   
-  public static final Boolean convert(final String str) {
+  public static final Boolean convert(final String str) {    
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {

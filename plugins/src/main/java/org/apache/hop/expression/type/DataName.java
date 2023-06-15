@@ -83,8 +83,7 @@ public enum DataName {
   
   private final int precisionMax;
 
-  public static final Set<String> ALL_NAMES =
-      Set.of("BigNumber", "Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
+  public static final Set<String> ALL_NAMES = Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
   private DataName(DataFamily family, int signature, int precisionMax,Class<?> javaClass) {
     this.family = family;

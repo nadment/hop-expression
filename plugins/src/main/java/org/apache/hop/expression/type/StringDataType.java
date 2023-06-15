@@ -41,6 +41,7 @@ public final class StringDataType extends DataType {
     super(DataName.STRING, precision);
   }
 
+  @Override
   public String cast(final Object value) {
     return cast(value, null);
   }
@@ -53,6 +54,7 @@ public final class StringDataType extends DataType {
    *        numeric, or null if none
    * @return the converted value
    */
+  @Override
   public String cast(final Object value, String pattern) {
 
     if (value == null) {
@@ -121,7 +123,7 @@ public final class StringDataType extends DataType {
    * 
    * @param value the value to coerce
    * @return String
-   */
+   */ 
   public static final String coerce(final Object value) {
     if (value == null) {
       return null;

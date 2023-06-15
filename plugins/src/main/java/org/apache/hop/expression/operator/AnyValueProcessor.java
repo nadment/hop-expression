@@ -20,9 +20,10 @@ import org.apache.hop.expression.IExpressionProcessor;
 
 public class AnyValueProcessor implements IExpressionProcessor {
 
-  private Object value = null;
+  private Object value;
 
   public AnyValueProcessor() {    
+    value = null;
   }
 
   @Override

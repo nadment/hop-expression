@@ -564,13 +564,11 @@ public class ExpressionBuilder {
 
   private Literal parseLiteralNumericDecimal(Token token) throws ParseException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
-
-    // if ( number.scale()==0 && number.precision()<17 ) {
-    // if ( BigDecimalMath.isLongValue(number) ) {
-    // return new Literal(DataType.INTEGER, number.longValueExact());
-    // }
-
-    return Literal.of(number);
+    try {
+      return Literal.of(number.longValueExact());
+    } catch (ArithmeticException  e) {
+      return Literal.of(number);
+    }
   }
 
   private Literal parseLiteralBinary(Token token) throws ParseException {
@@ -595,7 +593,7 @@ public class ExpressionBuilder {
   private Literal parseLiteralNumericHexa(Token token) {
     String str = token.text();
     BigInteger value = new BigInteger(str.substring(2), 16);
-   try {
+    try {
       return Literal.of(value.longValueExact());
     } catch (ArithmeticException e) {
       return Literal.of(new BigDecimal(value));

@@ -352,6 +352,8 @@ public class DataTypeTest extends ExpressionTest {
     assertEquals(BigDecimal.ONE, type.cast(1L));
     assertEquals(BigDecimal.ONE, type.cast(1D));
     assertEquals(BigDecimal.ONE, type.cast("1"));
+    assertEquals(new BigDecimal("0.1"), type.cast("0.1"));
+    assertEquals(new BigDecimal("0.1"), type.cast(".1"));
     assertEquals(BigDecimal.ONE, type.cast(new byte[] {0x01}));
     assertEquals(BigDecimal.valueOf(-356L), type.cast(-356L));
     assertEquals(BigDecimal.valueOf(-3.56E2D), type.cast(-3.56E+2D));
@@ -364,9 +366,9 @@ public class DataTypeTest extends ExpressionTest {
 
   @Test
   public void castToUnknown() throws Exception {
-  //  UnknownDataType type = UnknownDataType.UNKNOWN;
+    UnknownDataType type = UnknownDataType.UNKNOWN;
   //  assertThrows(IllegalArgumentException.class, () -> type.cast(null));
-//    assertThrows(IllegalArgumentException.class, () -> type.cast(true));
+  //  assertThrows(IllegalArgumentException.class, () -> type.cast(true));
   //  assertThrows(IllegalArgumentException.class, () -> type.cast("Test"));
   }
 

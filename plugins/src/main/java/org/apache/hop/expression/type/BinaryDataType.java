@@ -34,7 +34,7 @@ public final class BinaryDataType extends DataType {
     super(DataName.BINARY, precision);
   }
   
-  
+  @Override
   public byte[] cast(final Object value) {
     return cast(value, null);
   }
@@ -60,9 +60,6 @@ public final class BinaryDataType extends DataType {
     if (value instanceof String) {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
-    // if (value instanceof Long) {
-    // return toBinary((Long) value);
-    // }
 
     throw new IllegalArgumentException(
         ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), this));
@@ -100,6 +97,5 @@ public final class BinaryDataType extends DataType {
 
   public static byte[] convert(final String str) {
     return str.getBytes(StandardCharsets.UTF_8);
-  }
-  
+  }  
 }

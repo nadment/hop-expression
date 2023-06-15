@@ -139,7 +139,15 @@ public abstract class DataType {
 
     return builder.toString();
   }
-
+  /**
+   * Convert a value to the specified type {@link DataType}.
+   *
+   * @param value the value to convert
+   * @return the converted value
+   */
+  public Object cast(final Object value) {
+    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+  }
 
   /**
    * Convert a value to the specified type {@link DataType} with a pattern.

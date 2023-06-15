@@ -30,17 +30,18 @@ public final class NumberDataType extends DataType {
   public static final NumberDataType NUMBER = new NumberDataType(DataName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED);
   
   public NumberDataType() {
-    super(DataName.NUMBER);
+    super(DataName.NUMBER, DataName.NUMBER.getMaxPrecision(), 0);
   }
   
   public NumberDataType(int precision) {
-    super(DataName.NUMBER, precision);
+    super(DataName.NUMBER, precision, 0);
   }
   
   public NumberDataType(int precision, int scale) {
     super(DataName.NUMBER, precision, scale);
   }
   
+  @Override
   public BigDecimal cast(final Object value) {
     return cast(value, null);
   }
@@ -54,7 +55,7 @@ public final class NumberDataType extends DataType {
    * @return the converted value
    */
   @Override
-  public BigDecimal cast(final Object value, String pattern) {
+  public BigDecimal cast(final Object value, final String pattern) {
 
     if (value == null) {
       return null;
@@ -62,11 +63,6 @@ public final class NumberDataType extends DataType {
     
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-
-//      if ( this.precision!=PRECISION_NOT_SPECIFIED ) {
-//        number = number.setScale(precision, RoundingMode.DOWN);
-//      }
-
       if ( this.scale!=SCALE_NOT_SPECIFIED ) {
         number = number.setScale(scale, RoundingMode.DOWN);
       }

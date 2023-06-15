@@ -32,10 +32,10 @@ public final class DateDataType extends DataType {
     super(DataName.DATE, PRECISION_NOT_SPECIFIED, 9);
   } 
   
+  @Override
   public ZonedDateTime cast(final Object value) {
     return cast(value, null);
   }
-  
   
   /**
    * Convert a value to the specified type {@link DateDataType} with a pattern.

@@ -31,6 +31,7 @@ public final class IntegerDataType extends DataType {
     super(DataName.INTEGER, precision, 0);
   }
     
+  @Override
   public Long cast(final Object value) {
     return cast(value, null);
   }

@@ -68,8 +68,8 @@ public class BoolAndOperator extends Operator {
         right = false;
       }
     }
-    
-    // FALSE as soon as any operand is FALSE   
+
+    // FALSE as soon as any operand is FALSE
     // FALSE AND x => FALSE
     // x AND FALSE => FALSE
     if (!left || !right) {
@@ -77,17 +77,18 @@ public class BoolAndOperator extends Operator {
     }
 
     // Remove duplicate predicate
-    // x AND x => x    
-    // x AND y AND x => x AND y   
+    // x AND x => x
+    // x AND y AND x => x AND y
     Stack<IExpression> conditions = this.getChainedOperands(call, false);
 
 
-    //final Map<IExpression, Range<?>> ranges = new HashMap<>();
+    // final Map<IExpression, Range<?>> ranges = new HashMap<>();
     final List<IExpression> nullTerms = new ArrayList<>();
     final List<IExpression> notNullTerms = new ArrayList<>();
     final List<IExpression> strongTerms = new ArrayList<>();
-    final MultiValuedMap<IExpression, Pair<Call,Literal>> equalsLiterals = new ArrayListValuedHashMap<>();
-    
+    final MultiValuedMap<IExpression, Pair<Call, Literal>> equalsLiterals =
+        new ArrayListValuedHashMap<>();
+
     for (IExpression condition : conditions) {
       if (condition.is(Kind.CALL)) {
         call = condition.asCall();
@@ -105,22 +106,24 @@ public class BoolAndOperator extends Operator {
             equalsLiterals.put(call.getOperand(0), Pair.of(call, call.getOperand(1).asLiteral()));
           }
         }
-        
-//        if (call.is(Operators.LESS_THAN) && call.getOperand(0).isConstant() ) {
-//          
-//          this.processRange();
-//          
-//          Object value = call.getOperand(0).getValue(context);
-//          if ( value instanceof Comparable ) {
-//          Comparable<?> c = (Comparable<?>) value;
-//          Range<?> range = ranges.get(call);
-//          
-//          if ( range==null) {                       
-//            ranges.put(call, Range.lessThan(c));
-//          }
-//        }
-     
-        if (Operators.is(call, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN, Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN, Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
+
+        // if (call.is(Operators.LESS_THAN) && call.getOperand(0).isConstant() ) {
+        //
+        // this.processRange();
+        //
+        // Object value = call.getOperand(0).getValue(context);
+        // if ( value instanceof Comparable ) {
+        // Comparable<?> c = (Comparable<?>) value;
+        // Range<?> range = ranges.get(call);
+        //
+        // if ( range==null) {
+        // ranges.put(call, Range.lessThan(c));
+        // }
+        // }
+
+        if (Operators.is(call, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
+            Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN,
+            Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
           if (call.getOperand(0).is(Kind.IDENTIFIER)) {
             strongTerms.add(call.getOperand(0));
           }
@@ -133,49 +136,45 @@ public class BoolAndOperator extends Operator {
 
     // Simplify X=1 AND X=2 - not satisfiable
     for (IExpression reference : equalsLiterals.keySet()) {
-        Collection<Pair<Call,Literal>> pairs = equalsLiterals.get(reference);              
-        Literal literal = null;
-        for (Pair<Call,Literal> pair : pairs ) {
-          if ( literal==null ) {
-            literal = pair.getRight();
-          } 
-          else if ( !literal.equals(pair.getRight()) ) {
-            return Literal.FALSE;
-          }
+      Collection<Pair<Call, Literal>> pairs = equalsLiterals.get(reference);
+      Literal literal = null;
+      for (Pair<Call, Literal> pair : pairs) {
+        if (literal == null) {
+          literal = pair.getRight();
+        } else if (!literal.equals(pair.getRight())) {
+          return Literal.FALSE;
         }
+      }
     }
-    
-    // Simplify IS NULL(x) AND x < 5  - not satisfiable
+
+    // Simplify IS NULL(x) AND x < 5 - not satisfiable
     if (!Collections.disjoint(nullTerms, strongTerms)) {
       return Literal.FALSE;
-    }      
+    }
 
     // Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
     for (IExpression operand : notNullTerms) {
       if (strongTerms.contains(operand)) {
-        for (IExpression condition : conditions ) {
-          if( condition.is(Operators.IS_NOT_NULL) && condition.asCall().getOperand(0).equals(operand) ) { 
+        for (IExpression condition : conditions) {
+          if (condition.is(Operators.IS_NOT_NULL)
+              && condition.asCall().getOperand(0).equals(operand)) {
             conditions.remove(condition);
           }
         }
       }
     }
-    
-    // Rebuild conjunctions if more than 1 condition    
-    IExpression expression  = conditions.pop();
-    while (!conditions.isEmpty()) {      
-      call = new Call(Operators.BOOLAND, conditions.pop(), expression); 
-      call.inferenceType(context);  
+
+    // Rebuild conjunctions if more than 1 condition
+    IExpression expression = conditions.pop();
+    while (!conditions.isEmpty()) {
+      call = new Call(Operators.BOOLAND, conditions.pop(), expression);
+      call.inferenceType(context);
       expression = call;
     }
-    
+
     return expression;
-  } 
-  
-//    private void processRange(Operator operator, Literal literal) {
-//      
-//    }
-    
+  }
+
   @Override
   public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
     Boolean left = operands[0].getValue(context, Boolean.class);
@@ -186,11 +185,11 @@ public class BoolAndOperator extends Operator {
     if (right == Boolean.FALSE) {
       return right;
     }
-    
-    if (left==null || right == null) {
+
+    if (left == null || right == null) {
       return null;
     }
-    
+
     return Boolean.logicalAnd(left, right);
   }
 

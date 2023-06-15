@@ -34,10 +34,10 @@ public final class JsonDataType extends DataType {
     super(DataName.JSON);
   }
   
+  @Override
   public JsonNode cast(final Object value) {
     return cast(value, null);
   }
-
   
   /**
    * Convert a value to the specified type {@link JsonDataType} with a pattern.
@@ -47,6 +47,7 @@ public final class JsonDataType extends DataType {
    *        numeric, or null if none
    * @return the converted value
    */
+  @Override
   public JsonNode cast(final Object value, String pattern) {
 
     if (value == null) {

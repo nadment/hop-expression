@@ -132,7 +132,7 @@ NOTE: Leading, trailing and double underscores will produce an error.
 
 === Binary
 
-Binary literals of the word BINARY followed by a hexadecimal notation surrounded by single quotes `'`.
+Binary literals of the word BINARY followed by a hexadecimal notation (2 hexadecimal digits per byte) surrounded by single quotes `'`.
 
 ----
 BINARY 'ac6F'
