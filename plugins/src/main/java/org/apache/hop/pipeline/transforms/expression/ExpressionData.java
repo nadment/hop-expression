@@ -18,14 +18,14 @@ package org.apache.hop.pipeline.transforms.expression;
 
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
 public class ExpressionData extends BaseTransformData implements ITransformData {
 
   protected IRowMeta outputRowMeta;
-  protected IExpressionContext context;
+  protected IRowExpressionContext context;
   protected IExpression[] expressions;
 
   public ExpressionData() {

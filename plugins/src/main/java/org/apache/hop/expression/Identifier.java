@@ -15,6 +15,7 @@
 package org.apache.hop.expression;
 
 import static java.util.Objects.requireNonNull;
+import static org.apache.hop.expression.util.Expressions.createDataType;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
@@ -27,7 +28,6 @@ import org.apache.hop.expression.type.JsonDataType;
 import org.apache.hop.expression.type.NumberDataType;
 import org.apache.hop.expression.type.StringDataType;
 import org.apache.hop.expression.type.UnknownDataType;
-import org.apache.hop.expression.util.ExpressionUtils;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -94,25 +94,25 @@ public final class Identifier implements IExpression {
 
   @Override
   public Object getValue(final IExpressionContext context) throws ExpressionException {
+    IRowExpressionContext rowContext = getRowContext(context);
+    IRowMeta rowMeta = rowContext.getRowMeta();
 
-    IRowMeta rowMeta = context.getRowMeta();
-
-    Object[] row = context.getRow();   
-    if ( row==null ) {
+    Object[] row = rowContext.getRow();
+    if (row == null) {
       throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
     }
-    
+
     try {
       IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
 
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
-          return rowMeta.getBoolean(row, ordinal);            
+          return rowMeta.getBoolean(row, ordinal);
         case IValueMeta.TYPE_TIMESTAMP:
           Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
           if (timestamp == null)
             return null;
-          return timestamp.toLocalDateTime().atZone(ZoneId.systemDefault());          
+          return timestamp.toLocalDateTime().atZone(ZoneId.systemDefault());
         case IValueMeta.TYPE_DATE:
           Date date = rowMeta.getDate(row, ordinal);
           if (date == null)
@@ -123,7 +123,7 @@ public final class Identifier implements IExpression {
         case IValueMeta.TYPE_INTEGER:
           return rowMeta.getInteger(row, ordinal);
         case IValueMeta.TYPE_NUMBER:
-          //return rowMeta.getNumber(row, ordinal);
+          // return rowMeta.getNumber(row, ordinal);
         case IValueMeta.TYPE_BIGNUMBER:
           return rowMeta.getBigNumber(row, ordinal);
         case ValueMetaJson.TYPE_JSON:
@@ -141,21 +141,21 @@ public final class Identifier implements IExpression {
 
   @Override
   public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
-
-    IRowMeta rowMeta = context.getRowMeta();
+    IRowExpressionContext rowContext = getRowContext(context);
+    IRowMeta rowMeta = rowContext.getRowMeta();
     IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
 
     if (valueMeta == null) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, name);
     }
 
-    Object[] row = context.getRow();
-    if ( row==null ) {
+    Object[] row = rowContext.getRow();
+    if (row == null) {
       throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
     }
 
     try {
-            
+
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN: {
           Boolean value = rowMeta.getBoolean(row, ordinal);
@@ -168,12 +168,12 @@ public final class Identifier implements IExpression {
           if (clazz == String.class) {
             return clazz.cast(value ? "TRUE" : "FALSE");
           }
-//          if (clazz == Long.class) {
-//            return clazz.cast(value ? 1L : 0L);
-//          }
-//          if (clazz == BigDecimal.class) {
-//            return clazz.cast(value ? BigDecimal.ONE : BigDecimal.ZERO);
-//          }
+          // if (clazz == Long.class) {
+          // return clazz.cast(value ? 1L : 0L);
+          // }
+          // if (clazz == BigDecimal.class) {
+          // return clazz.cast(value ? BigDecimal.ONE : BigDecimal.ZERO);
+          // }
           break;
         }
 
@@ -182,25 +182,25 @@ public final class Identifier implements IExpression {
           if (value == null) {
             return null;
           }
-          if (clazz == LocalDateTime.class) {         
+          if (clazz == LocalDateTime.class) {
             return clazz.cast(LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()));
           }
-          
-          return clazz.cast(value.toInstant().atZone(ZoneId.systemDefault()));      
+
+          return clazz.cast(value.toInstant().atZone(ZoneId.systemDefault()));
         }
-        
+
         case IValueMeta.TYPE_DATE: {
           Date value = rowMeta.getDate(row, ordinal);
           if (value == null) {
             return null;
           }
-          if (clazz == ZonedDateTime.class) {         
+          if (clazz == ZonedDateTime.class) {
             return clazz.cast(value.toInstant().atZone(ZoneId.systemDefault()));
           }
-          
+
           return clazz.cast(LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()));
         }
-        
+
         case IValueMeta.TYPE_STRING: {
           String value = rowMeta.getString(row, ordinal);
           if (value == null) {
@@ -209,7 +209,7 @@ public final class Identifier implements IExpression {
           if (clazz == String.class) {
             return clazz.cast(value);
           }
-          if (clazz == Boolean.class) {         
+          if (clazz == Boolean.class) {
             return clazz.cast(BooleanDataType.convert(value));
           }
           if (clazz == Long.class) {
@@ -223,7 +223,7 @@ public final class Identifier implements IExpression {
           }
           if (clazz == JsonNode.class) {
             return clazz.cast(JsonDataType.convert(value));
-          }        
+          }
           break;
         }
 
@@ -270,7 +270,7 @@ public final class Identifier implements IExpression {
           BigDecimal value = rowMeta.getBigNumber(row, ordinal);
           if (value == null) {
             return null;
-          }          
+          }
           if (clazz == BigDecimal.class) {
             return clazz.cast(value);
           }
@@ -278,16 +278,16 @@ public final class Identifier implements IExpression {
             return clazz.cast(value.longValue());
           }
           if (clazz == Boolean.class) {
-            return clazz.cast(value.unscaledValue()!=BigInteger.ZERO);
+            return clazz.cast(value.unscaledValue() != BigInteger.ZERO);
           }
           if (clazz == String.class) {
             return clazz.cast(NumberFormat.of("TM").format(value));
           }
-          break;          
+          break;
         }
 
         case ValueMetaJson.TYPE_JSON: {
-          Object value = context.getRow()[ordinal];
+          Object value = rowContext.getRow()[ordinal];
           if (clazz.isInstance(value)) {
             return clazz.cast(value);
           }
@@ -331,17 +331,22 @@ public final class Identifier implements IExpression {
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
-    IRowMeta rowMeta = context.getRowMeta();
+    if (context instanceof IRowExpressionContext) {
+      IRowMeta rowMeta = ((IRowExpressionContext) context).getRowMeta();
 
-    int indexOfValue = rowMeta.indexOfValue(name);
-    if (indexOfValue < 0) {
-      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
+      int indexOfValue = rowMeta.indexOfValue(name);
+      if (indexOfValue < 0) {
+        throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
+      }
+
+      this.ordinal = indexOfValue;
+      this.type = createDataType(rowMeta.getValueMeta(indexOfValue));
+      return;
     }
 
-    this.ordinal = indexOfValue;
-    this.type = ExpressionUtils.createDataType(rowMeta.getValueMeta(indexOfValue));
+    throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
   }
-  
+
   /**
    * Compile a identifier.
    * 
@@ -352,19 +357,17 @@ public final class Identifier implements IExpression {
    */
   @Override
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
-    IRowMeta rowMeta = context.getRowMeta();
+    IRowMeta rowMeta = getRowContext(context).getRowMeta();
 
     int index = rowMeta.indexOfValue(name);
     if (index < 0) {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
     }
 
-    DataType type = ExpressionUtils.createDataType(rowMeta.getValueMeta(index));
-
-    return new Identifier(name, type, index);
+    return new Identifier(name, createDataType(rowMeta.getValueMeta(index)), index);
   }
-  
-  
+
+
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);
@@ -374,7 +377,8 @@ public final class Identifier implements IExpression {
   public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionBuilder.isReservedWord(name)
-        || FunctionRegistry.isFunction(name) || DataName.of(name)!=null || TimeUnit.of(name)!=null) {
+        || FunctionRegistry.isFunction(name) || DataName.of(name) != null
+        || TimeUnit.of(name) != null) {
       writer.append('\"');
       writer.append(name);
       writer.append('\"');
@@ -396,16 +400,25 @@ public final class Identifier implements IExpression {
       return false;
     if (getClass() != o.getClass())
       return false;
-    
-    Identifier other = (Identifier) o;    
-    return this.name.equals(other.name) && this.type.equals(other.type) && this.ordinal==other.ordinal;
+
+    Identifier other = (Identifier) o;
+    return this.name.equals(other.name) && this.type.equals(other.type)
+        && this.ordinal == other.ordinal;
+  }
+
+  protected IRowExpressionContext getRowContext(IExpressionContext context)
+      throws ExpressionException {
+    if (context instanceof IRowExpressionContext) {
+      return (IRowExpressionContext) context;
+    }
+    throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
   }
 
   @Override
   public Identifier asIdentifier() {
     return this;
-  } 
-  
+  }
+
   @Override
   public String toString() {
     return this.name;

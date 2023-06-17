@@ -25,13 +25,13 @@ import org.apache.hop.core.row.ValueDataUtil;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionBuilder;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.DataName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -103,7 +103,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       data.groupIndex = new int[meta.getGroupFields().size()];
       data.aggregates = new Call[meta.getAggregateFields().size()];
       data.functions = new AggregateFunction[meta.getAggregateFields().size()];
-      data.context = new ExpressionContext(this, data.inputRowMeta);
+      data.context = new RowExpressionContext(this, data.inputRowMeta);
 
       // If the transform does not receive any rows, we can not lookup field position indexes
       // if (row != null) {

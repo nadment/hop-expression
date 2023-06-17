@@ -30,6 +30,7 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -105,7 +106,7 @@ public class ExpressionBenchmark {
     row[12] = "UNDERSCORE";
     row[13] = "lower";
 
-    ExpressionContext context = new ExpressionContext(variables, rowMeta);
+    RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
     context.setRow(row);
 
     return context;

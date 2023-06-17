@@ -21,7 +21,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
-import org.apache.hop.expression.util.ExpressionUtils;
+import org.apache.hop.expression.util.Expressions;
 import java.util.List;
 
 public class UserDefinedFunction extends Function {
@@ -37,7 +37,7 @@ public class UserDefinedFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     try {
-      IExpressionContext ctx = new ExpressionContext(context, createRowMeta());
+      IRowExpressionContext ctx = new RowExpressionContext(context, createRowMeta());
       IExpression expression = ExpressionBuilder.build(ctx, getSource());
 
       // Replace function arguments with real operands
@@ -72,7 +72,7 @@ public class UserDefinedFunction extends Function {
     // Convert arguments to row meta
     IRowMeta rowMeta = new RowMeta();
     for (FunctionArgument argument : arguments) {
-      IValueMeta vm = ExpressionUtils.createValueMeta(argument.getName(), argument.getType());
+      IValueMeta vm = Expressions.createValueMeta(argument.getName(), argument.getType());
       rowMeta.addValueMeta(vm);
     }
 

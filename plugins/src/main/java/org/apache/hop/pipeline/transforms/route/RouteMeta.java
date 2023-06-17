@@ -27,7 +27,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionBuilder;
-import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -112,7 +112,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     }
 
     // Check expression
-    ExpressionContext context = new ExpressionContext(variables, prev);
+    RowExpressionContext context = new RowExpressionContext(variables, prev);
     int routeNumber = 1;
     for (Route route : routes) {
 

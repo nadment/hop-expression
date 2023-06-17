@@ -68,14 +68,6 @@ public class ExpressionContext extends Variables implements IExpressionContext {
    * The {@code Map} field stores the attributes.
    */
   private Map<String, Object> attributes;
-  private IRowMeta rowMeta;
-  private Object[] row;
-
-  public ExpressionContext(IVariables variables, IRowMeta rowMeta) {
-    this(variables);
-
-    this.rowMeta = Objects.requireNonNull(rowMeta);
-  }
 
   public ExpressionContext(IVariables variables) {
     super();
@@ -104,21 +96,6 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   @Override
   public Object getAttribute(String id) {
     return attributes.get(id);
-  }
-
-  @Override
-  public IRowMeta getRowMeta() {
-    return rowMeta;
-  }
-
-  @Override
-  public Object[] getRow() {
-    return this.row;
-  }
-
-  @Override
-  public void setRow(Object[] row) {
-    this.row = row;
   }
 }
 

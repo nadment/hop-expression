@@ -28,6 +28,7 @@ import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -100,7 +101,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
         }
       }
 
-      data.context = new ExpressionContext(this, getInputRowMeta());
+      data.context = new RowExpressionContext(this, getInputRowMeta());
 
       String nrclonesString = resolve(meta.getNrClones());
       try {

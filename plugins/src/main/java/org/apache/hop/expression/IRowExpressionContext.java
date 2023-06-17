@@ -14,24 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.hop.expression;
 
-package org.apache.hop.pipeline.transforms.route;
-
-import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.expression.IRowExpressionContext;
-import org.apache.hop.pipeline.transform.BaseTransformData;
-import org.apache.hop.pipeline.transform.ITransformData;
-import java.util.List;
 
-public class RouteData extends BaseTransformData implements ITransformData {
+public interface IRowExpressionContext extends IExpressionContext {
 
-  public IRowMeta rowMeta;
-  public IRowSet defaultRowSet;
-  public IRowExpressionContext context;
-  public List<RouteTarget> targets;
+  public IRowMeta getRowMeta();
 
-  public RouteData() {
-    super();
-  }
+  public Object[] getRow();
+
+  public void setRow(Object[] row);
 }

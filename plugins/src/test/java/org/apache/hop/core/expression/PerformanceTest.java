@@ -25,9 +25,9 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionBuilder;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class PerformanceTest {
     row[4] = true;
     row[5] = null;
 
-    ExpressionContext context = new ExpressionContext(new Variables(), rowMeta);
+    RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);
     context.setRow(row);
     
     IExpression expression = ExpressionBuilder.build(context, source);

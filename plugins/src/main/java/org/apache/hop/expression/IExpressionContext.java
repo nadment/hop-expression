@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 
 public interface IExpressionContext extends IVariables {
@@ -43,10 +42,4 @@ public interface IExpressionContext extends IVariables {
    * @throws NullPointerException if the name is null.
    */
   // public void setAttribute(String name, Object value);
-
-  public IRowMeta getRowMeta();
-
-  public Object[] getRow();
-
-  public void setRow(Object[] row);
 }

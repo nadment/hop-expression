@@ -45,10 +45,10 @@ import java.io.StringWriter;
 /**
  * Utility methods called by operator or transformation.
  */
-public class ExpressionUtils {
+public class Expressions {
   private static final ILogChannel LOG = new LogChannel("Expression");
 
-  private ExpressionUtils() {
+  private Expressions() {
     // Utility class
   }
 

@@ -25,14 +25,14 @@ package org.apache.hop.pipeline.transforms.clonerowexpression;
 
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 
 
 public class CloneRowData extends BaseTransformData implements ITransformData {
 
-  protected IExpressionContext context;
+  protected IRowExpressionContext context;
   protected IExpression numberOfClones;
   protected IRowMeta outputRowMeta;
   protected boolean addInfosToRow;

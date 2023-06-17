@@ -20,9 +20,9 @@ import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.ExpressionBuilder;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -76,7 +76,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
           metadataProvider);
       data.expressions = new IExpression[data.outputRowMeta.size()];
 
-      data.context = new ExpressionContext(this, data.outputRowMeta);
+      data.context = new RowExpressionContext(this, data.outputRowMeta);
 
       // For all fields expression
       for (ExpressionField field : meta.getFields()) {

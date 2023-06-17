@@ -22,8 +22,8 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.apache.hop.expression.IRowExpressionContext;
 import org.apache.hop.pipeline.transform.BaseTransformData;
 import org.apache.hop.pipeline.transform.ITransformData;
 import java.util.HashMap;
@@ -82,7 +82,7 @@ public class AggregateData extends BaseTransformData implements ITransformData {
   protected IRowMeta groupMeta;
   protected int[] groupIndex;
 
-  protected IExpressionContext context;
+  protected IRowExpressionContext context;
   protected Call[] aggregates;
   protected AggregateFunction[] functions;
   protected IRowMeta aggregateMeta;

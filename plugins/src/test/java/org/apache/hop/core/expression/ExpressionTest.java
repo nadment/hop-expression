@@ -37,9 +37,9 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.DataType;
 import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.NumberDataType;
 import org.apache.hop.expression.type.UnknownDataType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -131,7 +131,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER_UNDERSCORE"));
     rowMeta.addValueMeta(new ValueMetaString("IDENTIFIER lower"));
 
-    ExpressionContext context = new ExpressionContext(variables, rowMeta);
+    RowExpressionContext context = new RowExpressionContext(variables, rowMeta);
 
     if (withData) {
       Calendar calendar = Calendar.getInstance();

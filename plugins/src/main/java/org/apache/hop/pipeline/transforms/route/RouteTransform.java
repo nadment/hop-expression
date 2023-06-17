@@ -22,9 +22,9 @@ import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.expression.ExpressionBuilder;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -58,7 +58,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
       // clone the input row structure and place it in our data object
       data.rowMeta = getInputRowMeta().clone();
-      data.context = new ExpressionContext(this, data.rowMeta);
+      data.context = new RowExpressionContext(this, data.rowMeta);
       data.targets = new ArrayList<>();
 
       for (Route route : meta.getRoutes()) {
