@@ -140,6 +140,8 @@ public final class OperandTypes {
       family(DataFamily.BOOLEAN, OperandCountRange.between(1, -1));
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
       family(DataFamily.BOOLEAN, DataFamily.BOOLEAN);
+  public static final IOperandTypeChecker BOOLEAN_ANY =
+      family(DataFamily.BOOLEAN, DataFamily.ANY);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =
       family(DataFamily.BOOLEAN, DataFamily.ANY, DataFamily.ANY);
   public static final IOperandTypeChecker BOOLEAN_SAME_SAME =

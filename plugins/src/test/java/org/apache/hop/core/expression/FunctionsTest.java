@@ -167,11 +167,12 @@ public class FunctionsTest extends ExpressionTest {
   public void If() throws Exception {
     evalEquals("If(True,'True','False')", "True");
     evalEquals("If(False,'True','False')", "False");
+    evalEquals("If(true,'Test')", "Test");
+    evalNull("If(false,'Test')");    
     evalNull("If(NULL_BOOLEAN,'A','B')");
     
     evalFails("If()");
     evalFails("If(true)");
-    evalFails("If(true,2)");
     evalFails("If(true,2,'2')");
     evalFails("If(Date '2023-01-01',1,2)");
     

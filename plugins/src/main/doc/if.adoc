@@ -20,5 +20,22 @@ Single-level if-then-else expression. Similar to CASE, but only allows a single 
 
 == Syntax
 ----
-IF( condition, expression_true, expresion_false )
+IF( condition, true_value [, false_value] )
+----
+
+== Usage
+
+If the false_value is omitted, return NULL.
+
+The following IF and CASE expressions are equivalent:
+
+----
+IF(totalprice >= 150000, 'High Value', 'Low Value')
+----
+
+----
+CASE
+    WHEN totalprice >= 150000 THEN 'High Value'
+    ELSE 'Low Value'
+END
 ----
