@@ -26,15 +26,12 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import ch.obermuhlner.math.big.BigDecimalMath;
-
 
 /**
  * Returns the number of PI.
  */
 @FunctionPlugin
 public class PiFunction extends Function {
-  private static final Literal PI = Literal.of(BigDecimalMath.pi(DECIMAL128));
   
   public PiFunction() {
     super("PI", ReturnTypes.NUMBER, OperandTypes.NILADIC, OperatorCategory.MATHEMATICAL,
@@ -43,12 +40,6 @@ public class PiFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return PI;
-  }
-  
-  @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    return PI.getValue();
+    return Literal.PI;
   }
 }

@@ -37,6 +37,8 @@ import org.apache.hop.expression.operator.ExtractFunction;
 import org.apache.hop.expression.operator.GreaterThanOperator;
 import org.apache.hop.expression.operator.GreaterThanOrEqualOperator;
 import org.apache.hop.expression.operator.ILikeOperator;
+import org.apache.hop.expression.operator.IfFunction;
+import org.apache.hop.expression.operator.IfNullFunction;
 import org.apache.hop.expression.operator.InOperator;
 import org.apache.hop.expression.operator.IsDistinctFromOperator;
 import org.apache.hop.expression.operator.IsFalseOperator;
@@ -55,6 +57,8 @@ import org.apache.hop.expression.operator.ModFunction;
 import org.apache.hop.expression.operator.MultiplyOperator;
 import org.apache.hop.expression.operator.NegateOperator;
 import org.apache.hop.expression.operator.NotEqualOperator;
+import org.apache.hop.expression.operator.NullIfFunction;
+import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SubtractOperator;
 import org.apache.hop.expression.operator.TryOperator;
 import java.util.Set;
@@ -80,7 +84,11 @@ public class Operators {
   // CONDITIONAL OPERATORS
   // -------------------------------------------------------------
   public static final Operator CASE = new CaseOperator();
-
+  public static final Operator IF = new IfFunction();
+  public static final Operator IFNULL = new IfNullFunction();
+  public static final Operator NULLIF = new NullIfFunction();
+  public static final Operator NVL2 = new Nvl2Function();
+  
   // -------------------------------------------------------------
   // COMPARISON OPERATORS
   // -------------------------------------------------------------

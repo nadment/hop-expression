@@ -168,13 +168,31 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("If(True,'True','False')", "True");
     evalEquals("If(False,'True','False')", "False");
     evalEquals("If(true,'Test')", "Test");
+    
+    // If condition is NULL then return false value
+    evalEquals("If(NULL_BOOLEAN,'A','B')","B");
+    
+    // Missing false value return NULL
     evalNull("If(false,'Test')");    
-    evalNull("If(NULL_BOOLEAN,'A','B')");
+    evalNull("If(false,1)");
+    evalNull("If(false,Date '2023-01-01')");
+    
     
     evalFails("If()");
     evalFails("If(true)");
     evalFails("If(true,2,'2')");
     evalFails("If(Date '2023-01-01',1,2)");
+    
+    // "IF(x IS NULL,y,x)" to "IFNULL(x, y)"
+    optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");    
+    // "IF(x IS NULL,y,z)" to "NVL2(x, z, y)"
+    optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",NULL_INTEGER)", "NVL2(FIELD_INTEGER,NULL_INTEGER,\"YEAR\")");       
+    // "IF(x IS NOT NULL,y,z)" to "NVL2(x, y, z)"
+    optimize("IF(FIELD_INTEGER IS NOT NULL,\"YEAR\",NULL_INTEGER)", "NVL2(FIELD_INTEGER,\"YEAR\",NULL_INTEGER)");        
+    // "IF(x=y,NULL,x)" to "NULLIF(x, y)"
+    optimize("IF(FIELD_INTEGER=3,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,3)");
+    // "IF(x=y,NULL,y)" to "NULLIF(y, x)"
+    optimize("IF(3=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,3)");
     
     returnType("If(FIELD_BOOLEAN,'A','B')", StringDataType.STRING);
     returnType("If(FIELD_BOOLEAN,1,2)", IntegerDataType.INTEGER);

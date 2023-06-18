@@ -241,7 +241,7 @@ public abstract class Operator implements Comparable<Operator> {
   public Object eval(final IExpression[] operands)
       throws Exception {
     throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
-  };
+  }
 
   public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
     return call;

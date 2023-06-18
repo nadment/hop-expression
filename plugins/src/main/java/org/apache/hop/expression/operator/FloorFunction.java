@@ -39,6 +39,7 @@ public class FloorFunction extends Function {
         "/docs/floor.html");
   }
 
+  @Override
   public Object eval(IExpression[] operands)
       throws Exception {
     BigDecimal value = operands[0].getValue(BigDecimal.class);

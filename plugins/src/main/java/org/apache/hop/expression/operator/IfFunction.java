@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -46,6 +47,37 @@ public class IfFunction extends Function {
       return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.NULL);
     }
     
+    IExpression condition = call.getOperand(0);
+    
+
+    if (condition.is(Operators.IS_NULL) ) {
+      // "IF(x IS NULL,y,x)" to "IFNULL(x, y)"
+      if ( call.getOperand(2).equals(condition.asCall().getOperand(0))) {
+        return new Call(Operators.IFNULL, call.getOperand(2), call.getOperand(1));
+      }
+      
+      // "IF(x IS NULL,y,z)" to "NVL2(x, z, y)"
+      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(2), call.getOperand(1));      
+    }
+    
+    if (condition.is(Operators.IS_NOT_NULL)) {
+      // "IF(x IS NOT NULL,y,z)" to "NVL2(x, y, z)"
+      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(1), call.getOperand(2));
+    }
+  
+    if (condition.is(Operators.EQUAL) && call.getOperand(1) == Literal.NULL) {
+
+      // "IF(x=y,NULL,x)" to "NULLIF(x, y)"
+      if (condition.asCall().getOperand(0).equals(call.getOperand(2))) {
+        return new Call(Operators.NULLIF, call.getOperand(2), condition.asCall().getOperand(1));
+      }
+
+      // "IF(x=y,NULL,y)" to "NULLIF(y, x)"
+      if (condition.asCall().getOperand(1).equals(call.getOperand(2))) {
+        return new Call(Operators.NULLIF, call.getOperand(2), condition.asCall().getOperand(0));
+      }
+    }
+    
     return call;
   }
   
@@ -54,7 +86,7 @@ public class IfFunction extends Function {
       throws Exception {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null)
-      return null;
+      value = Boolean.FALSE;
 
     return operands[value ? 1 : 2].getValue();
   }

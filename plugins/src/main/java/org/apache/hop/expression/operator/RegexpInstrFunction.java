@@ -40,7 +40,8 @@ public class RegexpInstrFunction extends Function {
         OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_NUMERIC_NUMERIC_STRING, OperatorCategory.STRING,
         "/docs/regexp_instr.html");
   }
-
+ 
+  @Override
   public Object eval(IExpression[] operands)
       throws Exception {
     String input = operands[0].getValue(String.class);

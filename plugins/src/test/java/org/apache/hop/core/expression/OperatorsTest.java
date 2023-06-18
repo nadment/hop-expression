@@ -1422,7 +1422,7 @@ public class OperatorsTest extends ExpressionTest {
     
     // Literal
     optimizeFalse("(CASE WHEN FALSE THEN 1 ELSE 2 END) IS NULL");
-    
+
     // Implicit ELSE NULL
     optimize("CASE WHEN FIELD_INTEGER>40 THEN 10 WHEN FIELD_INTEGER>20 THEN 5 ELSE NULL END", "CASE WHEN 40<FIELD_INTEGER THEN 10 WHEN 20<FIELD_INTEGER THEN 5 END");
     optimize("CASE WHEN 40=FIELD_INTEGER THEN TRUE ELSE FALSE END");
@@ -1465,7 +1465,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("case FIELD_INTEGER when 10 then 10 when 20 then 20 else -1 end", -1L);
     evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end");
     
-    // Null
+    // If the operand is null, the else clause applies.
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L);
     evalEquals("CASE NULL_INTEGER WHEN 1 THEN 2 ELSE 0 END", 0L);
     evalEquals("CASE NULL_NUMBER WHEN 0/0 THEN 0/0 ELSE 1 END", 1L);
