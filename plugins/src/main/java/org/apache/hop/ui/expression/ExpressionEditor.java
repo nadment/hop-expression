@@ -19,7 +19,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.AggregateFunction;
-import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
@@ -327,7 +327,7 @@ public class ExpressionEditor extends Composite {
 
           // Escape field name matching reserved words or function name
           String name = valueMeta.getName();
-          if (ExpressionBuilder.isReservedWord(name) || FunctionRegistry.isFunction(name)) {
+          if (ExpressionParser.isReservedWord(name) || FunctionRegistry.isFunction(name)) {
             name = '[' + name + ']';
           }
 

@@ -44,7 +44,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 public class LiteralTest extends ExpressionTest {
   @Test
   public void testEquals() throws Exception {
-    assertEquals(Literal.of(5), Literal.of(5));
+    assertEquals(Literal.ZERO, Literal.of(0L));
+    assertEquals(Literal.ONE, Literal.of(1L));
+    assertEquals(Literal.of(new BigDecimal("5")), Literal.of(5L));
     assertEquals(Literal.of("test"), Literal.of("test"));
   }
 
@@ -58,25 +60,24 @@ public class LiteralTest extends ExpressionTest {
     assertTrue(Literal.NULL.isConstant());
     assertNotEquals(Literal.NULL, null);
     assertNotEquals(Literal.NULL, Literal.ZERO);
-    assertNull(Literal.NULL.getValue(createExpressionContext()));
+    assertNull(Literal.NULL.getValue());
     // assertThrows(IllegalArgumentException.class, () -> Literal.of(Literal.NULL));
   }
 
   @Test
   public void TimeUnit() throws Exception {
-    assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue(null));
+    assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
 
   public void DataType() throws Exception {
-    assertEquals(NumberDataType.NUMBER, Literal.of(NumberDataType.NUMBER).getValue(null));
+    assertEquals(NumberDataType.NUMBER, Literal.of(NumberDataType.NUMBER).getValue());
 
     evalEquals("Cast(123 as InTeGeR)", 123L);
-
   }
 
   @Test
   public void String() throws Exception {
-    assertEquals("Test", Literal.of("Test").getValue(null));
+    assertEquals("Test", Literal.of("Test").getValue());
     assertEquals(Literal.of("Test"), Literal.of("Test"));
 
     // Single quote
@@ -119,8 +120,8 @@ public class LiteralTest extends ExpressionTest {
 
   @Test
   public void Boolean() throws Exception {
-    assertEquals(Boolean.TRUE, Literal.TRUE.getValue(null));
-    assertEquals(Boolean.FALSE, Literal.FALSE.getValue(null));
+    assertEquals(Boolean.TRUE, Literal.TRUE.getValue());
+    assertEquals(Boolean.FALSE, Literal.FALSE.getValue());
     assertEquals(Literal.TRUE, Literal.of(true));
     assertEquals(Literal.FALSE, Literal.of(false));
     assertEquals(Literal.FALSE.hashCode(), Literal.of(false).hashCode());
@@ -231,7 +232,7 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.ZERO, Literal.of(BigDecimal.ZERO));
     assertEquals(Literal.ONE, Literal.of(1D));
     assertEquals(Literal.ONE, Literal.of(BigDecimal.ONE));
-    assertEquals(BigDecimal.valueOf(2.2), Literal.of(2.2D).getValue(null));
+    assertEquals(BigDecimal.valueOf(2.2), Literal.of(2.2D).getValue());
     assertEquals("-123456.789", Literal.of(-123456.789D).toString());
     assertEquals("-123456.789", Literal.of(BigDecimal.valueOf(-123456.789)).toString());
 
@@ -280,7 +281,7 @@ public class LiteralTest extends ExpressionTest {
     ZonedDateTime datetime = ZonedDateTime.of(LocalDate.of(2021, 2, 25), LocalTime.of(2, 59, 00),
         ZoneId.systemDefault());
 
-    assertEquals(datetime, Literal.of(datetime).getValue(createExpressionContext()));
+    assertEquals(datetime, Literal.of(datetime).getValue());
     assertEquals(Literal.of(datetime), Literal.of(datetime));
 
     evalEquals("DaTe '2021-02-25'", LocalDate.of(2021, 2, 25));

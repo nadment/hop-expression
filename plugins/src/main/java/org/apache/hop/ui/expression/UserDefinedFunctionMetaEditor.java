@@ -183,7 +183,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
     this.getWidgetsContent(meta);
 
-    wExpression.setRowMeta(UserDefinedFunction.createRowMeta(meta.getArguments()));
+    wExpression.setRowMeta(UserDefinedFunction.createRowMetaFromArguments(meta.getArguments()));
   }
 
   @Override

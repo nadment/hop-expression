@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,11 +36,11 @@ public class SubstringFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String string = operands[0].getValue(context, String.class);
+    String string = operands[0].getValue(String.class);
     int length = string.length();
-    int start = operands[1].getValue(context, Long.class).intValue();
+    int start = operands[1].getValue(Long.class).intValue();
 
     // These compatibility conditions violate the Standard
     if (start == 0) {
@@ -55,7 +54,7 @@ public class SubstringFunction extends Function {
       return string.substring(start - 1);
     }
 
-    int end = start + operands[2].getValue(context, Long.class).intValue();
+    int end = start + operands[2].getValue(Long.class).intValue();
     // SQL Standard requires "data exception - substring error" when
     // end < start but expression does not throw it for compatibility
     start = Math.max(start, 1);

@@ -18,14 +18,13 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 
 public class NumericReturnTypeInference implements IReturnTypeInference {
 
   public NumericReturnTypeInference() {}
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
 
     DataType result = call.getType();
 

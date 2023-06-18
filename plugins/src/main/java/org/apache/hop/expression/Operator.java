@@ -18,7 +18,7 @@ import org.apache.hop.core.util.TranslateUtil;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
-import org.apache.hop.expression.util.Expressions;
+import org.apache.hop.expression.util.Documentations;
 import java.io.StringWriter;
 import java.math.MathContext;
 import java.util.Objects;
@@ -92,8 +92,8 @@ public abstract class Operator implements Comparable<Operator> {
     this.operandTypeChecker = Objects.requireNonNull(operandTypeChecker,"operand type checker");
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;
-    this.documentation = Expressions.loadDocumention(id, documentationUrl);
-    this.description = Expressions.findDocumentionDescription(documentation);
+    this.documentation = Documentations.loadDocumention(id, documentationUrl);
+    this.description = Documentations.findDocumentionDescription(documentation);
   }
 
   protected Operator(String id, int precedence, boolean isLeftAssociative, 
@@ -238,8 +238,10 @@ public abstract class Operator implements Comparable<Operator> {
     return description;
   }
 
-  public abstract Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws Exception;
+  public Object eval(final IExpression[] operands)
+      throws Exception {
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  };
 
   public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
     return call;

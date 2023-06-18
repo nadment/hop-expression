@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -43,14 +42,14 @@ public class RegexpSubstrFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String input = operands[0].getValue(context, String.class);
+    String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
     }
 
-    String regexp = operands[1].getValue(context, String.class);
+    String regexp = operands[1].getValue(String.class);
     if (regexp == null) {
       return null;
     }
@@ -62,7 +61,7 @@ public class RegexpSubstrFunction extends Function {
     // Default position 1
     int position = 1;
     if (operands.length >= 3) {
-      Long v2 = operands[2].getValue(context, Long.class);
+      Long v2 = operands[2].getValue(Long.class);
       if (v2 != null) {
         position = v2.intValue();
       }
@@ -71,7 +70,7 @@ public class RegexpSubstrFunction extends Function {
     // Default occurrence
     int occurrence = 0;
     if (operands.length >= 4) {
-      Long v3 = operands[3].getValue(context, Long.class);
+      Long v3 = operands[3].getValue(Long.class);
       if (v3 != null) {
         occurrence = v3.intValue();
       }
@@ -79,7 +78,7 @@ public class RegexpSubstrFunction extends Function {
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 5) {
-      String v4 = operands[5].getValue(context, String.class);
+      String v4 = operands[5].getValue(String.class);
       flags = Regexp.parseFlags(v4);
     }
 

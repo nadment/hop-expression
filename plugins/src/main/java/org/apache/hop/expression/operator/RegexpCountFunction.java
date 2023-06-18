@@ -19,7 +19,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -47,17 +46,17 @@ public class RegexpCountFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
 
     long count = 0L;
 
-    String source = operands[0].getValue(context, String.class);
+    String source = operands[0].getValue(String.class);
     if (source == null) {
       return null;
     }
 
-    String pattern = operands[1].getValue(context, String.class);
+    String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
       return count;
     }
@@ -69,11 +68,11 @@ public class RegexpCountFunction extends Function {
     int start = 1;
     int parameters = Pattern.UNICODE_CASE;
     if (operands.length >= 3) {
-      Long v2 = operands[2].getValue(context, Long.class);
+      Long v2 = operands[2].getValue(Long.class);
       start = v2.intValue();
 
       if (operands.length == 4) {
-        String v3 = operands[3].getValue(context, String.class);
+        String v3 = operands[3].getValue(String.class);
         parameters = Regexp.parseFlags(v3);
       }
     }

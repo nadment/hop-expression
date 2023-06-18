@@ -40,7 +40,7 @@ public class LastValueFunction extends AggregateFunction {
 
     if (operands.length == 2) {
       try {
-        ignoreNull = operands[1].getValue(context, Boolean.class);
+        ignoreNull = operands[1].getValue(Boolean.class);
       } catch (ExpressionException e) {
         // Ignore
       }

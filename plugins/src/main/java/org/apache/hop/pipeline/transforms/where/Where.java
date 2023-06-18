@@ -19,7 +19,7 @@ package org.apache.hop.pipeline.transforms.where;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -73,7 +73,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         String expression = resolve(meta.getCondition());
 
         // Compile expression
-        data.condition = ExpressionBuilder.build(data.context, expression);
+        data.condition = Expressions.build(data.context, expression);
 
         // Cache the position of the RowSet for the output.
         List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();
@@ -110,7 +110,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       }
 
       data.context.setRow(row);
-      Boolean predicat = data.condition.getValue(data.context, Boolean.class);
+      Boolean predicat = data.condition.getValue(Boolean.class);
 
       if (predicat !=null && predicat) {
         // put the row to the TRUE output row stream

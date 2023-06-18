@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionContext;
 
 public class IfFunctionReturnTypeInference implements IReturnTypeInference {
 
@@ -26,7 +25,7 @@ public class IfFunctionReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
     DataType type1 = call.getOperand(1).getType();
     DataType type2 = call.getOperand(2).getType();
     

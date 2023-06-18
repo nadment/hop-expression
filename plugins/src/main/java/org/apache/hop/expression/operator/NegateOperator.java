@@ -57,8 +57,8 @@ public class NegateOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object v0 = operands[0].getValue(context);
+  public Object eval(IExpression[] operands) throws Exception {
+    Object v0 = operands[0].getValue();
 
     if (v0 == null)
       return null;

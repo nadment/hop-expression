@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 
 /**
@@ -30,5 +29,5 @@ public interface IReturnTypeInference {
    * @param call
    * @return
    */
-  public DataType getReturnType(IExpressionContext context, Call call);
+  public DataType getReturnType(Call call);
 }

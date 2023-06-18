@@ -19,8 +19,8 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -93,7 +93,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
 
         // Compile expression
         try {
-          data.expressions[index] = ExpressionBuilder.build(data.context, source);
+          data.expressions[index] = Expressions.build(data.context, source);
         } catch (ExpressionException e) {
           String message =
               BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
@@ -152,37 +152,37 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       case IValueMeta.TYPE_NONE:
         return null;
       case IValueMeta.TYPE_STRING:
-        return expression.getValue(data.context, String.class);
+        return expression.getValue(String.class);
       case IValueMeta.TYPE_NUMBER:
-        BigDecimal number = expression.getValue(data.context, BigDecimal.class);
+        BigDecimal number = expression.getValue(BigDecimal.class);
         if (number==null ) {
           return null;
         }
         return number.doubleValue();
       case IValueMeta.TYPE_INTEGER:
-        return expression.getValue(data.context, Long.class);
+        return expression.getValue(Long.class);
       case IValueMeta.TYPE_DATE: {
-        ZonedDateTime date = expression.getValue(data.context, ZonedDateTime.class);
+        ZonedDateTime date = expression.getValue(ZonedDateTime.class);
         if (date==null ) {
           return null;
         }        
         return Date.from(date.toInstant());             
       }
       case IValueMeta.TYPE_TIMESTAMP: {
-        ZonedDateTime date = expression.getValue(data.context, ZonedDateTime.class);
+        ZonedDateTime date = expression.getValue(ZonedDateTime.class);
         if (date==null ) {
           return null;
         }
         return Timestamp.from(date.toInstant());
       }
       case IValueMeta.TYPE_BIGNUMBER:
-        return expression.getValue(data.context, BigDecimal.class);
+        return expression.getValue(BigDecimal.class);
       case IValueMeta.TYPE_BOOLEAN:
-        return expression.getValue(data.context, Boolean.class);
+        return expression.getValue(Boolean.class);
       case IValueMeta.TYPE_BINARY:
-        return expression.getValue(data.context, byte[].class);
+        return expression.getValue(byte[].class);
       case ValueMetaJson.TYPE_JSON:
-        return expression.getValue(data.context, JsonNode.class);
+        return expression.getValue(JsonNode.class);
       default:
         throw new HopValueException("Error convert evaluate " + meta.getName() + " with data type : " + meta.getType());
     }

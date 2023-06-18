@@ -51,7 +51,7 @@ public class ExtractFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Replace EXTRACT with the corresponding function YEAR, DAY, HOUR... only if without time zone
-    TimeUnit unit = call.getOperand(0).getValue(context, TimeUnit.class);
+    TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
     Function function = FunctionRegistry.getFunction(unit.name());
     if (function != null && !(function instanceof UserDefinedFunction)) {
       return new Call(function, call.getOperand(1));
@@ -61,11 +61,11 @@ public class ExtractFunction extends Function {
   }
   
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) throws Exception {
 
-    TimeUnit unit = operands[0].getValue(context, TimeUnit.class);
+    TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
-    ZonedDateTime datetime = operands[1].getValue(context, ZonedDateTime.class);
+    ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
     if (datetime == null)
       return null;
 

@@ -27,6 +27,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringDataType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.ZonedDateTime;
 
@@ -41,38 +42,44 @@ public class ToDateFunction extends Function {
   }
 
   protected ToDateFunction(final String id) {
-    super(id, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT,
-        OperatorCategory.CONVERSION, "/docs/to_date.html");
+    super(id, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
+        "/docs/to_date.html");
   }
-  
+
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
     String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
 
     // With specified format
     if (call.getOperandCount() == 2) {
-      pattern = call.getOperand(1).getValue(context, String.class);
+      Object value = call.getOperand(1).getValue();
+      if (value instanceof DateTimeFormat) {
+        // Already compiled
+        return call;
+      }
+      pattern = StringDataType.coerce(value);
     }
 
-    // Compile format to check it
-    DateTimeFormat.of(pattern); 
-    
-    return new Call(call.getOperator(), call.getOperand(0), Literal.of(pattern));
-  }
-  
-  @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws Exception {
-    String value = operands[0].getValue(context, String.class);
-    if (value == null)
-      return null;
-
-    String pattern = operands[1].getValue(context, String.class);
 
     int twoDigitYearStart = Integer
         .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+
+    // Compile format to check it
     DateTimeFormat format = DateTimeFormat.of(pattern);
     format.setTwoDigitYearStart(twoDigitYearStart);
+
+
+    return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
+  }
+
+  @Override
+  public Object eval(IExpression[] operands) throws Exception {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return null;
+
+    DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
 
     return parse(value, format);
   }

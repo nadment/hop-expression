@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.OperandTypes;
@@ -42,13 +41,13 @@ public class StartsWithFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
 
-    Object v0 = operands[0].getValue(context);
+    Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;
-    Object v1 = operands[1].getValue(context);
+    Object v1 = operands[1].getValue();
     if (v1 == null)
       return null;
 

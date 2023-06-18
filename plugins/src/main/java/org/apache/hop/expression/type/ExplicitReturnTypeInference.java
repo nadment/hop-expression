@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionContext;
 
 /**
  * Inference rule which returns a explicit data type.
@@ -31,7 +30,7 @@ public class ExplicitReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
     return type;
   }
 }

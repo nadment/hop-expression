@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,15 +29,15 @@ public class CountDistinctValueProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
+  public void process(IExpression[] operands) throws Exception {
+    Object value = operands[0].getValue();
     if (value != null && !values.contains(value)) {
       values.add(value);
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() throws Exception {
     return Long.valueOf(values.size());
   }
 }

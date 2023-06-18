@@ -40,9 +40,9 @@ public class AbsFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    Object value = operands[0].getValue();
     if (value == null)
       return value;
 

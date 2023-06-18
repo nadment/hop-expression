@@ -18,7 +18,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Comparison;
@@ -47,10 +46,10 @@ public class BetweenOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
-    Object start = operands[1].getValue(context);
-    Object end = operands[2].getValue(context);
+  public Object eval(IExpression[] operands) throws Exception {
+    Object value = operands[0].getValue();
+    Object start = operands[1].getValue();
+    Object end = operands[2].getValue();
 
     if (value == null || start == null || end == null) {
       return null;

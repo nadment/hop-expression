@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -35,9 +34,9 @@ public class IsNotNullOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    Object value = operands[0].getValue();
     return value != null;
   }
 

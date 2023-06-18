@@ -19,9 +19,9 @@ package org.apache.hop.expression;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
-import org.apache.hop.expression.util.Expressions;
 import java.util.List;
 
 public class UserDefinedFunction extends Function {
@@ -37,24 +37,25 @@ public class UserDefinedFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     try {
-      IRowExpressionContext ctx = new RowExpressionContext(context, createRowMeta());
-      IExpression expression = ExpressionBuilder.build(ctx, getSource());
-
+      // Create a context for arguments
+      IRowExpressionContext ctx = new RowExpressionContext(new Variables(), createRowMetaFromArguments(meta.getArguments()));
+      
+      // Parse function source 
+      ExpressionParser parser = new ExpressionParser(getSource());
+      IExpression expression = parser.parse();
+      expression.validate(ctx);
+      
       // Replace function arguments with real operands
-      expression = expression.accept(context, new UserDefinedFunctionResolver(call.getOperands()));
+      expression = expression.accept(ctx, new UserDefinedFunctionResolver(call.getOperands()));      
       expression.validate(context);
       
-      return expression;
+      // Compile
+      return Expressions.compile(context, expression);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, getName());
     }
   }
   
-  @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.toString());
-  }
-
   public String getSource() {
     return meta.getSource();
   }
@@ -63,11 +64,7 @@ public class UserDefinedFunction extends Function {
     return meta.getArguments();
   }
 
-  public IRowMeta createRowMeta() {
-    return createRowMeta(meta.getArguments());
-  }
-
-  public static IRowMeta createRowMeta(List<FunctionArgument> arguments) {
+  public static IRowMeta createRowMetaFromArguments(List<FunctionArgument> arguments) {
 
     // Convert arguments to row meta
     IRowMeta rowMeta = new RowMeta();

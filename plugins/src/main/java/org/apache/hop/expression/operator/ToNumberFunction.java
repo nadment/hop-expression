@@ -51,7 +51,7 @@ public class ToNumberFunction extends Function {
 
     // With specified format
     if (call.getOperandCount() == 2) {
-      pattern = call.getOperand(1).getValue(context, String.class);
+      pattern = call.getOperand(1).getValue(String.class);
     }
 
     // Compile format to check it
@@ -61,13 +61,13 @@ public class ToNumberFunction extends Function {
   }
    
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String value = operands[0].getValue(context, String.class);
+    String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
-    String pattern = operands[1].getValue(context, String.class);
+    String pattern = operands[1].getValue(String.class);
 
     NumberFormat format = NumberFormat.of(pattern);
     return parse(value, format);

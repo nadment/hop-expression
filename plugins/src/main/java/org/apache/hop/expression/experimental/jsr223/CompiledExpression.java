@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.experimental.jsr223;
 
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import javax.script.CompiledScript;
@@ -37,7 +36,7 @@ public class CompiledExpression extends CompiledScript {
   @Override
   public Object eval(ScriptContext context) throws ScriptException {
     try {
-      return expression.getValue((ExpressionContext) context);
+      return expression.getValue();
     } catch (ExpressionException e) {
       throw new ScriptException(e.getMessage());
     }

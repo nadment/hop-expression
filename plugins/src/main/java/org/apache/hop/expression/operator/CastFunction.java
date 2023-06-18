@@ -48,16 +48,16 @@ public class CastFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
+  public Object eval(IExpression[] operands) throws Exception {
+    Object value = operands[0].getValue();
     if (value == null)
       return null;
 
-    DataType type = operands[1].getValue(context, DataType.class);
+    DataType type = operands[1].getValue(DataType.class);
 
     String format = null;
     if (operands.length == 3) {
-      format = operands[2].getValue(context, String.class);
+      format = operands[2].getValue(String.class);
     }
 
     return cast(value, type, format);
@@ -74,7 +74,7 @@ public class CastFunction extends Function {
   @Override
   public IExpression compile(final IExpressionContext context, Call call) throws ExpressionException {
 
-    call.inferenceType(context);
+    call.inferenceType();
     DataType type = call.getType();
     
     // Remove lossless cast

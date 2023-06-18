@@ -119,8 +119,8 @@ public class BoolNotOperator extends Operator {
   }
   
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Boolean value = operands[0].getValue(context, Boolean.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    Boolean value = operands[0].getValue(Boolean.class);
     if (value == null) {
       return null;
     }

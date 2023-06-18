@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.OperandTypes;
@@ -42,9 +41,9 @@ public class ConcatWsFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) throws Exception {
 
-    Object v0 = operands[0].getValue(context);
+    Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;
 
@@ -55,7 +54,7 @@ public class ConcatWsFunction extends Function {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
       byte[] separator = BinaryDataType.coerce(v0);
       for (int i = 1; i < operands.length; i++) {
-        byte[] value = operands[i].getValue(context, byte[].class);
+        byte[] value = operands[i].getValue(byte[].class);
 
         if (value != null) {
           if (notFirstValue) {
@@ -76,7 +75,7 @@ public class ConcatWsFunction extends Function {
     StringBuilder builder = new StringBuilder();
     String separator = StringDataType.coerce(v0);
     for (int i = 1; i < operands.length; i++) {
-      String value = operands[i].getValue(context, String.class);
+      String value = operands[i].getValue(String.class);
       if (value != null) {
         if (notFirstValue) {
           builder.append(separator);

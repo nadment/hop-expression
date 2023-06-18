@@ -75,13 +75,13 @@ public class ConcatFunction extends Function {
 
   
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) throws Exception {
 
     Object firstNotNull = null;
     Object[] values = new Object[operands.length];
     int i = 0;
     for (IExpression operand : operands) {
-      Object value = operand.getValue(context);
+      Object value = operand.getValue();
       if (firstNotNull == null && value != null)
         firstNotNull = value;
       values[i++] = value;
@@ -107,7 +107,7 @@ public class ConcatFunction extends Function {
     // Concat String
     StringBuilder builder = new StringBuilder();
     for (IExpression operand : operands) {
-      String value = operand.getValue(context, String.class);
+      String value = operand.getValue(String.class);
       if (value != null)
         builder.append(value);
     }

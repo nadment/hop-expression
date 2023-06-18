@@ -20,7 +20,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -41,10 +40,10 @@ public class Md5Function extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
 
-    byte[] v0 = operands[0].getValue(context, byte[].class);
+    byte[] v0 = operands[0].getValue(byte[].class);
     if (v0 == null) {
       return null;
     }

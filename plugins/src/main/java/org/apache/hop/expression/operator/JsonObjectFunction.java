@@ -22,7 +22,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.DataFamily;
 import org.apache.hop.expression.type.IOperandCountRange;
@@ -84,14 +83,14 @@ public class JsonObjectFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 
     for (int i = 0; i < operands.length; i += 2) {
-      String key = operands[i].getValue(context, String.class);
-      Object value = operands[i + 1].getValue(context);
+      String key = operands[i].getValue(String.class);
+      Object value = operands[i + 1].getValue();
       if (value == null) {
         node.putNull(key);
       } else if (value instanceof String) {

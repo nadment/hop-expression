@@ -20,7 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 
 /**
- * Operand type-checking strategy which checks operand type must be a literal .
+ * Operand type-checking strategy which checks operand type.
  */
 public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecker {
   private UserDefinedFunctionMeta meta;
@@ -38,5 +38,4 @@ public class UserDefinedFunctionOperandTypeChecker implements IOperandTypeChecke
   public IOperandCountRange getOperandCountRange() {
     return OperandCountRange.of(meta.getArguments().size());
   }
-
 }

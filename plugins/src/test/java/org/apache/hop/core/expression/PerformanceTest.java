@@ -24,7 +24,7 @@ import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
@@ -59,14 +59,14 @@ public class PerformanceTest {
     RowExpressionContext context = new RowExpressionContext(new Variables(), rowMeta);
     context.setRow(row);
     
-    IExpression expression = ExpressionBuilder.build(context, source);
+    IExpression expression = Expressions.build(context, source);
     
     long cycle = 1000000;
     long startTime = System.currentTimeMillis();
     try {
       for (long i = cycle; i > 0; i--) {
         @SuppressWarnings("unused")
-        Object result = expression.getValue(context);
+        Object result = expression.getValue();
       }
     } catch (ExpressionException e) {
       e.printStackTrace();

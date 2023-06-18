@@ -26,7 +26,7 @@ public class IdentifierTest extends ExpressionTest {
   public void test() throws Exception {
     Identifier identifier1 = new Identifier("NAME");
     Identifier identifier2 = new Identifier("NAME");
-    Identifier identifier3 = new Identifier("NAME", StringDataType.STRING, 3);
+    Identifier identifier3 = new Identifier("NAME", StringDataType.STRING);
     assertEquals("NAME", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());

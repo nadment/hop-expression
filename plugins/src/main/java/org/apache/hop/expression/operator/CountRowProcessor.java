@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 
 /** Returns the number of rows. */
@@ -28,12 +27,12 @@ public class CountRowProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
+  public void process(IExpression[] operands) throws Exception {
     count++;
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() throws Exception {
     return Long.valueOf(count);
   }
 }

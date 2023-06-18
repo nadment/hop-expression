@@ -20,7 +20,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -41,19 +40,19 @@ public class RPadFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String value = operands[0].getValue(context, String.class);
+    String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
-    Long v1 = operands[1].getValue(context, Long.class);
+    Long v1 = operands[1].getValue(Long.class);
     int length = v1.intValue();
 
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
-      pad = operands[2].getValue(context, String.class);
+      pad = operands[2].getValue(String.class);
     }
 
     if (length < 0) {

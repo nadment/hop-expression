@@ -77,7 +77,7 @@ public class InOperator extends Operator {
     // Try to evaluate all operands to detect error like division by zero X IN (1,2,3/0)
     if (call.isConstant()) {
       for (IExpression o : tuple) {
-        o.getValue(context);
+        o.getValue();
       }
     }
     
@@ -111,16 +111,16 @@ public class InOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object left = operands[0].getValue(context);
+    Object left = operands[0].getValue();
     if (left == null) {
       return null;
     }
 
     Tuple tuple = (Tuple) operands[1];
     for (IExpression expression : tuple) {
-      Object value = expression.getValue(context);
+      Object value = expression.getValue();
       if (Comparison.compare(left, value) == 0) {
         return Boolean.TRUE;
       }

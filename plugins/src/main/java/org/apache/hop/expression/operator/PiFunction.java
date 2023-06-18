@@ -47,8 +47,8 @@ public class PiFunction extends Function {
   }
   
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    return PI.getValue(context);
+    return PI.getValue();
   }
 }

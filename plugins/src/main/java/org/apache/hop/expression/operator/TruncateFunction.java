@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,15 +37,15 @@ public class TruncateFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
 
     int scale = 0;
     if (operands.length == 2) {
-      Long pattern = operands[1].getValue(context, Long.class);
+      Long pattern = operands[1].getValue(Long.class);
       if (pattern == null)
         return null;
       scale = pattern.intValue();

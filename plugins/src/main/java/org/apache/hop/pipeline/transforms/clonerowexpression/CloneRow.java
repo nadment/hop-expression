@@ -24,9 +24,9 @@ package org.apache.hop.pipeline.transforms.clonerowexpression;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowDataUtil;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -57,13 +57,13 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     ExpressionContext context = new ExpressionContext(this);
     IExpression expression;
     try {
-      expression = ExpressionBuilder.build(context, value.substring(1));
+      expression = Expressions.build(context, value.substring(1));
     } catch (ExpressionException e) {
       throw new HopException(
           BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
     }
 
-    return expression.getValue(context);
+    return expression.getValue();
   }
 
   @Override
@@ -105,7 +105,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
       String nrclonesString = resolve(meta.getNrClones());
       try {
-        data.numberOfClones = ExpressionBuilder.build(data.context, nrclonesString);
+        data.numberOfClones = Expressions.build(data.context, nrclonesString);
       } catch (ExpressionException e) {
         throw new HopException(
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),
@@ -138,7 +138,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     putRow(data.outputRowMeta, outputRowData); // copy row to output rowset(s);
 
     data.context.setRow(r);
-    long nrClones = data.numberOfClones.getValue(data.context, Long.class);
+    long nrClones = data.numberOfClones.getValue(Long.class);
 
     for (int i = 0; i < nrClones && !isStopped(); i++) {
       // Output now all clones row

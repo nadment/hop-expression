@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.DataFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
@@ -49,14 +48,14 @@ public class RegexpReplaceFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String input = operands[0].getValue(context, String.class);
+    String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
     }
 
-    String pattern = operands[1].getValue(context, String.class);
+    String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
       return null;
     }
@@ -68,13 +67,13 @@ public class RegexpReplaceFunction extends Function {
     // Default empty string
     String replacement = "";
     if (operands.length >= 3) {
-      replacement = operands[2].getValue(context, String.class);            
+      replacement = operands[2].getValue(String.class);            
     }
 
     // Default position 1
     int position = 1;
     if (operands.length >= 4) {
-      Long v3 = operands[3].getValue(context, Long.class);
+      Long v3 = operands[3].getValue(Long.class);
       if (v3 != null) {
         position = v3.intValue();
       }
@@ -83,7 +82,7 @@ public class RegexpReplaceFunction extends Function {
     // Default occurrence 0
     int occurrence = 0;
     if (operands.length >= 5) {
-      Long v4 = operands[4].getValue(context, Long.class);
+      Long v4 = operands[4].getValue(Long.class);
       if (v4 != null) {
         occurrence = v4.intValue();
       }
@@ -91,7 +90,7 @@ public class RegexpReplaceFunction extends Function {
 
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
-      String v5 = operands[5].getValue(context, String.class);
+      String v5 = operands[5].getValue(String.class);
       flags = Regexp.parseFlags(v5);
     }
 

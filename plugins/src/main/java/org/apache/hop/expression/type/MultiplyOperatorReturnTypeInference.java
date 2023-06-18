@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionContext;
 
 /**
  * Calculate return type precision and scale for x * y
@@ -29,7 +28,7 @@ public class MultiplyOperatorReturnTypeInference implements IReturnTypeInference
   }
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
     DataType x = call.getOperand(0).getType();
     DataType y = call.getOperand(1).getType();
 

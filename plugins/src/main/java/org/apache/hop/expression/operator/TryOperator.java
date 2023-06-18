@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -35,9 +34,9 @@ public class TryOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) throws Exception {
     try {
-      return operands[0].getValue(context);
+      return operands[0].getValue();
     } catch (RuntimeException e) {
       return null;
     }

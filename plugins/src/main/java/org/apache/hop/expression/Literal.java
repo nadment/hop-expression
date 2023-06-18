@@ -137,12 +137,12 @@ public final class Literal implements IExpression {
   }
 
   @Override
-  public Object getValue(final IExpressionContext context) throws ExpressionException {
+  public Object getValue() throws ExpressionException {
     return value;
   }
 
   @Override
-  public <T> T getValue(final IExpressionContext context, final Class<T> clazz)
+  public <T> T getValue(final Class<T> clazz)
       throws ExpressionException {
 
     if (clazz.isInstance(value)) {

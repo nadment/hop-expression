@@ -21,8 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
@@ -79,7 +79,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
 
         // Compile expression
         try {
-          IExpression expression = ExpressionBuilder.build(data.context, source);
+          IExpression expression = Expressions.build(data.context, source);
           data.targets.add(new RouteTarget(route, expression, rowSet));
         } catch (ExpressionException e) {
           String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
@@ -109,7 +109,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     for (RouteTarget target : data.targets) {
 
       try {
-        Boolean predicat = target.expression.getValue(data.context, Boolean.class);
+        Boolean predicat = target.expression.getValue(Boolean.class);
 
         if ( predicat ) {
           toDefault = false;

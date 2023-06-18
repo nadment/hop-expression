@@ -17,10 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,9 +41,8 @@ public class CurrentTimeZoneFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
-      throws Exception {
-    return Attribute.CURRENT_TIMEZONE.get(context);
+  public IExpression compile(IExpressionContext context, Call call)
+      throws ExpressionException {
+    return Literal.of(Attribute.CURRENT_TIMEZONE.get(context));
   }
-
 }

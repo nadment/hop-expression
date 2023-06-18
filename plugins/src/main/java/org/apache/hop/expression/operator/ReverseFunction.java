@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.OperandTypes;
@@ -38,9 +37,9 @@ public class ReverseFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    Object value = operands[0].getValue();
     if (value == null)
       return null;
 

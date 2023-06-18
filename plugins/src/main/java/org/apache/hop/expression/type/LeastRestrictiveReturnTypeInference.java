@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 
 public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference {
 
@@ -27,7 +26,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
   }
 
   @Override
-  public DataType getReturnType(final IExpressionContext context, final Call call) {
+  public DataType getReturnType(final Call call) {
 
     if ( call.getOperandCount()==0 ) 
       return UnknownDataType.UNKNOWN; 

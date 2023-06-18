@@ -33,10 +33,5 @@ public abstract class AggregateFunction extends Function {
   }
 
   public abstract IExpressionProcessor createProcessor(IExpressionContext context,
-      IExpression[] operands);
-
-  @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
-    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
-  }
+      IExpression[] operands) throws ExpressionException ;
 }

@@ -57,12 +57,12 @@ public class BoolOrOperator extends Operator {
 
     // Simplify trivial TRUE
     if (call.getOperand(0).isConstant()) {
-      Boolean value = call.getOperand(0).getValue(context, Boolean.class);
+      Boolean value = call.getOperand(0).getValue(Boolean.class);
       if (value == Boolean.TRUE)
         return Literal.TRUE;
     }
     if (call.getOperand(1).isConstant()) {
-      Boolean value = call.getOperand(1).getValue(context, Boolean.class);
+      Boolean value = call.getOperand(1).getValue(Boolean.class);
       if (value == Boolean.TRUE)
         return Literal.TRUE;
     }
@@ -158,7 +158,7 @@ public class BoolOrOperator extends Operator {
           conditions.remove(pair.getLeft());
         }        
         Call in = new Call(Operators.IN, reference, new Tuple(values));
-        in.inferenceType(context);
+        in.inferenceType();
         conditions.add(in);
       }
     }
@@ -171,7 +171,7 @@ public class BoolOrOperator extends Operator {
     IExpression operand = conditions.pop();
     while (!conditions.isEmpty()) {
       call = new Call(Operators.BOOLOR, conditions.pop(), operand);
-      call.inferenceType(context);
+      call.inferenceType();
       operand = call;
     }
 
@@ -179,9 +179,9 @@ public class BoolOrOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Boolean left = operands[0].getValue(context, Boolean.class);
-    Boolean right = operands[1].getValue(context, Boolean.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    Boolean left = operands[0].getValue(Boolean.class);
+    Boolean right = operands[1].getValue(Boolean.class);
 
     if (left == null) {
       if (!right)

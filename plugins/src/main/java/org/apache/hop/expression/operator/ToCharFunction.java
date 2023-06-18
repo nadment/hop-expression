@@ -17,13 +17,11 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryDataType;
 import org.apache.hop.expression.type.DateDataType;
@@ -50,16 +48,16 @@ public class ToCharFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    Object value = operands[0].getValue();
     if (value == null) {
       return null;
     }
 
     String pattern = null;
     if (operands.length > 1) {
-      pattern = operands[1].getValue(context, String.class);
+      pattern = operands[1].getValue(String.class);
     }
 
     if (value instanceof Number) {
@@ -72,7 +70,7 @@ public class ToCharFunction extends Function {
 
     if (value instanceof ZonedDateTime) {
       if (pattern == null) {
-        pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+        // TODO: pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT); 
       }
       return DateTimeFormat.of(pattern).format(DateDataType.coerce(value));
     }

@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpressionContext;
 
 public class ReturnTypeInferenceChain implements IReturnTypeInference {
   private final IReturnTypeInference[] rules;
@@ -27,9 +26,9 @@ public class ReturnTypeInferenceChain implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
     for (IReturnTypeInference rule : rules) {
-      DataType type = rule.getReturnType(context, call);
+      DataType type = rule.getReturnType(call);
       if (type != UnknownDataType.UNKNOWN) {
         return type;
       }

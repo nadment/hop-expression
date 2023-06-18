@@ -16,7 +16,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +34,15 @@ public class MedianProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
+  public void process(IExpression[] operands) throws Exception {
+    Double value = operands[0].getValue(Double.class);
     if (value != null) {
       values.add(value);
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() throws Exception {
 
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {

@@ -15,8 +15,8 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
+import com.ibm.icu.math.BigDecimal;
 
 /**
  * Returns the average (arithmetic mean) of all values in the expression over a group of rows. Null
@@ -24,25 +24,25 @@ import org.apache.hop.expression.IExpressionProcessor;
  */
 public class AvgProcessor implements IExpressionProcessor {
 
-  private double sum;
+  private BigDecimal sum;
   private long count;
 
   public AvgProcessor() {
-    sum = 0;
+    sum = BigDecimal.ZERO;
     count = 0;
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
+  public void process(IExpression[] operands) throws Exception {
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      sum += value;
+      sum = sum.add(value);
       count++;
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
-    return Double.valueOf(sum / count);
+  public Object getValue() throws Exception {
+    return sum.divide(BigDecimal.valueOf(count));
   }
 }

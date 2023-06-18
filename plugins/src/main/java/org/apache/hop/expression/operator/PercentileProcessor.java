@@ -16,8 +16,8 @@ package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,31 +28,30 @@ import java.util.List;
 public class PercentileProcessor implements IExpressionProcessor {
 
   private static final Percentile PERCENTILE = new Percentile();
-
+  private BigDecimal percentile;
   private List<Double> values;
 
-  public PercentileProcessor() {
+  public PercentileProcessor(BigDecimal percentile) {
     values = new ArrayList<>();
+    this.percentile = percentile;
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
-    Double value = operands[0].getValue(context, Double.class);
+  public void process(IExpression[] operands) throws Exception {
+    Double value = operands[0].getValue(Double.class);
     if (value != null) {
       values.add(value);
     }
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
-
-    Double percentile = operands[1].getValue(context, Double.class);
+  public Object getValue() throws Exception {
 
     final double[] array = new double[values.size()];
     for (int i = 0; i < array.length; i++) {
       array[i] = values.get(i);
     }
 
-    return PERCENTILE.evaluate(array, percentile);
+    return PERCENTILE.evaluate(array, percentile.doubleValue());
   }
 }

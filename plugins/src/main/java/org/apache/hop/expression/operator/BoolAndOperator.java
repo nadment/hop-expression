@@ -57,13 +57,13 @@ public class BoolAndOperator extends Operator {
 
     // Simplify trivial FALSE
     if (call.getOperand(0).isConstant()) {
-      Boolean value = call.getOperand(0).getValue(context, Boolean.class);
+      Boolean value = call.getOperand(0).getValue(Boolean.class);
       if (value == Boolean.FALSE) {
         left = false;
       }
     }
     if (call.getOperand(1).isConstant()) {
-      Boolean value = call.getOperand(1).getValue(context, Boolean.class);
+      Boolean value = call.getOperand(1).getValue(Boolean.class);
       if (value == Boolean.FALSE) {
         right = false;
       }
@@ -111,7 +111,7 @@ public class BoolAndOperator extends Operator {
         //
         // this.processRange();
         //
-        // Object value = call.getOperand(0).getValue(context);
+        // Object value = call.getOperand(0).getValue();
         // if ( value instanceof Comparable ) {
         // Comparable<?> c = (Comparable<?>) value;
         // Range<?> range = ranges.get(call);
@@ -168,7 +168,7 @@ public class BoolAndOperator extends Operator {
     IExpression expression = conditions.pop();
     while (!conditions.isEmpty()) {
       call = new Call(Operators.BOOLAND, conditions.pop(), expression);
-      call.inferenceType(context);
+      call.inferenceType();
       expression = call;
     }
 
@@ -176,12 +176,12 @@ public class BoolAndOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Boolean left = operands[0].getValue(context, Boolean.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    Boolean left = operands[0].getValue(Boolean.class);
     if (left == Boolean.FALSE) {
       return left;
     }
-    Boolean right = operands[1].getValue(context, Boolean.class);
+    Boolean right = operands[1].getValue(Boolean.class);
     if (right == Boolean.FALSE) {
       return right;
     }

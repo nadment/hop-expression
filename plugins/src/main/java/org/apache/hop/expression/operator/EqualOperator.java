@@ -47,14 +47,14 @@ public class EqualOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) throws Exception {
     // Treats NULLs as unknown values
     // NULL is not equal ( = ) to anything—not even to another NULL.
-    Object left = operands[0].getValue(context);
+    Object left = operands[0].getValue();
     if (left == null) {
       return null;
     }
-    Object right = operands[1].getValue(context);
+    Object right = operands[1].getValue();
     if (right == null) {
       return null;
     }

@@ -99,7 +99,7 @@ public final class ReturnTypes {
    * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with a fallback to {@link #ARG0}.
    * This rule is used for floor, ceiling.
    */
-  public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = (context, call) -> {
+  public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = (call) -> {
     DataType type = call.getOperand(0).getType();
     
     if ( type.getScale()>0) {

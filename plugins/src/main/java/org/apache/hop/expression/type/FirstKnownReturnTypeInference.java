@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 
 public class FirstKnownReturnTypeInference implements IReturnTypeInference {
 
@@ -27,7 +26,7 @@ public class FirstKnownReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
     for (IExpression operand : call.getOperands()) {
       DataType type = operand.getType();
       if (type != UnknownDataType.UNKNOWN)

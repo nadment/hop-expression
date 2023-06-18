@@ -40,7 +40,7 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-public class ExpressionBuilder {
+public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
       Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
@@ -68,31 +68,6 @@ public class ExpressionBuilder {
 
   private List<Token> tokens = new ArrayList<>();
 
-  public static IExpression build(IExpressionContext context, final String source)
-      throws ExpressionException {
-    ExpressionBuilder builder = new ExpressionBuilder(source);
-    try {
-      IExpression expression = builder.parse();
-
-      if (expression == null)
-        return expression;
-
-      expression.validate(context);
-
-      IExpression original;
-      do {
-        original = expression;
-        expression = expression.compile(context);
-      } while (!expression.equals(original));
-
-      return expression;
-    } catch (ParseException e) {
-      throw createException(source, e.getErrorOffset(), e);
-    } catch (IllegalArgumentException e) {
-      throw createException(source, builder.getPosition(), e);
-    }
-  }
-
   protected static ExpressionException createException(String source, int offset, Exception e) {
     int line = 1;
     int column = 1;
@@ -108,7 +83,7 @@ public class ExpressionBuilder {
         e.getMessage());
   }
 
-  protected ExpressionBuilder(final String source) {
+  protected ExpressionParser(final String source) {
     super();
     this.source = source;
   }
@@ -154,7 +129,7 @@ public class ExpressionBuilder {
   }
 
   /** Parse the expression */
-  private IExpression parse() throws ParseException {
+  public IExpression parse() throws ParseException {
 
     if (source == null)
       return Literal.NULL;
@@ -1587,5 +1562,6 @@ public class ExpressionBuilder {
     }
     return null;
   }
+  
 }
 

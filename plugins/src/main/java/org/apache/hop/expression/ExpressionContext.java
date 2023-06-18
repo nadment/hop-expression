@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.core.variables.Variables;
@@ -80,13 +79,9 @@ public class ExpressionContext extends Variables implements IExpressionContext {
 
     // Set cached attributes
     ZonedDateTime now = ZonedDateTime.now();
-    this.setAttribute(Attribute.CURRENT_TIMEZONE, ZoneId.systemDefault().getId());
-    this.setAttribute(Attribute.CURRENT_TIMESTAMP, now);
-    this.setAttribute(Attribute.CURRENT_DATE, now.truncatedTo(ChronoUnit.DAYS));
-  }
-
-  protected void setAttribute(Attribute attribute, Object value) {
-    attributes.put(attribute.name(), value);
+    this.setAttribute(Attribute.CURRENT_TIMEZONE.name(), ZoneId.systemDefault().getId());
+    this.setAttribute(Attribute.CURRENT_TIMESTAMP.name(), now);
+    this.setAttribute(Attribute.CURRENT_DATE.name(), now.truncatedTo(ChronoUnit.DAYS));
   }
 
   public void setAttribute(String id, Object value) {

@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
@@ -39,11 +38,11 @@ public class LeastFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
     Object result = null;
     for (IExpression operand : operands) {
-      Object value = operand.getValue(context);
+      Object value = operand.getValue();
       // null is always smaller
       if (value == null)
         continue;

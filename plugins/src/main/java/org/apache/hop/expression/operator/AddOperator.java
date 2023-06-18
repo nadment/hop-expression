@@ -59,8 +59,8 @@ public class AddOperator extends Operator {
 
     // Pull up literal
     if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
-      IExpression expression = new Call(Operators.ADD, left, right.asCall().getOperand(0));
-      Literal literal = Literal.of(expression.getValue(context));
+      Call expression = new Call(Operators.ADD, left, right.asCall().getOperand(0));
+      Literal literal = Literal.of(expression.getValue());
       return new Call(Operators.ADD, literal, right.asCall().getOperand(1));
     }
 
@@ -68,11 +68,11 @@ public class AddOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    BigDecimal left = operands[0].getValue(context, BigDecimal.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    BigDecimal left = operands[0].getValue(BigDecimal.class);
     if (left == null)
       return null;
-    BigDecimal right = operands[1].getValue(context, BigDecimal.class);
+    BigDecimal right = operands[1].getValue(BigDecimal.class);
     if (right == null)
       return null;
 

@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,13 +36,13 @@ public class AddSecondsFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    ZonedDateTime datetime = operands[0].getValue(context, ZonedDateTime.class);
+    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
     if (datetime == null)
       return null;
 
-    Long seconds = operands[1].getValue(context, Long.class);
+    Long seconds = operands[1].getValue(Long.class);
     if (seconds == null)
       return null;
 

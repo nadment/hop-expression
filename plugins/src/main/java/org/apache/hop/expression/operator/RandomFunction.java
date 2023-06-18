@@ -48,10 +48,10 @@ public class RandomFunction extends Function {
   }
     
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
     
-      Random random = operands[1].getValue(context, Random.class);         
+      Random random = operands[1].getValue(Random.class);         
       return BigDecimal.valueOf(random.nextDouble());    
   }
   
@@ -62,7 +62,7 @@ public class RandomFunction extends Function {
     }
     if (call.getOperandCount() == 1) {
       try {
-        Long seed = call.getOperand(0).getValue(context, Long.class);
+        Long seed = call.getOperand(0).getValue(Long.class);
         Random random = new Random();
         random.setSeed(seed);
         return new Call(call.getOperator(), call.getOperand(0), Literal.of(random));

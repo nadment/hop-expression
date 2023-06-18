@@ -41,12 +41,12 @@ public class GreaterThanOrEqualOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
+  public Object eval(IExpression[] operands) throws Exception {
+    Object left = operands[0].getValue();
     if (left == null) {
       return null;
     }
-    Object right = operands[1].getValue(context);
+    Object right = operands[1].getValue();
     if (right == null) {
       return null;
     }

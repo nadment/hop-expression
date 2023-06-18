@@ -66,11 +66,11 @@ public class DivOperator extends Operator {
   }
   
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    BigDecimal divisor = operands[1].getValue(context, BigDecimal.class);
+    BigDecimal divisor = operands[1].getValue(BigDecimal.class);
     if (divisor == null)
       return null;
 

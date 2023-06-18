@@ -41,13 +41,13 @@ public class PowerFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    BigDecimal number = operands[0].getValue(context, BigDecimal.class);
+    BigDecimal number = operands[0].getValue(BigDecimal.class);
     if (number == null) {
       return null;
     }
-    BigDecimal exponent = operands[1].getValue(context, BigDecimal.class);
+    BigDecimal exponent = operands[1].getValue(BigDecimal.class);
     if (exponent == null) {
       return null;
     }

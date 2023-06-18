@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 
 public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
@@ -27,7 +26,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(IExpressionContext context, Call call) {
+  public DataType getReturnType(Call call) {
     // Least restrictive then expression    
     DataType result = null;
     for (IExpression operand : call.getOperand(2).asTuple()) {

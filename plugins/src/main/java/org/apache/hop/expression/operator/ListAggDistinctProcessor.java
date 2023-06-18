@@ -15,23 +15,22 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class ListAggDistinctProcessor implements IExpressionProcessor {
-
+  private String delimiter;
   private Queue<String> values;
 
-  public ListAggDistinctProcessor() {
+  public ListAggDistinctProcessor(String delimiter) {
     this.values = new LinkedList<>();
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
+  public void process(IExpression[] operands) throws Exception {
 
-    String value = operands[0].getValue(context, String.class);
+    String value = operands[0].getValue(String.class);
 
     if (value == null || values.contains(value))
       return;
@@ -40,15 +39,10 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() {
 
     if (values.isEmpty())
       return null;
-
-    String delimiter = ",";
-    if (operands.length == 2) {
-      delimiter = operands[1].getValue(context, String.class);
-    }
 
     StringBuilder builder = new StringBuilder();
     for (String str : values) {

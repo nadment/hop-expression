@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IntegerDataType;
@@ -49,9 +48,9 @@ public class StrtokFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String str = operands[0].getValue(context, String.class);
+    String str = operands[0].getValue(String.class);
     if (str == null)
       return null;
    
@@ -61,7 +60,7 @@ public class StrtokFunction extends Function {
     int index = 1;
 
     if (operands.length == 2) {
-      Object v1 = operands[1].getValue(context);
+      Object v1 = operands[1].getValue();
       if (v1 == null)
         return null;
 
@@ -71,11 +70,11 @@ public class StrtokFunction extends Function {
         delimiter = StringDataType.coerce(v1);
       }
     } else if (operands.length == 3) {
-      delimiter = operands[1].getValue(context, String.class);
+      delimiter = operands[1].getValue(String.class);
       if (delimiter == null)
         return null;
       
-      Long v2 = operands[2].getValue(context, Long.class);
+      Long v2 = operands[2].getValue(Long.class);
       if (v2 == null)
         return null;
       index = v2.intValue();

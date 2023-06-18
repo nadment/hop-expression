@@ -19,13 +19,12 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * The function return the ASCII value of the first character in a string.
+ * Return the ASCII value of the first character in a string.
  * If the string is empty, a value of 0 is returned.
  */
 @FunctionPlugin
@@ -37,9 +36,9 @@ public class AsciiFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String value = operands[0].getValue(context, String.class);
+    String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 

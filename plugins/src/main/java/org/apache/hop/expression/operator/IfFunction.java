@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,12 +35,12 @@ public class IfFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Boolean value = operands[0].getValue(context, Boolean.class);
+    Boolean value = operands[0].getValue(Boolean.class);
     if (value == null)
       return null;
 
-    return operands[value ? 1 : 2].getValue(context);
+    return operands[value ? 1 : 2].getValue();
   }
 }

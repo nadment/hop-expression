@@ -22,14 +22,13 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
 
 /**
- * Returns the arc cosine, the angle in radians whose cosine is the specified float expression.
+ * Calculates the inverse cosine (arc cosine) of a number in radians; the result is a number in the interval [0, pi].
  */
 @FunctionPlugin
 public class AcosFunction extends Function {
@@ -40,9 +39,9 @@ public class AcosFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    BigDecimal number = operands[0].getValue(context, BigDecimal.class);
+    BigDecimal number = operands[0].getValue(BigDecimal.class);
     if (number == null)
       return null;    
     

@@ -42,16 +42,16 @@ public class RTrimFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String value = operands[0].getValue(context, String.class);
+    String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
     String stripChars = null;
 
     if (operands.length == 2) {
-      stripChars = operands[1].getValue(context, String.class);
+      stripChars = operands[1].getValue(String.class);
       if (stripChars == null)
         return null;      
     }

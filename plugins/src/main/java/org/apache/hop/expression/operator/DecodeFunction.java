@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
@@ -38,13 +37,13 @@ public class DecodeFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
+    Object value = operands[0].getValue();
 
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
-      Object search = operands[i].getValue(context);
+      Object search = operands[i].getValue();
       if (Comparison.compare(value, search) == 0) {
         index = i + 1;
         break;
@@ -56,6 +55,6 @@ public class DecodeFunction extends Function {
     if (index < 0)
       return null;
 
-    return operands[index].getValue(context);
+    return operands[index].getValue();
   }
 }

@@ -24,9 +24,9 @@ import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.ValueDataUtil;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionBuilder;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
@@ -135,7 +135,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           IValueMeta valueMeta = data.outputRowMeta.searchValueMeta(field.getName());
           data.aggregateMeta.addValueMeta(valueMeta);
 
-          IExpression expression = ExpressionBuilder.build(data.context, source);
+          IExpression expression = Expressions.build(data.context, source);
           Call call = null;
           AggregateFunction function = null;
           if (expression.is(Kind.CALL)) {
@@ -272,7 +272,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     try {
       data.context.setRow(row);
       for (int i = 0; i < aggregators.length; i++) {
-        aggregators[i].process(data.context, data.aggregates[i].getOperands());
+        aggregators[i].process(data.aggregates[i].getOperands());
       }
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, e.getMessage());
@@ -286,7 +286,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
    * @param aggregate
    * @throws HopException
    */
-  protected IExpressionProcessor[] createAggregate() {
+  protected IExpressionProcessor[] createAggregate() throws HopException {
 
     IExpressionProcessor[] processors = new IExpressionProcessor[data.functions.length];
 
@@ -302,7 +302,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     Object[] result = new Object[aggregators.length];
     try {
       for (int i = 0; i < aggregators.length; i++) {
-        Object value = aggregators[i].eval(data.context, data.aggregates[i].getOperands());
+        Object value = aggregators[i].getValue();
 
         if (value == null && allNullsAreZero) {
           // seems all rows for min function was nulls...

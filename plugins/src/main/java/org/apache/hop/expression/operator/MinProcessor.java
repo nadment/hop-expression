@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.type.Comparison;
 
@@ -29,9 +28,9 @@ public class MinProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
+  public void process(IExpression[] operands) throws Exception {
 
-    Object value = operands[0].getValue(context);
+    Object value = operands[0].getValue();
 
     if (min == null || (value != null && Comparison.compare(value, min) < 0)) {
       min = value;
@@ -39,7 +38,7 @@ public class MinProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() throws Exception {
     return min;
   }
 }

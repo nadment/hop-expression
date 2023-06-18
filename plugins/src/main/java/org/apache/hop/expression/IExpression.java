@@ -80,22 +80,24 @@ public interface IExpression {
   /**
    * Evaluates the value of this expression.
    *
-   * @param context The context against which the expression will be evaluated.
    * @throws ExpressionException if an error occurs.
-   * @throws NullPointerException if context is null.
    * @return The result of evaluating the expression.
    */
-  public Object getValue(IExpressionContext context) throws ExpressionException;
+  public default Object getValue() throws ExpressionException {
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  }
   
   /**
    * Evaluates the value of this expressions a given Java type.
    *
-   * @param context The context against which the expression will be evaluated.
    * @param clazz Desired value type
    * @param <T> Value type
    * @return The result of evaluating the expression in desired type
    */
-  public <T extends Object> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException;
+  public default <T extends Object> T getValue(Class<T> clazz) throws ExpressionException {
+    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  }
+
   
   /**
    * Validate the expression
@@ -110,7 +112,7 @@ public interface IExpression {
   /**
    * Compile and optimize the expression
    * 
-   * @param context The context against which the expression will be validated.
+   * @param context The context against which the expression will be compiled.
    * @return 
    * @throws ExpressionException if an error occurs.
    */

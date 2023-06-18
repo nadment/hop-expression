@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -45,17 +44,17 @@ public class SplitPartFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String str = operands[0].getValue(context, String.class);
+    String str = operands[0].getValue(String.class);
     if (str == null)
       return null;
 
-    String delimiter = operands[1].getValue(context, String.class);
+    String delimiter = operands[1].getValue(String.class);
     if (delimiter == null)
       return null;
 
-    Long v2 = operands[2].getValue(context, Long.class);
+    Long v2 = operands[2].getValue(Long.class);
     if (v2 == null)
       return null;
     

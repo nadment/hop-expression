@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -39,13 +38,13 @@ public class InstrFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String str = operands[0].getValue(context, String.class);
+    String str = operands[0].getValue(String.class);
     if (str == null) {
       return null;
     }
-    String substr = operands[1].getValue(context, String.class);
+    String substr = operands[1].getValue(String.class);
     if (substr == null) {
       return null;
     }
@@ -56,7 +55,7 @@ public class InstrFunction extends Function {
 
     // If 3 operands, indicate the position to start
     if (operands.length >= 3) {
-      start = operands[2].getValue(context, Long.class).intValue();
+      start = operands[2].getValue(Long.class).intValue();
 
       if (start == 0) {
         throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);        
@@ -66,7 +65,7 @@ public class InstrFunction extends Function {
       
       // The occurence to find, must be positive
       if (operands.length == 4) {
-        occurence = operands[3].getValue(context, Long.class).intValue();
+        occurence = operands[3].getValue(Long.class).intValue();
         if (occurence < 1) {
           throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);
         }

@@ -109,9 +109,9 @@ public final class Call implements IExpression {
   }
 
   @Override
-  public Object getValue(IExpressionContext context) throws ExpressionException {
+  public Object getValue() throws ExpressionException {
     try {
-      return operator.eval(context, operands);
+      return operator.eval(operands);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());
@@ -119,9 +119,9 @@ public final class Call implements IExpression {
   }
 
   @Override
-  public <T> T getValue(IExpressionContext context, Class<T> clazz) throws ExpressionException {
+  public <T> T getValue(Class<T> clazz) throws ExpressionException {
     try {
-      Object value = operator.eval(context, operands);
+      Object value = operator.eval(operands);
 
       if (clazz.isInstance(value)) {
         return clazz.cast(value);
@@ -286,7 +286,7 @@ public final class Call implements IExpression {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE, operator);
     }
 
-    inferenceType(context);
+    inferenceType();
   }
 
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
@@ -299,15 +299,15 @@ public final class Call implements IExpression {
     // If operator is deterministic and all operands are constant try to evaluate
     if (this.isConstant()) {
       try {
-        Object value = getValue(context);
-        inferenceType(context);
+        Object value = getValue();
+        inferenceType();
 
         if (value == null) {
           return Literal.NULL;
         }
 
         // Some operator don't known return type like JSON_VALUE.
-        if (DataName.ANY.equals(type.getName())) {        
+        if (DataName.ANY.equals(type.getName())) {
           return Literal.of(value);
         }
 
@@ -329,14 +329,14 @@ public final class Call implements IExpression {
     // Inference return type
     if (expression.is(Kind.CALL)) {
       call = (Call) expression;
-      call.inferenceType(context);
+      call.inferenceType();
     }
 
     return expression;
   }
 
-  public void inferenceType(final IExpressionContext context) {
-    this.type = this.operator.getReturnTypeInference().getReturnType(context, this);
+  public void inferenceType() {
+    this.type = this.operator.getReturnTypeInference().getReturnType(this);
   }
 
   @Override

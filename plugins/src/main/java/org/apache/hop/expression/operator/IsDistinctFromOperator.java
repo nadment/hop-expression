@@ -42,9 +42,9 @@ public class IsDistinctFromOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object left = operands[0].getValue(context);
-    Object right = operands[1].getValue(context);
+  public Object eval(IExpression[] operands) throws Exception {
+    Object left = operands[0].getValue();
+    Object right = operands[1].getValue();
 
     return Comparison.compare(left, right) != 0;
   }

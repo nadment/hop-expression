@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -50,13 +49,13 @@ public class JsonValueFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    JsonNode jsonNode = operands[0].getValue(context, JsonNode.class);
+    JsonNode jsonNode = operands[0].getValue(JsonNode.class);
     if (jsonNode == null)
       return null;
 
-    String path = operands[1].getValue(context, String.class);
+    String path = operands[1].getValue(String.class);
     if (path == null)
       return null;
 

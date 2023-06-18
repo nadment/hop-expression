@@ -61,6 +61,6 @@ public class TupleTest extends ExpressionTest {
     assertEquals("(1,0,NULL)", tuple1.toString());
 
     // Not evaluable alone
-    assertThrows(ExpressionException.class, () -> tuple1.getValue(createExpressionContext()));      
+    assertThrows(ExpressionException.class, () -> tuple1.getValue());      
   }
 }

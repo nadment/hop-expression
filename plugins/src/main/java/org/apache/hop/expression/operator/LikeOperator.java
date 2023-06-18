@@ -73,14 +73,14 @@ public class LikeOperator extends Operator {
       return value;
 
     if (call.getOperand(1).isConstant()) {
-      String pattern = call.getOperand(1).getValue(context, String.class);
+      String pattern = call.getOperand(1).getValue(String.class);
 
       // Optimize FIELD LIKE NULL to NULL
       if (pattern == null)
         return Literal.NULL;
 
       if (call.getOperandCount() == 3) {
-        String escape = call.getOperand(2).getValue(context, String.class);
+        String escape = call.getOperand(2).getValue(String.class);
         if (escape == null)
           return Literal.NULL;
 
@@ -123,19 +123,19 @@ public class LikeOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    String input = operands[0].getValue(context, String.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
     }
-    String pattern = operands[1].getValue(context, String.class);
+    String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
       return null;
     }
 
     String escape = null;
     if (operands.length == 3) {
-      escape= operands[2].getValue(context, String.class);
+      escape= operands[2].getValue(String.class);
       if (escape == null) {
         return null;
       }

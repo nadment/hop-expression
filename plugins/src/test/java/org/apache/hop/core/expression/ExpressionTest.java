@@ -31,7 +31,7 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionBuilder;
+import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
@@ -180,7 +180,7 @@ public class ExpressionTest {
 
   protected void returnType(String source, DataType expected) throws Exception {
     ExpressionContext context = createExpressionContext(false);
-    IExpression expression = ExpressionBuilder.build(context, source);
+    IExpression expression = Expressions.build(context, source);
     assertEquals(expected, expression.getType());
   }
 
@@ -192,9 +192,8 @@ public class ExpressionTest {
     }
 
     try {
-      IExpression expression = ExpressionBuilder.build(context, source);
-
-      return expression.getValue(context);
+      IExpression expression = Expressions.build(context, source);
+      return expression.getValue();
     } catch (Exception ex) {
       System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
@@ -210,9 +209,8 @@ public class ExpressionTest {
     }
 
     try {
-      IExpression expression = ExpressionBuilder.build(context, source);
-
-      return expression.getValue(context, clazz);
+      IExpression expression = Expressions.build(context, source);
+      return expression.getValue(clazz);
     } catch (Exception ex) {
       System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
       throw ex;
@@ -310,7 +308,7 @@ public class ExpressionTest {
   protected IExpression optimize(String source) {
     try {
       IExpressionContext context = createExpressionContext(false);
-      IExpression expression = ExpressionBuilder.build(context, source);
+      IExpression expression = Expressions.build(context, source);
 
       String color = ANSI_YELLOW;
       if (expression.getType() == UnknownDataType.UNKNOWN) {
@@ -355,8 +353,7 @@ public class ExpressionTest {
 //    evalEquals("1_234", 1234L);
  //   evalEquals("1", 1L);
   //  returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(37,3));
-    optimize("CASE WHEN FIELD_INTEGER=1 THEN 1 ELSE CASE WHEN FIELD_NUMBER=2 THEN 2 ELSE 3 END END",
-        "CASE WHEN 1=FIELD_INTEGER THEN 1 WHEN 2=FIELD_NUMBER THEN 2 ELSE 3 END");
+    evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
     
     //evalFails("0x_2F");
     //evalFails("0x_2F");

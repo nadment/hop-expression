@@ -40,10 +40,10 @@ public class NullIfFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue(context);
-    Object compare = operands[1].getValue(context);
+    Object value = operands[0].getValue();
+    Object compare = operands[1].getValue();
 
     if (Comparison.compare(value, compare) == 0)
       return null;

@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -42,14 +41,14 @@ public class RegexpInstrFunction extends Function {
         "/docs/regexp_instr.html");
   }
 
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    String input = operands[0].getValue(context, String.class);
+    String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
     }
 
-    String regexp = operands[1].getValue(context, String.class);
+    String regexp = operands[1].getValue(String.class);
     if (regexp == null) {
       return null;
     }
@@ -61,7 +60,7 @@ public class RegexpInstrFunction extends Function {
     // Default position 1
     int position = 1;
     if (operands.length >= 3) {
-      Long v2 = operands[2].getValue(context, Long.class);
+      Long v2 = operands[2].getValue(Long.class);
       if (v2 != null) {
         position = v2.intValue();
       }
@@ -70,7 +69,7 @@ public class RegexpInstrFunction extends Function {
     // Default occurrence
     int occurrence = 0;
     if (operands.length >= 4) {
-      Long v3 = operands[3].getValue(context, Long.class);
+      Long v3 = operands[3].getValue(Long.class);
       if (v3 != null) {
         occurrence = v3.intValue();
       }
@@ -79,7 +78,7 @@ public class RegexpInstrFunction extends Function {
     // Return-option
     int returnOption = 0;
     if (operands.length >= 5) {
-      Long v4 = operands[4].getValue(context, Long.class);
+      Long v4 = operands[4].getValue(Long.class);
       if (v4 != null) {
         returnOption = v4.intValue();
       }
@@ -88,7 +87,7 @@ public class RegexpInstrFunction extends Function {
     // Flags
     int flags = Pattern.UNICODE_CASE;
     if (operands.length == 6) {
-      String v5 = operands[5].getValue(context, String.class);
+      String v5 = operands[5].getValue(String.class);
       flags = Regexp.parseFlags(v5);
     }
 

@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
@@ -35,20 +34,20 @@ public class ILikeOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    String value = operands[0].getValue(context, String.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;
     }
 
-    String pattern = operands[1].getValue(context, String.class);
+    String pattern = operands[1].getValue(String.class);
     if (pattern == null) {
       return null;
     }
 
     String escape = null;
     if (operands.length == 3) {
-      escape = operands[2].getValue(context, String.class);
+      escape = operands[2].getValue(String.class);
       if (escape == null) {
         return null;
       }

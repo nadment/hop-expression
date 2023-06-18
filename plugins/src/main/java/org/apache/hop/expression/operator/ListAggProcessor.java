@@ -15,23 +15,23 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class ListAggProcessor implements IExpressionProcessor {
-
+  private String delimiter;
   private Queue<String> values;
 
-  public ListAggProcessor() {
+  public ListAggProcessor(String delimiter) {
     this.values = new LinkedList<>();
+    this.delimiter = delimiter;
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
+  public void process(IExpression[] operands) throws Exception {
 
-    String value = operands[0].getValue(context, String.class);
+    String value = operands[0].getValue(String.class);
 
     if (value == null)
       return;
@@ -40,18 +40,13 @@ public class ListAggProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() throws Exception {
 
-    if (values.isEmpty())
+    if (values.isEmpty()) {
       return null;
-
-    String delimiter = ",";
-    if (operands.length == 2) {
-      delimiter = operands[1].getValue(context, String.class);
     }
 
     StringBuilder builder = new StringBuilder();
-
     for (String str : values) {
       if (builder.length() > 0) {
         builder.append(delimiter);

@@ -157,7 +157,7 @@ public abstract class DataType {
    *        numeric, or null if none
    * @return the converted value
    */
-  public Object cast(final Object value, String pattern) {
+  public Object cast(final Object value, final String pattern) {
     throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
   }
 

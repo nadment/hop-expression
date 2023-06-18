@@ -40,9 +40,9 @@ public class CeilingFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    BigDecimal value = operands[0].getValue(context, BigDecimal.class);
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
 

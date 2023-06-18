@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
 import java.math.BigDecimal;
 
@@ -29,9 +28,9 @@ public class SumProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public void process(IExpressionContext context, IExpression[] operands) throws Exception {
+  public void process(IExpression[] operands) throws Exception {
 
-    BigDecimal value = operands[0].getValue(context,BigDecimal.class);
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
       if ( sum==null ) {
         sum = value;
@@ -43,7 +42,7 @@ public class SumProcessor implements IExpressionProcessor {
   }
 
   @Override
-  public Object eval(IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object getValue() throws Exception {
     return sum;
   }
 }

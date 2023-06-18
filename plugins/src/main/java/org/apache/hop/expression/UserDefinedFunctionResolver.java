@@ -35,30 +35,26 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
   public IExpression apply(final IExpressionContext context, final Call call) {
     List<IExpression> expressions = new ArrayList<>(call.getOperandCount());
     for (IExpression expression : call.getOperands()) {
-      // Some operands can be null
-      if (expression != null) {
-        expression = expression.accept(context, this);
-      }
+      expression = expression.accept(context, this);
       expressions.add(expression);
     }
-    return new Call(call.getOperator(), expressions);
+    Call e = new Call(call.getOperator(), expressions);
+    e.inferenceType();
+    return e;
   }
 
   @Override
-  public IExpression apply(IExpressionContext context, Tuple tuple) {
+  public IExpression apply(final IExpressionContext context, final Tuple tuple) {
     List<IExpression> expressions = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
-      // Some operands can be null
-      if (expression != null) {
-        expression = expression.accept(context, this);
-      }
+      expression = expression.accept(context, this);
       expressions.add(expression);
     }
     return new Tuple(expressions);
   }
 
   @Override
-  public IExpression apply(IExpressionContext context, Literal literal) {
+  public IExpression apply(final IExpressionContext context, final Literal literal) {
     return literal;
   }
 }

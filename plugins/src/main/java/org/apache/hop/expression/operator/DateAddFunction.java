@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
@@ -40,16 +39,16 @@ public class DateAddFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
 
-    TimeUnit unit = operands[0].getValue(context, TimeUnit.class);
+    TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
-    Long value = operands[1].getValue(context, Long.class);
+    Long value = operands[1].getValue(Long.class);
     if (value == null)
       return null;
 
-    ZonedDateTime datetime = operands[2].getValue(context, ZonedDateTime.class);
+    ZonedDateTime datetime = operands[2].getValue(ZonedDateTime.class);
     if (datetime == null)
       return null;
 

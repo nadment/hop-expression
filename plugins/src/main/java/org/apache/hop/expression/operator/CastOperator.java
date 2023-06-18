@@ -47,12 +47,12 @@ public class CastOperator extends Operator {
   }
     
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Object value = operands[0].getValue(context);
+  public Object eval(IExpression[] operands) throws Exception {
+    Object value = operands[0].getValue();
     if (value == null)
       return null;
 
-    DataType type = operands[1].getValue(context, DataType.class);
+    DataType type = operands[1].getValue(DataType.class);
 
     return type.cast(value, null);
   }

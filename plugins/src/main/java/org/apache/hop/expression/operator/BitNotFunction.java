@@ -59,8 +59,8 @@ public class BitNotFunction extends Function {
   }  
   
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
-    Long value = operands[0].getValue(context, Long.class);
+  public Object eval(IExpression[] operands) throws Exception {
+    Long value = operands[0].getValue(Long.class);
     if (value == null)
       return value;
 

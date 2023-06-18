@@ -45,7 +45,7 @@ public class CaseOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) throws Exception {
     int index = 0;
     IExpression switchExpression = operands[0];
     Tuple whenTuple = (Tuple) operands[1];
@@ -55,28 +55,28 @@ public class CaseOperator extends Operator {
     // Search case
     if (switchExpression == Literal.NULL) {
       for (IExpression whenOperand : whenTuple) {
-        Boolean predicat = whenOperand.getValue(context, Boolean.class);
+        Boolean predicat = whenOperand.getValue(Boolean.class);
         if (predicat != null && predicat) {
-          return thenTuple.get(index).getValue(context);
+          return thenTuple.get(index).getValue();
         }
         index++;
       }
     }
     // Simple case
     else {
-      Object condition = switchExpression.getValue(context);
+      Object condition = switchExpression.getValue();
       if (condition != null) {
         for (IExpression whenOperand : whenTuple) {
-          Object value = whenOperand.getValue(context);
+          Object value = whenOperand.getValue();
           if (Comparison.compare(condition, value) == 0) {
-            return thenTuple.get(index).getValue(context);
+            return thenTuple.get(index).getValue();
           }
           index++;
         }
       }
     }
 
-    return elseExpression.getValue(context);
+    return elseExpression.getValue();
   }
 
   @Override

@@ -21,7 +21,6 @@ import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
@@ -49,16 +48,16 @@ public class LastDayFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpressionContext context, final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    ZonedDateTime value = operands[0].getValue(context, ZonedDateTime.class);
+    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;
 
     // Default to last day of month
     TemporalAdjuster adjuster = TemporalAdjusters.lastDayOfMonth();
     if (operands.length == 2) {
-      TimeUnit unit = operands[1].getValue(context, TimeUnit.class);
+      TimeUnit unit = operands[1].getValue(TimeUnit.class);
       switch (unit) {
         case YEAR:
           adjuster = TemporalAdjusters.lastDayOfYear();
