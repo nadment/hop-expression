@@ -18,29 +18,29 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
-import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
-public final class BinaryDataType extends DataType {
+public final class JsonType extends Type {
+
   /**
-   * Default BINARY type with default parameters.
+   * Default JSON type.
    */
-  public static final BinaryDataType BINARY = new BinaryDataType();
+  public static final JsonType JSON = new JsonType();   
   
-  public BinaryDataType() {
-    super(DataName.BINARY, DataName.BINARY.getMaxPrecision());
-  } 
-    
-  public BinaryDataType(int precision) {
-    super(DataName.BINARY, precision);
+  public JsonType() {
+    super(TypeName.JSON);
   }
   
   @Override
-  public byte[] cast(final Object value) {
+  public JsonNode cast(final Object value) {
     return cast(value, null);
   }
   
   /**
-   * Convert a value to the specified type {@link BinaryDataType} with a pattern.
+   * Convert a value to the specified type {@link JsonType} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -48,54 +48,59 @@ public final class BinaryDataType extends DataType {
    * @return the converted value
    */
   @Override
-  public byte[] cast(final Object value, String pattern) {
+  public JsonNode cast(final Object value, String pattern) {
 
     if (value == null) {
       return null;
     }
     
-    if (value instanceof byte[]) {
-      return (byte[]) value;
-    }
-    if (value instanceof String) {
-      return ((String) value).getBytes(StandardCharsets.UTF_8);
+    if (value instanceof JsonNode) {
+      return (JsonNode) value;
     }
 
+    if (value instanceof String) {
+      return convert((String) value);
+    }   
+    
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), this));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
   
+
   /**
-   * Coerce value to data type BINARY
+   * Coerce value to data type JSON
    * 
    * @param value the value to coerce
-   * @return bytes array
+   * @return String
    */
-  public static final byte[] coerce(final Object value) {
+  public static final JsonNode coerce(final Object value) {
     if (value == null) {
       return null;
     }
-    if (value instanceof byte[]) {
-      return (byte[]) value;
+    if (value instanceof JsonNode) {
+      return (JsonNode) value;
     }
     if (value instanceof String) {
-      return ((String) value).getBytes(StandardCharsets.UTF_8);
+      return JsonType.convert((String) value);
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.from(value), DataName.BINARY));
-  }
-  
-  public static byte[] convert(Long number) {
-    byte[] result = new byte[Long.BYTES];
-    for (int i = Long.BYTES - 1; i >= 0; i--) {
-      result[i] = (byte) (number & 0xFF);
-      number >>= Byte.SIZE;
-    }
-    return result;
+        TypeName.from(value), TypeName.JSON));
   }
 
-  public static byte[] convert(final String str) {
-    return str.getBytes(StandardCharsets.UTF_8);
-  }  
+  /**
+   * Convert String value to Json.
+   * 
+   * @param str the string to convert
+   * @return JsonNode
+   */
+  public static JsonNode convert(final String str) {
+    try {
+      ObjectMapper objectMapper =
+          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+      return objectMapper.readTree(str);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(ExpressionError.INVALID_JSON.message(str));
+    }
+  }
 }

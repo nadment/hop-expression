@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.StringType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -63,7 +63,7 @@ public class RepeatFunction extends Function {
       }
     }
 
-    String value = StringDataType.coerce(v0);
+    String value = StringType.coerce(v0);
     StringBuilder builder = new StringBuilder(value.length() * count);
     while (count-- > 0) {
       builder.append(value);

@@ -27,7 +27,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.ZonedDateTime;
 
@@ -58,7 +58,7 @@ public class ToDateFunction extends Function {
         // Already compiled
         return call;
       }
-      pattern = StringDataType.coerce(value);
+      pattern = StringType.coerce(value);
     }
 
 

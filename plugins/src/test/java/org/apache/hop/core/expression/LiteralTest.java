@@ -23,13 +23,13 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.type.BooleanDataType;
-import org.apache.hop.expression.type.DateDataType;
-import org.apache.hop.expression.type.IntegerDataType;
-import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.NumberDataType;
-import org.apache.hop.expression.type.StringDataType;
-import org.apache.hop.expression.type.UnknownDataType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -54,7 +54,7 @@ public class LiteralTest extends ExpressionTest {
   public void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
     assertEquals(Literal.NULL, Literal.of(null));
-    assertEquals(Objects.hash(null, UnknownDataType.UNKNOWN), Literal.NULL.hashCode());
+    assertEquals(Objects.hash(null, UnknownType.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is((Kind) null));
     assertFalse(Literal.NULL.is((Operator) null));
     assertTrue(Literal.NULL.isConstant());
@@ -70,7 +70,7 @@ public class LiteralTest extends ExpressionTest {
   }
 
   public void DataType() throws Exception {
-    assertEquals(NumberDataType.NUMBER, Literal.of(NumberDataType.NUMBER).getValue());
+    assertEquals(NumberType.NUMBER, Literal.of(NumberType.NUMBER).getValue());
 
     evalEquals("Cast(123 as InTeGeR)", 123L);
   }
@@ -92,7 +92,7 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("'Test ''Bla'' string'");
 
-    returnType("FIELD_STRING", StringDataType.STRING);
+    returnType("FIELD_STRING", StringType.STRING);
   }
 
 
@@ -115,7 +115,7 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("JSON '{\"name\":\"John\",\"age\":5.0}'", "JSON '{\"name\":\"John\",\"age\":5.0}'");
 
-    returnType("JSON '{\"name\":\"John\",\"age\":5}'", JsonDataType.JSON);
+    returnType("JSON '{\"name\":\"John\",\"age\":5}'", JsonType.JSON);
   }
 
   @Test
@@ -141,7 +141,7 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("TRUE", "TRUE");
 
-    returnType("TRUE and TRUE", BooleanDataType.BOOLEAN);
+    returnType("TRUE and TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -222,8 +222,8 @@ public class LiteralTest extends ExpressionTest {
     optimize("123456", "123456");
     optimize("0X1F", "31");
 
-    returnType("FIELD_INTEGER", IntegerDataType.INTEGER);
-    returnType("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", NumberDataType.NUMBER);
+    returnType("FIELD_INTEGER", IntegerType.INTEGER);
+    returnType("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", NumberType.NUMBER);
   }
 
   @Test
@@ -301,7 +301,7 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("DATE '2021-02-25'");
 
-    returnType("DATE '2021-02-25'", DateDataType.DATE);
+    returnType("DATE '2021-02-25'", DateType.DATE);
   }
 
   @Test
@@ -420,10 +420,10 @@ public class LiteralTest extends ExpressionTest {
 
     // TODO: evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'");
 
-    returnType("TIMESTAMP '2021-12-01 12:01:01'", DateDataType.DATE);
-    returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DateDataType.DATE);
+    returnType("TIMESTAMP '2021-12-01 12:01:01'", DateType.DATE);
+    returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DateType.DATE);
     returnType("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'",
-        DateDataType.DATE);
+        DateType.DATE);
   }
 }
 

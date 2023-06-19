@@ -26,14 +26,14 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
   }
 
   @Override
-  public DataType getReturnType(final Call call) {
+  public Type getReturnType(final Call call) {
 
     if ( call.getOperandCount()==0 ) 
-      return UnknownDataType.UNKNOWN; 
+      return UnknownType.UNKNOWN; 
     
-    DataType result = null;
+    Type result = null;
     for (IExpression operand : call.getOperands()) {
-      DataType type = operand.getType();
+      Type type = operand.getType();
       if (result==null || type.getName().ordinal() > result.getName().ordinal()) {
         result = type;
       }

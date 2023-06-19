@@ -20,15 +20,15 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ExpressionError;
 import java.math.BigDecimal;
 
-public final class IntegerDataType extends DataType {
-  public static final IntegerDataType INTEGER = new IntegerDataType(DataName.INTEGER.getMaxPrecision());
+public final class IntegerType extends Type {
+  public static final IntegerType INTEGER = new IntegerType(TypeName.INTEGER.getMaxPrecision());
 
-  public IntegerDataType() {
-    super(DataName.INTEGER, DataName.INTEGER.getMaxPrecision(), 0);
+  public IntegerType() {
+    super(TypeName.INTEGER, TypeName.INTEGER.getMaxPrecision(), 0);
   }
   
-  protected IntegerDataType(int precision) {
-    super(DataName.INTEGER, precision, 0);
+  protected IntegerType(int precision) {
+    super(TypeName.INTEGER, precision, 0);
   }
     
   @Override
@@ -37,7 +37,7 @@ public final class IntegerDataType extends DataType {
   }
   
   /**
-   * Convert a value to the specified type {@link IntegerDataType} with a pattern.
+   * Convert a value to the specified type {@link IntegerType} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -69,7 +69,7 @@ public final class IntegerDataType extends DataType {
    }
     
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), this));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
   
   /**
@@ -89,7 +89,7 @@ public final class IntegerDataType extends DataType {
       return ((Number) value).longValue();
     }
     if (value instanceof String) {
-      return IntegerDataType.convert((String) value);
+      return IntegerType.convert((String) value);
     }
     // if (value instanceof Boolean) {
     // return ((boolean) value) ? 1L : 0L;
@@ -99,7 +99,7 @@ public final class IntegerDataType extends DataType {
     // }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.from(value), DataName.INTEGER));
+        TypeName.from(value), TypeName.INTEGER));
   }
   
   public static final Long convert(final String str) {
@@ -114,7 +114,7 @@ public final class IntegerDataType extends DataType {
   public static Long convert(final byte[] bytes) {
     if (bytes.length > 8)
       throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(DataName.BINARY, bytes, DataName.INTEGER));
+          .message(TypeName.BINARY, bytes, TypeName.INTEGER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

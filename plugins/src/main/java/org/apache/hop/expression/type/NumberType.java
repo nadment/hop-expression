@@ -22,23 +22,23 @@ import org.apache.hop.expression.ExpressionError;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public final class NumberDataType extends DataType {
+public final class NumberType extends Type {
 
   /**
    * Default NUMBER type with max precision.
    */
-  public static final NumberDataType NUMBER = new NumberDataType(DataName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED);
+  public static final NumberType NUMBER = new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED);
   
-  public NumberDataType() {
-    super(DataName.NUMBER, DataName.NUMBER.getMaxPrecision(), 0);
+  public NumberType() {
+    super(TypeName.NUMBER, TypeName.NUMBER.getMaxPrecision(), 0);
   }
   
-  public NumberDataType(int precision) {
-    super(DataName.NUMBER, precision, 0);
+  public NumberType(int precision) {
+    super(TypeName.NUMBER, precision, 0);
   }
   
-  public NumberDataType(int precision, int scale) {
-    super(DataName.NUMBER, precision, scale);
+  public NumberType(int precision, int scale) {
+    super(TypeName.NUMBER, precision, scale);
   }
   
   @Override
@@ -47,7 +47,7 @@ public final class NumberDataType extends DataType {
   }
   
   /**
-   * Convert a value to the specified type {@link NumberDataType} with a pattern.
+   * Convert a value to the specified type {@link NumberType} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -96,7 +96,7 @@ public final class NumberDataType extends DataType {
     }
     
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), this));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
   
   /**
@@ -135,7 +135,7 @@ public final class NumberDataType extends DataType {
       return convert((String) value);
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.from(value), DataName.NUMBER));
+        TypeName.from(value), TypeName.NUMBER));
   }
   
   public static final BigDecimal convert(final String str) {
@@ -149,7 +149,7 @@ public final class NumberDataType extends DataType {
   public static BigDecimal convert(final byte[] bytes) {
     if (bytes.length > 8)
       throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(DataName.BINARY, bytes, DataName.NUMBER));
+          .message(TypeName.BINARY, bytes, TypeName.NUMBER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

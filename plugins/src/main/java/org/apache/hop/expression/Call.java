@@ -17,17 +17,17 @@
 package org.apache.hop.expression;
 
 import static java.util.Objects.requireNonNull;
-import org.apache.hop.expression.type.BinaryDataType;
-import org.apache.hop.expression.type.BooleanDataType;
-import org.apache.hop.expression.type.DataName;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
-import org.apache.hop.expression.type.IntegerDataType;
-import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.NumberDataType;
-import org.apache.hop.expression.type.StringDataType;
-import org.apache.hop.expression.type.UnknownDataType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public final class Call implements IExpression {
 
-  protected DataType type = UnknownDataType.UNKNOWN;
+  protected Type type = UnknownType.UNKNOWN;
   protected final Operator operator;
   protected final IExpression[] operands;
 
@@ -74,7 +74,7 @@ public final class Call implements IExpression {
    * Data type is unknown before validation.
    */
   @Override
-  public DataType getType() {
+  public Type getType() {
     return type;
   }
 
@@ -146,19 +146,19 @@ public final class Call implements IExpression {
 
         case STRING:
           if (clazz == Boolean.class) {
-            return clazz.cast(BooleanDataType.convert((String) value));
+            return clazz.cast(BooleanType.convert((String) value));
           }
           if (clazz == Long.class) {
-            return clazz.cast(IntegerDataType.convert((String) value));
+            return clazz.cast(IntegerType.convert((String) value));
           }
           if (clazz == BigDecimal.class) {
-            return clazz.cast(NumberDataType.convert((String) value));
+            return clazz.cast(NumberType.convert((String) value));
           }
           if (clazz == byte[].class) {
-            return clazz.cast(BinaryDataType.convert((String) value));
+            return clazz.cast(BinaryType.convert((String) value));
           }
           if (clazz == JsonNode.class) {
-            return clazz.cast(JsonDataType.convert((String) value));
+            return clazz.cast(JsonType.convert((String) value));
           }
           break;
 
@@ -188,13 +188,13 @@ public final class Call implements IExpression {
 
         case BINARY:
           if (clazz == String.class) {
-            return clazz.cast(StringDataType.convert((byte[]) value));
+            return clazz.cast(StringType.convert((byte[]) value));
           }
           break;
 
         case JSON:
           if (clazz == String.class) {
-            return clazz.cast(JsonDataType.convert((String) value));
+            return clazz.cast(JsonType.convert((String) value));
           }
           break;
 
@@ -202,19 +202,19 @@ public final class Call implements IExpression {
           // JSon function return type ANY
           if (value instanceof String) {
             if (clazz == Boolean.class) {
-              return clazz.cast(BooleanDataType.convert((String) value));
+              return clazz.cast(BooleanType.convert((String) value));
             }
             if (clazz == Long.class) {
-              return clazz.cast(IntegerDataType.convert((String) value));
+              return clazz.cast(IntegerType.convert((String) value));
             }
             if (clazz == BigDecimal.class) {
-              return clazz.cast(NumberDataType.convert((String) value));
+              return clazz.cast(NumberType.convert((String) value));
             }
             if (clazz == byte[].class) {
-              return clazz.cast(BinaryDataType.convert((String) value));
+              return clazz.cast(BinaryType.convert((String) value));
             }
             if (clazz == JsonNode.class) {
-              return clazz.cast(JsonDataType.convert((String) value));
+              return clazz.cast(JsonType.convert((String) value));
             }
           }
           if (value instanceof BigDecimal) {
@@ -248,7 +248,7 @@ public final class Call implements IExpression {
       }
 
       throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-          DataName.from(value), DataName.from(clazz));
+          TypeName.from(value), TypeName.from(clazz));
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
           e.getMessage());
@@ -307,7 +307,7 @@ public final class Call implements IExpression {
         }
 
         // Some operator don't known return type like JSON_VALUE.
-        if (DataName.ANY.equals(type.getName())) {
+        if (TypeName.ANY.equals(type.getName())) {
           return Literal.of(value);
         }
 
@@ -430,9 +430,6 @@ public final class Call implements IExpression {
     // A call is constant if the operator is deterministic and all operands are constant
     if (operator.isDeterministic()) {
       for (IExpression operand : operands) {
-        if (operand == null) {
-          continue;
-        }
         if (!operand.isConstant()) {
           return false;
         }

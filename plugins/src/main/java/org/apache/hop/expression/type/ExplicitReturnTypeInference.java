@@ -23,14 +23,14 @@ import org.apache.hop.expression.Call;
  */
 public class ExplicitReturnTypeInference implements IReturnTypeInference {
 
-  private final DataType type;
+  private final Type type;
 
-  public ExplicitReturnTypeInference(DataType type) {
+  public ExplicitReturnTypeInference(Type type) {
     this.type = type;
   }
 
   @Override
-  public DataType getReturnType(Call call) {
+  public Type getReturnType(Call call) {
     return type;
   }
 }

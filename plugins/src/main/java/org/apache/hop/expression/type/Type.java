@@ -23,25 +23,25 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public abstract class DataType {
+public abstract class Type {
 
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
 
-  protected final DataName name;
+  protected final TypeName name;
   protected final int precision;
   protected final int scale;
   private final String signature;
 
-  protected DataType(final DataName name) {
+  protected Type(final TypeName name) {
     this(name, PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED);
   }
 
-  protected DataType(final DataName name, final int precision) {
+  protected Type(final TypeName name, final int precision) {
     this(name, precision, SCALE_NOT_SPECIFIED);
   }
 
-  protected DataType(final DataName name, int precision, int scale) {
+  protected Type(final TypeName name, int precision, int scale) {
     this.name = requireNonNull(name);
     this.precision = precision;
     this.scale = scale;
@@ -53,28 +53,28 @@ public abstract class DataType {
   }
 
   /**
-   * Gets the {@link DataName} of this type.
+   * Gets the {@link TypeName} of this type.
    *
    * @return name, never null
    */
-  public DataName getName() {
+  public TypeName getName() {
     return name;
   }
 
   /**
-   * Gets the {@link DataFamily} of this type.
+   * Gets the {@link TypeFamily} of this type.
    *
    * @return family, never null
    */
-  public DataFamily getFamily() {
+  public TypeFamily getFamily() {
     return name.getFamily();
   }
 
-  public boolean isSameFamily(DataFamily family) {
+  public boolean isSameFamily(TypeFamily family) {
     return name.getFamily().isSameFamily(family);
   }
 
-  public boolean isSameFamily(DataType type) {
+  public boolean isSameFamily(Type type) {
     return name.getFamily().isSameFamily(type.getFamily());
   }
 
@@ -111,7 +111,7 @@ public abstract class DataType {
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || obj instanceof DataType && Objects.equals(this.signature, ((DataType) obj).signature);
+        || obj instanceof Type && Objects.equals(this.signature, ((Type) obj).signature);
   }
 
   @Override
@@ -140,26 +140,22 @@ public abstract class DataType {
     return builder.toString();
   }
   /**
-   * Convert a value to the specified type {@link DataType}.
+   * Convert a value to the specified {@link Type}.
    *
    * @param value the value to convert
    * @return the converted value
    */
-  public Object cast(final Object value) {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
-  }
+  public abstract Object cast(final Object value);
 
   /**
-   * Convert a value to the specified type {@link DataType} with a pattern.
+   * Convert a value to the specified {@link Type} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
    *        numeric, or null if none
    * @return the converted value
    */
-  public Object cast(final Object value, final String pattern) {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
-  }
+  public abstract Object cast(final Object value, final String pattern);
 
   @Override
   public String toString() {
@@ -167,33 +163,33 @@ public abstract class DataType {
   }
 
   /**
-   * Return a default data type for a value.
+   * Return a default {@link Type} for a value.
    *
-   * @return The data type or 'UNKNOWN' if not found
+   * @return The type or 'UNKNOWN' if not found
    */
-  public static DataType of(final Object value) {
+  public static Type of(final Object value) {
     if (value == null)
-      return UnknownDataType.UNKNOWN;
+      return UnknownType.UNKNOWN;
     if (value instanceof Boolean)
-      return BooleanDataType.BOOLEAN;
+      return BooleanType.BOOLEAN;
     if (value instanceof String)
-      return StringDataType.STRING;
+      return StringType.STRING;
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-      return new NumberDataType(number.precision(), number.scale());
+      return new NumberType(number.precision(), number.scale());
     }
     if (value instanceof Double)
-      return NumberDataType.NUMBER;
+      return NumberType.NUMBER;
     if (value instanceof Long)
-      return IntegerDataType.INTEGER;
+      return IntegerType.INTEGER;
     if (value instanceof ZonedDateTime)
-      return DateDataType.DATE;
+      return DateType.DATE;
     if (value instanceof JsonNode)
-      return JsonDataType.JSON;
+      return JsonType.JSON;
     if (value instanceof byte[])
-      return BinaryDataType.BINARY;
+      return BinaryType.BINARY;
 
-    return UnknownDataType.UNKNOWN;
+    return UnknownType.UNKNOWN;
   }
 }
 

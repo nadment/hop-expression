@@ -18,27 +18,29 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.util.DateTimeFormat;
-import java.time.ZonedDateTime;
+import java.nio.charset.StandardCharsets;
 
-public final class DateDataType extends DataType {
-
+public final class BinaryType extends Type {
   /**
-   * Default DATE type with default parameters.
+   * Default BINARY type with default parameters.
    */
-  public static final DateDataType DATE = new DateDataType();
+  public static final BinaryType BINARY = new BinaryType();
   
-  public DateDataType() {
-    super(DataName.DATE, PRECISION_NOT_SPECIFIED, 9);
+  public BinaryType() {
+    super(TypeName.BINARY, TypeName.BINARY.getMaxPrecision());
   } 
+    
+  public BinaryType(int precision) {
+    super(TypeName.BINARY, precision);
+  }
   
   @Override
-  public ZonedDateTime cast(final Object value) {
+  public byte[] cast(final Object value) {
     return cast(value, null);
   }
   
   /**
-   * Convert a value to the specified type {@link DateDataType} with a pattern.
+   * Convert a value to the specified type {@link BinaryType} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -46,39 +48,54 @@ public final class DateDataType extends DataType {
    * @return the converted value
    */
   @Override
-  public ZonedDateTime cast(final Object value, String pattern) {
+  public byte[] cast(final Object value, String pattern) {
 
     if (value == null) {
       return null;
     }
     
-    if (value instanceof ZonedDateTime) {
-      return (ZonedDateTime) value;
+    if (value instanceof byte[]) {
+      return (byte[]) value;
     }
     if (value instanceof String) {
-      return DateTimeFormat.of(pattern).parse((String) value);
+      return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), this));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
   
   /**
-   * Coerce value to data type TIMESTAMP.
+   * Coerce value to data type BINARY
    * 
    * @param value the value to coerce
-   * @return ZonedDateTime
+   * @return bytes array
    */
-  public static final ZonedDateTime coerce(final Object value) {
+  public static final byte[] coerce(final Object value) {
     if (value == null) {
       return null;
     }
-    
-    if (value instanceof ZonedDateTime) {
-      return (ZonedDateTime) value;
+    if (value instanceof byte[]) {
+      return (byte[]) value;
+    }
+    if (value instanceof String) {
+      return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.from(value), DataName.DATE));
+        TypeName.from(value), TypeName.BINARY));
   }
+  
+  public static byte[] convert(Long number) {
+    byte[] result = new byte[Long.BYTES];
+    for (int i = Long.BYTES - 1; i >= 0; i--) {
+      result[i] = (byte) (number & 0xFF);
+      number >>= Byte.SIZE;
+    }
+    return result;
+  }
+
+  public static byte[] convert(final String str) {
+    return str.getBytes(StandardCharsets.UTF_8);
+  }  
 }

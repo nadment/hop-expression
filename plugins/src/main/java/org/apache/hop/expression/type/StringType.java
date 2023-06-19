@@ -26,19 +26,19 @@ import java.time.ZonedDateTime;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public final class StringDataType extends DataType {
+public final class StringType extends Type {
 
   /**
    * Default STRING type with max precision.
    */
-  public static final StringDataType STRING = new StringDataType(DataName.STRING.getMaxPrecision());
+  public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision());
 
-  public StringDataType() {
-    super(DataName.STRING);
+  public StringType() {
+    super(TypeName.STRING);
   }
   
-  public StringDataType(int precision) {
-    super(DataName.STRING, precision);
+  public StringType(int precision) {
+    super(TypeName.STRING, precision);
   }
 
   @Override
@@ -47,7 +47,7 @@ public final class StringDataType extends DataType {
   }
 
   /**
-   * Convert a value to the specified type {@link StringDataType} with a pattern.
+   * Convert a value to the specified type {@link StringType} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -78,19 +78,19 @@ public final class StringDataType extends DataType {
       }
 
       throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(BooleanDataType.BOOLEAN, value, this));
+          ExpressionError.CONVERSION_ERROR.message(BooleanType.BOOLEAN, value, this));
     }
     else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
-      BigDecimal number = NumberDataType.coerce(value);
+      BigDecimal number = NumberType.coerce(value);
       String result = NumberFormat.of(pattern).format(number);
       if ( checkPrecision(result)) {
         return result;
       }
       throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(NumberDataType.NUMBER, value, this));
+          ExpressionError.CONVERSION_ERROR.message(NumberType.NUMBER, value, this));
     }
     if (value instanceof ZonedDateTime) {
       if (pattern == null)
@@ -101,7 +101,7 @@ public final class StringDataType extends DataType {
         return result;
       }
       throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(DateDataType.DATE, value, this));
+          ExpressionError.CONVERSION_ERROR.message(DateType.DATE, value, this));
     }
 
     if (value instanceof byte[]) {

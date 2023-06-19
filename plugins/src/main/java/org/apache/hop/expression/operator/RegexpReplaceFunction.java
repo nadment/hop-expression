@@ -22,7 +22,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.DataFamily;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,8 +38,8 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpReplaceFunction extends Function {
 
   private static final IOperandTypeChecker OTC = OperandTypes
-      .family(DataFamily.STRING, DataFamily.STRING, DataFamily.STRING,
-          DataFamily.NUMERIC, DataFamily.NUMERIC, DataFamily.STRING)
+      .family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.STRING,
+          TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING)
       .optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {

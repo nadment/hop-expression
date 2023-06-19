@@ -24,12 +24,12 @@ public class NumericReturnTypeInference implements IReturnTypeInference {
   public NumericReturnTypeInference() {}
 
   @Override
-  public DataType getReturnType(Call call) {
+  public Type getReturnType(Call call) {
 
-    DataType result = call.getType();
+    Type result = call.getType();
 
     for (IExpression operand : call.getOperands()) {
-      DataType type = operand.getType();
+      Type type = operand.getType();
       if (type.getName().ordinal() < result.getName().ordinal()) {
         result = type;
       }

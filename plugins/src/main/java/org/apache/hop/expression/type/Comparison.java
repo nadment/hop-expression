@@ -51,21 +51,21 @@ public class Comparison {
 
     // The lower order data type is converted
     if (left instanceof byte[] || right instanceof byte[]) {
-      return compareTo(BinaryDataType.coerce(left), BinaryDataType.coerce(right));
+      return compareTo(BinaryType.coerce(left), BinaryType.coerce(right));
     }
 
     if (left instanceof JsonNode || right instanceof JsonNode) {
 
-      JsonNode l = JsonDataType.coerce(left);
-      JsonNode r = JsonDataType.coerce(right);
+      JsonNode l = JsonType.coerce(left);
+      JsonNode r = JsonType.coerce(right);
 
       // Ignores the order of attributes
       return l.equals(JSON_COMPARATOR, r) ? 0 : 1;
     }
 
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      ZonedDateTime dt1 = DateDataType.coerce(left);
-      ZonedDateTime dt2 = DateDataType.coerce(right);
+      ZonedDateTime dt1 = DateType.coerce(left);
+      ZonedDateTime dt2 = DateType.coerce(right);
       // Two timestamp are equal if they represent the same moment in time:
       // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
       if (dt1.isEqual(dt2)) {
@@ -74,16 +74,16 @@ public class Comparison {
       return dt1.compareTo(dt2);
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
-      return NumberDataType.coerce(left).compareTo(NumberDataType.coerce(right));
+      return NumberType.coerce(left).compareTo(NumberType.coerce(right));
     }
     if (left instanceof Long || right instanceof Long) {
-      return IntegerDataType.coerce(left).compareTo(IntegerDataType.coerce(right));
+      return IntegerType.coerce(left).compareTo(IntegerType.coerce(right));
     }
     if (left instanceof Boolean || right instanceof Boolean) {
-      return BooleanDataType.coerce(left).compareTo(BooleanDataType.coerce(right));
+      return BooleanType.coerce(left).compareTo(BooleanType.coerce(right));
     }
 
-    return StringDataType.coerce(left).compareTo(StringDataType.coerce(right));
+    return StringType.coerce(left).compareTo(StringType.coerce(right));
   }
 
   protected static int compareTo(final byte[] left, final byte[] right) {

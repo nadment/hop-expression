@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.StringType;
 
 /**
  * The function extracts a number of characters from a string starting from left.
@@ -62,7 +62,7 @@ public class LeftFunction extends Function {
       return result;
     }
 
-    String str = StringDataType.coerce(v0);
+    String str = StringType.coerce(v0);
     if (str.length() <= length) {
       return str;
     }

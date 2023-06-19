@@ -14,12 +14,12 @@
  */
 package org.apache.hop.core.expression;
 
-import org.apache.hop.expression.type.BinaryDataType;
-import org.apache.hop.expression.type.BooleanDataType;
-import org.apache.hop.expression.type.DateDataType;
-import org.apache.hop.expression.type.IntegerDataType;
-import org.apache.hop.expression.type.NumberDataType;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -103,7 +103,7 @@ public class OperatorsTest extends ExpressionTest {
     // Simplify comparison with same term
     optimize("FIELD_STRING=FIELD_STRING", "NULL OR FIELD_STRING IS NOT NULL");
     
-    returnType("FIELD_INTEGER=40", BooleanDataType.BOOLEAN);
+    returnType("FIELD_INTEGER=40", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -144,7 +144,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");
     optimize("FIELD_STRING!=FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
         
-    returnType("FIELD_INTEGER<>40", BooleanDataType.BOOLEAN);  
+    returnType("FIELD_INTEGER<>40", BooleanType.BOOLEAN);  
   }
 
   @Test
@@ -185,7 +185,7 @@ public class OperatorsTest extends ExpressionTest {
     // Simplify comparison with same term
     optimize("FIELD_STRING>FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
     
-    returnType("'bar' > 'foo'", BooleanDataType.BOOLEAN);
+    returnType("'bar' > 'foo'", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -211,7 +211,8 @@ public class OperatorsTest extends ExpressionTest {
 
     evalNull("NULL_BOOLEAN >= 0");
     evalNull("1 >= NULL_BOOLEAN");
-
+    evalNull("NULL_BOOLEAN >= NULL_INTEGER");
+    
     evalFails(">=FIELD_INTEGER");
     evalFails("FIELD_INTEGER >=");
     evalFails("FIELD_STRING>=5");
@@ -229,7 +230,7 @@ public class OperatorsTest extends ExpressionTest {
     // Simplify comparison with same term
     optimize("FIELD_STRING>=FIELD_STRING", "NULL OR FIELD_STRING IS NOT NULL");
     
-    returnType("'bar' >= 'foo'", BooleanDataType.BOOLEAN);
+    returnType("'bar' >= 'foo'", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -269,7 +270,7 @@ public class OperatorsTest extends ExpressionTest {
     // Simplify comparison with same term   
     optimize("FIELD_STRING<FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
     
-    returnType("'bar' < 'foo'", BooleanDataType.BOOLEAN);
+    returnType("'bar' < 'foo'", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -313,7 +314,7 @@ public class OperatorsTest extends ExpressionTest {
     // Simplify comparison with same term
     optimize("FIELD_STRING<=FIELD_STRING", "NULL OR FIELD_STRING IS NOT NULL");
     
-    returnType("'bar' <= 'foo'", BooleanDataType.BOOLEAN);
+    returnType("'bar' <= 'foo'", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -363,7 +364,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_INTEGER in (1,2,FIELD_INTEGER)", "NULL OR FIELD_INTEGER IS NOT NULL");
     optimize("FIELD_STRING in ('XX',FIELD_STRING,'ZZ')", "NULL OR FIELD_STRING IS NOT NULL");
     
-    returnType("FIELD_INTEGER IN (10,20,30,40)", BooleanDataType.BOOLEAN);
+    returnType("FIELD_INTEGER IN (10,20,30,40)", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -386,8 +387,8 @@ public class OperatorsTest extends ExpressionTest {
     optimizeTrue("false is not true");
 
     
-    returnType("FIELD_BOOLEAN IS TRUE", BooleanDataType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT TRUE", BooleanDataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS TRUE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -407,8 +408,8 @@ public class OperatorsTest extends ExpressionTest {
     optimizeFalse("true is false");
     optimizeTrue("true is not false");
     
-    returnType("FIELD_BOOLEAN IS FALSE", BooleanDataType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT FALSE", BooleanDataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS FALSE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT FALSE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -437,8 +438,8 @@ public class OperatorsTest extends ExpressionTest {
     optimizeFalse("'a' IS NULL");
     optimizeTrue("'a' IS NOT NULL");
     
-    returnType("FIELD_BOOLEAN IS NULL", BooleanDataType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT NULL", BooleanDataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NULL", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT NULL", BooleanType.BOOLEAN);
   }
   
   @Test
@@ -482,8 +483,8 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_STRING IS NOT DISTINCT FROM NULL", "FIELD_STRING IS NULL");
     optimize("NULL IS NOT DISTINCT FROM FIELD_STRING", "FIELD_STRING IS NULL");
     
-    returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", BooleanDataType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", BooleanDataType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", BooleanType.BOOLEAN);
   }
   
   @Test
@@ -522,10 +523,10 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
     optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
     
-    returnType("FIELD_NUMBER+FIELD_INTEGER", new NumberDataType(20));
-    returnType("1::NUMBER(4,1)+3::NUMBER(1,2)", new NumberDataType(6,2));
-    returnType("1::NUMBER(38,10)+3::NUMBER(38,5)", new NumberDataType(38,10));
-    returnType("1::NUMBER(14,2)+3::NUMBER(14,2)", new NumberDataType(15,2));
+    returnType("FIELD_NUMBER+FIELD_INTEGER", new NumberType(20));
+    returnType("1::NUMBER(4,1)+3::NUMBER(1,2)", new NumberType(6,2));
+    returnType("1::NUMBER(38,10)+3::NUMBER(38,5)", new NumberType(38,10));
+    returnType("1::NUMBER(14,2)+3::NUMBER(14,2)", new NumberType(15,2));
   }
 
   @Test
@@ -597,7 +598,7 @@ public class OperatorsTest extends ExpressionTest {
     optimizeTrue("25.8 between 18 and 32");
     optimizeTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
     
-    returnType("5 between 3 and 5", BooleanDataType.BOOLEAN);
+    returnType("5 between 3 and 5", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -656,7 +657,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_STRING::BOOLEAN", "TO_BOOLEAN(FIELD_STRING)");
     
     // Return type
-    returnType("CAST(3 as BOOLEAN)", BooleanDataType.BOOLEAN);
+    returnType("CAST(3 as BOOLEAN)", BooleanType.BOOLEAN);
   }
 
   
@@ -698,8 +699,8 @@ public class OperatorsTest extends ExpressionTest {
     optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
   
     // Return type
-    returnType("CAST('3' as INTEGER)", new IntegerDataType());
-    returnType("CAST(FIELD_NUMBER as INTEGER)", new IntegerDataType());
+    returnType("CAST('3' as INTEGER)", new IntegerType());
+    returnType("CAST(FIELD_NUMBER as INTEGER)", new IntegerType());
   }
 
   @Test
@@ -753,9 +754,9 @@ public class OperatorsTest extends ExpressionTest {
 
     
     // Return type
-    returnType("CAST(FIELD_STRING as NUMBER(5))", new NumberDataType(5));
-    returnType("CAST(FIELD_NUMBER as NUMBER(5,0))", new NumberDataType(5,0));
-    returnType("CAST('3.123' as NUMBER(10,2))", new NumberDataType(10, 2));
+    returnType("CAST(FIELD_STRING as NUMBER(5))", new NumberType(5));
+    returnType("CAST(FIELD_NUMBER as NUMBER(5,0))", new NumberType(5,0));
+    returnType("CAST('3.123' as NUMBER(10,2))", new NumberType(10, 2));
   }
 
   @Test
@@ -830,7 +831,7 @@ public class OperatorsTest extends ExpressionTest {
     
 
     // Return type
-    returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DateDataType.DATE);
+    returnType("CAST(DATE '2019-02-25' AS Date FORMAT 'YYY-MM-DD')", DateType.DATE);
   }
 
   @Test
@@ -919,9 +920,9 @@ public class OperatorsTest extends ExpressionTest {
     
     optimize("+FIELD_INTEGER","FIELD_INTEGER");
     
-    returnType("+FIELD_INTEGER", IntegerDataType.INTEGER);
-    returnType("+FIELD_NUMBER", NumberDataType.NUMBER);
-    returnType("+FIELD_BIGNUMBER", NumberDataType.NUMBER);
+    returnType("+FIELD_INTEGER", IntegerType.INTEGER);
+    returnType("+FIELD_NUMBER", NumberType.NUMBER);
+    returnType("+FIELD_BIGNUMBER", NumberType.NUMBER);
   }
 
   @Test
@@ -949,9 +950,9 @@ public class OperatorsTest extends ExpressionTest {
     optimize("-(-FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("-(FIELD_INTEGER-FIELD_NUMBER)", "FIELD_NUMBER-FIELD_INTEGER");
     
-    returnType("-FIELD_INTEGER", IntegerDataType.INTEGER);
-    returnType("-FIELD_NUMBER", NumberDataType.NUMBER);
-    returnType("-FIELD_BIGNUMBER", NumberDataType.NUMBER);
+    returnType("-FIELD_INTEGER", IntegerType.INTEGER);
+    returnType("-FIELD_NUMBER", NumberType.NUMBER);
+    returnType("-FIELD_BIGNUMBER", NumberType.NUMBER);
   }
 
   @Test
@@ -992,8 +993,8 @@ public class OperatorsTest extends ExpressionTest {
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
     optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
 
-    returnType("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(1,2)", new NumberDataType(5,3));
-    returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(38,3));
+    returnType("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(1,2)", new NumberType(5,3));
+    returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberType(38,3));
   }
 
   @Test
@@ -1017,8 +1018,8 @@ public class OperatorsTest extends ExpressionTest {
     optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
     
-    returnType("FIELD_INTEGER/4", NumberDataType.NUMBER);
-    returnType("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(1,2)", new NumberDataType(6,2));
+    returnType("FIELD_INTEGER/4", NumberType.NUMBER);
+    returnType("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(1,2)", new NumberType(6,2));
   }
 
   @Test
@@ -1031,7 +1032,7 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("Div0(1,NULL_INTEGER)");
     evalFails("Div0(40)");
     
-    returnType("Div0(FIELD_INTEGER,2)", NumberDataType.NUMBER);
+    returnType("Div0(FIELD_INTEGER,2)", NumberType.NUMBER);
   }
   
   @Test
@@ -1051,7 +1052,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("~FIELD_INTEGER");
     optimize("~(~FIELD_INTEGER)", "FIELD_INTEGER");
     
-    returnType("~FIELD_INTEGER", IntegerDataType.INTEGER);
+    returnType("~FIELD_INTEGER", IntegerType.INTEGER);
   }
 
   @Test
@@ -1066,7 +1067,7 @@ public class OperatorsTest extends ExpressionTest {
     
     optimize("FIELD_INTEGER&4");
     
-    returnType("FIELD_INTEGER&4", IntegerDataType.INTEGER);
+    returnType("FIELD_INTEGER&4", IntegerType.INTEGER);
   }
 
   @Test
@@ -1081,7 +1082,7 @@ public class OperatorsTest extends ExpressionTest {
     
     optimize("FIELD_INTEGER|4");
     
-    returnType("FIELD_INTEGER|4", IntegerDataType.INTEGER);
+    returnType("FIELD_INTEGER|4", IntegerType.INTEGER);
   }
 
   @Test
@@ -1096,7 +1097,7 @@ public class OperatorsTest extends ExpressionTest {
     
     optimize("FIELD_INTEGER^4");
     
-    returnType("FIELD_INTEGER^4", IntegerDataType.INTEGER);
+    returnType("FIELD_INTEGER^4", IntegerType.INTEGER);
   }
 
   @Test
@@ -1137,7 +1138,7 @@ public class OperatorsTest extends ExpressionTest {
         "FIELD_BOOLEAN IS DISTINCT FROM NULL_BOOLEAN");
     // optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
     
-    returnType("NOT FIELD_BOOLEAN", BooleanDataType.BOOLEAN);
+    returnType("NOT FIELD_BOOLEAN", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -1202,7 +1203,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_STRING='1' OR NULL_INTEGER in (1,2)",
         "'1'=FIELD_STRING OR NULL_INTEGER IN (1,2)");
     
-    returnType("false OR FIELD_BOOLEAN", BooleanDataType.BOOLEAN);
+    returnType("false OR FIELD_BOOLEAN", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -1262,7 +1263,7 @@ public class OperatorsTest extends ExpressionTest {
     optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN AND FIELD_INTEGER=2");
     optimizeFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN AND NULL_INTEGER=2");
     
-    returnType("false AND FIELD_BOOLEAN", BooleanDataType.BOOLEAN);
+    returnType("false AND FIELD_BOOLEAN", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -1277,7 +1278,7 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("'test' ILIKE 'TEST' escape NULL_STRING");
     evalNull("NULL_STRING ILIKE '%T%'");
     
-    returnType("'amigo' ILIKE 'a%o' ESCAPE '@'", BooleanDataType.BOOLEAN);
+    returnType("'amigo' ILIKE 'a%o' ESCAPE '@'", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -1365,7 +1366,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_STRING LIKE '%o'", "ENDSWITH(FIELD_STRING,'o')");    
     optimize("FIELD_STRING LIKE '%Hello%'", "CONTAINS(FIELD_STRING,'Hello')");
     
-    returnType("'amigo' like 'a%o'", BooleanDataType.BOOLEAN);
+    returnType("'amigo' like 'a%o'", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -1380,14 +1381,14 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("4 || '2'", "42");
     evalNull("NULL_STRING||NULL_STRING");
     
-    returnType("NULL_STRING||'TEST'", StringDataType.STRING);
+    returnType("NULL_STRING||'TEST'", StringType.STRING);
     
     // Binary
     evalEquals("BINARY '1F' || NULL_BINARY || BINARY '2A3B'", new byte[]{0x1F, 0x2A, 0x3B});
     evalEquals("NULL_BINARY || BINARY '1F' || BINARY '2A3B'", new byte[]{0x1F, 0x2A, 0x3B});
     evalEquals("BINARY '1F' || BINARY '2A3B' || NULL_BINARY", new byte[]{0x1F, 0x2A, 0x3B});
 
-    returnType("BINARY '2A3B' || NULL_BINARY", BinaryDataType.BINARY);
+    returnType("BINARY '2A3B' || NULL_BINARY", BinaryType.BINARY);
     
     optimize("FIELD_STRING||'TEST'");
   }
@@ -1452,10 +1453,10 @@ public class OperatorsTest extends ExpressionTest {
     // Search case to simple case: CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
     // optimize("CASE WHEN FIELD_INTEGER=1 THEN 2 END", "CASE 1 WHEN FIELD_INTEGER THEN 2");
 
-    returnType("CASE WHEN FIELD_INTEGER IS NULL THEN '-' ELSE FIELD_STRING END", StringDataType.STRING);
-    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", IntegerDataType.INTEGER);
-    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", NumberDataType.NUMBER);
-    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE TO_NUMBER(TO_CHAR(FIELD_INTEGER,'YYYYMMDD')) END", NumberDataType.NUMBER);    
+    returnType("CASE WHEN FIELD_INTEGER IS NULL THEN '-' ELSE FIELD_STRING END", StringType.STRING);
+    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", IntegerType.INTEGER);
+    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", NumberType.NUMBER);
+    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE TO_NUMBER(TO_CHAR(FIELD_INTEGER,'YYYYMMDD')) END", NumberType.NUMBER);    
   }
 
   @Test

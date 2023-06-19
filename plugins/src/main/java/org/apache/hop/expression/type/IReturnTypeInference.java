@@ -29,5 +29,5 @@ public interface IReturnTypeInference {
    * @param call
    * @return
    */
-  public DataType getReturnType(Call call);
+  public Type getReturnType(Call call);
 }

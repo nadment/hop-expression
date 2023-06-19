@@ -20,10 +20,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.StringType;
 import java.io.ByteArrayOutputStream;
 
 
@@ -52,7 +52,7 @@ public class ConcatWsFunction extends Function {
     // Concat Binary
     if (v0 instanceof byte[]) {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
-      byte[] separator = BinaryDataType.coerce(v0);
+      byte[] separator = BinaryType.coerce(v0);
       for (int i = 1; i < operands.length; i++) {
         byte[] value = operands[i].getValue(byte[].class);
 
@@ -73,7 +73,7 @@ public class ConcatWsFunction extends Function {
 
     // Concat String
     StringBuilder builder = new StringBuilder();
-    String separator = StringDataType.coerce(v0);
+    String separator = StringType.coerce(v0);
     for (int i = 1; i < operands.length; i++) {
       String value = operands[i].getValue(String.class);
       if (value != null) {

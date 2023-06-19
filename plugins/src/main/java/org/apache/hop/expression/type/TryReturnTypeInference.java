@@ -25,7 +25,7 @@ public class TryReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(Call call) {
+  public Type getReturnType(Call call) {
     Call child = call.getOperand(0).asCall();
     child.inferenceType();
     return child.getType();

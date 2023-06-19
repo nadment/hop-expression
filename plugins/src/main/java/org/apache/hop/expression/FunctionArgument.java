@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 
 public class FunctionArgument {
@@ -23,13 +23,13 @@ public class FunctionArgument {
   private String name;
 
   @HopMetadataProperty
-  private DataName type;
+  private TypeName type;
 
   public FunctionArgument() {
     super();
   }
 
-  public FunctionArgument(String name, DataName type) {
+  public FunctionArgument(String name, TypeName type) {
     super();
     this.name = name;
     this.type = type;
@@ -43,11 +43,11 @@ public class FunctionArgument {
     this.name = name;
   }
 
-  public DataName getType() {
+  public TypeName getType() {
     return type;
   }
 
-  public void setType(DataName type) {
+  public void setType(TypeName type) {
     this.type = type;
   }
 

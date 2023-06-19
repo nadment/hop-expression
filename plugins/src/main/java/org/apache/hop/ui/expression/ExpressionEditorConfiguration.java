@@ -20,7 +20,7 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.type.DataName;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -218,7 +218,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     for (String word : RESERVED_LITERALS) {
       rule.addWord(word, extra);
     }
-    for (DataName type : DataName.values()) {
+    for (TypeName type : TypeName.values()) {
       rule.addWord(type.name(), extra);
     }
     for (TimeUnit datapart : TimeUnit.values()) {

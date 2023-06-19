@@ -27,17 +27,17 @@ import java.util.function.Predicate;
 public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
 
   private final IOperandCountRange range;
-  private final List<DataFamily> families;
+  private final List<TypeFamily> families;
   private final Predicate<Integer> optional;
 
-  FamilyOperandTypeChecker(DataFamily family, IOperandCountRange range) {
+  FamilyOperandTypeChecker(TypeFamily family, IOperandCountRange range) {
     super();
     this.families = List.of(family);
     this.optional = i -> false;
     this.range = range;
   }
 
-  FamilyOperandTypeChecker(List<DataFamily> families, Predicate<Integer> optional) {
+  FamilyOperandTypeChecker(List<TypeFamily> families, Predicate<Integer> optional) {
     this.families = families;
     this.optional = optional;
 

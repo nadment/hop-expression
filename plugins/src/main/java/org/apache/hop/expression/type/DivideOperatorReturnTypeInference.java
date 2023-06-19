@@ -27,9 +27,9 @@ public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(Call call) {
-    DataType x = call.getOperand(0).getType();
-    DataType y = call.getOperand(1).getType();
+  public Type getReturnType(Call call) {
+    Type x = call.getOperand(0).getType();
+    Type y = call.getOperand(1).getType();
 
     // Return type scale
     int xs = x.getScale();
@@ -39,8 +39,8 @@ public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
     // Return type precision
     int xp = x.getPrecision();
     int yp = y.getPrecision();
-    int p = Math.min(DataName.NUMBER.getMaxPrecision(), xp + ys + Math.max(0, yp - xs));
+    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), xp + ys + Math.max(0, yp - xs));
         
-    return new NumberDataType(p, s);
+    return new NumberType(p, s);
   }
 }

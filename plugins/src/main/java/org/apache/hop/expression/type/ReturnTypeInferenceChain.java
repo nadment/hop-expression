@@ -26,13 +26,13 @@ public class ReturnTypeInferenceChain implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(Call call) {
+  public Type getReturnType(Call call) {
     for (IReturnTypeInference rule : rules) {
-      DataType type = rule.getReturnType(call);
-      if (type != UnknownDataType.UNKNOWN) {
+      Type type = rule.getReturnType(call);
+      if (type != UnknownType.UNKNOWN) {
         return type;
       }
     }
-    return UnknownDataType.UNKNOWN;
+    return UnknownType.UNKNOWN;
   }
 }

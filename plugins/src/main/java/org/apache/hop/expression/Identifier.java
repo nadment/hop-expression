@@ -17,9 +17,9 @@ package org.apache.hop.expression;
 import static java.util.Objects.requireNonNull;
 import static org.apache.hop.expression.Expressions.createDataType;
 import org.apache.hop.core.row.IRowMeta;
-import org.apache.hop.expression.type.DataName;
-import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.UnknownDataType;
+import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.util.Objects;
 
@@ -28,21 +28,21 @@ import java.util.Objects;
  */
 public class Identifier implements IExpression {
   protected final String name;
-  protected DataType type;
+  protected Type type;
   protected int ordinal;
-  
-  public Identifier(final String name, final DataType type) {
+
+  public Identifier(final String name, final Type type) {
     this(name, type, -1);
   }
 
-  protected Identifier(final String name, final DataType type, int ordinal) {
+  protected Identifier(final String name, final Type type, int ordinal) {
     this.name = requireNonNull(name, "name");
     this.type = requireNonNull(type, "data type");
     this.ordinal = ordinal;
   }
-  
+
   public Identifier(final String name) {
-    this(name, UnknownDataType.UNKNOWN);
+    this(name, UnknownType.UNKNOWN);
   }
 
   @Override
@@ -60,7 +60,7 @@ public class Identifier implements IExpression {
   }
 
   @Override
-  public DataType getType() {
+  public Type getType() {
     return type;
   }
 
@@ -77,7 +77,7 @@ public class Identifier implements IExpression {
   public int getIndex() {
     return ordinal;
   }
-  
+
   /**
    * Compile a identifier.
    * 
@@ -88,19 +88,15 @@ public class Identifier implements IExpression {
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
-    if (context instanceof IRowExpressionContext) {
-      IRowMeta rowMeta = ((IRowExpressionContext) context).getRowMeta();
+    IRowExpressionContext rowContext = getRowContext(context);
+    IRowMeta rowMeta = rowContext.getRowMeta();
 
-      this.ordinal = rowMeta.indexOfValue(name);
-      if (ordinal < 0) {
-        throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
-      }
-
-      this.type = createDataType(rowMeta.getValueMeta(ordinal));
-      return;
+    this.ordinal = rowMeta.indexOfValue(name);
+    if (ordinal < 0) {
+      throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, this);
     }
 
-    throw new ExpressionException(ExpressionError.CONTEXT_ERROR);
+    this.type = createDataType(rowMeta.getValueMeta(ordinal));
   }
 
   /**
@@ -114,7 +110,7 @@ public class Identifier implements IExpression {
   @Override
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
     IRowExpressionContext rowContext = getRowContext(context);
-    IRowMeta rowMeta = getRowContext(context).getRowMeta();
+    IRowMeta rowMeta = rowContext.getRowMeta();
 
     int index = rowMeta.indexOfValue(name);
     if (index < 0) {
@@ -123,7 +119,6 @@ public class Identifier implements IExpression {
 
     return new Field(rowContext, name, createDataType(rowMeta.getValueMeta(index)), index);
   }
-
 
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
@@ -134,7 +129,7 @@ public class Identifier implements IExpression {
   public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
-        || FunctionRegistry.isFunction(name) || DataName.of(name) != null
+        || FunctionRegistry.isFunction(name) || TypeName.of(name) != null
         || TimeUnit.of(name) != null) {
       writer.append('\"');
       writer.append(name);
@@ -148,7 +143,7 @@ public class Identifier implements IExpression {
   public int hashCode() {
     return Objects.hash(name, type, ordinal);
   }
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o)

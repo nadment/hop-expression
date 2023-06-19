@@ -24,8 +24,8 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
   @Override
   public boolean checkOperandTypes(Call call) {
-    DataType search = call.getOperand(0).getType();
-    DataType result = firstNonNull(call.getOperands()).getType();
+    Type search = call.getOperand(0).getType();
+    Type result = firstNonNull(call.getOperands()).getType();
 
     int count = ((call.getOperandCount() - 1) / 2) * 2;
     for (int i = 1; i < count; i += 2) {

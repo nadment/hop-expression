@@ -24,7 +24,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.type.UnknownDataType;
+import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 
 public class CallTest extends ExpressionTest {
@@ -50,8 +50,8 @@ public class CallTest extends ExpressionTest {
     //assertEquals(call1.hashCode(), call2.hashCode()); 
     assertEquals(2, call1.getOperandCount());
     // Data type is unknown before validation
-    assertEquals(UnknownDataType.UNKNOWN, call1.getType());
-    assertEquals(UnknownDataType.UNKNOWN, call3.getType());
+    assertEquals(UnknownType.UNKNOWN, call1.getType());
+    assertEquals(UnknownType.UNKNOWN, call3.getType());
     assertNotEquals(call1, null);   
     assertEquals("3+5", call1.toString());
     assertEquals(call1, call2);

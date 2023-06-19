@@ -20,7 +20,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.nio.charset.StandardCharsets;
@@ -51,6 +51,6 @@ public class Base64EncodeFunction extends Function {
       return Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
     }
 
-    return Base64.getEncoder().encodeToString(BinaryDataType.coerce(value));
+    return Base64.getEncoder().encodeToString(BinaryType.coerce(value));
   }
 }

@@ -29,47 +29,46 @@ public final class ReturnTypes {
    * Creates an inference rule which returns a type with no precision or scale,
    * such as {@code DATE}.
    */
-  public static ExplicitReturnTypeInference explicit(DataType type) {
+  public static ExplicitReturnTypeInference explicit(Type type) {
     return  new ExplicitReturnTypeInference(type);
   }
-
   
-  public static final IReturnTypeInference ANY = explicit(UnknownDataType.ANY);
+  public static final IReturnTypeInference ANY = explicit(UnknownType.ANY);
   
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.
    */
-  public static final IReturnTypeInference BOOLEAN = explicit(BooleanDataType.BOOLEAN);
+  public static final IReturnTypeInference BOOLEAN = explicit(BooleanType.BOOLEAN);
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY.
    */
-  public static final IReturnTypeInference BINARY = explicit(BinaryDataType.BINARY);
+  public static final IReturnTypeInference BINARY = explicit(BinaryType.BINARY);
 
   /**
    * Type-inference strategy whereby the result type of a call is STRING.
    */
-  public static final IReturnTypeInference STRING = explicit(StringDataType.STRING);
+  public static final IReturnTypeInference STRING = explicit(StringType.STRING);
 
   /**
    * Type-inference strategy whereby the result type of a call is INTEGER.
    */
-  public static final IReturnTypeInference INTEGER = explicit(IntegerDataType.INTEGER);
+  public static final IReturnTypeInference INTEGER = explicit(IntegerType.INTEGER);
 
   /**
    * Type-inference strategy whereby the result type of a call is NUMBER.
    */
-  public static final IReturnTypeInference NUMBER = explicit(NumberDataType.NUMBER);
+  public static final IReturnTypeInference NUMBER = explicit(NumberType.NUMBER);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference DATE = explicit(DateDataType.DATE);
+  public static final IReturnTypeInference DATE = explicit(DateType.DATE);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference JSON = explicit(JsonDataType.JSON);
+  public static final IReturnTypeInference JSON = explicit(JsonType.JSON);
 
   /**
    * Type-inference strategy whereby the result type of a call is the type of the operand #0.
@@ -99,14 +98,14 @@ public final class ReturnTypes {
    * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with a fallback to {@link #ARG0}.
    * This rule is used for floor, ceiling.
    */
-  public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = (call) -> {
-    DataType type = call.getOperand(0).getType();
+  public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = call -> {
+    Type type = call.getOperand(0).getType();
     
     if ( type.getScale()>0) {
-      return new NumberDataType(type.getPrecision(), 0); 
+      return new NumberType(type.getPrecision(), 0); 
     }
     
-    return IntegerDataType.INTEGER; 
+    return IntegerType.INTEGER; 
   };
 
   public static final IReturnTypeInference TRY = new TryReturnTypeInference();

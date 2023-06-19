@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.BooleanDataType;
+import org.apache.hop.expression.type.BooleanType;
 
 /**
  * Converts a string or numeric expression to a boolean value.
@@ -43,7 +43,7 @@ public class TryToBooleanFunction extends ToBooleanFunction {
       Object value = operands[0].getValue();
       if (value == null)
         return null;
-      return BooleanDataType.BOOLEAN.cast(value, null);
+      return BooleanType.BOOLEAN.cast(value, null);
     } catch (Exception e) {
       return null;
     }

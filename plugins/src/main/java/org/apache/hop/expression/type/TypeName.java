@@ -32,52 +32,52 @@ import com.fasterxml.jackson.databind.JsonNode;
  * If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
-public enum DataName {
+public enum TypeName {
 
   
   /** A unknown type */
-  UNKNOWN(DataFamily.NONE, PrecScale.NO_NO, -1, Void.class),
+  UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, -1, Void.class),
   
-  ANY(DataFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, -1, Object.class),
+  ANY(TypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, -1, Object.class),
   
   /** Unlimited length text */
-  STRING(DataFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, String.class),
+  STRING(TypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, String.class),
   
   /** Boolean (true or false) */
-  BOOLEAN(DataFamily.BOOLEAN, PrecScale.NO_NO, -1, Boolean.class),
+  BOOLEAN(TypeFamily.BOOLEAN, PrecScale.NO_NO, -1, Boolean.class),
 
   /** Signed long (64-bit) integer */
-  INTEGER(DataFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
+  INTEGER(TypeFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
 
   /** Unlimited precision number */
-  NUMBER(DataFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
+  NUMBER(TypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
 
   /** Date-time value with nanosecond precision and time zone */
-  DATE(DataFamily.TEMPORAL, PrecScale.NO_NO, -1, ZonedDateTime.class),
+  DATE(TypeFamily.TEMPORAL, PrecScale.NO_NO, -1, ZonedDateTime.class),
   
-  JSON(DataFamily.JSON, PrecScale.NO_NO, -1, JsonNode.class),
+  JSON(TypeFamily.JSON, PrecScale.NO_NO, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(DataFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class),
+  BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class),
 
   /** A time unit type */
-  TIMEUNIT(DataFamily.NONE, PrecScale.NO_NO, -1, TimeUnit.class);
+  TIMEUNIT(TypeFamily.NONE, PrecScale.NO_NO, -1, TimeUnit.class);
 
 
-  protected static final Set<DataName> STRING_TYPES = Set.of(STRING);
-  protected static final Set<DataName> BINARY_TYPES = Set.of(BINARY);
-  protected static final Set<DataName> BOOLEAN_TYPES = Set.of(BOOLEAN);
-  protected static final Set<DataName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
-  protected static final Set<DataName> TEMPORAL_TYPES = Set.of(DATE);
-  protected static final Set<DataName> JSON_TYPES = Set.of(JSON);
-  protected static final Set<DataName> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
+  protected static final Set<TypeName> STRING_TYPES = Set.of(STRING);
+  protected static final Set<TypeName> BINARY_TYPES = Set.of(BINARY);
+  protected static final Set<TypeName> BOOLEAN_TYPES = Set.of(BOOLEAN);
+  protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
+  protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
+  protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
+  protected static final Set<TypeName> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
 
   /**
    * Indicating allowable precision/scale combinations.
    */
   private final int signature;
 
-  private final DataFamily family;
+  private final TypeFamily family;
 
   private final Class<?> javaClass;
   
@@ -85,7 +85,7 @@ public enum DataName {
 
   public static final Set<String> ALL_NAMES = Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
-  private DataName(DataFamily family, int signature, int precisionMax,Class<?> javaClass) {
+  private TypeName(TypeFamily family, int signature, int precisionMax,Class<?> javaClass) {
     this.family = family;
     this.signature = signature;
     this.precisionMax = precisionMax;
@@ -97,23 +97,23 @@ public enum DataName {
   }
 
   /**
-   * Gets the {@link DataFamily} containing this DataTypeName.
+   * Gets the {@link TypeFamily} containing this {@link TypeName}.
    */
-  public DataFamily getFamily() {
+  public TypeFamily getFamily() {
     return family;
   }
 
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(DataFamily family) {
+  public boolean isSameFamily(TypeFamily family) {
     return this.family.isSameFamily(family);
   }
 
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isCompatibleWithCoercion(DataFamily family) {
+  public boolean isCompatibleWithCoercion(TypeFamily family) {
     return this.family.isCompatibleWithCoercion(family);
   }
 
@@ -140,13 +140,13 @@ public enum DataName {
   }
   
   /**
-   * Returns a {@link DataName} with a given name (ignore case).
+   * Returns a {@link TypeName} with a given name (ignore case).
    *
    * @param name The name of the data name
    * @return data name, or null if not valid
    */
-  public static DataName of(final String name) {
-    for (DataName type : DataName.values()) {
+  public static TypeName of(final String name) {
+    for (TypeName type : TypeName.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
@@ -158,9 +158,9 @@ public enum DataName {
   /**
    * Search a data name for a value or a java class.
    *
-   * @return The {@link DataName}, 'UNKNOWN' if not found
+   * @return The {@link TypeName}, 'UNKNOWN' if not found
    */
-  public static DataName from(final Object value) {
+  public static TypeName from(final Object value) {
     if (value == null)
       return UNKNOWN;
     
@@ -170,7 +170,7 @@ public enum DataName {
       clazz = (Class<?>) value;
     }
     
-    for (DataName name : DataName.values()) {
+    for (TypeName name : TypeName.values()) {
       
       // Ignore ANY
       if ( name.equals(ANY) ) continue;

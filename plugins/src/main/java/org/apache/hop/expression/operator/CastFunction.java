@@ -25,7 +25,7 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -53,7 +53,7 @@ public class CastFunction extends Function {
     if (value == null)
       return null;
 
-    DataType type = operands[1].getValue(DataType.class);
+    Type type = operands[1].getValue(Type.class);
 
     String format = null;
     if (operands.length == 3) {
@@ -63,7 +63,7 @@ public class CastFunction extends Function {
     return cast(value, type, format);
   }
   
-  protected Object cast(final Object value, final DataType type, final String format) {
+  protected Object cast(final Object value, final Type type, final String format) {
     return type.cast(value, format);
   }
   
@@ -75,7 +75,7 @@ public class CastFunction extends Function {
   public IExpression compile(final IExpressionContext context, Call call) throws ExpressionException {
 
     call.inferenceType();
-    DataType type = call.getType();
+    Type type = call.getType();
     
     // Remove lossless cast
     IExpression operand = call.getOperand(0);

@@ -17,12 +17,24 @@
 
 package org.apache.hop.expression.type;
 
-public final class UnknownDataType extends DataType {
+import org.apache.hop.expression.ExpressionError;
 
-  public static final UnknownDataType UNKNOWN = new UnknownDataType(DataName.UNKNOWN);
-  public static final UnknownDataType ANY = new UnknownDataType(DataName.ANY);
-  
-  private UnknownDataType(DataName name) {
+public final class UnknownType extends Type {
+
+  public static final UnknownType UNKNOWN = new UnknownType(TypeName.UNKNOWN);
+  public static final UnknownType ANY = new UnknownType(TypeName.ANY);
+
+  private UnknownType(TypeName name) {
     super(name);
-  } 
+  }
+
+  @Override
+  public Object cast(final Object value) {
+    throw new IllegalArgumentException(ExpressionError.INTERNAL_ERROR.message());
+  }
+
+  @Override
+  public Object cast(final Object value, final String pattern) {
+    throw new IllegalArgumentException(ExpressionError.INTERNAL_ERROR.message());
+  }
 }

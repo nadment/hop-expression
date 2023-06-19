@@ -24,7 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -52,7 +52,7 @@ public class CastOperator extends Operator {
     if (value == null)
       return null;
 
-    DataType type = operands[1].getValue(DataType.class);
+    Type type = operands[1].getValue(Type.class);
 
     return type.cast(value, null);
   }

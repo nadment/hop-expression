@@ -15,16 +15,16 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.type.BinaryDataType;
-import org.apache.hop.expression.type.BooleanDataType;
-import org.apache.hop.expression.type.DataFamily;
-import org.apache.hop.expression.type.DataName;
-import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.DateDataType;
-import org.apache.hop.expression.type.IntegerDataType;
-import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.NumberDataType;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -516,13 +516,13 @@ public class ExpressionParser {
       if (isThenNext(Id.PLUS)) {
         // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
         // - } <integer>
-        if (expression.getType().getName().isSameFamily(DataFamily.TEMPORAL)) {
+        if (expression.getType().getName().isSameFamily(TypeFamily.TEMPORAL)) {
           expression = new Call(Operators.ADD_DAYS, expression, this.parseBitwiseOr());
         } else {
           expression = new Call(Operators.ADD, expression, this.parseBitwiseOr());
         }
       } else if (isThenNext(Id.MINUS)) {
-        if (expression.getType().getName().isSameFamily(DataFamily.TEMPORAL)) {
+        if (expression.getType().getName().isSameFamily(TypeFamily.TEMPORAL)) {
           expression = new Call(Operators.ADD_DAYS, expression,
               new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
         } else {
@@ -1062,10 +1062,10 @@ public class ExpressionParser {
 
   private Literal parseLiteralDataType(Token token) throws ParseException {
 
-    DataName name = DataName.of(token.text());
+    TypeName name = TypeName.of(token.text());
     if (name != null) {
       int precision = name.getMaxPrecision();
-      int scale = DataType.SCALE_NOT_SPECIFIED;
+      int scale = Type.SCALE_NOT_SPECIFIED;
       boolean precisionFound = false;
       boolean scaleFound = false;
 
@@ -1093,29 +1093,29 @@ public class ExpressionParser {
         case BOOLEAN:
           if (precisionFound)
             break;
-          return Literal.of(BooleanDataType.BOOLEAN);
+          return Literal.of(BooleanType.BOOLEAN);
         case INTEGER:
           if (precisionFound)
             break;
-          return Literal.of(IntegerDataType.INTEGER);
+          return Literal.of(IntegerType.INTEGER);
         case NUMBER:
-          return Literal.of(new NumberDataType(precision, scale));
+          return Literal.of(new NumberType(precision, scale));
         case STRING:
           if (scaleFound)
             break;
-          return Literal.of(new StringDataType(precision));
+          return Literal.of(new StringType(precision));
         case BINARY:
           if (scaleFound)
             break;
-          return Literal.of(new BinaryDataType(precision));
+          return Literal.of(new BinaryType(precision));
         case DATE:
           if (precisionFound)
             break;
-          return Literal.of(DateDataType.DATE);
+          return Literal.of(DateType.DATE);
         case JSON:
           if (precisionFound)
             break;
-          return Literal.of(JsonDataType.JSON);
+          return Literal.of(JsonType.JSON);
         default:
       }
     }
@@ -1549,7 +1549,7 @@ public class ExpressionParser {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (DataName.of(name) != null) {
+          if (TypeName.of(name) != null) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 

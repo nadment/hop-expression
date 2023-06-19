@@ -18,49 +18,49 @@ package org.apache.hop.expression.type;
 
 import java.util.Set;
 
-public enum DataFamily {
+public enum TypeFamily {
   // Primary
   BINARY, NUMERIC, TEMPORAL, BOOLEAN, STRING, JSON,
   // Secondary
   NONE, ANY;
 
-  /** Return the default {@link DataType} that belongs to this family. */
-  public DataType getDefaultDataType() {
+  /** Return the default {@link Type} that belongs to this family. */
+  public Type getDefaultDataType() {
     switch (this) {
       case BOOLEAN:
-        return BooleanDataType.BOOLEAN;
+        return BooleanType.BOOLEAN;
       case BINARY:
-        return BinaryDataType.BINARY;
+        return BinaryType.BINARY;
       case STRING:
-        return StringDataType.STRING;
+        return StringType.STRING;
       case TEMPORAL:
-        return DateDataType.DATE;
+        return DateType.DATE;
       case NUMERIC:
-        return NumberDataType.NUMBER;
+        return NumberType.NUMBER;
       case JSON:
-        return JsonDataType.JSON;
+        return JsonType.JSON;
       default:
         return null;
     }
   }
 
-  /** Returns the collection of {@link DataName}s included in this family. */
-  public Set<DataName> getDataTypeNames() {
+  /** Returns the collection of {@link TypeName}s included in this family. */
+  public Set<TypeName> getDataTypeNames() {
     switch (this) {
       case BOOLEAN:
-        return DataName.BOOLEAN_TYPES;
+        return TypeName.BOOLEAN_TYPES;
       case BINARY:
-        return DataName.BINARY_TYPES;
+        return TypeName.BINARY_TYPES;
       case NUMERIC:
-        return DataName.NUMERIC_TYPES;
+        return TypeName.NUMERIC_TYPES;
       case STRING:
-        return DataName.STRING_TYPES;
+        return TypeName.STRING_TYPES;
       case TEMPORAL:
-        return DataName.TEMPORAL_TYPES;
+        return TypeName.TEMPORAL_TYPES;
       case JSON:
-        return DataName.JSON_TYPES;
+        return TypeName.JSON_TYPES;
       case ANY:
-        return DataName.ALL_TYPES;
+        return TypeName.ALL_TYPES;
       default:
         return Set.of();
     }
@@ -69,10 +69,10 @@ public enum DataFamily {
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(final DataFamily... families) {
+  public boolean isSameFamily(final TypeFamily... families) {
     if (families == null)
       return false;
-    for (DataFamily family : families) {
+    for (TypeFamily family : families) {
       if (ANY == this || family == ANY || this == family)
         return true;
     }
@@ -82,7 +82,7 @@ public enum DataFamily {
   /**
    * Returns whether type are in same type family with implicit coercion.
    */
-  public boolean isCompatibleWithCoercion(final DataFamily family) {
+  public boolean isCompatibleWithCoercion(final TypeFamily family) {
     if (family == null)
       return false;
 

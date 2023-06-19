@@ -19,12 +19,12 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
 
-public final class BooleanDataType extends DataType {
+public final class BooleanType extends Type {
 
-  public static final BooleanDataType BOOLEAN = new BooleanDataType();
+  public static final BooleanType BOOLEAN = new BooleanType();
   
-  public BooleanDataType() {
-    super(DataName.BOOLEAN, PRECISION_NOT_SPECIFIED);
+  public BooleanType() {
+    super(TypeName.BOOLEAN, PRECISION_NOT_SPECIFIED);
   } 
   
   
@@ -34,7 +34,7 @@ public final class BooleanDataType extends DataType {
   }
   
   /**
-   * Convert a value to the specified type {@link BooleanDataType} with a pattern.
+   * Convert a value to the specified type {@link BooleanType} with a pattern.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -59,7 +59,7 @@ public final class BooleanDataType extends DataType {
     }
 
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, DataName.from(value), this));
+        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
   
   /**
@@ -79,7 +79,7 @@ public final class BooleanDataType extends DataType {
       return ((Number) value).intValue() != 0;
     }
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        DataName.from(value), DataName.BOOLEAN));
+        TypeName.from(value), TypeName.BOOLEAN));
   }
   
   public static final Boolean convert(final String str) {    
@@ -123,6 +123,6 @@ public final class BooleanDataType extends DataType {
     }
 
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(str, DataName.STRING, DataName.BOOLEAN));
+        ExpressionError.UNSUPPORTED_COERCION.message(str, TypeName.STRING, TypeName.BOOLEAN));
   }
 }

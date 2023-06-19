@@ -17,7 +17,7 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.StringType;
 import org.junit.Test;
 
 public class IdentifierTest extends ExpressionTest {
@@ -26,7 +26,7 @@ public class IdentifierTest extends ExpressionTest {
   public void test() throws Exception {
     Identifier identifier1 = new Identifier("NAME");
     Identifier identifier2 = new Identifier("NAME");
-    Identifier identifier3 = new Identifier("NAME", StringDataType.STRING);
+    Identifier identifier3 = new Identifier("NAME", StringType.STRING);
     assertEquals("NAME", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());

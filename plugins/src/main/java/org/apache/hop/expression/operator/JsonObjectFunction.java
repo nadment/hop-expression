@@ -23,7 +23,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.DataFamily;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
@@ -44,8 +44,8 @@ public class JsonObjectFunction extends Function {
 
   public static final IOperandTypeChecker OTC = new JsonObjectFunctionOperandTypeChecker();
 
-  private static final EnumSet<DataFamily> VALUE_TYPES =
-      EnumSet.of(DataFamily.STRING, DataFamily.BOOLEAN, DataFamily.NUMERIC);
+  private static final EnumSet<TypeFamily> VALUE_TYPES =
+      EnumSet.of(TypeFamily.STRING, TypeFamily.BOOLEAN, TypeFamily.NUMERIC);
 
   public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {
 
@@ -55,7 +55,7 @@ public class JsonObjectFunction extends Function {
     public boolean checkOperandTypes(Call call) {
       for (int i = 0; i < call.getOperandCount();) {
         // Key should be string
-        if (call.getOperand(i++).getType().getFamily() != DataFamily.STRING) {
+        if (call.getOperand(i++).getType().getFamily() != TypeFamily.STRING) {
           return false;
         }
 

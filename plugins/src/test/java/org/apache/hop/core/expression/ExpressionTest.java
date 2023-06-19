@@ -38,9 +38,9 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.UnknownDataType;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -147,7 +147,7 @@ public class ExpressionTest {
       row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
       row[7] = true;
       row[8] = "TEST".getBytes();
-      row[9] = JsonDataType.convert("{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+      row[9] = JsonType.convert("{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
       row[10] = null;
       row[11] = null;
@@ -178,7 +178,7 @@ public class ExpressionTest {
     return context;
   }
 
-  protected void returnType(String source, DataType expected) throws Exception {
+  protected void returnType(String source, Type expected) throws Exception {
     ExpressionContext context = createExpressionContext(false);
     IExpression expression = Expressions.build(context, source);
     assertEquals(expected, expression.getType());
@@ -311,7 +311,7 @@ public class ExpressionTest {
       IExpression expression = Expressions.build(context, source);
 
       String color = ANSI_YELLOW;
-      if (expression.getType() == UnknownDataType.UNKNOWN) {
+      if (expression.getType() == UnknownType.UNKNOWN) {
         color = ANSI_RED;
       }
       System.out.println(

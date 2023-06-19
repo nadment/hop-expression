@@ -19,9 +19,9 @@ import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
-import org.apache.hop.expression.type.DataName;
-import org.apache.hop.expression.type.DateDataType;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TypeName;
 import org.junit.Test;
 import java.time.LocalDate;
 
@@ -33,8 +33,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       meta.setName("UCASE");
       meta.setDescription("UDF test");
       meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
-      meta.getArguments().add(new FunctionArgument("v0", DataName.STRING));
-      meta.getArguments().add(new FunctionArgument("v1", DataName.INTEGER));
+      meta.getArguments().add(new FunctionArgument("v0", TypeName.STRING));
+      meta.getArguments().add(new FunctionArgument("v1", TypeName.INTEGER));
     
       assertEquals("UCASE", meta.getName());
       assertEquals("UDF test", meta.getDescription());
@@ -48,7 +48,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       evalFails("UCASE()");
       evalFails("UCASE(1,2,3)");
       
-      returnType("UCASE('abcd',3)", StringDataType.STRING);
+      returnType("UCASE('abcd',3)", StringType.STRING);
   }
 
   @Test
@@ -56,7 +56,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
       meta.setName("DATE_FROM_ID");
       meta.setSource("case when v0 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");
-      meta.getArguments().add(new FunctionArgument("v0", DataName.INTEGER));
+      meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
       
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
@@ -66,6 +66,20 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       evalFails("DATE_FROM_ID()");
       evalFails("DATE_FROM_ID(1,2,3)");
 
-      returnType("DATE_FROM_ID(20230105)", DateDataType.DATE);
+      returnType("DATE_FROM_ID(20230105)", DateType.DATE);
   }
+  
+  @Test
+  public void testCompilationError() throws Exception {
+      UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
+      meta.setName("ERROR_UDF");
+      meta.setSource("case when v1 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");
+      meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));     
+      UserDefinedFunction udf = new UserDefinedFunction(meta);      
+      FunctionRegistry.register(udf.getName(), udf);
+      
+      // TODO assertThrows(ExpressionException.class, () -> optimize("ERROR_UDF(20230105)"));
+  }
+  
+  
 }

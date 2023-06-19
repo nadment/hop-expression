@@ -18,7 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.type.DataType;
+import org.apache.hop.expression.type.Type;
 
 /**
  * Converts a value of one data type into another data type <code>TRY_CAST(value AS type [FORMAT format])</code>.
@@ -38,7 +38,7 @@ public class TryCastFunction extends CastFunction {
   }
   
   @Override
-  protected Object cast(final Object value, final DataType type, final String format) {
+  protected Object cast(final Object value, final Type type, final String format) {
     try {
       return type.cast(value, format);
     } catch (RuntimeException e) {

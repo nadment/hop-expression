@@ -25,11 +25,11 @@ public class CastOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public DataType getReturnType(Call call) {
+  public Type getReturnType(Call call) {
     try {
-      return call.getOperand(1).getValue(DataType.class);
+      return call.getOperand(1).getValue(Type.class);
     } catch (Exception e) {
-      return UnknownDataType.UNKNOWN;
+      return UnknownType.UNKNOWN;
     }
   }
 }

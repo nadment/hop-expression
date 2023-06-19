@@ -43,14 +43,14 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
       max = call.getOperandCount();
     }
    
-    DataFamily firstFamily = null;
+    TypeFamily firstFamily = null;
     for (int i = start; i < max; i++) {
       IExpression operand = call.getOperand(i);
 
       // Ignore null
       if ( operand==Literal.NULL) continue;
       
-      DataType type = operand.getType();
+      Type type = operand.getType();
       if (firstFamily != null) {
         if (!type.isSameFamily(firstFamily)) {
           return false;

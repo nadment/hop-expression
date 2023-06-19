@@ -24,6 +24,7 @@ public class ListAggDistinctProcessor implements IExpressionProcessor {
   private Queue<String> values;
 
   public ListAggDistinctProcessor(String delimiter) {
+    this.delimiter = delimiter;
     this.values = new LinkedList<>();
   }
 

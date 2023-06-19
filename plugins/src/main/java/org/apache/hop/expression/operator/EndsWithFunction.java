@@ -20,10 +20,10 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.BinaryDataType;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.StringType;
 
 
 /**
@@ -52,8 +52,8 @@ public class EndsWithFunction extends Function {
       return null;
 
     if (v0 instanceof byte[]) {
-      byte[] data = BinaryDataType.coerce(v0);
-      byte[] suffix = BinaryDataType.coerce(v1);
+      byte[] data = BinaryType.coerce(v0);
+      byte[] suffix = BinaryType.coerce(v1);
       int startOffset = data.length - suffix.length;
 
       if (startOffset < 0) {
@@ -68,7 +68,7 @@ public class EndsWithFunction extends Function {
       return Boolean.TRUE;
     }
 
-    return StringDataType.coerce(v0).endsWith(StringDataType.coerce(v1));
+    return StringType.coerce(v0).endsWith(StringType.coerce(v1));
   }
 
 }

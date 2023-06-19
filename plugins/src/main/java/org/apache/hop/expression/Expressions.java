@@ -23,16 +23,16 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
-import org.apache.hop.expression.type.BinaryDataType;
-import org.apache.hop.expression.type.BooleanDataType;
-import org.apache.hop.expression.type.DataName;
-import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.DateDataType;
-import org.apache.hop.expression.type.IntegerDataType;
-import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.NumberDataType;
-import org.apache.hop.expression.type.StringDataType;
-import org.apache.hop.expression.type.UnknownDataType;
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.DateType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.UnknownType;
 import java.text.ParseException;
 
 public class Expressions {
@@ -87,30 +87,30 @@ public class Expressions {
   }
 
   
-  public static DataType createDataType(IValueMeta valueMeta) {
+  public static Type createDataType(IValueMeta valueMeta) {
     switch (valueMeta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
-        return BooleanDataType.BOOLEAN;
+        return BooleanType.BOOLEAN;
       case IValueMeta.TYPE_DATE:
       case IValueMeta.TYPE_TIMESTAMP:
-        return DateDataType.DATE;
+        return DateType.DATE;
       case IValueMeta.TYPE_STRING:
-        return new StringDataType(valueMeta.getLength());
+        return new StringType(valueMeta.getLength());
       case IValueMeta.TYPE_INTEGER:
-        return IntegerDataType.INTEGER;
+        return IntegerType.INTEGER;
       case IValueMeta.TYPE_NUMBER:
       case IValueMeta.TYPE_BIGNUMBER:        
-        return new NumberDataType(valueMeta.getLength(), valueMeta.getPrecision());     
+        return new NumberType(valueMeta.getLength(), valueMeta.getPrecision());     
       case ValueMetaJson.TYPE_JSON:
-        return JsonDataType.JSON;
+        return JsonType.JSON;
       case IValueMeta.TYPE_BINARY:
-        return new BinaryDataType(valueMeta.getLength());
+        return new BinaryType(valueMeta.getLength());
       default:
-        return UnknownDataType.UNKNOWN;
+        return UnknownType.UNKNOWN;
     }
   }
 
-  public static IValueMeta createValueMeta(final String name, final DataName type) {
+  public static IValueMeta createValueMeta(final String name, final TypeName type) {
 
     if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
@@ -140,7 +140,7 @@ public class Expressions {
     }
   }
 
-  public static IValueMeta createValueMeta(final String name, final DataType type) {
+  public static IValueMeta createValueMeta(final String name, final Type type) {
     if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
     }

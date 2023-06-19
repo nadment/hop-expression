@@ -18,13 +18,13 @@ import static java.util.Objects.requireNonNull;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.expression.type.BinaryDataType;
-import org.apache.hop.expression.type.BooleanDataType;
-import org.apache.hop.expression.type.DataType;
-import org.apache.hop.expression.type.IntegerDataType;
-import org.apache.hop.expression.type.JsonDataType;
-import org.apache.hop.expression.type.NumberDataType;
-import org.apache.hop.expression.type.StringDataType;
+import org.apache.hop.expression.type.BinaryType;
+import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public final class Field extends Identifier {
   private final IRowExpressionContext context;
   
-  public Field(final IRowExpressionContext context, final String name, final DataType type, int ordinal) {
+  public Field(final IRowExpressionContext context, final String name, final Type type, int ordinal) {
     super(name, type, ordinal);
     this.context = requireNonNull(context,"context");
   }
@@ -161,19 +161,19 @@ public final class Field extends Identifier {
             return clazz.cast(value);
           }
           if (clazz == Boolean.class) {
-            return clazz.cast(BooleanDataType.convert(value));
+            return clazz.cast(BooleanType.convert(value));
           }
           if (clazz == Long.class) {
-            return clazz.cast(IntegerDataType.convert(value));
+            return clazz.cast(IntegerType.convert(value));
           }
           if (clazz == BigDecimal.class) {
-            return clazz.cast(NumberDataType.convert(value));
+            return clazz.cast(NumberType.convert(value));
           }
           if (clazz == byte[].class) {
-            return clazz.cast(BinaryDataType.convert(value));
+            return clazz.cast(BinaryType.convert(value));
           }
           if (clazz == JsonNode.class) {
-            return clazz.cast(JsonDataType.convert(value));
+            return clazz.cast(JsonType.convert(value));
           }
           break;
         }
@@ -243,7 +243,7 @@ public final class Field extends Identifier {
             return clazz.cast(value);
           }
           if (clazz == String.class) {
-            return clazz.cast(StringDataType.convert((JsonNode) value));
+            return clazz.cast(StringType.convert((JsonNode) value));
           }
           break;
         }
