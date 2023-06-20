@@ -49,9 +49,6 @@ public class CastOperator extends Operator {
   @Override
   public Object eval(IExpression[] operands) throws Exception {
     Object value = operands[0].getValue();
-    if (value == null)
-      return null;
-
     Type type = operands[1].getValue(Type.class);
 
     return type.cast(value, null);

@@ -15,6 +15,8 @@
 package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
@@ -65,7 +67,9 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       evalNull("DATE_FROM_ID(null)");
       evalFails("DATE_FROM_ID()");
       evalFails("DATE_FROM_ID(1,2,3)");
-
+      
+      assertThrows(ExpressionException.class, () -> optimize("DATE_FROM_ID()"));
+      
       returnType("DATE_FROM_ID(20230105)", DateType.DATE);
   }
   
@@ -78,7 +82,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       
-      // TODO assertThrows(ExpressionException.class, () -> optimize("ERROR_UDF(20230105)"));
+      assertThrows(ExpressionException.class, () -> optimize("ERROR_UDF(20230105)"));
   }
   
   

@@ -294,8 +294,8 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("DATE '2019-01-01' <= DATE '2019-01-01'");
     evalFalse("DATE '2019-01-01' <= DATE '2018-01-01'");
 
-    evalNull("NULL_INTEGER <= 1");
-    evalNull("0 <= NULL_INTEGER");
+    evalNull("NULL_INTEGER <= FIELD_INTEGER");
+    evalNull("FIELD_INTEGER <= NULL_INTEGER");
 
     evalFails("<= FIELD_INTEGER");
     evalFails("FIELD_INTEGER <=");

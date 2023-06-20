@@ -131,7 +131,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */  
   public default Call asCall() {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message());
   } 
 
   /**
@@ -140,7 +140,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */
   public default Literal asLiteral() {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message());
   } 
 
   /**
@@ -149,7 +149,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */  
   public default Identifier asIdentifier() {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message());
   } 
   
 
@@ -159,7 +159,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */  
   public default Tuple asTuple() {
-    throw new RuntimeException(ExpressionError.INTERNAL_ERROR.message());
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message());
   } 
   
   /**

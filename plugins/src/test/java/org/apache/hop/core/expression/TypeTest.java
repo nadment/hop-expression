@@ -107,7 +107,6 @@ public class TypeTest extends ExpressionTest {
     assertEquals(UnknownType.UNKNOWN, Type.of(TimeUnit.CENTURY));
   }
 
-
   @Test
   public void family() throws Exception {
     assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.ANY));
@@ -117,7 +116,10 @@ public class TypeTest extends ExpressionTest {
     
     assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.BINARY));
     assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.BOOLEAN));
+    assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.NUMERIC));
     assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.TEMPORAL));
+    assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.STRING));
+    assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.JSON));
     assertTrue(UnknownType.ANY.isSameFamily(TypeFamily.ANY));
     
     assertTrue(BinaryType.BINARY.isSameFamily(TypeFamily.ANY));

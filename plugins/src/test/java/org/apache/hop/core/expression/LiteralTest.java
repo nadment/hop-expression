@@ -69,7 +69,7 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
 
-  public void DataType() throws Exception {
+  public void Type() throws Exception {
     assertEquals(NumberType.NUMBER, Literal.of(NumberType.NUMBER).getValue());
 
     evalEquals("Cast(123 as InTeGeR)", 123L);

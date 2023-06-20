@@ -58,9 +58,9 @@ import java.util.Locale;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ExpressionTest {
-  
+
   protected static final BigDecimal PI = new BigDecimal("3.141592653589793238462643383279503");
-  
+
   protected static final String ANSI_RESET = "\u001B[0m";
   protected static final String ANSI_BLACK = "\u001B[30m";
   protected static final String ANSI_RED = "\u001B[31m";
@@ -103,7 +103,7 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
     rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
     rowMeta.addValueMeta(new ValueMetaJson("FIELD_JSON"));
-    
+
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
     rowMeta.addValueMeta(new ValueMetaBoolean("NULL_BOOLEAN"));
@@ -147,7 +147,8 @@ public class ExpressionTest {
       row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
       row[7] = true;
       row[8] = "TEST".getBytes();
-      row[9] = JsonType.convert("{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+      row[9] = JsonType.convert(
+          "{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
       row[10] = null;
       row[11] = null;
@@ -183,6 +184,11 @@ public class ExpressionTest {
     IExpression expression = Expressions.build(context, source);
     assertEquals(expected, expression.getType());
   }
+  
+  protected Object eval(String source) throws Exception {
+    return eval(this.createExpressionContext(), source);
+  }
+
 
   protected Object eval(IExpressionContext context, String source) throws Exception {
 
@@ -256,11 +262,11 @@ public class ExpressionTest {
     assertEquals(BigDecimal.valueOf(expected).stripTrailingZeros(), result.stripTrailingZeros());
   }
 
-  protected void evalEquals(String source, BigInteger expected)
-      throws Exception {
-    assertEquals(new BigDecimal(expected), eval(createExpressionContext(true), source, BigDecimal.class));
+  protected void evalEquals(String source, BigInteger expected) throws Exception {
+    assertEquals(new BigDecimal(expected),
+        eval(createExpressionContext(true), source, BigDecimal.class));
   }
-  
+
   protected void evalEquals(String source, Double expected) throws Exception {
     evalEquals(createExpressionContext(true), source, expected);
   }
@@ -305,37 +311,35 @@ public class ExpressionTest {
     assertThrows(ExpressionException.class, () -> eval(createExpressionContext(true), source));
   }
 
-  protected IExpression optimize(String source) {
-    try {
-      IExpressionContext context = createExpressionContext(false);
-      IExpression expression = Expressions.build(context, source);
+  protected IExpression optimize(String source) throws Exception {
 
-      String color = ANSI_YELLOW;
-      if (expression.getType() == UnknownType.UNKNOWN) {
-        color = ANSI_RED;
-      }
-      System.out.println(
-          source + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color + expression + ANSI_RESET);
+    IExpressionContext context = createExpressionContext(false);
+    IExpression expression = Expressions.build(context, source);
 
-      return expression;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    String color = ANSI_YELLOW;
+    if (expression.getType() == UnknownType.UNKNOWN) {
+      color = ANSI_RED;
     }
+    System.out.println(source + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color
+        + expression + ANSI_RESET);
+
+    return expression;
+
   }
 
-  protected void optimize(String source, String expected) {
+  protected void optimize(String source, String expected) throws Exception {
     assertEquals(expected, optimize(source).toString());
   }
 
-  protected void optimizeTrue(String source) {
+  protected void optimizeTrue(String source) throws Exception {
     assertEquals("TRUE", optimize(source).toString());
   }
 
-  protected void optimizeFalse(String source) {
+  protected void optimizeFalse(String source) throws Exception {
     assertEquals("FALSE", optimize(source).toString());
   }
 
-  protected void optimizeNull(String source) {
+  protected void optimizeNull(String source) throws Exception {
     assertEquals("NULL", optimize(source).toString());
   }
 
@@ -347,18 +351,18 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
 
-    //evalEquals("CAST(1.25 as Integer)", 1L);
-    //assertEquals(new BigDecimal("1.23456"), Converter.cast("1.23456", new NumberDataType()));
-  //  optimize("CAST(123456.1 AS STRING(8))", "CAST(123456.1 AS STRING(8))");
-//    evalEquals("1_234", 1234L);
- //   evalEquals("1", 1L);
-  //  returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(37,3));
+    // evalEquals("CAST(1.25 as Integer)", 1L);
+    // assertEquals(new BigDecimal("1.23456"), Converter.cast("1.23456", new NumberDataType()));
+    // optimize("CAST(123456.1 AS STRING(8))", "CAST(123456.1 AS STRING(8))");
+    // evalEquals("1_234", 1234L);
+    // evalEquals("1", 1L);
+    // returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(37,3));
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L);
-    
-    //evalFails("0x_2F");
-    //evalFails("0x_2F");
-        
-    //evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
+
+    // evalFails("0x_2F");
+    // evalFails("0x_2F");
+
+    // evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
   }
 }
 

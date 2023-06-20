@@ -22,13 +22,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.operator.ConcatFunction;
-import org.apache.hop.expression.type.BooleanType;
 import org.junit.Test;
 
 public class SyntaxTest extends ExpressionTest { 
@@ -111,10 +110,9 @@ public class SyntaxTest extends ExpressionTest {
     assertTrue(optimize("FIELD_INTEGER").asIdentifier() instanceof Identifier);
     assertTrue(optimize("123").asLiteral() instanceof Literal);   
         
-    assertThrows(RuntimeException.class, () -> optimize("123").asCall());
-    assertThrows(RuntimeException.class, () -> optimize("ABS(FIELD_INTEGER)").asIdentifier());
-    assertThrows(RuntimeException.class, () -> optimize("FIELD_INTEGER").asLiteral());
-
+    assertThrows(UnsupportedOperationException.class, () -> optimize("123").asCall());
+    assertThrows(UnsupportedOperationException.class, () -> optimize("ABS(FIELD_INTEGER)").asIdentifier());
+    assertThrows(UnsupportedOperationException.class, () -> optimize("FIELD_INTEGER").asLiteral());
   }
   
   @Test
@@ -199,6 +197,8 @@ public class SyntaxTest extends ExpressionTest {
     evalFails("1 in (1,2,)");
     evalFails("0xABCDEFg");
     evalFails("Date '2020-20-28'");
+    
+    assertThrows(ExpressionException.class, () -> eval("0xABCDEFg"));
   }
 
 
