@@ -29,7 +29,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.DateTimeFormat;
-import java.time.ZonedDateTime;
 
 /**
  * Converts a string expression to a date value.
@@ -38,11 +37,7 @@ import java.time.ZonedDateTime;
 public class ToDateFunction extends Function {
 
   public ToDateFunction() {
-    this("TO_DATE");
-  }
-
-  protected ToDateFunction(final String id) {
-    super(id, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
+    super("TO_DATE", ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
         "/docs/to_date.html");
   }
 
@@ -81,10 +76,6 @@ public class ToDateFunction extends Function {
 
     DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
 
-    return parse(value, format);
-  }
-
-  public ZonedDateTime parse(String value, DateTimeFormat format) throws Exception {
     return format.parse(value);
   }
 }

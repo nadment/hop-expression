@@ -17,33 +17,32 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.util.NumberFormat;
-import java.math.BigDecimal;
-import java.text.ParseException;
+import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Converts a string expression to a number value.
  */
 @FunctionPlugin
-public class TryToNumberFunction extends ToNumberFunction {
+public class TryToNumberFunction extends Function {
   
   public TryToNumberFunction() {
-    super("TRY_TO_NUMBER");
+    super("TRY_TO_NUMBER", ReturnTypes.NUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
+        OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
   
-//  @Override
-//  public IExpression compile(final IExpressionContext context, final Call call)
-//      throws ExpressionException {
-//    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperands()));
-//  }
-  
   @Override
-  public BigDecimal parse(final String value, final NumberFormat format) {
-    try {
-      return format.parse(value);
-    } catch (ParseException e) {
-      return null;
-    }
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperands()));
   }
 }

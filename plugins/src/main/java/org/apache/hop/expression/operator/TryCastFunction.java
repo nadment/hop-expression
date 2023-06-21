@@ -17,32 +17,34 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Converts a value of one data type into another data type <code>TRY_CAST(value AS type [FORMAT format])</code>.
  * 
+ * @see CastFunction
  * @see CastOperator
  */
 @FunctionPlugin
-public class TryCastFunction extends CastFunction {
+public class TryCastFunction extends Function {
   
   public TryCastFunction() {
-    super("TRY_CAST");
-  }
-
-  @Override
-  protected boolean isTry() {
-    return true;  
+    super("TRY_CAST", ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
+        OperatorCategory.CONVERSION, "/docs/cast.html");
   }
   
   @Override
-  protected Object cast(final Object value, final Type type, final String format) {
-    try {
-      return type.cast(value, format);
-    } catch (RuntimeException e) {
-      return null;
-    }
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    return new Call(Operators.TRY, new Call(Operators.CAST_FUNCTION, call.getOperands()));
   }
 }

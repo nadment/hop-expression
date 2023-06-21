@@ -40,11 +40,7 @@ import java.util.Base64;
 public class ToBinaryFunction extends Function {
 
   public ToBinaryFunction() {
-    this("TO_BINARY");
-  }
-  
-  public ToBinaryFunction(final String id) {
-    super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
+    super("TO_BINARY", ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_binary.html");
   }
 

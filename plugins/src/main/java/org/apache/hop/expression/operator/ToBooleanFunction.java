@@ -31,16 +31,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToBooleanFunction extends Function {
 
   public ToBooleanFunction() {
-    this("TO_BOOLEAN");
-  }
-  
-  protected ToBooleanFunction(final String id) {
-    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
+    super("TO_BOOLEAN", ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
         "/docs/to_boolean.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
+  public Object eval(final IExpression[] operands)
       throws Exception {
     Object value = operands[0].getValue();
     if (value == null)

@@ -23,11 +23,11 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.TypeFamily;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

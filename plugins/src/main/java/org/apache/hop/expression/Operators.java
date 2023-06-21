@@ -27,6 +27,7 @@ import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.CaseOperator;
+import org.apache.hop.expression.operator.CastFunction;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
@@ -133,6 +134,7 @@ public class Operators {
   // -------------------------------------------------------------
   public static final Operator TRY = new TryOperator();
   public static final Operator CAST = new CastOperator();
+  public static final Operator CAST_FUNCTION = new CastFunction();
   public static final Function CONCAT = new ConcatFunction("||");  
   public static final Function EXTRACT = new ExtractFunction();
   public static final Function ADD_DAYS = new AddDaysFunction();

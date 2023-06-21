@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -29,7 +30,7 @@ import java.io.StringWriter;
 public class TryOperator extends Operator {
 
   public TryOperator() {
-    super("TRY", "TRY", 0, true, ReturnTypes.TRY, OperandTypes.ANY,
+    super("TRY", "TRY", 0, true, ReturnTypes.ARG0, OperandTypes.ANY,
         OperatorCategory.SPECIAL, "");
   }
 
@@ -37,7 +38,7 @@ public class TryOperator extends Operator {
   public Object eval(IExpression[] operands) throws Exception {
     try {
       return operands[0].getValue();
-    } catch (RuntimeException e) {
+    } catch (RuntimeException|ExpressionException e) {
       return null;
     }
   }

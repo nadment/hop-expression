@@ -16,26 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.util.DateTimeFormat;
-import java.time.ZonedDateTime;
+import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Converts a string expression to a date value.
  */
 @FunctionPlugin
-public class TryToDateFunction extends ToDateFunction {
+public class TryToDateFunction extends Function {
 
   public TryToDateFunction() {
-    super("TRY_TO_DATE");
+    super("TRY_TO_DATE", ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
+        "/docs/to_date.html");
   }
-  
+
   @Override
-  public ZonedDateTime parse(String value, DateTimeFormat format) throws Exception {
-    try {
-      return format.parse(value);
-    } catch (Exception e) {
-      return null;
-    }
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_DATE"), call.getOperands()));
   }
 }

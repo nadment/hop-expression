@@ -27,21 +27,15 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.NumberFormat;
-import java.math.BigDecimal;
-import java.text.ParseException;
 
 /**
  * Converts a string expression to a number value.
  */
 @FunctionPlugin
 public class ToNumberFunction extends Function {
-
-  public ToNumberFunction() {
-    this("TO_NUMBER");
-  }
   
-  protected ToNumberFunction(final String id) {
-    super(id, ReturnTypes.NUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
+  public ToNumberFunction() {
+    super("TO_NUMBER", ReturnTypes.NUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
   
@@ -70,10 +64,6 @@ public class ToNumberFunction extends Function {
     String pattern = operands[1].getValue(String.class);
 
     NumberFormat format = NumberFormat.of(pattern);
-    return parse(value, format);
-  }
-  
-  protected  BigDecimal parse(final String value, final NumberFormat format) throws ParseException {
     return format.parse(value);
   }
 }

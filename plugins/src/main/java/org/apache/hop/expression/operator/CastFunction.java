@@ -25,25 +25,22 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import java.io.StringWriter;
 
 /**
  * Converts a value of one data type into another data type <code>CAST(value AS type [FORMAT format])</code>.
  * 
  * @see CastOperator
+ * @see CastFunction
  */
 @FunctionPlugin
 public class CastFunction extends Function {
 
   public CastFunction() {
-    this("CAST");
-  }
-  
-  protected CastFunction(final String id) {
-    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
+    super("CAST", ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
