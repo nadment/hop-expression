@@ -2743,8 +2743,23 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop");
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop");
     evalFails("Base64_Decode()");
-
     returnType("Base64_Decode('QXBhY2hlIEhvcA==')", StringType.STRING);
+  }
+  
+  @Test
+  public void Base32_Encode() throws Exception {
+    evalEquals("Base32_Encode('Apache Hop')", "IFYGCY3IMUQEQ33Q");
+    evalEquals("Base32_Encode('Apache Hop'::Binary)", "IFYGCY3IMUQEQ33Q");
+    evalFails("Base32_Encode()");
+    returnType("Base32_Encode('QXBhY2hlIEhvcA==')", StringType.STRING);
+  }
+  
+  @Test
+  public void Base32_Decode() throws Exception {
+    evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q')", "Apache Hop");
+    evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q'::Binary)", "Apache Hop");
+    evalFails("Base32_Decode()");
+    returnType("Base32_Decode('QXBhY2hlIEhvcA==')", StringType.STRING);
   }
 
   @Test

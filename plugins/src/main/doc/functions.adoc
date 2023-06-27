@@ -37,6 +37,8 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atan2.adoc[ATAN2]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/atanh.adoc[ATANH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/avg.adoc[AVG] aggregate
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base32_decode.adoc[BASE32_DECODE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base32_encode.adoc[BASE32_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base64_decode.adoc[BASE64_DECODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/base64_encode.adoc[BASE64_ENCODE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_and.adoc[BIT_AND]

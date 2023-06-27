@@ -59,7 +59,7 @@ end
 * Concatenate operator `||`
 * Conditional operator `CASE WHEN`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
-* Over 180 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
+* Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
 * User Defined Function (UDF) support has metadata
 * Use of comments to facilitate reading
 * Are not case-sensitive, excepted for identifier

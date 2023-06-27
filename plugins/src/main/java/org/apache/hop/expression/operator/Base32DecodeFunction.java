@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.codec.binary.Base32;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -24,20 +25,19 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Base64.Encoder;
 
 /**
- * The function encode the input (string or binary) using Base64 encoding.
+ * The function encode the input (string or binary) using Base32 encoding.
  *
- * @see {@link Base64DecodeFunction}
+ * @see {@link Base32EncodeFunction}
  */
 @FunctionPlugin
-public class Base64EncodeFunction extends Function {
-  private static final Encoder ENCODER = Base64.getEncoder();
-  public Base64EncodeFunction() {
-    super("BASE64_ENCODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/base64_encode.html");
+public class Base32DecodeFunction extends Function {
+  private static final Base32 BASE32 = new Base32();
+  
+  public Base32DecodeFunction() {
+    super("BASE32_DECODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+        OperatorCategory.STRING, "/docs/base32_decode.html");
   }
 
   @Override
@@ -46,12 +46,12 @@ public class Base64EncodeFunction extends Function {
     Object value = operands[0].getValue();
     if (value == null)
       return null;
-
+   
     if (value instanceof String) {
       String str = (String) value;
-      return ENCODER.encodeToString(str.getBytes(StandardCharsets.UTF_8));
+      return new String(BASE32.decode(str), StandardCharsets.UTF_8);
     }
 
-    return ENCODER.encodeToString(BinaryType.coerce(value));
+    return new String(BASE32.decode(BinaryType.coerce(value)), StandardCharsets.UTF_8);
   }
 }

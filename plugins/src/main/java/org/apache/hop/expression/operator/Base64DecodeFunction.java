@@ -30,11 +30,11 @@ import java.util.Base64.Decoder;
 /**
  * The function encode the input (string or binary) using Base64 encoding.
  *
- * @see {@link Base64DecodeFunction}
+ * @see {@link Base64EncodeFunction}
  */
 @FunctionPlugin
 public class Base64DecodeFunction extends Function {
-
+  private static final Decoder DECODER = Base64.getDecoder();
   public Base64DecodeFunction() {
     super("BASE64_DECODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/base64_decode.html");
@@ -47,12 +47,11 @@ public class Base64DecodeFunction extends Function {
     if (value == null)
       return null;
 
-    Decoder decoder = Base64.getDecoder();
     if (value instanceof String) {
       String str = (String) value;
-      return new String(decoder.decode(str), StandardCharsets.UTF_8);
+      return new String(DECODER.decode(str), StandardCharsets.UTF_8);
     }
 
-    return new String(decoder.decode(BinaryType.coerce(value)), StandardCharsets.UTF_8);
+    return new String(DECODER.decode(BinaryType.coerce(value)), StandardCharsets.UTF_8);
   }
 }
