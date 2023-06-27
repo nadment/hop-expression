@@ -45,8 +45,8 @@ public class ExpressionParser {
   private static final Set<String> RESERVED_WORDS =
       Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
           "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "JSON",
-          "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SYMMETRIC", "THEN",
-          "TIME", "TIMESTAMP", "TRUE", "VALUE", "WHEN", "ZONE");
+          "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR", "SYMMETRIC", "THEN",
+          "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -236,7 +236,7 @@ public class ExpressionParser {
           }
           throw new ParseException(
               ExpressionError.INVALID_OPERATOR.message(Operators.IS_DISTINCT_FROM),
-              this.getPosition());
+              this.getPosition());         
         default:
           throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
               this.getPosition());
@@ -246,7 +246,7 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse IN, LIKE, BETWEEN expression
+   * Parse IN, LIKE, BETWEEN, SIMILAR TO expression
    *
    * <p>
    * AdditiveExpression ( [NOT] | InClause | BetweenClause | LikeClause AdditiveExpression)
@@ -254,7 +254,7 @@ public class ExpressionParser {
   private IExpression parseRelational() throws ParseException {
     IExpression expression = this.parseAdditive();
 
-    // Special case NOT before operation: <exp> [NOT] LIKE|IN|BETWEEN <primaryExp>
+    // Special case NOT before operation: <exp> [NOT] LIKE|ILIKE|IN|BETWEEN|SIMILAR <primaryExp>
     boolean not = false;
     if (isThenNext(Id.NOT)) {
       not = true;
@@ -297,7 +297,16 @@ public class ExpressionParser {
 
       expression = new Call(operator, expression, start, end);
     }
-
+    
+    if (isThenNext(Id.SIMILAR)) {    
+      if (isThenNext(Id.TO)) {        
+        expression = new Call(Operators.SIMILAR_TO, expression, parseAdditive());
+      }
+      else throw new ParseException(
+          ExpressionError.INVALID_OPERATOR.message(Operators.SIMILAR_TO),
+          this.getPosition());
+    }
+    
     if (not) {
       return new Call(Operators.BOOLNOT, expression);
     }

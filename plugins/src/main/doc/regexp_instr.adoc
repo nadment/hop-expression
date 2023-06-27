@@ -40,3 +40,4 @@ Return type:: Integer
 == Usage
 
 * If no match is found, then the function returns 0.
+* The <pattern> is defined according to Java language regular expression rules. 

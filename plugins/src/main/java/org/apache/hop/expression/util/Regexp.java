@@ -109,5 +109,85 @@ public class Regexp {
     }
     return flags;
   }
+
+  /** Translates a SIMILAR TO pattern to Java regex pattern. */
+  public static String toSimilarTo(String pattern, char escapeChar) throws ExpressionException {
+    final int len = pattern.length();
+    final StringBuilder javaPattern = new StringBuilder(len + len);
+    for (int i = 0; i < len; i++) {
+      char c = pattern.charAt(i);
+      if (c == escapeChar) {
+        if (i == (pattern.length() - 1)) {
+          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+        }
+        char nextChar = pattern.charAt(i + 1);
+        if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
+          if (JAVA_REGEXP_SPECIALS.indexOf(nextChar) >= 0) {
+            javaPattern.append('\\');
+          }
+          javaPattern.append(nextChar);
+          i++;
+        } else {
+          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+        }
+      } else if (c == '_') {
+        javaPattern.append('.');
+      } else if (c == '%') {
+        javaPattern.append("(?s:.*)");
+      } else if (c == '[') {
+        if (i == (len - 1)) {
+          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+        }
+        char nextChar = pattern.charAt(i + 1);
+        if (nextChar == ':') {
+          int end = pattern.indexOf(']', i + 1);
+          if (end < 0) {
+            throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern, i);
+          }
+          
+          String cls = pattern.substring(i + 2, end - 1).toLowerCase();
+          // Alphabetic characters
+          if ("alpha".equals(cls))
+            javaPattern.append("\\p{Alpha}");
+          // Alphanumeric characters
+          else if ("alnum".equals(cls))
+            javaPattern.append("\\p{Alnum}");
+          else if ("cntrl".equals(cls))
+            javaPattern.append("\\p{Cntrl}");
+          // Blank space and tab characters
+          else if ("blank".equals(cls))
+            javaPattern.append("\\h");
+          // Punctuation and symbols characters
+          else if ("punct".equals(cls))
+            javaPattern.append("\\p{Punct}");
+          // Numeric digits
+          else if ("digit".equals(cls))
+            javaPattern.append("\\d");
+          // Hexadecimal digits
+          else if ("xdigit".equals(cls))
+            javaPattern.append("\\p{XDigit}");
+          // All whitespace characters, including line breaks
+          else if ("space".equals(cls))
+            javaPattern.append("\\s");
+          // Uppercase letters
+          else if ("upper".equals(cls))
+            javaPattern.append("\\u");
+          // Lowercase letters
+          else if ("lower".equals(cls))
+            javaPattern.append("\\l");
+          // Word characters (letters, numbers and underscores)
+          else if ("word".equals(cls))
+            javaPattern.append("\\w");
+          
+          i = end;
+        }
+        else
+          javaPattern.append(c);
+      } else {
+        javaPattern.append(c);
+      }
+    }
+    return javaPattern.toString();
+  }
 }
 

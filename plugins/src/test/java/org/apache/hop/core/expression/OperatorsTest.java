@@ -486,6 +486,35 @@ public class OperatorsTest extends ExpressionTest {
     returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", BooleanType.BOOLEAN);
     returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", BooleanType.BOOLEAN);
   }
+
+  @Test
+  public void SimilarTo() throws Exception {
+    evalTrue("'abc' SIMILAR TO 'abc'");
+    evalTrue("'abc' SIMILAR TO '_b_'");
+    evalTrue("'aaa' SIMILAR TO 'a{2,4}'");
+    evalFalse("'aa' SIMILAR TO 'a{3,4}'");
+    evalFalse("'aaaaa' SIMILAR TO 'a{2,4}'");
+    evalFalse("'abc' SIMILAR TO '_B_'");
+    evalFalse("'abc' SIMILAR TO '_a_'");
+    
+    //evalTrue("'Erdbeere' SIMILAR TO 'Erd[a[:SPACE:]b]eere'");
+    evalTrue("'12345TEST' SIMILAR TO '123[:ALNUM:]*'");
+    
+    evalFalse("'abc' SIMILAR TO 'a'");
+    evalTrue("'abc' SIMILAR TO '.*(b|d).*'");
+    evalFalse("'abc' SIMILAR TO '(b|c).*'");
+    evalFalse("'abc' NOT SIMILAR TO 'abc'");
+    evalTrue("'xyz' SIMILAR TO '%(y|a)%'");
+    
+    // An empty pattern '' matches nothing
+    evalFalse("'' SIMILAR TO  ''");
+    evalFalse("'ABC' SIMILAR TO ''");
+    
+    evalNull("NULL_STRING SIMILAR TO 'A'");
+    evalNull("'A' SIMILAR TO NULL_STRING");
+    
+    optimize("FIELD_STRING SIMILAR TO 'a{2,4}'");
+  }
   
   @Test
   public void Add() throws Exception {

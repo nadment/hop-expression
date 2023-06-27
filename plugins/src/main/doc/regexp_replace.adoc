@@ -42,6 +42,7 @@ Return type:: String
 
 * If no matches are found, returns the original subject.
 * The replacement string can contain backreferences to capture groups. A capture group is a regular expression that is enclosed within parentheses (( )).
+* The <pattern> is defined according to Java language regular expression rules. 
 
 
 

@@ -40,6 +40,7 @@ Return type:: String
 == Usage
 
 * If no match is found, then the function returns NULL.
+* The <pattern> is defined according to Java language regular expression rules. 
 
 
 

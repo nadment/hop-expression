@@ -2487,9 +2487,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]')", "1234");
     evalEquals("Regexp_Replace('A1.2.3.4','[^0-9]', '', 1, 0)", "1234");
     evalEquals("Regexp_Replace('ABC, ABC, ABC','ABC', 'EFG', 1, 2)", "ABC, EFG, ABC");
-    // evalEquals("Regexp_Replace('AAA BBB CCC', '[:space:]+', '-')", "AAA BBB CCC");
-    evalEquals("Regexp_Replace('expression', 's+','s')", "expresion");
-
+    evalEquals("Regexp_Replace('AAA BBB CCC', '[:space:]+', '-')", "AAA BBB CCC");
+    evalEquals("Regexp_Replace('expressssion', 's+','ss')", "expression");
     evalEquals(
         "Regexp_Replace('This line    contains    more      than one   spacing      between      words', '( ){2,}', ' ')",
         "This line contains more than one spacing between words");
@@ -2547,15 +2546,11 @@ public class FunctionsTest extends ExpressionTest {
         "the worst");
 
     evalNull("regexp_substr('abc', 'z')");
-    // evalEquals("regexp_substr('abc', '.b.', 0)", "abc");
-    // evalNull("regexp_substr('abc', '.b.', 1)");
-    // evalEquals("regexp_substr('abc', '([a-z])(b)', 1)", "a");
-    // evalEquals("regexp_substr('abc', '([a-z])(b)', 2)", "b");
-
-    // [[:alnum:]] >>> \p{Alnum}
-    // evalEquals("regexp_substr('http://www.apache.org/products',
-    // 'http://([a-zA-Z0-9]+\\.?){3,4}/?')", "http://www.apache.org/");
-
+    evalEquals("regexp_substr('abc', '.b.', 0)", "abc");
+    evalNull("regexp_substr('abc', '.b.', 1)");
+    //evalEquals("regexp_substr('abc', '([a-z])(b)', 1)", "a");
+    //evalEquals("regexp_substr('abc', '([a-z])(b)', 2)", "b");
+   
     // An empty pattern matches nothing
     evalNull("regexp_substr('email@apache.org', '')");
 

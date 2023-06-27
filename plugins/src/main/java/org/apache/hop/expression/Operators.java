@@ -48,6 +48,7 @@ import org.apache.hop.expression.operator.IsNotFalseOperator;
 import org.apache.hop.expression.operator.IsNotNullOperator;
 import org.apache.hop.expression.operator.IsNotTrueOperator;
 import org.apache.hop.expression.operator.IsNullOperator;
+import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.IsTrueOperator;
 import org.apache.hop.expression.operator.LessThanOperator;
 import org.apache.hop.expression.operator.LessThanOrEqualOperator;
@@ -99,8 +100,10 @@ public class Operators {
   public static final Operator IS_NOT_TRUE = new IsNotTrueOperator();
   public static final Operator IS_FALSE = new IsFalseOperator();
   public static final Operator IS_NOT_FALSE = new IsNotFalseOperator();
-  public static final Operator IS_DISTINCT_FROM = new IsDistinctFromOperator();
+  public static final Operator IS_DISTINCT_FROM = new IsDistinctFromOperator();  
   public static final Operator IS_NOT_DISTINCT_FROM = new IsNotDistinctFromOperator();
+  public static final Operator SIMILAR_TO = new SimilarToOperator();
+  public static final Operator NOT_SIMILAR_TO = new SimilarToOperator();
   public static final Operator IN = new InOperator();
   public static final Operator LIKE = new LikeOperator();
   public static final Operator ILIKE = new ILikeOperator();
@@ -153,7 +156,7 @@ public class Operators {
       Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL,
           GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
           LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE, CONCAT, IN,
-          IS_DISTINCT_FROM, IS_NULL, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
+          IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(SET_OPERATORS);

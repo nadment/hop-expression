@@ -96,9 +96,9 @@ public enum ExpressionError {
   INVALID_DATATYPE("Expression.InvalidDataType"),
   //
   INVALID_VALUES("Expression.InvalidValues"),
-  //
+  // Invalid regexp pattern ''{0}''
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
-  //
+  // 
   INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),
   //
   JSON_PATH_NOT_FOUND("Expression.JsonPathNotFound"),

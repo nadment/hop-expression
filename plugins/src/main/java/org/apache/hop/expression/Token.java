@@ -143,7 +143,11 @@ public class Token {
     /** The literal value "TRUE". */
     TRUE,
     /** The literal value "FALSE". */
-    FALSE, ELSE, THEN, END, WHEN, TRY,    
+    FALSE, ELSE, THEN, END, WHEN, TRY,
+    /** The "SIMILAR TO" operator. */
+    TO,
+    /** The "SIMILAR TO" operator. */
+    SIMILAR,
     /** 
      * Used by functions:
      * COUNT([DISTINCT] numeric),  
