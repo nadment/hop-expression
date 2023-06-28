@@ -25,13 +25,13 @@ import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
 import java.text.ParseException;
 

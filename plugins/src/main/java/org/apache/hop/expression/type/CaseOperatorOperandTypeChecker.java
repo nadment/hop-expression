@@ -25,28 +25,29 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
   public CaseOperatorOperandTypeChecker() {}
 
   @Override
-  public boolean checkOperandTypes(Call call) {
-    IExpression switchExpression = call.getOperand(0);
-    Tuple whenTuple = (Tuple) call.getOperand(1);
-    Tuple thenTuple = (Tuple) call.getOperand(2);
-    IExpression elseExpression = call.getOperand(3);
+  public boolean checkOperandTypes(final Call call) {  
+    Tuple whenTuple= call.getOperand(1).asTuple();;
+    Tuple thenTuple = call.getOperand(2).asTuple();;
+    IExpression elseExpression= call.getOperand(3);;
 
-    if (switchExpression == Literal.NULL) {
-      for (IExpression whenOperand : whenTuple) {
-        if (!whenOperand.getType().isSameFamily(TypeFamily.BOOLEAN) ) {
-          return false;
-        }
-      }
-    } else {
-      Type switchType = switchExpression.getType();
-
-      for (IExpression whenOperand : whenTuple) {
-        if (!whenOperand.getType().isSameFamily(switchType)) {
-          return false;
-        }
+    Type valueType = call.getOperand(0).getType();
+    
+    // Searched case operator
+    if (call.getOperand(0)==Literal.NULL) {      
+      valueType = BooleanType.BOOLEAN;
+    } 
+    // Simple case operator
+    else {     
+      valueType = call.getOperand(0).getType();
+    }
+    
+    for (IExpression whenOperand : whenTuple) {
+      if (!whenOperand.getType().isSameFamily(valueType)) {
+        return false;
       }
     }
-
+    
+    
     Type thenType = UnknownType.UNKNOWN;
     for (IExpression thenOperand : thenTuple) {     
       // First non null      

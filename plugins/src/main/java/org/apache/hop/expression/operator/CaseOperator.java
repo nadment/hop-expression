@@ -21,6 +21,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
@@ -46,13 +47,13 @@ public class CaseOperator extends Operator {
   @Override
   public Object eval(IExpression[] operands) throws Exception {
     int index = 0;
-    IExpression switchExpression = operands[0];
+    IExpression valueExpression = operands[0];
     Tuple whenTuple = (Tuple) operands[1];
     Tuple thenTuple = (Tuple) operands[2];
     IExpression elseExpression = operands[3];
 
     // Search case
-    if (switchExpression == Literal.NULL) {
+    if (valueExpression == Literal.NULL) {
       for (IExpression whenOperand : whenTuple) {
         Boolean predicat = whenOperand.getValue(Boolean.class);
         if (predicat != null && predicat) {
@@ -63,12 +64,24 @@ public class CaseOperator extends Operator {
     }
     // Simple case
     else {
-      Object condition = switchExpression.getValue();
+      Object condition = valueExpression.getValue();
       if (condition != null) {
         for (IExpression whenOperand : whenTuple) {
-          Object value = whenOperand.getValue();
-          if (Comparison.compare(condition, value) == 0) {
-            return thenTuple.get(index).getValue();
+          
+          // Multi values
+          if ( whenOperand.is(Kind.TUPLE)) {
+            for (IExpression expression : whenOperand.asTuple()) {
+              Object value = expression.getValue();          
+              if (Comparison.compare(condition, value) == 0) {
+                return thenTuple.get(index).getValue();
+              }              
+            }
+          }
+          else {
+            Object value = whenOperand.getValue();          
+            if (Comparison.compare(condition, value) == 0) {
+              return thenTuple.get(index).getValue();
+            }
           }
           index++;
         }
@@ -81,8 +94,8 @@ public class CaseOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Tuple whenTerm = (Tuple) call.getOperand(1);
-    Tuple thenTerm = (Tuple) call.getOperand(2);
+    Tuple whenTerm = call.getOperand(1).asTuple();
+    Tuple thenTerm = call.getOperand(2).asTuple();
     IExpression elseTerm = call.getOperand(3);
 
     // Search CASE
@@ -167,16 +180,16 @@ public class CaseOperator extends Operator {
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("CASE");
 
-    // Form switch expression
-    IExpression switchExpression = operands[0];
-    if (switchExpression != Literal.NULL) {
+    // Simple case
+    IExpression valueExpression = operands[0];
+    if (valueExpression != Literal.NULL) {
       writer.append(' ');
-      switchExpression.unparse(writer);
+      valueExpression.unparse(writer);
     }
 
     int index = 0;
-    Tuple whenTuple = (Tuple) operands[1];
-    Tuple thenTuple = (Tuple) operands[2];
+    Tuple whenTuple = operands[1].asTuple();
+    Tuple thenTuple = operands[2].asTuple();
     for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
       whenOperand.unparse(writer);

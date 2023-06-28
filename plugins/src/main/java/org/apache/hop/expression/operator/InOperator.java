@@ -132,7 +132,8 @@ public class InOperator extends Operator {
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append(" IN ");
+    writer.append(" IN (");
     operands[1].unparse(writer);
+    writer.append(')');
   }
 }

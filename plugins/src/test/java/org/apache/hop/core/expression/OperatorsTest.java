@@ -1493,7 +1493,7 @@ public class OperatorsTest extends ExpressionTest {
     
     evalEquals("case FIELD_INTEGER when 10 then 10 when 40 then 40 else 50 end", 40L);
     evalEquals("case FIELD_INTEGER when 10 then 10 when 20 then 20 else -1 end", -1L);
-    evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end");
+    evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end");   
     
     // If the operand is null, the else clause applies.
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L);
@@ -1505,13 +1505,22 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2L);
     evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2L);
     
+    //Comma-separated form for multi value
+    evalEquals("CASE FIELD_INTEGER WHEN 10,20 THEN 'A' WHEN 40,50,60,70 THEN 'B' ELSE 'C' END","B");
+    evalEquals("CASE FIELD_INTEGER WHEN 10,20 THEN 'A' WHEN 30,40,50,60,70 THEN 'B' ELSE 'C' END","B");
+    evalEquals("CASE FIELD_INTEGER WHEN 10,20 THEN 'A' WHEN 30,40 THEN 'B' ELSE 'C' END","B");
+    
     // Incompatible return type
     evalFails("case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error'");        
 
     // Missing 'END'
     evalFails("case FIELD_INTEGER when 40 then 10 else 50");
-    
+
+      
     optimize("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
+    
+    // Multi values
+    optimize("CASE FIELD_INTEGER WHEN 1,2,3 THEN 'A' WHEN 4,5,6,7 THEN 'B' ELSE 'C' END");
   }
 }
 

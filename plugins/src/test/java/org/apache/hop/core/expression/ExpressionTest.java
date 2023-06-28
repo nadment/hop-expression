@@ -38,8 +38,8 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -351,17 +351,6 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
 
-    // evalEquals("CAST(1.25 as Integer)", 1L);
-    // assertEquals(new BigDecimal("1.23456"), Converter.cast("1.23456", new NumberDataType()));
-    // optimize("CAST(123456.1 AS STRING(8))", "CAST(123456.1 AS STRING(8))");
-    // evalEquals("1_234", 1234L);
-    // evalEquals("1", 1L);
-    // returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(1,2)", new NumberDataType(37,3));
-   
-    // evalFails("0x_2F");
-    // evalFails("0x_2F");
-
-    // evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
   }
 }
 

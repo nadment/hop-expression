@@ -139,7 +139,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   public void unparse(StringWriter writer) {
-    writer.append('(');
     boolean first = true;
     for (IExpression expression : values) {
       if (first)
@@ -149,7 +148,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
       }
       expression.unparse(writer);
     }
-    writer.append(')');
   }
   
   @Override

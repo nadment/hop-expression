@@ -24,11 +24,11 @@ A CASE expression consists of a set of WHEN/THEN clauses and an optional ELSE cl
 Simple CASE expressions
 ----
 CASE expression
-    WHEN value1 THEN result1
+    WHEN value1A [, value1N... ] THEN result1
   [ WHEN value2 THEN result2 ]
   [ ... ]
   [ ELSE result3 ]
-END		
+END
 ----
 
 Searched CASE expressions
@@ -44,6 +44,17 @@ END
 == Usage 
 === Simple CASE expressions
 A valued CASE expression tests for the first WHEN expression that is equal to a test expression and returns the value of the matching THEN expression. If no WHEN expression is equal to the test expression, CASE returns the ELSE expression, or, if omitted, NULL.
+
+The simple case allows one value or a list of values in the when clause.
+----
+CASE expression 
+  WHEN 0, 1, 2 THEN 'good'
+  WHEN 3, 7 THEN 'bad'
+  WHEN 9 THEN 'unknown'  
+  ELSE 'error'
+END
+----
+
 
 === Searched CASE expressions
 A searched CASE expression tests for the first WHEN expression that evaluates to TRUE and returns the value of the matching THEN expression. If no WHEN expression evaluates to TRUE, CASE returns the ELSE expression, or, if omitted, NULL.

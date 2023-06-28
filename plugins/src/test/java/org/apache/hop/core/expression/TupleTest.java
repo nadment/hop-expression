@@ -58,7 +58,7 @@ public class TupleTest extends ExpressionTest {
     assertNotEquals(tuple1, tuple3);
     assertNotEquals(tuple7, tuple8);
     assertEquals(tuple1.hashCode(), tuple2.hashCode());    
-    assertEquals("(1,0,NULL)", tuple1.toString());
+    assertEquals("1,0,NULL", tuple1.toString());
 
     // Not evaluable alone
     assertThrows(ExpressionException.class, () -> tuple1.getValue());      

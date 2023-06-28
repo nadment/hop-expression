@@ -21,7 +21,7 @@ Returns the first of its arguments that is not null.
 == Syntax
 
 ----
-COALESCE( expr1, expr2 [, exprN... ] )
+COALESCE( expression [, expression... ] )
 ----
 
 == Usage

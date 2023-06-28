@@ -17,7 +17,6 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
-import org.apache.hop.expression.ExpressionError;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;

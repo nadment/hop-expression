@@ -17,14 +17,14 @@ package org.apache.hop.expression;
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -45,8 +45,8 @@ public class ExpressionParser {
   private static final Set<String> RESERVED_WORDS =
       Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
           "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "JSON",
-          "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR", "SYMMETRIC", "THEN",
-          "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
+          "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR", "SYMMETRIC",
+          "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -236,7 +236,7 @@ public class ExpressionParser {
           }
           throw new ParseException(
               ExpressionError.INVALID_OPERATOR.message(Operators.IS_DISTINCT_FROM),
-              this.getPosition());         
+              this.getPosition());
         default:
           throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
               this.getPosition());
@@ -297,16 +297,15 @@ public class ExpressionParser {
 
       expression = new Call(operator, expression, start, end);
     }
-    
-    if (isThenNext(Id.SIMILAR)) {    
-      if (isThenNext(Id.TO)) {        
+
+    if (isThenNext(Id.SIMILAR)) {
+      if (isThenNext(Id.TO)) {
         expression = new Call(Operators.SIMILAR_TO, expression, parseAdditive());
-      }
-      else throw new ParseException(
-          ExpressionError.INVALID_OPERATOR.message(Operators.SIMILAR_TO),
-          this.getPosition());
+      } else
+        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Operators.SIMILAR_TO),
+            this.getPosition());
     }
-    
+
     if (not) {
       return new Call(Operators.BOOLNOT, expression);
     }
@@ -550,7 +549,7 @@ public class ExpressionParser {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
     try {
       return Literal.of(number.longValueExact());
-    } catch (ArithmeticException  e) {
+    } catch (ArithmeticException e) {
       return Literal.of(number);
     }
   }
@@ -756,14 +755,30 @@ public class ExpressionParser {
     List<IExpression> whenList = new ArrayList<>();
     List<IExpression> thenList = new ArrayList<>();
 
+    boolean simple = false;
+
     // Simple case
     if (!is(Id.WHEN)) {
       valueExpression = this.parseLogicalOr();
+      simple = true;
     }
 
-    // Search condition case
     while (isThenNext(Id.WHEN)) {
-      whenList.add(this.parseLogicalOr());
+      IExpression expression = this.parseLogicalOr();
+
+      // Simple case with multi values
+      if (simple && isThenNext(Id.COMMA)) {
+        List<IExpression> values = new ArrayList<>();
+        values.add(expression);
+
+        do {
+          values.add(this.parseLogicalOr());
+        } while (this.isThenNext(Id.COMMA));
+
+        expression = new Tuple(values);
+      }
+      whenList.add(expression);
+
       if (isNotThenNext(Id.THEN)) {
         throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE),
             this.getPosition());
@@ -1571,6 +1586,6 @@ public class ExpressionParser {
     }
     return null;
   }
-  
+
 }
 

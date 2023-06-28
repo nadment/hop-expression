@@ -16,13 +16,13 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
@@ -371,7 +371,7 @@ public final class Literal implements IExpression {
       case JSON:
         try {
           writer.append("JSON '");
-          writer.append(MAPPER.writeValueAsString((JsonNode) value));
+          writer.append(MAPPER.writeValueAsString(value));
           writer.append('\'');
         } catch (JsonProcessingException e) {
           throw new RuntimeException("Unable to unparse json object ", e);

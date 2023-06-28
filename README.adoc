@@ -57,7 +57,7 @@ end
 * Bitwise operators  `&` `|` `~` `^`
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` `LIKE` `ILIKE` `SIMILAR TO`
 * Concatenate operator `||`
-* Conditional operator `CASE WHEN`
+* Conditional operator `CASE WHEN` `IF` `IFNULL` `NULLIF`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 * Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
 * User Defined Function (UDF) support has metadata
