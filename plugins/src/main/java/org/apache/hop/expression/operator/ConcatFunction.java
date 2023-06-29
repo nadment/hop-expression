@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -28,7 +27,6 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -52,17 +50,18 @@ public class ConcatFunction extends Function {
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-   
+
     // Combine chained CONCAT operator and remove NULL
-    ArrayList<IExpression> operands = new ArrayList<>();    
+    ArrayList<IExpression> operands = new ArrayList<>();
     for (IExpression operand : getChainedOperands(call, true)) {
-      if (operand.isNull()) continue;
+      if (operand.isNull())
+        continue;
       operands.add(operand);
     }
-    
+
     switch (operands.size()) {
       case 0: // Nothing to concat
         return Literal.NULL;
@@ -73,7 +72,7 @@ public class ConcatFunction extends Function {
     }
   }
 
-  
+
   @Override
   public Object eval(IExpression[] operands) throws Exception {
 
@@ -92,16 +91,13 @@ public class ConcatFunction extends Function {
 
     // Concat Binary
     if (firstNotNull instanceof byte[]) {
-      try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-        for (Object value : values) {
-          if (value != null) {
-            output.write((byte[]) value);
-          }
+      ByteArrayOutputStream output = new ByteArrayOutputStream();
+      for (Object value : values) {
+        if (value != null) {
+          output.write((byte[]) value);
         }
-        return output.toByteArray();
-      } catch (IOException e) {
-        throw new ExpressionException(ExpressionError.INTERNAL_ERROR, e.getMessage());
       }
+      return output.toByteArray();
     }
 
     // Concat String

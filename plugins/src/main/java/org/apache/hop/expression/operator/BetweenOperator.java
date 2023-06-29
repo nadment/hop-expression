@@ -24,6 +24,7 @@ import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * <code>BETWEEN</code> operator.
@@ -62,7 +63,21 @@ public class BetweenOperator extends Operator {
 
     return Comparison.compare(value, start) >= 0 && Comparison.compare(value, end) <= 0;
   }
-
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof BetweenOperator) {
+      BetweenOperator other = (BetweenOperator) obj;
+      return between.equals(other.between);
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), this.between);
+  }  
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

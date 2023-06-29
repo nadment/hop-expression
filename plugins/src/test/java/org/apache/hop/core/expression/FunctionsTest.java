@@ -2387,6 +2387,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Date_Trunc(DAY, NULL_DATE)");
     
     evalFails("Date_Trunc(DAY)");
+    evalFails("Date_Trunc(ISOWEEK, DATE '2020-05-25')");
     evalFails("Date_Trunc(DATE '2020-05-25')");
     evalFails("Date_Trunc(NULL_DATE, DATE '2020-05-25')");
     evalFails("Date_Trunc(123, DATE '2020-05-25')");
@@ -2734,6 +2735,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Base64_Encode() throws Exception {
     evalEquals("Base64_Encode('Apache Hop')", "QXBhY2hlIEhvcA==");
     evalEquals("Base64_Encode('Apache Hop'::Binary)", "QXBhY2hlIEhvcA==");
+    evalNull("Base64_Encode(NULL_STRING)");
     evalFails("Base64_Encode()");
     returnType("Base64_Encode('QXBhY2hlIEhvcA==')", StringType.STRING);
   }
@@ -2742,6 +2744,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Base64_Decode() throws Exception {
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA==')", "Apache Hop");
     evalEquals("Base64_Decode('QXBhY2hlIEhvcA=='::Binary)", "Apache Hop");
+    evalNull("Base64_Decode(NULL_STRING)");
     evalFails("Base64_Decode()");
     returnType("Base64_Decode('QXBhY2hlIEhvcA==')", StringType.STRING);
   }
@@ -2750,6 +2753,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Base32_Encode() throws Exception {
     evalEquals("Base32_Encode('Apache Hop')", "IFYGCY3IMUQEQ33Q");
     evalEquals("Base32_Encode('Apache Hop'::Binary)", "IFYGCY3IMUQEQ33Q");
+    evalNull("Base32_Encode(NULL_STRING)");
     evalFails("Base32_Encode()");
     returnType("Base32_Encode('QXBhY2hlIEhvcA==')", StringType.STRING);
   }
@@ -2758,6 +2762,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Base32_Decode() throws Exception {
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q')", "Apache Hop");
     evalEquals("Base32_Decode('IFYGCY3IMUQEQ33Q'::Binary)", "Apache Hop");
+    evalNull("Base32_Decode(NULL_STRING)");
     evalFails("Base32_Decode()");
     returnType("Base32_Decode('QXBhY2hlIEhvcA==')", StringType.STRING);
   }

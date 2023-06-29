@@ -170,8 +170,10 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("DATE '2018-01-01' > DATE '2019-01-01'");
 
     evalNull("NULL_BOOLEAN > 0");
+    evalNull("NULL_INTEGER > 0");
+    evalNull("NULL_NUMBER > 0");
     evalNull("1 > NULL_BOOLEAN");
-
+        
     evalFails("> FIELD_INTEGER");
     evalFails("FIELD_INTEGER > ");
     evalFails("FIELD_STRING>5");
@@ -184,6 +186,8 @@ public class OperatorsTest extends ExpressionTest {
     
     // Simplify comparison with same term
     optimize("FIELD_STRING>FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
+    
+    
     
     returnType("'bar' > 'foo'", BooleanType.BOOLEAN);
   }
@@ -597,6 +601,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
     evalFalse("5 between 5 and 3");
+    evalTrue("FIELD_INTEGER between symmetric 30 and 50");
     evalTrue("FIELD_INTEGER between symmetric 50 and 30");
     evalTrue("FIELD_INTEGER between -3+27 and 50");
     evalTrue("'the' between 'that' and 'then'");
@@ -620,7 +625,7 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING");
 
     optimize("FIELD_INTEGER BETWEEN 10 AND 20");
-    optimize("FIELD_INTEGER BETWEEN SYMMETRIC 50 AND 20");
+    optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20");
     optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
     optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");    
     optimizeFalse("2 between 3 and (5+1)");
@@ -1041,11 +1046,9 @@ public class OperatorsTest extends ExpressionTest {
         
     optimize("0/0", "0/0");
     optimize("FIELD_INTEGER/4");
-    optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
-    optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
+    optimize("FIELD_INTEGER/1", "FIELD_INTEGER");    
     optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
     optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
-    optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
     
     returnType("FIELD_INTEGER/4", NumberType.NUMBER);
     returnType("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(1,2)", new NumberType(6,2));
@@ -1060,6 +1063,9 @@ public class OperatorsTest extends ExpressionTest {
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
     evalFails("Div0(40)");
+        
+    optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
+    optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
     
     returnType("Div0(FIELD_INTEGER,2)", NumberType.NUMBER);
   }
