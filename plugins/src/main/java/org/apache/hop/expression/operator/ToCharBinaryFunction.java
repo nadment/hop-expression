@@ -16,32 +16,36 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.FunctionPlugin;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.BooleanType;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
- * Converts a string or numeric expression to a boolean value.
+ * Converts a binary expression to a string value.
  */
-@FunctionPlugin
-public class TryToBooleanFunction extends ToBooleanFunction {
+public class ToCharBinaryFunction extends ToCharFunction {
 
-  public TryToBooleanFunction() {
-    super("TRY_TO_BOOLEAN");
+  public ToCharBinaryFunction() {
+    super();
   }
-
+  
   @Override
-  public Object eval(final IExpression[] operands)
+  public Object eval(IExpression[] operands)
       throws Exception {
-    Object value = operands[0].getValue();
-    if (value == null)
-      return null;
-
-    try {
-      return BooleanType.BOOLEAN.cast(value, null);
-    } catch (ConversionException e) {
+    byte[] bytes = operands[0].getValue(byte[].class);
+    if (bytes == null) {
       return null;
     }
+
+    String pattern = operands[1].getValue(String.class);
+    if (pattern.equals("BASE64")) {
+      return Base64.getEncoder().encodeToString(bytes);
+    }
+    if (pattern.equals("UTF8")) {
+      return new String(bytes, StandardCharsets.UTF_8);
+    }
+    
+    return Hex.encodeHexString(bytes); 
   }
 }

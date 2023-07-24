@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -29,6 +28,14 @@ import java.time.ZonedDateTime;
 
 /**
  * Adds or subtracts a specified number of time unit to a date or timestamp
+ * 
+ * @see AddDaysFunction
+ * @see AddWeeksFunction 
+ * @see AddMonthsFunction
+ * @see AddYearsFunction
+ * @see AddHoursFunction
+ * @see AddMinutesFunction
+ * @see AddSecondsFunction
  */
 @FunctionPlugin
 public class DateAddFunction extends Function {
@@ -69,8 +76,8 @@ public class DateAddFunction extends Function {
         return datetime.plusSeconds(value);
       case NANOSECOND:
         return datetime.plusNanos(value);
-      default:
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
+      default:        
+        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }
 }

@@ -16,12 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.core.compress.CompressionPluginType;
-import org.apache.hop.core.compress.ICompressionProvider;
-import org.apache.hop.core.plugins.IPlugin;
-import org.apache.hop.core.plugins.PluginRegistry;
-import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -63,20 +57,5 @@ public class DecompressFunction extends Function {
       output.write(buffer, 0, n);
     }
     return output.toByteArray();
-  }
-
-  private static ICompressionProvider getCompressionProviderByName(String id)
-      throws ExpressionException {
-    PluginRegistry registry = PluginRegistry.getInstance();
-    for (IPlugin plugin : registry.getPlugins(CompressionPluginType.class)) {
-      if (id.equalsIgnoreCase(plugin.getIds()[0])) {
-        try {
-          return registry.loadClass(plugin, ICompressionProvider.class);
-        } catch (Exception e) {
-          throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, id);
-        }
-      }
-    }
-    return null;
   }
 }

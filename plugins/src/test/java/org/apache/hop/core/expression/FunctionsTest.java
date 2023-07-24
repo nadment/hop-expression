@@ -131,7 +131,10 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("TRY_TO_DATE('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));    
     
     // Return NULL if parsing failed
+    evalNull("TRY_TO_DATE('2019-01-42','YYYY-MM-DD')");
+    evalNull("TRY_TO_DATE('2019-01-0x','YYYY-MM-DD')");
     evalNull("TRY_TO_DATE('2019-13-13','YYYY-MM-DD')");
+    evalNull("TRY_TO_DATE('20x9-13-13','YYYY-MM-DD')");   
     
     // Failed if format is bad 
     evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
@@ -434,6 +437,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("First_Day(FIELD_STRING)");
     evalFails("First_Day(FIELD_DATE, FIELD_INTEGER)");
     evalFails("First_Day(FIELD_DATE, NULL)");
+    evalFails("First_Day(FIELD_DATE, HOUR)");
 
     returnType("First_Day(FIELD_DATE)", DateType.DATE);
   }
@@ -464,6 +468,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Last_Day(FIELD_STRING)");
     evalFails("Last_Day(FIELD_DATE, FIELD_INTEGER)");
     evalFails("Last_Day(FIELD_DATE, NULL)");
+    evalFails("Last_Day(FIELD_DATE, HOUR)");
     
     returnType("Last_Day(FIELD_DATE)", DateType.DATE);
   }
@@ -481,6 +486,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Next_Day(FIELD_INTEGER, 'monday')");
     evalFails("Next_Day(FIELD_STRIN, 'monday')");
     evalFails("Next_Day(FIELD_DATE)");
+    evalFails("Next_Day(FIELD_DATE, HOUR)");
 
     returnType("Next_Day(FIELD_DATE,'monday')", DateType.DATE);
   }
@@ -1333,7 +1339,6 @@ public class FunctionsTest extends ExpressionTest {
     returnType("Exp(1)", NumberType.NUMBER);
   }
 
-
   @Test
   public void Factorial() throws Exception {
     evalEquals("Factorial(0)", 1L);
@@ -1518,10 +1523,11 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Length(BINARY '0F0FA')", 3L);
 
     evalNull("Length(NULL_STRING)");
-    evalFails("Length()");
-
-    returnType("Length(FIELD_STRING)", IntegerType.INTEGER);
     
+    evalFails("Length()");
+    evalFails("Length(true)");
+
+    returnType("Length(FIELD_STRING)", IntegerType.INTEGER);    
   }
 
   @Test
@@ -2099,12 +2105,11 @@ public class FunctionsTest extends ExpressionTest {
     // Binary
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','HEX')", "41706163686520486f70");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','BASE64')", "QXBhY2hlIEhvcA==");
+    evalEquals("TO_CHAR(BINARY '41706163686520486f70','UTF8')", "Apache Hop");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','UTF-8')", "Apache Hop");
-        
+    
     // String
-    evalEquals("TO_CHAR('Apache Hop','HEX')","41706163686520486f70");
-    evalEquals("TO_CHAR('Apache Hop','BASE64')","QXBhY2hlIEhvcA==");
-    evalEquals("TO_CHAR('Apache Hop','UTF8')","Apache Hop");
+    evalEquals("TO_CHAR('Apache Hop')","Apache Hop");
     
     returnType("TO_CHAR(12,'99MI')", StringType.STRING);
   }
@@ -2595,7 +2600,6 @@ public class FunctionsTest extends ExpressionTest {
 
     // Mix String and Binary
     evalFails("Concat(NOM,0x2A3B)");
-
     
     optimize("CONCAT('TES','T')", "'TEST'");
     optimize("'A'||'B'", "'AB'");

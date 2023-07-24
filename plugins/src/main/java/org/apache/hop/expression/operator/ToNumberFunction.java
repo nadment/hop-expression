@@ -35,7 +35,11 @@ import org.apache.hop.expression.util.NumberFormat;
 public class ToNumberFunction extends Function {
   
   public ToNumberFunction() {
-    super("TO_NUMBER", ReturnTypes.NUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
+    this("TO_NUMBER");
+  }
+  
+  protected ToNumberFunction(String id) {
+    super(id, ReturnTypes.NUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
   

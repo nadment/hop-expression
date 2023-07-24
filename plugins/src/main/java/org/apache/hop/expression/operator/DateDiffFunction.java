@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -29,7 +28,15 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 /**
- *  Returns the difference in time unit between two date or timestamp. 
+ *  Returns the difference in time unit between two date or timestamp.
+ *  
+ * @see DaysBetweenFunction
+ * @see WeeksBetweenFunction 
+ * @see MonthsBetweenFunction
+ * @see YearsBetweenFunction
+ * @see HoursBetweenFunction
+ * @see MinutesBetweenFunction
+ * @see SecondsBetweenFunction 
  */
 @FunctionPlugin
 public class DateDiffFunction extends Function {
@@ -82,8 +89,8 @@ public class DateDiffFunction extends Function {
         return startDateTime.until(endDateTime, ChronoUnit.MICROS);
       case NANOSECOND:
         return startDateTime.until(endDateTime, ChronoUnit.NANOS);
-      default:
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
+      default:        
+        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }
 }

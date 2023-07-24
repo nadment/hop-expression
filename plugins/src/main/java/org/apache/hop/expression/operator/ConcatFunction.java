@@ -23,20 +23,26 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
 
 /**
- * String concatenation operator '<code>||</code>'
+ * String or Binary concatenation operator '<code>||</code>'
  */
 @FunctionPlugin
 public class ConcatFunction extends Function {
 
+  private final static Function CONCAT_BINARY = new ConcatBinaryFunction();
+  private final static Function CONCAT_STRING = new ConcatStringFunction();
+  
   // Function
   public ConcatFunction() {
     super("CONCAT", ReturnTypes.FIRST_KNOWN,
@@ -53,28 +59,35 @@ public class ConcatFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
+    Type type = null;
     // Combine chained CONCAT operator and remove NULL
     ArrayList<IExpression> operands = new ArrayList<>();
     for (IExpression operand : getChainedOperands(call, true)) {
       if (operand.isNull())
-        continue;
-      operands.add(operand);
+        continue;    
+      if (type==null)
+        type=operand.getType();
+      operands.add(0,operand);
     }
-
+    
+    Operator operator = CONCAT_STRING;
+    if ( BinaryType.BINARY.isSameFamily(type)) {
+      operator = CONCAT_BINARY;
+    }
+    
     switch (operands.size()) {
       case 0: // Nothing to concat
         return Literal.NULL;
       case 1: // Concat(X) => X
         return operands.get(0);
       default:
-        return new Call(call.getOperator(), operands);
+        return new Call(operator, operands);
     }
   }
 
 
-  @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  //@Override
+  public Object eval2(IExpression[] operands) throws Exception {
 
     Object firstNotNull = null;
     Object[] values = new Object[operands.length];

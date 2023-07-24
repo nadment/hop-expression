@@ -26,6 +26,9 @@ public class IfFunctionReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public Type getReturnType(Call call) {
+    if ( call.getOperandCount()<2)
+      return UnknownType.UNKNOWN;
+    
     Type type1 = call.getOperand(1).getType();
     if ( call.getOperandCount()==2 ) {
       return type1;

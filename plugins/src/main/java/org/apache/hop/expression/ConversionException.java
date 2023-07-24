@@ -14,20 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.type;
+package org.apache.hop.expression;
 
-import org.apache.hop.expression.Call;
+public class ConversionException extends RuntimeException {
 
-public class OrdinalReturnTypeInference implements IReturnTypeInference {
+  private static final long serialVersionUID = 8634955627375465878L;
 
-  private final int ordinal;
-
-  public OrdinalReturnTypeInference(int ordinal) {
-    this.ordinal = ordinal;
+  /**
+   * Construct a new conversion exception.
+   * 
+   * @param error a error message
+   */
+  public ConversionException(String error) {
+    super(error);
   }
 
-  @Override
-  public Type getReturnType(final Call call) {  
-    return call.getOperand(ordinal).getType();
+  /**
+   * Construct a new expression exception.
+   * 
+   * @param error a error message
+   */
+  public ConversionException(ExpressionError error) {
+    super(error.message());
+  }
+
+  public ConversionException(ExpressionError error, Object... values) {
+    super(error.message(values));
   }
 }

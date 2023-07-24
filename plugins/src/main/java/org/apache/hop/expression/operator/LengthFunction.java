@@ -16,13 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
  * The function returns the number of characters of the specified string or binary.
@@ -30,20 +35,26 @@ import org.apache.hop.expression.type.StringType;
 @FunctionPlugin
 public class LengthFunction extends Function {
 
+  private final static Function LENGTH_BINARY = new LengthBinaryFunction();
+  private final static Function LENGTH_STRING = new LengthStringFunction();
+  
   public LengthFunction() {
     super("LENGTH", ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/length.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    Object value = operands[0].getValue();
-    if (value == null)
-      return value;
-    if (value instanceof byte[]) {
-      return Long.valueOf(((byte[]) value).length);
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    Type type = call.getOperand(0).getType();
+
+    if (type.isSameFamily(StringType.STRING) ) {
+      return new Call(LENGTH_STRING, call.getOperand(0));
     }
-    return Long.valueOf(StringType.coerce(value).length());
+    if (type.isSameFamily(BinaryType.BINARY) ) {
+      return new Call(LENGTH_BINARY, call.getOperand(0));
+    }
+    
+    return call;
   }
 }

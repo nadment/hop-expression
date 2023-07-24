@@ -14,20 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.type;
+package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.util.NumberFormat;
+import java.math.BigDecimal;
 
-public class OrdinalReturnTypeInference implements IReturnTypeInference {
+/**
+ * Converts a numeric expression to a string value.
+ */
+public class ToCharNumberFunction extends ToCharFunction {
 
-  private final int ordinal;
-
-  public OrdinalReturnTypeInference(int ordinal) {
-    this.ordinal = ordinal;
+  public ToCharNumberFunction() {
+    super();
   }
-
+  
   @Override
-  public Type getReturnType(final Call call) {  
-    return call.getOperand(ordinal).getType();
+  public Object eval(IExpression[] operands)
+      throws Exception {
+    BigDecimal value = operands[0].getValue(BigDecimal.class);
+    if (value == null) {
+      return null;
+    }
+
+    String pattern = operands[1].getValue(String.class);
+
+    return NumberFormat.of(pattern).format(value);    
   }
 }

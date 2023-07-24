@@ -17,6 +17,7 @@
 
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ExpressionError;
 
 public final class BooleanType extends Type {
@@ -58,8 +59,7 @@ public final class BooleanType extends Type {
       return convert((String) value);
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
   
   /**
@@ -78,8 +78,7 @@ public final class BooleanType extends Type {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.BOOLEAN));
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.BOOLEAN);
   }
   
   public static final Boolean convert(final String str) {    
@@ -122,7 +121,7 @@ public final class BooleanType extends Type {
         break;
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(str, TypeName.STRING, TypeName.BOOLEAN));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_COERCION, str, TypeName.STRING, TypeName.BOOLEAN);
   }
 }

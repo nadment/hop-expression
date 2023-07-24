@@ -14,20 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.type;
+package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
 
-public class OrdinalReturnTypeInference implements IReturnTypeInference {
+/**
+ * The function returns the number of characters of the specified string.
+ */
+public class LengthBinaryFunction extends LengthFunction {
 
-  private final int ordinal;
-
-  public OrdinalReturnTypeInference(int ordinal) {
-    this.ordinal = ordinal;
+  public LengthBinaryFunction() {
+    super();
   }
 
   @Override
-  public Type getReturnType(final Call call) {  
-    return call.getOperand(ordinal).getType();
+  public Object eval(IExpression[] operands)
+      throws Exception {
+    byte[] value = operands[0].getValue(byte[].class);
+    if (value == null)
+      return value;
+    return Long.valueOf(value.length);
   }
 }

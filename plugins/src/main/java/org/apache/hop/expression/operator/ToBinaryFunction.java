@@ -38,9 +38,12 @@ import java.util.Base64;
  */
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
-
   public ToBinaryFunction() {
-    super("TO_BINARY", ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
+    this("TO_BINARY");
+  }
+  
+  protected ToBinaryFunction(String id) {
+    super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
         OperatorCategory.CONVERSION, "/docs/to_binary.html");
   }
 
@@ -61,10 +64,9 @@ public class ToBinaryFunction extends Function {
 
     pattern = pattern.toUpperCase();
     
-    if ( pattern.equals("UTF8") ) pattern = "UTF-8";
+    if ( pattern.equals("UTF-8") ) pattern = "UTF8";
     
-    if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF-8")
-        || pattern.equals("UTF8"))) {
+    if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF8"))) {
       throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
     }
 
@@ -82,14 +84,11 @@ public class ToBinaryFunction extends Function {
     if (format.equals("HEX")) {
       return formatHex(value);
     }
-    if (format.equals("BASE64")) {
-      return formatBase64(value);
-    }
-    if (format.equals("UTF-8")) {
+    if (format.equals("UTF8")) {
       return formatUtf8(value);
     }
 
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+    return formatBase64(value);
   }
   
   protected byte[] formatHex(String value) throws DecoderException {

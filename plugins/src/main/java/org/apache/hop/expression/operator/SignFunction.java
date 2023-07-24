@@ -41,6 +41,7 @@ public class SignFunction extends Function {
   @Override
   public Object eval(IExpression[] operands)
       throws Exception {
+    //BigDecimal value = operands[0].getValue(BigDecimal.class);
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return value;

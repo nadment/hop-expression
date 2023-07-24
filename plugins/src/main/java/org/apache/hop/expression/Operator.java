@@ -21,8 +21,10 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.util.Documentations;
 import java.io.StringWriter;
 import java.math.MathContext;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Stack;
+import java.util.Queue;
 import java.util.function.Predicate;
 
 /**
@@ -272,14 +274,14 @@ public abstract class Operator implements Comparable<Operator> {
     return id;
   }
   
-  protected Stack<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
-    return getChainedOperands(call, new Stack<>(), predicate);
+  protected Deque<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
+    return getChainedOperands(call, new LinkedList<>(), predicate);
   }
   
-  private Stack<IExpression> getChainedOperands(Call call, Stack<IExpression> operands, Predicate<IExpression> predicate) {   
+  private Deque<IExpression> getChainedOperands(Call call, Deque<IExpression> operands, Predicate<IExpression> predicate) {   
     for (IExpression operand: call.getOperands()) {      
       if ( operand.is(call.getOperator()) ) {
-        getChainedOperands((Call) operand, operands, predicate); 
+        getChainedOperands(operand.asCall(), operands, predicate); 
       }          
       else if ( predicate.test(operand) ) {
         operands.push(operand);
@@ -289,14 +291,14 @@ public abstract class Operator implements Comparable<Operator> {
     return operands;
   }
   
-  protected Stack<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
-    return getChainedOperands(call, new Stack<IExpression>(), allowDuplicate);
+  protected Queue<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
+    return getChainedOperands(call, new LinkedList<IExpression>(), allowDuplicate);
   }
   
-  private Stack<IExpression> getChainedOperands(Call call, Stack<IExpression> operands, boolean allowDuplicate) {   
+  private Queue<IExpression> getChainedOperands(Call call, Deque<IExpression> operands, boolean allowDuplicate) {   
     for (IExpression operand: call.getOperands()) {      
       if ( operand.is(call.getOperator()) ) {
-        getChainedOperands((Call) operand, operands, allowDuplicate); 
+        getChainedOperands(operand.asCall(), operands, allowDuplicate); 
       } else if ( allowDuplicate || !operands.contains(operand) ) {        
         operands.push(operand);
       }

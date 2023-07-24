@@ -16,32 +16,42 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.BooleanType;
+
 
 /**
- * Converts a string or numeric expression to a boolean value.
+ * String concatenation operator '<code>||</code>'
  */
-@FunctionPlugin
-public class TryToBooleanFunction extends ToBooleanFunction {
+public class ConcatStringFunction extends ConcatFunction {
 
-  public TryToBooleanFunction() {
-    super("TRY_TO_BOOLEAN");
+  // Function
+  public ConcatStringFunction() {
+    super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
-    Object value = operands[0].getValue();
-    if (value == null)
+  public Object eval(IExpression[] operands) throws Exception {
+
+    String firstNotNull = null;
+    String[] values = new String[operands.length];
+    int i = 0;
+    for (IExpression operand : operands) {
+      String value = operand.getValue(String.class);
+      if (firstNotNull == null && value != null)
+        firstNotNull = value;
+      values[i++] = value;
+    }
+
+    if (firstNotNull == null)
       return null;
 
-    try {
-      return BooleanType.BOOLEAN.cast(value, null);
-    } catch (ConversionException e) {
-      return null;
+    StringBuilder builder = new StringBuilder();
+    for (IExpression operand : operands) {
+      String value = operand.getValue(String.class);
+      if (value != null)
+        builder.append(value);
     }
+
+    return builder.toString();
   }
 }

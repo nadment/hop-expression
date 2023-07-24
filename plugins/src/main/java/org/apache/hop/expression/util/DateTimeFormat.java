@@ -18,6 +18,7 @@ import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +262,7 @@ public abstract class DateTimeFormat extends BaseFormat {
     return new ZonedDateTimeFormat(pattern);
   }
 
-  public abstract ZonedDateTime parse(String text);
+  public abstract ZonedDateTime parse(String text) throws DateTimeParseException;
 
   /**
    * <p>

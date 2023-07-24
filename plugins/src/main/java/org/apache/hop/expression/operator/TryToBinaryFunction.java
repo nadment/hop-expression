@@ -16,32 +16,39 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Function;
+import org.apache.commons.codec.DecoderException;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Converts the string expression to a binary value.
  */
 @FunctionPlugin
-public class TryToBinaryFunction extends Function {
+public class TryToBinaryFunction extends ToBinaryFunction {
 
   public TryToBinaryFunction() {
-    super("TRY_TO_BINARY", ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
-        OperatorCategory.CONVERSION, "/docs/to_binary.html");
+    super("TRY_TO_BINARY");
   }
 
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_BINARY"), call.getOperands()));
-  }
+  public Object eval(IExpression[] operands)
+      throws Exception {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return null;
+
+    String format = operands[1].getValue(String.class);
+    
+    try {
+      if (format.equals("HEX")) {
+        return formatHex(value);
+      }
+      if (format.equals("UTF8")) {
+        return formatUtf8(value);
+      }
+      return formatBase64(value);
+    } catch (DecoderException e) {
+      return null;
+    }
+  }  
 }

@@ -17,16 +17,11 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Function;
+import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import java.time.DateTimeException;
 
 /**
  * Converts a value of one data type into another data type <code>TRY_CAST(value AS type [FORMAT format])</code>.
@@ -35,16 +30,30 @@ import org.apache.hop.expression.type.ReturnTypes;
  * @see CastOperator
  */
 @FunctionPlugin
-public class TryCastFunction extends Function {
+public class TryCastFunction extends CastFunction {
   
   public TryCastFunction() {
-    super("TRY_CAST", ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
-        OperatorCategory.CONVERSION, "/docs/cast.html");
+    super("TRY_CAST");
   }
   
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-    return new Call(Operators.TRY, new Call(Operators.CAST_FUNCTION, call.getOperands()));
+  public Object eval(IExpression[] operands) throws Exception {
+    Object value = operands[0].getValue();
+    if (value == null)
+      return null;
+
+    Type type = operands[1].getValue(Type.class);
+
+    String format = null;
+    if (operands.length == 3) {
+      format = operands[2].getValue(String.class);
+    }
+
+    try {
+      return type.cast(value, format);
+    } catch (ConversionException|DateTimeException e) {
+      return null;
+    }
   }
+  
 }

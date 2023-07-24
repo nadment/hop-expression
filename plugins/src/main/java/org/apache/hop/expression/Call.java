@@ -53,7 +53,7 @@ public final class Call implements IExpression {
 
   public Call(Operator operator, Collection<IExpression> operands) {
     this.operator = requireNonNull(operator, "operator");
-    this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);
+    this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);  
   }
 
   @Override
@@ -286,7 +286,8 @@ public final class Call implements IExpression {
       throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE, operator);
     }
 
-    inferenceType();
+    // Inference type
+    this.type = operator.getReturnTypeInference().getReturnType(this);
   }
 
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
@@ -295,50 +296,64 @@ public final class Call implements IExpression {
     for (int i = 0; i < operands.length; i++) {
       this.operands[i] = operands[i].compile(context);
     }
+    
+    if (isConstant()) try {
+      return evaluate();
+    } catch (Exception e) {
+      // Ignore error like division by zero "X IN (1,3/0)" and continue
+    }
+    
+    IExpression expression = operator.compile(context, this);
 
-    // If operator is deterministic and all operands are constant try to evaluate
-    if (this.isConstant()) {
-      try {
-        Object value = getValue();
-        inferenceType();
-
-        if (value == null) {
-          return Literal.NULL;
-        }
-
-        // Some operator don't known return type like JSON_VALUE.
-        if (TypeName.ANY.equals(type.getName())) {
-          return Literal.of(value);
-        }
-
-        return new Literal(value, type);
+    if (expression.is(Kind.CALL)) {
+      Call call = expression.asCall();
+      
+      // If operator is symmetrical reorganize operands
+      if (call.getOperator().isSymmetrical()) {
+        call = call.reorganizeSymmetrical();
+      }
+      
+      // Inference return type      
+      call.inferenceType();
+      
+      // If operator is deterministic and all operands are constant try to evaluate
+      if (isConstant()) try {
+        return call.evaluate();
       } catch (Exception e) {
         // Ignore error like division by zero "X IN (1,3/0)" and continue
       }
+      
+      expression = call;
     }
 
-    Call call = this;
-
-    // If operator is symmetrical reorganize operands
-    if (operator.isSymmetrical()) {
-      call = reorganizeSymmetrical();
-    }
-
-    IExpression expression = call.getOperator().compile(context, call);
-
-    // Inference return type
-    if (expression.is(Kind.CALL)) {
-      call = (Call) expression;
-      call.inferenceType();
-    }
-
+    // If operator is deterministic and all operands are constant try to evaluate
+//    try {
+//      return evaluate();
+//    } catch (Exception e) {
+//      // Ignore error like division by zero "X IN (1,3/0)" and continue
+//    }
+    
     return expression;
   }
 
-  public void inferenceType() {
+  public Call inferenceType() {
     this.type = this.operator.getReturnTypeInference().getReturnType(this);
+    return this;
   }
+    
+  protected Literal evaluate() throws Exception {
 
+      Object value = getValue();
+      inferenceType();
+
+      // Some operator don't known return type like JSON_VALUE.
+      if (TypeName.ANY.equals(type.getName())) {
+        return Literal.of(value);
+      }
+
+      return new Literal(value, type);
+  }
+  
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);

@@ -17,32 +17,37 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Function;
+import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.NumberFormat;
+import java.text.ParseException;
 
 /**
  * Converts a string expression to a number value.
  */
 @FunctionPlugin
-public class TryToNumberFunction extends Function {
+public class TryToNumberFunction extends ToNumberFunction {
   
   public TryToNumberFunction() {
-    super("TRY_TO_NUMBER", ReturnTypes.NUMBER, OperandTypes.STRING_OPTIONAL_TEXT,
-        OperatorCategory.CONVERSION, "/docs/to_number.html");
+    super("TRY_TO_NUMBER");
   }
-  
+
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperands()));
+  public Object eval(IExpression[] operands)
+      throws Exception {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return null;
+
+    String pattern = operands[1].getValue(String.class);
+
+    NumberFormat format = NumberFormat.of(pattern);
+
+    try {
+      return format.parse(value);
+    } catch (ConversionException|ParseException e) {
+      return null;
+    }
   }
 }

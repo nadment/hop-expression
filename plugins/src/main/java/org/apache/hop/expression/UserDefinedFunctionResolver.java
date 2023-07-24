@@ -38,9 +38,7 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
       expression = expression.accept(context, this);
       expressions.add(expression);
     }
-    Call e = new Call(call.getOperator(), expressions);
-    e.inferenceType();
-    return e;
+    return new Call(call.getOperator(), expressions).inferenceType();
   }
 
   @Override

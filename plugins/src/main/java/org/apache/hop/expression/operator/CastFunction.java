@@ -21,7 +21,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
@@ -34,13 +33,17 @@ import java.io.StringWriter;
  * Converts a value of one data type into another data type <code>CAST(value AS type [FORMAT format])</code>.
  * 
  * @see CastOperator
- * @see CastFunction
+ * @see TryCastFunction
  */
 @FunctionPlugin
 public class CastFunction extends Function {
 
   public CastFunction() {
-    super("CAST", ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
+    this("CAST");
+  }
+        
+  public CastFunction(String id) {
+    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
         OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
@@ -57,22 +60,13 @@ public class CastFunction extends Function {
       format = operands[2].getValue(String.class);
     }
 
-    return cast(value, type, format);
-  }
-  
-  protected Object cast(final Object value, final Type type, final String format) {
     return type.cast(value, format);
   }
-  
-  protected boolean isTry() {
-    return false;  
-  }
-  
+    
   @Override
   public IExpression compile(final IExpressionContext context, Call call) throws ExpressionException {
 
-    call.inferenceType();
-    Type type = call.getType();
+    //Type type = call.inferenceType().getType();
     
     // Remove lossless cast
     IExpression operand = call.getOperand(0);
@@ -80,27 +74,27 @@ public class CastFunction extends Function {
       return operand;
     }
     
-    // Translate to function
-    switch(type.getFamily()) {
-      case BOOLEAN:
-        return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_BOOLEAN":"TO_BOOLEAN"), call.getOperand(0));
-      case NUMERIC:
-        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_NUMBER":"TO_NUMBER"), call.getOperand(0));
-        break;
-      case TEMPORAL:
-        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_DATE":"TO_DATE"), call.getOperand(0));
-        break;
-      case STRING:
-        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_CHAR":"TO_CHAR"), call.getOperand(0));
-        break;
-      case BINARY:
-        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_BINARY":"TO_BINARY"), call.getOperand(0));
-        break;
-      case JSON:
-        //return new Call(FunctionRegistry.getFunction(isTry() ? "TRY_TO_JSON":"TO_JSON"), call.getOperand(0));
-      default:
-        break;
-    } 
+//    // Translate to function
+//    switch(type.getFamily()) {
+//      case BOOLEAN:
+//        return new Call(FunctionRegistry.getFunction("TO_BOOLEAN"), call.getOperand(0));
+//      case NUMERIC:
+//        //return new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperand(0));
+//        break;
+//      case TEMPORAL:
+//        //return new Call(FunctionRegistry.getFunction("TO_DATE"), call.getOperand(0));
+//        break;
+//      case STRING:
+//        //return new Call(FunctionRegistry.getFunction("TO_CHAR"), call.getOperand(0));
+//        break;
+//      case BINARY:
+//        //return new Call(FunctionRegistry.getFunction("TO_BINARY"), call.getOperand(0));
+//        break;
+//      case JSON:
+//        //return new Call(FunctionRegistry.getFunction("TO_JSON"), call.getOperand(0));
+//      default:
+//        break;
+//    } 
     
     return call; 
   }

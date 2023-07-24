@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -35,7 +36,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 @FunctionPlugin
 public class ExpFunction extends Function {
 
-  private static final Literal E = Literal.of(BigDecimalMath.e(DECIMAL128));
+  private static final Literal E = new Literal(BigDecimalMath.e(DECIMAL128), NumberType.NUMBER);
   
   public ExpFunction() {
     super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,

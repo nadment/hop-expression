@@ -16,36 +16,23 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 
 /**
- * Try is an internal operator
+ * The function returns the number of characters of the specified string.
  */
-public class TryOperator extends Operator {
+public class LengthStringFunction extends LengthFunction {
 
-  public TryOperator() {
-    super("TRY", "TRY", 0, true, ReturnTypes.ARG0, OperandTypes.ANY,
-        OperatorCategory.SPECIAL, "");
+  public LengthStringFunction() {
+    super();
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
-    try {
-      return operands[0].getValue();
-    } catch (RuntimeException|ExpressionException e) {
-      return null;
-    }
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append("TRY_");
-    operands[0].unparse(writer);
+  public Object eval(IExpression[] operands)
+      throws Exception {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return value;
+    return Long.valueOf(value.length());
   }
 }

@@ -17,7 +17,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -87,8 +86,8 @@ public class DateTruncFunction extends Function {
         return datetime.truncatedTo(ChronoUnit.MICROS);
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
-      default:
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
+      default:        
+        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }
 }

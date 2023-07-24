@@ -37,7 +37,11 @@ import org.apache.hop.expression.util.DateTimeFormat;
 public class ToDateFunction extends Function {
 
   public ToDateFunction() {
-    super("TO_DATE", ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
+    this("TO_DATE");
+  }
+        
+  protected ToDateFunction(String id) {
+    super(id, ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
         "/docs/to_date.html");
   }
 
@@ -56,14 +60,12 @@ public class ToDateFunction extends Function {
       pattern = StringType.coerce(value);
     }
 
-
     int twoDigitYearStart = Integer
         .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
     // Compile format to check it
     DateTimeFormat format = DateTimeFormat.of(pattern);
     format.setTwoDigitYearStart(twoDigitYearStart);
-
 
     return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
   }

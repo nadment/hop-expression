@@ -62,7 +62,6 @@ import org.apache.hop.expression.operator.NullIfFunction;
 import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SimilarToOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
-import org.apache.hop.expression.operator.TryOperator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -135,7 +134,6 @@ public class Operators {
   // -------------------------------------------------------------
   // SPECIAL OPERATORS with custom or alternative syntax, or optimized
   // -------------------------------------------------------------
-  public static final Operator TRY = new TryOperator();
   public static final Operator CAST = new CastOperator();
   public static final Operator CAST_FUNCTION = new CastFunction();
   public static final Function CONCAT = new ConcatFunction("||");  

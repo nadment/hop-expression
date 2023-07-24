@@ -119,8 +119,8 @@ public class ExtractFunction extends Function {
         return Long.valueOf(datetime.getOffset().getTotalSeconds() / (60 * 60));
       case TIMEZONE_MINUTE:
         return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
-      default:
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, unit);
+      default:        
+        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }
   

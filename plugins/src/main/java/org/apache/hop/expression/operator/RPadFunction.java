@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -59,7 +59,7 @@ public class RPadFunction extends Function {
       length = 0;
     }
     if (length > PAD_LIMIT) {
-      throw new ExpressionException("Paddind length exceeds maximum limit: " + PAD_LIMIT);
+      throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
     }
 
     // If this parameter is omitted, the function will pad spaces

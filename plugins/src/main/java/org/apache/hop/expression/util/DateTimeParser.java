@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 
 /* package */ class DateTimeParser {
 
@@ -71,9 +72,9 @@ import java.time.ZonedDateTime;
    *
    * @param lenght number of digits to parse in the string
    * @return the int
-   * @throws NumberFormatException if the value is not a number
+   * @throws DateTimeParseException if the value is not a number
    */
-  protected int parseInt(int length) throws NumberFormatException {
+  protected int parseInt(int length) throws DateTimeParseException {
 
     int end = text.length();
 
@@ -96,7 +97,7 @@ import java.time.ZonedDateTime;
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
         if (index == initialIndex) {
-          throw new NumberFormatException("Invalid number: " + text);
+          throw new DateTimeParseException("Invalid number", text, index);
         }
         break;
       }
@@ -114,14 +115,14 @@ import java.time.ZonedDateTime;
 
     int result = 0;
     if (index + length > end)
-      throw new NumberFormatException("Invalid number: " + text);
+      throw new DateTimeParseException("Invalid number", text, index);
 
     for (int i = 0; i < length; i++, index++) {
       char ch = text.charAt(index);
 
       int digit = Character.digit(ch, 10);
       if (digit < 0) {
-        throw new NumberFormatException("Invalid number: " + text);
+        throw new DateTimeParseException("Invalid number", text, index);
       }
 
       result *= 10;

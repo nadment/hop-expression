@@ -16,29 +16,33 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.DateTimeFormat;
-import org.apache.hop.expression.util.NumberFormat;
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.util.Base64;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
  * Converts a numeric or date expression to a string value.
  */
 @FunctionPlugin
 public class ToCharFunction extends Function {
+
+  private final static Function TO_CHAR_BINARY = new ToCharBinaryFunction();
+  private final static Function TO_CHAR_NUMBER = new ToCharNumberFunction();
+  private final static Function TO_CHAR_DATE = new ToCharDateFunction();
 
   public ToCharFunction() {
     super(
@@ -48,50 +52,53 @@ public class ToCharFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    Object value = operands[0].getValue();
-    if (value == null) {
-      return null;
-    }
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    Type type = call.getOperand(0).getType();
 
     String pattern = null;
-    if (operands.length > 1) {
-      pattern = operands[1].getValue(String.class);
+    if (call.getOperandCount() > 1) {
+      pattern = call.getOperand(1).getValue(String.class);
     }
 
-    if (value instanceof Number) {
+    if (type.isSameFamily(StringType.STRING) && call.getOperandCount()==1) {
+      return call.getOperand(0);
+    }
+    
+    if (type.isSameFamily(DateType.DATE)) {
+      if (pattern == null) {
+        pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+      }
+
+      return new Call(TO_CHAR_DATE, call.getOperand(0), Literal.of(pattern));
+    }
+
+    if (type.isSameFamily(NumberType.NUMBER)) {
       if (pattern == null) {
         pattern = "TM";
       }
 
-      return NumberFormat.of(pattern).format(NumberType.coerce(value));
+      return new Call(TO_CHAR_NUMBER, call.getOperand(0), Literal.of(pattern));
     }
 
-    if (value instanceof ZonedDateTime) {
+    if (type.isSameFamily(BinaryType.BINARY)) {
       if (pattern == null) {
-        // TODO: pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT); 
+        pattern = "HEX";
       }
-      return DateTimeFormat.of(pattern).format(DateType.coerce(value));
-    }
 
-    if (pattern == null) {
-      pattern = "HEX";
-    } else
+      // Normalize pattern
       pattern = pattern.toUpperCase();
+      if (pattern.equals("UTF-8")) {
+        pattern = "UTF8";
+      }
 
-    byte[] bytes = BinaryType.coerce(value);
+      if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF8"))) {
+        throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
+      }
 
-    if (pattern.equals("HEX")) {
-      return Hex.encodeHexString(bytes);
-    }
-    if (pattern.equals("BASE64")) {
-      return Base64.getEncoder().encodeToString(bytes);
-    }
-    if (pattern.equals("UTF-8") || pattern.equals("UTF8")) {
-      return new String(bytes, StandardCharsets.UTF_8);
+      return new Call(TO_CHAR_BINARY, call.getOperand(0), Literal.of(pattern));      
     }
 
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
+    return call;
   }
 }

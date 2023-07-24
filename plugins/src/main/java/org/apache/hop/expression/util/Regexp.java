@@ -103,7 +103,7 @@ public class Regexp {
             flags |= Pattern.MULTILINE;
             break;
           default:
-            throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, str);
+            throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(str));
         }
       }
     }

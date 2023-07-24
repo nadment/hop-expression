@@ -43,6 +43,7 @@ public class Div0Function extends Function {
     super("DIV0", ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         OperatorCategory.MATHEMATICAL, "/docs/div0.html");
   }
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);

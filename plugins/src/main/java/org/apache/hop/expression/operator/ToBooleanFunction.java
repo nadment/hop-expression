@@ -31,7 +31,11 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToBooleanFunction extends Function {
 
   public ToBooleanFunction() {
-    super("TO_BOOLEAN", ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
+    this("TO_BOOLEAN");
+  }
+  
+  protected ToBooleanFunction(String id) {
+    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
         "/docs/to_boolean.html");
   }
 

@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Queue;
 
 /**
  * Logical disjunction <code>OR</code> operator.
@@ -70,7 +70,7 @@ public class BoolOrOperator extends Operator {
     // Remove duplicate
     // x OR x => x
     // x OR y OR x => x OR y
-    Stack<IExpression> conditions = this.getChainedOperands(call, false);
+    Queue<IExpression> conditions = this.getChainedOperands(call, false);
 
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
@@ -157,9 +157,7 @@ public class BoolOrOperator extends Operator {
           values.add(pair.getRight());
           conditions.remove(pair.getLeft());
         }        
-        Call in = new Call(Operators.IN, reference, new Tuple(values));
-        in.inferenceType();
-        conditions.add(in);
+        conditions.add(new Call(Operators.IN, reference, new Tuple(values)).inferenceType());
       }
     }
 
@@ -167,12 +165,10 @@ public class BoolOrOperator extends Operator {
 
     // Rebuild disjunctions if more than 1 condition
     if (conditions.size() == 1)
-      return conditions.pop();
-    IExpression operand = conditions.pop();
+      return conditions.peek();
+    IExpression operand = conditions.poll();
     while (!conditions.isEmpty()) {
-      call = new Call(Operators.BOOLOR, conditions.pop(), operand);
-      call.inferenceType();
-      operand = call;
+      operand = new Call(Operators.BOOLOR, conditions.poll(), operand).inferenceType();
     }
 
     return operand;

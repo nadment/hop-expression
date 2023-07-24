@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
@@ -180,8 +181,8 @@ public class TypeTest extends ExpressionTest {
     assertTrue(BooleanType.coerce(1D));
     assertFalse(BooleanType.coerce(0L));
     assertFalse(BooleanType.coerce(false));
-    assertThrows(IllegalArgumentException.class, () -> BooleanType.coerce("True"));
-    assertThrows(IllegalArgumentException.class, () -> BooleanType.coerce(ZonedDateTime.now()));
+    assertThrows(ConversionException.class, () -> BooleanType.coerce("True"));
+    assertThrows(ConversionException.class, () -> BooleanType.coerce(ZonedDateTime.now()));
   }
 
   @Test
@@ -209,11 +210,11 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Boolean.FALSE, type.cast("N"));
     assertEquals(Boolean.FALSE, type.cast("No"));
     assertEquals(Boolean.FALSE, type.cast("Off"));
-    assertThrows(IllegalArgumentException.class, () -> type.cast("3"));
-    assertThrows(IllegalArgumentException.class, () -> type.cast("MO"));
-    assertThrows(IllegalArgumentException.class, () -> type.cast("BAD"));
-    assertThrows(IllegalArgumentException.class, () -> type.cast("TRUL"));
-    assertThrows(IllegalArgumentException.class, () -> type.cast("FILSE"));
+    assertThrows(ConversionException.class, () -> type.cast("3"));
+    assertThrows(ConversionException.class, () -> type.cast("MO"));
+    assertThrows(ConversionException.class, () -> type.cast("BAD"));
+    assertThrows(ConversionException.class, () -> type.cast("TRUL"));
+    assertThrows(ConversionException.class, () -> type.cast("FILSE"));
   }
 
   @Test

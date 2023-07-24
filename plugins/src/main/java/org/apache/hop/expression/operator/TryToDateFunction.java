@@ -16,32 +16,32 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionException;
-import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.DateTimeFormat;
+import java.time.DateTimeException;
 
 /**
  * Converts a string expression to a date value.
  */
 @FunctionPlugin
-public class TryToDateFunction extends Function {
+public class TryToDateFunction extends ToDateFunction {
 
   public TryToDateFunction() {
-    super("TRY_TO_DATE", ReturnTypes.DATE, OperandTypes.STRING_OPTIONAL_TEXT, OperatorCategory.CONVERSION,
-        "/docs/to_date.html");
+    super("TRY_TO_DATE");
   }
-
+  
   @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-    return new Call(Operators.TRY, new Call(FunctionRegistry.getFunction("TO_DATE"), call.getOperands()));
+  public Object eval(IExpression[] operands) throws Exception {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return null;
+
+    DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
+    try {
+      return format.parse(value);
+    } catch (DateTimeException e) {
+      return null;
+    }
   }
 }

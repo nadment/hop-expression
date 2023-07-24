@@ -38,6 +38,7 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
@@ -79,7 +80,7 @@ public class ExpressionTest {
     return new ExternalResource() {
       @Override
       protected void before() throws Throwable {
-        FunctionRegistry.registerBuilInFunctions();
+        FunctionRegistry.registerPluginFunctions();
       }
     };
   }
@@ -350,6 +351,14 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
+    evalNull("TRY_TO_DATE('2019-01-42','YYYY-MM-DD')");
+    //optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
+   // evalNull("TRY_TO_BOOLEAN('test')");
+    //evalEquals("4 || 2", "42");
+    //evalTrue("true >= false");
+   // returnType("TRY_TO_BOOLEAN('True')", BooleanType.BOOLEAN);
+    //returnType("TRY_TO_BOOLEAN('True')", BooleanType.BOOLEAN);
+   // optimize("CONCAT('TES','T')", "'TEST'");
 
   }
 }

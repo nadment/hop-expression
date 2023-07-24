@@ -34,8 +34,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
+import java.util.Queue;
 
 /**
  * Logical conjunction <code>AND</code> operator.
@@ -79,7 +80,7 @@ public class BoolAndOperator extends Operator {
     // Remove duplicate predicate
     // x AND x => x
     // x AND y AND x => x AND y
-    Stack<IExpression> conditions = this.getChainedOperands(call, false);
+    Queue<IExpression> conditions = this.getChainedOperands(call, false);
 
 
     // final Map<IExpression, Range<?>> ranges = new HashMap<>();
@@ -155,7 +156,9 @@ public class BoolAndOperator extends Operator {
     // Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
     for (IExpression operand : notNullTerms) {
       if (strongTerms.contains(operand)) {
-        for (IExpression condition : conditions) {
+        Iterator<IExpression> iterator = conditions.iterator();
+        while (iterator.hasNext()) {
+          IExpression condition = iterator.next();
           if (condition.is(Operators.IS_NOT_NULL)
               && condition.asCall().getOperand(0).equals(operand)) {
             conditions.remove(condition);
@@ -165,9 +168,9 @@ public class BoolAndOperator extends Operator {
     }
 
     // Rebuild conjunctions if more than 1 condition
-    IExpression expression = conditions.pop();
+    IExpression expression = conditions.poll();
     while (!conditions.isEmpty()) {
-      call = new Call(Operators.BOOLAND, conditions.pop(), expression);
+      call = new Call(Operators.BOOLAND, conditions.poll(), expression);
       call.inferenceType();
       expression = call;
     }

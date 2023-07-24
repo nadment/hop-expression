@@ -87,7 +87,7 @@ public class FunctionRegistry {
   /**
    * Discovery and register built-in and plugin functions
    */
-  public static void registerBuilInFunctions() throws HopException {
+  public static void registerPluginFunctions() throws HopException {
     JarCache cache = JarCache.getInstance();
     try {
       // Search annotation in native jar
