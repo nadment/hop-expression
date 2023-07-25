@@ -16,36 +16,25 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-
 
 /**
- * The function compute Levenshtein distance.
+ * The function reverses the order of characters in a string value.
  */
-@FunctionPlugin
-public class Levenshtein extends Function {
+public class ReverseStringFunction extends ReverseFunction {
 
-  public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        OperatorCategory.STRING, "/docs/levenshtein.html");
+  public ReverseStringFunction() {
+    super();
   }
 
   @Override
   public Object eval(final IExpression[] operands)
       throws Exception {
-    String str1 = operands[0].getValue(String.class);
-    if (str1 == null)
-      return null;
-    String str2 = operands[1].getValue(String.class);
-    if (str2 == null)
+    String value = operands[0].getValue(String.class);
+    if (value == null)
       return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
+    StringBuilder builder = new StringBuilder(value);
+    return builder.reverse().toString();
   }
 }

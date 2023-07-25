@@ -16,36 +16,39 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-
 
 /**
- * The function compute Levenshtein distance.
+ * The function extracts a number of bytes from a binary (starting from right)
  */
 @FunctionPlugin
-public class Levenshtein extends Function {
+public class RightBinaryFunction extends RightFunction {
 
-  public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        OperatorCategory.STRING, "/docs/levenshtein.html");
+  public RightBinaryFunction() {
+    super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
-    String str1 = operands[0].getValue(String.class);
-    if (str1 == null)
-      return null;
-    String str2 = operands[1].getValue(String.class);
-    if (str2 == null)
+  public Object eval(final IExpression[] operands) throws Exception {
+    byte[] bytes = operands[0].getValue(byte[].class);
+    if (bytes == null)
       return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
+    Long v1 = operands[1].getValue(Long.class);
+    if (v1 == null)
+      return null;
+    int length = v1.intValue();
+    if (length < 0) {
+      length = 0;
+    }
+
+    if (bytes.length <= length) {
+      return bytes;
+    }
+    
+    byte[] result = new byte[length];
+    System.arraycopy(bytes, bytes.length - length, result, 0, length);
+    return result;
   }
 }

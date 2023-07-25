@@ -16,14 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
@@ -31,28 +35,27 @@ import org.apache.hop.expression.type.StringType;
 @FunctionPlugin
 public class ReverseFunction extends Function {
 
+  private final static Function REVERSE_BINARY = new ReverseBinaryFunction();
+  private final static Function REVERSE_STRING = new ReverseStringFunction();
+  
   public ReverseFunction() {
     super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/reverse.html");
   }
-
+ 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    Object value = operands[0].getValue();
-    if (value == null)
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    if (value instanceof byte[]) {
-      byte[] data = BinaryType.coerce(value);
-      byte[] result = new byte[data.length];
-      for (int i = data.length - 1, j = 0; i >= 0; i--, j++) {
-        result[j] = data[i];
-      }
-      return result;
+    Type type = call.getOperand(0).getType();
+
+    if (type.isSameFamily(StringType.STRING)) {      
+      return new Call(REVERSE_STRING, call.getOperand(0));
     }
-
-    StringBuilder builder = new StringBuilder(StringType.coerce(value)).reverse();
-    return builder.toString();
+    
+    if (type.isSameFamily(BinaryType.BINARY)) {      
+      return new Call(REVERSE_BINARY, call.getOperand(0));
+    }
+    
+    return call;
   }
 }

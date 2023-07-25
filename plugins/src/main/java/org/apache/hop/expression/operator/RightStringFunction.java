@@ -16,36 +16,37 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-
 
 /**
- * The function compute Levenshtein distance.
+ * The function extracts a number of characters from a string (starting from right)
  */
 @FunctionPlugin
-public class Levenshtein extends Function {
+public class RightStringFunction extends RightFunction {
 
-  public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        OperatorCategory.STRING, "/docs/levenshtein.html");
+  public RightStringFunction() {
+    super();
   }
 
   @Override
   public Object eval(final IExpression[] operands)
       throws Exception {
-    String str1 = operands[0].getValue(String.class);
-    if (str1 == null)
-      return null;
-    String str2 = operands[1].getValue(String.class);
-    if (str2 == null)
+    String str = operands[0].getValue(String.class);
+    if (str == null)
       return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
+    Long v1 = operands[1].getValue(Long.class);
+    if (v1 == null)
+      return null;
+    int length = v1.intValue();
+    if (length < 0) {
+      length = 0;
+    }
+
+    if (str.length() <= length) {
+      return str;
+    }
+    return str.substring(str.length() - length);
   }
 }

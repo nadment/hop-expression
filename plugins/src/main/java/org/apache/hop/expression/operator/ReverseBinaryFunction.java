@@ -16,36 +16,27 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-
 
 /**
- * The function compute Levenshtein distance.
+ * The function reverses the order of bytes in a binary value.
  */
-@FunctionPlugin
-public class Levenshtein extends Function {
+public class ReverseBinaryFunction extends ReverseFunction {
 
-  public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        OperatorCategory.STRING, "/docs/levenshtein.html");
+  public ReverseBinaryFunction() {
+    super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
-    String str1 = operands[0].getValue(String.class);
-    if (str1 == null)
-      return null;
-    String str2 = operands[1].getValue(String.class);
-    if (str2 == null)
+  public Object eval(final IExpression[] operands) throws Exception {
+    byte[] value = operands[0].getValue(byte[].class);
+    if (value == null)
       return null;
 
-    return Long.valueOf(StringUtils.getLevenshteinDistance(str1, str2));
+    byte[] result = new byte[value.length];
+    for (int i = value.length - 1, j = 0; i >= 0; i--, j++) {
+      result[j] = value[i];
+    }
+    return result;
   }
 }

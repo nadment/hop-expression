@@ -16,13 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
  * The function extracts a number of characters from a string (starting from right)
@@ -31,6 +36,8 @@ import org.apache.hop.expression.type.StringType;
  */
 @FunctionPlugin
 public class RightFunction extends Function {
+  private final static Function RIGHT_BINARY = new RightBinaryFunction();
+  private final static Function RIGHT_STRING = new RightStringFunction();
 
   public RightFunction() {
     super("RIGHT", ReturnTypes.ARG0,
@@ -39,33 +46,18 @@ public class RightFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
-      return null;
-    int length = v1.intValue();
-    if (length < 0) {
-      length = 0;
-    }
+    Type type = call.getOperand(0).getType();
 
-    if (v0 instanceof byte[]) {
-      byte[] bytes = (byte[]) v0;
-      if (bytes.length <= length)
-        return bytes;
-      byte[] result = new byte[length];
-      System.arraycopy(bytes, bytes.length - length, result, 0, length);
-      return result;
+    if (type.isSameFamily(StringType.STRING)) {      
+      return new Call(RIGHT_STRING, call.getOperands());
     }
-
-    String str = StringType.coerce(v0);
-    if (str.length() <= length) {
-      return str;
+    
+    if (type.isSameFamily(BinaryType.BINARY)) {      
+      return new Call(RIGHT_BINARY, call.getOperands());
     }
-    return str.substring(str.length() - length);
+    
+    return call;
   }
 }
