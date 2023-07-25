@@ -17,12 +17,12 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -39,7 +39,7 @@ public class RightFunction extends Function {
 
   public RightFunction() {
     super("RIGHT", ReturnTypes.ARG0,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), OperatorCategory.STRING,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), Category.STRING,
         "/docs/right.html");
   }
 

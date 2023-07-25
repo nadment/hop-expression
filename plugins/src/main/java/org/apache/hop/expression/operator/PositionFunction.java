@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -33,7 +33,7 @@ public class PositionFunction extends Function {
 
   public PositionFunction() {
     super("POSITION", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        OperatorCategory.STRING, "/docs/position.html");
+        Category.STRING, "/docs/position.html");
   }
 
   @Override

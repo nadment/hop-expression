@@ -17,13 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
@@ -37,7 +37,7 @@ public class GreaterThanOperator extends Operator {
 
   public GreaterThanOperator() {
     super("GREATER_THAN", ">", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
-        OperatorCategory.COMPARISON, "/docs/greater_than.html");
+        Category.COMPARISON, "/docs/greater_than.html");
   }
 
   @Override

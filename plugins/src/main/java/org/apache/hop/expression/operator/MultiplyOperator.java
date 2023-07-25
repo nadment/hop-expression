@@ -17,13 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -39,7 +39,7 @@ public class MultiplyOperator extends Operator {
 
   public MultiplyOperator() {
     super("MULTIPLY", "*", 50, true, ReturnTypes.MULTIPLY_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
+        Category.MATHEMATICAL, "/docs/multiply.html");
   }
 
   @Override

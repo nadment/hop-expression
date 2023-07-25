@@ -14,12 +14,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -41,7 +41,7 @@ public class RegexpCountFunction extends Function {
 
   public RegexpCountFunction() {
     super("REGEXP_COUNT", ReturnTypes.INTEGER,
-        OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_STRING, OperatorCategory.STRING,
+        OperandTypes.STRING_STRING_OPTIONAL_NUMERIC_STRING, Category.STRING,
         "/docs/regexp_count.html");
   }
 

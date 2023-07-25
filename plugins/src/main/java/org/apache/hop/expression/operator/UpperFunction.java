@@ -17,13 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.Locale;
@@ -37,7 +37,7 @@ import java.util.Locale;
 public class UpperFunction extends Function {
 
   public UpperFunction() {
-    super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
         "/docs/upper.html");
   }
 

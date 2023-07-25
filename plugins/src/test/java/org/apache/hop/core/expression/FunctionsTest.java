@@ -38,7 +38,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.TimeZone;
-import com.ctc.wstx.shaded.msv_core.datatype.xsd.Base64BinaryType;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 public class FunctionsTest extends ExpressionTest {

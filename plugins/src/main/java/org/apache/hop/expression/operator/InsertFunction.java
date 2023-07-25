@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
@@ -45,7 +45,7 @@ public class InsertFunction extends Function {
           TypeFamily.BINARY));
 
   public InsertFunction() {
-    super("INSERT", ReturnTypes.ARG0, OTC, OperatorCategory.STRING, "/docs/insert.html");
+    super("INSERT", ReturnTypes.ARG0, OTC, Category.STRING, "/docs/insert.html");
   }
 
   @Override

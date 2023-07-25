@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +36,7 @@ import java.util.zip.GZIPOutputStream;
 public class CompressFunction extends Function {
 
   public CompressFunction() {
-    super("COMPRESS", ReturnTypes.BINARY, OperandTypes.BINARY, OperatorCategory.STRING,
+    super("COMPRESS", ReturnTypes.BINARY, OperandTypes.BINARY, Category.STRING,
         "/docs/compress.html");
   }
 

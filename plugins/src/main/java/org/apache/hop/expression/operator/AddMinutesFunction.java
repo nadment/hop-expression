@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZonedDateTime;
@@ -31,7 +31,7 @@ import java.time.ZonedDateTime;
 public class AddMinutesFunction extends Function {
 
   public AddMinutesFunction() {
-    super("ADD_MINUTES", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+    super("ADD_MINUTES", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
         "/docs/add_minutes.html");
   }
 

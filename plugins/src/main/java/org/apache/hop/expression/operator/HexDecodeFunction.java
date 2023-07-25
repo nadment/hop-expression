@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class HexDecodeFunction extends Function {
 
   public HexDecodeFunction() {
-    super("HEX_DECODE", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING, "/docs/hex_decode.html");
+    super("HEX_DECODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING, "/docs/hex_decode.html");
   }
 
   @Override

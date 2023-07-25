@@ -17,13 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +36,7 @@ public class IfFunction extends Function {
 
   public IfFunction() {
     super("IF", ReturnTypes.IF_FUNCTION, OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME),
-        OperatorCategory.CONDITIONAL, "/docs/if.html");
+        Category.CONDITIONAL, "/docs/if.html");
   }
   
   @Override

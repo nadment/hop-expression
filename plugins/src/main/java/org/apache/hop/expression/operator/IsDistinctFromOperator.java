@@ -17,12 +17,12 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
@@ -38,7 +38,7 @@ public class IsDistinctFromOperator extends Operator {
 
   public IsDistinctFromOperator() {
     super("IS DISTINCT FROM", 10, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
-        OperatorCategory.COMPARISON, "/docs/is-distinct-from.html");
+        Category.COMPARISON, "/docs/is-distinct-from.html");
   }
 
   @Override

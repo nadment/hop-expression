@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -35,7 +35,7 @@ public class LogFunction extends Function {
 
   public LogFunction() {
     super("LOG", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/log.html");
+        Category.TRIGONOMETRY, "/docs/log.html");
   }
 
   @Override

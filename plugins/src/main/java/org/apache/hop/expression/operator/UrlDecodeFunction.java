@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.net.URLDecoder;
@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 public class UrlDecodeFunction extends Function {
 
   public UrlDecodeFunction() {
-    super("URL_DECODE", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("URL_DECODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
         "/docs/url_decode.html");
   }
 

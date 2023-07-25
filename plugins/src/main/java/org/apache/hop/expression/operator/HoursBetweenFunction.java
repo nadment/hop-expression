@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZonedDateTime;
@@ -33,7 +33,7 @@ public class HoursBetweenFunction extends Function {
 
   public HoursBetweenFunction() {
     super("HOURS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
-        OperatorCategory.DATE, "/docs/hours_between.html");
+        Category.DATE, "/docs/hours_between.html");
   }
 
   @Override

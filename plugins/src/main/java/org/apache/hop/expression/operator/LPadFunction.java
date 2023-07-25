@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -37,7 +37,7 @@ public class LPadFunction extends Function {
 
   public LPadFunction() {
     super("LPAD", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
-        OperatorCategory.STRING, "/docs/lpad.html");
+        Category.STRING, "/docs/lpad.html");
   }
 
   @Override

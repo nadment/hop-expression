@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,7 +37,7 @@ public class ConcatWsFunction extends Function {
   public ConcatWsFunction() {
     super("CONCAT_WS", ReturnTypes.FIRST_KNOWN,
         OperandTypes.or(OperandTypes.STRING_STRING_VARIADIC, OperandTypes.BINARY_BINARY_VARIADIC),
-        OperatorCategory.STRING, "/docs/concat_ws.html");
+        Category.STRING, "/docs/concat_ws.html");
   }
 
   @Override

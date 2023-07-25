@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -43,7 +43,7 @@ public class RegexpReplaceFunction extends Function {
       .optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", ReturnTypes.STRING, OTC, OperatorCategory.STRING,
+    super("REGEXP_REPLACE", ReturnTypes.STRING, OTC, Category.STRING,
         "/docs/regexp_replace.html");
   }
 

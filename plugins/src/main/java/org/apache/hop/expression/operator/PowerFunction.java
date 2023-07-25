@@ -17,13 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -36,7 +36,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class PowerFunction extends Function {
 
   public PowerFunction() {
-    super("POWER", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("POWER", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
         "/docs/power.html");
   }
 

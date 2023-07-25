@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZonedDateTime;
@@ -32,7 +32,7 @@ import java.time.temporal.ChronoField;
 public class WeekFunction extends Function {
 
   public WeekFunction() {
-    super("WEEK", ReturnTypes.INTEGER, OperandTypes.DATE, OperatorCategory.DATE,
+    super("WEEK", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
         "/docs/week.html");
   }
 

@@ -18,12 +18,12 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -38,7 +38,7 @@ public class CastOperator extends Operator {
 
   public CastOperator() {
     super("CAST", "::", 40, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
-        OperatorCategory.CONVERSION, "/docs/cast.html");
+        Category.CONVERSION, "/docs/cast.html");
   }
   
   @Override

@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ public class Atan2Function extends Function {
 
   public Atan2Function() {
     super("ATAN2", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.TRIGONOMETRY, "/docs/atan2.html");
+        Category.TRIGONOMETRY, "/docs/atan2.html");
   }
 
   @Override

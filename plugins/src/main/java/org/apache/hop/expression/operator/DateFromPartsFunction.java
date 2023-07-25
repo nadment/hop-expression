@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class DateFromPartsFunction extends Function {
 
   public DateFromPartsFunction() {
     super("DATE_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC,
-        OperatorCategory.DATE, "/docs/date_from_parts.html");
+        Category.DATE, "/docs/date_from_parts.html");
   }
 
   @Override

@@ -16,12 +16,12 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ import java.math.BigInteger;
 public class FactorialFunction extends Function {
 
   public FactorialFunction() {
-    super("FACTORIAL", ReturnTypes.NUMBER, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("FACTORIAL", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/factorial.html");
   }
 

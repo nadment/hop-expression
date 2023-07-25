@@ -17,12 +17,12 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Comparison;
@@ -53,7 +53,7 @@ public class InOperator extends Operator {
 
   public InOperator() {
     super("IN", 120, true, ReturnTypes.BOOLEAN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
-        OperatorCategory.COMPARISON, "/docs/in.html");
+        Category.COMPARISON, "/docs/in.html");
   }
   
   /**

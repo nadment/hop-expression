@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Characters;
@@ -34,7 +34,7 @@ import org.apache.hop.expression.util.Characters;
 public class InitCapFunction extends Function {
 
   public InitCapFunction() {
-    super("INITCAP", ReturnTypes.STRING, OperandTypes.STRING, OperatorCategory.STRING,
+    super("INITCAP", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
         "/docs/initcap.html");
   }
 

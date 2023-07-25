@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,7 +37,7 @@ public class Base64EncodeFunction extends Function {
   private static final Encoder ENCODER = Base64.getEncoder();
   public Base64EncodeFunction() {
     super("BASE64_ENCODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.STRING, "/docs/base64_encode.html");
+        Category.STRING, "/docs/base64_encode.html");
   }
 
   @Override

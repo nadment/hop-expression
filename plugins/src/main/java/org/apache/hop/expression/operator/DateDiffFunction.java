@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -42,7 +42,7 @@ import java.time.temporal.ChronoUnit;
 public class DateDiffFunction extends Function {
 
   public DateDiffFunction() {
-    super("DATE_DIFF", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE_DATE, OperatorCategory.DATE,
+    super("DATE_DIFF", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE_DATE, Category.DATE,
         "/docs/date_diff.html");
   }
 

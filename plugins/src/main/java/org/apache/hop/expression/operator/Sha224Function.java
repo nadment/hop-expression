@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -36,7 +36,7 @@ public class Sha224Function extends Function {
 
   public Sha224Function() {
     super("SHA224", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
-        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha224.html");
+        Category.CRYPTOGRAPHIC, "/docs/sha224.html");
   }
 
   @Override

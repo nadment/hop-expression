@@ -23,7 +23,7 @@ public abstract class AggregateFunction extends Function {
 
   protected AggregateFunction(String id, IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker, String documentationUrl) {
-    super(id, returnTypeInference, operandTypeChecker, OperatorCategory.AGGREGATION,
+    super(id, returnTypeInference, operandTypeChecker, Category.AGGREGATION,
         documentationUrl);
   }
 

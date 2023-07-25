@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
@@ -27,7 +28,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.nio.charset.StandardCharsets;
@@ -44,7 +44,7 @@ public class ToBinaryFunction extends Function {
   
   protected ToBinaryFunction(String id) {
     super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
-        OperatorCategory.CONVERSION, "/docs/to_binary.html");
+        Category.CONVERSION, "/docs/to_binary.html");
   }
 
   @Override

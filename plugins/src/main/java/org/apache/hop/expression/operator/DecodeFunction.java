@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class DecodeFunction extends Function {
 
   public DecodeFunction() {
-    super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, OperatorCategory.CONDITIONAL,
+    super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, Category.CONDITIONAL,
         "/docs/decode.html");
   }
 

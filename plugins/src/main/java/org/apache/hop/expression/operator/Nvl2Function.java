@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -32,7 +32,7 @@ public class Nvl2Function extends Function {
 
   public Nvl2Function() {
     super("NVL2", ReturnTypes.ARG1_OR_ARG2, OperandTypes.ANY_SAME_SAME,
-        OperatorCategory.CONDITIONAL, "/docs/nvl2.html");
+        Category.CONDITIONAL, "/docs/nvl2.html");
   }
 
   @Override

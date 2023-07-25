@@ -16,11 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -36,7 +36,7 @@ import java.time.temporal.TemporalAdjusters;
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {
-    super("DATE_TRUNC", ReturnTypes.DATE, OperandTypes.TIMEUNIT_DATE, OperatorCategory.DATE,
+    super("DATE_TRUNC", ReturnTypes.DATE, OperandTypes.TIMEUNIT_DATE, Category.DATE,
         "/docs/date_trunc.html");
   }
 

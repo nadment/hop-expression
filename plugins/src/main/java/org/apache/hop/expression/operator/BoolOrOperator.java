@@ -19,13 +19,13 @@ package org.apache.hop.expression.operator;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.OperandTypes;
@@ -46,7 +46,7 @@ public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
     super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_VARIADIC,
-        OperatorCategory.LOGICAL, "/docs/boolor.html");
+        Category.LOGICAL, "/docs/boolor.html");
   }
 
   /**

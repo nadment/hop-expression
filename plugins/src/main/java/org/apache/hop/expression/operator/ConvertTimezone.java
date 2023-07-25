@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
-    super("CONVERT_TIMEZONE", ReturnTypes.DATE, OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), OperatorCategory.DATE, "/docs/convert_timezone.html");
+    super("CONVERT_TIMEZONE", ReturnTypes.DATE, OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), Category.DATE, "/docs/convert_timezone.html");
   }
 
   @Override

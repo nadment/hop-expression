@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.ExpressionException;
@@ -25,7 +26,6 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.NumberType;
@@ -44,7 +44,7 @@ public class ToCharFunction extends Function {
     super(
         "TO_CHAR", ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT
             .or(OperandTypes.DATE_OPTIONAL_TEXT).or(OperandTypes.BINARY_OPTIONAL_TEXT),
-        OperatorCategory.CONVERSION, "/docs/to_char.html");
+        Category.CONVERSION, "/docs/to_char.html");
   }
 
   @Override

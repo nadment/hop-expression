@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.OperandTypes;
@@ -44,7 +44,7 @@ public class StrtokFunction extends Function {
       .or(OperandTypes.STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC);
 
   public StrtokFunction() {
-    super("STRTOK", ReturnTypes.STRING, OTC, OperatorCategory.STRING, "/docs/strtok.html");
+    super("STRTOK", ReturnTypes.STRING, OTC, Category.STRING, "/docs/strtok.html");
   }
 
   @Override

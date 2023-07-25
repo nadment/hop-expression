@@ -17,10 +17,10 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -35,12 +35,12 @@ public class BitAndFunction extends Function {
 
   public BitAndFunction() {
     super("BIT_AND", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.BITWISE, "/docs/bit_and.html");
+        Category.BITWISE, "/docs/bit_and.html");
   }
 
   public BitAndFunction(String name) {
     super("BIT_AND", name, 70, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        OperatorCategory.BITWISE, "/docs/bit_and.html");
+        Category.BITWISE, "/docs/bit_and.html");
   }
 
   @Override

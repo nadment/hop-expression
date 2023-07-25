@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ public class TruncateFunction extends Function {
 
   public TruncateFunction() {
     super("TRUNCATE", ReturnTypes.NUMBER, OperandTypes.NUMERIC_OPTIONAL_NUMERIC,
-        OperatorCategory.MATHEMATICAL, "/docs/truncate.html");
+        Category.MATHEMATICAL, "/docs/truncate.html");
   }
 
   @Override

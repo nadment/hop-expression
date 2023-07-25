@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,7 +35,7 @@ public class ToBooleanFunction extends Function {
   }
   
   protected ToBooleanFunction(String id) {
-    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), OperatorCategory.CONVERSION,
+    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), Category.CONVERSION,
         "/docs/to_boolean.html");
   }
 

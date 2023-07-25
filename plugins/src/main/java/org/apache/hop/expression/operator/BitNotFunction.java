@@ -17,12 +17,12 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,13 +37,13 @@ import java.io.StringWriter;
 public class BitNotFunction extends Function {
 
   public BitNotFunction() {
-    super("BIT_NOT", ReturnTypes.INTEGER, OperandTypes.NUMERIC, OperatorCategory.BITWISE,
+    super("BIT_NOT", ReturnTypes.INTEGER, OperandTypes.NUMERIC, Category.BITWISE,
         "/docs/bit_not.html");
   }
 
   public BitNotFunction(String name) {
     super("BIT_NOT", name, 40, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
-        OperatorCategory.BITWISE, "/docs/bit_not.html");
+        Category.BITWISE, "/docs/bit_not.html");
   }
 
   @Override

@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {
-    super("UNICODE", ReturnTypes.INTEGER, OperandTypes.STRING, OperatorCategory.STRING,
+    super("UNICODE", ReturnTypes.INTEGER, OperandTypes.STRING, Category.STRING,
         "/docs/unicode.html");
   }
 

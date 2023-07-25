@@ -16,10 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.LocalDateTime;
@@ -33,7 +33,7 @@ public class TimestampFromPartsFunction extends Function {
 
   public TimestampFromPartsFunction() {
     super("TIMESTAMP_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC,
-        OperatorCategory.DATE, "/docs/timestamp_from_parts.html");
+        Category.DATE, "/docs/timestamp_from_parts.html");
   }
 
   @Override

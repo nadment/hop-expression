@@ -18,13 +18,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.Comparison;
@@ -41,7 +41,7 @@ public class CaseOperator extends Operator {
 
   public CaseOperator() {
     super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, OperandTypes.CASE_OPERATOR,
-        OperatorCategory.CONDITIONAL, "/docs/case.html");
+        Category.CONDITIONAL, "/docs/case.html");
   }
 
   @Override
