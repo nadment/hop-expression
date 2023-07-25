@@ -441,6 +441,9 @@ public class OperatorsTest extends ExpressionTest {
     optimizeTrue("1 IS NOT NULL");
     optimizeFalse("'a' IS NULL");
     optimizeTrue("'a' IS NOT NULL");
+        
+    // 'CAST(x AS type) IS NOT NULL' to 'x IS NOT NULL'
+    optimize("CAST(FIELD_NUMBER AS STRING) IS NOT NULL","FIELD_NUMBER IS NOT NULL");
     
     returnType("FIELD_BOOLEAN IS NULL", BooleanType.BOOLEAN);
     returnType("FIELD_BOOLEAN IS NOT NULL", BooleanType.BOOLEAN);
