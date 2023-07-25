@@ -945,13 +945,22 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Add_Seconds() throws Exception {
-    evalEquals("Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20, 0));
-    evalEquals("Add_Seconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
+    evalEquals("Add_Seconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 20));
+    evalEquals("Add_Seconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20));
     evalNull("Add_Seconds(NULL_DATE,140)");
     evalNull("Add_Seconds(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Seconds(DATE '2019-01-15')");
   }
 
+  @Test
+  public void Add_Nanoseconds() throws Exception {
+    evalEquals("Add_NanoSeconds(DATE '2019-01-15',20)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 20));
+    evalEquals("Add_NanoSeconds(DATE '2019-01-15',140)", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 140));
+    evalNull("Add_NanoSeconds(NULL_DATE,140)");
+    evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
+    evalFails("Add_NanoSeconds(DATE '2019-01-15')");
+  }
+  
   @Test
   public void Date_Add() throws Exception {
     evalEquals("DATE_ADD(YEAR,1,DATE '2020-02-29')", LocalDate.of(2021, Month.FEBRUARY, 28));

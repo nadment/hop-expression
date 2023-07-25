@@ -26,6 +26,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_hours.adoc[ADD_HOURS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_minutes.adoc[ADD_MINUTES]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_months.adoc[ADD_MONTHS]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_nanoseconds.adoc[ADD_NANOSECONDS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_seconds.adoc[ADD_SECONDS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_weeks.adoc[ADD_WEEKS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add_years.adoc[ADD_YEARS]

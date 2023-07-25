@@ -16,35 +16,36 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Function;
+import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
+import java.time.ZonedDateTime;
 
 /**
- * The function extracts a number of characters from a string (starting from right)
+ * Adds or subtracts a specified number of nanoseconds to a date or timestamp
  */
-public class RightStringFunction extends RightFunction {
+@FunctionPlugin
+public class AddNanosecondsFunction extends Function {
 
-  public RightStringFunction() {
-    super();
+  public AddNanosecondsFunction() {
+    super("ADD_NANOSECONDS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, OperatorCategory.DATE,
+        "/docs/add_nanoseconds.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands)
       throws Exception {
-    String str = operands[0].getValue(String.class);
-    if (str == null)
+    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
+    if (value == null)
       return null;
 
-    Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
+    Long nanos = operands[1].getValue(Long.class);
+    if (nanos == null)
       return null;
-    int length = v1.intValue();
-    if (length < 0) {
-      length = 0;
-    }
 
-    if (str.length() <= length) {
-      return str;
-    }
-    return str.substring(str.length() - length);
+    return value.plusNanos(nanos);
   }
 }

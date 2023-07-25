@@ -16,13 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 
 /**
  * The function extracts a number of bytes from a binary (starting from right)
  */
-@FunctionPlugin
 public class RightBinaryFunction extends RightFunction {
 
   public RightBinaryFunction() {
