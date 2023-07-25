@@ -26,6 +26,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.NumberFormat;
 
 /**
@@ -49,25 +50,28 @@ public class ToNumberFunction extends Function {
 
     // With specified format
     if (call.getOperandCount() == 2) {
-      pattern = call.getOperand(1).getValue(String.class);
+      Object value = call.getOperand(1).getValue();
+      if (value instanceof NumberFormat) {
+        // Already compiled
+        return call;
+      }
+      pattern = StringType.coerce(value);
     }
-
-    // Compile format to check it
-    NumberFormat.of(pattern);     
     
-    return new Call(call.getOperator(), call.getOperand(0), Literal.of(pattern));
+    // Compile format to check it
+    NumberFormat format = NumberFormat.of(pattern);     
+    
+    return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
   }
    
   @Override
-  public Object eval(IExpression[] operands)
+  public Object eval(final IExpression[] operands)
       throws Exception {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
-    String pattern = operands[1].getValue(String.class);
-
-    NumberFormat format = NumberFormat.of(pattern);
+    NumberFormat format = operands[1].getValue(NumberFormat.class);
     return format.parse(value);
   }
 }
