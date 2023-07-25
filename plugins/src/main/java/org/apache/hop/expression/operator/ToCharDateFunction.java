@@ -24,7 +24,8 @@ import java.time.ZonedDateTime;
  * Converts a date expression to a string value.
  */
 public class ToCharDateFunction extends ToCharFunction {
-
+  static final ToCharDateFunction INSTANCE = new ToCharDateFunction();
+  
   public ToCharDateFunction() {
     super();
   }

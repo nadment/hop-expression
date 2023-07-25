@@ -22,7 +22,8 @@ import org.apache.hop.expression.IExpression;
  * The function reverses the order of characters in a string value.
  */
 public class ReverseStringFunction extends ReverseFunction {
-
+  static final ReverseStringFunction INSTANCE = new ReverseStringFunction();
+  
   public ReverseStringFunction() {
     super();
   }

@@ -22,7 +22,8 @@ import org.apache.hop.expression.IExpression;
  * The function extracts a number of bytes from a binary (starting from right)
  */
 public class RightBinaryFunction extends RightFunction {
-
+  static final RightBinaryFunction INSTANCE = new RightBinaryFunction();
+  
   public RightBinaryFunction() {
     super();
   }

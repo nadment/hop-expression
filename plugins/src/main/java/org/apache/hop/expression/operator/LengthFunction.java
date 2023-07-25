@@ -35,9 +35,6 @@ import org.apache.hop.expression.type.Type;
 @FunctionPlugin
 public class LengthFunction extends Function {
 
-  private final static Function LENGTH_BINARY = new LengthBinaryFunction();
-  private final static Function LENGTH_STRING = new LengthStringFunction();
-  
   public LengthFunction() {
     super("LENGTH", ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/length.html");
@@ -48,13 +45,13 @@ public class LengthFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING) ) {
-      return new Call(LENGTH_STRING, call.getOperand(0));
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(LengthStringFunction.INSTANCE, call.getOperand(0));
     }
-    if (type.isSameFamily(BinaryType.BINARY) ) {
-      return new Call(LENGTH_BINARY, call.getOperand(0));
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(LengthBinaryFunction.INSTANCE, call.getOperand(0));
     }
-    
+
     return call;
   }
 }

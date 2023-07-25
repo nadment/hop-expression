@@ -22,7 +22,8 @@ import org.apache.hop.expression.IExpression;
  * The function extracts a number of characters from a string (starting from right)
  */
 public class RightStringFunction extends RightFunction {
-
+  static final RightStringFunction INSTANCE = new RightStringFunction();
+  
   public RightStringFunction() {
     super();
   }

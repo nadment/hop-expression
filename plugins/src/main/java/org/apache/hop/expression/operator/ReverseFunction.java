@@ -35,9 +35,6 @@ import org.apache.hop.expression.type.Type;
 @FunctionPlugin
 public class ReverseFunction extends Function {
 
-  private final static Function REVERSE_BINARY = new ReverseBinaryFunction();
-  private final static Function REVERSE_STRING = new ReverseStringFunction();
-  
   public ReverseFunction() {
     super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY),
         OperatorCategory.STRING, "/docs/reverse.html");
@@ -49,11 +46,11 @@ public class ReverseFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.isSameFamily(StringType.STRING)) {      
-      return new Call(REVERSE_STRING, call.getOperand(0));
+      return new Call(ReverseStringFunction.INSTANCE, call.getOperand(0));
     }
     
     if (type.isSameFamily(BinaryType.BINARY)) {      
-      return new Call(REVERSE_BINARY, call.getOperand(0));
+      return new Call(ReverseBinaryFunction.INSTANCE, call.getOperand(0));
     }
     
     return call;

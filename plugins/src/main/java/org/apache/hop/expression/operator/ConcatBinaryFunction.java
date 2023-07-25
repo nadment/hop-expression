@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 import java.io.ByteArrayOutputStream;
 
@@ -24,14 +25,15 @@ import java.io.ByteArrayOutputStream;
  * Binary concatenation operator '<code>||</code>'
  */
 public class ConcatBinaryFunction extends ConcatFunction {
-
+  static final Function INSTANCE = new ConcatBinaryFunction();
+  
   // Function
   public ConcatBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) throws Exception {
 
     Object firstNotNull = null;
     Object[] values = new Object[operands.length];

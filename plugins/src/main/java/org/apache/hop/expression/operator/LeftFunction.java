@@ -37,9 +37,6 @@ import org.apache.hop.expression.type.Type;
 @FunctionPlugin
 public class LeftFunction extends Function {
 
-  private final static Function LEFT_BINARY = new LeftBinaryFunction();
-  private final static Function LEFT_STRING = new LeftStringFunction();
-  
   public LeftFunction() {
     super("LEFT", ReturnTypes.ARG0,
         OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), OperatorCategory.STRING,
@@ -52,11 +49,11 @@ public class LeftFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.isSameFamily(StringType.STRING)) {      
-      return new Call(LEFT_STRING, call.getOperands());
+      return new Call(LeftStringFunction.INSTANCE, call.getOperands());
     }
     
     if (type.isSameFamily(BinaryType.BINARY)) {      
-      return new Call(LEFT_BINARY, call.getOperands());
+      return new Call(LeftBinaryFunction.INSTANCE, call.getOperands());
     }
     
     return call;

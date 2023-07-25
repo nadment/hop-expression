@@ -36,8 +36,6 @@ import org.apache.hop.expression.type.Type;
  */
 @FunctionPlugin
 public class RightFunction extends Function {
-  private final static Function RIGHT_BINARY = new RightBinaryFunction();
-  private final static Function RIGHT_STRING = new RightStringFunction();
 
   public RightFunction() {
     super("RIGHT", ReturnTypes.ARG0,
@@ -51,11 +49,11 @@ public class RightFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.isSameFamily(StringType.STRING)) {      
-      return new Call(RIGHT_STRING, call.getOperands());
+      return new Call(RightStringFunction.INSTANCE, call.getOperands());
     }
     
     if (type.isSameFamily(BinaryType.BINARY)) {      
-      return new Call(RIGHT_BINARY, call.getOperands());
+      return new Call(RightBinaryFunction.INSTANCE, call.getOperands());
     }
     
     return call;

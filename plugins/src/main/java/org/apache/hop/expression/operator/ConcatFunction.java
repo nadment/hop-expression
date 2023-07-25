@@ -29,7 +29,6 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -40,9 +39,6 @@ import java.util.ArrayList;
 @FunctionPlugin
 public class ConcatFunction extends Function {
 
-  private final static Function CONCAT_BINARY = new ConcatBinaryFunction();
-  private final static Function CONCAT_STRING = new ConcatStringFunction();
-  
   // Function
   public ConcatFunction() {
     super("CONCAT", ReturnTypes.FIRST_KNOWN,
@@ -70,9 +66,9 @@ public class ConcatFunction extends Function {
       operands.add(0,operand);
     }
     
-    Operator operator = CONCAT_STRING;
+    Operator operator = ConcatStringFunction.INSTANCE;
     if ( BinaryType.BINARY.isSameFamily(type)) {
-      operator = CONCAT_BINARY;
+      operator = ConcatBinaryFunction.INSTANCE;
     }
     
     switch (operands.size()) {
@@ -83,45 +79,6 @@ public class ConcatFunction extends Function {
       default:
         return new Call(operator, operands);
     }
-  }
-
-
-  //@Override
-  public Object eval2(IExpression[] operands) throws Exception {
-
-    Object firstNotNull = null;
-    Object[] values = new Object[operands.length];
-    int i = 0;
-    for (IExpression operand : operands) {
-      Object value = operand.getValue();
-      if (firstNotNull == null && value != null)
-        firstNotNull = value;
-      values[i++] = value;
-    }
-
-    if (firstNotNull == null)
-      return null;
-
-    // Concat Binary
-    if (firstNotNull instanceof byte[]) {
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      for (Object value : values) {
-        if (value != null) {
-          output.write((byte[]) value);
-        }
-      }
-      return output.toByteArray();
-    }
-
-    // Concat String
-    StringBuilder builder = new StringBuilder();
-    for (IExpression operand : operands) {
-      String value = operand.getValue(String.class);
-      if (value != null)
-        builder.append(value);
-    }
-
-    return builder.toString();
   }
 
   @Override

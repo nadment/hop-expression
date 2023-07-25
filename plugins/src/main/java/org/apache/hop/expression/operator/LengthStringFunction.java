@@ -22,7 +22,8 @@ import org.apache.hop.expression.IExpression;
  * The function returns the number of characters of the specified string.
  */
 public class LengthStringFunction extends LengthFunction {
-
+  static final LengthStringFunction INSTANCE = new LengthStringFunction();
+  
   public LengthStringFunction() {
     super();
   }

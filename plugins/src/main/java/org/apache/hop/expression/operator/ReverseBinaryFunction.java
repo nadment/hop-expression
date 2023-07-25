@@ -22,7 +22,8 @@ import org.apache.hop.expression.IExpression;
  * The function reverses the order of bytes in a binary value.
  */
 public class ReverseBinaryFunction extends ReverseFunction {
-
+  static final ReverseBinaryFunction INSTANCE = new ReverseBinaryFunction();
+  
   public ReverseBinaryFunction() {
     super();
   }

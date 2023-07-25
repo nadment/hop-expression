@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
 
 
@@ -23,14 +24,15 @@ import org.apache.hop.expression.IExpression;
  * String concatenation operator '<code>||</code>'
  */
 public class ConcatStringFunction extends ConcatFunction {
-
+  static final Function INSTANCE = new ConcatStringFunction();
+  
   // Function
   public ConcatStringFunction() {
     super();
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) throws Exception {
 
     String firstNotNull = null;
     String[] values = new String[operands.length];

@@ -292,7 +292,7 @@ public abstract class Operator implements Comparable<Operator> {
   }
   
   protected Queue<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
-    return getChainedOperands(call, new LinkedList<IExpression>(), allowDuplicate);
+    return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
   }
   
   private Queue<IExpression> getChainedOperands(Call call, Deque<IExpression> operands, boolean allowDuplicate) {   

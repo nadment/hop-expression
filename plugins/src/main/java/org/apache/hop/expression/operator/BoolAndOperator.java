@@ -156,14 +156,16 @@ public class BoolAndOperator extends Operator {
     // Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
     for (IExpression operand : notNullTerms) {
       if (strongTerms.contains(operand)) {
-        Iterator<IExpression> iterator = conditions.iterator();
+        Iterator<IExpression> iterator = conditions.iterator();        
+        List<IExpression> unnecessary = new ArrayList<>(); 
         while (iterator.hasNext()) {
           IExpression condition = iterator.next();
           if (condition.is(Operators.IS_NOT_NULL)
               && condition.asCall().getOperand(0).equals(operand)) {
-            conditions.remove(condition);
+            unnecessary.add(condition);
           }
-        }
+        }        
+        conditions.removeAll(unnecessary);
       }
     }
 

@@ -22,7 +22,8 @@ import org.apache.hop.expression.IExpression;
  * The function extracts a number of characters from a string starting from left.
  */
 public class LeftStringFunction extends LeftFunction {
-
+  static final LeftStringFunction INSTANCE = new LeftStringFunction();
+  
   public LeftStringFunction() {
     super();
   }

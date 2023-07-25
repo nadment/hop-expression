@@ -25,7 +25,8 @@ import java.util.Base64;
  * Converts a binary expression to a string value.
  */
 public class ToCharBinaryFunction extends ToCharFunction {
-
+  static final ToCharBinaryFunction INSTANCE = new ToCharBinaryFunction();
+  
   public ToCharBinaryFunction() {
     super();
   }

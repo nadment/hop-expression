@@ -40,10 +40,6 @@ import org.apache.hop.expression.type.Type;
 @FunctionPlugin
 public class ToCharFunction extends Function {
 
-  private final static Function TO_CHAR_BINARY = new ToCharBinaryFunction();
-  private final static Function TO_CHAR_NUMBER = new ToCharNumberFunction();
-  private final static Function TO_CHAR_DATE = new ToCharDateFunction();
-
   public ToCharFunction() {
     super(
         "TO_CHAR", ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT
@@ -70,7 +66,7 @@ public class ToCharFunction extends Function {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
 
-      return new Call(TO_CHAR_DATE, call.getOperand(0), Literal.of(pattern));
+      return new Call(ToCharDateFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));
     }
 
     if (type.isSameFamily(NumberType.NUMBER)) {
@@ -78,7 +74,7 @@ public class ToCharFunction extends Function {
         pattern = "TM";
       }
 
-      return new Call(TO_CHAR_NUMBER, call.getOperand(0), Literal.of(pattern));
+      return new Call(ToCharNumberFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));
     }
 
     if (type.isSameFamily(BinaryType.BINARY)) {
@@ -96,7 +92,7 @@ public class ToCharFunction extends Function {
         throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
       }
 
-      return new Call(TO_CHAR_BINARY, call.getOperand(0), Literal.of(pattern));      
+      return new Call(ToCharBinaryFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));      
     }
 
     return call;
