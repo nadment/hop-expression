@@ -81,7 +81,7 @@ public class Regexp {
   }
 
 
-  public static int parseFlags(String str) throws ExpressionException {
+  public static int parseFlags(String str) {
     int flags = Pattern.UNICODE_CASE;
     if (str != null) {
       for (int i = 0; i < str.length(); ++i) {

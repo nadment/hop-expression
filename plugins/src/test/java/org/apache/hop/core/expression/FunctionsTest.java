@@ -38,6 +38,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.TimeZone;
+import com.ctc.wstx.shaded.msv_core.datatype.xsd.Base64BinaryType;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 public class FunctionsTest extends ExpressionTest {
@@ -3016,11 +3017,15 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Compress() throws Exception {
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+    evalNull("Compress(NULL_BINARY)");
+    returnType("Compress('Test'::BINARY)", BinaryType.BINARY);
   }
 
   @Test
   public void Decompress() throws Exception {
     evalEquals("Decompress(Compress('Test'::BINARY))::STRING", "Test");
+    evalNull("Decompress(NULL_BINARY)");
+    returnType("Decompress(Compress('Test'::BINARY))", BinaryType.BINARY);
   }
 
   @Test
