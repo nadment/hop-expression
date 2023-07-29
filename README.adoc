@@ -21,19 +21,24 @@ image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&me
 
 ## Overview
 
-This plugin provides 4 transformations that use the power of an expression language.
+This plugin provides 4 transformations and 1 action that use the power of an expression language.
 
-* The `Expression` transformation calculate fields with expression 
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/expression.svg[Expression,24,24,role=text-center]
+`Expression` transformation calculate fields with expression.
 
-* The `Route` transformation switches rows according to an expression condition
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/route.svg[Route]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/route.svg[Route,24,24,role=left]
+`Route` transformation switches rows according to an expression condition.
 
-* The `Where` transformation filter rows with expression condition
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/where.svg[Where]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/where.svg[Where,24,24,role=left]
+`Where` transformation filter rows with expression condition.
 
-* The `Aggregate` transformation uses aggregation functions to calculate values on groups of rows.
-image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/aggregate.svg[Where]
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/aggregate.svg[Where,24,24,role=left]
+`Aggregate` transformation uses aggregation functions to calculate values on groups of rows.
+
+
+image:https://raw.githubusercontent.com/nadment/hop-expression/master/plugins/src/main/resources/setvariable.svg[Set variable,24,24,role=left]
+`Set variable` action provide the possibility to set variables or modify existing variables using expressions.
+
 
 ## Expression language
 

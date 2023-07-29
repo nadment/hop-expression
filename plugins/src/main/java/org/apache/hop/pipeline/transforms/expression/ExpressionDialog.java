@@ -146,7 +146,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
   protected void getWidgetsContent(final ExpressionMeta meta) {
 
-    // Save step name
+    // Save transform name
     this.transformName = this.wTransformName.getText();
 
     int count = wTableFields.nrNonEmpty();
@@ -303,7 +303,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     return GuiResource.getInstance().getImageError();
   }
 
-  /** Called when the user confirms the dialog. Subclasses may override if desired. */
+  /** Called when the user confirms the dialog. */
   protected void ok() {
 
     if (Utils.isEmpty(wTransformName.getText())) {
@@ -318,7 +318,7 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     dispose();
   }
 
-  /** Called when the user cancels the dialog. Subclasses may override if desired. */
+  /** Called when the user cancels the dialog.*/
   protected void cancel() {
     this.transformName = null;
 

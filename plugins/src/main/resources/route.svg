@@ -2,17 +2,15 @@
 <!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1"
-	 id="Layer_1" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:svg="http://www.w3.org/2000/svg" sodipodi:docname="route.svg" inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+	 id="Layer_1" xmlns:svg="http://www.w3.org/2000/svg" 
 	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="42px" height="42px"
 	 viewBox="0 0 42 42" enable-background="new 0 0 42 42" xml:space="preserve">
-<sodipodi:namedview  id="namedview5" borderopacity="1.0" bordercolor="#666666" pagecolor="#ffffff" inkscape:cy="30.734894" inkscape:zoom="6.9953064" showgrid="false" inkscape:cx="24.945298" inkscape:current-layer="Layer_1" inkscape:window-y="-8" inkscape:window-x="-8" inkscape:window-height="1017" inkscape:window-width="1920" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:window-maximized="1" inkscape:pagecheckerboard="0">
-	</sodipodi:namedview>
 <path id="path2-2" fill="#0E3A5A" d="M21,3.083l-1.982,1.791v5.375v7.166v17.918c-2.187,0-3.963,1.606-3.963,3.584h11.886
 	c0-1.978-1.774-3.584-3.963-3.584v-10.75v-7.168v-3.582V4.872L21,3.083z"/>
-<path id="path2-1-6" sodipodi:nodetypes="ccccccc" fill="#C9E8FB" d="M22.979,13.833H34.87l3.965-3.582L34.87,6.667H22.981
+<path id="path2-1-6" fill="#C9E8FB" d="M22.979,13.833H34.87l3.965-3.582L34.87,6.667H22.981
 	C22.981,6.667,22.979,12.443,22.979,13.833L22.979,13.833z"/>
-<path id="path2-1-6-8" sodipodi:nodetypes="ccccccc" fill="#C9E8FB" d="M22.979,24.582h11.891L38.834,21l-3.965-3.584H22.98
+<path id="path2-1-6-8" fill="#C9E8FB" d="M22.979,24.582h11.891L38.834,21l-3.965-3.584H22.98
 	C22.98,17.416,22.979,23.192,22.979,24.582L22.979,24.582z"/>
-<path id="path2-1-6-8-0" sodipodi:nodetypes="ccccccc" fill="#C9E8FB" d="M19.018,10.25H7.127l-3.965,3.582l3.965,3.584h11.889
+<path id="path2-1-6-8-0" fill="#C9E8FB" d="M19.018,10.25H7.127l-3.965,3.582l3.965,3.584h11.889
 	C19.016,17.416,19.018,11.64,19.018,10.25L19.018,10.25z"/>
 </svg>
