@@ -28,12 +28,12 @@ import java.util.List;
 public class PercentileProcessor implements IExpressionProcessor {
 
   private static final Percentile PERCENTILE = new Percentile();
-  private BigDecimal percentile;
+  private double quantile;
   private List<Double> values;
 
-  public PercentileProcessor(BigDecimal percentile) {
-    values = new ArrayList<>();
-    this.percentile = percentile;
+  public PercentileProcessor(BigDecimal quantile) {
+    this.values = new ArrayList<>();
+    this.quantile = quantile.doubleValue();
   }
 
   @Override
@@ -52,6 +52,6 @@ public class PercentileProcessor implements IExpressionProcessor {
       array[i] = values.get(i);
     }
 
-    return PERCENTILE.evaluate(array, percentile.doubleValue());
+    return PERCENTILE.evaluate(array, quantile);
   }
 }

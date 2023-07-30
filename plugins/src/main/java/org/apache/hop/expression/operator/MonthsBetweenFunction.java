@@ -28,6 +28,8 @@ import java.time.temporal.ChronoUnit;
 
 /**
  * Returns number of months between two date.
+ * 
+ * The difference is calculated based on 31 days per month.
  */
 @FunctionPlugin
 public class MonthsBetweenFunction extends Function {
@@ -47,10 +49,6 @@ public class MonthsBetweenFunction extends Function {
     if (endDateTime == null)
       return null;
 
-    // Remove time
-    //startDateTime = startDateTime.truncatedTo(ChronoUnit.DAYS);
-    //endDateTime = endDateTime.truncatedTo(ChronoUnit.DAYS);
-    
     long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
     
     // All months have 31 days
