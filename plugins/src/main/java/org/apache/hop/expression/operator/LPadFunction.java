@@ -16,16 +16,21 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
- * The function left-pads a string with another string, to a certain length.
+ * The function left-pads a string or binary with another string or binary, to a certain length.
  *
  * @see {@link RPadFunction}
  */
@@ -33,61 +38,26 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class LPadFunction extends Function {
 
   /** The maximum size to which the padding can expand. */
-  private static final int PAD_LIMIT = 8192;
+  protected static final int PAD_LIMIT = 8192;
 
   public LPadFunction() {
-    super("LPAD", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING,
+    super("LPAD", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING.or(OperandTypes.BINARY_NUMERIC_BINARY),
         Category.STRING, "/docs/lpad.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Long v1 = operands[1].getValue(Long.class);
-    int length = v1.intValue();
+    Type type = call.getOperand(0).getType();
 
-    // If this parameter is omitted, the function will pad spaces
-    String pad = null;
-    if (operands.length == 3) {
-      pad = operands[2].getValue(String.class);      
+    if (type.isSameFamily(StringType.STRING)) {      
+      return new Call(LPadStringFunction.INSTANCE, call.getOperands());
     }
-
-    if (length < 0) {
-      length = 0;
-    } else if (length > PAD_LIMIT) {
-      throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+    
+    if (type.isSameFamily(BinaryType.BINARY)) {      
+      return new Call(LPadBinaryFunction.INSTANCE, call.getOperands());
     }
-
-    // If this parameter is omitted, the function will pad spaces
-    if (pad == null) {
-      pad = " ";
-    }
-
-    final int size = pad.length();
-    final int index = length - value.length();
-
-    if (index <= 0) {
-      value = value.substring(0, length);
-    } else if (size == 0) {
-      // nothing to do
-    } else if (index == size) {
-      value = pad.concat(value);
-    } else if (index < size) {
-      value = pad.substring(0, index).concat(value);
-    } else {
-      final char[] padding = new char[index];
-      final char[] padChars = pad.toCharArray();
-      for (int i = 0; i < index; i++) {
-        padding[i] = padChars[i % size];
-      }
-      value = new String(padding).concat(value);
-    }
-
-    return value;
-  }
-
+    
+    return call;
+  }  
 }

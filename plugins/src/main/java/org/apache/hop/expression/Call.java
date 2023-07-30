@@ -324,13 +324,6 @@ public final class Call implements IExpression {
       
       expression = call;
     }
-
-    // If operator is deterministic and all operands are constant try to evaluate
-//    try {
-//      return evaluate();
-//    } catch (Exception e) {
-//      // Ignore error like division by zero "X IN (1,3/0)" and continue
-//    }
     
     return expression;
   }

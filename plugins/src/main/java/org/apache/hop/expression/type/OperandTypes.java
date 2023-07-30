@@ -155,6 +155,8 @@ public final class OperandTypes {
       family(TypeFamily.BINARY, TypeFamily.BINARY);
   public static final IOperandTypeChecker BINARY_NUMERIC =
       family(TypeFamily.BINARY, TypeFamily.NUMERIC);
+  public static final IOperandTypeChecker BINARY_NUMERIC_BINARY = family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.BINARY);
+
   public static final IOperandTypeChecker BINARY_OPTIONAL_TEXT =
       sequence(OperandTypes.BINARY, OperandTypes.TEXT).optional(i -> i == 1);
 

@@ -612,15 +612,42 @@ public class FunctionsTest extends ExpressionTest {
   public void RPad() throws Exception {
     evalEquals("RPad('test',7)", "test   ");
     evalEquals("RPad('test',7,'*')", "test***");
-    evalEquals("RPad('test',4,'*')", "test");
+    evalEquals("RPad('test',4,'*')", "test");    
     evalEquals("RPad('test',3,'*')", "tes");
-    evalEquals("RPad('test',12,'')", "test");
+    evalEquals("RPad('test',4,'ABC')", "test");
+    evalEquals("RPad('test',6,'ABC')", "testAB");
+    evalEquals("RPad('test',7,'ABC')", "testABC");
     evalEquals("RPad('test',8,'ABC')", "testABCA");
+
+    evalEquals("RPad(BINARY '1A2B3C',2,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B});
+    evalEquals("RPad(BINARY '1A2B3C',3,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C});    
+    evalEquals("RPad(BINARY '1A2B3C',4,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D});
+    evalEquals("RPad(BINARY '1A2B3C',5,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E});
+    evalEquals("RPad(BINARY '1A2B3C',6,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F});
+    evalEquals("RPad(BINARY '1A2B3C',7,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F, 0x4D});
+    
+    // Empty padding
+    evalEquals("RPad('test',5,'')", "test");
+    evalEquals("RPad(BINARY '2A3B4C',5,BINARY '')", new byte[] {0x2A, 0x3B, 0x4C});
+    
+    // If length is a negative number, the result of the function is an empty string or binary.
     evalEquals("RPad('test',-8)", "");
+    evalEquals("RPad(FIELD_BINARY,-8)", new byte[0]);      
+    
+    evalNull("RPad(NULL_STRING,2)");
+    evalNull("RPad(NULL_BINARY,2)");
     evalNull("RPad(NULL_STRING,-8)");
+    evalNull("RPad(NULL_BINARY,-8)");
+    
+    // Missing length
     evalFails("RPad('test')");
+    
     // Test PAD_LIMIT
     evalFails("RPad('test',10000)");
+    evalFails("RPad(FIELD_BINARY,10000)");
+    
+    returnType("RPad(FIELD_STRING,7,'*')", StringType.STRING);
+    returnType("RPad(FIELD_BINARY,7,BINARY '02')", BinaryType.BINARY);
   }
 
   @Test
@@ -628,15 +655,37 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("LPad('test',6)", "  test");
     evalEquals("LPad('test',7,'*')", "***test");
     evalEquals("LPad('test',3,'*')", "tes");
-    evalEquals("LPad('test',8,'ABC')", "ABCAtest");
-    evalEquals("LPad('test',12,'')", "test");
-    evalEquals("LPad('test',6,'ABC')", "ABtest");
     evalEquals("LPad('test',4,'ABC')", "test");
+    evalEquals("LPad('test',6,'ABC')", "ABtest");
+    evalEquals("LPad('test',7,'ABC')", "ABCtest");
+    evalEquals("LPad('test',8,'ABC')", "ABCAtest");
+
+    evalEquals("LPad(BINARY '1A2B3C',2,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B});
+    evalEquals("LPad(BINARY '1A2B3C',3,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C});    
+    evalEquals("LPad(BINARY '1A2B3C',4,BINARY '4D5E6F')", new byte[] {0x4D, 0x1A, 0x2B, 0x3C});
+    evalEquals("LPad(BINARY '1A2B3C',5,BINARY '4D5E6F')", new byte[] {0x4D, 0x5E, 0x1A, 0x2B, 0x3C});
+    evalEquals("LPad(BINARY '1A2B3C',6,BINARY '4D5E6F')", new byte[] {0x4D, 0x5E, 0x6F, 0x1A, 0x2B, 0x3C});
+    evalEquals("LPad(BINARY '1A2B3C',7,BINARY '4D5E6F')", new byte[] {0x4D, 0x5E, 0x6F, 0x4D, 0x1A, 0x2B, 0x3C});
+    
+    // Empty padding
+    evalEquals("LPad('test',5,'')", "test");
+    evalEquals("LPad(BINARY '2A3B4C',5,BINARY '')", new byte[] {0x2A, 0x3B, 0x4C});
+    
+    // If length is a negative number, the result of the function is an empty string or binary.
     evalEquals("LPad('test',-8)", "");
+    
+    evalNull("LPad(NULL_STRING,2)");
     evalNull("LPad(NULL_STRING,-8)");
+    evalNull("LPad(NULL_BINARY,2)");    
+    evalNull("LPad(NULL_BINARY,-8)");
+        
     evalFails("LPad('test')");
+    
     // Test PAD_LIMIT
     evalFails("LPad('test',10000)");
+    
+    returnType("LPad(FIELD_STRING,7,'*')", StringType.STRING);
+    returnType("LPad(FIELD_BINARY,7,BINARY '02')", BinaryType.BINARY);
   }
 
   @Test
@@ -644,6 +693,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Year(DATE '2019-01-01')", 2019L);
     evalNull("Year(NULL_DATE)");
     evalFails("Year()");
+    
+    returnType("Year(DATE '2019-01-01')", IntegerType.INTEGER);
   }
 
   @Test
@@ -701,6 +752,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Date_Diff(YEAR, NULL_DATE, NULL_DATE)");
     
     evalFails("Date_Diff(YEAR, DATE '2007-11-09')");
+    
+    returnType("Date_Diff(DAY, DATE '2021-11-09',DATE '2020-12-28')", IntegerType.INTEGER);
   }
   
   @Test
@@ -789,6 +842,8 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Quarter(FIELD_STRING)");
     evalFails("Quarter(FIELD_INTEGER)");
     evalFails("Quarter(FIELD_NUMBER)");
+    
+    returnType("Quarter(DATE '2019-01-01')", IntegerType.INTEGER);   
   }
 
   @Test
@@ -803,6 +858,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("DayOfWeek(NULL_DATE)");
     
     evalFails("DayOfWeek()");
+    
+    returnType("DayOfWeek(DATE '2019-01-01')", IntegerType.INTEGER); 
   }
 
   @Test
@@ -821,6 +878,8 @@ public class FunctionsTest extends ExpressionTest {
     
     optimize("DAY(DATE '2019-02-15')", "15");
     optimize("DAY(DATE_FROM_PARTS(2019,2,15))", "15");
+    
+    returnType("Day(DATE '2019-01-01')", IntegerType.INTEGER); 
   }
 
   @Test
@@ -832,6 +891,8 @@ public class FunctionsTest extends ExpressionTest {
     
     evalNull("DayOfYear(NULL_DATE)");
     evalFails("DayOfYear()");
+    
+    returnType("DayOfYear(DATE '2019-01-01')", IntegerType.INTEGER);   
   }
 
   @Test
@@ -843,6 +904,8 @@ public class FunctionsTest extends ExpressionTest {
     
     //evalFails("Week(NULL_BOOLEAN)");
     evalFails("Week()");
+    
+    returnType("Week(DATE '2019-01-01')", IntegerType.INTEGER);   
   }
 
   @Test
@@ -850,7 +913,6 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("IsoDayOfWeek(DATE '2003-12-28')", 7L);
     evalNull("IsoDayOfWeek(NULL_DATE)");
     evalFails("IsoDayOfWeek()");
-
   }
 
   @Test
@@ -2310,8 +2372,15 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Reverse() throws Exception {
     evalEquals("Reverse('Hello, world!')", "!dlrow ,olleH");
+    evalEquals("Reverse(BINARY '2A3B4C')", new byte[] {0x4C, 0x3B, 0x2A});
+    
     evalNull("Reverse(NULL_STRING)");
+    evalNull("Reverse(NULL_BINARY)");
+    
     evalFails("Reverse()");
+    
+    returnType("Reverse(FIELD_STRING)", StringType.STRING);
+    returnType("Reverse(FIELD_BINARY)", BinaryType.BINARY);
   }
 
   @Test
@@ -2321,6 +2390,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
     evalNull("Soundex(NULL_STRING)");
     evalFails("Soundex()");
+    returnType("Soundex('Wikipedia')", StringType.STRING);
   }
 
   @Test
@@ -2687,6 +2757,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Unicode('')", 0L);
     evalNull("Unicode(NULL_STRING)");
     evalFails("Unicode()");
+    
+    returnType("Unicode('€')", IntegerType.INTEGER);
   }
 
   @Test
@@ -3269,6 +3341,3 @@ public class FunctionsTest extends ExpressionTest {
     returnType("Position('abc' IN 'abcdefgh')", IntegerType.INTEGER);
   }
 }
-
-
-
