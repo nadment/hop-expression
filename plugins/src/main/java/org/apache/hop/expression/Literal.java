@@ -223,7 +223,6 @@ public final class Literal implements IExpression {
         break;
 
       case DATE:
-      case TIMEUNIT:
       case ANY:
       case UNKNOWN:
         break;

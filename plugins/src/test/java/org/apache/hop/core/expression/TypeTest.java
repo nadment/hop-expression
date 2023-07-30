@@ -87,10 +87,6 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeName.INTEGER, TypeName.from(Long.class));
     assertEquals(TypeName.INTEGER, TypeName.from(1L));
     
-    assertEquals(TypeName.TIMEUNIT, TypeName.of("TIMEUNIT"));
-    assertEquals(TypeName.TIMEUNIT, TypeName.from(TimeUnit.class));
-    assertEquals(TypeName.TIMEUNIT, TypeName.from(TimeUnit.CENTURY));
-    
     assertNull(TypeName.of("NOP"));
   }
 

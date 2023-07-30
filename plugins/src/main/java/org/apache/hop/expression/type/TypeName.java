@@ -58,11 +58,7 @@ public enum TypeName {
   JSON(TypeFamily.JSON, PrecScale.NO_NO, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class),
-
-  /** A time unit type */
-  TIMEUNIT(TypeFamily.NONE, PrecScale.NO_NO, -1, TimeUnit.class);
-
+  BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class);
 
   protected static final Set<TypeName> STRING_TYPES = Set.of(STRING);
   protected static final Set<TypeName> BINARY_TYPES = Set.of(BINARY);

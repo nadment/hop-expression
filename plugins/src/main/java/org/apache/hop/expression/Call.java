@@ -242,7 +242,6 @@ public final class Call implements IExpression {
 
           break;
         case DATE:
-        case TIMEUNIT:
         case UNKNOWN:
           break;
       }
