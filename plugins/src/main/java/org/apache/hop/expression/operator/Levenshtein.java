@@ -32,13 +32,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Levenshtein extends Function {
 
   public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        Category.STRING, "/docs/levenshtein.html");
+    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+        "/docs/levenshtein.html");
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
+  public Object eval(final IExpression[] operands) {
     String str1 = operands[0].getValue(String.class);
     if (str1 == null)
       return null;

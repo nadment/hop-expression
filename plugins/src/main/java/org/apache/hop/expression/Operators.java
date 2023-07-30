@@ -89,7 +89,7 @@ public class Operators {
   public static final Operator IFNULL = new IfNullFunction();
   public static final Operator NULLIF = new NullIfFunction();
   public static final Operator NVL2 = new Nvl2Function();
-  
+
   // -------------------------------------------------------------
   // COMPARISON OPERATORS
   // -------------------------------------------------------------
@@ -99,7 +99,7 @@ public class Operators {
   public static final Operator IS_NOT_TRUE = new IsNotTrueOperator();
   public static final Operator IS_FALSE = new IsFalseOperator();
   public static final Operator IS_NOT_FALSE = new IsNotFalseOperator();
-  public static final Operator IS_DISTINCT_FROM = new IsDistinctFromOperator();  
+  public static final Operator IS_DISTINCT_FROM = new IsDistinctFromOperator();
   public static final Operator IS_NOT_DISTINCT_FROM = new IsNotDistinctFromOperator();
   public static final Operator SIMILAR_TO = new SimilarToOperator();
   public static final Operator NOT_SIMILAR_TO = new SimilarToOperator();
@@ -136,7 +136,7 @@ public class Operators {
   // -------------------------------------------------------------
   public static final Operator CAST = new CastOperator();
   public static final Operator CAST_FUNCTION = new CastFunction();
-  public static final Function CONCAT = new ConcatFunction("||");  
+  public static final Function CONCAT = new ConcatFunction("||");
   public static final Function EXTRACT = new ExtractFunction();
   public static final Function ADD_DAYS = new AddDaysFunction();
 
@@ -164,12 +164,12 @@ public class Operators {
 
   public static boolean is(IExpression expression, Operator... operators) {
     for (Operator o : operators) {
-      if ( expression.is(o)) {
+      if (expression.is(o)) {
         return true;
       }
     }
     return false;
   }
-  
+
   private Operators() {}
 }

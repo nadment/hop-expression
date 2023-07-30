@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,20 +34,18 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ChrFunction extends Function {
 
   public ChrFunction() {
-    super("CHR", ReturnTypes.STRING, OperandTypes.NUMERIC, Category.STRING,
-        "/docs/chr.html");
+    super("CHR", ReturnTypes.STRING, OperandTypes.NUMERIC, Category.STRING, "/docs/chr.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;
     int codePoint = value.intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, codePoint);
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(codePoint));
     }
     return new String(Character.toChars(codePoint));
   }

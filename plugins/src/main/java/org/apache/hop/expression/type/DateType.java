@@ -27,16 +27,16 @@ public final class DateType extends Type {
    * Default DATE type with default parameters.
    */
   public static final DateType DATE = new DateType();
-  
+
   public DateType() {
     super(TypeName.DATE, PRECISION_NOT_SPECIFIED, 9);
-  } 
-  
+  }
+
   @Override
   public ZonedDateTime cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link DateType} with a pattern.
    *
@@ -51,7 +51,7 @@ public final class DateType extends Type {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
@@ -62,7 +62,7 @@ public final class DateType extends Type {
     throw new IllegalArgumentException(
         ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
-  
+
   /**
    * Coerce value to data type TIMESTAMP.
    * 
@@ -73,12 +73,12 @@ public final class DateType extends Type {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof ZonedDateTime) {
       return (ZonedDateTime) value;
     }
 
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.DATE));
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.DATE));
   }
 }

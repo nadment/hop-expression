@@ -138,6 +138,7 @@ public abstract class Type {
 
     return builder.toString();
   }
+
   /**
    * Convert a value to the specified {@link Type}.
    *

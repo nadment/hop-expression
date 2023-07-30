@@ -16,6 +16,7 @@ package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ParseNumberException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -480,7 +481,7 @@ final class SimpleNumberFormat extends NumberFormat {
    * @return the parsed value
    * @throws ParseException
    */
-  public BigDecimal parse(String text) throws ParseException {
+  public BigDecimal parse(String text) throws ParseNumberException {
 
     DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.getDefault());
 
@@ -979,12 +980,12 @@ final class SimpleNumberFormat extends NumberFormat {
     return 1;
   }
 
-  protected final IllegalArgumentException createInvalidFormat(final String pattern) {
-    return new IllegalArgumentException(ExpressionError.INVALID_NUMBER_FORMAT.message(pattern));
+  protected final NumberFormatException createInvalidFormat(final String pattern) {
+    return new NumberFormatException(ExpressionError.INVALID_NUMBER_FORMAT.message(pattern));
   }
 
-  protected final ParseException createUnparsableNumber(final String text, int index) {
-    return new ParseException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT.message(text, format),
+  protected final ParseNumberException createUnparsableNumber(final String text, int index) {
+    return new ParseNumberException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT, text, format,
         index);
   }
 }

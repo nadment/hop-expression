@@ -18,11 +18,11 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -38,24 +38,23 @@ import org.apache.hop.expression.type.Type;
 public class LeftFunction extends Function {
 
   public LeftFunction() {
-    super("LEFT", ReturnTypes.ARG0,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), Category.STRING,
-        "/docs/left.html");
+    super("LEFT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+        Category.STRING, "/docs/left.html");
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING)) {      
+    if (type.isSameFamily(StringType.STRING)) {
       return new Call(LeftStringFunction.INSTANCE, call.getOperands());
     }
-    
-    if (type.isSameFamily(BinaryType.BINARY)) {      
+
+    if (type.isSameFamily(BinaryType.BINARY)) {
       return new Call(LeftBinaryFunction.INSTANCE, call.getOperands());
     }
-    
+
     return call;
   }
 }

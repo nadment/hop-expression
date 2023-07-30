@@ -17,6 +17,7 @@
 package org.apache.hop.expression;
 
 import static java.util.Objects.requireNonNull;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IOperandCountRange;
@@ -53,7 +54,7 @@ public final class Call implements IExpression {
 
   public Call(Operator operator, Collection<IExpression> operands) {
     this.operator = requireNonNull(operator, "operator");
-    this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);  
+    this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);
   }
 
   @Override
@@ -109,7 +110,7 @@ public final class Call implements IExpression {
   }
 
   @Override
-  public Object getValue() throws ExpressionException {
+  public Object getValue() {
     try {
       return operator.eval(operands);
     } catch (Exception e) {
@@ -119,7 +120,7 @@ public final class Call implements IExpression {
   }
 
   @Override
-  public <T> T getValue(Class<T> clazz) throws ExpressionException {
+  public <T> T getValue(Class<T> clazz) {
     try {
       Object value = operator.eval(operands);
 
@@ -295,36 +296,38 @@ public final class Call implements IExpression {
     for (int i = 0; i < operands.length; i++) {
       this.operands[i] = operands[i].compile(context);
     }
-    
-    if (isConstant()) try {
-      return evaluate();
-    } catch (Exception e) {
-      // Ignore error like division by zero "X IN (1,3/0)" and continue
-    }
-    
+
+    if (isConstant())
+      try {
+        return evaluate();
+      } catch (Exception e) {
+        // Ignore error like division by zero "X IN (1,3/0)" and continue
+      }
+
     IExpression expression = operator.compile(context, this);
 
     if (expression.is(Kind.CALL)) {
       Call call = expression.asCall();
-      
+
       // If operator is symmetrical reorganize operands
       if (call.getOperator().isSymmetrical()) {
         call = call.reorganizeSymmetrical();
       }
-      
-      // Inference return type      
+
+      // Inference return type
       call.inferenceType();
-      
+
       // If operator is deterministic and all operands are constant try to evaluate
-      if (isConstant()) try {
-        return call.evaluate();
-      } catch (Exception e) {
-        // Ignore error like division by zero "X IN (1,3/0)" and continue
-      }
-      
+      if (isConstant())
+        try {
+          return call.evaluate();
+        } catch (Exception e) {
+          // Ignore error like division by zero "X IN (1,3/0)" and continue
+        }
+
       expression = call;
     }
-    
+
     return expression;
   }
 
@@ -332,20 +335,20 @@ public final class Call implements IExpression {
     this.type = this.operator.getReturnTypeInference().getReturnType(this);
     return this;
   }
-    
+
   protected Literal evaluate() throws Exception {
 
-      Object value = getValue();
-      inferenceType();
+    Object value = getValue();
+    inferenceType();
 
-      // Some operator don't known return type like JSON_VALUE.
-      if (TypeName.ANY.equals(type.getName())) {
-        return Literal.of(value);
-      }
+    // Some operator don't known return type like JSON_VALUE.
+    if (TypeName.ANY.equals(type.getName())) {
+      return Literal.of(value);
+    }
 
-      return new Literal(value, type);
+    return new Literal(value, type);
   }
-  
+
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);

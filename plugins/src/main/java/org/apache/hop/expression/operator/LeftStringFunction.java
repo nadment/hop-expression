@@ -23,14 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class LeftStringFunction extends LeftFunction {
   static final LeftStringFunction INSTANCE = new LeftStringFunction();
-  
+
   public LeftStringFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
+  public Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null)
       return null;

@@ -31,13 +31,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class JaroWinklerFunction extends Function {
 
   public JaroWinklerFunction() {
-    super("JAROWINKLER", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        Category.STRING, "/docs/jarowinkler.html");
+    super("JAROWINKLER", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+        "/docs/jarowinkler.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
     if (v0 == null)
       return null;

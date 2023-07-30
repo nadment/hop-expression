@@ -37,12 +37,11 @@ public class AtanhFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
+  public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-   
+
     return BigDecimalMath.atanh(value, DECIMAL128);
   }
 }

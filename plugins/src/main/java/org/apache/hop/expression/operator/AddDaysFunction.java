@@ -36,10 +36,9 @@ public class AddDaysFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
-    if (datetime==null)
+    if (datetime == null)
       return null;
 
     Long days = operands[1].getValue(Long.class);

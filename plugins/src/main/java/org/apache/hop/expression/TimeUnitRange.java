@@ -23,30 +23,23 @@ import java.util.Map;
  * Enumeration of time units ranges.
  */
 public enum TimeUnitRange {
-  YEAR(TimeUnit.YEAR, null),
-  YEAR_TO_MONTH(TimeUnit.YEAR, TimeUnit.MONTH),
-  MONTH(TimeUnit.MONTH, null),
-  DAY(TimeUnit.DAY, null),
-  DAY_TO_HOUR(TimeUnit.DAY, TimeUnit.HOUR),
-  DAY_TO_MINUTE(TimeUnit.DAY, TimeUnit.MINUTE),
-  DAY_TO_SECOND(TimeUnit.DAY, TimeUnit.SECOND),
-  HOUR(TimeUnit.HOUR, null),
-  HOUR_TO_MINUTE(TimeUnit.HOUR, TimeUnit.MINUTE),
-  HOUR_TO_SECOND(TimeUnit.HOUR, TimeUnit.SECOND),
-  MINUTE(TimeUnit.MINUTE, null),
-  MINUTE_TO_SECOND(TimeUnit.MINUTE, TimeUnit.SECOND),
-  SECOND(TimeUnit.SECOND, null);
-  
+  YEAR(TimeUnit.YEAR, null), YEAR_TO_MONTH(TimeUnit.YEAR, TimeUnit.MONTH), MONTH(TimeUnit.MONTH,
+      null), DAY(TimeUnit.DAY, null), DAY_TO_HOUR(TimeUnit.DAY, TimeUnit.HOUR), DAY_TO_MINUTE(
+          TimeUnit.DAY, TimeUnit.MINUTE), DAY_TO_SECOND(TimeUnit.DAY, TimeUnit.SECOND), HOUR(
+              TimeUnit.HOUR, null), HOUR_TO_MINUTE(TimeUnit.HOUR, TimeUnit.MINUTE), HOUR_TO_SECOND(
+                  TimeUnit.HOUR, TimeUnit.SECOND), MINUTE(TimeUnit.MINUTE, null), MINUTE_TO_SECOND(
+                      TimeUnit.MINUTE, TimeUnit.SECOND), SECOND(TimeUnit.SECOND, null);
+
   public final TimeUnit startUnit;
   public final TimeUnit endUnit;
-  
+
   private static final Map<Pair<TimeUnit, TimeUnit>, TimeUnitRange> MAP = createMap();
-  
+
   /**
    * Creates a TimeUnitRange.
    *
    * @param startUnit Start time unit
-   * @param endUnit   End time unit
+   * @param endUnit End time unit
    */
   private TimeUnitRange(TimeUnit startUnit, TimeUnit endUnit) {
     assert startUnit != null;
@@ -61,23 +54,23 @@ public enum TimeUnitRange {
    * @return Time unit range, or null if not valid
    */
   public static TimeUnitRange of(final String name) {
-     if ( name==null ) 
-       return null;
-     
-     return TimeUnitRange.valueOf(name.toUpperCase());
+    if (name == null)
+      return null;
+
+    return TimeUnitRange.valueOf(name.toUpperCase());
   }
-  
+
   /**
    * Returns a {@link TimeUnitRange} with a given start and end unit.
    *
    * @param startUnit Start unit
-   * @param endUnit   End unit
+   * @param endUnit End unit
    * @return Time unit range, or null if not valid
    */
   public static TimeUnitRange of(TimeUnit startUnit, TimeUnit endUnit) {
     return MAP.get(new Pair<>(startUnit, endUnit));
   }
-  
+
   private static Map<Pair<TimeUnit, TimeUnit>, TimeUnitRange> createMap() {
     Map<Pair<TimeUnit, TimeUnit>, TimeUnitRange> map = new HashMap<>();
     for (TimeUnitRange value : values()) {
@@ -85,5 +78,5 @@ public enum TimeUnitRange {
     }
     return Collections.unmodifiableMap(map);
   }
-  
+
 }

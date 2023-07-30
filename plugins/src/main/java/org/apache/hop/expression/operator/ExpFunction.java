@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,15 +37,13 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class ExpFunction extends Function {
 
   private static final Literal E = new Literal(BigDecimalMath.e(DECIMAL128), NumberType.NUMBER);
-  
+
   public ExpFunction() {
-    super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
-        "/docs/exp.html");
+    super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/exp.html");
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     // Simplify arithmetic "EXP(1)" to Euler number "E"
     if (Literal.ONE.equals(call.getOperand(0))) {
@@ -54,10 +52,9 @@ public class ExpFunction extends Function {
 
     return call;
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;

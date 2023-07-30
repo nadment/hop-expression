@@ -25,20 +25,20 @@ public final class BinaryType extends Type {
    * Default BINARY type with default parameters.
    */
   public static final BinaryType BINARY = new BinaryType();
-  
+
   public BinaryType() {
     super(TypeName.BINARY, TypeName.BINARY.getMaxPrecision());
-  } 
-    
+  }
+
   public BinaryType(int precision) {
     super(TypeName.BINARY, precision);
   }
-  
+
   @Override
   public byte[] cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link BinaryType} with a pattern.
    *
@@ -53,7 +53,7 @@ public final class BinaryType extends Type {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof byte[]) {
       return (byte[]) value;
     }
@@ -64,7 +64,7 @@ public final class BinaryType extends Type {
     throw new IllegalArgumentException(
         ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
-  
+
   /**
    * Coerce value to data type BINARY
    * 
@@ -82,10 +82,10 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.BINARY));
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.BINARY));
   }
-  
+
   public static byte[] convert(Long number) {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
@@ -97,5 +97,5 @@ public final class BinaryType extends Type {
 
   public static byte[] convert(final String str) {
     return str.getBytes(StandardCharsets.UTF_8);
-  }  
+  }
 }

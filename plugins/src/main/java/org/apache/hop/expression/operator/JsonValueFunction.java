@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
@@ -43,14 +43,12 @@ public class JsonValueFunction extends Function {
 
 
   public JsonValueFunction() {
-    super("JSON_VALUE", ReturnTypes.ANY,
-        OperandTypes.JSON_STRING.or(OperandTypes.STRING_STRING), "i18n::Operator.Category.Json",
-        "/docs/json_value.html");
+    super("JSON_VALUE", ReturnTypes.ANY, OperandTypes.JSON_STRING.or(OperandTypes.STRING_STRING),
+        "i18n::Operator.Category.Json", "/docs/json_value.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     JsonNode jsonNode = operands[0].getValue(JsonNode.class);
     if (jsonNode == null)
       return null;
@@ -62,7 +60,7 @@ public class JsonValueFunction extends Function {
     try {
       JsonPath jsonPath = JsonPath.compile(path);
       JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-    
+
       if (result.isNull())
         return null;
       if (result.isTextual())
@@ -73,7 +71,7 @@ public class JsonValueFunction extends Function {
         return result.booleanValue();
       if (result.isArray())
         throw new ExpressionException(ExpressionError.UNSUPPORTED_ARRAY_TYPE, path);
-      return result;      
+      return result;
     } catch (ExpressionException e) {
       throw e;
     } catch (PathNotFoundException e) {

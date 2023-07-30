@@ -38,8 +38,7 @@ public class GreatestFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.getValue();

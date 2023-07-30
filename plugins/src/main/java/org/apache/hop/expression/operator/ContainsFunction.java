@@ -30,13 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ContainsFunction extends Function {
 
   public ContainsFunction() {
-    super("CONTAINS", ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING,
-        Category.COMPARISON, "/docs/contains.html");
+    super("CONTAINS", ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING, Category.COMPARISON,
+        "/docs/contains.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
     if (v0 == null)
       return null;

@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -35,7 +35,7 @@ public class AbortFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) {
     String message = operands[0].getValue(String.class);
     throw new ExpressionException(message);
   }

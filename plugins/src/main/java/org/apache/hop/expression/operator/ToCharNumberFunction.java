@@ -25,14 +25,13 @@ import java.math.BigDecimal;
  */
 public class ToCharNumberFunction extends ToCharFunction {
   static final ToCharNumberFunction INSTANCE = new ToCharNumberFunction();
-  
+
   public ToCharNumberFunction() {
     super();
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null) {
       return null;
@@ -40,6 +39,6 @@ public class ToCharNumberFunction extends ToCharFunction {
 
     String pattern = operands[1].getValue(String.class);
 
-    return NumberFormat.of(pattern).format(value);    
+    return NumberFormat.of(pattern).format(value);
   }
 }

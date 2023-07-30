@@ -23,15 +23,15 @@ public final class Range<T extends Comparable<? super T>> {
   public static <T extends Comparable<? super T>> Range<T> singleton(T value) {
     return new Range<>(value, value);
   }
-  
+
   public static <T extends Comparable<? super T>> Range<T> lessThan(T value) {
     return new Range<>(null, value);
-  } 
+  }
 
   public static <T extends Comparable<? super T>> Range<T> greatherThan(T value) {
     return new Range<>(value, null);
-  } 
-  
+  }
+
   public Range(final T lower, final T upper) {
     lowerBound = Objects.requireNonNull(lower, "lower must not be null");
     upperBound = Objects.requireNonNull(upper, "upper must not be null");

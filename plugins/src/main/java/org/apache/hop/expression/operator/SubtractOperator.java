@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -39,16 +39,15 @@ public class SubtractOperator extends Operator {
   protected static final double SECONDS_BY_DAY = 24D * 60 * 60;
 
   public SubtractOperator() {
-    super("SUBTRACT", "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR,
-        OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL, "/docs/subtract.html");
+    super("SUBTRACT", "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
+        Category.MATHEMATICAL, "/docs/subtract.html");
   }
 
   /**
    * Simplify arithmetic subtract
    */
   @Override
-  public IExpression compile(IExpressionContext context, Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -56,22 +55,22 @@ public class SubtractOperator extends Operator {
     if (Literal.ZERO.equals(right)) {
       return left;
     }
-    
+
     // Simplify arithmetic 0-A => -A
     if (Literal.ZERO.equals(left)) {
       return new Call(Operators.NEGATIVE, right);
     }
 
     // Simplify arithmetic A-(-B) => A+B
-    if (right.is(Operators.NEGATIVE)) {      
+    if (right.is(Operators.NEGATIVE)) {
       return new Call(Operators.ADD, left, right.asCall().getOperand(0));
     }
 
     return call;
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal left = operands[0].getValue(BigDecimal.class);
     if (left == null)
       return null;

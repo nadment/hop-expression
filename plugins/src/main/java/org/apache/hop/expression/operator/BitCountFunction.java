@@ -35,8 +35,7 @@ public class BitCountFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;

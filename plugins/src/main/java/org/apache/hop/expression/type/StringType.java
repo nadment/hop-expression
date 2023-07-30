@@ -36,7 +36,7 @@ public final class StringType extends Type {
   public StringType() {
     super(TypeName.STRING);
   }
-  
+
   public StringType(int precision) {
     super(TypeName.STRING, precision);
   }
@@ -72,21 +72,20 @@ public final class StringType extends Type {
       return str;
     }
     if (value instanceof Boolean) {
-      String result = convert((boolean) value);      
+      String result = convert((boolean) value);
       if (checkPrecision(result)) {
         return result;
       }
 
       throw new IllegalArgumentException(
           ExpressionError.CONVERSION_ERROR.message(BooleanType.BOOLEAN, value, this));
-    }
-    else if (value instanceof Number) {
+    } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
       BigDecimal number = NumberType.coerce(value);
       String result = NumberFormat.of(pattern).format(number);
-      if ( checkPrecision(result)) {
+      if (checkPrecision(result)) {
         return result;
       }
       throw new IllegalArgumentException(
@@ -95,8 +94,8 @@ public final class StringType extends Type {
     if (value instanceof ZonedDateTime) {
       if (pattern == null)
         pattern = "YYYY-MM-DD";
-      String result =  DateTimeFormat.of(pattern).format((ZonedDateTime) value);
-      
+      String result = DateTimeFormat.of(pattern).format((ZonedDateTime) value);
+
       if (checkPrecision(result)) {
         return result;
       }
@@ -113,8 +112,9 @@ public final class StringType extends Type {
 
 
   protected boolean checkPrecision(String result) {
-    if ( result==null) return true;
-    
+    if (result == null)
+      return true;
+
     return this.precision < 0 || this.precision >= result.length();
   }
 
@@ -123,7 +123,7 @@ public final class StringType extends Type {
    * 
    * @param value the value to coerce
    * @return String
-   */ 
+   */
   public static final String coerce(final Object value) {
     if (value == null) {
       return null;

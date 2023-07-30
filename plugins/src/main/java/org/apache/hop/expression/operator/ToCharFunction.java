@@ -20,12 +20,12 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.NumberType;
@@ -57,10 +57,10 @@ public class ToCharFunction extends Function {
       pattern = call.getOperand(1).getValue(String.class);
     }
 
-    if (type.isSameFamily(StringType.STRING) && call.getOperandCount()==1) {
+    if (type.isSameFamily(StringType.STRING) && call.getOperandCount() == 1) {
       return call.getOperand(0);
     }
-    
+
     if (type.isSameFamily(DateType.DATE)) {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
@@ -92,7 +92,7 @@ public class ToCharFunction extends Function {
         throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
       }
 
-      return new Call(ToCharBinaryFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));      
+      return new Call(ToCharBinaryFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));
     }
 
     return call;

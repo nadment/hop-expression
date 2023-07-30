@@ -19,10 +19,10 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandCountRange;
@@ -78,13 +78,11 @@ public class JsonObjectFunction extends Function {
 
 
   public JsonObjectFunction() {
-    super("JSON_OBJECT", ReturnTypes.JSON, OTC, Category.JSON,
-        "/docs/json_object.html");
+    super("JSON_OBJECT", ReturnTypes.JSON, OTC, Category.JSON, "/docs/json_object.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 

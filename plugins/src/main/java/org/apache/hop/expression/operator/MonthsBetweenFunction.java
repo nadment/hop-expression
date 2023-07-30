@@ -35,13 +35,12 @@ import java.time.temporal.ChronoUnit;
 public class MonthsBetweenFunction extends Function {
 
   public MonthsBetweenFunction() {
-    super("MONTHS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
-        Category.DATE, "/docs/months_between.html");
+    super("MONTHS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE, Category.DATE,
+        "/docs/months_between.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
     if (startDateTime == null)
       return null;
@@ -50,7 +49,7 @@ public class MonthsBetweenFunction extends Function {
       return null;
 
     long days = startDateTime.until(endDateTime, ChronoUnit.DAYS);
-    
+
     // All months have 31 days
     return BigDecimal.valueOf(days / 31d);
   }

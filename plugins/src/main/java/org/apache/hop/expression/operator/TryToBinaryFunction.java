@@ -16,9 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.DecoderException;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.util.Hex;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * Converts the string expression to a binary value.
@@ -31,24 +35,27 @@ public class TryToBinaryFunction extends ToBinaryFunction {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    String value = operands[0].getValue(String.class);
+  public Object eval(IExpression[] operands) {
+    final String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
-    String format = operands[1].getValue(String.class);
-    
+    final String format = operands[1].getValue(String.class);
+
     try {
       if (format.equals("HEX")) {
-        return formatHex(value);
+        return Hex.decode(value);
       }
       if (format.equals("UTF8")) {
-        return formatUtf8(value);
+        return value.getBytes(StandardCharsets.UTF_8);
       }
-      return formatBase64(value);
-    } catch (DecoderException e) {
+      if (format.equals("BASE64")) {
+        return Base64.getDecoder().decode(value);
+      }
+    } catch (RuntimeException e) {
       return null;
-    }
-  }  
+    }    
+    
+    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+  }
 }

@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,8 +35,8 @@ import java.math.BigDecimal;
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD", ReturnTypes.MOD_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
-        Category.MATHEMATICAL, "/docs/mod.html");
+    super("MOD", ReturnTypes.MOD_OPERATOR, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
+        "/docs/mod.html");
   }
 
   public ModFunction(String name) {
@@ -46,7 +45,7 @@ public class ModFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
@@ -56,7 +55,7 @@ public class ModFunction extends Function {
 
     // Prevent a division by zero ..
     if (divisor.signum() == 0)
-      throw new ExpressionException(ExpressionError.DIVISION_BY_ZERO);
+      throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
 
     return value.remainder(divisor);
   }

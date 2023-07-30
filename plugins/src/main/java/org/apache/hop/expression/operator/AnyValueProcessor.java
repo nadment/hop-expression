@@ -21,14 +21,14 @@ public class AnyValueProcessor implements IExpressionProcessor {
 
   private Object value;
 
-  public AnyValueProcessor() {    
+  public AnyValueProcessor() {
     value = null;
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (value!=null)
+    if (value != null)
       return;
 
     value = operands[0].getValue();

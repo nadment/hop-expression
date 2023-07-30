@@ -34,13 +34,12 @@ public class NormalizeFunction extends Function {
 
 
   public NormalizeFunction() {
-    super("NORMALIZE", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
-        Category.STRING, "/docs/normalize.html");
+    super("NORMALIZE", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, Category.STRING,
+        "/docs/normalize.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -52,7 +51,7 @@ public class NormalizeFunction extends Function {
       try {
         form = Form.valueOf(name);
       } catch (Exception e) {
-       throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(name));
+        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(name));
       }
     }
 

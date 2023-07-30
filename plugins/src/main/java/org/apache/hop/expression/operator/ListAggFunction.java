@@ -15,11 +15,11 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.AggregateFunction;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -46,13 +46,14 @@ public class ListAggFunction extends AggregateFunction {
   }
 
   @Override
-  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) throws ExpressionException {
+  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands)
+      throws ExpressionException {
 
     String delimiter = ",";
     if (operands.length == 2) {
       delimiter = operands[1].getValue(String.class);
     }
-      
+
     if (option == ListAgg.DISTINCT) {
       return new ListAggDistinctProcessor(delimiter);
     }

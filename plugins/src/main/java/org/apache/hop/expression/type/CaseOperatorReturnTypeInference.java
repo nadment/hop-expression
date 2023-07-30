@@ -27,7 +27,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public Type getReturnType(Call call) {
-    // Least restrictive then expression    
+    // Least restrictive then expression
     Type result = null;
     for (IExpression operand : call.getOperand(2).asTuple()) {
       Type type = operand.getType();
@@ -38,7 +38,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
     // Else data type
     Type elseType = call.getOperand(3).getType();
-    if (result==null || elseType.getName().ordinal() > result.getName().ordinal()) {
+    if (result == null || elseType.getName().ordinal() > result.getName().ordinal()) {
       result = elseType;
     }
 

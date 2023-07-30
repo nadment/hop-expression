@@ -34,8 +34,8 @@ import java.io.StringWriter;
 public class BitAndFunction extends Function {
 
   public BitAndFunction() {
-    super("BIT_AND", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        Category.BITWISE, "/docs/bit_and.html");
+    super("BIT_AND", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+        "/docs/bit_and.html");
   }
 
   public BitAndFunction(String name) {
@@ -44,7 +44,7 @@ public class BitAndFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Long left = operands[0].getValue(Long.class);
     if (left == null)
       return null;

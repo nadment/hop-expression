@@ -30,13 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitSetFunction extends Function {
 
   public BitSetFunction() {
-    super("BIT_SET", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        Category.BITWISE, "/docs/bit_set.html");
+    super("BIT_SET", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+        "/docs/bit_set.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;

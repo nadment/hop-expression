@@ -50,7 +50,7 @@ public class Token {
     RPARENTHESIS(")"),
     /** Literal decimal number. */
     LITERAL_NUMERIC_DECIMAL,
-    /** Literal hexadecimal number  0x1234567890ABCDEF */
+    /** Literal hexadecimal number 0x1234567890ABCDEF */
     LITERAL_NUMERIC_HEXA,
     /** Literal bit number 0b1101010101 */
     LITERAL_NUMERIC_BINARY,
@@ -136,8 +136,8 @@ public class Token {
     RESPECT,
     /** The "IS" operator. */
     IS,
-    /** Used by function "JSON_OBJECT" */ 
-    KEY, 
+    /** Used by function "JSON_OBJECT" */
+    KEY,
     /** Used by function "JSON_OBJECT" */
     VALUE,
     /** The literal value "TRUE". */
@@ -148,9 +148,9 @@ public class Token {
     TO,
     /** The "SIMILAR TO" operator. */
     SIMILAR,
-    /** 
+    /**
      * Used by functions:
-     * COUNT([DISTINCT] numeric),  
+     * COUNT([DISTINCT] numeric),
      * LISTAGG( [DISTINCT] string [, delimiter])
      */
     DISTINCT,

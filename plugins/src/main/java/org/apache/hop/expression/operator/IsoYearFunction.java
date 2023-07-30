@@ -32,13 +32,11 @@ import java.time.temporal.IsoFields;
 public class IsoYearFunction extends Function {
 
   public IsoYearFunction() {
-    super("ISOYEAR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/isoyear.html");
+    super("ISOYEAR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/isoyear.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

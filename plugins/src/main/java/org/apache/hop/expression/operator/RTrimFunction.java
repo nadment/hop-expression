@@ -19,12 +19,12 @@ package org.apache.hop.expression.operator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -37,13 +37,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class RTrimFunction extends Function {
 
   public RTrimFunction() {
-    super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING,
-        Category.STRING, "/docs/rtrim.html");
+    super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, Category.STRING,
+        "/docs/rtrim.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -53,7 +52,7 @@ public class RTrimFunction extends Function {
     if (operands.length == 2) {
       stripChars = operands[1].getValue(String.class);
       if (stripChars == null)
-        return null;      
+        return null;
     }
 
     return StringUtils.stripEnd(value, stripChars);
@@ -62,18 +61,18 @@ public class RTrimFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
-    
+
     // Repetitions of the same function
     if (operand.is(call.getOperator())) {
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }
-    
+
     // Repetitions of functions that do not have any effects on the result
     Function trimFunction = FunctionRegistry.getFunction("TRIM");
-    if ( operand.is(trimFunction) ) {
+    if (operand.is(trimFunction)) {
       return new Call(trimFunction, operand.asCall().getOperand(0));
     }
-    
+
     return call;
   }
 }

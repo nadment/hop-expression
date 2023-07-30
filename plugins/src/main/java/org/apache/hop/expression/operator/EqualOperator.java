@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,8 +37,8 @@ import java.io.StringWriter;
 public class EqualOperator extends Operator {
 
   public EqualOperator() {
-    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
-        Category.COMPARISON, "/docs/equal.html");
+    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY, Category.COMPARISON,
+        "/docs/equal.html");
   }
 
   @Override
@@ -47,7 +47,7 @@ public class EqualOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     // Treats NULLs as unknown values
     // NULL is not equal ( = ) to anything—not even to another NULL.
     Object left = operands[0].getValue();
@@ -75,7 +75,7 @@ public class EqualOperator extends Operator {
     // Simplify "x = NULL" to "NULL"
     if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
       return Literal.NULL;
-    }    
+    }
     // Simplify "x = TRUE" to "x IS TRUE"
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, right);
@@ -92,8 +92,7 @@ public class EqualOperator extends Operator {
     }
 
     // Simplify "3 = X+1" to "3-1 = X"
-    if (left.isConstant() && right.is(Operators.ADD)
-        && right.asCall().getOperand(0).isConstant()) {
+    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));

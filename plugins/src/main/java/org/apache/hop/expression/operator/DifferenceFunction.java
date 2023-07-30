@@ -33,13 +33,12 @@ public class DifferenceFunction extends Function {
   private static final int SOUNDEX_LENGTH = 4;
 
   public DifferenceFunction() {
-    super("DIFFERENCE", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        Category.STRING, "/docs/difference.html");
+    super("DIFFERENCE", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+        "/docs/difference.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
     if (v0 == null)
       return null;

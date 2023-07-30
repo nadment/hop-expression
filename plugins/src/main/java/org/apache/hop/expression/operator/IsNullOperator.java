@@ -29,13 +29,12 @@ import java.io.StringWriter;
 public class IsNullOperator extends Operator {
 
   public IsNullOperator() {
-    super("IS NULL", 140, true, ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        Category.COMPARISON, "/docs/is-null.html");
+    super("IS NULL", 140, true, ReturnTypes.BOOLEAN, OperandTypes.ANY, Category.COMPARISON,
+        "/docs/is-null.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     return value == null;
   }

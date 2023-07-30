@@ -32,13 +32,11 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class SinFunction extends Function {
 
   public SinFunction() {
-    super("SIN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
-        "/docs/sin.html");
+    super("SIN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/sin.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return value;

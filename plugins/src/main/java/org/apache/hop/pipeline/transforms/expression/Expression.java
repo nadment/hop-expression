@@ -19,10 +19,10 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -109,7 +109,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         }
       }
     }
-
+    
     // Copies row into outputRowValues and pads extra null-default slots for the
     // output values
     Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
@@ -118,14 +118,12 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     data.context.setRow(outputRowValues);
 
     for (ExpressionField field : meta.getFields()) {
-
       int index = data.outputRowMeta.indexOfValue(field.getName());
-
       try {
         IExpression expression = data.expressions[index];
-        IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);        
+        IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = processValue(expression, valueMeta);
-      } catch (HopException e) {
+      } catch (Exception e) {
         String message =
             BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
                 field.getName(), field.getExpression(), e.getMessage());
@@ -147,7 +145,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     return true;
   }
 
-  public Object processValue(IExpression expression, IValueMeta meta) throws HopException {
+  public Object processValue(IExpression expression, IValueMeta meta) throws Exception {
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
         return null;
@@ -155,7 +153,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         return expression.getValue(String.class);
       case IValueMeta.TYPE_NUMBER:
         BigDecimal number = expression.getValue(BigDecimal.class);
-        if (number==null ) {
+        if (number == null) {
           return null;
         }
         return number.doubleValue();
@@ -163,14 +161,14 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         return expression.getValue(Long.class);
       case IValueMeta.TYPE_DATE: {
         ZonedDateTime date = expression.getValue(ZonedDateTime.class);
-        if (date==null ) {
+        if (date == null) {
           return null;
-        }        
-        return Date.from(date.toInstant());             
+        }
+        return Date.from(date.toInstant());
       }
       case IValueMeta.TYPE_TIMESTAMP: {
         ZonedDateTime date = expression.getValue(ZonedDateTime.class);
-        if (date==null ) {
+        if (date == null) {
           return null;
         }
         return Timestamp.from(date.toInstant());
@@ -184,7 +182,8 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       case ValueMetaJson.TYPE_JSON:
         return expression.getValue(JsonNode.class);
       default:
-        throw new HopValueException("Error convert evaluate " + meta.getName() + " with data type : " + meta.getType());
+        throw new HopValueException(
+            "Error convert evaluate " + meta.getName() + " with data type : " + meta.getType());
     }
   }
 }

@@ -35,14 +35,14 @@ import java.util.Base64.Encoder;
 @FunctionPlugin
 public class Base64EncodeFunction extends Function {
   private static final Encoder ENCODER = Base64.getEncoder();
+
   public Base64EncodeFunction() {
     super("BASE64_ENCODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base64_encode.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return null;

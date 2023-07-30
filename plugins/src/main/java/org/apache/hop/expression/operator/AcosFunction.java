@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -28,7 +27,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
 
 /**
- * Calculates the inverse cosine (arc cosine) of a number in radians; the result is a number in the interval [0, pi].
+ * Calculates the inverse cosine (arc cosine) of a number in radians; the result is a number in the
+ * interval [0, pi].
  */
 @FunctionPlugin
 public class AcosFunction extends Function {
@@ -39,15 +39,14 @@ public class AcosFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal number = operands[0].getValue(BigDecimal.class);
     if (number == null)
-      return null;    
-    
-    double value = number.doubleValue();    
+      return null;
+
+    double value = number.doubleValue();
     if (value < -1.0 || value > 1.0) {
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
     }
     return BigDecimal.valueOf(FastMath.acos(value));
   }

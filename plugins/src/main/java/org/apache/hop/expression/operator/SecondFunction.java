@@ -33,13 +33,11 @@ import java.time.ZonedDateTime;
 public class SecondFunction extends Function {
 
   public SecondFunction() {
-    super("SECOND", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/second.html");
+    super("SECOND", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/second.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

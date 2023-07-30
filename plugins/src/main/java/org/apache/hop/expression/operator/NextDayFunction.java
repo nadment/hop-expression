@@ -38,8 +38,7 @@ public class NextDayFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.OperandTypes;
@@ -43,7 +42,7 @@ public class SimilarToOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;
@@ -53,18 +52,18 @@ public class SimilarToOperator extends Operator {
     if (pattern == null) {
       return null;
     }
-    
-    if ( Utils.isEmpty(pattern)) {
+
+    if (Utils.isEmpty(pattern)) {
       return false;
     }
 
     try {
       pattern = Regexp.toSimilarTo(pattern, '\\');
-      
-      Matcher matcher = Pattern.compile(pattern, Pattern.UNICODE_CASE).matcher(value);      
+
+      Matcher matcher = Pattern.compile(pattern, Pattern.UNICODE_CASE).matcher(value);
       return matcher.matches();
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern);
+      throw new IllegalArgumentException(ExpressionError.INVALID_REGEXP_PATTERN.message(pattern));
     }
   }
 

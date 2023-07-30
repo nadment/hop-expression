@@ -30,7 +30,7 @@ import java.time.ZonedDateTime;
  * Adds or subtracts a specified number of time unit to a date or timestamp
  * 
  * @see AddDaysFunction
- * @see AddWeeksFunction 
+ * @see AddWeeksFunction
  * @see AddMonthsFunction
  * @see AddYearsFunction
  * @see AddHoursFunction
@@ -46,8 +46,7 @@ public class DateAddFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
@@ -76,7 +75,7 @@ public class DateAddFunction extends Function {
         return datetime.plusSeconds(value);
       case NANOSECOND:
         return datetime.plusNanos(value);
-      default:        
+      default:
         throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }

@@ -56,9 +56,9 @@ import java.time.format.DateTimeParseException;
   public ZoneId zoneId = null;
 
   protected boolean isAllCharParsed() {
-    return index==text.length();
+    return index == text.length();
   }
-  
+
   protected char parseChar() {
 
     if (index == text.length())

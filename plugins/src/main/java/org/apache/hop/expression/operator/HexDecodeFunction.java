@@ -16,13 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Hex;
 
 
 /**
@@ -32,17 +32,17 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class HexDecodeFunction extends Function {
 
   public HexDecodeFunction() {
-    super("HEX_DECODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING, "/docs/hex_decode.html");
+    super("HEX_DECODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+        "/docs/hex_decode.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null) {
       return null;
     }
 
-    return new String(Hex.decodeHex(value));
+    return new String(Hex.decode(value));
   }
 }

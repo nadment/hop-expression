@@ -24,6 +24,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
 import ch.obermuhlner.math.big.BigDecimalMath;
+
 /**
  * Calculates the hyperbolic tangent of its argument.
  */
@@ -36,8 +37,7 @@ public class TanhFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;

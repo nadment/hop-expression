@@ -20,7 +20,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
@@ -28,6 +27,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
@@ -156,7 +156,7 @@ public class BoolOrOperator extends Operator {
         for (Pair<Call, Literal> pair : pairs) {
           values.add(pair.getRight());
           conditions.remove(pair.getLeft());
-        }        
+        }
         conditions.add(new Call(Operators.IN, reference, new Tuple(values)).inferenceType());
       }
     }
@@ -175,7 +175,7 @@ public class BoolOrOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     Boolean right = operands[1].getValue(Boolean.class);
 

@@ -17,23 +17,23 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ConversionException;
 
 public final class BooleanType extends Type {
 
   public static final BooleanType BOOLEAN = new BooleanType();
-  
+
   public BooleanType() {
     super(TypeName.BOOLEAN, PRECISION_NOT_SPECIFIED);
-  } 
-  
-  
+  }
+
+
   @Override
   public Boolean cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link BooleanType} with a pattern.
    *
@@ -47,7 +47,7 @@ public final class BooleanType extends Type {
 
     if (value == null) {
       return null;
-    }    
+    }
     if (value instanceof Boolean) {
       return (Boolean) value;
     }
@@ -59,9 +59,10 @@ public final class BooleanType extends Type {
       return convert((String) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        TypeName.from(value), this);
   }
-  
+
   /**
    * Coerce value to data type BOOLEAN
    * 
@@ -78,10 +79,11 @@ public final class BooleanType extends Type {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.BOOLEAN);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value),
+        TypeName.BOOLEAN);
   }
-  
-  public static final Boolean convert(final String str) {    
+
+  public static final Boolean convert(final String str) {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {
@@ -121,7 +123,7 @@ public final class BooleanType extends Type {
         break;
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, str, TypeName.STRING, TypeName.BOOLEAN);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, str, TypeName.STRING,
+        TypeName.BOOLEAN);
   }
 }

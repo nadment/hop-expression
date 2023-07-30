@@ -35,13 +35,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SplitPartFunction extends Function {
 
   public SplitPartFunction() {
-    super("SPLIT_PART", ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC,
-        Category.STRING, "/docs/split_part.html");
+    super("SPLIT_PART", ReturnTypes.STRING, OperandTypes.STRING_STRING_NUMERIC, Category.STRING,
+        "/docs/split_part.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null)
       return null;
@@ -53,7 +52,7 @@ public class SplitPartFunction extends Function {
     Long v2 = operands[2].getValue(Long.class);
     if (v2 == null)
       return null;
-    
+
     int index = v2.intValue();
 
     String[] parts = StringUtils.splitByWholeSeparator(str, delimiter, -1);

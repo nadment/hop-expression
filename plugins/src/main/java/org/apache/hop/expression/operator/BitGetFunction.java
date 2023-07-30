@@ -30,13 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitGetFunction extends Function {
 
   public BitGetFunction() {
-    super("BIT_GET", ReturnTypes.BOOLEAN, OperandTypes.NUMERIC_NUMERIC,
-        Category.BITWISE, "/docs/bit_get.html");
+    super("BIT_GET", ReturnTypes.BOOLEAN, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+        "/docs/bit_get.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;

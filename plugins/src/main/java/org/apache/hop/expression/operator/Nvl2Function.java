@@ -31,13 +31,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Nvl2Function extends Function {
 
   public Nvl2Function() {
-    super("NVL2", ReturnTypes.ARG1_OR_ARG2, OperandTypes.ANY_SAME_SAME,
-        Category.CONDITIONAL, "/docs/nvl2.html");
+    super("NVL2", ReturnTypes.ARG1_OR_ARG2, OperandTypes.ANY_SAME_SAME, Category.CONDITIONAL,
+        "/docs/nvl2.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object condition = operands[0].getValue();
 
     if (condition == null) {

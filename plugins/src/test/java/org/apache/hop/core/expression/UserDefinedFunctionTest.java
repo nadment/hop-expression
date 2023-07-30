@@ -16,11 +16,11 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeName;

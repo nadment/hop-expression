@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -38,23 +38,22 @@ import java.util.Random;
 public class RandomFunction extends Function {
 
   public RandomFunction() {
-    super("RANDOM", ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC,
-        Category.MATHEMATICAL, "/docs/random.html");
+    super("RANDOM", ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC, Category.MATHEMATICAL,
+        "/docs/random.html");
   }
-  
+
   @Override
   public boolean isDeterministic() {
     return false;
   }
-    
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    
-      Random random = operands[1].getValue(Random.class);         
-      return BigDecimal.valueOf(random.nextDouble());    
+  public Object eval(IExpression[] operands) {
+
+    Random random = operands[1].getValue(Random.class);
+    return BigDecimal.valueOf(random.nextDouble());
   }
-  
+
   @Override
   public IExpression compile(final IExpressionContext context, final Call call) {
     if (call.getOperandCount() == 0) {
@@ -68,17 +67,17 @@ public class RandomFunction extends Function {
         return new Call(call.getOperator(), call.getOperand(0), Literal.of(random));
       } catch (ExpressionException e) {
         // Ignore
-      }                 
+      }
     }
 
     return call;
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append(this.getName());
     writer.append('(');
-    if ( operands.length>0 && !operands[0].isNull() ) {
+    if (operands.length > 0 && !operands[0].isNull()) {
       operands[0].unparse(writer);
     }
     writer.append(')');

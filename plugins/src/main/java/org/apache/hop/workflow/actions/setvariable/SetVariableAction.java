@@ -186,7 +186,9 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
         } catch (Exception e) {
           result.setResult(false);
           result.increaseErrors(1);
-          logError(BaseMessages.getString(PKG, "SetVariableAction.Error.UnableSetVariableWithExpression", name, definition.getExpression(), e.getMessage()));
+          logError(
+              BaseMessages.getString(PKG, "SetVariableAction.Error.UnableSetVariableWithExpression",
+                  name, definition.getExpression(), e.getMessage()));
         }
       }
     } catch (Exception e) {

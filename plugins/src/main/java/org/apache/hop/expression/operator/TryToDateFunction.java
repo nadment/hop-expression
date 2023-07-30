@@ -30,9 +30,9 @@ public class TryToDateFunction extends ToDateFunction {
   public TryToDateFunction() {
     super("TRY_TO_DATE");
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

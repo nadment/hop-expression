@@ -23,7 +23,7 @@ import org.apache.hop.expression.IExpression;
  * The function right-pads a binary with another binary, to a certain length.
  */
 public class RPadBinaryFunction extends RPadFunction {
-
+  private static final byte[] DEFAULT = new byte[] {0x00};
   static final RPadBinaryFunction INSTANCE = new RPadBinaryFunction();
 
   public RPadBinaryFunction() {
@@ -31,7 +31,7 @@ public class RPadBinaryFunction extends RPadFunction {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return null;
@@ -39,12 +39,14 @@ public class RPadBinaryFunction extends RPadFunction {
     Long v1 = operands[1].getValue(Long.class);
     int length = v1.intValue();
 
-    // If this parameter is omitted, the function will pad spaces
+    // If this parameter is omitted, the function will pad 0x00
     byte[] pad = null;
     if (operands.length == 3) {
       pad = operands[2].getValue(byte[].class);
     }
-
+    if (pad == null) {
+      pad = DEFAULT;
+    }
     // If length is a negative number, the result is an empty array.
     if (length < 0) {
       return new byte[0];
@@ -54,7 +56,7 @@ public class RPadBinaryFunction extends RPadFunction {
     }
 
     // nothing to pad
-    if ( pad.length == 0) {
+    if (pad.length == 0) {
       return value;
     }
 

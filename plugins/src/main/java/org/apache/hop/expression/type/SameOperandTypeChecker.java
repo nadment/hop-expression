@@ -26,30 +26,31 @@ import org.apache.hop.expression.Literal;
 public class SameOperandTypeChecker implements IOperandTypeChecker {
   private final IOperandCountRange range;
   private final int start;
-  
+
   public SameOperandTypeChecker(IOperandCountRange range) {
-    this(range,0);    
+    this(range, 0);
   }
 
-  public SameOperandTypeChecker(IOperandCountRange range, int start) {    
+  public SameOperandTypeChecker(IOperandCountRange range, int start) {
     this.range = range;
     this.start = start;
   }
-  
+
   @Override
   public boolean checkOperandTypes(final Call call) {
     int max = range.getMax();
     if (max == -1) {
       max = call.getOperandCount();
     }
-   
+
     TypeFamily firstFamily = null;
     for (int i = start; i < max; i++) {
       IExpression operand = call.getOperand(i);
 
       // Ignore null
-      if ( operand==Literal.NULL) continue;
-      
+      if (operand == Literal.NULL)
+        continue;
+
       Type type = operand.getType();
       if (firstFamily != null) {
         if (!type.isSameFamily(firstFamily)) {

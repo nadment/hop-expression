@@ -101,7 +101,9 @@ public class FunctionsTest extends ExpressionTest {
     
     evalNull("TRY_TO_BINARY(NULL_STRING)");
     
+    // Failed if format is null
     evalFails("TRY_TO_BINARY('Apache Hop',NULL_STRING)");
+    // Failed if format is bad 
     evalFails("TRY_TO_BINARY('Apache Hop','ZZZ')");    
     evalFails("TRY_TO_BINARY()");
   }
@@ -123,7 +125,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("TRY_TO_NUMBER('54Z67z12', '999999D99')");
 
     // Failed if format is bad 
-    evalFails("TRY_TO_BINARY('5467.12', '11.99')");
+    evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')");
+    evalFails("TRY_TO_NUMBER()");
   }
   
   @Test

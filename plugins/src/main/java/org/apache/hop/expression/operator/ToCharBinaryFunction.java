@@ -26,14 +26,13 @@ import java.util.Base64;
  */
 public class ToCharBinaryFunction extends ToCharFunction {
   static final ToCharBinaryFunction INSTANCE = new ToCharBinaryFunction();
-  
+
   public ToCharBinaryFunction() {
     super();
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) {
       return null;
@@ -46,7 +45,7 @@ public class ToCharBinaryFunction extends ToCharFunction {
     if (pattern.equals("UTF8")) {
       return new String(bytes, StandardCharsets.UTF_8);
     }
-    
-    return Hex.encodeHexString(bytes); 
+
+    return Hex.encodeHexString(bytes);
   }
 }

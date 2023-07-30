@@ -41,8 +41,7 @@ public class Sha256Function extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) {
       return null;

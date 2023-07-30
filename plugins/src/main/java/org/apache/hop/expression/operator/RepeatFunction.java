@@ -34,14 +34,12 @@ import java.io.IOException;
 public class RepeatFunction extends Function {
 
   public RepeatFunction() {
-    super("REPEAT", ReturnTypes.STRING,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC), Category.STRING,
-        "/docs/repeat.html");
+    super("REPEAT", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+        Category.STRING, "/docs/repeat.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;

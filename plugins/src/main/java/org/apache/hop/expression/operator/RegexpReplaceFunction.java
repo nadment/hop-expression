@@ -18,10 +18,10 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,19 +37,16 @@ import java.util.regex.PatternSyntaxException;
 @FunctionPlugin
 public class RegexpReplaceFunction extends Function {
 
-  private static final IOperandTypeChecker OTC = OperandTypes
-      .family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.STRING,
-          TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING)
-      .optional(i -> i >= 2);
+  private static final IOperandTypeChecker OTC =
+      OperandTypes.family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.STRING,
+          TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING).optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", ReturnTypes.STRING, OTC, Category.STRING,
-        "/docs/regexp_replace.html");
+    super("REGEXP_REPLACE", ReturnTypes.STRING, OTC, Category.STRING, "/docs/regexp_replace.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
@@ -67,7 +64,7 @@ public class RegexpReplaceFunction extends Function {
     // Default empty string
     String replacement = "";
     if (operands.length >= 3) {
-      replacement = operands[2].getValue(String.class);            
+      replacement = operands[2].getValue(String.class);
     }
 
     // Default position 1
@@ -131,8 +128,8 @@ public class RegexpReplaceFunction extends Function {
       }
     } catch (PatternSyntaxException e) {
       throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern);
-    } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.REGEXP_REPLACE_ERROR, replacement);
+      // } catch (Exception e) {
+      /// throw new ExpressionException(ExpressionError.REGEXP_REPLACE_ERROR, replacement);
     }
   }
 }

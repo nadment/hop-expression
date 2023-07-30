@@ -161,8 +161,8 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
 
     Label label = new Label(composite, SWT.NONE);
     label.setText(BaseMessages.getString("System.Label.TransformName"));
-    //label.setText(BaseMessages.getString(PKG, "System.TransformName.Label"));
-    //label.setToolTipText(BaseMessages.getString(PKG, "System.TransformName.Tooltip"));
+    // label.setText(BaseMessages.getString(PKG, "System.TransformName.Label"));
+    // label.setToolTipText(BaseMessages.getString(PKG, "System.TransformName.Tooltip"));
     label.setLayoutData(new FormDataBuilder().top().left().right(icon, 100).result());
     PropsUi.setLook(label);
 
@@ -172,7 +172,7 @@ public class RouteDialog extends BaseTransformDialog implements ITransformDialog
         new FormDataBuilder().top(label).left().right(icon, -PropsUi.getMargin()).result());
     wTransformName.addListener(SWT.Modify, event -> onChanged());
     PropsUi.setLook(wTransformName);
-    
+
     return composite;
   }
 

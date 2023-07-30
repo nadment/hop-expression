@@ -39,7 +39,7 @@ public class AtTimeZoneOperator extends Operator {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

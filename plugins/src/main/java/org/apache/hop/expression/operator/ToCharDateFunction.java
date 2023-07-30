@@ -25,14 +25,13 @@ import java.time.ZonedDateTime;
  */
 public class ToCharDateFunction extends ToCharFunction {
   static final ToCharDateFunction INSTANCE = new ToCharDateFunction();
-  
+
   public ToCharDateFunction() {
     super();
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null) {
       return null;
@@ -40,6 +39,6 @@ public class ToCharDateFunction extends ToCharFunction {
 
     String pattern = operands[1].getValue(String.class);
 
-    return DateTimeFormat.of(pattern).format(value);     
+    return DateTimeFormat.of(pattern).format(value);
   }
 }

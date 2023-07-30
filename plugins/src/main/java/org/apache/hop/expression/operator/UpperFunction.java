@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.Locale;
@@ -37,28 +37,26 @@ import java.util.Locale;
 public class UpperFunction extends Function {
 
   public UpperFunction() {
-    super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
-        "/docs/upper.html");
+    super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING, "/docs/upper.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
     return value.toUpperCase(Locale.getDefault());
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if ( operand.is(call.getOperator()) || operand.is(FunctionRegistry.getFunction("LOWER")) ) {
+    if (operand.is(call.getOperator()) || operand.is(FunctionRegistry.getFunction("LOWER"))) {
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }
-    
+
     return call;
   }
 }

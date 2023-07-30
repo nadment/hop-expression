@@ -103,9 +103,10 @@ public final class OperandTypes {
       family(TypeFamily.ANY, TypeFamily.ANY, TypeFamily.ANY);
   public static final IOperandTypeChecker OPTIONAL_ANY =
       family(TypeFamily.ANY).optional(i -> i == 0);
-  public static final IOperandTypeChecker ANY_SAME_SAME = ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
+  public static final IOperandTypeChecker ANY_SAME_SAME =
+      ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
-  
+
   /**
    * Operand type-checking strategy where two operands must both be in the
    * same type family.
@@ -155,7 +156,8 @@ public final class OperandTypes {
       family(TypeFamily.BINARY, TypeFamily.BINARY);
   public static final IOperandTypeChecker BINARY_NUMERIC =
       family(TypeFamily.BINARY, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker BINARY_NUMERIC_BINARY = family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY_NUMERIC_BINARY =
+      family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.BINARY);
 
   public static final IOperandTypeChecker BINARY_OPTIONAL_TEXT =
       sequence(OperandTypes.BINARY, OperandTypes.TEXT).optional(i -> i == 1);

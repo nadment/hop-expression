@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,13 +33,12 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class LogFunction extends Function {
 
   public LogFunction() {
-    super("LOG", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
-        Category.TRIGONOMETRY, "/docs/log.html");
+    super("LOG", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
+        "/docs/log.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal base = operands[0].getValue(BigDecimal.class);
     if (base == null)
       return null;
@@ -48,10 +46,11 @@ public class LogFunction extends Function {
     BigDecimal value = operands[1].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    
-    if (value.signum() <= 0)
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
 
-    return BigDecimalMath.log(value, DECIMAL128).divide(BigDecimalMath.log(base, DECIMAL128), DECIMAL128);
+    if (value.signum() <= 0)
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+
+    return BigDecimalMath.log(value, DECIMAL128).divide(BigDecimalMath.log(base, DECIMAL128),
+        DECIMAL128);
   }
 }

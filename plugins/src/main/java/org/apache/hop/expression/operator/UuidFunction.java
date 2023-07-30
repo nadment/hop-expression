@@ -31,14 +31,11 @@ import java.util.UUID;
 public class UuidFunction extends Function {
 
   public UuidFunction() {
-    super("UUID", ReturnTypes.STRING, OperandTypes.NILADIC, Category.STRING,
-        "/docs/uuid.html");
+    super("UUID", ReturnTypes.STRING, OperandTypes.NILADIC, Category.STRING, "/docs/uuid.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-
+  public Object eval(IExpression[] operands) {
     return UUID.randomUUID().toString();
   }
 

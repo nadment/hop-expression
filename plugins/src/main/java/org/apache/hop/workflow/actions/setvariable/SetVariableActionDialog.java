@@ -1,12 +1,12 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * the License. You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,8 +62,8 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
 
   private boolean changed;
 
-  public SetVariableActionDialog(
-      Shell parent, IAction action, WorkflowMeta workflowMeta, IVariables variables) {
+  public SetVariableActionDialog(Shell parent, IAction action, WorkflowMeta workflowMeta,
+      IVariables variables) {
     super(parent, workflowMeta, variables);
     this.action = (SetVariableAction) action;
 
@@ -122,7 +122,7 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     fdName.right = new FormAttachment(100, 0);
     wName.setLayoutData(fdName);
 
- 
+
     Label wlFields = new Label(shell, SWT.NONE);
     wlFields.setText(BaseMessages.getString(PKG, "SetVariableAction.Variables.Label"));
     PropsUi.setLook(wlFields);
@@ -135,49 +135,32 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     final int FieldsRows = rows;
 
     ColumnInfo[] colinf = {
-      new ColumnInfo(
-          BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Name"),
-          ColumnInfo.COLUMN_TYPE_TEXT,
-          false),
-      new ColumnInfo(
-          BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Expression"),
-          ColumnInfo.COLUMN_TYPE_TEXT_BUTTON,
-          false),
-      new ColumnInfo(
-          BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Scope"),
-          ColumnInfo.COLUMN_TYPE_CCOMBO,
-          SetVariableScope.getDescriptions(),
-          false),
-    };
+        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Name"),
+            ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Expression"),
+            ColumnInfo.COLUMN_TYPE_TEXT_BUTTON, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "SetVariableAction.Fields.Column.Scope"),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableScope.getDescriptions(), false),};
     colinf[0].setUsingVariables(true);
     colinf[1].setUsingVariables(true);
     colinf[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(SelectionEvent e) {
 
-        String expression =
-            wFields.getActiveTableItem().getText(wFields.getActiveTableColumn());
+        String expression = wFields.getActiveTableItem().getText(wFields.getActiveTableColumn());
 
         if (!shell.isDisposed()) {
           ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
           expression = dialog.open(expression, action, ExpressionMode.NONE, null);
           if (expression != null) {
-            wFields.getActiveTableItem().setText(wFields.getActiveTableColumn(),
-                expression);
+            wFields.getActiveTableItem().setText(wFields.getActiveTableColumn(), expression);
           }
         }
       }
     });
-        
-    wFields =
-        new TableView(
-            variables,
-            shell,
-            SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
-            colinf,
-            FieldsRows,
-            lsMod,
-            props);
+
+    wFields = new TableView(variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf,
+        FieldsRows, lsMod, props);
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment(0, 0);
@@ -186,7 +169,7 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     fdFields.bottom = new FormAttachment(wOk, -2 * margin);
     wFields.setLayoutData(fdFields);
     wFields.getTable().addListener(SWT.Resize, new ColumnsResizer(4, 20, 60, 16));
-    
+
     setWidgetsContent(action);
 
     BaseDialog.defaultShellHandling(shell, c -> ok(), c -> cancel());
@@ -204,7 +187,7 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
         TableItem item = wFields.table.getItem(i++);
         item.setText(1, Const.nullToEmpty(definition.getName()));
         item.setText(2, Const.nullToEmpty(definition.getExpression()));
-        if ( definition.getScope()!=null ) {
+        if (definition.getScope() != null) {
           item.setText(3, definition.getScope().getDescription());
         }
       }
@@ -224,15 +207,15 @@ public class SetVariableActionDialog extends ActionDialog implements IActionDial
     List<SetVariableDefinition> list = new ArrayList<>();
     for (int i = 0; i < nrItems; i++) {
       TableItem item = wFields.getTable().getItem(i);
-      
+
       String name = item.getText(1);
       String expression = item.getText(2);
-      SetVariableScope scope = SetVariableScope.lookupDescription(item.getText(3));        
-      list.add(new SetVariableDefinition(name, expression, scope));      
+      SetVariableScope scope = SetVariableScope.lookupDescription(item.getText(3));
+      list.add(new SetVariableDefinition(name, expression, scope));
     }
     meta.setVariableDefinitions(list);
   }
-  
+
   private void cancel() {
     action.setChanged(changed);
     action = null;

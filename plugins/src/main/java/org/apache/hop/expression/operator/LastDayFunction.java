@@ -42,13 +42,12 @@ public class LastDayFunction extends Function {
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
   public LastDayFunction() {
-    super("LAST_DAY", ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT,
-        Category.DATE, "/docs/last_day.html");
+    super("LAST_DAY", ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT, Category.DATE,
+        "/docs/last_day.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

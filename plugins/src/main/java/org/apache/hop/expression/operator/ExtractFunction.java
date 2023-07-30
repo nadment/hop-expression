@@ -20,7 +20,6 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.FunctionRegistry;
@@ -28,6 +27,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -42,7 +42,7 @@ import java.time.temporal.IsoFields;
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
-    
+
   public ExtractFunction() {
     super("EXTRACT", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, Category.DATE,
         "/docs/extract.html");
@@ -59,9 +59,9 @@ public class ExtractFunction extends Function {
 
     return call;
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
@@ -119,11 +119,11 @@ public class ExtractFunction extends Function {
         return Long.valueOf(datetime.getOffset().getTotalSeconds() / (60 * 60));
       case TIMEZONE_MINUTE:
         return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
-      default:        
+      default:
         throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }
-  
+
   private static int millennium(int year) {
     return year > 0 ? (year + 999) / 1000 : year / 1000;
   }

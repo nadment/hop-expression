@@ -20,13 +20,13 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Pair;
@@ -156,15 +156,15 @@ public class BoolAndOperator extends Operator {
     // Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
     for (IExpression operand : notNullTerms) {
       if (strongTerms.contains(operand)) {
-        Iterator<IExpression> iterator = conditions.iterator();        
-        List<IExpression> unnecessary = new ArrayList<>(); 
+        Iterator<IExpression> iterator = conditions.iterator();
+        List<IExpression> unnecessary = new ArrayList<>();
         while (iterator.hasNext()) {
           IExpression condition = iterator.next();
           if (condition.is(Operators.IS_NOT_NULL)
               && condition.asCall().getOperand(0).equals(operand)) {
             unnecessary.add(condition);
           }
-        }        
+        }
         conditions.removeAll(unnecessary);
       }
     }
@@ -181,7 +181,7 @@ public class BoolAndOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     if (left == Boolean.FALSE) {
       return left;

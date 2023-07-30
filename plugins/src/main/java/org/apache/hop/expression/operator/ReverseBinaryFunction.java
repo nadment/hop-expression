@@ -23,13 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class ReverseBinaryFunction extends ReverseFunction {
   static final ReverseBinaryFunction INSTANCE = new ReverseBinaryFunction();
-  
+
   public ReverseBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return null;

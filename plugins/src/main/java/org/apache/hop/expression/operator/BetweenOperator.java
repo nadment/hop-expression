@@ -47,7 +47,7 @@ public class BetweenOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     Object start = operands[1].getValue();
     Object end = operands[2].getValue();
@@ -63,7 +63,7 @@ public class BetweenOperator extends Operator {
 
     return Comparison.compare(value, start) >= 0 && Comparison.compare(value, end) <= 0;
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof BetweenOperator) {
@@ -72,12 +72,12 @@ public class BetweenOperator extends Operator {
     }
     return false;
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), this.between);
-  }  
-  
+  }
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

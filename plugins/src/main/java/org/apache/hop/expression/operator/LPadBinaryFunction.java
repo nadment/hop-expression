@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
  */
 public class LPadBinaryFunction extends LPadFunction {
 
+  private static final byte[] DEFAULT = new byte[] {0x00};
   static final LPadBinaryFunction INSTANCE = new LPadBinaryFunction();
 
   public LPadBinaryFunction() {
@@ -31,7 +32,7 @@ public class LPadBinaryFunction extends LPadFunction {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return null;
@@ -39,12 +40,14 @@ public class LPadBinaryFunction extends LPadFunction {
     Long v1 = operands[1].getValue(Long.class);
     int length = v1.intValue();
 
-    // If this parameter is omitted, the function will pad spaces
+    // If this parameter is omitted, the function will pad 0x00
     byte[] pad = null;
     if (operands.length == 3) {
       pad = operands[2].getValue(byte[].class);
     }
-
+    if (pad == null) {
+      pad = DEFAULT;
+    }
     // If length is a negative number, the result is an empty array.
     if (length < 0) {
       return new byte[0];
@@ -54,7 +57,7 @@ public class LPadBinaryFunction extends LPadFunction {
     }
 
     // nothing to pad
-    if ( pad.length == 0) {
+    if (pad.length == 0) {
       return value;
     }
 
@@ -66,7 +69,7 @@ public class LPadBinaryFunction extends LPadFunction {
     } else {
       System.arraycopy(value, 0, result, index, value.length);
       for (int i = 0, pos = 0; i < index; i++, pos++) {
-        result[pos] = pad[i %  pad.length];
+        result[pos] = pad[i % pad.length];
       }
     }
 

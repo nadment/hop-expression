@@ -32,13 +32,12 @@ import java.time.ZoneId;
 public class DateFromPartsFunction extends Function {
 
   public DateFromPartsFunction() {
-    super("DATE_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC,
-        Category.DATE, "/docs/date_from_parts.html");
+    super("DATE_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+        "/docs/date_from_parts.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
     if (v0 == null)
       return null;
@@ -57,13 +56,13 @@ public class DateFromPartsFunction extends Function {
 
     int monthsToAdd = 0;
     if (month < 1 || month > 12) {
-      monthsToAdd = month-1;
+      monthsToAdd = month - 1;
       month = 1;
     }
 
     int daysToAdd = 0;
     if (day < 1 || day > 31) {
-      daysToAdd = day-1;
+      daysToAdd = day - 1;
       day = 1;
     }
 

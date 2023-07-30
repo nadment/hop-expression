@@ -32,13 +32,11 @@ import java.time.temporal.IsoFields;
 public class QuarterFunction extends Function {
 
   public QuarterFunction() {
-    super("QUARTER", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/quarter.html");
+    super("QUARTER", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/quarter.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

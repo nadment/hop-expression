@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.exception;
 
-import org.apache.hop.core.exception.HopException;
+import org.apache.hop.expression.ExpressionError;
 
-public class ExpressionException extends HopException {
+public class ExpressionException extends RuntimeException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 
@@ -44,8 +44,8 @@ public class ExpressionException extends HopException {
     super(error.message(values));
   }
 
-  @Override
-  public String getMessage() {
-    return getSuperMessage();
-  }
+  // @Override
+  // public String getMessage() {
+  // return getSuperMessage();
+  // }
 }

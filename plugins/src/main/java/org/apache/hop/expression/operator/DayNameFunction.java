@@ -34,13 +34,11 @@ import java.util.Locale;
 public class DayNameFunction extends Function {
 
   public DayNameFunction() {
-    super("DAYNAME", ReturnTypes.STRING, OperandTypes.DATE, Category.DATE,
-        "/docs/dayname.html");
+    super("DAYNAME", ReturnTypes.STRING, OperandTypes.DATE, Category.DATE, "/docs/dayname.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

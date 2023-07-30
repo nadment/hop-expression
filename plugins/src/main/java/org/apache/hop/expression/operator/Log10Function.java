@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -39,14 +38,13 @@ public class Log10Function extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-   
+
     if (value.signum() <= 0)
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
     return BigDecimalMath.log10(value, DECIMAL128);
   }
 }

@@ -32,12 +32,12 @@ import java.io.StringWriter;
 public class PositionFunction extends Function {
 
   public PositionFunction() {
-    super("POSITION", ReturnTypes.INTEGER, OperandTypes.STRING_STRING,
-        Category.STRING, "/docs/position.html");
+    super("POSITION", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+        "/docs/position.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     String substr = operands[0].getValue(String.class);
     String str = operands[1].getValue(String.class);
 

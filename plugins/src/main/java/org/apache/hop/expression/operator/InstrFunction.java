@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -38,8 +37,7 @@ public class InstrFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) {
       return null;
@@ -58,16 +56,18 @@ public class InstrFunction extends Function {
       start = operands[2].getValue(Long.class).intValue();
 
       if (start == 0) {
-        throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);        
+        throw new IllegalArgumentException(
+            ExpressionError.ARGUMENT_OUT_OF_RANGE.message(occurence));
       }
 
       start -= 1;
-      
+
       // The occurence to find, must be positive
       if (operands.length == 4) {
         occurence = operands[3].getValue(Long.class).intValue();
         if (occurence < 1) {
-          throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, occurence);
+          throw new IllegalArgumentException(
+              ExpressionError.ARGUMENT_OUT_OF_RANGE.message(occurence));
         }
       }
     }

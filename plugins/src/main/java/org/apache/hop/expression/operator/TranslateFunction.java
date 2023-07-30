@@ -30,13 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TranslateFunction extends Function {
 
   public TranslateFunction() {
-    super("TRANSLATE", ReturnTypes.STRING, OperandTypes.STRING_STRING_STRING,
-        Category.STRING, "/docs/translate.html");
+    super("TRANSLATE", ReturnTypes.STRING, OperandTypes.STRING_STRING_STRING, Category.STRING,
+        "/docs/translate.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String string = operands[0].getValue(String.class);
     if (string == null)
       return null;

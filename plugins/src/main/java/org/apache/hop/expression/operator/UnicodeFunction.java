@@ -38,12 +38,11 @@ public class UnicodeFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
-    
+
     int codePoint = 0;
     if (value.length() > 0) {
       codePoint = value.codePointAt(0);

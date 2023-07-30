@@ -22,7 +22,7 @@ import org.apache.hop.i18n.BaseMessages;
 public enum ExpressionError {
   /** Internal error {0} */
   INTERNAL_ERROR("Expression.InternalError"),
-  /** Syntax error at line {0} column {1}:  {2} */
+  /** Syntax error at line {0} column {1}: {2} */
   SYNTAX_ERROR("Expression.SyntaxError"),
   /** {0} {1} */
   OPERATOR_ERROR("Expression.OperatorError"),
@@ -50,7 +50,7 @@ public enum ExpressionError {
   MISSING_LEFT_PARENTHESIS("Expression.MissingLeftParenthesis"),
   //
   UNBALANCE_PARENTHESIS("Expression.UnbalancedParenthesis"),
-  /** Unexpected character ''{0}''*/
+  /** Unexpected character ''{0}'' */
   UNEXPECTED_CHARACTER("Expression.UnexpectedCharacter"),
   //
   UNEXPECTED_END_OF_EXPRESSION("Expression.UnexpectedEndOfExpression"),
@@ -67,7 +67,7 @@ public enum ExpressionError {
   /** Invalid Boolean ''{0}'' */
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   //
-  //INVALID_DATE("Expression.InvalidDate"),
+  // INVALID_DATE("Expression.InvalidDate"),
   //
   INVALID_TIMEUNIT("Expression.InvalidTimeUnit"),
   //
@@ -98,7 +98,7 @@ public enum ExpressionError {
   INVALID_VALUES("Expression.InvalidValues"),
   // Invalid regexp pattern ''{0}''
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
-  // 
+  //
   INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),
   //
   JSON_PATH_NOT_FOUND("Expression.JsonPathNotFound"),
@@ -106,7 +106,7 @@ public enum ExpressionError {
   UDF_COMPILATION_ERROR("Expression.UdfCompilationError"),
   //
   UNSUPPORTED_COERCION("Expression.UnsupportedCoercion"),
-  
+
   UNSUPPORTED_CONVERSION("Expression.UnsupportedConversion"),
   //
   UNSUPPORTED_VALUEMETA("Expression.UnsupportedValueMeta"),
@@ -116,6 +116,10 @@ public enum ExpressionError {
   UNSUPPORTED_ARRAY_TYPE("Expression.UnsupportedArrayType"),
   /** Error converting {0} value ''{1}'' to data type {2} */
   CONVERSION_ERROR("Expression.ConversionError"),
+  // 
+  COMPRESSION_ERROR("Expression.CompressionError"),
+  //
+  DECOMPRESSION_ERROR("Expression.DecompressionError"),
   //
   UNPARSABLE_DATE_WITH_FORMAT("Expression.UnparsableDateWithFormat"),
   //
@@ -130,7 +134,7 @@ public enum ExpressionError {
   ExpressionError(final String message) {
     this.message = message;
   }
-  
+
   @Override
   public String toString() {
     return BaseMessages.getString(ExpressionError.class, message);

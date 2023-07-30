@@ -18,13 +18,13 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -53,20 +53,19 @@ public class LikeOperator extends Operator {
   static final Pattern contains = Pattern.compile("^%([^_%]+)%$");
   static final Pattern equalTo = Pattern.compile("^[^_%]*$");
 
-  
+
   public LikeOperator() {
     super("LIKE", 120, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
         Category.COMPARISON, "/docs/like.html");
   }
-  
+
   /**
    * Simplifies LIKE expressions that do not need full regular expressions to evaluate the
    * condition. For example, when the expression is just checking to see if a string starts with a
    * given pattern.
    */
   @Override
-  public IExpression compile(IExpressionContext context, Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     // Optimize NULL LIKE FIELD to NULL
     IExpression value = call.getOperand(0);
     if (value.isNull())
@@ -123,7 +122,7 @@ public class LikeOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
@@ -135,7 +134,7 @@ public class LikeOperator extends Operator {
 
     String escape = null;
     if (operands.length == 3) {
-      escape= operands[2].getValue(String.class);
+      escape = operands[2].getValue(String.class);
       if (escape == null) {
         return null;
       }

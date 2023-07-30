@@ -18,6 +18,7 @@ import static java.util.Objects.requireNonNull;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IntegerType;
@@ -38,14 +39,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public final class Field extends Identifier {
   private final IRowExpressionContext context;
-  
-  public Field(final IRowExpressionContext context, final String name, final Type type, int ordinal) {
+
+  public Field(final IRowExpressionContext context, final String name, final Type type,
+      int ordinal) {
     super(name, type, ordinal);
-    this.context = requireNonNull(context,"context");
+    this.context = requireNonNull(context, "context");
   }
-  
+
   @Override
-  public Object getValue() throws ExpressionException {
+  public Object getValue() {
     IRowMeta rowMeta = context.getRowMeta();
     Object[] row = context.getRow();
     if (row == null) {
@@ -87,12 +89,11 @@ public final class Field extends Identifier {
       throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, getName());
     }
   }
-  
 
 
 
   @Override
-  public <T> T getValue(Class<T> clazz) throws ExpressionException {
+  public <T> T getValue(Class<T> clazz) {
     IRowMeta rowMeta = context.getRowMeta();
     IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
 

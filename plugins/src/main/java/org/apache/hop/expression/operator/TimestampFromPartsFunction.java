@@ -32,13 +32,13 @@ import java.time.ZoneId;
 public class TimestampFromPartsFunction extends Function {
 
   public TimestampFromPartsFunction() {
-    super("TIMESTAMP_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC,
+    super("TIMESTAMP_FROM_PARTS", ReturnTypes.DATE,
+        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC,
         Category.DATE, "/docs/timestamp_from_parts.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
     if (v0 == null)
       return null;
@@ -62,7 +62,7 @@ public class TimestampFromPartsFunction extends Function {
     Long v5 = operands[5].getValue(Long.class);
     if (v5 == null)
       return null;
-    
+
     int year = v0.intValue();
     int month = v1.intValue();
     int day = v2.intValue();
@@ -70,14 +70,14 @@ public class TimestampFromPartsFunction extends Function {
     int minute = v4.intValue();
     int second = v5.intValue();
     int nano = 0;
-    
-    if ( operands.length==7 ) {
+
+    if (operands.length == 7) {
       Long v6 = operands[6].getValue(Long.class);
       if (v6 == null)
         return null;
       nano = v6.intValue();
     }
-    
+
     int monthsToAdd = 0;
     if (month < 1 || month > 12) {
       monthsToAdd = month - 1;
@@ -86,7 +86,7 @@ public class TimestampFromPartsFunction extends Function {
 
     int daysToAdd = 0;
     if (day < 1 || day > 31) {
-      daysToAdd = day-1;
+      daysToAdd = day - 1;
       day = 1;
     }
 
@@ -107,9 +107,9 @@ public class TimestampFromPartsFunction extends Function {
       secondsToAdd = second;
       second = 0;
     }
-    
+
     LocalDateTime datetime = LocalDateTime.of(year, month, day, hour, minute, second, nano);
-    
+
     if (monthsToAdd != 0)
       datetime = datetime.plusMonths(monthsToAdd);
     if (daysToAdd != 0)
@@ -120,7 +120,7 @@ public class TimestampFromPartsFunction extends Function {
       datetime = datetime.plusMinutes(minutesToAdd);
     if (secondsToAdd != 0)
       datetime = datetime.plusSeconds(secondsToAdd);
-    
+
     return datetime.atZone(ZoneId.systemDefault());
   }
 }

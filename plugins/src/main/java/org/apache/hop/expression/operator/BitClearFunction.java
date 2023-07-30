@@ -30,13 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitClearFunction extends Function {
 
   public BitClearFunction() {
-    super("BIT_CLEAR", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        Category.BITWISE, "/docs/bit_clear.html");
+    super("BIT_CLEAR", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+        "/docs/bit_clear.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;
@@ -47,7 +46,7 @@ public class BitClearFunction extends Function {
       return null;
     if (position > 64)
       return value;
-    
+
     return value & ~(1L << position.intValue() - 1);
   }
 

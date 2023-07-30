@@ -33,27 +33,29 @@ import java.time.ZonedDateTime;
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
-    super("CONVERT_TIMEZONE", ReturnTypes.DATE, OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), Category.DATE, "/docs/convert_timezone.html");
+    super("CONVERT_TIMEZONE", ReturnTypes.DATE,
+        OperandTypes.STRING_STRING_DATE.or(OperandTypes.STRING_DATE), Category.DATE,
+        "/docs/convert_timezone.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
-    if ( operands.length==3 ) {
+  public Object eval(IExpression[] operands) {
+    if (operands.length == 3) {
       ZoneId zoneSource = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
-      ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[1].getValue(String.class));      
+      ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[1].getValue(String.class));
       ZonedDateTime value = operands[2].getValue(ZonedDateTime.class);
-      
+
       if (value == null)
         return null;
-      
+
       return value.withZoneSameLocal(zoneSource).withZoneSameInstant(zoneTarget);
     } else {
-      ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[0].getValue(String.class));    
+      ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
       ZonedDateTime value = operands[1].getValue(ZonedDateTime.class);
-      
+
       if (value == null)
         return null;
-      return value.withZoneSameInstant(zoneTarget); 
+      return value.withZoneSameInstant(zoneTarget);
     }
   }
 }

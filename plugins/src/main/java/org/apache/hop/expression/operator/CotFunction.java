@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,20 +33,18 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CotFunction extends Function {
 
   public CotFunction() {
-    super("COT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
-        "/docs/cot.html");
+    super("COT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/cot.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
 
     if (value.signum() == 0)
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
-    
-    return BigDecimalMath.cot(value, DECIMAL128);    
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+
+    return BigDecimalMath.cot(value, DECIMAL128);
   }
 }

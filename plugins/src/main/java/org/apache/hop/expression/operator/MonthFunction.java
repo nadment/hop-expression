@@ -31,13 +31,11 @@ import java.time.ZonedDateTime;
 public class MonthFunction extends Function {
 
   public MonthFunction() {
-    super("MONTH", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/month.html");
+    super("MONTH", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/month.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

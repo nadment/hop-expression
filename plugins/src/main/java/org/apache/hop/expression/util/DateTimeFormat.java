@@ -15,7 +15,6 @@
 package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -279,13 +278,13 @@ public abstract class DateTimeFormat extends BaseFormat {
    * component.
    */
   public abstract void setTwoDigitYearStart(int year);
-  
 
-  public static ZoneId toZoneId(final String zone) throws Exception {
+
+  public static ZoneId toZoneId(final String zone) {
     try {
       return ZoneId.of(zone);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.INVALID_TIMEZONE, zone);
+      throw new IllegalArgumentException(ExpressionError.INVALID_TIMEZONE.message(zone));
     }
   }
 }

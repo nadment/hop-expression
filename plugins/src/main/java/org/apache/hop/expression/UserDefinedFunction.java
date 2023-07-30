@@ -20,6 +20,7 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
 import java.util.List;
@@ -28,34 +29,35 @@ public class UserDefinedFunction extends Function {
   private UserDefinedFunctionMeta meta;
 
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
-    super(meta.getName(), ReturnTypes.ANY,
-        new UserDefinedFunctionOperandTypeChecker(meta), Category.UDF, "/docs/udf.html");
+    super(meta.getName(), ReturnTypes.ANY, new UserDefinedFunctionOperandTypeChecker(meta),
+        Category.UDF, "/docs/udf.html");
     this.meta = meta;
   }
-  
+
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     try {
       // Create a context for arguments
-      IRowExpressionContext ctx = new RowExpressionContext(new Variables(), createRowMetaFromArguments(meta.getArguments()));
-      
-      // Parse function source 
+      IRowExpressionContext ctx = new RowExpressionContext(new Variables(),
+          createRowMetaFromArguments(meta.getArguments()));
+
+      // Parse function source
       ExpressionParser parser = new ExpressionParser(getSource());
       IExpression expression = parser.parse();
       expression.validate(ctx);
-      
+
       // Replace function arguments with real operands
-      expression = expression.accept(ctx, new UserDefinedFunctionResolver(call.getOperands()));      
+      expression = expression.accept(ctx, new UserDefinedFunctionResolver(call.getOperands()));
       expression.validate(context);
-      
+
       // Compile
       return Expressions.compile(context, expression);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, getName());
     }
   }
-  
+
   public String getSource() {
     return meta.getSource();
   }

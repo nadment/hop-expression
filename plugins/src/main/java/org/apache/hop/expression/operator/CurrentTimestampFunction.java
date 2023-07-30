@@ -19,12 +19,12 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -38,10 +38,9 @@ public class CurrentTimestampFunction extends Function {
     super("CURRENT_TIMESTAMP", ReturnTypes.DATE, OperandTypes.NILADIC, Category.DATE,
         "/docs/current_timestamp.html");
   }
-  
+
   @Override
-  public IExpression compile(IExpressionContext context, Call call)
-      throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     return Literal.of(Attribute.CURRENT_TIMESTAMP.get(context));
   }
 }

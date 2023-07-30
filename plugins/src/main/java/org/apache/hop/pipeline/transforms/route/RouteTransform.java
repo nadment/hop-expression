@@ -21,10 +21,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -111,7 +111,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       try {
         Boolean predicat = target.expression.getValue(Boolean.class);
 
-        if ( predicat ) {
+        if (predicat) {
           toDefault = false;
           putRowTo(data.rowMeta, row, target.rowSet);
           break;

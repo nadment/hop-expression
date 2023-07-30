@@ -17,6 +17,7 @@
 package org.apache.hop.expression;
 
 
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
 import java.io.StringWriter;
 
@@ -62,14 +63,15 @@ public interface IExpression {
   }
 
   /**
-   * Check if this expression will always return the same result when invoked and has no side effect.
+   * Check if this expression will always return the same result when invoked and has no side
+   * effect.
    * 
-   * @return {@code true} if this is a constant expression.  
+   * @return {@code true} if this is a constant expression.
    */
   public default boolean isConstant() {
     return false;
   }
-    
+
   /**
    * Estimate the cost to process the expression, used when optimizing the expression.
    *
@@ -80,13 +82,12 @@ public interface IExpression {
   /**
    * Evaluates the value of this expression.
    *
-   * @throws ExpressionException if an error occurs.
    * @return The result of evaluating the expression.
    */
-  public default Object getValue() throws ExpressionException {
-    throw new ExpressionException(ExpressionError.INTERNAL_ERROR, this);
+  public default Object getValue() {
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
   }
-  
+
   /**
    * Evaluates the value of this expressions a given Java type.
    *
@@ -94,31 +95,29 @@ public interface IExpression {
    * @param <T> Value type
    * @return The result of evaluating the expression in desired type
    */
-  public default <T extends Object> T getValue(Class<T> clazz) throws ExpressionException {
-    throw new ExpressionException(ExpressionError.INTERNAL_ERROR, this);
+  public default <T extends Object> T getValue(Class<T> clazz) {
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
   }
 
-  
+
   /**
    * Validate the expression
    * 
    * @param context The context against which the expression will be validated.
-   * @return 
    * @throws ExpressionException if an error occurs.
    */
-  public default void validate(IExpressionContext context) throws ExpressionException {    
-  }
-  
+  public default void validate(IExpressionContext context) throws ExpressionException {}
+
   /**
    * Compile and optimize the expression
    * 
    * @param context The context against which the expression will be compiled.
-   * @return 
+   * @return
    * @throws ExpressionException if an error occurs.
    */
-  
+
   public IExpression compile(IExpressionContext context) throws ExpressionException;
-  
+
   /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.
@@ -129,10 +128,10 @@ public interface IExpression {
    * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}
    *
    * @return this instance cast to a class
-   */  
+   */
   public default Call asCall() {
     throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
-  } 
+  }
 
   /**
    * Casts and returns this expression as a {@link Literal} if it is of kind {@code LITERAL}
@@ -141,27 +140,27 @@ public interface IExpression {
    */
   public default Literal asLiteral() {
     throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
-  } 
+  }
 
   /**
    * Casts and returns this expression as a {@link Identifier} if it is of kind {@code IDENTIFIER}
    *
    * @return this instance cast to a class
-   */  
+   */
   public default Identifier asIdentifier() {
     throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
-  } 
-  
+  }
+
 
   /**
    * Casts and returns this expression as a {@link Tuple} if it is of kind {@code TUPLE}
    *
    * @return this instance cast to a class
-   */  
+   */
   public default Tuple asTuple() {
     throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
-  } 
-  
+  }
+
   /**
    * Appends this expression statement to the specified writer. This may not always be the original
    * expression statement, specially after optimization.

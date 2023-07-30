@@ -18,11 +18,11 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -42,10 +42,10 @@ import java.io.StringWriter;
 public class BoolNotOperator extends Operator {
 
   public BoolNotOperator() {
-    super("BOOLNOT", "NOT", 150, false, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        Category.LOGICAL, "/docs/boolnot.html");
+    super("BOOLNOT", "NOT", 150, false, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, Category.LOGICAL,
+        "/docs/boolnot.html");
   }
-  
+
   /**
    * Simplifies by removing unnecessary `Not` operator
    */
@@ -114,12 +114,12 @@ public class BoolNotOperator extends Operator {
     if (operand.is(Operators.IS_DISTINCT_FROM)) {
       return new Call(Operators.IS_NOT_DISTINCT_FROM, operand.asCall().getOperands());
     }
-    
+
     return call;
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null) {
       return null;

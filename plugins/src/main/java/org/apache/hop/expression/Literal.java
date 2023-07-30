@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -49,8 +50,9 @@ public final class Literal implements IExpression {
   public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, IntegerType.INTEGER);
   public static final Literal ONE = new Literal(1L, IntegerType.INTEGER);
-  public static final Literal PI = new Literal(BigDecimalMath.pi(MathContext.DECIMAL128), NumberType.NUMBER);
-  
+  public static final Literal PI =
+      new Literal(BigDecimalMath.pi(MathContext.DECIMAL128), NumberType.NUMBER);
+
   public static Literal of(final Object value) {
     if (value == null)
       return NULL;
@@ -129,7 +131,7 @@ public final class Literal implements IExpression {
    * The value of this literal.
    */
   private final Object value;
-  
+
   /**
    * For internal use only
    */
@@ -139,13 +141,12 @@ public final class Literal implements IExpression {
   }
 
   @Override
-  public Object getValue() throws ExpressionException {
+  public Object getValue() {
     return value;
   }
 
   @Override
-  public <T> T getValue(final Class<T> clazz)
-      throws ExpressionException {
+  public <T> T getValue(final Class<T> clazz) {
 
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
@@ -186,7 +187,7 @@ public final class Literal implements IExpression {
         }
         break;
 
-      case INTEGER:        
+      case INTEGER:
         if (clazz == BigDecimal.class) {
           return clazz.cast(BigDecimal.valueOf((Long) value));
         }
@@ -205,7 +206,7 @@ public final class Literal implements IExpression {
         if (clazz == Long.class) {
           return clazz.cast(((BigDecimal) value).longValue());
         }
-       if (clazz == String.class) {
+        if (clazz == String.class) {
           return clazz.cast(StringType.convert((BigDecimal) value));
         }
         break;
@@ -228,8 +229,8 @@ public final class Literal implements IExpression {
         break;
     }
 
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-        TypeName.from(value), TypeName.from(clazz));
+    throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value),
+        TypeName.from(clazz));
   }
 
   @Override
@@ -274,12 +275,12 @@ public final class Literal implements IExpression {
     }
     return false;
   }
-  
+
   @Override
   public Literal asLiteral() {
     return this;
   }
-  
+
   @Override
   public String toString() {
     StringWriter writer = new StringWriter();
@@ -289,99 +290,100 @@ public final class Literal implements IExpression {
 
   @Override
   public void unparse(StringWriter writer) {
-    
+
     if (value == null) {
       writer.append("NULL");
-    }
-    else switch (type.getName()) {
-      case STRING:
-        writer.append('\'');
-        String str = (String) value;
-        for (int i = 0; i < str.length(); i++) {
-          char ch = str.charAt(i);
-          writer.append(ch);
-          if (ch == '\'') {
-            writer.append(ch);
-          }
-        }
-        writer.append('\'');
-        break;
-      case BOOLEAN:
-        writer.append(((boolean) value) ? "TRUE" : "FALSE");
-        break;
-      case INTEGER:
-        writer.append(((Long) value).toString());
-        break;        
-      case NUMBER:
-        writer.append(StringType.convert((BigDecimal) value));
-        break;        
-      case BINARY:
-        writer.append("BINARY '");
-        for (byte b : (byte[]) value) {
-          writer.append(byteToHex((b >> 4) & 0xF));
-          writer.append(byteToHex(b & 0xF));
-        }
-        writer.append('\'');
-        break;
-      case DATE: {
-        //ZonedDateTime datetime = ((LocalDateTime) value).atZone(ZoneId.systemDefault());
-        ZonedDateTime datetime = (ZonedDateTime) value;
-        int nano = datetime.getNano();
-        if (nano > 0) {
-          writer.append("TIMESTAMP '");
-
-          if (nano % 1000000 == 0)
-            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF3").format(datetime));
-          else if (nano % 1000 == 0)
-            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF6").format(datetime));
-          else
-            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9").format(datetime));
-          if (datetime.getOffset().getTotalSeconds() != 0) {
-            if (datetime.getZone() instanceof ZoneOffset) {
-              writer.append(' ');
-              writer.append(datetime.getZone().toString());
-
-            } else {
-              writer.append("' AT TIME ZONE '");
-              writer.append(datetime.getZone().getId());
-            }
-          }
-          
-        } else if (datetime.getHour() == 0 && datetime.getMinute() == 0 && datetime.getSecond() == 0) {
-          writer.append("DATE '");
-          writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
-        } else {
-          writer.append("TIMESTAMP '");
-          writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
-          if (datetime.getOffset().getTotalSeconds() != 0) {
-            if (datetime.getZone() instanceof ZoneOffset) {
-              writer.append(' ');
-              writer.append(datetime.getZone().toString());
-
-            } else {
-              writer.append("' AT TIME ZONE '");
-              writer.append(datetime.getZone().getId());
-            }
-          }
-        }
-        writer.append('\'');
-        break;
-      }
-      case JSON:
-        try {
-          writer.append("JSON '");
-          writer.append(MAPPER.writeValueAsString(value));
+    } else
+      switch (type.getName()) {
+        case STRING:
           writer.append('\'');
-        } catch (JsonProcessingException e) {
-          throw new RuntimeException("Unable to unparse json object ", e);
+          String str = (String) value;
+          for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+            writer.append(ch);
+            if (ch == '\'') {
+              writer.append(ch);
+            }
+          }
+          writer.append('\'');
+          break;
+        case BOOLEAN:
+          writer.append(((boolean) value) ? "TRUE" : "FALSE");
+          break;
+        case INTEGER:
+          writer.append(((Long) value).toString());
+          break;
+        case NUMBER:
+          writer.append(StringType.convert((BigDecimal) value));
+          break;
+        case BINARY:
+          writer.append("BINARY '");
+          for (byte b : (byte[]) value) {
+            writer.append(byteToHex((b >> 4) & 0xF));
+            writer.append(byteToHex(b & 0xF));
+          }
+          writer.append('\'');
+          break;
+        case DATE: {
+          // ZonedDateTime datetime = ((LocalDateTime) value).atZone(ZoneId.systemDefault());
+          ZonedDateTime datetime = (ZonedDateTime) value;
+          int nano = datetime.getNano();
+          if (nano > 0) {
+            writer.append("TIMESTAMP '");
+
+            if (nano % 1000000 == 0)
+              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF3").format(datetime));
+            else if (nano % 1000 == 0)
+              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF6").format(datetime));
+            else
+              writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS.FF9").format(datetime));
+            if (datetime.getOffset().getTotalSeconds() != 0) {
+              if (datetime.getZone() instanceof ZoneOffset) {
+                writer.append(' ');
+                writer.append(datetime.getZone().toString());
+
+              } else {
+                writer.append("' AT TIME ZONE '");
+                writer.append(datetime.getZone().getId());
+              }
+            }
+
+          } else if (datetime.getHour() == 0 && datetime.getMinute() == 0
+              && datetime.getSecond() == 0) {
+            writer.append("DATE '");
+            writer.append(DateTimeFormat.of("YYYY-MM-DD").format(datetime));
+          } else {
+            writer.append("TIMESTAMP '");
+            writer.append(DateTimeFormat.of("YYYY-MM-DD HH24:MI:SS").format(datetime));
+            if (datetime.getOffset().getTotalSeconds() != 0) {
+              if (datetime.getZone() instanceof ZoneOffset) {
+                writer.append(' ');
+                writer.append(datetime.getZone().toString());
+
+              } else {
+                writer.append("' AT TIME ZONE '");
+                writer.append(datetime.getZone().getId());
+              }
+            }
+          }
+          writer.append('\'');
+          break;
         }
-        break;
-      case UNKNOWN:
-        writer.append(String.valueOf(value));
-        break;
-      default:
-        writer.append(String.valueOf(value));
-    }
+        case JSON:
+          try {
+            writer.append("JSON '");
+            writer.append(MAPPER.writeValueAsString(value));
+            writer.append('\'');
+          } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to unparse json object ", e);
+          }
+          break;
+        case UNKNOWN:
+          writer.append(String.valueOf(value));
+          break;
+        default:
+          writer.append(String.valueOf(value));
+      }
   }
 
   private char byteToHex(int digit) {
@@ -390,22 +392,22 @@ public final class Literal implements IExpression {
     }
     return (char) ('A' - 10 + digit);
   }
-  
+
   /**
    * Validate a literal.
    * 
    * @param context The context against which the expression will be validated.
    */
   @Override
-  public void validate(final IExpressionContext context) throws ExpressionException {   
+  public void validate(final IExpressionContext context) throws ExpressionException {
     // Nothing to validate
   }
-  
+
   @Override
-  public IExpression compile(final IExpressionContext context) throws ExpressionException {   
+  public IExpression compile(final IExpressionContext context) throws ExpressionException {
     return this;
   }
-  
+
   @Override
   public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
     return visitor.apply(context, this);

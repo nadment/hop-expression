@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.exception;
 
-public class ConversionException extends RuntimeException {
+import org.apache.hop.expression.ExpressionError;
+
+public class ParseNumberException extends RuntimeException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 
@@ -25,7 +27,7 @@ public class ConversionException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ConversionException(String error) {
+  public ParseNumberException(String error) {
     super(error);
   }
 
@@ -34,11 +36,11 @@ public class ConversionException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ConversionException(ExpressionError error) {
+  public ParseNumberException(ExpressionError error) {
     super(error.message());
   }
 
-  public ConversionException(ExpressionError error, Object... values) {
+  public ParseNumberException(ExpressionError error, Object... values) {
     super(error.message(values));
   }
 }

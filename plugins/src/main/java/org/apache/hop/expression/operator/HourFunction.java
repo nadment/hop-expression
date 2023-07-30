@@ -33,13 +33,11 @@ import java.time.ZonedDateTime;
 public class HourFunction extends Function {
 
   public HourFunction() {
-    super("HOUR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/hour.html");
+    super("HOUR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/hour.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

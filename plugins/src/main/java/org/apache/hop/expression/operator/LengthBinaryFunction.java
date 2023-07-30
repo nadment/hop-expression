@@ -23,14 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class LengthBinaryFunction extends LengthFunction {
   static final LengthBinaryFunction INSTANCE = new LengthBinaryFunction();
-  
+
   public LengthBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return value;

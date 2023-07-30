@@ -40,8 +40,7 @@ public class HtmlEncodeFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     return StringEscapeUtils.escapeHtml(value);
   }

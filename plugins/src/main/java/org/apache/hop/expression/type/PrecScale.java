@@ -22,11 +22,11 @@ package org.apache.hop.expression.type;
  */
 
 /* package */ final class PrecScale {
-  
+
   private PrecScale() {
-    
+
   }
-  
+
   public static final int NO_NO = 1;
   public static final int YES_NO = 2;
   public static final int YES_YES = 4;

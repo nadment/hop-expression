@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression.util;
 
+import org.apache.hop.expression.exception.ParseNumberException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -137,9 +138,9 @@ public abstract class NumberFormat extends BaseFormat {
 
   private static final Map<String, NumberFormat> cache = new ConcurrentHashMap<>();
 
-  public static NumberFormat of(String pattern) {
+  public static NumberFormat of(final String pattern) {
     if (pattern == null) {
-      throw new IllegalArgumentException("Paterrn is null");
+      throw new NumberFormatException("Paterrn is null");
     }
 
     return cache.computeIfAbsent(pattern, NumberFormat::create);
@@ -166,7 +167,7 @@ public abstract class NumberFormat extends BaseFormat {
    * @return the parsed value
    * @throws ParseException
    */
-  public abstract BigDecimal parse(String text) throws ParseException;
+  public abstract BigDecimal parse(String text) throws ParseNumberException;
 
   /**
    * Format number with number format.

@@ -25,13 +25,13 @@ import org.apache.hop.core.row.ValueDataUtil;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -56,7 +56,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
-  
+
   public Date convertToDate(final Object value) {
     if (value == null) {
       return null;
@@ -64,11 +64,11 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     if (value instanceof ZonedDateTime) {
       return Date.from(((ZonedDateTime) value).toInstant());
     }
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.DATE));
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.DATE));
   }
 
-  
+
   @Override
   public boolean processRow() throws HopException {
 
@@ -224,9 +224,8 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       putRow(data.outputRowMeta, outputRow);
     }
 
-  
 
-    
+
     // If we need to give back one row ?
     // This means we give back 0 for COUNT function, null for everything else
     //

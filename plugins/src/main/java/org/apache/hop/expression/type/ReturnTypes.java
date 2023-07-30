@@ -30,11 +30,11 @@ public final class ReturnTypes {
    * such as {@code DATE}.
    */
   public static ExplicitReturnTypeInference explicit(Type type) {
-    return  new ExplicitReturnTypeInference(type);
+    return new ExplicitReturnTypeInference(type);
   }
-  
+
   public static final IReturnTypeInference ANY = explicit(UnknownType.ANY);
-  
+
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.
    */
@@ -93,30 +93,34 @@ public final class ReturnTypes {
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
       new LeastRestrictiveReturnTypeInference();
 
-  
+
   /**
-   * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with a fallback to {@link #ARG0}.
+   * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with
+   * a fallback to {@link #ARG0}.
    * This rule is used for floor, ceiling.
    */
   public static final IReturnTypeInference ARG0_OR_EXACT_NO_SCALE = call -> {
     Type type = call.getOperand(0).getType();
-    
-    if ( type.getScale()>0) {
-      return new NumberType(type.getPrecision(), 0); 
+
+    if (type.getScale() > 0) {
+      return new NumberType(type.getPrecision(), 0);
     }
-    
-    return IntegerType.INTEGER; 
+
+    return IntegerType.INTEGER;
   };
 
   public static final IReturnTypeInference TRY = new TryReturnTypeInference();
-  public static final IReturnTypeInference ADDITIVE_OPERATOR = new AdditiveOperatorReturnTypeInference();
-  public static final IReturnTypeInference MULTIPLY_OPERATOR = new MultiplyOperatorReturnTypeInference();  
-  public static final IReturnTypeInference DIVIDE_OPERATOR = new DivideOperatorReturnTypeInference();
+  public static final IReturnTypeInference ADDITIVE_OPERATOR =
+      new AdditiveOperatorReturnTypeInference();
+  public static final IReturnTypeInference MULTIPLY_OPERATOR =
+      new MultiplyOperatorReturnTypeInference();
+  public static final IReturnTypeInference DIVIDE_OPERATOR =
+      new DivideOperatorReturnTypeInference();
   public static final IReturnTypeInference MOD_OPERATOR = new ModOperatorReturnTypeInference();
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
   public static final IReturnTypeInference CAST_OPERATOR = new CastOperatorReturnTypeInference();
   public static final IReturnTypeInference IF_FUNCTION = new IfFunctionReturnTypeInference();
-  
+
   public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);
   }

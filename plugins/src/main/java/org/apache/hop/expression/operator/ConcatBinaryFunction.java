@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.IExpression;
-import java.io.ByteArrayOutputStream;
 
 
 /**
@@ -26,34 +25,35 @@ import java.io.ByteArrayOutputStream;
  */
 public class ConcatBinaryFunction extends ConcatFunction {
   static final Function INSTANCE = new ConcatBinaryFunction();
-  
-  // Function
+
   public ConcatBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
-
-    Object firstNotNull = null;
-    Object[] values = new Object[operands.length];
-    int i = 0;
-    for (IExpression operand : operands) {
-      Object value = operand.getValue();
-      if (firstNotNull == null && value != null)
-        firstNotNull = value;
-      values[i++] = value;
-    }
-
-    if (firstNotNull == null)
-      return null;
-
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      for (Object value : values) {
+  public Object eval(final IExpression[] operands) {
+      byte[][] values = new byte[operands.length][];
+      int i = 0;
+      int length = 0;
+      for (IExpression operand : operands) {
+        byte[] value = operand.getValue(byte[].class);
+        values[i++] = value;
         if (value != null) {
-          output.write((byte[]) value);
+          length += value.length;
         }
       }
-      return output.toByteArray();
+
+      if (length == 0)
+        return null;
+      
+      final byte[] result = new byte[length];
+      int index = 0;
+      for (byte[] value : values) {
+        if (value != null) {
+          System.arraycopy(value, 0, result, index, value.length);
+          index += value.length;
+        }
+      }
+      return result;
   }
 }

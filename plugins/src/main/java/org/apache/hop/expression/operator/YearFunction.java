@@ -31,13 +31,11 @@ import java.time.ZonedDateTime;
 public class YearFunction extends Function {
 
   public YearFunction() {
-    super("YEAR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/year.html");
+    super("YEAR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/year.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

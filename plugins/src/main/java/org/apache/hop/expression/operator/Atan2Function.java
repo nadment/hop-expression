@@ -26,19 +26,18 @@ import java.math.BigDecimal;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
- * Calculates the arc tangent (inverted tangent) of y / x in the range -pi to pi. 
+ * Calculates the arc tangent (inverted tangent) of y / x in the range -pi to pi.
  */
 @FunctionPlugin
 public class Atan2Function extends Function {
 
   public Atan2Function() {
-    super("ATAN2", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
-        Category.TRIGONOMETRY, "/docs/atan2.html");
+    super("ATAN2", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
+        "/docs/atan2.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value0 = operands[0].getValue(BigDecimal.class);
     if (value0 == null)
       return null;

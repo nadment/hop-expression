@@ -32,13 +32,11 @@ import java.time.temporal.ChronoField;
 public class WeekFunction extends Function {
 
   public WeekFunction() {
-    super("WEEK", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/week.html");
+    super("WEEK", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/week.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

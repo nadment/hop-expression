@@ -35,8 +35,7 @@ public class ZeroIfNullFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
 
     if (value == null)

@@ -15,7 +15,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.AggregateFunction;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -39,11 +38,7 @@ public class FirstValueFunction extends AggregateFunction {
     boolean ignoreNull = false;
 
     if (operands.length == 2) {
-      try {
-        ignoreNull = operands[1].getValue(Boolean.class);
-      } catch (ExpressionException e) {
-        // Ignore
-      }
+      ignoreNull = operands[1].getValue(Boolean.class);
     }
 
     return new FirstValueProcessor(ignoreNull);

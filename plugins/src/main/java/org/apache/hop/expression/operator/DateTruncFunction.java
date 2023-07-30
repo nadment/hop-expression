@@ -41,14 +41,13 @@ public class DateTruncFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
     ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
     if (datetime == null)
-      return null;   
+      return null;
 
     switch (unit) {
       case MILLENNIUM:
@@ -86,7 +85,7 @@ public class DateTruncFunction extends Function {
         return datetime.truncatedTo(ChronoUnit.MICROS);
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
-      default:        
+      default:
         throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }

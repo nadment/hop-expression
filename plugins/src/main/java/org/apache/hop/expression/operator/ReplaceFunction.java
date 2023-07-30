@@ -37,8 +37,7 @@ public class ReplaceFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String string = operands[0].getValue(String.class);
     if (string == null)
       return null;

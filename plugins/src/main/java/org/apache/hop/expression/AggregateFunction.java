@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
 
@@ -23,8 +24,7 @@ public abstract class AggregateFunction extends Function {
 
   protected AggregateFunction(String id, IReturnTypeInference returnTypeInference,
       IOperandTypeChecker operandTypeChecker, String documentationUrl) {
-    super(id, returnTypeInference, operandTypeChecker, Category.AGGREGATION,
-        documentationUrl);
+    super(id, returnTypeInference, operandTypeChecker, Category.AGGREGATION, documentationUrl);
   }
 
   @Override
@@ -33,5 +33,5 @@ public abstract class AggregateFunction extends Function {
   }
 
   public abstract IExpressionProcessor createProcessor(IExpressionContext context,
-      IExpression[] operands) throws ExpressionException ;
+      IExpression[] operands) throws ExpressionException;
 }

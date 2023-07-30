@@ -17,6 +17,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+
 /**
  * Calculate return type precision and scale for x / y
  */
@@ -35,12 +36,12 @@ public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
     int xs = x.getScale();
     int ys = y.getScale();
     int s = Math.max(xs, ys);
-    
+
     // Return type precision
     int xp = x.getPrecision();
     int yp = y.getPrecision();
     int p = Math.min(TypeName.NUMBER.getMaxPrecision(), xp + ys + Math.max(0, yp - xs));
-        
+
     return new NumberType(p, s);
   }
 }

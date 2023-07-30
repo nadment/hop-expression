@@ -252,7 +252,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           // If identifier name contains space, is a reserved word or a function name must be
           // quoted
           if (quoted || name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
-              || TypeName.of(name)!=null || TimeUnit.of(name)!=null
+              || TypeName.of(name) != null || TimeUnit.of(name) != null
               || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';
           }

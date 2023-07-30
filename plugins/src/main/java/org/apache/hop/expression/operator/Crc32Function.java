@@ -36,8 +36,7 @@ public class Crc32Function extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null)
       return null;

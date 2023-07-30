@@ -17,25 +17,24 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ConversionException;
+import org.apache.hop.expression.exception.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
-import java.text.ParseException;
 
 /**
  * Converts a string expression to a number value.
  */
 @FunctionPlugin
 public class TryToNumberFunction extends ToNumberFunction {
-  
+
   public TryToNumberFunction() {
     super("TRY_TO_NUMBER");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -46,7 +45,7 @@ public class TryToNumberFunction extends ToNumberFunction {
 
     try {
       return format.parse(value);
-    } catch (ConversionException|ParseException e) {
+    } catch (ConversionException | ParseNumberException e) {
       return null;
     }
   }

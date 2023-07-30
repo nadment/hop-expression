@@ -23,13 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class LeftBinaryFunction extends LeftFunction {
   static final LeftBinaryFunction INSTANCE = new LeftBinaryFunction();
-  
+
   public LeftBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null)
       return null;

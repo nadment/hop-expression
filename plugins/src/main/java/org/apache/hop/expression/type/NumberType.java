@@ -27,25 +27,26 @@ public final class NumberType extends Type {
   /**
    * Default NUMBER type with max precision.
    */
-  public static final NumberType NUMBER = new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED);
-  
+  public static final NumberType NUMBER =
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED);
+
   public NumberType() {
     super(TypeName.NUMBER, TypeName.NUMBER.getMaxPrecision(), 0);
   }
-  
+
   public NumberType(int precision) {
     super(TypeName.NUMBER, precision, 0);
   }
-  
+
   public NumberType(int precision, int scale) {
     super(TypeName.NUMBER, precision, scale);
   }
-  
+
   @Override
   public BigDecimal cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link NumberType} with a pattern.
    *
@@ -60,10 +61,10 @@ public final class NumberType extends Type {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-      if ( this.scale!=SCALE_NOT_SPECIFIED ) {
+      if (this.scale != SCALE_NOT_SPECIFIED) {
         number = number.setScale(scale, RoundingMode.DOWN);
       }
       return number;
@@ -89,16 +90,16 @@ public final class NumberType extends Type {
     }
     if (value instanceof String) {
       return convert((String) value);
-      
+
     }
     if (value instanceof byte[]) {
       return convert((byte[]) value);
     }
-    
+
     throw new IllegalArgumentException(
         ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
-  
+
   /**
    * Coerce value to data type BIGNUMBER
    * 
@@ -134,10 +135,10 @@ public final class NumberType extends Type {
     if (value instanceof String) {
       return convert((String) value);
     }
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.NUMBER));
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.NUMBER));
   }
-  
+
   public static final BigDecimal convert(final String str) {
     try {
       return new BigDecimal(StringUtils.trim(str));
@@ -148,8 +149,8 @@ public final class NumberType extends Type {
 
   public static BigDecimal convert(final byte[] bytes) {
     if (bytes.length > 8)
-      throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(TypeName.BINARY, bytes, TypeName.NUMBER));
+      throw new IllegalArgumentException(
+          ExpressionError.CONVERSION_ERROR.message(TypeName.BINARY, bytes, TypeName.NUMBER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

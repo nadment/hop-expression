@@ -34,19 +34,18 @@ import java.nio.charset.StandardCharsets;
 @FunctionPlugin
 public class Base32DecodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
-  
+
   public Base32DecodeFunction() {
     super("BASE32_DECODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base32_decode.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return null;
-   
+
     if (value instanceof String) {
       String str = (String) value;
       return new String(BASE32.decode(str), StandardCharsets.UTF_8);

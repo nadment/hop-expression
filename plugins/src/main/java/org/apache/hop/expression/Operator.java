@@ -15,6 +15,7 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.util.TranslateUtil;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
@@ -38,7 +39,7 @@ public abstract class Operator implements Comparable<Operator> {
 
 
   protected static final MathContext DECIMAL128 = MathContext.DECIMAL128;
-  
+
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;
 
@@ -84,25 +85,25 @@ public abstract class Operator implements Comparable<Operator> {
    * @param category The category to group operator
    */
   protected Operator(String id, String name, int precedence, boolean isLeftAssociative,
-      IReturnTypeInference returnTypeInference,
-      IOperandTypeChecker operandTypeChecker, String category, String documentationUrl) {
+      IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
+      String category, String documentationUrl) {
     this.id = Objects.requireNonNull(id, "id");
     this.name = Objects.requireNonNull(name, "name");
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
-    this.returnTypeInference = Objects.requireNonNull(returnTypeInference,"return type inference");
-    this.operandTypeChecker = Objects.requireNonNull(operandTypeChecker,"operand type checker");
+    this.returnTypeInference = Objects.requireNonNull(returnTypeInference, "return type inference");
+    this.operandTypeChecker = Objects.requireNonNull(operandTypeChecker, "operand type checker");
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;
     this.documentation = Documentations.loadDocumention(id, documentationUrl);
     this.description = Documentations.findDocumentionDescription(documentation);
   }
 
-  protected Operator(String id, int precedence, boolean isLeftAssociative, 
+  protected Operator(String id, int precedence, boolean isLeftAssociative,
       IReturnTypeInference returnTypeInference, IOperandTypeChecker operandTypeChecker,
       String category, String documentationUrl) {
-    this(id, id, precedence, isLeftAssociative, returnTypeInference,
-        operandTypeChecker, category, documentationUrl);
+    this(id, id, precedence, isLeftAssociative, returnTypeInference, operandTypeChecker, category,
+        documentationUrl);
   }
 
   private static int leftPrecedence(int precedence, boolean isLeftAssociative) {
@@ -161,12 +162,12 @@ public abstract class Operator implements Comparable<Operator> {
   /**
    * Returns whether this function is an aggregate function.
    * 
-   * @return {@code true} if this is a aggregate function. 
+   * @return {@code true} if this is a aggregate function.
    */
   public boolean isAggregate() {
     return false;
   }
-  
+
   /**
    * Return type inference strategy.
    * 
@@ -239,16 +240,21 @@ public abstract class Operator implements Comparable<Operator> {
   public String getDescription() {
     return description;
   }
-
-  public Object eval(final IExpression[] operands)
-      throws Exception {
-    throw new ExpressionException(ExpressionError.INTERNAL_ERROR);
+  
+  /**
+   * Evaluate the result of operator with operands.
+   * 
+   * @return
+   */
+  public Object eval(final IExpression[] operands) {
+    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message());
   }
 
-  public IExpression compile(final IExpressionContext context, final Call call) throws ExpressionException {
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
     return call;
   }
-  
+
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
   @Override
@@ -273,37 +279,38 @@ public abstract class Operator implements Comparable<Operator> {
   public String toString() {
     return id;
   }
-  
+
   protected Deque<IExpression> getChainedOperands(Call call, Predicate<IExpression> predicate) {
     return getChainedOperands(call, new LinkedList<>(), predicate);
   }
-  
-  private Deque<IExpression> getChainedOperands(Call call, Deque<IExpression> operands, Predicate<IExpression> predicate) {   
-    for (IExpression operand: call.getOperands()) {      
-      if ( operand.is(call.getOperator()) ) {
-        getChainedOperands(operand.asCall(), operands, predicate); 
-      }          
-      else if ( predicate.test(operand) ) {
-        operands.push(operand);
-      }      
-    }
-    
-    return operands;
-  }
-  
-  protected Queue<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
-    return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
-  }
-  
-  private Queue<IExpression> getChainedOperands(Call call, Deque<IExpression> operands, boolean allowDuplicate) {   
-    for (IExpression operand: call.getOperands()) {      
-      if ( operand.is(call.getOperator()) ) {
-        getChainedOperands(operand.asCall(), operands, allowDuplicate); 
-      } else if ( allowDuplicate || !operands.contains(operand) ) {        
+
+  private Deque<IExpression> getChainedOperands(Call call, Deque<IExpression> operands,
+      Predicate<IExpression> predicate) {
+    for (IExpression operand : call.getOperands()) {
+      if (operand.is(call.getOperator())) {
+        getChainedOperands(operand.asCall(), operands, predicate);
+      } else if (predicate.test(operand)) {
         operands.push(operand);
       }
     }
-    
+
+    return operands;
+  }
+
+  protected Queue<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
+    return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
+  }
+
+  private Queue<IExpression> getChainedOperands(Call call, Deque<IExpression> operands,
+      boolean allowDuplicate) {
+    for (IExpression operand : call.getOperands()) {
+      if (operand.is(call.getOperator())) {
+        getChainedOperands(operand.asCall(), operands, allowDuplicate);
+      } else if (allowDuplicate || !operands.contains(operand)) {
+        operands.push(operand);
+      }
+    }
+
     return operands;
   }
 }

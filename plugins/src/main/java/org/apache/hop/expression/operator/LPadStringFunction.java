@@ -25,14 +25,13 @@ import org.apache.hop.expression.IExpression;
 public class LPadStringFunction extends LPadFunction {
 
   static final LPadStringFunction INSTANCE = new LPadStringFunction();
-  
+
   public LPadStringFunction() {
     super();
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -43,16 +42,17 @@ public class LPadStringFunction extends LPadFunction {
     // If this parameter is omitted, the function will pad spaces
     String pad = null;
     if (operands.length == 3) {
-      pad = operands[2].getValue(String.class);      
+      pad = operands[2].getValue(String.class);
     }
     if (pad == null) {
       pad = " ";
     }
-    
+
     if (length < 0) {
       length = 0;
     } else if (length > PAD_LIMIT) {
-      throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+      throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT
+          .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
     }
 
     final int size = pad.length();

@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -42,8 +42,8 @@ public class BitNotFunction extends Function {
   }
 
   public BitNotFunction(String name) {
-    super("BIT_NOT", name, 40, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC,
-        Category.BITWISE, "/docs/bit_not.html");
+    super("BIT_NOT", name, 40, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC, Category.BITWISE,
+        "/docs/bit_not.html");
   }
 
   @Override
@@ -54,12 +54,12 @@ public class BitNotFunction extends Function {
     if (operand.is(Operators.BITNOT)) {
       return operand.asCall().getOperand(0);
     }
-    
+
     return call;
-  }  
-  
+  }
+
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return value;

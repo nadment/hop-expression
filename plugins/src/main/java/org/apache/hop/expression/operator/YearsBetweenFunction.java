@@ -32,13 +32,12 @@ import java.time.temporal.ChronoUnit;
 public class YearsBetweenFunction extends Function {
 
   public YearsBetweenFunction() {
-    super("YEARS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
-        Category.DATE, "/docs/years_between.html");
+    super("YEARS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE, Category.DATE,
+        "/docs/years_between.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
     if (startDateTime == null)
       return null;

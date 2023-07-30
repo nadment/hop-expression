@@ -29,17 +29,16 @@ import java.io.StringWriter;
 public class IsTrueOperator extends Operator {
 
   public IsTrueOperator() {
-    super("IS TRUE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        Category.COMPARISON, "/docs/is-true.html");
+    super("IS TRUE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, Category.COMPARISON,
+        "/docs/is-true.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
 
     // NULL is never TRUE
-    return value==Boolean.TRUE;
+    return value == Boolean.TRUE;
   }
 
   @Override

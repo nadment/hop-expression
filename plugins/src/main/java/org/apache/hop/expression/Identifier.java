@@ -17,6 +17,7 @@ package org.apache.hop.expression;
 import static java.util.Objects.requireNonNull;
 import static org.apache.hop.expression.Expressions.createDataType;
 import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;

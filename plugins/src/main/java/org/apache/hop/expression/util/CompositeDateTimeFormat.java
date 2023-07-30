@@ -44,7 +44,8 @@ public class CompositeDateTimeFormat extends DateTimeFormat {
       }
     }
 
-    throw new DateTimeParseException(ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, 0);
+    throw new DateTimeParseException(
+        ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, 0);
   }
 
   @Override

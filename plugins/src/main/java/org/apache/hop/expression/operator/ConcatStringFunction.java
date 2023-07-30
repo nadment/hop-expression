@@ -25,14 +25,14 @@ import org.apache.hop.expression.IExpression;
  */
 public class ConcatStringFunction extends ConcatFunction {
   static final Function INSTANCE = new ConcatStringFunction();
-  
+
   // Function
   public ConcatStringFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) {
 
     String firstNotNull = null;
     String[] values = new String[operands.length];

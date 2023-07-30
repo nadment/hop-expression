@@ -16,7 +16,7 @@
 package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.exception.ExpressionException;
 import java.util.regex.Pattern;
 
 public class Regexp {
@@ -144,7 +144,7 @@ public class Regexp {
           if (end < 0) {
             throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern, i);
           }
-          
+
           String cls = pattern.substring(i + 2, end - 1).toLowerCase();
           // Alphabetic characters
           if ("alpha".equals(cls))
@@ -178,10 +178,9 @@ public class Regexp {
           // Word characters (letters, numbers and underscores)
           else if ("word".equals(cls))
             javaPattern.append("\\w");
-          
+
           i = end;
-        }
-        else
+        } else
           javaPattern.append(c);
       } else {
         javaPattern.append(c);

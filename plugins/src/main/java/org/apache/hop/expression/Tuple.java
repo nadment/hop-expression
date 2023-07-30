@@ -14,6 +14,7 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
@@ -149,7 +150,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
       expression.unparse(writer);
     }
   }
-  
+
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
     // Validate all elements
@@ -157,10 +158,10 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
       expression.validate(context);
     }
   }
-  
+
   @Override
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
-    
+
     // Compile all elements
     List<IExpression> elements = new ArrayList<>(size());
     for (IExpression expression : this) {
@@ -168,7 +169,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     }
     return new Tuple(elements);
   }
-  
+
   public Stream<IExpression> stream() {
     return Stream.of(values);
   }
@@ -182,7 +183,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   public Tuple asTuple() {
     return this;
   }
-  
+
   @Override
   public boolean isConstant() {
     for (IExpression expression : values) {
@@ -190,7 +191,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
         return false;
       }
     }
-    
+
     return true;
   }
 

@@ -32,13 +32,12 @@ import java.time.temporal.ChronoUnit;
 public class SecondBetweenFunction extends Function {
 
   public SecondBetweenFunction() {
-    super("SECONDS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
-        Category.DATE, "/docs/seconds_between.html");
+    super("SECONDS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE, Category.DATE,
+        "/docs/seconds_between.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
     if (startDateTime == null)
       return null;

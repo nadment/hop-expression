@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -39,29 +38,28 @@ public class FactorialFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;
-    
-    int n = value.intValue(); 
-    
-    if (n<0)      
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, value);
-    
-    if (n>20) {
+
+    int n = value.intValue();
+
+    if (n < 0)
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+
+    if (n > 20) {
       BigInteger result = BigInteger.ONE;
       for (int i = 2; i <= n; i++) {
-          result = result.multiply(BigInteger.valueOf(i));
-      }      
+        result = result.multiply(BigInteger.valueOf(i));
+      }
       return new BigDecimal(result);
     }
 
     long result = 1;
     for (int i = 2; i <= n; i++) {
-      result = result*i;
+      result = result * i;
     }
-    return new BigDecimal(result);      
+    return new BigDecimal(result);
   }
 }

@@ -50,11 +50,12 @@ public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
   private IExpression firstNonNull(IExpression[] operands) {
     for (int i = 2; i < operands.length; i += 2) {
-      if ( ! operands[i].isNull() ) return operands[i];
-    }    
+      if (!operands[i].isNull())
+        return operands[i];
+    }
     return operands[2];
   }
-  
+
   @Override
   public IOperandCountRange getOperandCountRange() {
     return OperandCountRange.between(3, Integer.MAX_VALUE);

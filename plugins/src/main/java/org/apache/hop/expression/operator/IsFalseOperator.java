@@ -29,13 +29,12 @@ import java.io.StringWriter;
 public class IsFalseOperator extends Operator {
 
   public IsFalseOperator() {
-    super("IS FALSE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN,
-        Category.COMPARISON, "/docs/is-false.html");
+    super("IS FALSE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, Category.COMPARISON,
+        "/docs/is-false.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
 
     // NULL is never FALSE

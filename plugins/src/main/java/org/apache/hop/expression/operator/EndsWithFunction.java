@@ -42,8 +42,7 @@ public class EndsWithFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;

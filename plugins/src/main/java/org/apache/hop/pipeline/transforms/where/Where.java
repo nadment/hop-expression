@@ -112,7 +112,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
       data.context.setRow(row);
       Boolean predicat = data.condition.getValue(Boolean.class);
 
-      if (predicat !=null && predicat) {
+      if (predicat != null && predicat) {
         // put the row to the TRUE output row stream
         if (data.trueRowSet != null) {
           if (log.isRowLevel()) {

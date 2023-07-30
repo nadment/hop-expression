@@ -19,7 +19,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
@@ -61,6 +60,6 @@ public class TupleTest extends ExpressionTest {
     assertEquals("1,0,NULL", tuple1.toString());
 
     // Not evaluable alone
-    assertThrows(ExpressionException.class, () -> tuple1.getValue());      
+    assertThrows(UnsupportedOperationException.class, () -> tuple1.getValue());      
   }
 }

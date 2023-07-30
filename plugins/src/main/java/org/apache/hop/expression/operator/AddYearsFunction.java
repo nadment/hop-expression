@@ -36,8 +36,7 @@ public class AddYearsFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
     if (datetime == null)
       return null;

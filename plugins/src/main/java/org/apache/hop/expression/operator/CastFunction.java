@@ -19,18 +19,19 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import java.io.StringWriter;
 
 /**
- * Converts a value of one data type into another data type <code>CAST(value AS type [FORMAT format])</code>.
+ * Converts a value of one data type into another data type
+ * <code>CAST(value AS type [FORMAT format])</code>.
  * 
  * @see CastOperator
  * @see TryCastFunction
@@ -41,14 +42,14 @@ public class CastFunction extends Function {
   public CastFunction() {
     this("CAST");
   }
-        
+
   public CastFunction(String id) {
-    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
-        Category.CONVERSION, "/docs/cast.html");
+    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR, Category.CONVERSION,
+        "/docs/cast.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return null;
@@ -62,41 +63,42 @@ public class CastFunction extends Function {
 
     return type.cast(value, format);
   }
-    
-  @Override
-  public IExpression compile(final IExpressionContext context, Call call) throws ExpressionException {
 
-    //Type type = call.inferenceType().getType();
-    
+  @Override
+  public IExpression compile(final IExpressionContext context, Call call)
+      throws ExpressionException {
+
+    // Type type = call.inferenceType().getType();
+
     // Remove lossless cast
     IExpression operand = call.getOperand(0);
     if (call.getType().equals(operand.getType())) {
       return operand;
     }
-    
-//    // Translate to function
-//    switch(type.getFamily()) {
-//      case BOOLEAN:
-//        return new Call(FunctionRegistry.getFunction("TO_BOOLEAN"), call.getOperand(0));
-//      case NUMERIC:
-//        //return new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperand(0));
-//        break;
-//      case TEMPORAL:
-//        //return new Call(FunctionRegistry.getFunction("TO_DATE"), call.getOperand(0));
-//        break;
-//      case STRING:
-//        //return new Call(FunctionRegistry.getFunction("TO_CHAR"), call.getOperand(0));
-//        break;
-//      case BINARY:
-//        //return new Call(FunctionRegistry.getFunction("TO_BINARY"), call.getOperand(0));
-//        break;
-//      case JSON:
-//        //return new Call(FunctionRegistry.getFunction("TO_JSON"), call.getOperand(0));
-//      default:
-//        break;
-//    } 
-    
-    return call; 
+
+    // // Translate to function
+    // switch(type.getFamily()) {
+    // case BOOLEAN:
+    // return new Call(FunctionRegistry.getFunction("TO_BOOLEAN"), call.getOperand(0));
+    // case NUMERIC:
+    // //return new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperand(0));
+    // break;
+    // case TEMPORAL:
+    // //return new Call(FunctionRegistry.getFunction("TO_DATE"), call.getOperand(0));
+    // break;
+    // case STRING:
+    // //return new Call(FunctionRegistry.getFunction("TO_CHAR"), call.getOperand(0));
+    // break;
+    // case BINARY:
+    // //return new Call(FunctionRegistry.getFunction("TO_BINARY"), call.getOperand(0));
+    // break;
+    // case JSON:
+    // //return new Call(FunctionRegistry.getFunction("TO_JSON"), call.getOperand(0));
+    // default:
+    // break;
+    // }
+
+    return call;
   }
 
   @Override

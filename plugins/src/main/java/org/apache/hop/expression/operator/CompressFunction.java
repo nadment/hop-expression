@@ -17,12 +17,15 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -41,21 +44,23 @@ public class CompressFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null)
       return null;
 
-    ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
-    GZIPOutputStream compression = new GZIPOutputStream(output);
-    compression.write(bytes);
-    compression.flush();
-    compression.close();
+    try {
+      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 200);
+      GZIPOutputStream compression = new GZIPOutputStream(output);
+      compression.write(bytes);
+      compression.flush();
+      compression.close();
 
-    byte[] result = output.toByteArray();
-    System.out.printf("Compress %1d >>> %2d", bytes.length, result.length);
+      byte[] result = output.toByteArray();
 
-    return result;
+      return result;
+    } catch (IOException e) {
+      throw new ExpressionException(ExpressionError.COMPRESSION_ERROR);
+    }
   }
 }

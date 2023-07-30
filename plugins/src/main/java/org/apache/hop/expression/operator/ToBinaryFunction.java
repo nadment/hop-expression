@@ -16,20 +16,19 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Hex;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -41,65 +40,57 @@ public class ToBinaryFunction extends Function {
   public ToBinaryFunction() {
     this("TO_BINARY");
   }
-  
+
   protected ToBinaryFunction(String id) {
-    super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT,
-        Category.CONVERSION, "/docs/to_binary.html");
+    super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT, Category.CONVERSION,
+        "/docs/to_binary.html");
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-    String pattern = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
-    
+    String format = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
+
     // Default format
-    if (pattern == null) {
-      pattern = "HEX";
+    if (format == null) {
+      format = "HEX";
     }
 
     // With specified format
     if (call.getOperandCount() == 2) {
-      pattern = call.getOperand(1).getValue(String.class);
+      format = call.getOperand(1).getValue(String.class);
     }
 
-    pattern = pattern.toUpperCase();
-    
-    if ( pattern.equals("UTF-8") ) pattern = "UTF8";
-    
-    if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF8"))) {
-      throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
-    }
+    // Normalize pattern
+    format = format.toUpperCase();
+    if (format.equals("UTF-8"))
+      format = "UTF8";
 
-    return new Call(call.getOperator(), call.getOperand(0), Literal.of(pattern));
+    if ( format.equals("HEX") || format.equals("BASE64") || format.equals("UTF8") ) {
+      return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));  
+    }
+    
+    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);    
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
-    String value = operands[0].getValue(String.class);
+  public Object eval(IExpression[] operands) {
+    final String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
-    String format = operands[1].getValue(String.class);
+    final String format = operands[1].getValue(String.class);
+    
     if (format.equals("HEX")) {
-      return formatHex(value);
+      return Hex.decode(value);
     }
     if (format.equals("UTF8")) {
-      return formatUtf8(value);
+      return value.getBytes(StandardCharsets.UTF_8);
     }
-
-    return formatBase64(value);
-  }
-  
-  protected byte[] formatHex(String value) throws DecoderException {
-    return Hex.decodeHex(value);
-  }
-  
-  protected byte[] formatBase64(String value) {
-    return Base64.getDecoder().decode(value);
-  }
+    if (format.equals("BASE64")) {
+      return Base64.getDecoder().decode(value);
+    }
     
-  protected byte[] formatUtf8(String value) {
-    return value.getBytes(StandardCharsets.UTF_8);
+    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
   }
 }

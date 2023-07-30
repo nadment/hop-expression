@@ -30,13 +30,12 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class IfNullFunction extends Function {
 
   public IfNullFunction() {
-    super("IFNULL", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.SAME_SAME,
-        Category.CONDITIONAL, "/docs/ifnull.html");
+    super("IFNULL", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.SAME_SAME, Category.CONDITIONAL,
+        "/docs/ifnull.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return operands[1].getValue();

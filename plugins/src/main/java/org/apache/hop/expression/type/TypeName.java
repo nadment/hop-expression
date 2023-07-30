@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.TimeUnit;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -34,15 +33,15 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public enum TypeName {
 
-  
+
   /** A unknown type */
   UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, -1, Void.class),
-  
+
   ANY(TypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, -1, Object.class),
-  
+
   /** Unlimited length text */
   STRING(TypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, String.class),
-  
+
   /** Boolean (true or false) */
   BOOLEAN(TypeFamily.BOOLEAN, PrecScale.NO_NO, -1, Boolean.class),
 
@@ -50,11 +49,12 @@ public enum TypeName {
   INTEGER(TypeFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
 
   /** Unlimited precision number */
-  NUMBER(TypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38, BigDecimal.class),
+  NUMBER(TypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38,
+      BigDecimal.class),
 
   /** Date-time value with nanosecond precision and time zone */
   DATE(TypeFamily.TEMPORAL, PrecScale.NO_NO, -1, ZonedDateTime.class),
-  
+
   JSON(TypeFamily.JSON, PrecScale.NO_NO, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
@@ -66,7 +66,8 @@ public enum TypeName {
   protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
   protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
   protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
-  protected static final Set<TypeName> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
+  protected static final Set<TypeName> ALL_TYPES =
+      Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
 
   /**
    * Indicating allowable precision/scale combinations.
@@ -76,12 +77,13 @@ public enum TypeName {
   private final TypeFamily family;
 
   private final Class<?> javaClass;
-  
+
   private final int precisionMax;
 
-  public static final Set<String> ALL_NAMES = Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
+  public static final Set<String> ALL_NAMES =
+      Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
-  private TypeName(TypeFamily family, int signature, int precisionMax,Class<?> javaClass) {
+  private TypeName(TypeFamily family, int signature, int precisionMax, Class<?> javaClass) {
     this.family = family;
     this.signature = signature;
     this.precisionMax = precisionMax;
@@ -134,7 +136,7 @@ public enum TypeName {
         precision ? (scale ? PrecScale.YES_YES : PrecScale.YES_NO) : (scale ? 0 : PrecScale.NO_NO);
     return (signature & mask) != 0;
   }
-  
+
   /**
    * Returns a {@link TypeName} with a given name (ignore case).
    *
@@ -150,7 +152,7 @@ public enum TypeName {
     return null;
   }
 
-  
+
   /**
    * Search a data name for a value or a java class.
    *
@@ -159,18 +161,19 @@ public enum TypeName {
   public static TypeName from(final Object value) {
     if (value == null)
       return UNKNOWN;
-    
+
     Class<?> clazz = value.getClass();
-    
-    if ( value instanceof Class) {
+
+    if (value instanceof Class) {
       clazz = (Class<?>) value;
     }
-    
+
     for (TypeName name : TypeName.values()) {
-      
+
       // Ignore ANY
-      if ( name.equals(ANY) ) continue;
-      
+      if (name.equals(ANY))
+        continue;
+
       if (name.javaClass.isAssignableFrom(clazz)) {
         return name;
       }

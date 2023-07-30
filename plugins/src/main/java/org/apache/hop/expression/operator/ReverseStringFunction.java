@@ -23,14 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class ReverseStringFunction extends ReverseFunction {
   static final ReverseStringFunction INSTANCE = new ReverseStringFunction();
-  
+
   public ReverseStringFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

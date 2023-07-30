@@ -32,17 +32,14 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class TanFunction extends Function {
 
   public TanFunction() {
-    super("TAN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
-        "/docs/tan.html");
+    super("TAN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/tan.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
     return BigDecimalMath.tan(value, DECIMAL128);
   }
-
 }

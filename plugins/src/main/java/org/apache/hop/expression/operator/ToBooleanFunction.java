@@ -33,15 +33,14 @@ public class ToBooleanFunction extends Function {
   public ToBooleanFunction() {
     this("TO_BOOLEAN");
   }
-  
+
   protected ToBooleanFunction(String id) {
-    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC), Category.CONVERSION,
-        "/docs/to_boolean.html");
+    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC),
+        Category.CONVERSION, "/docs/to_boolean.html");
   }
 
   @Override
-  public Object eval(final IExpression[] operands)
-      throws Exception {
+  public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return null;

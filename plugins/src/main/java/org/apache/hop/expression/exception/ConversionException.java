@@ -14,33 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.operator;
+package org.apache.hop.expression.exception;
 
-import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.exception.ConversionException;
-import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.ExpressionError;
 
-/**
- * Converts a string or numeric expression to a boolean value.
- */
-@FunctionPlugin
-public class TryToBooleanFunction extends ToBooleanFunction {
+public class ConversionException extends RuntimeException {
 
-  public TryToBooleanFunction() {
-    super("TRY_TO_BOOLEAN");
+  private static final long serialVersionUID = 8634955627375465878L;
+
+  /**
+   * Construct a new conversion exception.
+   * 
+   * @param error a error message
+   */
+  public ConversionException(String error) {
+    super(error);
   }
 
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
-    if (value == null)
-      return null;
+  /**
+   * Construct a new expression exception.
+   * 
+   * @param error a error message
+   */
+  public ConversionException(ExpressionError error) {
+    super(error.message());
+  }
 
-    try {
-      return BooleanType.BOOLEAN.cast(value, null);
-    } catch (ConversionException e) {
-      return null;
-    }
+  public ConversionException(ExpressionError error, Object... values) {
+    super(error.message(values));
   }
 }

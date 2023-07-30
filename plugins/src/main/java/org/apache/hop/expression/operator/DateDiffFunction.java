@@ -28,15 +28,15 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 /**
- *  Returns the difference in time unit between two date or timestamp.
- *  
+ * Returns the difference in time unit between two date or timestamp.
+ * 
  * @see DaysBetweenFunction
- * @see WeeksBetweenFunction 
+ * @see WeeksBetweenFunction
  * @see MonthsBetweenFunction
  * @see YearsBetweenFunction
  * @see HoursBetweenFunction
  * @see MinutesBetweenFunction
- * @see SecondsBetweenFunction 
+ * @see SecondsBetweenFunction
  */
 @FunctionPlugin
 public class DateDiffFunction extends Function {
@@ -47,8 +47,7 @@ public class DateDiffFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 
@@ -67,16 +66,16 @@ public class DateDiffFunction extends Function {
       case DECADE:
         return startDateTime.until(endDateTime, ChronoUnit.DECADES);
       case YEAR:
-          return startDateTime.until(endDateTime, ChronoUnit.YEARS);
+        return startDateTime.until(endDateTime, ChronoUnit.YEARS);
       case MONTH:
         return startDateTime.until(endDateTime, ChronoUnit.MONTHS);
       case QUARTER:
-        long months = startDateTime.until(endDateTime, ChronoUnit.MONTHS);        
+        long months = startDateTime.until(endDateTime, ChronoUnit.MONTHS);
         return Long.valueOf(months / 3);
       case WEEK:
         return startDateTime.until(endDateTime, ChronoUnit.WEEKS);
       case DAY:
-       return startDateTime.until(endDateTime, ChronoUnit.DAYS);
+        return startDateTime.until(endDateTime, ChronoUnit.DAYS);
       case HOUR:
         return startDateTime.until(endDateTime, ChronoUnit.HOURS);
       case MINUTE:
@@ -89,7 +88,7 @@ public class DateDiffFunction extends Function {
         return startDateTime.until(endDateTime, ChronoUnit.MICROS);
       case NANOSECOND:
         return startDateTime.until(endDateTime, ChronoUnit.NANOS);
-      default:        
+      default:
         throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
   }

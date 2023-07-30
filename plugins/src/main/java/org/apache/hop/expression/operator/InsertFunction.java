@@ -18,10 +18,10 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
@@ -49,8 +49,7 @@ public class InsertFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;
@@ -72,7 +71,7 @@ public class InsertFunction extends Function {
       int start = Math.min(Math.max(0, position - 1), bytes.length);
       length = Math.min(length, bytes.length);
       if (length < 0) {
-        throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, length);
+        throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(length));
       }
 
       try {

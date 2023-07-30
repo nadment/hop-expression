@@ -33,8 +33,8 @@ import java.io.StringWriter;
 public class BitOrFunction extends Function {
 
   public BitOrFunction() {
-    super("BIT_OR", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
-        Category.BITWISE, "/docs/bit_or.html");
+    super("BIT_OR", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+        "/docs/bit_or.html");
   }
 
   public BitOrFunction(String name) {
@@ -43,7 +43,7 @@ public class BitOrFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Long left = operands[0].getValue(Long.class);
     if (left == null)
       return null;

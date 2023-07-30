@@ -19,12 +19,12 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -56,17 +56,17 @@ public class DivOperator extends Operator {
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);
     }
-    
+
     // Simplify arithmetic "(-A) / (-B)" to "A / B"
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
       return new Call(Operators.DIVIDE, left.asCall().getOperand(0), right.asCall().getOperand(0));
     }
-    
+
     return call;
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
@@ -77,7 +77,7 @@ public class DivOperator extends Operator {
     // Prevent a division by zero ..
     if (divisor.signum() == 0)
       throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
-    
+
     return value.divide(divisor, DECIMAL128);
   }
 

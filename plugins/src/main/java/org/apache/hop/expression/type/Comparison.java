@@ -15,7 +15,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionException;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.util.JsonComparator;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

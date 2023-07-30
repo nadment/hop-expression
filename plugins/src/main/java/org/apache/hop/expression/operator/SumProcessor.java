@@ -32,10 +32,9 @@ public class SumProcessor implements IExpressionProcessor {
 
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value != null) {
-      if ( sum==null ) {
+      if (sum == null) {
         sum = value;
-      }
-      else {
+      } else {
         sum = sum.add(value);
       }
     }

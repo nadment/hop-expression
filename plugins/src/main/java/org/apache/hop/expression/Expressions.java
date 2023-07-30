@@ -23,6 +23,7 @@ import org.apache.hop.core.row.value.ValueMetaInteger;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -36,17 +37,17 @@ import org.apache.hop.expression.type.UnknownType;
 import java.text.ParseException;
 
 public class Expressions {
-  
+
   /* package */ static IExpression compile(IExpressionContext context, IExpression expression)
       throws ExpressionException {
     IExpression original;
 
-      do {
-        original = expression;
-        expression = expression.compile(context);
-      } while (!expression.equals(original));
+    do {
+      original = expression;
+      expression = expression.compile(context);
+    } while (!expression.equals(original));
 
-      return expression;
+    return expression;
   }
 
   public static IExpression build(IExpressionContext context, final String source)
@@ -66,7 +67,7 @@ public class Expressions {
       throw createException(source, parser.getPosition(), e);
     }
   }
-  
+
   protected static ExpressionException createException(String source, int offset, Exception e) {
     int line = 1;
     int column = 1;
@@ -86,7 +87,7 @@ public class Expressions {
     // Utility class
   }
 
-  
+
   public static Type createDataType(IValueMeta valueMeta) {
     switch (valueMeta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
@@ -99,8 +100,8 @@ public class Expressions {
       case IValueMeta.TYPE_INTEGER:
         return IntegerType.INTEGER;
       case IValueMeta.TYPE_NUMBER:
-      case IValueMeta.TYPE_BIGNUMBER:        
-        return new NumberType(valueMeta.getLength(), valueMeta.getPrecision());     
+      case IValueMeta.TYPE_BIGNUMBER:
+        return new NumberType(valueMeta.getLength(), valueMeta.getPrecision());
       case ValueMetaJson.TYPE_JSON:
         return JsonType.JSON;
       case IValueMeta.TYPE_BINARY:

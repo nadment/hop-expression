@@ -22,7 +22,7 @@ import java.util.Objects;
 public final class Pair<T1 extends Object, T2 extends Object> {
   private final T1 left;
   private final T2 right;
-  
+
   public static <T1, T2> Pair<T1, T2> of(T1 left, T2 right) {
     return new Pair<>(left, right);
   }
@@ -30,7 +30,7 @@ public final class Pair<T1 extends Object, T2 extends Object> {
   /**
    * Creates a Pair.
    *
-   * @param left  left value
+   * @param left left value
    * @param right right value
    */
   public Pair(final T1 left, final T2 right) {
@@ -57,18 +57,18 @@ public final class Pair<T1 extends Object, T2 extends Object> {
     return "<" + left + ", " + right + ">";
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     int l = (left == null) ? 0 : left.hashCode();
     int r = (right == null) ? 0 : right.hashCode();
     return ((l << 4) | l) ^ r;
   }
 
-  
+
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || (obj instanceof Pair)
-        && Objects.equals(this.left, ((Pair<?, ?>) obj).left)
-        && Objects.equals(this.right, ((Pair<?, ?>) obj).right);
+        || (obj instanceof Pair) && Objects.equals(this.left, ((Pair<?, ?>) obj).left)
+            && Objects.equals(this.right, ((Pair<?, ?>) obj).right);
   }
 }

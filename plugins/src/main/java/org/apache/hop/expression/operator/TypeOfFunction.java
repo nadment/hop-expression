@@ -30,12 +30,11 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TypeOfFunction extends Function {
 
   public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL,
-        "/docs/typeof.html");
+    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     return operands[0].getType().getName().name();
   }
 }

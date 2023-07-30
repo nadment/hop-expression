@@ -28,17 +28,17 @@ public final class JsonType extends Type {
   /**
    * Default JSON type.
    */
-  public static final JsonType JSON = new JsonType();   
-  
+  public static final JsonType JSON = new JsonType();
+
   public JsonType() {
     super(TypeName.JSON);
   }
-  
+
   @Override
   public JsonNode cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link JsonType} with a pattern.
    *
@@ -53,19 +53,19 @@ public final class JsonType extends Type {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof JsonNode) {
       return (JsonNode) value;
     }
 
     if (value instanceof String) {
       return convert((String) value);
-    }   
-    
+    }
+
     throw new IllegalArgumentException(
         ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
-  
+
 
   /**
    * Coerce value to data type JSON
@@ -84,8 +84,8 @@ public final class JsonType extends Type {
       return JsonType.convert((String) value);
     }
 
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.JSON));
+    throw new IllegalArgumentException(
+        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.JSON));
   }
 
   /**

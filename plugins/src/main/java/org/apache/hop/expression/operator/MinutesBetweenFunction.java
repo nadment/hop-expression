@@ -32,13 +32,12 @@ import java.time.temporal.ChronoUnit;
 public class MinutesBetweenFunction extends Function {
 
   public MinutesBetweenFunction() {
-    super("MINUTES_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE,
-        Category.DATE, "/docs/minutes_between.html");
+    super("MINUTES_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE, Category.DATE,
+        "/docs/minutes_between.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime startDateTime = operands[0].getValue(ZonedDateTime.class);
     if (startDateTime == null)
       return null;

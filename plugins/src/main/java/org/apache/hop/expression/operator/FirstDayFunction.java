@@ -41,13 +41,12 @@ public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
 
   public FirstDayFunction() {
-    super("FIRST_DAY", ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT,
-        Category.DATE, "/docs/first_day.html");
+    super("FIRST_DAY", ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT, Category.DATE,
+        "/docs/first_day.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;

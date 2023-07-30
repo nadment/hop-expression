@@ -18,13 +18,13 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -60,17 +60,17 @@ public class ConcatFunction extends Function {
     ArrayList<IExpression> operands = new ArrayList<>();
     for (IExpression operand : getChainedOperands(call, true)) {
       if (operand.isNull())
-        continue;    
-      if (type==null)
-        type=operand.getType();
-      operands.add(0,operand);
+        continue;
+      if (type == null)
+        type = operand.getType();
+      operands.add(0, operand);
     }
-    
+
     Operator operator = ConcatStringFunction.INSTANCE;
-    if ( BinaryType.BINARY.isSameFamily(type)) {
+    if (BinaryType.BINARY.isSameFamily(type)) {
       operator = ConcatBinaryFunction.INSTANCE;
     }
-    
+
     switch (operands.size()) {
       case 0: // Nothing to concat
         return Literal.NULL;

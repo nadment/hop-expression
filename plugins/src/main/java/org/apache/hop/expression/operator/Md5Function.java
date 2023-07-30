@@ -40,8 +40,7 @@ public class Md5Function extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
 
     byte[] v0 = operands[0].getValue(byte[].class);
     if (v0 == null) {

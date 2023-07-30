@@ -34,15 +34,14 @@ import java.nio.charset.StandardCharsets;
 @FunctionPlugin
 public class Base32EncodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
-  
+
   public Base32EncodeFunction() {
     super("BASE32_ENCODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base32_encode.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return null;

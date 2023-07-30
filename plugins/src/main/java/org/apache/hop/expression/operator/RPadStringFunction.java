@@ -25,16 +25,15 @@ import org.apache.hop.expression.IExpression;
  * @see {@link LPadFunction}
  */
 public class RPadStringFunction extends RPadFunction {
-  
+
   static final RPadStringFunction INSTANCE = new RPadStringFunction();
-  
+
   public RPadStringFunction() {
     super();
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -50,13 +49,14 @@ public class RPadStringFunction extends RPadFunction {
     if (pad == null) {
       pad = " ";
     }
-    
+
     // If length is a negative number, the result is an empty string.
     if (length < 0) {
       return "";
-    }   
+    }
     if (length > PAD_LIMIT) {
-      throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
+      throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT
+          .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
     }
 
 

@@ -32,21 +32,20 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 @FunctionPlugin
 public class CbrtFunction extends Function {
-    
+
   private static final BigDecimal TREE = BigDecimal.valueOf(3);
-  
+
   public CbrtFunction() {
     super("CBRT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/cbrt.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-  
+
     return BigDecimalMath.root(value, TREE, DECIMAL128);
   }
 }

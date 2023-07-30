@@ -23,13 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class RightBinaryFunction extends RightFunction {
   static final RightBinaryFunction INSTANCE = new RightBinaryFunction();
-  
+
   public RightBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) throws Exception {
+  public Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null)
       return null;
@@ -45,7 +45,7 @@ public class RightBinaryFunction extends RightFunction {
     if (bytes.length <= length) {
       return bytes;
     }
-    
+
     byte[] result = new byte[length];
     System.arraycopy(bytes, bytes.length - length, result, 0, length);
     return result;

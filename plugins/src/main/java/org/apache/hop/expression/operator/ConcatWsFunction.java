@@ -20,11 +20,13 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 
 /**
@@ -41,34 +43,39 @@ public class ConcatWsFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
 
     Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;
 
     boolean notFirstValue = false;
-    
+
     // Concat Binary
     if (v0 instanceof byte[]) {
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      byte[] separator = BinaryType.coerce(v0);
-      for (int i = 1; i < operands.length; i++) {
-        byte[] value = operands[i].getValue(byte[].class);
+      try {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] separator = BinaryType.coerce(v0);
+        for (int i = 1; i < operands.length; i++) {
+          byte[] value = operands[i].getValue(byte[].class);
 
-        if (value != null) {
-          if (notFirstValue) {
-            output.write(separator);
+          if (value != null) {
+            if (notFirstValue) {
+              output.write(separator);
+            }
+            notFirstValue = true;
+            output.write(value);
           }
-          notFirstValue = true;
-          output.write(value);
         }
+
+        if (output.size() == 0)
+          return null;
+
+        return output.toByteArray();
+      } catch (IOException e) {
+        // TODO: Create specific function for binary
+        throw new ExpressionException("CONCATWS ERROR");
       }
-
-      if (output.size() == 0)
-        return null;
-
-      return output.toByteArray();
     }
 
     // Concat String

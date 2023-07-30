@@ -19,11 +19,11 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -46,18 +46,18 @@ public class NegateOperator extends Operator {
     if (operand.is(Operators.NEGATIVE)) {
       return ((Call) operand).getOperand(0);
     }
-    
+
     // Simplify arithmetic "-(A-B)" to "B-A"
     if (operand.is(Operators.SUBTRACT)) {
       Call subtract = (Call) operand;
-      return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));      
+      return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
     }
-    
+
     return call;
   }
 
   @Override
-  public Object eval(IExpression[] operands) throws Exception {
+  public Object eval(IExpression[] operands) {
     Object v0 = operands[0].getValue();
 
     if (v0 == null)
@@ -66,7 +66,7 @@ public class NegateOperator extends Operator {
     if (v0 instanceof Double) {
       Double value = (Double) v0;
       if (value == Double.MIN_VALUE) {
-        throw new ExpressionException(ExpressionError.ARITHMETIC_OVERFLOW, value);
+        throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
       }
       return Double.valueOf(-value);
     }
@@ -74,7 +74,7 @@ public class NegateOperator extends Operator {
     if (v0 instanceof Long) {
       Long value = (Long) v0;
       if (value == Long.MIN_VALUE) {
-        throw new ExpressionException(ExpressionError.ARITHMETIC_OVERFLOW, value);
+        throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
       }
       return Long.valueOf(-value);
     }

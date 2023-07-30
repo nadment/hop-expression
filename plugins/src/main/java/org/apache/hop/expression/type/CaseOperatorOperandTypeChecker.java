@@ -25,47 +25,47 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
   public CaseOperatorOperandTypeChecker() {}
 
   @Override
-  public boolean checkOperandTypes(final Call call) {  
-    Tuple whenTuple= call.getOperand(1).asTuple();;
+  public boolean checkOperandTypes(final Call call) {
+    Tuple whenTuple = call.getOperand(1).asTuple();;
     Tuple thenTuple = call.getOperand(2).asTuple();;
-    IExpression elseExpression= call.getOperand(3);;
+    IExpression elseExpression = call.getOperand(3);;
 
     Type valueType = call.getOperand(0).getType();
-    
+
     // Searched case operator
-    if (call.getOperand(0)==Literal.NULL) {      
+    if (call.getOperand(0) == Literal.NULL) {
       valueType = BooleanType.BOOLEAN;
-    } 
+    }
     // Simple case operator
-    else {     
+    else {
       valueType = call.getOperand(0).getType();
     }
-    
+
     for (IExpression whenOperand : whenTuple) {
       if (!whenOperand.getType().isSameFamily(valueType)) {
         return false;
       }
     }
-    
-    
+
+
     Type thenType = UnknownType.UNKNOWN;
-    for (IExpression thenOperand : thenTuple) {     
-      // First non null      
-      if ( !thenOperand.isNull() ) {
+    for (IExpression thenOperand : thenTuple) {
+      // First non null
+      if (!thenOperand.isNull()) {
         thenType = thenOperand.getType();
       }
-    } 
-    
-    if ( thenType.isSameFamily(TypeFamily.NONE) ) {
+    }
+
+    if (thenType.isSameFamily(TypeFamily.NONE)) {
       thenType = elseExpression.getType();
-    }    
-    
-    for (IExpression thenOperand : thenTuple) {     
-      if (!( thenOperand.getType().isSameFamily(thenType) || thenOperand.isNull()) ) {
+    }
+
+    for (IExpression thenOperand : thenTuple) {
+      if (!(thenOperand.getType().isSameFamily(thenType) || thenOperand.isNull())) {
         return false;
       }
-    } 
-    
+    }
+
     return elseExpression.isNull() || elseExpression.getType().isSameFamily(thenType);
   }
 

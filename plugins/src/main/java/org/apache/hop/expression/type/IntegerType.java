@@ -26,16 +26,16 @@ public final class IntegerType extends Type {
   public IntegerType() {
     super(TypeName.INTEGER, TypeName.INTEGER.getMaxPrecision(), 0);
   }
-  
+
   protected IntegerType(int precision) {
     super(TypeName.INTEGER, precision, 0);
   }
-    
+
   @Override
   public Long cast(final Object value) {
     return cast(value, null);
   }
-  
+
   /**
    * Convert a value to the specified type {@link IntegerType} with a pattern.
    *
@@ -50,28 +50,28 @@ public final class IntegerType extends Type {
     if (value == null) {
       return null;
     }
-    
+
     if (value instanceof Long) {
-    return (Long) value;
+      return (Long) value;
     }
     if (value instanceof BigDecimal) {
       BigDecimal number = (BigDecimal) value;
-     return number.longValue();
-   }
-   if (value instanceof Boolean) {
-     return ((boolean) value) ? 1L : 0L;
-   }
-   if (value instanceof String) {
-     return convert((String) value);
-   }
-   if (value instanceof byte[]) {
-     return convert((byte[]) value);
-   }
-    
+      return number.longValue();
+    }
+    if (value instanceof Boolean) {
+      return ((boolean) value) ? 1L : 0L;
+    }
+    if (value instanceof String) {
+      return convert((String) value);
+    }
+    if (value instanceof byte[]) {
+      return convert((byte[]) value);
+    }
+
     throw new IllegalArgumentException(
         ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
   }
-  
+
   /**
    * Coerce value to data type INTEGER
    * 
@@ -101,7 +101,7 @@ public final class IntegerType extends Type {
     throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
         TypeName.from(value), TypeName.INTEGER));
   }
-  
+
   public static final Long convert(final String str) {
     try {
       Double number = Double.parseDouble(str);
@@ -110,11 +110,11 @@ public final class IntegerType extends Type {
       throw new NumberFormatException(ExpressionError.INVALID_INTEGER.message(str));
     }
   }
-  
+
   public static Long convert(final byte[] bytes) {
     if (bytes.length > 8)
-      throw new IllegalArgumentException(ExpressionError.CONVERSION_ERROR
-          .message(TypeName.BINARY, bytes, TypeName.INTEGER));
+      throw new IllegalArgumentException(
+          ExpressionError.CONVERSION_ERROR.message(TypeName.BINARY, bytes, TypeName.INTEGER));
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

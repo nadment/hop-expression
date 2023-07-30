@@ -18,12 +18,12 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.ArrayList;
@@ -43,8 +43,7 @@ public class CoalesceFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     for (IExpression operand : operands) {
       Object value = operand.getValue();
       if (value != null)
@@ -67,8 +66,7 @@ public class CoalesceFunction extends Function {
       // Flatten chained coalesce
       if (operand.is(call.getOperator())) {
         operands.addAll(Arrays.asList(operand.asCall().getOperands()));
-      }
-      else {
+      } else {
         operands.add(operand);
       }
     }

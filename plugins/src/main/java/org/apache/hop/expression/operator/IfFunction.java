@@ -18,13 +18,13 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -35,36 +35,39 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class IfFunction extends Function {
 
   public IfFunction() {
-    super("IF", ReturnTypes.IF_FUNCTION, OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME),
-        Category.CONDITIONAL, "/docs/if.html");
+    super("IF", ReturnTypes.IF_FUNCTION,
+        OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME), Category.CONDITIONAL,
+        "/docs/if.html");
   }
-  
+
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-    
-    if ( call.getOperandCount()==2) {
+
+    if (call.getOperandCount() == 2) {
       return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.NULL);
     }
-    
-    IExpression condition = call.getOperand(0);
-    
 
-    if (condition.is(Operators.IS_NULL) ) {
+    IExpression condition = call.getOperand(0);
+
+
+    if (condition.is(Operators.IS_NULL)) {
       // "IF(x IS NULL,y,x)" to "IFNULL(x, y)"
-      if ( call.getOperand(2).equals(condition.asCall().getOperand(0))) {
+      if (call.getOperand(2).equals(condition.asCall().getOperand(0))) {
         return new Call(Operators.IFNULL, call.getOperand(2), call.getOperand(1));
       }
-      
+
       // "IF(x IS NULL,y,z)" to "NVL2(x, z, y)"
-      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(2), call.getOperand(1));      
+      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(2),
+          call.getOperand(1));
     }
-    
+
     if (condition.is(Operators.IS_NOT_NULL)) {
       // "IF(x IS NOT NULL,y,z)" to "NVL2(x, y, z)"
-      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(1), call.getOperand(2));
+      return new Call(Operators.NVL2, condition.asCall().getOperand(0), call.getOperand(1),
+          call.getOperand(2));
     }
-  
+
     if (condition.is(Operators.EQUAL) && call.getOperand(1) == Literal.NULL) {
 
       // "IF(x=y,NULL,x)" to "NULLIF(x, y)"
@@ -77,13 +80,12 @@ public class IfFunction extends Function {
         return new Call(Operators.NULLIF, call.getOperand(2), condition.asCall().getOperand(0));
       }
     }
-    
+
     return call;
   }
-  
+
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null)
       value = Boolean.FALSE;

@@ -18,11 +18,11 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -41,7 +41,8 @@ public class LPadFunction extends Function {
   protected static final int PAD_LIMIT = 8192;
 
   public LPadFunction() {
-    super("LPAD", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC_OPTIONAL_STRING.or(OperandTypes.BINARY_NUMERIC_BINARY),
+    super("LPAD", ReturnTypes.ARG0,
+        OperandTypes.STRING_NUMERIC_OPTIONAL_STRING.or(OperandTypes.BINARY_NUMERIC_BINARY),
         Category.STRING, "/docs/lpad.html");
   }
 
@@ -50,14 +51,14 @@ public class LPadFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING)) {      
+    if (type.isSameFamily(StringType.STRING)) {
       return new Call(LPadStringFunction.INSTANCE, call.getOperands());
     }
-    
-    if (type.isSameFamily(BinaryType.BINARY)) {      
+
+    if (type.isSameFamily(BinaryType.BINARY)) {
       return new Call(LPadBinaryFunction.INSTANCE, call.getOperands());
     }
-    
+
     return call;
-  }  
+  }
 }

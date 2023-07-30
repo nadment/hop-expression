@@ -17,13 +17,16 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -39,23 +42,23 @@ public class DecompressFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null)
       return null;
 
-    // String algorithm = "SNAPPY";
-    // CompressionInputStream cis = provider.createInputStream(new ByteArrayInputStream(bytes));    
-    
-    ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);
-    GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));
+    try {
+      ByteArrayOutputStream output = new ByteArrayOutputStream(bytes.length + 100);
+      GZIPInputStream cis = new GZIPInputStream(new ByteArrayInputStream(bytes));
 
-    final byte[] buffer = new byte[8024];
-    int n = 0;
-    while ((n = cis.read(buffer)) != -1) {
-      output.write(buffer, 0, n);
+      final byte[] buffer = new byte[8024];
+      int n = 0;
+      while ((n = cis.read(buffer)) != -1) {
+        output.write(buffer, 0, n);
+      }
+      return output.toByteArray();
+    } catch (IOException e) {
+      throw new ExpressionException(ExpressionError.DECOMPRESSION_ERROR);
     }
-    return output.toByteArray();
   }
 }

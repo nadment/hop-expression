@@ -271,11 +271,9 @@ import java.util.Locale;
      * @param calendar calendar to be appended
      * @throws Exception if an error occurs.
      */
-    public void append(StringBuilder buffer, ZonedDateTime datetime) throws DateTimeException {      
-    }
+    public void append(StringBuilder buffer, ZonedDateTime datetime) throws DateTimeException {}
 
-    public void parse(DateTimeParser parser) throws DateTimeParseException {
-    }
+    public void parse(DateTimeParser parser) throws DateTimeParseException {}
   }
 
   private static class StringFormat extends Format {
@@ -287,7 +285,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder buffer, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder buffer, final ZonedDateTime datetime)
+        throws DateTimeException {
       buffer.append(value);
     }
 
@@ -306,7 +305,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       output.append(ch);
     }
 
@@ -420,7 +420,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       output.append(cap.apply(RomanNumeral.format(datetime.getMonthValue())));
     }
 
@@ -445,7 +446,8 @@ import java.util.Locale;
         }
       }
 
-      throw new DateTimeParseException("Invalid roman month when parsing date with format RM", parser.text, index);
+      throw new DateTimeParseException("Invalid roman month when parsing date with format RM",
+          parser.text, index);
     }
   }
 
@@ -462,7 +464,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       output.append((datetime.getHour() < 12) ? am : pm);
     }
 
@@ -505,12 +508,13 @@ import java.util.Locale;
   }
 
   private static class ZoneAbbreviatedRegionFormat extends Format {
-    private static final DateTimeFormatter zoneAbbreviationFormatter = DateTimeFormatter.ofPattern("zzz", Locale.ENGLISH);
+    private static final DateTimeFormatter zoneAbbreviationFormatter =
+        DateTimeFormatter.ofPattern("zzz", Locale.ENGLISH);
 
     public ZoneAbbreviatedRegionFormat() {
       super(true, true);
     }
-    
+
     @Override
     public void append(StringBuilder output, ZonedDateTime datetime) throws DateTimeException {
       output.append(zoneAbbreviationFormatter.format(datetime));
@@ -525,7 +529,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       ZoneOffset offset = datetime.getOffset();
       int hours = offset.getTotalSeconds() / SECONDS_PER_HOUR;
       output.append(hours < 0 ? '-' : '+');
@@ -552,7 +557,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder buffer, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder buffer, final ZonedDateTime datetime)
+        throws DateTimeException {
       ZoneOffset offset = datetime.getOffset();
       int minutes = (offset.getTotalSeconds() / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
       appendDigits(buffer, FastMath.abs(minutes));
@@ -574,7 +580,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       output.append(datetime.format(formatter));
     }
   }
@@ -588,7 +595,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       output.append(datetime.format(formatter));
     }
   }
@@ -618,15 +626,15 @@ import java.util.Locale;
     public void parse(final DateTimeParser parser) {
       // Skip space
       int length = parser.text.length();
-      while( parser.index<length ) {
-        if ( !Characters.isSpace(parser.text.charAt(parser.index)) ) {
+      while (parser.index < length) {
+        if (!Characters.isSpace(parser.text.charAt(parser.index))) {
           return;
         }
         parser.index++;
       }
     }
   }
-  
+
   private static class JulianDayFormat extends Format {
     /** The offset from Julian to EPOCH DAY. */
     private static final long JULIAN_DAY_OFFSET = 2440588L;
@@ -636,7 +644,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       long julianDay = datetime.getLong(JulianFields.JULIAN_DAY);
       output.append(julianDay);
     }
@@ -658,7 +667,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int h12 = (datetime.getHour() + 11) % 12 + 1;
       appendDigits(output, h12);
     }
@@ -677,7 +687,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       appendDigits(output, datetime.getHour());
     }
 
@@ -694,7 +705,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       appendDigits(output, datetime.getMinute());
     }
 
@@ -710,7 +722,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int day = datetime.getDayOfMonth();
       if (fillMode) {
         appendDigits(output, day);
@@ -737,7 +750,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int month = datetime.getMonthValue();
       if (fillMode) {
         appendDigits(output, month);
@@ -761,7 +775,7 @@ import java.util.Locale;
       parser.isEpochDay = false;
     }
 
-    public void parseNameOfMonth(final DateTimeParser parser)  {
+    public void parseNameOfMonth(final DateTimeParser parser) {
       // Rule to try alternate format MONTH
       int index = parser.index;
       int month = 1;
@@ -785,7 +799,8 @@ import java.util.Locale;
         month++;
       }
 
-      throw new DateTimeParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"), parser.text, index);
+      throw new DateTimeParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"),
+          parser.text, index);
     }
   }
 
@@ -795,7 +810,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int seconds = datetime.get(ChronoField.SECOND_OF_DAY);
       appendZeroPadded(output, seconds, 5);
     }
@@ -807,7 +823,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       appendDigits(output, datetime.getSecond());
     }
 
@@ -824,7 +841,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int doy = datetime.getDayOfYear();
       if (fillMode) {
         appendZeroPadded(output, doy, 3);
@@ -847,7 +865,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int dof = (datetime.getDayOfWeek().getValue() + 1) % 7;
       output.append((char) (dof + '0'));
     }
@@ -859,7 +878,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int week = datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
       output.append((char) (week + '0'));
     }
@@ -871,7 +891,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int week = datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
       if (fillMode) {
         appendDigits(output, week);
@@ -887,7 +908,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int quarter = datetime.get(IsoFields.QUARTER_OF_YEAR);
       output.append((char) (quarter + '0'));
     }
@@ -899,7 +921,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int year = datetime.getYear();
       int value = FastMath.abs(year);
 
@@ -932,7 +955,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int year = datetime.getYear();
       int value = FastMath.abs(year);
 
@@ -966,11 +990,10 @@ import java.util.Locale;
 
     @Override
     public void parse(final DateTimeParser parser) {
-      
-      if ( this.exactMode ) {
+
+      if (this.exactMode) {
         parser.year = parser.parseExactInt(length);
-      }
-      else if (length == 2) {
+      } else if (length == 2) {
         int year = parser.parseExactInt(2);
         year += (year < twoDigitYearStart - 1900) ? 2000 : 1900;
         parser.year = year;
@@ -990,7 +1013,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int year = datetime.getYear();
       int value = FastMath.abs(year);
 
@@ -1035,7 +1059,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int year = FastMath.abs(datetime.get(IsoFields.WEEK_BASED_YEAR));
 
       switch (length) {
@@ -1073,7 +1098,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int week = datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
       if (fillMode) {
         appendDigits(output, week);
@@ -1092,7 +1118,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       int nano = datetime.getNano();
       if (scale < 9) {
         nano /= (int) FastMath.pow(10d, 9 - scale);
@@ -1121,7 +1148,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       String name = cap.apply(datetime.getDayOfWeek().getDisplayName(style, Locale.ENGLISH));
       if (fillMode) {
         name = StringUtils.rightPad(name, "Wednesday".length(), ' ');
@@ -1143,7 +1171,8 @@ import java.util.Locale;
     }
 
     @Override
-    public void append(final StringBuilder output, final ZonedDateTime datetime) throws DateTimeException {
+    public void append(final StringBuilder output, final ZonedDateTime datetime)
+        throws DateTimeException {
       String name = datetime.getMonth().getDisplayName(style, Locale.ENGLISH);
       name = cap.apply(name);
       // Abbreviated mode doesn't use fillMode
@@ -1218,7 +1247,7 @@ import java.util.Locale;
         index += 2;
         continue;
       }
-      
+
       // Special characters
       char ch = pattern.charAt(index);
       if (" =/\\\\-_:,.;()".indexOf(ch) >= 0) {
@@ -1226,7 +1255,7 @@ import java.util.Locale;
         index++;
         continue;
       }
-      
+
       // Literal text
       if (ch == '"') {
         index++;
@@ -1588,10 +1617,10 @@ import java.util.Locale;
           ExpressionError.INVALID_DATE_FORMAT.message(pattern, index));
     }
 
-    if ( !exactMode ) {
+    if (!exactMode) {
       list.add(new SpaceFormat());
-    } 
-    
+    }
+
     return list.toArray(new Format[0]);
   }
 
@@ -1681,7 +1710,7 @@ import java.util.Locale;
     }
     buffer.append(s);
   }
-  
+
   @Override
   public String toString() {
     return pattern;

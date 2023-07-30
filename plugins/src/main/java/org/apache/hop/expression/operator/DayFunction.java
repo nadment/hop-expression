@@ -31,13 +31,11 @@ import java.time.ZonedDateTime;
 public class DayFunction extends Function {
 
   public DayFunction() {
-    super("DAY", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE,
-        "/docs/day.html");
+    super("DAY", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/day.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands)
-      throws Exception {
+  public Object eval(IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;
