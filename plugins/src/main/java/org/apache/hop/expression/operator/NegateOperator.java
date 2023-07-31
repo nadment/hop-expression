@@ -59,23 +59,14 @@ public class NegateOperator extends Operator {
   @Override
   public Object eval(IExpression[] operands) {
     Object v0 = operands[0].getValue();
-
     if (v0 == null)
       return null;
-
-    if (v0 instanceof Double) {
-      Double value = (Double) v0;
-      if (value == Double.MIN_VALUE) {
-        throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
-      }
-      return Double.valueOf(-value);
-    }
 
     if (v0 instanceof Long) {
       Long value = (Long) v0;
       if (value == Long.MIN_VALUE) {
         throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
-      }
+      }      
       return Long.valueOf(-value);
     }
 

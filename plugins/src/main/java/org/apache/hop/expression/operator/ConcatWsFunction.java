@@ -16,30 +16,48 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 
 /**
- * String concatenation function with separator
+ * String or binary concatenation function with separator
  */
 @FunctionPlugin
 public class ConcatWsFunction extends Function {
 
-  // Function
   public ConcatWsFunction() {
     super("CONCAT_WS", ReturnTypes.FIRST_KNOWN,
-        OperandTypes.or(OperandTypes.STRING_STRING_VARIADIC, OperandTypes.BINARY_BINARY_VARIADIC),
+        OperandTypes.STRING_STRING_VARIADIC.or(OperandTypes.BINARY_BINARY_VARIADIC),
         Category.STRING, "/docs/concat_ws.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    Type type = call.getOperand(0).getType();
+
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(ConcatWsStringFunction.INSTANCE, call.getOperands());
+    }
+
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(ConcatWsBinaryFunction.INSTANCE, call.getOperands());
+    }
+
+    return call;
   }
 
   @Override

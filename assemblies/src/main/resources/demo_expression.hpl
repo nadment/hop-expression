@@ -32,8 +32,6 @@
     <created_date>2020/04/05 18:12:39.120</created_date>
     <modified_user>-</modified_user>
     <modified_date>2020/04/05 18:12:39.120</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
-    <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
@@ -77,10 +75,11 @@
     </partitioning>
     <addcloneflag>N</addcloneflag>
     <addclonenum>Y</addclonenum>
+    <cloneflagfield/>
     <clonenumfield>ROWNUM</clonenumfield>
     <nrclonefield>bb</nrclonefield>
     <nrcloneinfield>N</nrcloneinfield>
-    <nrclones>100000</nrclones>
+    <nrclones>1000000</nrclones>
     <attributes/>
     <GUI>
       <xloc>240</xloc>
@@ -98,107 +97,6 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <fields>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_STRING</name>
-        <precision>-1</precision>
-        <type>String</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_NUMBER</name>
-        <precision>-1</precision>
-        <type>Number</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_BOOLEAN</name>
-        <precision>-1</precision>
-        <type>Boolean</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format>yyyy-MM-dd</format>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_DATE</name>
-        <precision>-1</precision>
-        <type>Date</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_INTEGER</name>
-        <precision>-1</precision>
-        <type>Integer</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_JSON</name>
-        <precision>-1</precision>
-        <type>JSON</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>FIELD_BINARY</name>
-        <precision>-1</precision>
-        <type>Binary</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>YEAR</name>
-        <precision>-1</precision>
-        <type>Integer</type>
-      </field>
-      <field>
-        <currency/>
-        <decimal/>
-        <set_empty_string>N</set_empty_string>
-        <format/>
-        <group/>
-        <length>-1</length>
-        <name>COST CENTER</name>
-        <precision>-1</precision>
-        <type>String</type>
-      </field>
-    </fields>
     <data>
       <line>
         <item>John</item>
@@ -234,6 +132,72 @@
         <item>85500</item>
       </line>
     </data>
+    <fields>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_STRING</name>
+        <type>String</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_NUMBER</name>
+        <type>Number</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_BOOLEAN</name>
+        <type>Boolean</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_DATE</name>
+        <format>yyyy-MM-dd</format>
+        <type>Date</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_INTEGER</name>
+        <type>Integer</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_JSON</name>
+        <type>JSON</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>FIELD_BINARY</name>
+        <type>Binary</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>YEAR</name>
+        <type>Integer</type>
+      </field>
+      <field>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <name>COST CENTER</name>
+        <type>String</type>
+      </field>
+    </fields>
     <attributes/>
     <GUI>
       <xloc>96</xloc>
@@ -272,7 +236,7 @@ End </expression>
         <type>String</type>
       </field>
       <field>
-        <expression>Date '2020-05-18 15:28:59'</expression>
+        <expression>Timestamp '2020-05-18 15:28:59'</expression>
         <length>-1</length>
         <name>LITERAL_TIMESTAMP</name>
         <precision>-1</precision>
@@ -300,6 +264,27 @@ End </expression>
         <type>Integer</type>
       </field>
       <field>
+        <expression>0b000000010000000000000010000000000000001000010011101110011</expression>
+        <length>-1</length>
+        <name>LITERAL_INTEGER_BIT</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>0xFFFEEEE0000AAA0</expression>
+        <length>-1</length>
+        <name>LITERAL_INTEGER_HEX</name>
+        <precision>-1</precision>
+        <type>Integer</type>
+      </field>
+      <field>
+        <expression>BINARY 'FFFEEEE0000AAA0'</expression>
+        <length>-1</length>
+        <name>LITERAL_BINARY</name>
+        <precision>-1</precision>
+        <type>Binary</type>
+      </field>
+      <field>
         <expression>Date '2020-05-18'</expression>
         <length>-1</length>
         <name>LITERAL_DATE</name>
@@ -319,20 +304,6 @@ End </expression>
         <name>LITERAL_NULL</name>
         <precision>-1</precision>
         <type>String</type>
-      </field>
-      <field>
-        <expression>0b000000010000000000000010000000000000001000010011101110011</expression>
-        <length>-1</length>
-        <name>LITERAL_BINARY_BIT</name>
-        <precision>-1</precision>
-        <type>Binary</type>
-      </field>
-      <field>
-        <expression>0xFFFEEEE0000AAA0</expression>
-        <length>-1</length>
-        <name>LITERAL_BINARY_HEX</name>
-        <precision>-1</precision>
-        <type>Binary</type>
       </field>
       <field>
         <expression>123456789012345678901234567890.123456</expression>
@@ -374,7 +345,7 @@ UPPER(SUBSTR('${os.name}',1,10))</expression>
         <type>Integer</type>
       </field>
       <field>
-        <expression>DAYS_BETWEEN(Date '1980-05-18',Date(2020,6,29))</expression>
+        <expression>DAYS_BETWEEN(Date '1980-05-18',DATE_FROM_PARTS(2020,6,29))</expression>
         <length>-1</length>
         <name>AGE</name>
         <precision>-1</precision>
@@ -465,7 +436,8 @@ UPPER(SUBSTR('${os.name}',1,10))</expression>
         <type>String</type>
       </field>
       <field>
-        <expression>LITERAL_INTEGER*3</expression>
+        <expression>// TOTO: LITERAL_INTEGER*3
+3</expression>
         <length>-1</length>
         <name>USE_EXPRESSION_RESULT</name>
         <precision>-1</precision>
@@ -498,7 +470,7 @@ End
         <type>Integer</type>
       </field>
       <field>
-        <expression>try(10/0)</expression>
+        <expression>DIV0(10,0)</expression>
         <length>-1</length>
         <name>EMPTY</name>
         <precision>-1</precision>

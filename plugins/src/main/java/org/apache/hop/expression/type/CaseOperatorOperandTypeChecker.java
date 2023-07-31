@@ -22,13 +22,15 @@ import org.apache.hop.expression.Tuple;
 
 public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
 
-  public CaseOperatorOperandTypeChecker() {}
+  public CaseOperatorOperandTypeChecker() {
+    
+  }
 
   @Override
   public boolean checkOperandTypes(final Call call) {
-    Tuple whenTuple = call.getOperand(1).asTuple();;
-    Tuple thenTuple = call.getOperand(2).asTuple();;
-    IExpression elseExpression = call.getOperand(3);;
+    Tuple whenTuple = call.getOperand(1).asTuple();
+    Tuple thenTuple = call.getOperand(2).asTuple();
+    IExpression elseExpression = call.getOperand(3);
 
     Type valueType = call.getOperand(0).getType();
 

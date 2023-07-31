@@ -17,42 +17,49 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
-
+import org.apache.hop.expression.exception.ExpressionException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
- * Binary concatenation operator '<code>||</code>'
+ * Binary concatenation function with separator
  */
-public class ConcatBinaryFunction extends ConcatFunction {
-  static final ConcatBinaryFunction INSTANCE = new ConcatBinaryFunction();
+public class ConcatWsBinaryFunction extends ConcatWsFunction {
+  static final ConcatWsBinaryFunction INSTANCE = new ConcatWsBinaryFunction();
 
-  public ConcatBinaryFunction() {
+  public ConcatWsBinaryFunction() {
     super();
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-      byte[][] values = new byte[operands.length][];
-      int i = 0;
-      int length = 0;
-      for (IExpression operand : operands) {
-        byte[] value = operand.getValue(byte[].class);
-        values[i++] = value;
+
+    byte[] separator = operands[0].getValue(byte[].class);
+    if (separator == null)
+      return null;
+
+    boolean notFirstValue = false;
+
+    try {
+      ByteArrayOutputStream output = new ByteArrayOutputStream();
+      for (int i = 1; i < operands.length; i++) {
+        byte[] value = operands[i].getValue(byte[].class);
+
         if (value != null) {
-          length += value.length;
+          if (notFirstValue) {
+            output.write(separator);
+          }
+          notFirstValue = true;
+          output.write(value);
         }
       }
 
-      if (length == 0)
+      if (output.size() == 0)
         return null;
-      
-      final byte[] result = new byte[length];
-      int index = 0;
-      for (byte[] value : values) {
-        if (value != null) {
-          System.arraycopy(value, 0, result, index, value.length);
-          index += value.length;
-        }
-      }
-      return result;
+
+      return output.toByteArray();
+    } catch (IOException e) {
+      throw new ExpressionException(e.getMessage());
+    }
   }
 }

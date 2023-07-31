@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 
 /**
- * String or Binary concatenation operator '<code>||</code>'
+ * String or binary concatenation operator '<code>||</code>'
  */
 @FunctionPlugin
 public class ConcatFunction extends Function {
