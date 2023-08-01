@@ -16,11 +16,11 @@ under the License.
 ////
 = CONTAINS
 
-Returns true if string contains pattern.
+Returns true if expr1 contains expr2. Both expressions must be string or binary expressions.
 
 == Syntax
 ----
-CONTAINS( string, substring )
+CONTAINS( expr1, expr2 )
 ----
 
 == Usage

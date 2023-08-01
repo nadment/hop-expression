@@ -36,6 +36,7 @@ import java.time.ZonedDateTime;
  * @see AddHoursFunction
  * @see AddMinutesFunction
  * @see AddSecondsFunction
+ * @see AddNanosecondsFunction
  */
 @FunctionPlugin
 public class DateAddFunction extends Function {

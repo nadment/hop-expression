@@ -38,7 +38,7 @@ import java.time.temporal.IsoFields;
 /**
  * Extracts the specified date or time part from a date, time, or timestamp.
  * 
- * Date part: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
+ * Time unit: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
