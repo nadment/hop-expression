@@ -16,32 +16,41 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Hex;
 
 
 /**
- * Converts a string value to a hexadecimal string.
+ * The function returns TRUE if the first value ends with second value. Both values must be data
+ * type of binary.
  */
-@FunctionPlugin
-public class HexEncodeFunction extends Function {
+public class EndsWithBinaryFunction extends EndsWithFunction {
 
-  public HexEncodeFunction() {
-    super("HEX_ENCODE", ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
-        Category.STRING, "/docs/hex_encode.html");
+  public static final EndsWithBinaryFunction INSTANCE = new EndsWithBinaryFunction();
+  
+  public EndsWithBinaryFunction() {
+    super();
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
-    String value = operands[0].getValue(String.class);
-    if (value == null) {
+  public Object eval(final IExpression[] operands) {
+    byte[] value = operands[0].getValue(byte[].class);
+    if (value == null)
       return null;
+    byte[] suffix = operands[1].getValue(byte[].class);
+    if (suffix == null)
+      return null;
+
+    int offset = value.length - suffix.length;
+
+    if (offset < 0) {
+      return Boolean.FALSE;
+    } else {
+      for (int i = 0; i < suffix.length; i++) {
+        if (value[offset + i] != suffix[i]) {
+          return Boolean.FALSE;
+        }
+      }
     }
-    return Hex.encodeToString(value.getBytes());
+    return Boolean.TRUE;
   }
 }

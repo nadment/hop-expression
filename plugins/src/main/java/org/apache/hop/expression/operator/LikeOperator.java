@@ -102,13 +102,13 @@ public class LikeOperator extends Operator {
       // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(FunctionRegistry.getFunction("STARTSWITH"), value, Literal.of(search));
+        return new Call(StartsWithStringFunction.INSTANCE, value, Literal.of(search));
       }
 
       // Optimize the common case of FIELD LIKE '%foo' to ENDSWITH(FIELD,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(FunctionRegistry.getFunction("ENDSWITH"), value, Literal.of(search));
+        return new Call(EndsWithStringFunction.INSTANCE, value, Literal.of(search));
       }
 
       // Optimize FIELD LIKE 'Hello' to FIELD='Hello'
@@ -122,7 +122,7 @@ public class LikeOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String input = operands[0].getValue(String.class);
     if (input == null) {
       return null;
@@ -131,7 +131,6 @@ public class LikeOperator extends Operator {
     if (pattern == null) {
       return null;
     }
-
     String escape = null;
     if (operands.length == 3) {
       escape = operands[2].getValue(String.class);

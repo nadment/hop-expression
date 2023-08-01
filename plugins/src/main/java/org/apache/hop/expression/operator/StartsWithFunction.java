@@ -16,17 +16,21 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
- * The function returns TRUE if the first value starts with second value. Both values must be data
+ * The function returns TRUE if the first value starts with second value. Both values must be the same data
  * type string or binary.
  *
  * @see {@link EndsWithFunction}
@@ -41,31 +45,18 @@ public class StartsWithFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
-    Object v1 = operands[1].getValue();
-    if (v1 == null)
-      return null;
+    Type type = call.getOperand(0).getType();
 
-    if (v0 instanceof byte[]) {
-      byte[] data = BinaryType.coerce(v0);
-      byte[] prefix = BinaryType.coerce(v1);
-      if (prefix.length > data.length) {
-        return Boolean.TRUE;
-      } else {
-        int end = prefix.length;
-        for (int i = 0; i < end; i++) {
-          if (data[i] != prefix[i]) {
-            return Boolean.FALSE;
-          }
-        }
-      }
-      return Boolean.TRUE;
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(StartsWithStringFunction.INSTANCE, call.getOperands());
     }
 
-    return StringType.coerce(v0).startsWith(StringType.coerce(v1));
-  }
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(StartsWithBinaryFunction.INSTANCE, call.getOperands());
+    }
+
+    return call;
+  }  
 }

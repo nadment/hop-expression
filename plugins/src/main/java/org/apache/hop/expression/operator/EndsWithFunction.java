@@ -16,14 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 
 /**
@@ -42,32 +46,18 @@ public class EndsWithFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
-    Object v1 = operands[1].getValue();
-    if (v1 == null)
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    if (v0 instanceof byte[]) {
-      byte[] data = BinaryType.coerce(v0);
-      byte[] suffix = BinaryType.coerce(v1);
-      int startOffset = data.length - suffix.length;
+    Type type = call.getOperand(0).getType();
 
-      if (startOffset < 0) {
-        return Boolean.FALSE;
-      } else {
-        for (int i = 0; i < suffix.length; i++) {
-          if (data[startOffset + i] != suffix[i]) {
-            return Boolean.FALSE;
-          }
-        }
-      }
-      return Boolean.TRUE;
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(EndsWithStringFunction.INSTANCE, call.getOperands());
     }
 
-    return StringType.coerce(v0).endsWith(StringType.coerce(v1));
-  }
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(EndsWithBinaryFunction.INSTANCE, call.getOperands());
+    }
 
+    return call;
+  }  
 }

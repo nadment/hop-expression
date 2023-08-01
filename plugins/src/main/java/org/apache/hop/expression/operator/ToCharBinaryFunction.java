@@ -16,8 +16,10 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.util.Hex;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -42,10 +44,13 @@ public class ToCharBinaryFunction extends ToCharFunction {
     if (pattern.equals("BASE64")) {
       return Base64.getEncoder().encodeToString(bytes);
     }
+    if (pattern.equals("HEX")) {
+      return Hex.encodeToString(bytes);
+    }
     if (pattern.equals("UTF8")) {
       return new String(bytes, StandardCharsets.UTF_8);
     }
-
-    return Hex.encodeHexString(bytes);
+    
+    throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, pattern);
   }
 }

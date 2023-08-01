@@ -21,7 +21,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -35,7 +34,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class RTrimFunction extends Function {
-
+  public static final RTrimFunction INSTANCE = new RTrimFunction();
+  
   public RTrimFunction() {
     super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, Category.STRING,
         "/docs/rtrim.html");
@@ -68,9 +68,8 @@ public class RTrimFunction extends Function {
     }
 
     // Repetitions of functions that do not have any effects on the result
-    Function trimFunction = FunctionRegistry.getFunction("TRIM");
-    if (operand.is(trimFunction)) {
-      return new Call(trimFunction, operand.asCall().getOperand(0));
+    if (operand.is(TrimFunction.INSTANCE)) {
+      return new Call(TrimFunction.INSTANCE, operand.asCall().getOperand(0));
     }
 
     return call;

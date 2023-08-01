@@ -75,7 +75,6 @@
     </partitioning>
     <addcloneflag>N</addcloneflag>
     <addclonenum>Y</addclonenum>
-    <cloneflagfield/>
     <clonenumfield>ROWNUM</clonenumfield>
     <nrclonefield>bb</nrclonefield>
     <nrcloneinfield>N</nrcloneinfield>
@@ -543,6 +542,62 @@ Day(FIELD_DATE)%2 = 1</condition>
     <GUI>
       <xloc>528</xloc>
       <yloc>96</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Metadata Input</name>
+    <type>MetadataInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <jsonFieldName>json</jsonFieldName>
+    <nameFieldName>name</nameFieldName>
+    <providerFieldName>provider</providerFieldName>
+    <typeClassFieldName>typeClass</typeClassFieldName>
+    <typeDescriptionFieldName>typeDescription</typeDescriptionFieldName>
+    <typeKeyFieldName>typeKey</typeKeyFieldName>
+    <typeNameFieldName>typeName</typeNameFieldName>
+    <attributes/>
+    <GUI>
+      <xloc>448</xloc>
+      <yloc>304</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Metadata structure of stream</name>
+    <type>TransformMetaStructure</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <commentsFieldname>Comments</commentsFieldname>
+    <fieldFieldname>Fieldname</fieldFieldname>
+    <includeCommentsField>Y</includeCommentsField>
+    <includeFieldnameField>Y</includeFieldnameField>
+    <includeLengthField>Y</includeLengthField>
+    <includeOriginField>Y</includeOriginField>
+    <includePositionField>Y</includePositionField>
+    <includePrecisionField>Y</includePrecisionField>
+    <includeTypeField>Y</includeTypeField>
+    <lengthFieldname>Length</lengthFieldname>
+    <originFieldname>Origin</originFieldname>
+    <outputRowcount>N</outputRowcount>
+    <positionFieldname>Position</positionFieldname>
+    <precisionFieldname>Precision</precisionFieldname>
+    <typeFieldname>Type</typeFieldname>
+    <attributes/>
+    <GUI>
+      <xloc>752</xloc>
+      <yloc>320</yloc>
     </GUI>
   </transform>
   <transform_error_handling>

@@ -16,10 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Characters;
@@ -33,9 +36,24 @@ import org.apache.hop.expression.util.Characters;
 @FunctionPlugin
 public class InitCapFunction extends Function {
 
+  public static final InitCapFunction INSTANCE = new InitCapFunction();
+  
   public InitCapFunction() {
     super("INITCAP", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
         "/docs/initcap.html");
+  }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression operand = call.getOperand(0);
+
+    // Repetitions of functions that do not have any effects on the result
+    if (operand.is(call.getOperator()) || operand.is(UpperFunction.INSTANCE)
+        || operand.is(LowerFunction.INSTANCE)) {
+      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+    }
+
+    return call;
   }
 
   @Override

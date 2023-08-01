@@ -99,6 +99,11 @@ public class Hex {
     return out;
   }
 
+  public static String encodeToString(final byte[] data) {
+    return new String(encode(data, true));
+  }
+  
+  
   /**
    * Converts an array of bytes into an array of characters representing the hexadecimal values of
    * each byte in order.

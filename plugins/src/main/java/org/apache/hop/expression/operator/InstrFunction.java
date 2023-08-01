@@ -57,7 +57,7 @@ public class InstrFunction extends Function {
 
       if (start == 0) {
         throw new IllegalArgumentException(
-            ExpressionError.ARGUMENT_OUT_OF_RANGE.message(occurence));
+            ExpressionError.ARGUMENT_OUT_OF_RANGE.message(start));
       }
 
       start -= 1;

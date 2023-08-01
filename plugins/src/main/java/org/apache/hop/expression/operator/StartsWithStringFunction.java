@@ -16,32 +16,30 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.util.Hex;
-
 
 /**
- * Converts a string value to a hexadecimal string.
+ * The function returns TRUE if the first value starts with second value. Both values must be data
+ * type string or binary.
  */
-@FunctionPlugin
-public class HexEncodeFunction extends Function {
+public class StartsWithStringFunction extends StartsWithFunction {
 
-  public HexEncodeFunction() {
-    super("HEX_ENCODE", ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
-        Category.STRING, "/docs/hex_encode.html");
+  public static final StartsWithStringFunction INSTANCE = new StartsWithStringFunction();
+  
+  public StartsWithStringFunction() {
+    super();
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
+
     String value = operands[0].getValue(String.class);
-    if (value == null) {
+    if (value == null)
       return null;
-    }
-    return Hex.encodeToString(value.getBytes());
+    String prefix = operands[1].getValue(String.class);
+    if (prefix == null)
+      return null;
+
+    return value.startsWith(prefix);
   }
 }
