@@ -16,56 +16,43 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+import org.apache.hop.expression.type.Type;
 
 /**
- * The function repeats a string as many times as specified.
+ * The function repeats a string or binary as many times as specified.
  */
 @FunctionPlugin
 public class RepeatFunction extends Function {
 
   public RepeatFunction() {
-    super("REPEAT", ReturnTypes.STRING, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+    super("REPEAT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
         Category.STRING, "/docs/repeat.html");
   }
-
+  
   @Override
-    public Object eval(final IExpression[] operands) {
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
-    Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
-      return null;
-    int count = v1.intValue();
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    if (v0 instanceof byte[]) {
-      byte[] bytes = (byte[]) v0;
-      try {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        for (int i = 0; i < count; i++) {
-          buffer.write(bytes);
-        }
-        return buffer.toByteArray();
-      } catch (IOException e) {
-        return null;
-      }
+    Type type = call.getOperand(0).getType();
+
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(RepeatStringFunction.INSTANCE, call.getOperands());
     }
 
-    String value = StringType.coerce(v0);
-    StringBuilder builder = new StringBuilder(value.length() * count);
-    while (count-- > 0) {
-      builder.append(value);
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(RepeatBinaryFunction.INSTANCE, call.getOperands());
     }
-    return builder.toString();
+
+    return call;
   }
 }

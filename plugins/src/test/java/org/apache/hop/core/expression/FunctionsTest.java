@@ -1693,7 +1693,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Repeat()");
 
     returnType("Repeat('ABCD',3)", StringType.STRING);
-   // TODO: returnType("Repeat(BINARY '1234',3)", BinaryType.BINARY);
+    returnType("Repeat(BINARY '1234',3)", BinaryType.BINARY);
   }
 
   @Test
