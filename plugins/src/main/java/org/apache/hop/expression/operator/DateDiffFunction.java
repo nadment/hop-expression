@@ -47,7 +47,7 @@ public class DateDiffFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 

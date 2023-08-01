@@ -35,7 +35,7 @@ public class TranslateFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
     if (string == null)
       return null;

@@ -46,7 +46,7 @@ public class EqualNullFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
     Object v1 = operands[1].getValue();
 

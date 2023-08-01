@@ -31,7 +31,7 @@ public class StartsWithBinaryFunction extends StartsWithFunction {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
 
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)

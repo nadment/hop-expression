@@ -37,7 +37,7 @@ public class Atan2Function extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     BigDecimal value0 = operands[0].getValue(BigDecimal.class);
     if (value0 == null)
       return null;

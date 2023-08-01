@@ -74,7 +74,7 @@ public class ToBinaryFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     final String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

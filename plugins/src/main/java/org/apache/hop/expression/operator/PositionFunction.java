@@ -37,7 +37,7 @@ public class PositionFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     String substr = operands[0].getValue(String.class);
     String str = operands[1].getValue(String.class);
 

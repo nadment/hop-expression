@@ -48,7 +48,7 @@ public class RandomFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
 
     Random random = operands[1].getValue(Random.class);
     return BigDecimal.valueOf(random.nextDouble());

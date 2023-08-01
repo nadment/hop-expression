@@ -175,7 +175,7 @@ public class BoolOrOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     Boolean right = operands[1].getValue(Boolean.class);
 

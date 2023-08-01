@@ -48,7 +48,7 @@ public class JsonValueFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     JsonNode jsonNode = operands[0].getValue(JsonNode.class);
     if (jsonNode == null)
       return null;

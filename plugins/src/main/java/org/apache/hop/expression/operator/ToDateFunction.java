@@ -71,7 +71,7 @@ public class ToDateFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

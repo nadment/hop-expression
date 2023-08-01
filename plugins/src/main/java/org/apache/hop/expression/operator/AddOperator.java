@@ -68,7 +68,7 @@ public class AddOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     BigDecimal left = operands[0].getValue(BigDecimal.class);
     if (left == null)
       return null;

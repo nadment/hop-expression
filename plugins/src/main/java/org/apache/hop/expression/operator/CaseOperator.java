@@ -45,7 +45,7 @@ public class CaseOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     int index = 0;
     IExpression valueExpression = operands[0];
     Tuple whenTuple = (Tuple) operands[1];

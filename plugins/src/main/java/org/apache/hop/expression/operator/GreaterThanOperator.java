@@ -41,7 +41,7 @@ public class GreaterThanOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
     if (left == null) {
       return null;

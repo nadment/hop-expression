@@ -181,7 +181,7 @@ public class BoolAndOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     if (left == Boolean.FALSE) {
       return left;

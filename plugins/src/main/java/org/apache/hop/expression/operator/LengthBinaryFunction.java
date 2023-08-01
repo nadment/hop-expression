@@ -29,7 +29,7 @@ public class LengthBinaryFunction extends LengthFunction {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return value;

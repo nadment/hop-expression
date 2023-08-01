@@ -34,7 +34,7 @@ public class TypeOfFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     return operands[0].getType().getName().name();
   }
 }

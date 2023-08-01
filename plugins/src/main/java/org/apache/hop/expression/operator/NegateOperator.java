@@ -57,7 +57,7 @@ public class NegateOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;

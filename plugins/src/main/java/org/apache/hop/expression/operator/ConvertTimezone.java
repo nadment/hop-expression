@@ -39,7 +39,7 @@ public class ConvertTimezone extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     if (operands.length == 3) {
       ZoneId zoneSource = DateTimeFormat.toZoneId(operands[0].getValue(String.class));
       ZoneId zoneTarget = DateTimeFormat.toZoneId(operands[1].getValue(String.class));

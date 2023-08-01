@@ -36,7 +36,7 @@ public class SubstringFunction extends Function {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
     int length = string.length();
     int start = operands[1].getValue(Long.class).intValue();

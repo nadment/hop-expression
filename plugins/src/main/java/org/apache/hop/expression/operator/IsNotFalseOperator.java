@@ -34,7 +34,7 @@ public class IsNotFalseOperator extends Operator {
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
+    public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
 
     // NULL is always NOT FALSE
