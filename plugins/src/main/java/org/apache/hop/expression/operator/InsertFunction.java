@@ -16,20 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
-import org.apache.hop.expression.type.TypeFamily;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.apache.hop.expression.type.Type;
 
 /**
  * Replaces a substring of the specified length, starting at the specified position, with a new
@@ -38,65 +36,22 @@ import java.io.IOException;
 @FunctionPlugin
 public class InsertFunction extends Function {
 
-  public static final IOperandTypeChecker OTC = OperandTypes.or(
-      OperandTypes.family(TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.NUMERIC,
-          TypeFamily.STRING),
-      OperandTypes.family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.NUMERIC,
-          TypeFamily.BINARY));
-
   public InsertFunction() {
-    super("INSERT", ReturnTypes.ARG0, OTC, Category.STRING, "/docs/insert.html");
+    super("INSERT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC_NUMERIC_STRING.or(OperandTypes.BINARY_NUMERIC_NUMERIC_BINARY), Category.STRING, "/docs/insert.html");
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
-    Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
-      return null;
-    Long v2 = operands[2].getValue(Long.class);
-    if (v2 == null)
-      return null;
-    Object v3 = operands[3].getValue();
-    if (v3 == null)
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    int position = v1.intValue();
-    int length = v2.intValue();
+    Type type = call.getOperand(0).getType();
 
-    if (v0 instanceof byte[]) {
-      byte[] bytes = (byte[]) v0;
-      int start = Math.min(Math.max(0, position - 1), bytes.length);
-      length = Math.min(length, bytes.length);
-      if (length < 0) {
-        throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(length));
-      }
-
-      try {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        buffer.write(bytes, 0, start);
-        buffer.write(BinaryType.coerce(v3));
-        buffer.write(bytes, start + length, bytes.length - start - length);
-        return buffer.toByteArray();
-      } catch (IOException e) {
-        throw new ExpressionException(ExpressionError.INTERNAL_ERROR, e);
-      }
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(InsertStringFunction.INSTANCE, call.getOperands());
+    }
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(InsertBinaryFunction.INSTANCE, call.getOperands());
     }
 
-    String str = StringType.coerce(v0);
-    int start = Math.min(Math.max(0, position - 1), str.length());
-
-    length = Math.min(length, str.length());
-    if (length < 0)
-      throw new ExpressionException(ExpressionError.ARGUMENT_OUT_OF_RANGE, length);
-
-    StringBuilder builder = new StringBuilder();
-    builder.append(str.substring(0, start));
-    builder.append(StringType.coerce(v3));
-    builder.append(str.substring(start + length));
-    return builder.toString();
+    return call;
   }
-
 }

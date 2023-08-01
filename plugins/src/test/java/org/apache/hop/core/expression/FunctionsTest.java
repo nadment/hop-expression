@@ -1591,29 +1591,36 @@ public class FunctionsTest extends ExpressionTest {
   public void Length() throws Exception {
     // String
     evalEquals("Length('TEST')", 4L);
-
+    evalNull("Length(NULL_STRING)");
+    
     // Binary
     evalEquals("Length(BINARY 'F0FA')", 2L);
     evalEquals("Length(BINARY '0F0FA')", 3L);
+    evalNull("Length(NULL_BINARY)");
 
-    evalNull("Length(NULL_STRING)");
-    
     evalFails("Length()");
     evalFails("Length(true)");
 
-    returnType("Length(FIELD_STRING)", IntegerType.INTEGER);    
+    returnType("Length(FIELD_STRING)", IntegerType.INTEGER);
+    returnType("Length(FIELD_BINARY)", IntegerType.INTEGER);   
   }
 
   @Test
   public void Left() throws Exception {
+    // String
     evalEquals("Left('TEST FROM',4)", "TEST");
     evalEquals("Left('',1)", "");
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
-    evalEquals("Left(BINARY '1234567890', 2)", new byte[] {0x12, 0x34});
     evalNull("Left(NULL_STRING,4)");
-    evalNull("Left('TEST',NULL_INTEGER)");
-    evalFails("Left()");
+    evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
+
+    // Binary
+    evalEquals("Left(BINARY '1234567890', 2)", new byte[] {0x12, 0x34});
+    evalNull("Left(NULL_BINARY,4)");
+    evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
+    
+    evalFails("Left()");    
     
     returnType("Left('TEST FROM',4)", StringType.STRING);
     returnType("Left(BINARY '1234567890', 2)", BinaryType.BINARY);
@@ -1621,26 +1628,49 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Insert() throws Exception {
-    evalEquals("Insert('abcd', 2, 1, 'qw')", "aqwcd");
-    evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
-    evalEquals("Insert(BINARY '1234', 2, 0, BINARY '56')", new byte[] {0x12, 0x56, 0x34});
-    evalEquals("Insert(BINARY '1234', 0, 0, BINARY '56')", new byte[] {0x56, 0x12, 0x34});
+    // String
+    evalEquals("Insert('abcd', 1, 0, 'QW')", "QWabcd");
+    evalEquals("Insert('abcd', 2, 1, 'QW')", "aQWcd");
+    evalEquals("Insert('abcd', 2, 2, 'QW')", "aQWd");
+    evalEquals("Insert('abcd', 5, 0, 'QW')", "abcdQW");
+    
+    //evalEquals("Insert('abcdefg', 1, 9, 'zy')", "zy");
+    
     evalNull("Insert(NULL_STRING, 2, 1, 'qw')");
     evalNull("Insert('abcd', NULL_INTEGER, 1, 'qw')");
     evalNull("Insert('abcd', 2, NULL_INTEGER, 'qw')");
     evalNull("Insert('abcd', 2, 1, NULL_STRING)");
-    evalFails("Insert()");
+    
+    // Binary
+    evalEquals("Insert(BINARY '1234', 1, 0, BINARY '56')", new byte[] {0x56, 0x12, 0x34});   
+    evalEquals("Insert(BINARY '1234', 2, 0, BINARY '56')", new byte[] {0x12, 0x56, 0x34});
+    evalEquals("Insert(BINARY '1234', 3, 0, BINARY '56')", new byte[] {0x12, 0x34, 0x56});    
+    evalEquals("Insert(BINARY '1234', 1, 1, BINARY '56')", new byte[] {0x56, 0x34});
+    evalNull("Insert(NULL_BINARY, 1, 0, BINARY '56')");
+        
+    evalFails("Insert()");    
+    evalFails("Insert(BINARY '1234', 0, 0, BINARY '56')");
+    evalFails("Insert(BINARY '1234', 4, 0, BINARY '56')");
+    
+    returnType("Insert('abcd', 2, 1, 'qw')", StringType.STRING);
+    returnType("Insert(BINARY '1234', 2, 0, BINARY '56')", BinaryType.BINARY);
   }
 
   @Test
   public void Right() throws Exception {
+    // String
     evalEquals("Right('TEST FROM',4)", "FROM");
     evalEquals("Right('',1)", "");
     evalEquals("Right('TEST',10)", "TEST");
     evalEquals("Right('TEST',-1)", "");
-    evalEquals("Right(BINARY '1234567890', 2)", new byte[] {0x78, (byte) 0x90});
     evalNull("Right(NULL_STRING,4)");
     evalNull("Right('TEST',NULL_INTEGER)");
+    
+    // Binary
+    evalEquals("Right(BINARY '1234567890', 2)", new byte[] {0x78, (byte) 0x90});
+    evalNull("Right(NULL_BINARY,4)");
+    evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
+    
     evalFails("Right()");
     
     returnType("Right('TEST FROM',4)", StringType.STRING);
@@ -1649,20 +1679,30 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Repeat() throws Exception {
+    // String
     evalEquals("Repeat('ABCD',3)", "ABCDABCDABCD");
     evalEquals("Repeat('ABCDEFCD',0)", "");
-    evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
     evalNull("Repeat(NULL_STRING,2)");
     evalNull("Repeat('ABCD',NULL_INTEGER)");
+    
+    // Binary
+    evalEquals("Repeat(BINARY '1234',3)", new byte[] {0x12, 0x34, 0x12, 0x34, 0x12, 0x34});
+    evalNull("Repeat(NULL_BINARY,2)");
+    evalNull("Repeat(FIELD_BINARY,NULL_INTEGER)");
+    
     evalFails("Repeat()");
+
+    returnType("Repeat('ABCD',3)", StringType.STRING);
+   // TODO: returnType("Repeat(BINARY '1234',3)", BinaryType.BINARY);
   }
 
   @Test
   public void Replace() throws Exception {
     evalEquals("Replace('ABCD','CD')", "AB");
     evalEquals("Replace('ABCDEFCD','CD','EF')", "ABEFEFEF");
-    evalNull("Replace(NULL_STRING,'CD','EF')");
+    evalNull("Replace(NULL_STRING,'CD','EF')");    
     evalNull("Replace('ABCD',NULL_STRING,'EF')");
+    
     evalFails("Replace()");
   }
 

@@ -158,6 +158,8 @@ public final class OperandTypes {
       family(TypeFamily.BINARY, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker BINARY_NUMERIC_BINARY =
       family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY_NUMERIC_NUMERIC_BINARY =
+      family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.BINARY);
 
   public static final IOperandTypeChecker BINARY_OPTIONAL_TEXT =
       sequence(OperandTypes.BINARY, OperandTypes.TEXT).optional(i -> i == 1);
@@ -210,6 +212,8 @@ public final class OperandTypes {
       family(TypeFamily.STRING, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker STRING_NUMERIC_NUMERIC =
       family(TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.NUMERIC);
+  public static final IOperandTypeChecker STRING_NUMERIC_NUMERIC_STRING =
+      family(TypeFamily.STRING, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING);
   public static final IOperandTypeChecker STRING_OPTIONAL_NUMERIC =
       family(TypeFamily.STRING, TypeFamily.NUMERIC).optional(i -> i == 1);
   public static final IOperandTypeChecker STRING_OPTIONAL_STRING =

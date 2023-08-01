@@ -30,11 +30,11 @@ public class ReverseBinaryFunction extends ReverseFunction {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    byte[] value = operands[0].getValue(byte[].class);
+    final byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return null;
 
-    byte[] result = new byte[value.length];
+    final byte[] result = new byte[value.length];
     for (int i = value.length - 1, j = 0; i >= 0; i--, j++) {
       result[j] = value[i];
     }

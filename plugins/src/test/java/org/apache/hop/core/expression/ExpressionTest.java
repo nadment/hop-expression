@@ -352,7 +352,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("HEX_ENCODE('Apache Hop')", "41706163686520486f70");
+    evalEquals("Insert('abcd', 5, 0, 'QW')", "abcdQW");
 
     //optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
    // evalNull("TRY_TO_BOOLEAN('test')");
