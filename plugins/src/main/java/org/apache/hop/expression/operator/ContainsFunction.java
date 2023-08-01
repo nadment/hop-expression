@@ -16,12 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Type;
 
 /**
  * Contains function
@@ -30,24 +36,23 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ContainsFunction extends Function {
 
   public ContainsFunction() {
-    super("CONTAINS", ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING, Category.COMPARISON,
+    super("CONTAINS", ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), Category.COMPARISON,
         "/docs/contains.html");
   }
 
   @Override
-  public Object eval(IExpression[] operands) {
-    String v0 = operands[0].getValue(String.class);
-    if (v0 == null)
-      return null;
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    String v1 = operands[1].getValue(String.class);
-    if (v1 == null)
-      return null;
+    Type type = call.getOperand(0).getType();
 
-    if (v0.contains(v1))
-      return Boolean.TRUE;
+    if (type.isSameFamily(StringType.STRING)) {
+      return new Call(ContainsStringFunction.INSTANCE, call.getOperands());
+    }
 
-    return Boolean.FALSE;
+    if (type.isSameFamily(BinaryType.BINARY)) {
+      return new Call(ContainsBinaryFunction.INSTANCE, call.getOperands());
+    }
+
+    return call;
   }
-
 }

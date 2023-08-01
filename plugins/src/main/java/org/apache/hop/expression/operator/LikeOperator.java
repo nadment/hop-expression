@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
@@ -96,7 +95,7 @@ public class LikeOperator extends Operator {
       // Try contains before starts and ends
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(FunctionRegistry.getFunction("CONTAINS"), value, Literal.of(search));
+        return new Call(ContainsStringFunction.INSTANCE, value, Literal.of(search));
       }
 
       // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')

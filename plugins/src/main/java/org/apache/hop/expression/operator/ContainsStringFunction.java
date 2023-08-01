@@ -19,36 +19,28 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 
 /**
- * The function extracts a number of characters from a string starting from left.
+ * Contains function
  */
-public class LeftBinaryFunction extends LeftFunction {
-  public static final LeftBinaryFunction INSTANCE = new LeftBinaryFunction();
-
-  public LeftBinaryFunction() {
+public class ContainsStringFunction extends ContainsFunction {
+  public static final ContainsStringFunction INSTANCE = new ContainsStringFunction();
+  
+  public ContainsStringFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
-    byte[] bytes = operands[0].getValue(byte[].class);
-    if (bytes == null)
+  public Object eval(IExpression[] operands) {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
       return null;
 
-    Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
+    String search = operands[1].getValue(String.class);
+    if (search == null)
       return null;
-    int length = v1.intValue();
-    if (length < 0) {
-      length = 0;
-    }
 
-    if (bytes.length <= length) {
-      return bytes;
-    }
+    if (value.contains(search))
+      return Boolean.TRUE;
 
-    byte[] result = new byte[length];
-    System.arraycopy(bytes, 0, result, 0, length);
-    return result;
-
+    return Boolean.FALSE;
   }
 }

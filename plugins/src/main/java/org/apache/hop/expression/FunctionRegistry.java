@@ -36,7 +36,7 @@ public class FunctionRegistry {
   private static final HashMap<String, Function> functions = new HashMap<>(256);
 
   public static boolean isFunction(final String name) {
-    return getFunction(name) != null;
+    return functions.containsKey(name);
   }
 
   public static Set<Function> getFunctions() {

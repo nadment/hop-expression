@@ -19,36 +19,38 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 
 /**
- * The function extracts a number of characters from a string starting from left.
+ * Contains function
  */
-public class LeftBinaryFunction extends LeftFunction {
-  public static final LeftBinaryFunction INSTANCE = new LeftBinaryFunction();
-
-  public LeftBinaryFunction() {
+public class ContainsBinaryFunction extends ContainsFunction {
+  public static final ContainsBinaryFunction INSTANCE = new ContainsBinaryFunction();
+  
+  public ContainsBinaryFunction() {
     super();
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
-    byte[] bytes = operands[0].getValue(byte[].class);
-    if (bytes == null)
+  public Object eval(IExpression[] operands) {
+    byte[] value = operands[0].getValue(byte[].class);
+    if (value == null)
       return null;
 
-    Long v1 = operands[1].getValue(Long.class);
-    if (v1 == null)
+    byte[] search = operands[1].getValue(byte[].class);
+    if (search == null)
       return null;
-    int length = v1.intValue();
-    if (length < 0) {
-      length = 0;
+
+    if (search.length == 0) {
+      return 0;
     }
 
-    if (bytes.length <= length) {
-      return bytes;
+    outer:
+    for (int i = 0; i < value.length - search.length + 1; i++) {
+      for (int j = 0; j < search.length; j++) {
+        if (value[i + j] != search[j]) {
+          continue outer;
+        }
+      }
+      return Boolean.TRUE;
     }
-
-    byte[] result = new byte[length];
-    System.arraycopy(bytes, 0, result, 0, length);
-    return result;
-
+    return Boolean.FALSE;    
   }
 }

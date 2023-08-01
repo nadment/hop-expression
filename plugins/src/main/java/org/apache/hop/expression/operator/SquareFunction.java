@@ -29,7 +29,8 @@ import java.math.BigDecimal;
  */
 @FunctionPlugin
 public class SquareFunction extends Function {
-
+  public static final SquareFunction INSTANCE = new SquareFunction();
+  
   public SquareFunction() {
     super("SQUARE", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/square.html");

@@ -2499,16 +2499,27 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Contains() throws Exception {
+    // String
     evalTrue("CONTAINS(FIELD_STRING,'ES')");
-    evalFalse("CONTAINS(FIELD_STRING,'YZ')");
-    
+    evalFalse("CONTAINS(FIELD_STRING,'YZ')");    
     evalNull("CONTAINS(NULL_STRING,'ES')");
     evalNull("CONTAINS(FIELD_STRING,NULL_STRING)");
     
+    // Binary
+    evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '1A2B')");
+    evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '2B3C')");
+    evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '5E6F')");
+    evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B')");
+    evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '6F6F')");
+    evalNull("CONTAINS(NULL_BINARY,BINARY '1A2B3C')");
+    evalNull("CONTAINS(BINARY '1A2B3C',NULL_BINARY)");
+    
     evalFails("CONTAINS()");
     evalFails("CONTAINS(FIELD_STRING)");
+    evalFails("CONTAINS(FIELD_BINARY)");
     
     returnType("CONTAINS(FIELD_STRING,'ES')", BooleanType.BOOLEAN);
+    returnType("CONTAINS(FIELD_BINARY,BINARY '036F')", BooleanType.BOOLEAN);
   }
 
   @Test

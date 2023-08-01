@@ -60,7 +60,7 @@ public class MultiplyOperator extends Operator {
 
     // Simplify arithmetic "A * A" to "SQUARE(A)"
     if (left.equals(right)) {
-      return new Call(FunctionRegistry.getFunction("SQUARE"), left);
+      return new Call(SquareFunction.INSTANCE, left);
     }
 
     // Pull up literal "1 * (1 * A)" to "(1 * 1) * A
