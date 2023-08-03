@@ -80,7 +80,7 @@ public class Identifier implements IExpression {
   }
 
   /**
-   * Compile a identifier.
+   * Validate a identifier in the context.
    * 
    * <ul>
    * <li>Resolve index in IRowMeta</li>

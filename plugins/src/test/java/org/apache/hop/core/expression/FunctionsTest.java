@@ -1724,6 +1724,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFalse("To_Boolean('n')");
     evalFalse("To_Boolean('0')");
     evalFalse("To_Boolean(0)");
+    evalFalse("To_Boolean(0.0000)");
 
     evalNull("To_Boolean(NULL_STRING)");
 

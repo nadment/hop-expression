@@ -137,9 +137,8 @@ public class AggregateMeta extends BaseTransformMeta<AggregateTransform, Aggrega
 
     // Add aggregates
     //
+    IRowExpressionContext context = new RowExpressionContext(variables, rowMeta);
     for (AggregateField field : aggregateFields) {
-
-      IRowExpressionContext context = new RowExpressionContext(variables, rowMeta);
       // Compile expression
       try {
         IExpression expression = Expressions.build(context, field.getExpression());

@@ -38,7 +38,6 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
@@ -48,7 +47,6 @@ import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -352,15 +350,10 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalEquals("Insert('abcd', 5, 0, 'QW')", "abcdQW");
+    //evalEquals("9223372036854775807*2", -2L);
+    //evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"));
+    evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
 
-    //optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
-   // evalNull("TRY_TO_BOOLEAN('test')");
-    //evalEquals("4 || 2", "42");
-    //evalTrue("true >= false");
-   // returnType("TRY_TO_BOOLEAN('True')", BooleanType.BOOLEAN);
-    //returnType("TRY_TO_BOOLEAN('True')", BooleanType.BOOLEAN);
-   // optimize("CONCAT('TES','T')", "'TEST'");
 
   }
 }

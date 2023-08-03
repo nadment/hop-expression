@@ -56,9 +56,7 @@ public class CompressFunction extends Function {
       compression.flush();
       compression.close();
 
-      byte[] result = output.toByteArray();
-
-      return result;
+      return output.toByteArray();
     } catch (IOException e) {
       throw new ExpressionException(ExpressionError.COMPRESSION_ERROR);
     }

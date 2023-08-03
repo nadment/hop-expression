@@ -1018,6 +1018,12 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("2*-2", -4D);
     evalEquals("100 * .5", 50D);    
     evalEquals("1.23456::Number*-2.987654", -3.68843812224);
+    
+    // Check no overflow Long.MAX_VALUE * 2
+    evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"));
+    // Check no underflow Long.MIN_VALUE * 2
+    evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
+        
     evalNull("NULL_INTEGER*1");
     evalNull("1*NULL_INTEGER");
 

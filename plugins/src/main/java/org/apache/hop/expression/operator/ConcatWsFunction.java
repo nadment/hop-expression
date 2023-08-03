@@ -28,9 +28,6 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 
 /**
  * String or binary concatenation function with separator
@@ -58,61 +55,5 @@ public class ConcatWsFunction extends Function {
     }
 
     return call;
-  }
-
-  @Override
-    public Object eval(final IExpression[] operands) {
-
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
-
-    boolean notFirstValue = false;
-
-    // Concat Binary
-    if (v0 instanceof byte[]) {
-      try {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] separator = BinaryType.coerce(v0);
-        for (int i = 1; i < operands.length; i++) {
-          byte[] value = operands[i].getValue(byte[].class);
-
-          if (value != null) {
-            if (notFirstValue) {
-              output.write(separator);
-            }
-            notFirstValue = true;
-            output.write(value);
-          }
-        }
-
-        if (output.size() == 0)
-          return null;
-
-        return output.toByteArray();
-      } catch (IOException e) {
-        // TODO: Create specific function for binary
-        throw new ExpressionException("CONCATWS ERROR");
-      }
-    }
-
-    // Concat String
-    StringBuilder builder = new StringBuilder();
-    String separator = StringType.coerce(v0);
-    for (int i = 1; i < operands.length; i++) {
-      String value = operands[i].getValue(String.class);
-      if (value != null) {
-        if (notFirstValue) {
-          builder.append(separator);
-        }
-        notFirstValue = true;
-        builder.append(value);
-      }
-    }
-
-    if (builder.length() == 0)
-      return null;
-
-    return builder.toString();
   }
 }

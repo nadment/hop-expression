@@ -259,7 +259,6 @@ public final class Call implements IExpression {
    * Validate a call.
    * 
    * @param context The context against which the expression will be validated.
-   * @param call Call
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
@@ -289,7 +288,13 @@ public final class Call implements IExpression {
     // Inference type
     this.type = operator.getReturnTypeInference().getReturnType(this);
   }
-
+  
+  /**
+   * Compile and optimize the call in the context
+   * 
+   * @param context The context against which the expression will be compiled. 
+   * @return the compiled expression
+   */
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
 
     // Compile all operands
@@ -336,7 +341,7 @@ public final class Call implements IExpression {
     return this;
   }
 
-  protected Literal evaluate() throws Exception {
+  protected Literal evaluate() {
 
     Object value = getValue();
     inferenceType();
