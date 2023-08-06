@@ -350,10 +350,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    //evalEquals("9223372036854775807*2", -2L);
-    //evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"));
-    evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
-
+    evalEquals("SQUEEZE(' T  es T ')", "T es T");
 
   }
 }
