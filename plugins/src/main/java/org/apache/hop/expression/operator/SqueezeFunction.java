@@ -16,12 +16,16 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.util.Characters;
 
 /**
  * Trims white space from the beginning and end of the string, and replaces all other white space
@@ -33,13 +37,55 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class SqueezeFunction extends Function {
 
+  public static final SqueezeFunction INSTANCE = new SqueezeFunction();
+
   public SqueezeFunction() {
     super("SQUEEZE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
         "/docs/squeeze.html");
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression operand = call.getOperand(0);
+
+    // Repetitions of functions that do not have any effects on the result
+    if (operand.is(call.getOperator())) {
+      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+    }
+
+    return call;
+  }
+
+  @Override
+  public Object eval(final IExpression[] operands) {
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return null;
+
+    char[] a = value.toCharArray();
+
+    int i = 0;
+    while (Characters.isSpace(a[i])) {
+      i++;
+    }
+    int n = 0;
+    for (; i < a.length; i++) {
+      char c = a[i];
+      if (Characters.isSpace(c)) {
+        a[n] = ' ';
+        if (a[n - 1] != ' ')
+          n++;
+      } else {
+        a[n++] = c;
+      }
+    }
+    if (Characters.isSpace(a[n-1])) {
+      n--;
+    }
+    return new String(a, 0, n);
+  }
+
+  public Object eval2(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

@@ -156,7 +156,7 @@ public class Characters {
    * @return
    */
   public static boolean isSpace(char ch) {
-    return ch == ' ' || ch == '\t' || ch == '\n';
+    return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
   }
 
   public static boolean isExponent(char ch) {

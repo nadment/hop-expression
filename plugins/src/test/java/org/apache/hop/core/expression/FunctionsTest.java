@@ -548,6 +548,9 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Unaccent(NULL_STRING)");
     evalFails("Unaccent()");
 
+    // Function repetition
+    optimize("Unaccent(Unaccent(FIELD_STRING))", "UNACCENT(FIELD_STRING)");
+    
     returnType("Unaccent('ÇĆČçćč')", StringType.STRING);
   }
 
@@ -561,6 +564,7 @@ public class FunctionsTest extends ExpressionTest {
     // Function repetition
     optimize("UPPER(UPPER(FIELD_STRING))", "UPPER(FIELD_STRING)");
     optimize("UPPER(LOWER(FIELD_STRING))", "UPPER(FIELD_STRING)");
+    optimize("UPPER(INITCAP(FIELD_STRING))", "UPPER(FIELD_STRING)");
     
     returnType("Upper('test')", StringType.STRING);
   }
@@ -573,6 +577,13 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("InitCap('ÉéÀàè]çÂâ ÊêÎÔô ÛûËÏ ïÜŸÇç ŒœÆæ')", "Ééààè]Çââ Êêîôô Ûûëï Ïüÿçç Œœææ");
     evalNull("InitCap(NULL_STRING)");
     evalFails("InitCap()");
+    
+    // Function repetition
+    optimize("INITCAP(LOWER(FIELD_STRING))", "INITCAP(FIELD_STRING)");
+    optimize("INITCAP(UPPER(FIELD_STRING))", "INITCAP(FIELD_STRING)");
+    optimize("INITCAP(INITCAP(FIELD_STRING))", "INITCAP(FIELD_STRING)");
+
+    
     returnType("InitCap('test')", StringType.STRING);
   }
 
@@ -1066,16 +1077,31 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Lower()");
     evalFails("Lower('Test','Test')");
 
-    // Alias
-    // evalEquals("LCase('TesT')", "test");
-
     // Function repetition
     optimize("LOWER(LOWER(FIELD_STRING))", "LOWER(FIELD_STRING)");
     optimize("LOWER(UPPER(FIELD_STRING))", "LOWER(FIELD_STRING)");
+    optimize("LOWER(INITCAP(FIELD_STRING))", "LOWER(FIELD_STRING)");
     
     returnType("Lower(FIELD_STRING)", StringType.STRING);
   }
 
+  @Test
+  public void Squeeze() throws Exception {
+    evalEquals("SQUEEZE('   Tes T      ')", "Tes T");
+    evalEquals("SQUEEZE(' T  es T ')", "T es T");
+    evalEquals("SQUEEZE('T\t es T ')", "T es T");
+    evalEquals("SQUEEZE('T \t es T')", "T es T");
+    evalEquals("SQUEEZE('T \t es T\n\r')", "T es T");
+    evalNull("SQUEEZE(NULL_STRING)");
+    evalFails("SQUEEZE()");
+    evalFails("SQUEEZE('Test','Test')");
+
+    // Function repetition
+    optimize("SQUEEZE(Squeeze(FIELD_STRING))", "SQUEEZE(FIELD_STRING)");
+    
+    returnType("Squeeze(FIELD_STRING)", StringType.STRING);
+  }
+  
   @Test
   public void Substring() throws Exception {
     evalEquals("Substring('TEST FROM',6)", "FROM");
