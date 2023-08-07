@@ -35,7 +35,7 @@ public class BitSetFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Long value = operands[0].getValue(Long.class);
     if (value == null)
       return null;

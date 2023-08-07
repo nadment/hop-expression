@@ -23,7 +23,7 @@ import org.apache.hop.expression.IExpression;
  */
 public class ContainsBinaryFunction extends ContainsFunction {
   public static final ContainsBinaryFunction INSTANCE = new ContainsBinaryFunction();
-  
+
   public ContainsBinaryFunction() {
     super();
   }
@@ -42,8 +42,7 @@ public class ContainsBinaryFunction extends ContainsFunction {
       return 0;
     }
 
-    outer:
-    for (int i = 0; i < value.length - search.length + 1; i++) {
+    outer: for (int i = 0; i < value.length - search.length + 1; i++) {
       for (int j = 0; j < search.length; j++) {
         if (value[i + j] != search[j]) {
           continue outer;
@@ -51,6 +50,6 @@ public class ContainsBinaryFunction extends ContainsFunction {
       }
       return Boolean.TRUE;
     }
-    return Boolean.FALSE;    
+    return Boolean.FALSE;
   }
 }

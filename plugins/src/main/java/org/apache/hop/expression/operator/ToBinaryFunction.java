@@ -66,21 +66,21 @@ public class ToBinaryFunction extends Function {
     if (format.equals("UTF-8"))
       format = "UTF8";
 
-    if ( format.equals("HEX") || format.equals("BASE64") || format.equals("UTF8") ) {
-      return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));  
+    if (format.equals("HEX") || format.equals("BASE64") || format.equals("UTF8")) {
+      return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
     }
-    
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);    
+
+    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     final String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
     final String format = operands[1].getValue(String.class);
-    
+
     if (format.equals("HEX")) {
       return Hex.decode(value);
     }
@@ -90,7 +90,7 @@ public class ToBinaryFunction extends Function {
     if (format.equals("BASE64")) {
       return Base64.getDecoder().decode(value);
     }
-    
+
     throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
   }
 }

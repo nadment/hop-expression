@@ -39,7 +39,7 @@ public class RepeatFunction extends Function {
     super("REPEAT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
         Category.STRING, "/docs/repeat.html");
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 

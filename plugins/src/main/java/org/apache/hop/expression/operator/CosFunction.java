@@ -36,7 +36,7 @@ public class CosFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;

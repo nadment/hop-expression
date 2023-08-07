@@ -47,7 +47,7 @@ public class EqualOperator extends Operator {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     // Treats NULLs as unknown values
     // NULL is not equal ( = ) to anything—not even to another NULL.
     Object left = operands[0].getValue();

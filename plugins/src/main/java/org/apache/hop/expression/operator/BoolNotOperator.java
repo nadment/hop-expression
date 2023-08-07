@@ -119,7 +119,7 @@ public class BoolNotOperator extends Operator {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null) {
       return null;

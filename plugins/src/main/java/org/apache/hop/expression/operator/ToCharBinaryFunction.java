@@ -34,7 +34,7 @@ public class ToCharBinaryFunction extends ToCharFunction {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     byte[] bytes = operands[0].getValue(byte[].class);
     if (bytes == null) {
       return null;
@@ -50,7 +50,7 @@ public class ToCharBinaryFunction extends ToCharFunction {
     if (pattern.equals("UTF8")) {
       return new String(bytes, StandardCharsets.UTF_8);
     }
-    
+
     throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, pattern);
   }
 }

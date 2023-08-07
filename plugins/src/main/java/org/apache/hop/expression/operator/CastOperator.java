@@ -47,7 +47,7 @@ public class CastOperator extends Operator {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     Type type = operands[1].getValue(Type.class);
 

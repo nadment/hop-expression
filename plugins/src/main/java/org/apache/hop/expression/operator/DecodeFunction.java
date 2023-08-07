@@ -37,7 +37,7 @@ public class DecodeFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
 
     int index = -1;

@@ -36,7 +36,7 @@ public class JaroWinklerFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String v0 = operands[0].getValue(String.class);
     if (v0 == null)
       return null;

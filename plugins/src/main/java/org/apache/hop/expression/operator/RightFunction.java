@@ -30,7 +30,8 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 
 /**
- * The function extracts a number of characters from a string or bytes from binary starting from right.
+ * The function extracts a number of characters from a string or bytes from binary starting from
+ * right.
  * 
  * @See {@link LeftFunction}
  */

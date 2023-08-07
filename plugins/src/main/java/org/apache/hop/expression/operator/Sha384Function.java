@@ -40,7 +40,7 @@ public class Sha384Function extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null) {
       return null;

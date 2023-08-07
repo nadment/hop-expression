@@ -45,7 +45,7 @@ public class RegexpCountFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
 
     long count = 0L;
 

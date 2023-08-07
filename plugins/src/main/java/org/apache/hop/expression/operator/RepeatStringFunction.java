@@ -24,13 +24,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class RepeatStringFunction extends RepeatFunction {
   public static final RepeatStringFunction INSTANCE = new RepeatStringFunction();
-  
+
   public RepeatStringFunction() {
     super();
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

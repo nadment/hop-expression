@@ -30,14 +30,14 @@ import java.math.BigDecimal;
 @FunctionPlugin
 public class SquareFunction extends Function {
   public static final SquareFunction INSTANCE = new SquareFunction();
-  
+
   public SquareFunction() {
     super("SQUARE", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/square.html");
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;

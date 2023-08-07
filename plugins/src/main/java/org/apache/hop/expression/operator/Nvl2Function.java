@@ -36,7 +36,7 @@ public class Nvl2Function extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object condition = operands[0].getValue();
 
     if (condition == null) {

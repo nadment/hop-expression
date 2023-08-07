@@ -38,7 +38,7 @@ public class LeastFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object result = null;
     for (IExpression operand : operands) {
       Object value = operand.getValue();

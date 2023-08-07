@@ -48,7 +48,7 @@ public class StrtokFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null)
       return null;

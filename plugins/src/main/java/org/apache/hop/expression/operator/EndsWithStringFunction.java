@@ -26,7 +26,7 @@ import org.apache.hop.expression.IExpression;
 public class EndsWithStringFunction extends EndsWithFunction {
 
   public static final EndsWithStringFunction INSTANCE = new EndsWithStringFunction();
-  
+
   public EndsWithStringFunction() {
     super();
   }

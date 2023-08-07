@@ -44,7 +44,7 @@ public class BitAndFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Long left = operands[0].getValue(Long.class);
     if (left == null)
       return null;

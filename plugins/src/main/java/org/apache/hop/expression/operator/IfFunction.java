@@ -85,7 +85,7 @@ public class IfFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
     if (value == null)
       value = Boolean.FALSE;

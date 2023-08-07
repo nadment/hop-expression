@@ -32,7 +32,7 @@ public class TryToDateFunction extends ToDateFunction {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

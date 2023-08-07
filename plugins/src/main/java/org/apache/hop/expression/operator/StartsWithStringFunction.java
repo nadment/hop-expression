@@ -25,7 +25,7 @@ import org.apache.hop.expression.IExpression;
 public class StartsWithStringFunction extends StartsWithFunction {
 
   public static final StartsWithStringFunction INSTANCE = new StartsWithStringFunction();
-  
+
   public StartsWithStringFunction() {
     super();
   }

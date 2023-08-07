@@ -47,7 +47,7 @@ public class BetweenOperator extends Operator {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     Object start = operands[1].getValue();
     Object end = operands[2].getValue();

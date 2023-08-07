@@ -59,5 +59,5 @@ public class EndsWithFunction extends Function {
     }
 
     return call;
-  }  
+  }
 }

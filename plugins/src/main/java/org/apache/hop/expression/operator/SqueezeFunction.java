@@ -79,7 +79,7 @@ public class SqueezeFunction extends Function {
         a[n++] = c;
       }
     }
-    if (Characters.isSpace(a[n-1])) {
+    if (Characters.isSpace(a[n - 1])) {
       n--;
     }
     return new String(a, 0, n);

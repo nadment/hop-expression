@@ -38,7 +38,7 @@ public class TimestampFromPartsFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Long v0 = operands[0].getValue(Long.class);
     if (v0 == null)
       return null;

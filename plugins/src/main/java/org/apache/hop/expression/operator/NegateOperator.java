@@ -57,7 +57,7 @@ public class NegateOperator extends Operator {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
     if (v0 == null)
       return null;
@@ -66,7 +66,7 @@ public class NegateOperator extends Operator {
       Long value = (Long) v0;
       if (value == Long.MIN_VALUE) {
         throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
-      }      
+      }
       return Long.valueOf(-value);
     }
 

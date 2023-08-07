@@ -36,13 +36,13 @@ import java.util.Locale;
 public class UpperFunction extends Function {
 
   public static final UpperFunction INSTANCE = new UpperFunction();
-  
+
   public UpperFunction() {
     super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING, "/docs/upper.html");
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -52,7 +52,7 @@ public class UpperFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
-    
+
     // Repetitions of functions that do not have any effects on the result
     if (operand.is(call.getOperator()) || operand.is(LowerFunction.INSTANCE)
         || operand.is(InitCapFunction.INSTANCE)) {

@@ -31,28 +31,28 @@ public class ConcatBinaryFunction extends ConcatFunction {
 
   @Override
   public Object eval(final IExpression[] operands) {
-      byte[][] values = new byte[operands.length][];
-      int i = 0;
-      int length = 0;
-      for (IExpression operand : operands) {
-        byte[] value = operand.getValue(byte[].class);
-        values[i++] = value;
-        if (value != null) {
-          length += value.length;
-        }
+    byte[][] values = new byte[operands.length][];
+    int i = 0;
+    int length = 0;
+    for (IExpression operand : operands) {
+      byte[] value = operand.getValue(byte[].class);
+      values[i++] = value;
+      if (value != null) {
+        length += value.length;
       }
+    }
 
-      if (length == 0)
-        return null;
-      
-      final byte[] result = new byte[length];
-      int index = 0;
-      for (byte[] value : values) {
-        if (value != null) {
-          System.arraycopy(value, 0, result, index, value.length);
-          index += value.length;
-        }
+    if (length == 0)
+      return null;
+
+    final byte[] result = new byte[length];
+    int index = 0;
+    for (byte[] value : values) {
+      if (value != null) {
+        System.arraycopy(value, 0, result, index, value.length);
+        index += value.length;
       }
-      return result;
+    }
+    return result;
   }
 }

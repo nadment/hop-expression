@@ -35,7 +35,7 @@ public class TryToBinaryFunction extends ToBinaryFunction {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     final String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
@@ -54,8 +54,8 @@ public class TryToBinaryFunction extends ToBinaryFunction {
       }
     } catch (RuntimeException e) {
       return null;
-    }    
-    
+    }
+
     throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
   }
 }

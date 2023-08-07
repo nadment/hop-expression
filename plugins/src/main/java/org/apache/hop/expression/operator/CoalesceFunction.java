@@ -43,7 +43,7 @@ public class CoalesceFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     for (IExpression operand : operands) {
       Object value = operand.getValue();
       if (value != null)

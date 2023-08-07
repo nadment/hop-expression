@@ -82,7 +82,7 @@ public class JsonObjectFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
 
     ObjectNode node = JsonNodeFactory.instance.objectNode();
 

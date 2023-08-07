@@ -26,7 +26,7 @@ import org.apache.hop.expression.IExpression;
 public class EndsWithBinaryFunction extends EndsWithFunction {
 
   public static final EndsWithBinaryFunction INSTANCE = new EndsWithBinaryFunction();
-  
+
   public EndsWithBinaryFunction() {
     super();
   }

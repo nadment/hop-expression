@@ -37,7 +37,9 @@ import org.apache.hop.expression.type.Type;
 public class InsertFunction extends Function {
 
   public InsertFunction() {
-    super("INSERT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC_NUMERIC_STRING.or(OperandTypes.BINARY_NUMERIC_NUMERIC_BINARY), Category.STRING, "/docs/insert.html");
+    super("INSERT", ReturnTypes.ARG0,
+        OperandTypes.STRING_NUMERIC_NUMERIC_STRING.or(OperandTypes.BINARY_NUMERIC_NUMERIC_BINARY),
+        Category.STRING, "/docs/insert.html");
   }
 
   @Override

@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class TrimFunction extends Function {
   public static final TrimFunction INSTANCE = new TrimFunction();
-  
+
   public TrimFunction() {
     super("TRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, Category.STRING,
         "/docs/trim.html");
@@ -62,7 +62,8 @@ public class TrimFunction extends Function {
     IExpression operand = call.getOperand(0);
 
     // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator()) || operand.is(LTrimFunction.INSTANCE) || operand.is(RTrimFunction.INSTANCE)) {
+    if (operand.is(call.getOperator()) || operand.is(LTrimFunction.INSTANCE)
+        || operand.is(RTrimFunction.INSTANCE)) {
       // TODO: Combine stripChars
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }

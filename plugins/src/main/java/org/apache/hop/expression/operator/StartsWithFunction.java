@@ -30,7 +30,8 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 
 /**
- * The function returns TRUE if the first value starts with second value. Both values must be the same data
+ * The function returns TRUE if the first value starts with second value. Both values must be the
+ * same data
  * type string or binary.
  *
  * @see {@link EndsWithFunction}
@@ -58,5 +59,5 @@ public class StartsWithFunction extends Function {
     }
 
     return call;
-  }  
+  }
 }

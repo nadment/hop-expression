@@ -37,12 +37,12 @@ import org.apache.hop.expression.util.Characters;
 public class InitCapFunction extends Function {
 
   public static final InitCapFunction INSTANCE = new InitCapFunction();
-  
+
   public InitCapFunction() {
     super("INITCAP", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
         "/docs/initcap.html");
   }
-  
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
@@ -57,7 +57,7 @@ public class InitCapFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

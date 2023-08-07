@@ -41,7 +41,7 @@ public class DateTruncFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
 
     TimeUnit unit = operands[0].getValue(TimeUnit.class);
 

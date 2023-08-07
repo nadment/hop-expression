@@ -35,7 +35,7 @@ public class IfNullFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
     if (value == null)
       return operands[1].getValue();

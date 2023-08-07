@@ -38,7 +38,7 @@ public class LogFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     BigDecimal base = operands[0].getValue(BigDecimal.class);
     if (base == null)
       return null;

@@ -39,7 +39,7 @@ public class ConcatWsStringFunction extends ConcatWsFunction {
     for (int i = 1; i < operands.length; i++) {
       String value = operands[i].getValue(String.class);
       if (value != null) {
-        if (builder.length() > 0) {        
+        if (builder.length() > 0) {
           builder.append(separator);
         }
         builder.append(value);

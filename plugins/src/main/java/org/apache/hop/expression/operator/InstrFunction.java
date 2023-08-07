@@ -37,7 +37,7 @@ public class InstrFunction extends Function {
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String str = operands[0].getValue(String.class);
     if (str == null) {
       return null;
@@ -56,8 +56,7 @@ public class InstrFunction extends Function {
       start = operands[2].getValue(Long.class).intValue();
 
       if (start == 0) {
-        throw new IllegalArgumentException(
-            ExpressionError.ARGUMENT_OUT_OF_RANGE.message(start));
+        throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(start));
       }
 
       start -= 1;

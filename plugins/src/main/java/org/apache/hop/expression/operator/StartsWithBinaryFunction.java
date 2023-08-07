@@ -25,13 +25,13 @@ import org.apache.hop.expression.IExpression;
 public class StartsWithBinaryFunction extends StartsWithFunction {
 
   static final StartsWithBinaryFunction INSTANCE = new StartsWithBinaryFunction();
-  
+
   public StartsWithBinaryFunction() {
     super();
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
 
     byte[] value = operands[0].getValue(byte[].class);
     if (value == null)

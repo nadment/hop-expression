@@ -35,14 +35,14 @@ import org.apache.hop.expression.type.ReturnTypes;
 @FunctionPlugin
 public class RTrimFunction extends Function {
   public static final RTrimFunction INSTANCE = new RTrimFunction();
-  
+
   public RTrimFunction() {
     super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, Category.STRING,
         "/docs/rtrim.html");
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;

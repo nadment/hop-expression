@@ -23,13 +23,13 @@ import org.apache.hop.expression.IExpression;
  */
 public class ContainsStringFunction extends ContainsFunction {
   public static final ContainsStringFunction INSTANCE = new ContainsStringFunction();
-  
+
   public ContainsStringFunction() {
     super();
   }
 
   @Override
-    public Object eval(final IExpression[] operands) {
+  public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
