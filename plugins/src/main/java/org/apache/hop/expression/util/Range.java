@@ -28,7 +28,7 @@ public final class Range<T extends Comparable<? super T>> {
     return new Range<>(null, value);
   }
 
-  public static <T extends Comparable<? super T>> Range<T> greatherThan(T value) {
+  public static <T extends Comparable<? super T>> Range<T> greaterThan(T value) {
     return new Range<>(value, null);
   }
 

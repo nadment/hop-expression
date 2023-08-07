@@ -215,7 +215,7 @@ public class ExpressionParser {
    * RelationalExpression IS [NOT] DISTINCT FROM RelationalExpression
    */
   private IExpression parseIs() throws ParseException {
-    IExpression expression = this.parseComparaison();
+    IExpression expression = this.parseComparison();
     if (isThenNext(Id.IS)) {
       boolean not = false;
       if (isThenNext(Id.NOT)) {
@@ -491,7 +491,7 @@ public class ExpressionParser {
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
-  private IExpression parseComparaison() throws ParseException {
+  private IExpression parseComparison() throws ParseException {
     IExpression expression = this.parseRelational();
 
     if (isThenNext(Id.EQUAL)) {
