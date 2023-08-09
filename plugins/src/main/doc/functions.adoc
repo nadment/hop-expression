@@ -107,6 +107,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/initcap.adoc[INITCAP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/insert.adoc[INSERT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/instr.adoc[INSTR]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is_number.adoc[IS_NUMBER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/isoweek.adoc[ISOWEEK]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/json_object.adoc[JSON_OBJECT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/json_value.adoc[JSON_VALUE]

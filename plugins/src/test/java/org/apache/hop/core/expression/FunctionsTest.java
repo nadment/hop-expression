@@ -1733,6 +1733,39 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
+  public void Is_Number() throws Exception {
+    // String
+    evalTrue("IS_NUMBER(' 123   ')");
+    evalTrue("IS_NUMBER('-123.45')");
+    evalTrue("IS_NUMBER('-3.45e+32')");
+    evalTrue("IS_NUMBER('+3.45E-32')");
+    evalTrue("IS_NUMBER('.6804')");
+    evalFalse("IS_NUMBER('   ')");    
+    evalFalse("IS_NUMBER('3.45E-')");
+    evalFalse("IS_NUMBER('12word')");    
+    evalFalse("IS_NUMBER(NULL_STRING)");
+    
+    // Number
+    evalTrue("IS_NUMBER(-123)");
+    evalTrue("IS_NUMBER(123.45)");
+    evalTrue("IS_NUMBER(PI())");
+    evalTrue("IS_NUMBER(FIELD_INTEGER)");
+    evalTrue("IS_NUMBER(FIELD_NUMBER)");    
+    evalFalse("IS_NUMBER(NULL_INTEGER)");
+    evalFalse("IS_NUMBER(NULL_NUMBER)");    
+    optimize("IS_NUMBER(FIELD_INTEGER)","FIELD_INTEGER IS NOT NULL");
+    
+    // Other data type
+    evalFalse("IS_NUMBER(FIELD_BOOLEAN)");
+    evalFalse("IS_NUMBER(FIELD_DATE)");
+    evalFalse("IS_NUMBER(FIELD_JSON)");
+    
+    evalFails("IS_NUMBER()");
+    
+    returnType("IS_NUMBER(FIELD_STRING)", BooleanType.BOOLEAN);
+  }
+  
+  @Test
   public void To_Boolean() throws Exception {
     evalTrue("To_Boolean('True')");
     evalTrue("To_Boolean('t')");
