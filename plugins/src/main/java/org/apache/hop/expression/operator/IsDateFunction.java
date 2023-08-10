@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -27,33 +28,46 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.DateTimeFormat;
 
 
 /**
- * Check if a string is a valid number.
+ * Check if a value is a valid date.
  */
 @FunctionPlugin
-public class IsNumberFunction extends Function {
+public class IsDateFunction extends Function {
 
-  private static final NumberFormat FORMAT = NumberFormat.of("TM");
-
-  public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        Category.COMPARISON, "/docs/is_number.html");
+  public IsDateFunction() {
+    super("IS_DATE", ReturnTypes.BOOLEAN, OperandTypes.ANY_STRING,
+        Category.COMPARISON, "/docs/is_date.html");
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-
+        
     if ( call.getOperand(0).getType().isSameFamily(TypeFamily.STRING) ) {
-      return call;
+      Object value = call.getOperand(1).getValue();
+      if (value instanceof DateTimeFormat) {
+        // format already compiled
+        return call;
+      }
+      
+      String pattern = StringType.coerce(value);      
+      int twoDigitYearStart = Integer
+          .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+
+      // Compile format to check it
+      DateTimeFormat format = DateTimeFormat.of(pattern);
+      format.setTwoDigitYearStart(twoDigitYearStart);
+      
+      return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
     }
     
-    // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.NUMERIC) ) {
+    // Optimize "IS_DATE(d)" to "d IS NOT NULL"
+    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.TEMPORAL) ) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
     
@@ -69,11 +83,15 @@ public class IsNumberFunction extends Function {
     if (value == null)
       return Boolean.FALSE;
     
+    DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
+    
     try {
-      FORMAT.parse(value);
-      return Boolean.TRUE;
-    } catch (Exception e) {
+      format.parse(value);     
+    }
+    catch(Exception e) {
       return Boolean.FALSE;
     }
+    
+    return Boolean.TRUE;
   }
 }

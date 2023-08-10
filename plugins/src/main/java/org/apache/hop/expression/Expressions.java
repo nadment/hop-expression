@@ -38,7 +38,7 @@ import java.text.ParseException;
 
 public class Expressions {
 
-  /* package */ static IExpression compile(IExpressionContext context, IExpression expression)
+  /* package */ static IExpression compile(final IExpressionContext context, IExpression expression)
       throws ExpressionException {
     IExpression original;
 
@@ -50,7 +50,7 @@ public class Expressions {
     return expression;
   }
 
-  public static IExpression build(IExpressionContext context, final String source)
+  public static IExpression build(final IExpressionContext context, final String source)
       throws ExpressionException {
     ExpressionParser parser = new ExpressionParser(source);
     try {

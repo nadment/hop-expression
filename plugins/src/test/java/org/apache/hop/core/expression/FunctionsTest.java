@@ -1745,7 +1745,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFalse("IS_NUMBER('12word')");    
     evalFalse("IS_NUMBER(NULL_STRING)");
     
-    // Number
+    // Number or Integer
     evalTrue("IS_NUMBER(-123)");
     evalTrue("IS_NUMBER(123.45)");
     evalTrue("IS_NUMBER(PI())");
@@ -1758,11 +1758,39 @@ public class FunctionsTest extends ExpressionTest {
     // Other data type
     evalFalse("IS_NUMBER(FIELD_BOOLEAN)");
     evalFalse("IS_NUMBER(FIELD_DATE)");
+    evalFalse("IS_NUMBER(FIELD_BINARY)");
     evalFalse("IS_NUMBER(FIELD_JSON)");
     
     evalFails("IS_NUMBER()");
     
     returnType("IS_NUMBER(FIELD_STRING)", BooleanType.BOOLEAN);
+  }
+  
+  @Test
+  public void Is_Date() throws Exception {
+    
+    // String
+    evalTrue("IS_DATE('2023','YYYY')");
+    evalTrue("IS_DATE('2023-04-25','YYYY-MM-DD')");
+    evalTrue("IS_DATE('01/05/2023','DD/MM/YYYY')");    
+    evalFalse("IS_DATE('2023-02-31','YYYY-MM-DD')");
+    evalFalse("IS_DATE('2023-02-31','YYYY.MM.DD')");
+    
+    // Date or Timestamp
+    evalTrue("IS_DATE(FIELD_DATE,'YYYY-MM-DD')");
+    evalTrue("IS_DATE(FIELD_TIMESTAMP,'YYYY-MM-DD HH24:MI:SS')");
+    evalFalse("IS_DATE(NULL_DATE,'YYYY-MM-DD')");
+    evalFalse("IS_DATE(NULL_TIMESTAMP,'YYYY-MM-DD HH24:MI:SS')");
+    optimize("IS_DATE(FIELD_DATE,'YYYY-MM-DD')","FIELD_DATE IS NOT NULL");
+    optimize("IS_DATE(NULL_TIMESTAMP,'YYYY-MM-DD HH24:MI:SS')","NULL_TIMESTAMP IS NOT NULL");
+    
+    // Other data type
+    evalFalse("IS_DATE(FIELD_BOOLEAN,'YYYY-MM-DD')");
+    evalFalse("IS_DATE(FIELD_NUMBER,'YYYY-MM-DD')");
+    evalFalse("IS_DATE(FIELD_BINARY,'YYYY-MM-DD')");
+    evalFalse("IS_DATE(FIELD_JSON,'YYYY-MM-DD')");
+    
+    returnType("IS_DATE(FIELD_STRING,'YYYY-MM-DD')", BooleanType.BOOLEAN);
   }
   
   @Test

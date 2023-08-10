@@ -103,6 +103,7 @@ public final class OperandTypes {
       family(TypeFamily.ANY, TypeFamily.ANY, TypeFamily.ANY);
   public static final IOperandTypeChecker OPTIONAL_ANY =
       family(TypeFamily.ANY).optional(i -> i == 0);
+  public static final IOperandTypeChecker ANY_STRING = family(TypeFamily.ANY, TypeFamily.STRING);
   public static final IOperandTypeChecker ANY_SAME_SAME =
       ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
