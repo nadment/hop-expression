@@ -1577,17 +1577,25 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Greatest() throws Exception {
-    evalEquals("Greatest(5,2,NULL_INTEGER,9,4)", 9L);
+    evalEquals("Greatest(5,2,9,4)", 9L);
+    evalEquals("Greatest(-5,2.1,9,4)", 9L);
     evalEquals("Greatest('B','A','C')", "C");
     evalEquals("Greatest(BINARY '12', BINARY '1F',BINARY '0A')", new byte[] {0x1F});
     evalEquals("Greatest(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
         LocalDate.of(2021, 12, 6));
     evalTrue("Greatest(false,true,false)");
     evalFalse("Greatest(false,false,false)");
+    
+    // Ignore nulls
+    evalEquals("Greatest(NULL_STRING, 'B','A','C')", "C");
+    
+    // Null only if all values are null
+    evalNull("Greatest(NULL_INTEGER, NULL_NUMBER)");
 
     // Data type mixed
     evalFails("Greatest(123,'str',123)");
-
+    
+    returnType("Greatest(FIELD_BOOLEAN, true)", BooleanType.BOOLEAN);
     returnType("Greatest(FIELD_STRING,'st','bf')", StringType.STRING);
     returnType("Greatest(123,FIELD_INTEGER,789)", IntegerType.INTEGER);
     returnType("Greatest(FIELD_INTEGER,FIELD_NUMBER,789)", NumberType.NUMBER);
@@ -1596,17 +1604,25 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Least() throws Exception {
-    evalEquals("Least(5,2,NULL_INTEGER,9,4)", 2L);
+    evalEquals("Least(5,2,9,4)", 2L);
+    evalEquals("Least(-5,2.1,9,4)", -5L);
     evalEquals("Least('B','A','C')", "A");
     evalEquals("Least(BINARY '12',BINARY '1F',BINARY '0A')", new byte[] {0x0A});
     evalEquals("Least(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')",
         LocalDate.of(1990, 12, 8));
     evalFalse("Least(false,true,false)");
     evalTrue("Least(true,true,true)");
+ 
+    // Ignore nulls
+    evalEquals("Least(NULL_STRING, 'B','A','C')", "A");
+    
+    // Null only if all values are null
+    evalNull("Least(NULL_INTEGER, NULL_NUMBER)");
 
     // Data type mixed
-    evalFails("Least(123,'str',123)");
+    evalFails("Least(123,'str',123)");    
     
+    returnType("Least(FIELD_BOOLEAN, true)", BooleanType.BOOLEAN);
     returnType("Least(FIELD_STRING,'st','bf')", StringType.STRING);
     returnType("Least(123,FIELD_INTEGER,789)", IntegerType.INTEGER);
     returnType("Least(FIELD_INTEGER,FIELD_NUMBER,789)", NumberType.NUMBER);

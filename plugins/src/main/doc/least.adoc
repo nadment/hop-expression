@@ -16,11 +16,15 @@ under the License.
 ////
 = LEAST
 
-Returns the smallest value of all arguments, skipping null values.
+Returns the smallest value of all arguments, ignore null values.
 		
 == Syntax
 ----
 LEAST( expression1 [, expressionN... ] )
 ----
+
+== Usage
+
+* Returns NULL only if all arguments are NULL. 
 
 See also xref:greatest.adoc[GREATEST]
