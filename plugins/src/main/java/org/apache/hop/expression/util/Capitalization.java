@@ -56,7 +56,7 @@ public enum Capitalization {
    * @param str the string to apply this strategy to
    * @return the resultant string
    */
-  public String apply(String str) {
+  public String apply(final String str) {
     if (str == null || str.isEmpty()) {
       return str;
     }

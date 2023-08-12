@@ -28,7 +28,7 @@ public class Regexp {
   private Regexp() {}
 
   /** Translates a LIKE pattern to Java regexp pattern, with optional escape string. */
-  public static String toRegexLike(String pattern, CharSequence escapeStr)
+  public static String toRegexLike(final String pattern, final CharSequence escapeStr)
       throws ExpressionException {
     final char escapeChar;
     if (escapeStr != null) {
@@ -45,7 +45,7 @@ public class Regexp {
   }
 
   /** Translates a LIKE pattern to Java regex pattern. */
-  public static String toRegexLike(String pattern, char escapeChar) throws ExpressionException {
+  public static String toRegexLike(final String pattern, final char escapeChar) throws ExpressionException {
     int i;
     final int len = pattern.length();
     final StringBuilder javaPattern = new StringBuilder(len + len);
@@ -111,7 +111,7 @@ public class Regexp {
   }
 
   /** Translates a SIMILAR TO pattern to Java regex pattern. */
-  public static String toSimilarTo(String pattern, char escapeChar) throws ExpressionException {
+  public static String toSimilarTo(final String pattern, final char escapeChar) throws ExpressionException {
     final int len = pattern.length();
     final StringBuilder javaPattern = new StringBuilder(len + len);
     for (int i = 0; i < len; i++) {
