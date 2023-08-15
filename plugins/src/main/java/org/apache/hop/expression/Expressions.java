@@ -24,6 +24,7 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.exception.ParseExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -34,7 +35,6 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
-import java.text.ParseException;
 
 public class Expressions {
 
@@ -50,9 +50,11 @@ public class Expressions {
     return expression;
   }
 
-  public static IExpression build(final IExpressionContext context, final String source)
+  public static IExpression build(final IExpressionContext context, String source)
       throws ExpressionException {
-    ExpressionParser parser = new ExpressionParser(source);
+    
+    ExpressionParser parser = new ExpressionParser(context.resolve(source));
+
     try {
       IExpression expression = parser.parse();
 
@@ -61,27 +63,28 @@ public class Expressions {
 
       expression.validate(context);
       return compile(context, expression);
-    } catch (ParseException e) {
-      throw createException(source, e.getErrorOffset(), e);
+    } catch (ExpressionException e) {
+      throw e;
     } catch (IllegalArgumentException e) {
-      throw createException(source, parser.getPosition(), e);
+      //throw createException(parser.getSource(), parser.getPosition(), e);
+      throw new ParseExpressionException(parser.getPosition(), ExpressionError.SYNTAX_ERROR, e.getMessage());
     }
   }
 
-  protected static ExpressionException createException(String source, int offset, Exception e) {
-    int line = 1;
-    int column = 1;
-    for (int index = 0; index < offset; index++) {
-      char c = source.charAt(index);
-      if (c == '\n' || c == '\r') {
-        line++;
-        column = 1;
-      } else
-        column++;
-    }
-    return new ExpressionException(ExpressionError.SYNTAX_ERROR, offset + 1, line, column,
-        e.getMessage());
-  }
+//  protected static ParseExpressionException createException(String source, int offset, Exception e) {
+//    int line = 1;
+//    int column = 1;
+//    for (int index = 0; index < offset; index++) {
+//      char c = source.charAt(index);
+//      if (c == '\n' || c == '\r') {
+//        line++;
+//        column = 1;
+//      } else
+//        column++;
+//    }
+//    return new ExpressionException(ExpressionError.SYNTAX_ERROR, offset + 1, line, column,
+//        e.getMessage());
+//  }
 
   private Expressions() {
     // Utility class
@@ -117,13 +120,13 @@ public class Expressions {
       throw new IllegalArgumentException("Name must not be null");
     }
     if (type == null) {
-      throw new IllegalArgumentException("DataName must not be null");
+      throw new IllegalArgumentException("TypeName must not be null");
     }
 
     switch (type) {
       case BOOLEAN:
         return new ValueMetaBoolean(name);
-      case INTEGER: // Max 2.147.483.647
+      case INTEGER:
         return new ValueMetaInteger(name, 9, 0);
       case NUMBER:
         return new ValueMetaBigNumber(name, -1, -1);
@@ -146,7 +149,7 @@ public class Expressions {
       throw new IllegalArgumentException("Name must not be null");
     }
     if (type == null) {
-      throw new IllegalArgumentException("DataType must not be null");
+      throw new IllegalArgumentException("Type must not be null");
     }
     switch (type.getName()) {
       case BOOLEAN:
@@ -158,7 +161,7 @@ public class Expressions {
       case STRING:
         return new ValueMetaString(name, type.getPrecision(), type.getScale());
       case DATE:
-        return new ValueMetaDate(name, -1, -1);
+        return new ValueMetaDate(name);
       case JSON:
         return new ValueMetaJson(name);
       case UNKNOWN:

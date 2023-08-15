@@ -15,7 +15,7 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.exception.ParseExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -31,7 +31,6 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
 import java.util.ArrayList;
@@ -69,26 +68,15 @@ public class ExpressionParser {
 
   private List<Token> tokens = new ArrayList<>();
 
-  protected static ExpressionException createException(String source, int offset, Exception e) {
-    int line = 1;
-    int column = 1;
-    for (int index = 0; index < offset; index++) {
-      char c = source.charAt(index);
-      if (c == '\n' || c == '\r') {
-        line++;
-        column = 1;
-      } else
-        column++;
-    }
-    return new ExpressionException(ExpressionError.SYNTAX_ERROR, offset + 1, line, column,
-        e.getMessage());
-  }
-
-  protected ExpressionParser(final String source) {
+  public ExpressionParser(final String source) {
     super();
     this.source = source;
   }
 
+  protected String getSource() {
+    return source;
+  }
+  
   protected int getPosition() {
 
     if (index > 0 && index < tokens.size())
@@ -101,10 +89,9 @@ public class ExpressionParser {
     return index < tokens.size();
   }
 
-  protected Token next() throws ParseException {
+  protected Token next() throws ParseExpressionException {
     if (!hasNext()) {
-      throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
-          this.getPosition());
+      throw new ParseExpressionException(getPosition(), ExpressionError.UNEXPECTED_END_OF_EXPRESSION);
     }
 
     return tokens.get(index++);
@@ -130,10 +117,10 @@ public class ExpressionParser {
   }
 
   /** Parse the expression */
-  public IExpression parse() throws ParseException {
+  public IExpression parse() throws ParseExpressionException {
 
     if (source == null)
-      return Literal.NULL;
+      throw new ParseExpressionException(0, ExpressionError.NULL_SOURCE_ERROR);
 
     // Tokenize
     for (Token token = tokenize(); token != null; token = tokenize()) {
@@ -153,8 +140,7 @@ public class ExpressionParser {
 
     if (hasNext()) {
       Token token = next();
-      throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(token.text()),
-          token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.UNEXPECTED_CHARACTER, token.text());
     }
 
     return expression;
@@ -166,7 +152,7 @@ public class ExpressionParser {
    * <p>
    * LogicalAndExpression ( OR LogicalAndExpression )*
    */
-  private IExpression parseLogicalOr() throws ParseException {
+  private IExpression parseLogicalOr() throws ParseExpressionException {
     IExpression expression = this.parseLogicalAnd();
     while (isThenNext(Id.OR)) {
       expression = new Call(Operators.BOOLOR, expression, parseLogicalAnd());
@@ -183,7 +169,7 @@ public class ExpressionParser {
    *
    * @return Expression
    */
-  private IExpression parseLogicalAnd() throws ParseException {
+  private IExpression parseLogicalAnd() throws ParseExpressionException {
     IExpression expression = this.parseLogicalNot();
     while (isThenNext(Id.AND)) {
       expression = new Call(Operators.BOOLAND, expression, parseLogicalNot());
@@ -198,7 +184,7 @@ public class ExpressionParser {
    * <p>
    * [NOT] IdentityExpression
    */
-  private IExpression parseLogicalNot() throws ParseException {
+  private IExpression parseLogicalNot() throws ParseExpressionException {
 
     if (isThenNext(Id.NOT)) {
       return new Call(Operators.BOOLNOT, parseLogicalNot());
@@ -214,7 +200,7 @@ public class ExpressionParser {
    * RelationalExpression IS [NOT] TRUE|FALSE|NULL
    * RelationalExpression IS [NOT] DISTINCT FROM RelationalExpression
    */
-  private IExpression parseIs() throws ParseException {
+  private IExpression parseIs() throws ParseExpressionException {
     IExpression expression = this.parseComparison();
     if (isThenNext(Id.IS)) {
       boolean not = false;
@@ -235,12 +221,10 @@ public class ExpressionParser {
             return new Call((not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
                 expression, parseLogicalNot());
           }
-          throw new ParseException(
-              ExpressionError.INVALID_OPERATOR.message(Operators.IS_DISTINCT_FROM),
-              this.getPosition());
+          throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR,
+              Operators.IS_DISTINCT_FROM);
         default:
-          throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.IS),
-              this.getPosition());
+          throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, Id.IS);
       }
     }
     return expression;
@@ -252,7 +236,7 @@ public class ExpressionParser {
    * <p>
    * AdditiveExpression ( [NOT] | InClause | BetweenClause | LikeClause AdditiveExpression)
    */
-  private IExpression parseRelational() throws ParseException {
+  private IExpression parseRelational() throws ParseExpressionException {
     IExpression expression = this.parseAdditive();
 
     // Special case NOT before operation: <exp> [NOT] LIKE|ILIKE|IN|BETWEEN|SIMILAR <primaryExp>
@@ -291,8 +275,7 @@ public class ExpressionParser {
 
       IExpression start = this.parseAdditive();
       if (isNotThenNext(Id.AND)) {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.BETWEEN),
-            this.getPosition());
+        throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, Id.BETWEEN);
       }
       IExpression end = this.parseAdditive();
 
@@ -303,8 +286,8 @@ public class ExpressionParser {
       if (isThenNext(Id.TO)) {
         expression = new Call(Operators.SIMILAR_TO, expression, parseAdditive());
       } else
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Operators.SIMILAR_TO),
-            this.getPosition());
+        throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR,
+            Operators.SIMILAR_TO);
     }
 
     if (not) {
@@ -319,7 +302,7 @@ public class ExpressionParser {
    *
    * @return Expression
    */
-  private IExpression parseFactor() throws ParseException {
+  private IExpression parseFactor() throws ParseExpressionException {
     IExpression expression = this.parseBitwiseNot();
 
     while (hasNext()) {
@@ -337,7 +320,7 @@ public class ExpressionParser {
   }
 
   /** ( UnaryExpression)* */
-  private IExpression parseBitwiseNot() throws ParseException {
+  private IExpression parseBitwiseNot() throws ParseExpressionException {
     if (isThenNext(Id.BITWISE_NOT)) {
       return new Call(Operators.BITNOT, this.parseUnary());
     }
@@ -345,7 +328,7 @@ public class ExpressionParser {
   }
 
   /** UnaryExpression ( & UnaryExpression)* */
-  private IExpression parseBitwiseAnd() throws ParseException {
+  private IExpression parseBitwiseAnd() throws ParseExpressionException {
     IExpression expression = this.parseFactor();
     if (isThenNext(Id.BITWISE_AND)) {
       return new Call(Operators.BITAND, expression, this.parseFactor());
@@ -354,7 +337,7 @@ public class ExpressionParser {
   }
 
   /** BitwiseXorExpression ( | BitwiseXorExpression)* */
-  private IExpression parseBitwiseOr() throws ParseException {
+  private IExpression parseBitwiseOr() throws ParseExpressionException {
     IExpression expression = this.parseBitwiseXor();
     if (isThenNext(Id.BITWISE_OR)) {
       return new Call(Operators.BITOR, expression, this.parseBitwiseXor());
@@ -363,7 +346,7 @@ public class ExpressionParser {
   }
 
   /** BitwiseAndExpression ( ^ BitwiseAndExpression)* */
-  private IExpression parseBitwiseXor() throws ParseException {
+  private IExpression parseBitwiseXor() throws ParseExpressionException {
     IExpression expression = this.parseBitwiseAnd();
     if (isThenNext(Id.BITWISE_XOR)) {
       return new Call(Operators.BITXOR, expression, this.parseBitwiseAnd());
@@ -372,7 +355,7 @@ public class ExpressionParser {
   }
 
   /** (('+' | '-') PrimaryExpression ) */
-  private IExpression parseUnary() throws ParseException {
+  private IExpression parseUnary() throws ParseExpressionException {
 
     if (isThenNext(Id.MINUS)) {
       return new Call(Operators.NEGATIVE, this.parsePrimary());
@@ -390,13 +373,13 @@ public class ExpressionParser {
   }
 
   /** Literal Json */
-  private Literal parseLiteralJson(Token token) throws ParseException {
+  private Literal parseLiteralJson(Token token) throws ParseExpressionException {
     try {
       ObjectMapper objectMapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return Literal.of(objectMapper.readTree(token.text()));
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.INVALID_JSON.message(token.text()), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.INVALID_JSON, token.text());
     }
   }
 
@@ -404,7 +387,7 @@ public class ExpressionParser {
    * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone>)
    *
    */
-  private IExpression parsePrimary() throws ParseException {
+  private IExpression parsePrimary() throws ParseExpressionException {
     IExpression expression = this.parseTerm();
     if (isThenNext(Id.CAST)) {
       Literal type = parseLiteralDataType(next());
@@ -414,13 +397,13 @@ public class ExpressionParser {
       if (isThenNext(Id.TIME) && isThenNext(Id.ZONE)) {
         return new Call(Operators.AT_TIME_ZONE, expression, this.parseTerm());
       }
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.AT), this.getPosition());
+      throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, Id.AT);
     }
     return expression;
   }
 
   /** Term = Literal | Identifier | Function | '(' Expression ')' */
-  private IExpression parseTerm() throws ParseException {
+  private IExpression parseTerm() throws ParseExpressionException {
     Token token = next();
     switch (token.id()) {
       case TRUE:
@@ -481,17 +464,15 @@ public class ExpressionParser {
         if (token.is(Id.RPARENTHESIS)) {
           return expression;
         }
-        throw new ParseException(ExpressionError.UNBALANCE_PARENTHESIS.message(),
-            this.getPosition());
+        throw new ParseExpressionException(getPosition(), ExpressionError.UNBALANCE_PARENTHESIS);
       default:
         // Syntax error
     }
-    throw new ParseException(ExpressionError.UNEXPECTED_END_OF_EXPRESSION.message(),
-        this.getPosition());
+    throw new ParseExpressionException(getPosition(), ExpressionError.UNEXPECTED_END_OF_EXPRESSION);
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
-  private IExpression parseComparison() throws ParseException {
+  private IExpression parseComparison() throws ParseExpressionException {
     IExpression expression = this.parseRelational();
 
     if (isThenNext(Id.EQUAL)) {
@@ -519,7 +500,7 @@ public class ExpressionParser {
   /**
    * BitwiseOrExpression ( (+ | - | ||) BitwiseOrExpression )*
    **/
-  private IExpression parseAdditive() throws ParseException {
+  private IExpression parseAdditive() throws ParseExpressionException {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
       if (isThenNext(Id.PLUS)) {
@@ -546,7 +527,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  private Literal parseLiteralNumericDecimal(Token token) throws ParseException {
+  private Literal parseLiteralNumericDecimal(Token token) throws ParseExpressionException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
     try {
       return Literal.of(number.longValueExact());
@@ -555,7 +536,7 @@ public class ExpressionParser {
     }
   }
 
-  private Literal parseLiteralBinary(Token token) throws ParseException {
+  private Literal parseLiteralBinary(Token token) throws ParseExpressionException {
     try {
       String str = token.text();
       if (str.length() % 2 > 0)
@@ -569,8 +550,7 @@ public class ExpressionParser {
       // Return as BINARY
       return Literal.of(bytes);
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.UNPARSABLE_BINARY.message(token.text()),
-          token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.UNPARSABLE_BINARY, token.text());
     }
   }
 
@@ -608,26 +588,26 @@ public class ExpressionParser {
    * Parses a date literal.
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
-  private Literal parseLiteralDate(Token token) throws ParseException {
+  private Literal parseLiteralDate(Token token) throws ParseExpressionException {
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
     try {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(
-          ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.UNPARSABLE_DATE_WITH_FORMAT,
+          token.text(), format);
     }
   }
 
   /** Parses a time literal. */
-  private Literal parseLiteralTime(Token token) throws ParseException {
+  private Literal parseLiteralTime(Token token) throws ParseExpressionException {
     DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
     try {
       ZonedDateTime datetime = format.parse(token.text());
       return Literal.of(datetime);
     } catch (Exception e) {
-      throw new ParseException(
-          ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(token.text(), format), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.UNPARSABLE_DATE_WITH_FORMAT,
+          token.text(), format);
     }
   }
 
@@ -636,7 +616,7 @@ public class ExpressionParser {
    * 
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
-  private Literal parseLiteralTimestamp(Token token) throws ParseException {
+  private Literal parseLiteralTimestamp(Token token) throws ParseExpressionException {
     try {
       String pattern;
       String str = token.text();
@@ -712,11 +692,9 @@ public class ExpressionParser {
 
       return Literal.of(datetime);
     } catch (ZoneRulesException e) {
-      throw new ParseException(ExpressionError.INVALID_TIMEZONE.message(token.text()),
-          token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.INVALID_TIMEZONE, token.text());
     } catch (Exception e) {
-      throw new ParseException(ExpressionError.INVALID_TIMESTAMP.message(token.text()),
-          token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.INVALID_TIMESTAMP, token.text());
     }
   }
 
@@ -724,7 +702,7 @@ public class ExpressionParser {
    * Parses a list of expressions separated by commas.
    * (expression [,expression...] )
    */
-  private Tuple parseTuple() throws ParseException {
+  private Tuple parseTuple() throws ParseExpressionException {
 
     List<IExpression> list = new ArrayList<>();
 
@@ -745,12 +723,11 @@ public class ExpressionParser {
         break;
       } while (true);
     }
-    throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(),
-        this.getPosition());
+    throw new ParseExpressionException(getPosition(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
   }
 
   /** Case When Then Else End ) */
-  private IExpression parseCase() throws ParseException {
+  private IExpression parseCase() throws ParseExpressionException {
     IExpression valueExpression = Literal.NULL;
     IExpression elseExpression = Literal.NULL;
     List<IExpression> whenList = new ArrayList<>();
@@ -781,8 +758,7 @@ public class ExpressionParser {
       whenList.add(expression);
 
       if (isNotThenNext(Id.THEN)) {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE),
-            this.getPosition());
+        throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, Id.CASE);
       }
       thenList.add(this.parseLogicalOr());
     }
@@ -792,8 +768,7 @@ public class ExpressionParser {
     }
 
     if (isNotThenNext(Id.END)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CASE),
-          this.getPosition());
+      throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, Id.CASE);
     }
 
     return new Call(Operators.CASE, valueExpression, new Tuple(whenList), new Tuple(thenList),
@@ -803,17 +778,17 @@ public class ExpressionParser {
   /**
    * Cast function CAST(value AS type [FORMAT pattern])
    */
-  private IExpression parseFunctionCast(Token token, Function function) throws ParseException {
+  private IExpression parseFunctionCast(Token token, Function function) throws ParseExpressionException {
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     operands.add(this.parseLogicalOr());
 
     if (isNotThenNext(Id.AS)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CAST), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.INVALID_OPERATOR, Id.CAST);
     }
 
     operands.add(this.parseLiteralDataType(next()));
@@ -823,11 +798,11 @@ public class ExpressionParser {
       if (token.is(Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(Id.CAST), token.start());
+        throw new ParseExpressionException(token.start(), ExpressionError.INVALID_OPERATOR, Id.CAST);
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(function, operands);
@@ -837,25 +812,24 @@ public class ExpressionParser {
    * Parse function POSITION(<expression> IN <expression>)
    */
   private IExpression parseFunctionPosition(Token token, final Function function)
-      throws ParseException {
+      throws ParseExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     operands.add(this.parseAdditive());
 
     if (isNotThenNext(Id.IN)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
-          this.getPosition());
+      throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, function.getName());
     }
 
     operands.add(this.parseAdditive());
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     return new Call(function, operands);
@@ -866,10 +840,10 @@ public class ExpressionParser {
    * LAST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
    */
   private IExpression parseFunctionFirstLastValue(Token token, final Function function)
-      throws ParseException {
+      throws ParseExpressionException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
     List<IExpression> operands = new ArrayList<>();
     operands.add(this.parseLogicalOr());
@@ -879,20 +853,20 @@ public class ExpressionParser {
       if (isThenNext(Id.NULLS)) {
         operands.add(Literal.TRUE);
       } else
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
-            this.getPosition());
+        throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR,
+            function.getName());
     } else if (isThenNext(Id.RESPECT)) {
 
       // Default respect null, no operand
 
       if (isNotThenNext(Id.NULLS)) {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
-            this.getPosition());
+        throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR,
+            function.getName());
       }
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     return new Call(function, operands);
@@ -900,10 +874,10 @@ public class ExpressionParser {
 
   /** EXTRACT(<part> FROM <expression>) */
   private IExpression parseFunctionExtract(Token token, final Function function)
-      throws ParseException {
+      throws ParseExpressionException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -911,14 +885,13 @@ public class ExpressionParser {
     operands.add(this.parseLiteralTimeUnit(next()));
 
     if (isNotThenNext(Id.FROM)) {
-      throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
-          this.getPosition());
+      throw new ParseExpressionException(getPosition(), ExpressionError.INVALID_OPERATOR, function.getName());
     }
 
     operands.add(this.parseAdditive());
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.end());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(function, operands);
@@ -927,12 +900,12 @@ public class ExpressionParser {
   /**
    * COUNT(*) | COUNT([DISTINCT] <expression>)
    */
-  private IExpression parseFunctionCount(Token token, Function function) throws ParseException {
+  private IExpression parseFunctionCount(Token token, Function function) throws ParseExpressionException {
 
     AggregateFunction aggregator = Operators.COUNT_VALUE;
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -948,7 +921,7 @@ public class ExpressionParser {
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(aggregator, operands);
@@ -958,12 +931,12 @@ public class ExpressionParser {
    * LISTAGG([DISTINCT] <expression> [, delimiter] )
    */
   private IExpression parseFunctionListAgg(Token token, final Function function)
-      throws ParseException {
+      throws ParseExpressionException {
 
     AggregateFunction aggregator = Operators.LISTAGG_ALL;
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -981,7 +954,7 @@ public class ExpressionParser {
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(aggregator, operands);
@@ -989,10 +962,10 @@ public class ExpressionParser {
 
   /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
   private IExpression parseFunctionJsonObject(Token token, final Function function)
-      throws ParseException {
+      throws ParseExpressionException {
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     List<IExpression> operands = new ArrayList<>();
@@ -1008,8 +981,8 @@ public class ExpressionParser {
       if (isThenNext(Id.VALUE)) {
         operands.add(this.parsePrimary());
       } else {
-        throw new ParseException(ExpressionError.INVALID_OPERATOR.message(function.getName()),
-            token.start());
+        throw new ParseExpressionException(token.start(), ExpressionError.INVALID_OPERATOR,
+            function.getName());
       }
 
       comma = false;
@@ -1020,14 +993,14 @@ public class ExpressionParser {
     } while (comma);
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(function, operands);
   }
 
   /** Function */
-  private IExpression parseFunction(Token token) throws ParseException {
+  private IExpression parseFunction(Token token) throws ParseExpressionException {
 
     Function function = FunctionRegistry.getFunction(token.text());
 
@@ -1054,7 +1027,7 @@ public class ExpressionParser {
     List<IExpression> operands = new ArrayList<>();
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_LEFT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
     // No param function
@@ -1069,23 +1042,22 @@ public class ExpressionParser {
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
-      throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(), token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
     }
 
     return new Call(function, operands);
   }
 
-  private Literal parseLiteralTimeUnit(Token token) throws ParseException {
+  private Literal parseLiteralTimeUnit(Token token) throws ParseExpressionException {
     TimeUnit unit = TimeUnit.of(token.text());
 
     if (unit == null) {
-      throw new ParseException(ExpressionError.INVALID_TIMEUNIT.message(token.text()),
-          token.start());
+      throw new ParseExpressionException(token.start(), ExpressionError.INVALID_TIMEUNIT, token.text());
     }
     return Literal.of(unit);
   }
 
-  private Literal parseLiteralDataType(Token token) throws ParseException {
+  private Literal parseLiteralDataType(Token token) throws ParseExpressionException {
 
     TypeName name = TypeName.of(token.text());
     if (name != null) {
@@ -1109,8 +1081,7 @@ public class ExpressionParser {
         }
 
         if (isNotThenNext(Id.RPARENTHESIS)) {
-          throw new ParseException(ExpressionError.MISSING_RIGHT_PARENTHESIS.message(),
-              token.start());
+          throw new ParseExpressionException(token.start(), ExpressionError.MISSING_RIGHT_PARENTHESIS);
         }
       }
 
@@ -1145,11 +1116,11 @@ public class ExpressionParser {
       }
     }
 
-    throw new ParseException(ExpressionError.INVALID_DATATYPE.message(token.text()), token.start());
+    throw new ParseExpressionException(token.start(), ExpressionError.INVALID_DATATYPE, token.text());
   }
 
   /** Parses an expression string to return the individual tokens. */
-  protected Token tokenize() throws ParseException {
+  protected Token tokenize() throws ParseExpressionException {
 
     while (position < source.length()) {
       char c = source.charAt(position);
@@ -1186,8 +1157,7 @@ public class ExpressionParser {
           }
 
           if (c != '\'') {
-            throw new ParseException(ExpressionError.MISSING_END_SINGLE_QUOTED_STRING.message(),
-                start);
+            throw new ParseExpressionException(start, ExpressionError.MISSING_END_SINGLE_QUOTED_STRING);
           }
 
           return new Token(Id.LITERAL_STRING, start, position, text.toString());
@@ -1263,7 +1233,7 @@ public class ExpressionParser {
               return new Token(Id.NOT_EQUAL, start);
             }
           }
-          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(c), start);
+          throw new ParseExpressionException(start, ExpressionError.UNEXPECTED_CHARACTER, c);
         }
 
 
@@ -1277,7 +1247,7 @@ public class ExpressionParser {
               return new Token(Id.CAST, start);
             }
           }
-          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(c), start);
+          throw new ParseExpressionException(start, ExpressionError.UNEXPECTED_CHARACTER, c);
         }
 
         // possible start of '/*' or '//' comment
@@ -1304,8 +1274,8 @@ public class ExpressionParser {
                   } else
                     position++;
                 } else {
-                  throw new ParseException(ExpressionError.MISSING_END_BLOCK_COMMENT.message(),
-                      start);
+                  throw new ParseExpressionException(start,
+                      ExpressionError.MISSING_END_BLOCK_COMMENT.message());
                 }
               }
 
@@ -1360,7 +1330,7 @@ public class ExpressionParser {
               return new Token(Id.IDENTIFIER, start, position, value);
             }
           }
-          throw new ParseException(ExpressionError.UNEXPECTED_CHARACTER.message(c), start);
+          throw new ParseExpressionException(start, ExpressionError.MISSING_END_DOUBLE_QUOTED_STRING);
         }
 
         case '0':
@@ -1401,7 +1371,7 @@ public class ExpressionParser {
               String str = source.substring(start, position);
               // Empty, consecutive underscore or last char is underscore
               if (str.length() == 2 || previous == '_' || error) {
-                throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+                throw new ParseExpressionException(position, ExpressionError.INVALID_NUMBER, str);
               }
 
               return new Token(Id.LITERAL_NUMERIC_HEXA, start, position, str.replace("_", ""));
@@ -1426,7 +1396,7 @@ public class ExpressionParser {
               String str = source.substring(start, position);
               // Empty, consecutive underscore or last char is underscore
               if (str.length() == 2 || previous == '_' || error) {
-                throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+                throw new ParseExpressionException(position, ExpressionError.INVALID_NUMBER, str);
               }
 
               return new Token(Id.LITERAL_NUMERIC_BINARY, start, position, str.replace("_", ""));
@@ -1451,7 +1421,7 @@ public class ExpressionParser {
               String str = source.substring(start, position);
               // Empty, consecutive underscore or last char is underscore
               if (str.length() == 2 || previous == '_' || error) {
-                throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+                throw new ParseExpressionException(position, ExpressionError.INVALID_NUMBER, str);
               }
 
               return new Token(Id.LITERAL_NUMERIC_OCTAL, start, position, str.replace("_", ""));
@@ -1535,7 +1505,7 @@ public class ExpressionParser {
           String str = source.substring(start, position);
           // Empty, consecutive underscore or last char is underscore
           if (str.length() == 0 || previous == '_' || error) {
-            throw new ParseException(ExpressionError.INVALID_NUMBER.message(str), position);
+            throw new ParseExpressionException(position, ExpressionError.INVALID_NUMBER, str);
           }
 
           // Literal decimal number

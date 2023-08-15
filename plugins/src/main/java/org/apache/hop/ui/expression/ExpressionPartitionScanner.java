@@ -20,8 +20,8 @@ import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
-import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
 public class ExpressionPartitionScanner extends RuleBasedPartitionScanner {
@@ -34,10 +34,14 @@ public class ExpressionPartitionScanner extends RuleBasedPartitionScanner {
     IToken string = new Token(STRING);
 
     setPredicateRules(new IPredicateRule[] {
+        // Add partition rule for single comment
+        new EndOfLineRule("//", comment),
+        // Add partition rule for single comment
+        new EndOfLineRule("--", comment),
         // Add partition rule for comment
-        new EndOfLineRule("//", comment), new EndOfLineRule("--", comment),
         new MultiLineRule("/*", "*/", comment),
         // Add partition rule for strings
-        new PatternRule("'", "'", string, (char) 0, true)});
+        new SingleLineRule("'", "'", string, (char) 0, true)
+     });  
   }
 }

@@ -20,10 +20,10 @@ import org.apache.hop.expression.ExpressionError;
 
 public class ExpressionException extends RuntimeException {
 
-  private static final long serialVersionUID = 8634955627375465878L;
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Construct a new expression exception.
+   * Create a new expression exception.
    * 
    * @param error a error message
    */
@@ -32,7 +32,7 @@ public class ExpressionException extends RuntimeException {
   }
 
   /**
-   * Construct a new expression exception.
+   * Create a new expression exception.
    * 
    * @param error a error message
    */
@@ -44,8 +44,4 @@ public class ExpressionException extends RuntimeException {
     super(error.message(values));
   }
 
-  // @Override
-  // public String getMessage() {
-  // return getSuperMessage();
-  // }
 }

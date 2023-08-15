@@ -18,6 +18,7 @@ package org.apache.hop.ui.expression;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.type.TypeName;
@@ -31,25 +32,27 @@ import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.IUndoManager;
 import org.eclipse.jface.text.TextAttribute;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.hyperlink.DefaultHyperlinkPresenter;
+import org.eclipse.jface.text.hyperlink.IHyperlinkPresenter;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
+import org.eclipse.jface.text.source.DefaultAnnotationHover;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,37 +61,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
+
+  private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
   private static final int MAX_UNDO_LEVEL = 25;
 
   private IVariables variables;
   private ExpressionMode mode;
   private CompletableFuture<IRowMeta> rowMeta;
-  private static final Set<String> RESERVED_WORDS =
-      Set.of("AS", "AND", "AT", "BETWEEN", "CASE", "COLLATE", "DATE", "DISTINCT", "ELSE", "END",
-          "ESCAPE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "LIKE", "NOT", "NULLS", "OR",
-          "RESPECT", "SYMMETRY", "THEN", "TIME", "TIMESTAMP", "WHEN", "XOR", "ZONE");
-
-  private static final Set<String> RESERVED_LITERALS = Set.of("NULL", "TRUE", "FALSE");
-
-  private org.eclipse.jface.text.DefaultInformationControl.IInformationPresenter presenter;
-
+  
   public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta,
       ExpressionMode mode) {
     super();
     this.variables = variables;
     this.rowMeta = rowMeta;
     this.mode = mode;
-
-    presenter = new DefaultInformationControl.IInformationPresenter() {
-      @Override
-      public String updatePresentation(Display display, String hoverInfo,
-          TextPresentation presentation, int maxWidth, int maxHeight) {
-
-        StyleRange title = new StyleRange(0, 3, null, null, SWT.BOLD | SWT.ITALIC);
-        presentation.addStyleRange(title);
-        return hoverInfo;
-      }
-    };
   }
 
   @Override
@@ -169,15 +155,15 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     Token number = new Token(new TextAttribute(resource.getColorOrange()));
     Token extra = new Token(new TextAttribute(resource.getColor(255, 0, 255)));
     Token variable = new Token(new TextAttribute(resource.getColorBlack(), null, SWT.BOLD));
-
+    Token undefined = new Token(new TextAttribute(resource.getColorBlack()));
 
     List<IRule> rules = new ArrayList<>();
 
     // Add rule for string
-    rules.add(new PatternRule("'", "'", string, (char) 0, false));
+    rules.add(new SingleLineRule("'", "'", string, '\'', false));
 
     // Add rule for variables
-    rules.add(new PatternRule("${", "}", variable, (char) 0, false));
+    rules.add(new SingleLineRule("${", "}", variable));
 
     // Add rule for quoted identifier
     rules.add(new PatternRule("\"", "\"", identifier, (char) 0, true));
@@ -193,30 +179,30 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
     // Add case sensitive rule for identifier without double quote
     if (rowMeta != null) {
-      WordRule ruleIdentifier = new WordRule(new IndentifierDetector(), Token.UNDEFINED, false);
+      WordRule rule = new WordRule(new IndentifierDetector(), Token.UNDEFINED, false);
       try {
         for (IValueMeta vm : rowMeta.get().getValueMetaList()) {
-          ruleIdentifier.addWord(vm.getName(), identifier);
+          rule.addWord(vm.getName(), identifier);
         }
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
         // Ignore
       }
-      rules.add(ruleIdentifier);
+      rules.add(rule);
     }
 
     // Add case insensitive rule for reserved world and function name
     // If word not found use Token.WHITESPACE to signal problem
-    WordRule rule = new WordRule(new WordDetector(), Token.WHITESPACE, true);
+    WordRule rule = new WordRule(new WordDetector(), Token.UNDEFINED, true);
     for (String name : FunctionRegistry.getFunctionNames()) {
       rule.addWord(name, function);
     }
-    for (String word : RESERVED_WORDS) {
-      rule.addWord(word, keyword);
-    }
-    for (String word : RESERVED_LITERALS) {
-      rule.addWord(word, extra);
+    for (String word : ExpressionParser.getReservedWords()) {
+      if ( RESERVED_LITERALS.contains(word))
+        rule.addWord(word, extra);        
+      else
+        rule.addWord(word, keyword);
     }
     for (TypeName type : TypeName.values()) {
       rule.addWord(type.name(), extra);
@@ -228,6 +214,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules.toArray(new IRule[0]));
+    scanner.setDefaultReturnToken(undefined);
     return scanner;
   }
 
@@ -235,11 +222,13 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     Color color = GuiResource.getInstance().getColorDarkGray();
     Token token = new Token(new TextAttribute(color, null, SWT.ITALIC));
     Token variable = new Token(new TextAttribute(color, null, SWT.ITALIC | SWT.BOLD));
-
+    
     IRule[] rules = {
         // Add rule for variables
-        new PatternRule("${", "}", variable, (char) 0, false)};
-
+       new PatternRule("${", "}", variable, (char) 0, false)//,
+      // new LinkRule(link)
+    };
+    
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
@@ -253,7 +242,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
     IRule[] rules = {
         // Add rule for variables
-        new PatternRule("${", "}", variable, (char) 0, false)};
+        new PatternRule("${", "}", variable, (char) 0, false)
+    };
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
@@ -268,6 +258,16 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   @Override
   public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-    return new ExpressionEditorTextHover();
+    return new ExpressionTextHover();
+  }
+  
+  @Override
+  public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+      return new DefaultAnnotationHover();
+  }
+     
+  @Override
+  public IHyperlinkPresenter getHyperlinkPresenter(ISourceViewer sourceViewer) {
+    return new DefaultHyperlinkPresenter(GuiResource.getInstance().getColorLightBlue());
   }
 }

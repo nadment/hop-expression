@@ -74,12 +74,9 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
               "Route.Exception.UnableToFindTargetTransform", route.getTransformName()));
         }
 
-        // Resolve variable
-        String source = resolve(route.getCondition());
-
         // Compile expression
         try {
-          IExpression expression = Expressions.build(data.context, source);
+          IExpression expression = Expressions.build(data.context, route.getCondition());
           data.targets.add(new RouteTarget(route, expression, rowSet));
         } catch (ExpressionException e) {
           String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",

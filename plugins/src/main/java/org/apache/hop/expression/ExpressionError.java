@@ -22,7 +22,9 @@ import org.apache.hop.i18n.BaseMessages;
 public enum ExpressionError {
   /** Internal error {0} */
   INTERNAL_ERROR("Expression.InternalError"),
-  /** Syntax error at line {0} column {1}: {2} */
+  /** Expression source is null */  
+  NULL_SOURCE_ERROR("Expression.NullSourceError"),
+  /** Syntax error: {0} */
   SYNTAX_ERROR("Expression.SyntaxError"),
   /** {0} {1} */
   OPERATOR_ERROR("Expression.OperatorError"),
@@ -44,6 +46,8 @@ public enum ExpressionError {
   MISSING_END_BLOCK_COMMENT("Expression.MissingEndBlockComment"),
   //
   MISSING_END_SINGLE_QUOTED_STRING("Expression.MissingEndSingleQuotedString"),
+  //
+  MISSING_END_DOUBLE_QUOTED_STRING("Expression.MissingEndDoubleQuotedString"),
   //
   MISSING_RIGHT_PARENTHESIS("Expression.MissingRightParenthesis"),
   //

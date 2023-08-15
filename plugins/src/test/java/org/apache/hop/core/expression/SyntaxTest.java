@@ -34,11 +34,13 @@ public class SyntaxTest extends ExpressionTest {
 
   @Test
   public void EmptyOrNull() throws Exception {
+    // Empty source return NULL
     evalNull("");
     evalNull(" ");
     evalNull("\t");
     evalNull("\n");
-    evalNull(null);
+        
+    evalFails(null);
   }
     
   @Test

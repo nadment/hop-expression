@@ -30,9 +30,9 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.widgets.Shell;
 
-public class ExpressionEditorTextHover implements ITextHover, ITextHoverExtension {
+public class ExpressionTextHover implements ITextHover, ITextHoverExtension {
 
-  public ExpressionEditorTextHover() {
+  public ExpressionTextHover() {
     super();
   }
 

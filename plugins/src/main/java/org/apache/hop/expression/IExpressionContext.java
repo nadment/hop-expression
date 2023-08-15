@@ -42,4 +42,29 @@ public interface IExpressionContext extends IVariables {
    * @throws NullPointerException if the name is null.
    */
   // public void setAttribute(String name, Object value);
+  
+  /**
+   * Get the value of a variable with a default in case the variable is not found.
+   *
+   * @param name The name of the variable
+   * @param defaultValue The default value in case the variable could not be found
+   * @return the String value of a variable
+   */
+  String getVariable(String name, String defaultValue);
+
+  /**
+   * Get the value of a variable.
+   *
+   * @param name The name of the variable
+   * @return the String value of a variable or null in case the variable could not be found.
+   */
+  String getVariable(String name);
+  
+  /**
+   * Substitute the string using the current variable variables.
+   *
+   * @param aString The string to substitute.
+   * @return The substituted string.
+   */
+  String resolve(String aString);
 }

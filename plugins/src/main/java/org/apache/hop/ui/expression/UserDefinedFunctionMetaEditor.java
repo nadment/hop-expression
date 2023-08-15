@@ -17,6 +17,7 @@
 
 package org.apache.hop.ui.expression;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.gui.plugin.GuiPlugin;
@@ -192,6 +193,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
 
     wName.setText(Const.NVL(udf.getName(), ""));
     wDescription.setText(Const.NVL(udf.getDescription(), ""));
+    wExpression.setRowMeta(UserDefinedFunction.createRowMetaFromArguments(udf.getArguments()));
     wExpression.setText(Const.NVL(udf.getSource(), ""));
     for (int i = 0; i < udf.getArguments().size(); i++) {
       FunctionArgument argument = udf.getArguments().get(i);
@@ -200,8 +202,6 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
         wArguments.setText(Const.NVL(argument.getType().name(), ""), 2, i);
       }
     }
-
-    this.updateField();
   }
 
   @Override
@@ -214,9 +214,11 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
     for (int i = 0; i < nrFields; i++) {
       TableItem item = wArguments.getNonEmpty(i);
       String name = item.getText(1);
-      TypeName dataType = TypeName.of(item.getText(2));
-      FunctionArgument argument = new FunctionArgument(name, dataType);
-      udf.getArguments().add(argument);
+      if ( StringUtils.isNotEmpty(name) ) {
+        TypeName dataType = TypeName.of(item.getText(2));
+        FunctionArgument argument = new FunctionArgument(name, dataType);
+        udf.getArguments().add(argument);
+      }
     }
   }
 

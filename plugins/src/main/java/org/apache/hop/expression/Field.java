@@ -90,8 +90,6 @@ public final class Field extends Identifier {
     }
   }
 
-
-
   @Override
   public <T> T getValue(Class<T> clazz) {
     IRowMeta rowMeta = context.getRowMeta();
@@ -272,7 +270,4 @@ public final class Field extends Identifier {
 
     throw new ExpressionException(ExpressionError.UNRESOLVED_IDENTIFIER, getName());
   }
-
-
-
 }

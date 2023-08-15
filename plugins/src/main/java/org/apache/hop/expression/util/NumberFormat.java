@@ -16,7 +16,6 @@ package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.exception.ParseNumberException;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +164,7 @@ public abstract class NumberFormat extends BaseFormat {
    * 
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws ParseException
+   * @throws ParseNumberException
    */
   public abstract BigDecimal parse(String text) throws ParseNumberException;
 

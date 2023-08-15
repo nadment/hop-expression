@@ -82,8 +82,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       for (ExpressionField field : meta.getFields()) {
         int index = data.outputRowMeta.indexOfValue(field.getName());
 
-        // Resolve variable
-        String source = resolve(field.getExpression());
+        String source = field.getExpression();
 
         // Ignore expression if value meta type is NONE
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);

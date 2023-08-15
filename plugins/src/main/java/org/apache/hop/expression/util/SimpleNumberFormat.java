@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.Locale;
 
 /**
@@ -479,7 +478,7 @@ final class SimpleNumberFormat extends NumberFormat {
    * 
    * @param text the string to be parsed
    * @return the parsed value
-   * @throws ParseException
+   * @throws ParseNumberException
    */
   public BigDecimal parse(String text) throws ParseNumberException {
 

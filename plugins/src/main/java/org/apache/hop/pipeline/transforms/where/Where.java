@@ -69,11 +69,8 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         data.outputRowMeta = getInputRowMeta().clone();
         data.context = new RowExpressionContext(this, getInputRowMeta());
 
-        // Resolve variable
-        String expression = resolve(meta.getCondition());
-
         // Compile expression
-        data.condition = Expressions.build(data.context, expression);
+        data.condition = Expressions.build(data.context, meta.getCondition());
 
         // Cache the position of the RowSet for the output.
         List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();

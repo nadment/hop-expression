@@ -15,7 +15,6 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.util.JsonComparator;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -39,8 +38,7 @@ public class Comparison {
    * @param value the other value
    * @return 0 if both values are equal, -1 if this value is smaller, and 1 otherwise
    */
-  public static final int compare(final Object left, final Object right)
-      throws ExpressionException {
+  public static final int compare(final Object left, final Object right) {
 
     if (left == null && right == null)
       return 0;

@@ -92,5 +92,21 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   public Object getAttribute(String id) {
     return attributes.get(id);
   }
+
+//  @Override
+//  public synchronized String resolve(String string) {
+//    if (string == null || string.length() == 0) {
+//      return string;
+//    }
+//
+//    Map<String, String> map = Collections.synchronizedMap(getProperties());
+//    synchronized (map) {
+//      string = StringUtil.substituteWindows(string, map);
+//      string = StringUtil.substituteUnix(string, map);
+//      Bug with some JsonPath array
+//      // string = substituteHex(aString);
+//      return string;
+//    }
+//  }
 }
 
