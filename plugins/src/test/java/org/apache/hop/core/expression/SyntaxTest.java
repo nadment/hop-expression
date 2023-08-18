@@ -82,7 +82,7 @@ public class SyntaxTest extends ExpressionTest {
     evalTrue(" \n\tTrue");
     evalTrue(" \nTrue\n\r");
   }
-  
+   
   @Test
   public void Operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
@@ -159,14 +159,23 @@ public class SyntaxTest extends ExpressionTest {
 
   @Test
   public void SyntaxError() throws Exception {
+    
+    // Single quote for string
     evalFails("'T'||'T");
+    
+    // Double quote for identifier
     evalFails("\"T\"||\"T");
+    evalFails("\"");
+    evalFails(" \" ");    
+    evalFails(" \"");
+    evalFails("\"\"");
+    
     evalFails("9!7");
     evalFails("9+(");
     evalFails("9+*(");
     evalFails("9:");
     evalFails("*9");
-    evalFails("Left||'X'");
+    evalFails("DATE '2023-01-01'||'X'");
     evalFails("Date ");
     evalFails("Timestamp ");
     evalFails("Extract(");
@@ -185,7 +194,8 @@ public class SyntaxTest extends ExpressionTest {
     evalFails("Year(1,2)");
     evalFails("TRUE AND");
     evalFails("5 BETWEEN 4 AND");
-    evalFails("5 BETWEEN 4 OR");
+    evalFails("5 BETWEEN  AND 7");
+    evalFails("5 BETWEEN 4 OR 6");
     evalFails("case when 1=1 then 1 else 0");
     evalFails("case when 1=1 then 1 else  end ");
     evalFails("case 1 when 1  else 0 end");

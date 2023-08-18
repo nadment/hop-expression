@@ -76,7 +76,10 @@ public abstract class Type {
   public boolean isSameFamily(Type type) {
     return name.getFamily().isSameFamily(type.getFamily());
   }
-
+  
+  public boolean isCompatibleWithCoercion(Type type) {
+    return name.getFamily().isCompatibleWithCoercion(type.getFamily());
+  }
   /**
    * Gets the precision of this type.
    *

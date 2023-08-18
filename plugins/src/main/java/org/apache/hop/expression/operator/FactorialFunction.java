@@ -46,7 +46,7 @@ public class FactorialFunction extends Function {
     int n = value.intValue();
 
     if (n < 0)
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
 
     if (n > 20) {
       BigInteger result = BigInteger.ONE;

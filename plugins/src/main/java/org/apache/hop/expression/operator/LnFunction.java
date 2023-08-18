@@ -44,7 +44,7 @@ public class LnFunction extends Function {
       return null;
 
     if (value.signum() <= 0)
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
 
     return BigDecimalMath.log(value, DECIMAL128);
   }

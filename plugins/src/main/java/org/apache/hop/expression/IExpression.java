@@ -78,7 +78,7 @@ public interface IExpression {
    * @return the estimated cost
    */
   public int getCost();
-
+    
   /**
    * Evaluates the value of this expression.
    *

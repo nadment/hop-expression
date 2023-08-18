@@ -143,7 +143,7 @@ public final class NumberType extends Type {
     try {
       return new BigDecimal(StringUtils.trim(str));
     } catch (NumberFormatException e) {
-      throw new NumberFormatException(ExpressionError.INVALID_BIGNUMBER.message(str));
+      throw new NumberFormatException(ExpressionError.INVALID_NUMBER.message(str));
     }
   }
 

@@ -46,7 +46,7 @@ public class AcosFunction extends Function {
 
     double value = number.doubleValue();
     if (value < -1.0 || value > 1.0) {
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
     }
     return BigDecimal.valueOf(FastMath.acos(value));
   }

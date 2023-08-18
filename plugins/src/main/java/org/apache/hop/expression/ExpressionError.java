@@ -25,7 +25,11 @@ public enum ExpressionError {
   /** Expression source is null */  
   NULL_SOURCE_ERROR("Expression.NullSourceError"),
   /** Syntax error: {0} */
-  SYNTAX_ERROR("Expression.SyntaxError"),
+  SYNTAX_ERROR("Expression.SyntaxError"), 
+  /** Syntax error with operator {0} */
+  SYNTAX_ERROR_OPERATOR("Expression.SyntaxErrorOperator"),
+  /** Syntax error: Invalid data type ''{0}'' */
+  SYNTAX_ERROR_DATATYPE("Expression.SyntaxErrorDataType"),
   /** {0} {1} */
   OPERATOR_ERROR("Expression.OperatorError"),
   //
@@ -62,12 +66,11 @@ public enum ExpressionError {
   UNEXPECTED_DATA_TYPE("Expression.UnexpectedDataType"),
   //
   ARITHMETIC_OVERFLOW("Expression.ArithmeticOverflow"),
-  //
+  /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE("Expression.ArgumentOutOfRange"),
   //
   VARIABLE_VALUE_ERROR("Expression.InvalidVariable"),
-  //
-  INVALID_OPERATOR("Expression.InvalidOperator"),
+
   /** Invalid Boolean ''{0}'' */
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   //
@@ -91,13 +94,10 @@ public enum ExpressionError {
   //
   INVALID_BINARY_FORMAT("Expression.InvalidBinaryFormat"),
   //
-  INVALID_BIGNUMBER("Expression.InvalidBigNumber"),
-  //
   INVALID_JSON("Expression.InvalidJson"),
   //
   INVALID_JSON_PATH("Expression.InvalidJsonPath"),
-  //
-  INVALID_DATATYPE("Expression.InvalidDataType"),
+
   //
   INVALID_VALUES("Expression.InvalidValues"),
   // Invalid regexp pattern ''{0}''

@@ -1646,8 +1646,20 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Length(BINARY '0F0FA')", 3L);
     evalNull("Length(NULL_BINARY)");
 
+    // Implicit conversion from Boolean to String 
+    evalEquals("Length(true)", 4L);
+    evalEquals("Length(FALSE)", 5L);
+
+    // Implicit conversion from Integer or Number to String 
+    evalEquals("Length(5)", 1L);
+    evalEquals("Length(-5.3)", 4L);
+    
+    // TODO: Implicit conversion from Date to String ?
+    // evalEquals("Length(Date '2023-01-01')", 8L);
+        
+    // Bad data type
     evalFails("Length()");
-    evalFails("Length(true)");
+    evalFails("Length(Date '2023-01-01')");
 
     returnType("Length(FIELD_STRING)", IntegerType.INTEGER);
     returnType("Length(FIELD_BINARY)", IntegerType.INTEGER);   

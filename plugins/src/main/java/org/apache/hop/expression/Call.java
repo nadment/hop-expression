@@ -44,17 +44,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 public final class Call implements IExpression {
 
   protected Type type = UnknownType.UNKNOWN;
+  // The position of this expression in the source before compilation else 0.  
+  protected final int position;
+  
   protected final Operator operator;
   protected final IExpression[] operands;
 
   public Call(Operator operator, IExpression... operands) {
-    this.operator = requireNonNull(operator, "operator");
-    this.operands = requireNonNull(operands, "operands");
+    this(0, operator, operands);
   }
 
   public Call(Operator operator, Collection<IExpression> operands) {
+    this(0, operator, operands);
+  }
+  
+  public Call(int position, Operator operator, IExpression... operands) {
+    this.operator = requireNonNull(operator, "operator");
+    this.operands = requireNonNull(operands, "operands");
+    this.position = position;
+  }
+
+  public Call(int position, Operator operator, Collection<IExpression> operands) {
     this.operator = requireNonNull(operator, "operator");
     this.operands = requireNonNull(operands, "operands").toArray(new IExpression[0]);
+    this.position = position;
   }
 
   @Override
@@ -79,6 +92,15 @@ public final class Call implements IExpression {
     return type;
   }
 
+  /**
+   * Returns the position of this expression in the source before compilation else 0.
+   *
+   * @return position
+   */
+  public int getPosition() {
+    return position;
+  }
+  
   /**
    * Get the operator
    *
@@ -272,17 +294,17 @@ public final class Call implements IExpression {
     IOperandCountRange operandCountRange = operator.getOperandCountRange();
     if (!operandCountRange.isValid(this.getOperandCount())) {
       if (getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(ExpressionError.NOT_ENOUGH_ARGUMENT, operator);
+        throw new ExpressionException(position, ExpressionError.NOT_ENOUGH_ARGUMENT, operator);
       }
       if (getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(ExpressionError.TOO_MANY_ARGUMENT, operator);
+        throw new ExpressionException(position, ExpressionError.TOO_MANY_ARGUMENT, operator);
       }
     }
 
     // Check operand types expected
     IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
     if (!operandTypeChecker.checkOperandTypes(this)) {
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT_TYPE, operator);
+      throw new ExpressionException(position, ExpressionError.ILLEGAL_ARGUMENT_TYPE, operator);
     }
 
     // Inference type

@@ -45,7 +45,7 @@ public enum TypeName {
   /** Boolean (true or false) */
   BOOLEAN(TypeFamily.BOOLEAN, PrecScale.NO_NO, -1, Boolean.class),
 
-  /** Signed long (64-bit) integer */
+  /** Signed integer (64-bit) */
   INTEGER(TypeFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
 
   /** Unlimited precision number */

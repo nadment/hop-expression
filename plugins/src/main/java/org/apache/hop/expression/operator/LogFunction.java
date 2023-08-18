@@ -48,7 +48,7 @@ public class LogFunction extends Function {
       return null;
 
     if (value.signum() <= 0)
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(value));
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(2, value));
 
     return BigDecimalMath.log(value, DECIMAL128).divide(BigDecimalMath.log(base, DECIMAL128),
         DECIMAL128);

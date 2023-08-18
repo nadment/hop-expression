@@ -17,17 +17,17 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.type.StringType;
 import org.junit.Test;
 
 public class IdentifierTest extends ExpressionTest {
    
   @Test
   public void test() throws Exception {
-    Identifier identifier1 = new Identifier("NAME");
-    Identifier identifier2 = new Identifier("NAME");
-    Identifier identifier3 = new Identifier("NAME", StringType.STRING);
-    assertEquals("NAME", identifier1.getName());
+    Identifier identifier1 = new Identifier(0, "FIELD_STRING");
+    Identifier identifier2 = new Identifier(10, "FIELD_STRING");
+    Identifier identifier3 = new Identifier("FIELD_STRING");
+    identifier3.validate(this.createExpressionContext(true));
+    assertEquals("FIELD_STRING", identifier1.getName());
     assertEquals(identifier1, identifier2);
     assertEquals(identifier1.hashCode(), identifier2.hashCode());
     assertNotEquals(identifier1,null);    
@@ -41,11 +41,9 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("\"IDENTIFIER SPACE\"", "SPACE");
     evalEquals("\"IDENTIFIER_UNDERSCORE\"", "UNDERSCORE");
     evalEquals("\"IDENTIFIER lower\"", "lower");
+    
+    evalFails("BIDON||'X'");
 
-    evalFails("\"");
-    evalFails(" \" ");    
-    evalFails(" \"");
-    evalFails("\"\"");
   }  
   
   @Test

@@ -32,7 +32,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.exception.ParseExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
@@ -515,13 +514,7 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       Expressions.build(context, expression);
     } catch (ExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
-
-      int offset = 0;
-      if (e instanceof ParseExpressionException) {
-        offset = ((ParseExpressionException) e).getPosition();
-      }
-
-      annotationModel.addAnnotation(annotation, new Position(offset, 0));
+      annotationModel.addAnnotation(annotation, new Position(e.getPosition(), 0));
     }
   }
 }

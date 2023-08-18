@@ -45,13 +45,14 @@ public class LengthFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING)) {
-      return new Call(LengthStringFunction.INSTANCE, call.getOperand(0));
-    }
+    // Binary first
     if (type.isSameFamily(BinaryType.BINARY)) {
       return new Call(LengthBinaryFunction.INSTANCE, call.getOperand(0));
+    }    
+    if (type.isCompatibleWithCoercion(StringType.STRING)) {
+      return new Call(LengthStringFunction.INSTANCE, call.getOperand(0));
     }
-
+    
     return call;
   }
 }

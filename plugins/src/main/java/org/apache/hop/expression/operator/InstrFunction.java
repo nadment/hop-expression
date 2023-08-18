@@ -56,7 +56,7 @@ public class InstrFunction extends Function {
       start = operands[2].getValue(Long.class).intValue();
 
       if (start == 0) {
-        throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(start));
+        throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(3, start));
       }
 
       start -= 1;

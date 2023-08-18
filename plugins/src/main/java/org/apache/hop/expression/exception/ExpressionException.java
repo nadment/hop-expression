@@ -21,7 +21,13 @@ import org.apache.hop.expression.ExpressionError;
 public class ExpressionException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
-
+  
+  /**
+   * The zero-based character offset into the string being parsed at which
+   * the error was found during parsing.
+   */
+  private int position;
+  
   /**
    * Create a new expression exception.
    * 
@@ -31,6 +37,16 @@ public class ExpressionException extends RuntimeException {
     super(error);
   }
 
+  /**
+   * Construct a new expression exception.
+   * 
+   * @param error a error message
+   */
+  public ExpressionException(int position, ExpressionError error) {
+    super(error.message());
+    this.position = position;
+  }
+  
   /**
    * Create a new expression exception.
    * 
@@ -43,5 +59,18 @@ public class ExpressionException extends RuntimeException {
   public ExpressionException(ExpressionError error, Object... values) {
     super(error.message(values));
   }
-
+  
+  public ExpressionException(int position, ExpressionError error, Object... values) {
+    super(error.message(values));
+    this.position = position;
+  }
+  
+  /**
+   * Returns the position where the error was found.
+   *
+   * @return the position where the error was found
+   */
+  public int getPosition() {
+      return position;
+  }
 }

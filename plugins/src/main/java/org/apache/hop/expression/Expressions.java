@@ -24,7 +24,6 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.exception.ParseExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -67,7 +66,7 @@ public class Expressions {
       throw e;
     } catch (IllegalArgumentException e) {
       //throw createException(parser.getSource(), parser.getPosition(), e);
-      throw new ParseExpressionException(parser.getPosition(), ExpressionError.SYNTAX_ERROR, e.getMessage());
+      throw new ExpressionException(parser.getPosition(), ExpressionError.SYNTAX_ERROR, e.getMessage());
     }
   }
 

@@ -161,7 +161,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
-
     // Compile all elements
     List<IExpression> elements = new ArrayList<>(size());
     for (IExpression expression : this) {

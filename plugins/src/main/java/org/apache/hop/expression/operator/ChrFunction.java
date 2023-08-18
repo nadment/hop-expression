@@ -45,7 +45,7 @@ public class ChrFunction extends Function {
     int codePoint = value.intValue();
 
     if (!Character.isValidCodePoint(codePoint)) {
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(codePoint));
+      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, codePoint));
     }
     return new String(Character.toChars(codePoint));
   }
