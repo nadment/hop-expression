@@ -77,7 +77,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Try_Cast(123 as Nill)");
 
     // Bad format
-    // TODO: evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')");
+    evalFails("TRY_CAST('2020-01-021' AS DATE FORMAT 'OOOO-MM-DD')");
     
     optimize("TRY_CAST(FIELD_STRING AS BINARY)");
     optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)");
@@ -273,7 +273,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void NullIfZero() throws Exception {
-    //evalEquals("NULLIFZERO(0.1)", BigDecimal.valueOf(1L,1));
+    evalEquals("NULLIFZERO(0.1)", new BigDecimal("0.1"));
     evalEquals("NULLIFZERO(0.1)", 0.1);
     evalEquals("NullIfZero(1)", 1L);
     evalNull("NullIfZero(0)");
@@ -882,8 +882,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Day(DATE '2019-02-28')", 28L);
     evalEquals("Day(DATE '2019-12-28')", 28L);
     evalEquals("Day(FIELD_DATE)", 23L);
-    evalEquals("Day(FIELD_TIMESTAMP)", 28L);
-    
+    evalEquals("Day(FIELD_TIMESTAMP)", 28L);    
     evalNull("Day(NULL_DATE)");
     
     evalFails("Day()");
@@ -901,14 +900,25 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("DayOfYear(DATE '2019-01-01')", 1L);
     evalEquals("DayOfYear(DATE '2019-12-31')", 365L);
     evalEquals("DayOfYear(FIELD_DATE)", 174L);
-    evalEquals("DayOfYear(FIELD_TIMESTAMP)", 59L);
-    
+    evalEquals("DayOfYear(FIELD_TIMESTAMP)", 59L);    
     evalNull("DayOfYear(NULL_DATE)");
     evalFails("DayOfYear()");
+    evalFails("DayOfYear(123)");
     
     returnType("DayOfYear(DATE '2019-01-01')", IntegerType.INTEGER);   
   }
 
+  @Test
+  public void Julian_Day() throws Exception {
+    evalEquals("Julian_Day(DATE '2021-06-23')", 2459389L);
+    evalEquals("Julian_Day(TIMESTAMP  '2021-06-23 8:00:00' at time zone 'UTC+12')", 2459389L);
+    evalNull("Julian_Day(NULL_DATE)");
+    evalFails("Julian_Day()");
+    evalFails("Julian_Day(123)");
+    
+    returnType("Julian_Day(DATE '2019-01-01')", IntegerType.INTEGER);
+  }
+  
   @Test
   public void Week() throws Exception {
     evalEquals("Week(DATE '2015-12-31')", 53L);
@@ -916,8 +926,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Week(DATE '2015-01-02')", 1L);
     evalNull("Week(NULL_DATE)");
     
-    //evalFails("Week(NULL_BOOLEAN)");
     evalFails("Week()");
+    evalFails("Week(123)");
     
     returnType("Week(DATE '2019-01-01')", IntegerType.INTEGER);   
   }

@@ -480,7 +480,7 @@ public class ExpressionParser {
       default:
         // Syntax error        
     }  
-    throw new ExpressionException(token.start(), ExpressionError.UNEXPECTED_END_OF_EXPRESSION);
+    throw new ExpressionException(position, ExpressionError.UNEXPECTED_END_OF_EXPRESSION);
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
