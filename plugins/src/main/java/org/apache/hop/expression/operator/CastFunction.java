@@ -68,35 +68,11 @@ public class CastFunction extends Function {
   public IExpression compile(final IExpressionContext context, Call call)
       throws ExpressionException {
 
-    // Type type = call.inferenceType().getType();
-
     // Remove lossless cast
     IExpression operand = call.getOperand(0);
     if (call.getType().equals(operand.getType())) {
       return operand;
     }
-
-    // // Translate to function
-    // switch(type.getFamily()) {
-    // case BOOLEAN:
-    // return new Call(FunctionRegistry.getFunction("TO_BOOLEAN"), call.getOperand(0));
-    // case NUMERIC:
-    // //return new Call(FunctionRegistry.getFunction("TO_NUMBER"), call.getOperand(0));
-    // break;
-    // case TEMPORAL:
-    // //return new Call(FunctionRegistry.getFunction("TO_DATE"), call.getOperand(0));
-    // break;
-    // case STRING:
-    // //return new Call(FunctionRegistry.getFunction("TO_CHAR"), call.getOperand(0));
-    // break;
-    // case BINARY:
-    // //return new Call(FunctionRegistry.getFunction("TO_BINARY"), call.getOperand(0));
-    // break;
-    // case JSON:
-    // //return new Call(FunctionRegistry.getFunction("TO_JSON"), call.getOperand(0));
-    // default:
-    // break;
-    // }
 
     return call;
   }

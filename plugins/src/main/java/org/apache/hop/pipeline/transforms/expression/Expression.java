@@ -144,7 +144,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
     return true;
   }
 
-  public Object processValue(IExpression expression, IValueMeta meta) throws Exception {
+  public Object processValue(IExpression expression, IValueMeta meta) throws HopException, ExpressionException {
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
         return null;

@@ -26,7 +26,7 @@ public class ExpressionException extends RuntimeException {
    * The zero-based character offset into the string being parsed at which
    * the error was found during parsing.
    */
-  private int position;
+  private final int position;
   
   /**
    * Create a new expression exception.
@@ -35,6 +35,7 @@ public class ExpressionException extends RuntimeException {
    */
   public ExpressionException(String error) {
     super(error);
+    this.position = 0;
   }
 
   /**
@@ -53,11 +54,11 @@ public class ExpressionException extends RuntimeException {
    * @param error a error message
    */
   public ExpressionException(ExpressionError error) {
-    super(error.message());
+    this(0, error);
   }
 
   public ExpressionException(ExpressionError error, Object... values) {
-    super(error.message(values));
+    this(0, error, values);
   }
   
   public ExpressionException(int position, ExpressionError error, Object... values) {

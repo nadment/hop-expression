@@ -56,7 +56,6 @@ public class UpperFunction extends Function {
     // Repetitions of functions that do not have any effects on the result
     if (operand.is(call.getOperator()) || operand.is(LowerFunction.INSTANCE)
         || operand.is(InitCapFunction.INSTANCE)) {
-      // TODO: Combine stripChars
       return new Call(call.getOperator(), operand.asCall().getOperand(0));
     }
 

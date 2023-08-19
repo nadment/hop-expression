@@ -56,6 +56,7 @@ import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Locale;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ibm.icu.impl.Assert;
 
 public class ExpressionTest {
 
@@ -307,8 +308,9 @@ public class ExpressionTest {
     assertEquals(expected, result);
   }
 
-  protected void evalFails(final String source) {
-    assertThrows(ExpressionException.class, () -> eval(createExpressionContext(true), source));
+  protected void evalFails(final String source) throws Exception {
+    IExpressionContext context = createExpressionContext(true);
+    assertThrows(ExpressionException.class, () -> eval(context, source));
   }
 
   protected IExpression optimize(String source) throws Exception {

@@ -29,7 +29,8 @@ import org.apache.hop.expression.type.ReturnTypes;
  */
 @FunctionPlugin
 public class ToBooleanFunction extends Function {
-
+  public static final ToBooleanFunction INSTANCE = new ToBooleanFunction();
+  
   public ToBooleanFunction() {
     this("TO_BOOLEAN");
   }
