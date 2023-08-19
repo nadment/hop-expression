@@ -25,21 +25,20 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeFamily;
 
-
 /**
- * Check if a string or a numeric is a valid number.
+ * Check if a string is a valid JSON.
  */
 @FunctionPlugin
-public class IsNumberFunction extends Function {
+public class IsJsonFunction extends Function {
 
-  public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        Category.COMPARISON, "/docs/is_number.html");
+  public IsJsonFunction() {
+    super("IS_JSON", ReturnTypes.BOOLEAN, OperandTypes.ANY,
+        Category.COMPARISON, "/docs/is_json.html");
   }
 
   @Override
@@ -50,8 +49,8 @@ public class IsNumberFunction extends Function {
       return call;
     }
     
-    // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.NUMERIC) ) {
+    // Optimize "IS_JSON(json)" to "json IS NOT NULL"
+    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.JSON) ) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
     
@@ -68,7 +67,7 @@ public class IsNumberFunction extends Function {
       return Boolean.FALSE;
     
     try {
-      NumberType.convert(value);
+      JsonType.convert(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

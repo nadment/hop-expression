@@ -17,6 +17,7 @@ under the License.
 = TO_DATE, TRY_TO_DATE
 
 Converts a string into a date.
+
 == Syntax
 ----
 TO_DATE( string [, format ] )

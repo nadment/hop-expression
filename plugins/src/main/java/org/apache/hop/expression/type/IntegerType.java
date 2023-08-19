@@ -18,6 +18,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ParseNumberException;
 import java.math.BigDecimal;
 
 public final class IntegerType extends Type {
@@ -107,7 +108,7 @@ public final class IntegerType extends Type {
       Double number = Double.parseDouble(str);
       return number.longValue();
     } catch (NumberFormatException e) {
-      throw new NumberFormatException(ExpressionError.INVALID_INTEGER.message(str));
+      throw new ParseNumberException(ExpressionError.INVALID_INTEGER, str);
     }
   }
 

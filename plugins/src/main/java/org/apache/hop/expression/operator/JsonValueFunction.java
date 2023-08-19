@@ -54,6 +54,7 @@ public class JsonValueFunction extends Function {
       return null;
 
     String path = operands[1].getValue(String.class);
+    // TODO: Throw error is json path is null   
     if (path == null)
       return null;
 

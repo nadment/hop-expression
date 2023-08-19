@@ -16,62 +16,35 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
-import org.apache.hop.expression.Operators;
-import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeFamily;
-
 
 /**
- * Check if a string or a numeric is a valid number.
+ * Converts a string expression to a Json value.
  */
 @FunctionPlugin
-public class IsNumberFunction extends Function {
+public class ToJsonFunction extends Function {
 
-  public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        Category.COMPARISON, "/docs/is_number.html");
+  public ToJsonFunction() {
+    this("TO_JSON");
   }
 
-  @Override
-  public IExpression compile(final IExpressionContext context, final Call call)
-      throws ExpressionException {
-
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.STRING) ) {
-      return call;
-    }
-    
-    // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.NUMERIC) ) {
-      return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
-    }
-    
-    // Other data type are always false
-    return Literal.FALSE;
+  protected ToJsonFunction(String id) {
+    super(id, ReturnTypes.JSON, OperandTypes.STRING,
+        Category.CONVERSION, "/docs/to_json.html");
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    
-    // Return FALSE if a value is NULL. 
     if (value == null)
-      return Boolean.FALSE;
-    
-    try {
-      NumberType.convert(value);
-      return Boolean.TRUE;
-    } catch (Exception e) {
-      return Boolean.FALSE;
-    }
+      return null;
+
+    return JsonType.JSON.cast(value, null);
   }
 }

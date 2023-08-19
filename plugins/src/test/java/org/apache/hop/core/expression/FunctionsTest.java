@@ -48,7 +48,7 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
-  public void TryCast() throws Exception {
+  public void Try_Cast() throws Exception {
 
     // String to Boolean
     evalTrue("TRY_CAST('Yes' as Boolean)");
@@ -89,7 +89,7 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
-  public void TryToBinary() throws Exception {
+  public void Try_To_Binary() throws Exception {
     evalEquals("TRY_TO_BINARY(HEX_ENCODE('Apache Hop'),'HEX')", "Apache Hop".getBytes());    
     evalEquals("TRY_TO_BINARY('41706163686520486f70','HEX')", "Apache Hop".getBytes());
     evalNull("TRY_TO_BINARY('Z4','HEX')");
@@ -109,7 +109,7 @@ public class FunctionsTest extends ExpressionTest {
   }
   
   @Test
-  public void TryToBoolean() throws Exception {
+  public void Try_To_Boolean() throws Exception {
     evalTrue("TRY_TO_BOOLEAN('True')");
     evalFalse("TRY_TO_BOOLEAN('falSE')");
     evalNull("TRY_TO_BOOLEAN('test')");
@@ -118,7 +118,7 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
-  public void TryToNumber() throws Exception {
+  public void Try_To_Number() throws Exception {
     evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D);   
     
     // Return NULL if parsing failed
@@ -130,7 +130,7 @@ public class FunctionsTest extends ExpressionTest {
   }
   
   @Test
-  public void TryToDate() throws Exception {    
+  public void Try_To_Date() throws Exception {    
     evalEquals("TRY_TO_DATE('2019-02-13','YYYY-MM-DD')", LocalDate.of(2019, 2, 13));    
     
     // Return NULL if parsing failed
@@ -1799,6 +1799,17 @@ public class FunctionsTest extends ExpressionTest {
     
     returnType("IS_NUMBER(FIELD_STRING)", BooleanType.BOOLEAN);
   }
+    
+  @Test
+  public void IsJson() throws Exception {
+    evalTrue("IS_JSON('{\"name\":\"Smith\", \"age\":29}')");
+    evalTrue("IS_JSON('{name:\"Smith\", age:29}')");
+    evalFalse("IS_JSON('name:\"Smith\", age:29}')");
+    
+    evalFails("IS_JSON()");
+    
+    returnType("IS_JSON(FIELD_STRING)", BooleanType.BOOLEAN);
+  }
   
   @Test
   public void Is_Date() throws Exception {
@@ -2481,6 +2492,20 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
   }
 
+  @Test
+  public void To_Json() throws Exception {
+
+    evalEquals("To_Json('{\"name\":\"Smith\", \"age\":29}')", JsonType.convert("{\"name\":\"Smith\",\"age\":29}"));
+    
+    evalNull("To_Json(NULL_STRING)");
+    
+    evalFails("To_Json()");
+    evalFails("To_Json(BOOLEAN_FIELD)");
+    evalFails("To_Json('{\"name\":\"Smith\"; \"age\":29}')");
+    
+    returnType("To_Json('{\"name\":\"Smith\", \"age\":29}')", JsonType.JSON);
+  }
+  
   @Test
   public void Json_Value() throws Exception {
     // Json string type

@@ -18,6 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -49,7 +50,6 @@ public class RandomFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-
     Random random = operands[1].getValue(Random.class);
     return BigDecimal.valueOf(random.nextDouble());
   }
@@ -59,14 +59,15 @@ public class RandomFunction extends Function {
     if (call.getOperandCount() == 0) {
       return new Call(call.getOperator(), Literal.NULL, Literal.of(new Random()));
     }
+    
     if (call.getOperandCount() == 1) {
       try {
         Long seed = call.getOperand(0).getValue(Long.class);
         Random random = new Random();
         random.setSeed(seed);
         return new Call(call.getOperator(), call.getOperand(0), Literal.of(random));
-      } catch (ExpressionException e) {
-        // Ignore
+      } catch (Exception e) {
+        throw new ExpressionException(ExpressionError.INVALID_NUMBER, call.getOperand(0));
       }
     }
 

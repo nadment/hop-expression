@@ -17,13 +17,15 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public final class NumberType extends Type {
 
+  private static final NumberFormat FORMAT = NumberFormat.of("TM");
+  
   /**
    * Default NUMBER type with max precision.
    */
@@ -140,11 +142,7 @@ public final class NumberType extends Type {
   }
 
   public static final BigDecimal convert(final String str) {
-    try {
-      return new BigDecimal(StringUtils.trim(str));
-    } catch (NumberFormatException e) {
-      throw new NumberFormatException(ExpressionError.INVALID_NUMBER.message(str));
-    }
+    return FORMAT.parse(str);
   }
 
   public static BigDecimal convert(final byte[] bytes) {

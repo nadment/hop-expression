@@ -154,7 +154,8 @@ public class SyntaxTest extends ExpressionTest {
     
     // The cast operator has higher precedence than the unary minus (negation) operator,
     // so the statement is interpreted as -(0.0::NUMBER::BOOLEAN)
-    evalFails("-0.0::NUMBER::BOOLEAN");
+    evalFails("-0.0::NUMBER::BOOLEAN");    
+    evalFalse("(-0.0::NUMBER)::BOOLEAN");
   }
 
   @Test

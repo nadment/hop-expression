@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.exception.ConversionException;
+import org.apache.hop.expression.exception.ParseNumberException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -295,7 +296,7 @@ public class TypeTest extends ExpressionTest {
     assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce(true));
     assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce(new byte[] {0xF}));
     assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce(ZonedDateTime.now()));
-    assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce("FALSE"));
+    assertThrows(ParseNumberException.class, () -> IntegerType.coerce("FALSE"));
   }
 
   @Test
@@ -336,7 +337,7 @@ public class TypeTest extends ExpressionTest {
     assertThrows(IllegalArgumentException.class, () -> NumberType.coerce(true));
     assertThrows(IllegalArgumentException.class, () -> NumberType.coerce(new byte[] {0xF}));
     assertThrows(IllegalArgumentException.class, () -> NumberType.coerce(ZonedDateTime.now()));
-    assertThrows(IllegalArgumentException.class, () -> NumberType.coerce("FALSE"));
+    assertThrows(ParseNumberException.class, () -> NumberType.coerce("FALSE"));
   }
 
   @Test
@@ -362,6 +363,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(BigDecimal.valueOf(15), type.cast(new byte[] {0xF}));
 
     assertThrows(IllegalArgumentException.class, () -> type.cast(ZonedDateTime.now()));
+    assertThrows(ParseNumberException.class, () -> type.cast("TRUE"));
   }
 
   @Test
