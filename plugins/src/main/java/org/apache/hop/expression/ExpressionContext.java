@@ -79,7 +79,7 @@ public class ExpressionContext extends Variables implements IExpressionContext {
 
     // Set cached attributes
     ZonedDateTime now = ZonedDateTime.now();
-    this.setAttribute(Attribute.CURRENT_USER.name(),variables.getVariable("user.name"));
+    this.setAttribute(Attribute.CURRENT_USER.name(), System.getProperty("user.name"));
     this.setAttribute(Attribute.CURRENT_TIMEZONE.name(), ZoneId.systemDefault().getId());
     this.setAttribute(Attribute.CURRENT_TIMESTAMP.name(), now);
     this.setAttribute(Attribute.CURRENT_DATE.name(), now.truncatedTo(ChronoUnit.DAYS));
