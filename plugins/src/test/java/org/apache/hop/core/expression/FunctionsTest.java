@@ -368,6 +368,12 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
+  public void Current_User() throws Exception {    
+    evalEquals("Current_User()", System.getProperty("user.name"));
+    returnType("Current_User()", StringType.STRING);
+  }  
+  
+  @Test
   public void DateFromParts() throws Exception {
     evalEquals("DATE_FROM_PARTS(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
     evalEquals("DATE_FROM_PARTS(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
@@ -1811,11 +1817,13 @@ public class FunctionsTest extends ExpressionTest {
   }
     
   @Test
-  public void IsJson() throws Exception {
+  public void Is_Json() throws Exception {
     evalTrue("IS_JSON('{\"name\":\"Smith\", \"age\":29}')");
     evalTrue("IS_JSON('{name:\"Smith\", age:29}')");
+    evalTrue("IS_JSON('{id:1,coordinates:[10,20]}')");
     evalFalse("IS_JSON('name:\"Smith\", age:29}')");
-    
+    //evalFalse("IS_JSON(TRUE)");
+     
     evalFails("IS_JSON()");
     
     returnType("IS_JSON(FIELD_STRING)", BooleanType.BOOLEAN);

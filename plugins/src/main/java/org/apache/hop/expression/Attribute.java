@@ -17,6 +17,7 @@ package org.apache.hop.expression;
 import java.time.ZonedDateTime;
 
 public enum Attribute {
+  CURRENT_USER(String.class),
   //
   CURRENT_TIMEZONE(String.class),
   //
