@@ -72,24 +72,24 @@ public class LessThanOperator extends Operator {
       return new Call(Operators.GREATER_THAN, right, left);
     }
 
-    // Simplify "x < NULL" to "NULL"
+    // Simplify x<NULL → NULL
     if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
       return Literal.NULL;
     }
 
-    // Simplify "x < x" to "NULL AND x IS NULL"
+    // Simplify x<x → NULL AND x IS NULL
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
     }
 
-    // Simplify "3 < X+1" to "3-1 < X"
+    // Simplify 3<X+1 → 3-1<X
     if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
 
-    // Simplify "X+1 < 3" to "X < 3-1"
+    // Simplify X+1<3 → X<3-1
     if (left.is(Operators.ADD) && right.isConstant() && left.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(), left.asCall().getOperand(1),
           new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));

@@ -71,15 +71,15 @@ public class BoolAndOperator extends Operator {
     }
 
     // FALSE as soon as any operand is FALSE
-    // FALSE AND x => FALSE
-    // x AND FALSE => FALSE
+    // FALSE AND x → FALSE
+    // x AND FALSE → FALSE
     if (!left || !right) {
       return Literal.FALSE;
     }
 
     // Remove duplicate predicate
-    // x AND x => x
-    // x AND y AND x => x AND y
+    // x AND x → x
+    // x AND y AND x → x AND y
     Queue<IExpression> conditions = this.getChainedOperands(call, false);
 
 
@@ -135,7 +135,7 @@ public class BoolAndOperator extends Operator {
       }
     }
 
-    // Simplify X=1 AND X=2 - not satisfiable
+    // Simplify X=1 AND X=2 → not satisfiable
     for (IExpression reference : equalsLiterals.keySet()) {
       Collection<Pair<Call, Literal>> pairs = equalsLiterals.get(reference);
       Literal literal = null;
@@ -148,12 +148,12 @@ public class BoolAndOperator extends Operator {
       }
     }
 
-    // Simplify IS NULL(x) AND x < 5 - not satisfiable
+    // Simplify IS NULL(x) AND x<5 → not satisfiable
     if (!Collections.disjoint(nullTerms, strongTerms)) {
       return Literal.FALSE;
     }
 
-    // Remove not necessary IS NOT NULL expressions "IS NOT NULL(x) AND x < 5" to "x < 5"
+    // Remove not necessary IS NOT NULL expressions IS NOT NULL(x) AND x<5 → x<5
     for (IExpression operand : notNullTerms) {
       if (strongTerms.contains(operand)) {
         Iterator<IExpression> iterator = conditions.iterator();

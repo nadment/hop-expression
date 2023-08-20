@@ -44,20 +44,17 @@ public class DivOperator extends Operator {
         Category.MATHEMATICAL, "/docs/div.html");
   }
 
-  /**
-   * Simplify arithmetic divide
-   */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic "A / 1" to "A"
+    // Simplify arithmetic  A/1 → A
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);
     }
 
-    // Simplify arithmetic "(-A) / (-B)" to "A / B"
+    // Simplify arithmetic (-A)/(-B) → A/B
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
       return new Call(Operators.DIVIDE, left.asCall().getOperand(0), right.asCall().getOperand(0));
     }

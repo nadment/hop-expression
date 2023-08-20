@@ -64,12 +64,12 @@ public class NotEqualOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify "x != x" to "NULL AND x IS NULL"
+    // Simplify x!=x → NULL AND x IS NULL
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
     }
 
-    // Simplify "3 != X+1" to "3-1 != X"
+    // Simplify 3!=X+1 → 3-1!=X
     if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),

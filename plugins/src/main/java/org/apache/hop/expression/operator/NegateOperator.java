@@ -41,13 +41,13 @@ public class NegateOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
-
-    // Simplify arithmetic "-(-(A))" to "A"
+    
+    // Simplify arithmetic -(-(A)) → A
     if (operand.is(Operators.NEGATIVE)) {
       return ((Call) operand).getOperand(0);
     }
 
-    // Simplify arithmetic "-(A-B)" to "B-A"
+    // Simplify arithmetic -(A-B) → B-A
     if (operand.is(Operators.SUBTRACT)) {
       Call subtract = (Call) operand;
       return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));

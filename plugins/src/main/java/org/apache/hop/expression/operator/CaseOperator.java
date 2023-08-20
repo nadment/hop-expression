@@ -124,12 +124,12 @@ public class CaseOperator extends Operator {
         IExpression whenTerm0 = whenTerm.get(0);
         IExpression thenTerm0 = thenTerm.get(0);
 
-        // "CASE WHEN x IS NULL THEN y ELSE x END" to "IFNULL(x, y)"
+        // CASE WHEN x IS NULL THEN y ELSE x END → IFNULL(x,y)
         if (whenTerm0.is(Operators.IS_NULL) && whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
           return new Call(Operators.IFNULL, whenTerm0.asCall().getOperand(0), thenTerm0);
         }
 
-        // "CASE WHEN x = y THEN NULL ELSE x END" to "NULLIF(x, y)"
+        // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
         if (whenTerm0.is(Operators.EQUAL) && thenTerm0 == Literal.NULL) {
 
           if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
@@ -143,17 +143,17 @@ public class CaseOperator extends Operator {
           }
         }
 
-        // "CASE WHEN x IS NOT NULL THEN y ELSE z END" to "NVL2(x, y, z)"
+        // CASE WHEN x IS NOT NULL THEN y ELSE z END → NVL2(x,y,z)
         if (whenTerm0.is(Operators.IS_NOT_NULL)) {
           return new Call(Operators.NVL2, whenTerm0.asCall().getOperand(0), thenTerm0, elseTerm);
         }
 
-        // "CASE WHEN x IS NULL THEN y ELSE z END" to "NVL2(x, z, y)"
+        // CASE WHEN x IS NULL THEN y ELSE z END → NVL2(x,z,y)
         if (whenTerm0.is(Operators.IS_NULL)) {
           return new Call(Operators.NVL2, whenTerm0.asCall().getOperand(0), elseTerm, thenTerm0);
         }
 
-        // CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
+        // CASE WHEN a=b THEN 1 END to CASE a WHEN b THEN 1 END
         // Not always compatible with flatten search case
         // if (whenTerm0.is(Operators.EQUAL)) {
         // return new Call(Operators.CASE, whenTerm0.asCall().getOperand(0), new
@@ -166,7 +166,7 @@ public class CaseOperator extends Operator {
       if (whenTerm.size() == 1) {
         IExpression searchTerm = call.getOperand(0);
 
-        // "CASE value WHEN x THEN y ELSE z END" to "IF(value=x, y, z)"
+        // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
         return new Call(Operators.IF, new Call(Operators.EQUAL, searchTerm, whenTerm.get(0)),
             thenTerm.get(0), elseTerm);
       }

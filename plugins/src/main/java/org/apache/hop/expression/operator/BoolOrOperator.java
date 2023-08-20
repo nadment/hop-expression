@@ -68,8 +68,8 @@ public class BoolOrOperator extends Operator {
     }
 
     // Remove duplicate
-    // x OR x => x
-    // x OR y OR x => x OR y
+    // x OR x → x
+    // x OR y OR x → x OR y
     Queue<IExpression> conditions = this.getChainedOperands(call, false);
 
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
@@ -112,19 +112,19 @@ public class BoolOrOperator extends Operator {
     // Merge OR comparison
     for (Pair<IExpression, IExpression> pair : lessThanTerms.keySet()) {
 
-      // "x < a OR x != a" to "x != a"
+      // x<a OR x!=a → x!=a
       if (notEqualTerms.containsKey(pair)) {
         conditions.remove(lessThanTerms.get(pair));
       }
 
-      // "x < a OR x = a" to "x <= a"
+      // x<a OR x=a → x<=a
       if (equalTerms.containsKey(pair)) {
         conditions.remove(equalTerms.get(pair));
         conditions.remove(lessThanTerms.get(pair));
         conditions.add(new Call(Operators.LESS_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
       }
 
-      // "x < a OR x > a" to "x != a"
+      // x<a OR x>a → x!=a
       if (greaterThanTerms.containsKey(pair)) {
         conditions.remove(lessThanTerms.get(pair));
         conditions.remove(greaterThanTerms.get(pair));
@@ -134,12 +134,12 @@ public class BoolOrOperator extends Operator {
 
     for (Pair<IExpression, IExpression> pair : greaterThanTerms.keySet()) {
 
-      // "x > a OR x != a" to "x != a"
+      // x>a OR x!=a → x!=a
       if (notEqualTerms.containsKey(pair)) {
         conditions.remove(greaterThanTerms.get(pair));
       }
 
-      // "x > a OR x = a" to "x >= a"
+      // x>a OR x=a → x>=a
       if (equalTerms.containsKey(pair)) {
         conditions.remove(equalTerms.get(pair));
         conditions.remove(greaterThanTerms.get(pair));
@@ -147,8 +147,8 @@ public class BoolOrOperator extends Operator {
       }
     }
 
-    // Simplify "X=1 OR X=2" to "X IN (1,2)"
-    // Simplify "X=1 OR X IN (2,3)" to "X IN (1,2,3)"
+    // Simplify X=1 OR X=2 → X IN (1,2)
+    // Simplify X=1 OR X IN (2,3) → X IN (1,2,3)
     for (IExpression reference : equalsLiterals.keySet()) {
       Collection<Pair<Call, Literal>> pairs = equalsLiterals.get(reference);
       if (pairs.size() > 1) {
@@ -161,7 +161,7 @@ public class BoolOrOperator extends Operator {
       }
     }
 
-    // X <> A OR X <> B => X IS NOT NULL or NULL
+    // X <> A OR X <> B → X IS NOT NULL or NULL
 
     // Rebuild disjunctions if more than 1 condition
     if (conditions.size() == 1)

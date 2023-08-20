@@ -73,7 +73,7 @@ public class LikeOperator extends Operator {
     if (call.getOperand(1).isConstant()) {
       String pattern = call.getOperand(1).getValue(String.class);
 
-      // Optimize FIELD LIKE NULL to NULL
+      // FIELD LIKE NULL → NULL
       if (pattern == null)
         return Literal.NULL;
 
@@ -86,31 +86,30 @@ public class LikeOperator extends Operator {
         return call;
       }
 
-      // Optimize "x LIKE '%'" to "x IS NOT NULL"
+      // field LIKE '%' → field IS NOT NULL
       if ("%".equals(pattern)) {
         return new Call(Operators.IS_NOT_NULL, value);
       }
 
-      // Optimize the common case of FIELD LIKE '%foo%' to CONTAINS(FIELD,'foo')
-      // Try contains before starts and ends
+      // field LIKE '%foo%' → CONTAINS(field,'foo')
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(ContainsStringFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // Optimize the common case of FIELD LIKE 'foo%' to STARTSWITH(FIELD,'foo')
+      // field LIKE 'foo%' → STARTSWITH(field,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(StartsWithStringFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // Optimize the common case of FIELD LIKE '%foo' to ENDSWITH(FIELD,'foo')
+      // field LIKE '%foo' → ENDSWITH(field,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(EndsWithStringFunction.INSTANCE, value, Literal.of(search));
       }
 
-      // Optimize FIELD LIKE 'Hello' to FIELD='Hello'
+      // field LIKE 'Hello' → field='Hello'
       if (equalTo.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
         return new Call(Operators.EQUAL, value, Literal.of(search));

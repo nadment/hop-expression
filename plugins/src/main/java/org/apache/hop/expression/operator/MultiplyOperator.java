@@ -46,23 +46,23 @@ public class MultiplyOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic "1 * A" to "A"
+    // Simplify arithmetic 1*A → A
     if (Literal.ONE.equals(left)) {
       return right;
     }
 
-    // Simplify arithmetic "(-A) * (-B)" to "A * B"
+    // Simplify arithmetic (-A)*(-B) → A*B
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
       return new Call(Operators.MULTIPLY, left.asCall().getOperand(0),
           right.asCall().getOperand(0));
     }
 
-    // Simplify arithmetic "A * A" to "SQUARE(A)"
+    // Simplify arithmetic A*A → SQUARE(A)
     if (left.equals(right)) {
       return new Call(SquareFunction.INSTANCE, left);
     }
 
-    // Pull up literal "1 * (1 * A)" to "(1 * 1) * A
+    // Pull up literal 1*(1*A) → (1*1)*A
     if (left.isConstant() && right.is(Operators.MULTIPLY)
         && right.asCall().getOperand(0).isConstant()) {
       IExpression operation = new Call(Operators.MULTIPLY, left, right.asCall().getOperand(0));

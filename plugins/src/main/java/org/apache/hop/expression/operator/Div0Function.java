@@ -49,12 +49,12 @@ public class Div0Function extends Function {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic "DIV0(A,1)" to "A"
+    // Simplify arithmetic DIV0(A,1) → A
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);
     }
 
-    // Simplify arithmetic "DIV0(-A,-B)" to "DIV0(A,B)"
+    // Simplify arithmetic DIV0(-A,-B) → DIV0(A,B)
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
       return new Call(call.getOperator(), left.asCall().getOperand(0),
           right.asCall().getOperand(0));

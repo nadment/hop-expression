@@ -67,23 +67,25 @@ public class EqualOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify "x = x" to "NULL OR x IS NOT NULL"
+    // Simplify x=x → NULL OR x IS NOT NULL
     if (left.equals(right)) {
       return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
     }
 
-    // Simplify "x = NULL" to "NULL"
+    // Simplify x=NULL → NULL
     if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
       return Literal.NULL;
     }
-    // Simplify "x = TRUE" to "x IS TRUE"
+
+    // Simplify x=TRUE → x IS TRUE
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, right);
     }
     if (right.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, left);
     }
-    // Simplify "x = FALSE" to "x IS FALSE"
+
+    // Simplify x=FALSE → x IS FALSE
     if (left.equals(Literal.FALSE)) {
       return new Call(Operators.IS_FALSE, right);
     }
@@ -91,7 +93,7 @@ public class EqualOperator extends Operator {
       return new Call(Operators.IS_FALSE, left);
     }
 
-    // Simplify "3 = X+1" to "3-1 = X"
+    // Simplify 3=X+1 → 3-1=X
     if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),

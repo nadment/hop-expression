@@ -74,7 +74,7 @@ public class CoalesceFunction extends Function {
     switch (operands.size()) {
       case 0: // Nothing to coalesce
         return Literal.NULL;
-      case 1: // Coalesce(X) => X
+      case 1: // Coalesce(X) → X
         return operands.get(0);
       default:
         return new Call(call.getOperator(), operands);
