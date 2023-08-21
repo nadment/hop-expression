@@ -294,6 +294,9 @@ public class Identifier implements IExpression {
 
         case ValueMetaJson.TYPE_JSON: {
           Object value = row[ordinal];
+          if (value == null) {
+            return null;
+          }
           if (clazz.isInstance(value)) {
             return clazz.cast(value);
           }
@@ -305,6 +308,9 @@ public class Identifier implements IExpression {
 
         case IValueMeta.TYPE_BINARY: {
           byte[] value = rowMeta.getBinary(row, ordinal);
+          if (value == null) {
+            return null;
+          }
           if (clazz == byte[].class) {
             return clazz.cast(value);
           }
