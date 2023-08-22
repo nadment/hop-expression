@@ -28,15 +28,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
 /**
- * Extracts a scalar value from a JSON string.
+ * Extracts a JSON fragment from a JSON object or string representing a Json.
+ * <code>JSON_QUERY( expression [, path] )</code>
  */
 @FunctionPlugin
-public class JsonValueFunction extends Function {
+public class JsonQueryFunction extends Function {
 
   public static final Configuration JSONPATH_CONFIGURATION = Configuration.builder()
       .mappingProvider(new JacksonMappingProvider(
@@ -44,9 +44,9 @@ public class JsonValueFunction extends Function {
       .jsonProvider(new JacksonJsonNodeJsonProvider()).build();
 
 
-  public JsonValueFunction() {
-    super("JSON_VALUE", ReturnTypes.ANY, OperandTypes.JSON_STRING.or(OperandTypes.STRING_STRING),
-        "i18n::Operator.Category.Json", "/docs/json_value.html");
+  public JsonQueryFunction() {
+    super("JSON_QUERY", ReturnTypes.JSON, OperandTypes.JSON_OPTIONAL_STRING,
+        "i18n::Operator.Category.Json", "/docs/json_query.html");
   }
 
   @Override
@@ -55,6 +55,9 @@ public class JsonValueFunction extends Function {
     if (jsonNode == null)
       return null;
 
+    if ( operands.length==1)
+      return jsonNode;
+    
     String path = operands[1].getValue(String.class);
     if (path == null)
       throw new ExpressionException(ExpressionError.JSON_PATH_IS_NULL);
@@ -62,22 +65,7 @@ public class JsonValueFunction extends Function {
     try {
       JsonPath jsonPath = JsonPath.compile(path);
       JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
-
-      if (result.isNull())
-        return null;
-      if (result.isTextual())
-        return result.textValue();
-      if (result.isNumber())
-        return result.decimalValue();
-      if (result.isBoolean())
-        return result.booleanValue();
-      if (result.isArray())
-        throw new ExpressionException(ExpressionError.UNSUPPORTED_ARRAY_TYPE, path);
       return result;
-    } catch (ExpressionException e) {
-      throw e;
-    } catch (PathNotFoundException e) {
-      throw new ExpressionException(ExpressionError.JSON_PATH_NOT_FOUND, path);
     } catch (Exception e) {
       throw new ExpressionException(ExpressionError.INVALID_JSON_PATH, path);
     }

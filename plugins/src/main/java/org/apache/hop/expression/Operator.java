@@ -143,9 +143,9 @@ public abstract class Operator implements Comparable<Operator> {
   }
 
   /**
-   * Whether the operator always returns the same result for the same parameters.
+   * Returns whethe the operator always returns the same result for the same parameters.
    *
-   * @return {@code true} if this is a deterministric function
+   * @return {@code true} if this is a deterministic function
    */
   public boolean isDeterministic() {
     return true;

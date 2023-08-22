@@ -353,6 +353,7 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
+    //evalNull("Json_Value(NULL_JSON,'$.name')");
     
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    

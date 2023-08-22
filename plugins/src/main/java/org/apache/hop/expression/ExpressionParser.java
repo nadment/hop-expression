@@ -76,7 +76,7 @@ public class ExpressionParser {
   protected String getSource() {
     return source;
   }
-  
+
   protected int getPosition() {
 
     if (index > 0 && index < tokens.size())
@@ -140,7 +140,8 @@ public class ExpressionParser {
 
     if (hasNext()) {
       Token token = next();
-      throw new ExpressionException(token.start(), ExpressionError.UNEXPECTED_CHARACTER, token.text());
+      throw new ExpressionException(token.start(), ExpressionError.UNEXPECTED_CHARACTER,
+          token.text());
     }
 
     return expression;
@@ -205,7 +206,7 @@ public class ExpressionParser {
     if (isThenNext(Id.IS)) {
       boolean not = false;
       int start = this.getPosition();
-      
+
       if (isThenNext(Id.NOT)) {
         not = true;
       }
@@ -220,8 +221,9 @@ public class ExpressionParser {
           return new Call((not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
         case DISTINCT:
           if (isThenNext(Id.FROM)) {
-            return new Call(start, (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM,
-                expression, parseLogicalNot());
+            return new Call(start,
+                (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM, expression,
+                parseLogicalNot());
           }
           throw new ExpressionException(start, ExpressionError.SYNTAX_ERROR_OPERATOR,
               Operators.IS_DISTINCT_FROM);
@@ -277,7 +279,8 @@ public class ExpressionParser {
 
       IExpression start = this.parseAdditive();
       if (isNotThenNext(Id.AND)) {
-        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR, Id.BETWEEN);
+        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR,
+            Id.BETWEEN);
       }
       IExpression end = this.parseAdditive();
 
@@ -308,9 +311,9 @@ public class ExpressionParser {
     IExpression expression = this.parseBitwiseNot();
 
     while (hasNext()) {
-      
+
       int start = this.getPosition();
-      
+
       if (isThenNext(Id.MULTIPLY)) {
         expression = new Call(start, Operators.MULTIPLY, expression, this.parseBitwiseNot());
       } else if (isThenNext(Id.DIVIDE)) {
@@ -326,9 +329,9 @@ public class ExpressionParser {
 
   /** ( UnaryExpression)* */
   private IExpression parseBitwiseNot() throws ExpressionException {
-    
+
     int start = this.getPosition();
-    
+
     if (isThenNext(Id.BITWISE_NOT)) {
       return new Call(start, Operators.BITNOT, this.parseUnary());
     }
@@ -358,8 +361,8 @@ public class ExpressionParser {
   /** BitwiseAndExpression ( ^ BitwiseAndExpression)* */
   private IExpression parseBitwiseXor() throws ExpressionException {
     IExpression expression = this.parseBitwiseAnd();
-    
-    int start = this.getPosition();    
+
+    int start = this.getPosition();
     if (isThenNext(Id.BITWISE_XOR)) {
       return new Call(start, Operators.BITXOR, expression, this.parseBitwiseAnd());
     }
@@ -478,15 +481,15 @@ public class ExpressionParser {
         }
         throw new ExpressionException(token.start(), ExpressionError.UNBALANCE_PARENTHESIS);
       default:
-        // Syntax error        
-    }  
+        // Syntax error
+    }
     throw new ExpressionException(position, ExpressionError.UNEXPECTED_END_OF_EXPRESSION);
   }
 
   /** RelationalExpression ( Operator RelationalExpression ) */
   private IExpression parseComparison() throws ExpressionException {
     IExpression expression = this.parseRelational();
-    int start = this.getPosition(); 
+    int start = this.getPosition();
     if (isThenNext(Id.EQUAL)) {
       return new Call(start, Operators.EQUAL, expression, this.parseRelational());
     }
@@ -515,8 +518,8 @@ public class ExpressionParser {
   private IExpression parseAdditive() throws ExpressionException {
     IExpression expression = this.parseBitwiseOr();
     while (hasNext()) {
-      int start = this.getPosition(); 
-      
+      int start = this.getPosition();
+
       if (isThenNext(Id.PLUS)) {
         // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
         // - } <integer>
@@ -773,7 +776,8 @@ public class ExpressionParser {
       whenList.add(expression);
 
       if (isNotThenNext(Id.THEN)) {
-        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR, Id.CASE);
+        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR,
+            Id.CASE);
       }
       thenList.add(this.parseLogicalOr());
     }
@@ -786,8 +790,8 @@ public class ExpressionParser {
       throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR, Id.CASE);
     }
 
-    return new Call(start, Operators.CASE, valueExpression, new Tuple(whenList), new Tuple(thenList),
-        elseExpression);
+    return new Call(start, Operators.CASE, valueExpression, new Tuple(whenList),
+        new Tuple(thenList), elseExpression);
   }
 
   /**
@@ -813,7 +817,8 @@ public class ExpressionParser {
       if (token.is(Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
-        throw new ExpressionException(token.start(), ExpressionError.SYNTAX_ERROR_OPERATOR, Id.CAST);
+        throw new ExpressionException(token.start(), ExpressionError.SYNTAX_ERROR_OPERATOR,
+            Id.CAST);
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
@@ -838,7 +843,8 @@ public class ExpressionParser {
     operands.add(this.parseAdditive());
 
     if (isNotThenNext(Id.IN)) {
-      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR, function.getName());
+      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR,
+          function.getName());
     }
 
     operands.add(this.parseAdditive());
@@ -900,7 +906,8 @@ public class ExpressionParser {
     operands.add(this.parseLiteralTimeUnit(next()));
 
     if (isNotThenNext(Id.FROM)) {
-      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR, function.getName());
+      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_OPERATOR,
+          function.getName());
     }
 
     operands.add(this.parseAdditive());
@@ -915,7 +922,8 @@ public class ExpressionParser {
   /**
    * COUNT(*) | COUNT([DISTINCT] <expression>)
    */
-  private IExpression parseFunctionCount(Token token, Function function) throws ExpressionException {
+  private IExpression parseFunctionCount(Token token, Function function)
+      throws ExpressionException {
 
     AggregateFunction aggregator = Operators.COUNT_VALUE;
 
@@ -1018,6 +1026,10 @@ public class ExpressionParser {
   private IExpression parseFunction(Token token) throws ExpressionException {
 
     Function function = FunctionRegistry.getFunction(token.text());
+    if (function == null) {
+      throw new ExpressionException(token.start(), ExpressionError.FUNCTION_DOES_NOT_EXIST,
+          token.text());
+    }
 
     // Function with custom syntax
     switch (token.text()) {
@@ -1131,7 +1143,8 @@ public class ExpressionParser {
       }
     }
 
-    throw new ExpressionException(token.start(), ExpressionError.SYNTAX_ERROR_DATATYPE, token.text());
+    throw new ExpressionException(token.start(), ExpressionError.SYNTAX_ERROR_DATATYPE,
+        token.text());
   }
 
   /** Parses an expression string to return the individual tokens. */
@@ -1548,9 +1561,13 @@ public class ExpressionParser {
           String name = identifier.toUpperCase();
 
           if (c == '(') {
-            if (FunctionRegistry.isFunction(name)) {
-              return new Token(Id.FUNCTION, start, position, name);
+
+            // Syntax NOT(TRUE)
+            if ("NOT".equals(name)) {
+              return new Token(Id.NOT, start, position, name);
             }
+
+            return new Token(Id.FUNCTION, start, position, name);
           }
 
           // Reserved words: AS, AND, LIKE, NOT, TRUE, FALSE, OR

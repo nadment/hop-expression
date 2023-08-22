@@ -253,7 +253,8 @@ public final class OperandTypes {
 
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
-
+  public static final IOperandTypeChecker JSON_OPTIONAL_STRING = family(TypeFamily.JSON, TypeFamily.STRING).optional(i -> i == 1);
+  
   public static final IOperandTypeChecker CASE_OPERATOR = new CaseOperatorOperandTypeChecker();
   public static final IOperandTypeChecker CAST_OPERATOR = OperandTypes
       .sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);

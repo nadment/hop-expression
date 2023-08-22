@@ -14,14 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= JSON_VALUE
+= JSON_QUERY
 
-Extracts scalar value from JSON object or string representing a Json.
+Extracts a JSON fragment from a JSON object or string representing a Json.
 
 == Syntax
 ----
-JSON_VALUE( {string | json}, path )
+JSON_QUERY( {string | json} [, path] )
 ----
+
+Returns:: Json
 
 == Usage
 
@@ -31,6 +33,5 @@ path:: Use JSONPath query language for JSON, similar to XPath for XML. The path 
 == Examples
 
 ----
-JSON_VALUE('{"language":["English", "French"]}','$.language[1]') >>> French
-JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') >>> 12345
+JSON_QUERY('{"language":["English", "French"]}','$.language') >>> [English, French]
 ----

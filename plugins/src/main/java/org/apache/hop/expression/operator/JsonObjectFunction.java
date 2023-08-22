@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Build a JSON object from a list of key=values pairs.
  * 
- * JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)
+ * <code>JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...)</code> 
  */
 @FunctionPlugin
 public class JsonObjectFunction extends Function {

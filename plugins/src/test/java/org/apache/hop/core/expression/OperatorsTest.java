@@ -1151,10 +1151,14 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("NOT (NULL_BOOLEAN is not null)");
     evalFalse("NOT 1");
     evalTrue("NOT 0");
+    
     evalTrue("NOT NOT True");
     evalNull("NOT NULL_BOOLEAN");
     evalFails("FIELD_BOOLEAN is ");
     evalFails("NOT");
+    
+    // Function syntax
+    evalTrue("NOT(FALSE)");
     
     optimize("NOT FIELD_BOOLEAN");
     optimize("NOT NOT FIELD_BOOLEAN","FIELD_BOOLEAN");

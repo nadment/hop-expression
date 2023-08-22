@@ -103,11 +103,11 @@ public final class IntegerType extends Type {
         TypeName.from(value), TypeName.INTEGER));
   }
 
-  public static final Long convert(final String str) {
+  public static final Long convert(final String str) throws ParseNumberException {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
-    } catch (NumberFormatException e) {
+    } catch (Exception e) {
       throw new ParseNumberException(ExpressionError.INVALID_INTEGER, str);
     }
   }

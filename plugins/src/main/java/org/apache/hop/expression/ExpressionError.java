@@ -42,6 +42,8 @@ public enum ExpressionError {
   ILLEGAL_ARGUMENT_TYPE("Expression.IllegalArgumentType"),
   //
   UNRESOLVED_IDENTIFIER("Expression.UnresolvedIdentifier"),
+  /** Function ''{0}'' does not exist */
+  FUNCTION_DOES_NOT_EXIST("Expression.FunctionDoesNotExist"),
   //
   NOT_ENOUGH_ARGUMENT("Expression.NotEnoughArguments"),
   //
@@ -104,6 +106,8 @@ public enum ExpressionError {
   INVALID_REGEXP_PATTERN("Expression.InvalidRegexpPattern"),
   //
   INVALID_REGEXP_ESCAPE("Expression.InvalidRegexpEscape"),
+  //
+  JSON_PATH_IS_NULL("Expression.JsonPathIsNull"),
   //
   JSON_PATH_NOT_FOUND("Expression.JsonPathNotFound"),
   //
