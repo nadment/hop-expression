@@ -59,15 +59,19 @@ public class TrimFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    IExpression operand = call.getOperand(0);
 
-    // Repetitions of functions that do not have any effects on the result
-    if (operand.is(call.getOperator()) || operand.is(LTrimFunction.INSTANCE)
-        || operand.is(RTrimFunction.INSTANCE)) {
-      // TODO: Combine stripChars
-      return new Call(call.getOperator(), operand.asCall().getOperand(0));
+    if (call.getOperandCount() == 1) {
+      IExpression operand = call.getOperand(0);
+
+      // Repetitions of functions that do not have any effects on the result
+      // TRIM(TRIM(x)) → TRIM(x)
+      // TRIM(RTRIM(x)) → TRIM(x)
+      // TRIM(LTRIM(x)) → TRIM(x)
+      if (operand.is(call.getOperator()) || operand.is(LTrimFunction.INSTANCE)
+          || operand.is(RTrimFunction.INSTANCE)) {
+        return new Call(call.getOperator(), operand.asCall().getOperand(0));
+      }
     }
-
     return call;
   }
 }

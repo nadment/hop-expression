@@ -50,7 +50,7 @@ public class RoundFunctionFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Remove function repetition
+    // Idempotent function repetition
     if (call.getOperand(0).is(call.getOperator())) {
       return call.getOperand(0);
     }

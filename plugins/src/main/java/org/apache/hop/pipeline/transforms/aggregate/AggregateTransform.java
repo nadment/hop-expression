@@ -149,7 +149,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
           }
           data.aggregates[index] = call;
           data.functions[index] = function;
-        } catch (ExpressionException e) {
+        } catch (Exception e) {
           String message = BaseMessages.getString(PKG, "Aggregate.Exception.ExpressionError",
               field.getName(), field.getExpression(), e.getMessage());
           logError(message);

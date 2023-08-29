@@ -16,10 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
@@ -34,6 +37,19 @@ public class TruncateFunction extends Function {
   public TruncateFunction() {
     super("TRUNCATE", ReturnTypes.NUMBER, OperandTypes.NUMERIC_OPTIONAL_NUMERIC,
         Category.MATHEMATICAL, "/docs/truncate.html");
+  }
+
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    if (call.getOperandCount() == 1) {
+      // Idempotent function repetition
+      if (call.getOperand(0).is(call.getOperator())) {
+        return call.getOperand(0);
+      }
+    }
+    return call;
   }
 
   @Override

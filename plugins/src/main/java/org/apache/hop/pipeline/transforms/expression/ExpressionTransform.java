@@ -35,10 +35,10 @@ import java.util.Arrays;
 import java.util.Date;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
+public class ExpressionTransform extends BaseTransform<ExpressionMeta, ExpressionData> {
   private static final Class<?> PKG = ExpressionMeta.class;
 
-  public Expression(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data,
+  public ExpressionTransform(TransformMeta transformMeta, ExpressionMeta meta, ExpressionData data,
       int copyNr, PipelineMeta pipelineMeta, Pipeline pipeline) {
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
@@ -59,8 +59,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
 
     // the "first" flag is inherited from the base step implementation
     // it is used to guard some processing tasks, like figuring out field
-    // indexes
-    // in the row structure that only need to be done once
+    // indexes in the row structure that only need to be done once
     if (first) {
       first = false;
 
@@ -93,10 +92,10 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         // Compile expression
         try {
           data.expressions[index] = Expressions.build(data.context, source);
-        } catch (ExpressionException e) {
+        } catch (Exception e) {
           String message =
-              BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
-                  field.getName(), field.getExpression(), e.getMessage());
+              BaseMessages.getString(PKG, "ExpressionTransform.Exception.CompileExpression",
+                  field.getName(), e.getMessage());
           logError(message);
           if (isDebug()) {
             logError(Const.getStackTracker(e));
@@ -108,43 +107,48 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
         }
       }
     }
-    
-    // Copies row into outputRowValues and pads extra null-default slots for the
-    // output values
-    Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
 
-    // Use output row as context, so second expression can use result from the first
-    data.context.setRow(outputRowValues);
+    String name = null;
 
-    for (ExpressionField field : meta.getFields()) {
-      int index = data.outputRowMeta.indexOfValue(field.getName());
-      try {
+    try {
+      // Copies row into outputRowValues and pads extra null-default slots for the
+      // output values
+      Object[] outputRowValues = Arrays.copyOf(row, data.outputRowMeta.size());
+
+      // Use output row as context, so second expression can use result from the first
+      data.context.setRow(outputRowValues);
+
+      for (ExpressionField field : meta.getFields()) {
+        name = field.getName();
+        int index = data.outputRowMeta.indexOfValue(name);
+
         IExpression expression = data.expressions[index];
         IValueMeta valueMeta = data.outputRowMeta.getValueMeta(index);
         outputRowValues[index] = processValue(expression, valueMeta);
-      } catch (Exception e) {
-        String message =
-            BaseMessages.getString(PKG, "ExpressionTransform.Exception.ExpressionError",
-                field.getName(), field.getExpression(), e.getMessage());
-        logError(message, e);
-        if (isDebug()) {
-          logError(Const.getStackTracker(e));
-        }
-        setErrors(1);
-        stopAll();
-        setOutputDone();
-        return false;
       }
-    }
 
-    // Put the row to the output row stream
-    putRow(data.outputRowMeta, outputRowValues);
+      // Put the row to the output row stream
+      putRow(data.outputRowMeta, outputRowValues);
+
+    } catch (Exception e) {
+      String message = BaseMessages.getString(PKG, "ExpressionTransform.Exception.EvaluateExpression",
+          name, e.getMessage());
+      logError(message, e);
+      if (isDebug()) {
+        logError(Const.getStackTracker(e));
+      }
+      setErrors(1);
+      stopAll();
+      setOutputDone();
+      return false;
+    }
 
     // indicate that processRow() should be called again
     return true;
   }
 
-  public Object processValue(IExpression expression, IValueMeta meta) throws HopException, ExpressionException {
+  public Object processValue(IExpression expression, IValueMeta meta)
+      throws HopException, ExpressionException {
     switch (meta.getType()) {
       case IValueMeta.TYPE_NONE:
         return null;
@@ -181,8 +185,7 @@ public class Expression extends BaseTransform<ExpressionMeta, ExpressionData> {
       case ValueMetaJson.TYPE_JSON:
         return expression.getValue(JsonNode.class);
       default:
-        throw new HopValueException(
-            "Error convert evaluate " + meta.getName() + " with data type : " + meta.getType());
+        throw new HopValueException(BaseMessages.getString(PKG, "ExpressionTransform.Exception.ConversionError", meta.getName(), meta.getType()));
     }
   }
 }

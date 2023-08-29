@@ -21,17 +21,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.IRowSet;
 import org.apache.hop.core.exception.HopException;
+import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /** Route input rows base on conditions. */
 public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
@@ -64,13 +63,13 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
       for (Route route : meta.getRoutes()) {
 
         if (StringUtils.isEmpty(route.getTransformName())) {
-          throw new HopException(BaseMessages.getString(PKG,
+          throw new HopTransformException(BaseMessages.getString(PKG,
               "Route.Exception.NoTargetTransformSpecified", route.getCondition()));
         }
 
         IRowSet rowSet = findOutputRowSet(route.getTransformName());
         if (rowSet == null) {
-          throw new HopException(BaseMessages.getString(PKG,
+          throw new HopTransformException(BaseMessages.getString(PKG,
               "Route.Exception.UnableToFindTargetTransform", route.getTransformName()));
         }
 
@@ -78,7 +77,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
         try {
           IExpression expression = Expressions.build(data.context, route.getCondition());
           data.targets.add(new RouteTarget(route, expression, rowSet));
-        } catch (ExpressionException e) {
+        } catch (Exception e) {
           String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
               route.getTransformName(), route.getCondition(), e.getMessage());
           logError(message);
@@ -113,7 +112,7 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
           putRowTo(data.rowMeta, row, target.rowSet);
           break;
         }
-      } catch (HopException e) {
+      } catch (Exception e) {
         String message = BaseMessages.getString(PKG, "Route.Exception.ConditionError",
             target.route.getTransformName(), target.route.getCondition(), e.getMessage());
         logError(message);
@@ -132,9 +131,5 @@ public class RouteTransform extends BaseTransform<RouteMeta, RouteData> {
     }
 
     return true;
-  }
-
-  protected static Object prepareObjectType(Object o) {
-    return (o instanceof byte[]) ? Arrays.hashCode((byte[]) o) : o;
   }
 }

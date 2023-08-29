@@ -67,13 +67,13 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
   private IVariables variables;
   private ExpressionMode mode;
-  private CompletableFuture<IRowMeta> rowMeta;
-  
-  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> rowMeta,
+  private CompletableFuture<IRowMeta> futurRowMeta;
+
+  public ExpressionEditorConfiguration(IVariables variables, CompletableFuture<IRowMeta> futurRowMeta,
       ExpressionMode mode) {
     super();
     this.variables = variables;
-    this.rowMeta = rowMeta;
+    this.futurRowMeta = futurRowMeta;
     this.mode = mode;
   }
 
@@ -93,7 +93,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
     ExpressionCompletionProcessor expressionProcessor =
-        new ExpressionCompletionProcessor(variables, rowMeta, mode);
+        new ExpressionCompletionProcessor(variables, futurRowMeta, mode);
     ExpressionCompletionProcessor variableProcessor = new ExpressionCompletionProcessor(variables);
 
     ContentAssistant assistant = new ContentAssistant();
@@ -178,11 +178,14 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     rules.add(new OperatorRule(keyword));
 
     // Add case sensitive rule for identifier without double quote
-    if (rowMeta != null) {
+    if (futurRowMeta != null) {
       WordRule rule = new WordRule(new IndentifierDetector(), Token.UNDEFINED, false);
       try {
-        for (IValueMeta vm : rowMeta.get().getValueMetaList()) {
-          rule.addWord(vm.getName(), identifier);
+        IRowMeta rowMeta = futurRowMeta.get();
+        if (rowMeta != null) {
+          for (IValueMeta vm : rowMeta.getValueMetaList()) {
+            rule.addWord(vm.getName(), identifier);
+          }
         }
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
@@ -199,8 +202,8 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       rule.addWord(name, function);
     }
     for (String word : ExpressionParser.getReservedWords()) {
-      if ( RESERVED_LITERALS.contains(word))
-        rule.addWord(word, extra);        
+      if (RESERVED_LITERALS.contains(word))
+        rule.addWord(word, extra);
       else
         rule.addWord(word, keyword);
     }
@@ -222,13 +225,13 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     Color color = GuiResource.getInstance().getColorDarkGray();
     Token token = new Token(new TextAttribute(color, null, SWT.ITALIC));
     Token variable = new Token(new TextAttribute(color, null, SWT.ITALIC | SWT.BOLD));
-    
+
     IRule[] rules = {
         // Add rule for variables
-       new PatternRule("${", "}", variable, (char) 0, false)//,
-      // new LinkRule(link)
+        new PatternRule("${", "}", variable, (char) 0, false)// ,
+        // new LinkRule(link)
     };
-    
+
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
@@ -242,8 +245,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
 
     IRule[] rules = {
         // Add rule for variables
-        new PatternRule("${", "}", variable, (char) 0, false)
-    };
+        new PatternRule("${", "}", variable, (char) 0, false)};
     RuleBasedScanner scanner = new RuleBasedScanner();
     scanner.setRules(rules);
     scanner.setDefaultReturnToken(token);
@@ -260,12 +262,12 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
   public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
     return new ExpressionTextHover();
   }
-  
+
   @Override
   public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-      return new DefaultAnnotationHover();
+    return new DefaultAnnotationHover();
   }
-     
+
   @Override
   public IHyperlinkPresenter getHyperlinkPresenter(ISourceViewer sourceViewer) {
     return new DefaultHyperlinkPresenter(GuiResource.getInstance().getColorLightBlue());

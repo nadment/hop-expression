@@ -1205,8 +1205,6 @@ public class OperatorsTest extends ExpressionTest {
     
     evalFails("false OR");
     evalFails("OR false");
-
-    //evalFails("true OR NAME");
     
     optimize("FIELD_BOOLEAN OR NULL_BOOLEAN");
     optimizeTrue("true or true");

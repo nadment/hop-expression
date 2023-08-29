@@ -44,7 +44,7 @@ import java.util.List;
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Scripting",
     documentationUrl = "/pipeline/transforms/expresssion.html",
     keywords = "i18n::Expression.Keywords")
-public class ExpressionMeta extends BaseTransformMeta<Expression, ExpressionData> {
+public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, ExpressionData> {
 
   private static final Class<?> PKG = ExpressionMeta.class;
 

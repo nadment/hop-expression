@@ -56,8 +56,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
     try {
       // the "first" flag is inherited from the base Transform implementation
       // it is used to guard some processing tasks, like figuring out field
-      // indexes
-      // in the row structure that only need to be done once
+      // indexes in the row structure that only need to be done once
       if (first) {
         if (log.isDebug()) {
           logDebug(BaseMessages.getString(PKG, "Where.Log.StartedProcessing"));
@@ -128,7 +127,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
           putRowTo(data.outputRowMeta, row, data.falseRowSet);
         }
       }
-    } catch (HopException e) {
+    } catch (Exception e) {
       logError(e.getMessage());
       if (isDebug()) {
         logError(Const.getStackTracker(e));

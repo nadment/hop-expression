@@ -60,16 +60,21 @@ public class RTrimFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    IExpression operand = call.getOperand(0);
 
-    // Repetitions of the same function
-    if (operand.is(call.getOperator())) {
-      return new Call(call.getOperator(), operand.asCall().getOperand(0));
-    }
+    if (call.getOperandCount() == 1) {
+      IExpression operand = call.getOperand(0);
 
-    // Repetitions of functions that do not have any effects on the result
-    if (operand.is(TrimFunction.INSTANCE)) {
-      return new Call(TrimFunction.INSTANCE, operand.asCall().getOperand(0));
+      // Repetitions of the same function
+      if (operand.is(call.getOperator())) {
+        return new Call(call.getOperator(), operand.asCall().getOperand(0));
+      }
+
+      // Repetitions of functions that do not have any effects on the result
+      // RTRIM(LTRIM(x)) → TRIM(x)
+      // RTRIM(TRIM(x)) → TRIM(x)
+      if (operand.is(TrimFunction.INSTANCE) || operand.is(LTrimFunction.INSTANCE)) {
+        return new Call(TrimFunction.INSTANCE, operand.asCall().getOperand(0));
+      }
     }
 
     return call;

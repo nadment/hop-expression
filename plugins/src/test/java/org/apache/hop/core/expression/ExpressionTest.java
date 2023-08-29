@@ -56,7 +56,6 @@ import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Locale;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ibm.icu.impl.Assert;
 
 public class ExpressionTest {
 

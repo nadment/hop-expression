@@ -153,7 +153,8 @@ public class FunctionsTest extends ExpressionTest {
 
     optimize("COALESCE(NULL)", "NULL");
     optimize("COALESCE(FIELD_INTEGER)", "FIELD_INTEGER");
-
+    optimize("COALESCE(NULL, FIELD_INTEGER, FIELD_NUMBER)", "COALESCE(FIELD_INTEGER,FIELD_NUMBER)");
+    
     // Duplicate coalesce
     optimize("COALESCE(FIELD_INTEGER,FIELD_INTEGER)", "FIELD_INTEGER");
     optimize("COALESCE(FIELD_INTEGER, FIELD_NUMBER, FIELD_NUMBER)",
@@ -162,6 +163,10 @@ public class FunctionsTest extends ExpressionTest {
     // Flatten
     optimize("COALESCE(FIELD_INTEGER,COALESCE(FIELD_INTEGER,COALESCE(FIELD_NUMBER,2)))",
         "COALESCE(FIELD_INTEGER,FIELD_NUMBER,2)");
+    
+    // First not null is literal
+    optimize("COALESCE(1, FIELD_INTEGER,FIELD_NUMBER)", "1");
+    optimize("COALESCE(null, 1, FIELD_INTEGER,FIELD_NUMBER)", "1");
     
     returnType("Coalesce(FIELD_INTEGER, 5)", IntegerType.INTEGER);
     returnType("Coalesce(NULL_INTEGER, FIELD_NUMBER, 5)", NumberType.NUMBER);
@@ -2688,7 +2693,7 @@ public class FunctionsTest extends ExpressionTest {
     // Alias
     evalEquals("Trunc(123.456, -2)", 100L);
     
-    // optimize("TRUNC(TRUNC(FIELD_NUMBER))", "TRUNC(FIELD_NUMBER)");
+    optimize("TRUNC(TRUNCATE(FIELD_NUMBER))", "TRUNCATE(FIELD_NUMBER)");
   }
 
   @Test
@@ -3124,7 +3129,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Ceiling(1)", 1L);
     
     // Function repetition
-    optimize("CEILING(CEILING(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
+    optimize("CEIL(CEILING(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
   }
 
   @Test

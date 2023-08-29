@@ -123,7 +123,6 @@ public final class BooleanType extends Type {
         break;
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, str, TypeName.STRING,
-        TypeName.BOOLEAN);
+    throw new ConversionException(ExpressionError.INVALID_BOOLEAN, str);
   }
 }

@@ -51,7 +51,8 @@ public class FloorFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Remove function repetition
+    // Idempotent function repetition
+    // FLOOR(FLOOR(x)) → FLOOR(x)
     if (call.getOperand(0).is(call.getOperator())) {
       return call.getOperand(0);
     }
