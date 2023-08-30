@@ -19,6 +19,7 @@ import static org.apache.hop.expression.Expressions.createDataType;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
+import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
@@ -324,8 +325,10 @@ public class Identifier implements IExpression {
           throw new ExpressionException(position, ExpressionError.UNSUPPORTED_VALUEMETA, getName(),
               valueMeta.getTypeDesc());
       }
-    } catch (ClassCastException ce) {
-      throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta, getName(), clazz);
+    } catch (ClassCastException e) {
+      throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal], clazz);
+    } catch (ConversionException e) {
+      throw e;
     } catch (Exception e) {
       // Ignore
     }

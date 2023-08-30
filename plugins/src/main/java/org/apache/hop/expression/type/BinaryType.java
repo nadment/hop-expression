@@ -18,6 +18,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ConversionException;
 import java.nio.charset.StandardCharsets;
 
 public final class BinaryType extends Type {
@@ -35,7 +36,7 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public byte[] cast(final Object value) {
+  public byte[] cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -48,7 +49,7 @@ public final class BinaryType extends Type {
    * @return the converted value
    */
   @Override
-  public byte[] cast(final Object value, String pattern) {
+  public byte[] cast(final Object value, String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -61,8 +62,8 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 
   /**
@@ -71,7 +72,7 @@ public final class BinaryType extends Type {
    * @param value the value to coerce
    * @return bytes array
    */
-  public static final byte[] coerce(final Object value) {
+  public static final byte[] coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -82,11 +83,11 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.BINARY));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.BINARY);
   }
 
-  public static byte[] convert(Long number) {
+  public static byte[] convert(Long number) throws ConversionException {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
       result[i] = (byte) (number & 0xFF);
@@ -95,7 +96,7 @@ public final class BinaryType extends Type {
     return result;
   }
 
-  public static byte[] convert(final String str) {
+  public static byte[] convert(final String str) throws ConversionException {
     return str.getBytes(StandardCharsets.UTF_8);
   }
 }

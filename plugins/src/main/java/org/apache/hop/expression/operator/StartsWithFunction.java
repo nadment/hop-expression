@@ -23,11 +23,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 
 /**
  * The function returns TRUE if the first value starts with second value. Both values must be the
@@ -50,11 +49,11 @@ public class StartsWithFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING)) {
+    if (type.is(TypeName.STRING)) {
       return new Call(StartsWithStringFunction.INSTANCE, call.getOperands());
     }
 
-    if (type.isSameFamily(BinaryType.BINARY)) {
+    if (type.is(TypeName.BINARY)) {
       return new Call(StartsWithBinaryFunction.INSTANCE, call.getOperands());
     }
 

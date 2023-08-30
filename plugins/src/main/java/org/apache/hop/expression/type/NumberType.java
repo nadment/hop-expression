@@ -18,6 +18,8 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ConversionException;
+import org.apache.hop.expression.exception.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -45,7 +47,7 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public BigDecimal cast(final Object value) {
+  public BigDecimal cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -58,7 +60,7 @@ public final class NumberType extends Type {
    * @return the converted value
    */
   @Override
-  public BigDecimal cast(final Object value, final String pattern) {
+  public BigDecimal cast(final Object value, final String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -98,8 +100,8 @@ public final class NumberType extends Type {
       return convert((byte[]) value);
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
+    throw new ConversionException (
+        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 
   /**
@@ -108,7 +110,7 @@ public final class NumberType extends Type {
    * @param value the value to coerce
    * @return BigDecimal
    */
-  public static final BigDecimal coerce(final Object value) {
+  public static final BigDecimal coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -137,18 +139,23 @@ public final class NumberType extends Type {
     if (value instanceof String) {
       return convert((String) value);
     }
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.NUMBER));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.NUMBER);
   }
 
-  public static final BigDecimal convert(final String str) {
-    return FORMAT.parse(str);
+  public static final BigDecimal convert(final String str) throws ConversionException {
+    try {
+      return FORMAT.parse(str);
+    } catch (ParseNumberException e) {
+      throw new ConversionException(
+          ExpressionError.UNSUPPORTED_COERCION, str, TypeName.STRING, TypeName.NUMBER);
+    }
   }
 
-  public static BigDecimal convert(final byte[] bytes) {
+  public static BigDecimal convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(TypeName.BINARY, bytes, TypeName.NUMBER));
+      throw new ConversionException(
+          ExpressionError.CONVERSION_ERROR, bytes, TypeName.BINARY, TypeName.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

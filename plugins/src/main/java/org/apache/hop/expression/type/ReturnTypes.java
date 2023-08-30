@@ -93,6 +93,18 @@ public final class ReturnTypes {
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
       new LeastRestrictiveReturnTypeInference();
 
+  public static final IReturnTypeInference ABS_FUNCTION = call -> {
+    Type type = call.getOperand(0).getType();
+    
+    if ( type.is(TypeName.INTEGER ))
+      return type;
+    
+    if ( type.is(TypeName.NUMBER ))
+      return type;
+    
+    // By default Number for coercion
+    return NumberType.NUMBER;
+  };
 
   /**
    * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with

@@ -1223,7 +1223,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Abs(1)", 1L);
     evalEquals("Abs(-1)", 1L);
     evalEquals("Abs(FIELD_INTEGER)", 40L);
-    evalEquals("Abs(FIELD_NUMBER)", 5.12);
+    evalEquals("Abs(FIELD_NUMBER)", 5.12D);
     evalEquals("Abs(STRING_NUMBER)", 12.56D);
     evalEquals("Abs(-1::INTEGER)", 1L);
     evalEquals("Abs(-1.12345679)", 1.12345679D);

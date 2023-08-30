@@ -19,7 +19,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.exception.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
 
@@ -45,7 +44,7 @@ public class TryToNumberFunction extends ToNumberFunction {
 
     try {
       return format.parse(value);
-    } catch (ConversionException | ParseNumberException e) {
+    } catch (ParseNumberException e) {
       return null;
     }
   }

@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
@@ -24,9 +23,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 
 /**
  * Returns the absolute (positive) value of the numeric value.
@@ -35,20 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class AbsFunction extends Function {
 
   public AbsFunction() {
-    super("ABS", ReturnTypes.ARG0, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/abs.html");
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
-    if (value == null)
-      return value;
-
-    if (value instanceof Long) {
-      return FastMath.abs((long) value);
-    }
-
-    return NumberType.coerce(value).abs();
+    super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/abs.html");
   }
 
   @Override
@@ -58,6 +45,13 @@ public class AbsFunction extends Function {
       return call.getOperand(0);
     }
 
-    return call;
+    Type type = call.getOperand(0).getType();
+
+    if (type.is(TypeName.INTEGER)) {
+      return new Call(AbsIntegerFunction.INSTANCE, call.getOperands());
+    }
+
+    // If type Number or String
+    return new Call(AbsNumberFunction.INSTANCE, call.getOperands());
   }
 }

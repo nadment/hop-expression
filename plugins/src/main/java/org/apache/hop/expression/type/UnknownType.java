@@ -18,6 +18,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ConversionException;
 
 public final class UnknownType extends Type {
 
@@ -29,12 +30,12 @@ public final class UnknownType extends Type {
   }
 
   @Override
-  public Object cast(final Object value) {
-    throw new IllegalArgumentException(ExpressionError.INTERNAL_ERROR.message());
+  public Object cast(final Object value) throws ConversionException {
+    throw new ConversionException(ExpressionError.INTERNAL_ERROR);
   }
 
   @Override
-  public Object cast(final Object value, final String pattern) {
-    throw new IllegalArgumentException(ExpressionError.INTERNAL_ERROR.message());
+  public Object cast(final Object value, final String pattern) throws ConversionException {
+    throw new ConversionException(ExpressionError.INTERNAL_ERROR);
   }
 }

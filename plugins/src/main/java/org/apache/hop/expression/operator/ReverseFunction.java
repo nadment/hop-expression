@@ -23,11 +23,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 
 /**
  * The function reverses the order of characters in a string value, or of bytes in a binary value.
@@ -45,11 +44,11 @@ public class ReverseFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING)) {
+    if (type.is(TypeName.STRING)) {
       return new Call(ReverseStringFunction.INSTANCE, call.getOperand(0));
     }
 
-    if (type.isSameFamily(BinaryType.BINARY)) {
+    if (type.is(TypeName.BINARY)) {
       return new Call(ReverseBinaryFunction.INSTANCE, call.getOperand(0));
     }
 

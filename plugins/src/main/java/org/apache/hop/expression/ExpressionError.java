@@ -40,7 +40,7 @@ public enum ExpressionError {
   ILLEGAL_ARGUMENT("Expression.IllegalArgument"),
   //
   ILLEGAL_ARGUMENT_TYPE("Expression.IllegalArgumentType"),
-  //
+  /** Field not found ''{0}'' */
   UNRESOLVED_IDENTIFIER("Expression.UnresolvedIdentifier"),
   /** Function ''{0}'' does not exist */
   FUNCTION_DOES_NOT_EXIST("Expression.FunctionDoesNotExist"),

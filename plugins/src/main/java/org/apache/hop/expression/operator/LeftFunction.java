@@ -23,11 +23,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 
 /**
  * The function extracts a number of characters from a string or bytes from binary starting from
@@ -48,11 +47,11 @@ public class LeftFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(StringType.STRING)) {
+    if (type.is(TypeName.STRING)) {
       return new Call(LeftStringFunction.INSTANCE, call.getOperands());
     }
 
-    if (type.isSameFamily(BinaryType.BINARY)) {
+    if (type.is(TypeName.BINARY)) {
       return new Call(LeftBinaryFunction.INSTANCE, call.getOperands());
     }
 

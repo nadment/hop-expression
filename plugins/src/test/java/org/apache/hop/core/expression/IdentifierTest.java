@@ -43,7 +43,9 @@ public class IdentifierTest extends ExpressionTest {
     evalEquals("\"IDENTIFIER lower\"", "lower");
     
     evalFails("BIDON||'X'");
-
+    evalFails("ABS(FIELD_STRING)");
+    evalFails("SIN(FIELD_STRING)");
+    evalFails("CAST(FIELD_STRING as INTEGER)");
   }  
   
   @Test

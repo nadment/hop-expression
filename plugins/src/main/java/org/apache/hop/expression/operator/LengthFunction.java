@@ -23,11 +23,11 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 
 /**
  * The function returns the number of characters of the specified string or binary.
@@ -46,7 +46,7 @@ public class LengthFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     // Binary first
-    if (type.isSameFamily(BinaryType.BINARY)) {
+    if (type.is(TypeName.BINARY)) {
       return new Call(LengthBinaryFunction.INSTANCE, call.getOperand(0));
     }    
     if (type.isCompatibleWithCoercion(StringType.STRING)) {

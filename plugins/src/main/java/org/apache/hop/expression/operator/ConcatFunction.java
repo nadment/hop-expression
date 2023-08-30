@@ -25,10 +25,10 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -67,7 +67,7 @@ public class ConcatFunction extends Function {
     }
 
     Operator operator = ConcatStringFunction.INSTANCE;
-    if (BinaryType.BINARY.isSameFamily(type)) {
+    if (type!=null && type.is(TypeName.BINARY)) {
       operator = ConcatBinaryFunction.INSTANCE;
     }
 

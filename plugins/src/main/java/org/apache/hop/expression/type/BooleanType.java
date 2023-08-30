@@ -30,7 +30,7 @@ public final class BooleanType extends Type {
 
 
   @Override
-  public Boolean cast(final Object value) {
+  public Boolean cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -43,7 +43,7 @@ public final class BooleanType extends Type {
    * @return the converted value
    */
   @Override
-  public Boolean cast(final Object value, final String pattern) {
+  public Boolean cast(final Object value, final String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -69,7 +69,7 @@ public final class BooleanType extends Type {
    * @param value the value to coerce
    * @return Boolean
    */
-  public static final Boolean coerce(final Object value) {
+  public static final Boolean coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -83,7 +83,7 @@ public final class BooleanType extends Type {
         TypeName.BOOLEAN);
   }
 
-  public static final Boolean convert(final String str) {
+  public static final Boolean convert(final String str) throws ConversionException {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {

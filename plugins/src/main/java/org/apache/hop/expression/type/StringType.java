@@ -18,6 +18,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
@@ -42,7 +43,7 @@ public final class StringType extends Type {
   }
 
   @Override
-  public String cast(final Object value) {
+  public String cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -55,7 +56,7 @@ public final class StringType extends Type {
    * @return the converted value
    */
   @Override
-  public String cast(final Object value, String pattern) {
+  public String cast(final Object value, String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -77,8 +78,8 @@ public final class StringType extends Type {
         return result;
       }
 
-      throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(BooleanType.BOOLEAN, value, this));
+      throw new ConversionException(ExpressionError.CONVERSION_ERROR, BooleanType.BOOLEAN, value,
+          this);
     } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
@@ -88,8 +89,8 @@ public final class StringType extends Type {
       if (checkPrecision(result)) {
         return result;
       }
-      throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(NumberType.NUMBER, value, this));
+      throw new ConversionException(ExpressionError.CONVERSION_ERROR, NumberType.NUMBER, value,
+          this);
     }
     if (value instanceof ZonedDateTime) {
       if (pattern == null)
@@ -99,8 +100,7 @@ public final class StringType extends Type {
       if (checkPrecision(result)) {
         return result;
       }
-      throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(DateType.DATE, value, this));
+      throw new ConversionException(ExpressionError.CONVERSION_ERROR, DateType.DATE, value, this);
     }
 
     if (value instanceof byte[]) {
@@ -124,7 +124,7 @@ public final class StringType extends Type {
    * @param value the value to coerce
    * @return String
    */
-  public static final String coerce(final Object value) {
+  public static final String coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -148,7 +148,7 @@ public final class StringType extends Type {
     return value ? "TRUE" : "FALSE";
   }
 
-  public static String convert(final BigDecimal value) {
+  public static String convert(final BigDecimal value) throws ConversionException {
     return NumberFormat.of("TM").format(value);
   }
 
@@ -162,12 +162,12 @@ public final class StringType extends Type {
    * @param json the json to convert
    * @return String
    */
-  public static String convert(final JsonNode json) {
+  public static String convert(final JsonNode json) throws ConversionException {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new IllegalArgumentException(ExpressionError.INVALID_JSON.message(json));
+      throw new ConversionException(ExpressionError.INVALID_JSON, json);
     }
   }
 }

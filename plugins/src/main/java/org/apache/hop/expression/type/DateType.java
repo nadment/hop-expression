@@ -18,6 +18,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.ZonedDateTime;
 
@@ -33,7 +34,7 @@ public final class DateType extends Type {
   }
 
   @Override
-  public ZonedDateTime cast(final Object value) {
+  public ZonedDateTime cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -46,7 +47,7 @@ public final class DateType extends Type {
    * @return the converted value
    */
   @Override
-  public ZonedDateTime cast(final Object value, String pattern) {
+  public ZonedDateTime cast(final Object value, String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -59,8 +60,8 @@ public final class DateType extends Type {
       return DateTimeFormat.of(pattern).parse((String) value);
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 
   /**
@@ -69,7 +70,7 @@ public final class DateType extends Type {
    * @param value the value to coerce
    * @return ZonedDateTime
    */
-  public static final ZonedDateTime coerce(final Object value) {
+  public static final ZonedDateTime coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -78,7 +79,7 @@ public final class DateType extends Type {
       return (ZonedDateTime) value;
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(value, TypeName.from(value), TypeName.DATE));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.DATE);
   }
 }

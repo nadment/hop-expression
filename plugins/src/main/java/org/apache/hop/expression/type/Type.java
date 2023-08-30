@@ -17,6 +17,7 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
+import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -69,6 +70,10 @@ public abstract class Type {
     return name.getFamily();
   }
 
+  public boolean is(TypeName typeName) {
+    return name==typeName;
+  }
+  
   public boolean isSameFamily(TypeFamily family) {
     return name.getFamily().isSameFamily(family);
   }
@@ -148,7 +153,7 @@ public abstract class Type {
    * @param value the value to convert
    * @return the converted value
    */
-  public abstract Object cast(final Object value);
+  public abstract Object cast(final Object value) throws ConversionException;
 
   /**
    * Convert a value to the specified {@link Type} with a pattern.
@@ -158,7 +163,7 @@ public abstract class Type {
    *        numeric, or null if none
    * @return the converted value
    */
-  public abstract Object cast(final Object value, final String pattern);
+  public abstract Object cast(final Object value, final String pattern) throws ConversionException;
 
   @Override
   public String toString() {

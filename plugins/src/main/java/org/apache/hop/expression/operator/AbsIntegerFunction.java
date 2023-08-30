@@ -16,43 +16,25 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.IExpression;
 
-
 /**
- * String concatenation operator '<code>||</code>'
+ * Returns the absolute (positive) value of the integer value.
  */
-public class ConcatStringFunction extends ConcatFunction {
-  public static final ConcatStringFunction INSTANCE = new ConcatStringFunction();
-
-  // Function
-  public ConcatStringFunction() {
+public class AbsIntegerFunction extends AbsFunction {
+  public static final AbsIntegerFunction INSTANCE = new AbsIntegerFunction();
+  
+  public AbsIntegerFunction() {
     super();
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
+    Long value = operands[0].getValue(Long.class);
+    if (value == null)
+      return value;
 
-    String firstNotNull = null;
-    String[] values = new String[operands.length];
-    int i = 0;
-    for (IExpression operand : operands) {
-      String value = operand.getValue(String.class);
-      if (firstNotNull == null && value != null)
-        firstNotNull = value;
-      values[i++] = value;
-    }
-
-    if (firstNotNull == null)
-      return null;
-
-    StringBuilder builder = new StringBuilder();
-    for (IExpression operand : operands) {
-      String value = operand.getValue(String.class);
-      if (value != null)
-        builder.append(value);
-    }
-
-    return builder.toString();
+    return FastMath.abs(value);
   }
 }

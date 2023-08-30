@@ -18,7 +18,7 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
-import org.apache.hop.expression.exception.ParseNumberException;
+import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 
 public final class IntegerType extends Type {
@@ -33,7 +33,7 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public Long cast(final Object value) {
+  public Long cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -46,7 +46,7 @@ public final class IntegerType extends Type {
    * @return the converted value
    */
   @Override
-  public Long cast(final Object value, String pattern) {
+  public Long cast(final Object value, String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -69,8 +69,8 @@ public final class IntegerType extends Type {
       return convert((byte[]) value);
     }
 
-    throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_CONVERSION.message(value, TypeName.from(value), this));
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 
   /**
@@ -79,7 +79,7 @@ public final class IntegerType extends Type {
    * @param value the value to coerce
    * @return Long
    */
-  public static final Long coerce(final Object value) {
+  public static final Long coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -99,23 +99,23 @@ public final class IntegerType extends Type {
     // return toInteger((byte[]) value);
     // }
 
-    throw new IllegalArgumentException(ExpressionError.UNSUPPORTED_COERCION.message(value,
-        TypeName.from(value), TypeName.INTEGER));
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value,
+        TypeName.from(value), TypeName.INTEGER);
   }
 
-  public static final Long convert(final String str) throws ParseNumberException {
+  public static final Long convert(final String str) throws ConversionException {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
     } catch (Exception e) {
-      throw new ParseNumberException(ExpressionError.INVALID_INTEGER, str);
+      throw new ConversionException(ExpressionError.INVALID_INTEGER, str);
     }
   }
 
-  public static Long convert(final byte[] bytes) {
+  public static Long convert(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new IllegalArgumentException(
-          ExpressionError.CONVERSION_ERROR.message(TypeName.BINARY, bytes, TypeName.INTEGER));
+      throw new ConversionException(
+          ExpressionError.CONVERSION_ERROR, TypeName.BINARY, bytes, TypeName.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

@@ -36,7 +36,7 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public JsonNode cast(final Object value) {
+  public JsonNode cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
 
@@ -49,7 +49,7 @@ public final class JsonType extends Type {
    * @return the converted value
    */
   @Override
-  public JsonNode cast(final Object value, String pattern) {
+  public JsonNode cast(final Object value, String pattern) throws ConversionException {
 
     if (value == null) {
       return null;
@@ -74,7 +74,7 @@ public final class JsonType extends Type {
    * @param value the value to coerce
    * @return String
    */
-  public static final JsonNode coerce(final Object value) {
+  public static final JsonNode coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -95,7 +95,7 @@ public final class JsonType extends Type {
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode convert(final String str) {
+  public static JsonNode convert(final String str) throws ConversionException {
     try {
       ObjectMapper objectMapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();

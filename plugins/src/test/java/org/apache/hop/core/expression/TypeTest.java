@@ -217,9 +217,9 @@ public class TypeTest extends ExpressionTest {
   @Test
   public void coerceToBinary() throws Exception {
     assertNull(BinaryType.coerce(null));
-    assertThrows(IllegalArgumentException.class, () -> BinaryType.coerce(true));
-    assertThrows(IllegalArgumentException.class, () -> BinaryType.coerce(3L));
-    assertThrows(IllegalArgumentException.class, () -> BinaryType.coerce(3D));
+    assertThrows(ConversionException.class, () -> BinaryType.coerce(true));
+    assertThrows(ConversionException.class, () -> BinaryType.coerce(3L));
+    assertThrows(ConversionException.class, () -> BinaryType.coerce(3D));
   }
 
   @Test
@@ -227,11 +227,11 @@ public class TypeTest extends ExpressionTest {
     BinaryType type = BinaryType.BINARY;
     assertNull(type.cast(null));
     //assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
-    assertThrows(IllegalArgumentException.class, () ->  type.cast(true));
-    assertThrows(IllegalArgumentException.class, () ->  type.cast(1L));
-    assertThrows(IllegalArgumentException.class, () ->  type.cast(1D));
-    assertThrows(IllegalArgumentException.class, () ->  type.cast(BigDecimal.ONE));
-    assertThrows(IllegalArgumentException.class, () ->  type.cast(ZonedDateTime.now()));
+    assertThrows(ConversionException.class, () ->  type.cast(true));
+    assertThrows(ConversionException.class, () ->  type.cast(1L));
+    assertThrows(ConversionException.class, () ->  type.cast(1D));
+    assertThrows(ConversionException.class, () ->  type.cast(BigDecimal.ONE));
+    assertThrows(ConversionException.class, () ->  type.cast(ZonedDateTime.now()));
   }
 
   @Test
@@ -239,10 +239,9 @@ public class TypeTest extends ExpressionTest {
     ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
    
     assertNull(DateType.coerce(null));
-
     
-    assertThrows(IllegalArgumentException.class, () -> DateType.coerce(true));
-    assertThrows(IllegalArgumentException.class, () -> DateType.coerce("2022"));
+    assertThrows(ConversionException.class, () -> DateType.coerce(true));
+    assertThrows(ConversionException.class, () -> DateType.coerce("2022"));
   }
   
   @Test
@@ -293,10 +292,10 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(1L), IntegerType.coerce(BigDecimal.ONE));
     assertEquals(Long.valueOf(0L), IntegerType.coerce(BigDecimal.ZERO));
 
-    assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce(true));
-    assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce(new byte[] {0xF}));
-    assertThrows(IllegalArgumentException.class, () -> IntegerType.coerce(ZonedDateTime.now()));
-    assertThrows(ParseNumberException.class, () -> IntegerType.coerce("FALSE"));
+    assertThrows(ConversionException.class, () -> IntegerType.coerce(true));
+    assertThrows(ConversionException.class, () -> IntegerType.coerce(new byte[] {0xF}));
+    assertThrows(ConversionException.class, () -> IntegerType.coerce(ZonedDateTime.now()));
+    assertThrows(ConversionException.class, () -> IntegerType.coerce("FALSE"));
   }
 
   @Test
@@ -334,10 +333,10 @@ public class TypeTest extends ExpressionTest {
     assertEquals(new BigDecimal("-2.3E-2"), NumberType.coerce("-2.3e-2"));
     assertEquals(new BigDecimal("3.123"), NumberType.coerce(3.123D));
 
-    assertThrows(IllegalArgumentException.class, () -> NumberType.coerce(true));
-    assertThrows(IllegalArgumentException.class, () -> NumberType.coerce(new byte[] {0xF}));
-    assertThrows(IllegalArgumentException.class, () -> NumberType.coerce(ZonedDateTime.now()));
-    assertThrows(ParseNumberException.class, () -> NumberType.coerce("FALSE"));
+    assertThrows(ConversionException.class, () -> NumberType.coerce(true));
+    assertThrows(ConversionException.class, () -> NumberType.coerce(new byte[] {0xF}));
+    assertThrows(ConversionException.class, () -> NumberType.coerce(ZonedDateTime.now()));
+    assertThrows(ConversionException.class, () -> NumberType.coerce("FALSE"));
   }
 
   @Test
@@ -362,16 +361,16 @@ public class TypeTest extends ExpressionTest {
     assertEquals(new BigDecimal("-3.56E2"), type.cast("-3.56E+2"));
     assertEquals(BigDecimal.valueOf(15), type.cast(new byte[] {0xF}));
 
-    assertThrows(IllegalArgumentException.class, () -> type.cast(ZonedDateTime.now()));
-    assertThrows(ParseNumberException.class, () -> type.cast("TRUE"));
+    assertThrows(ConversionException.class, () -> type.cast(ZonedDateTime.now()));
+    assertThrows(ConversionException.class, () -> type.cast("TRUE"));
   }
 
   @Test
   public void castToUnknown() throws Exception {
     UnknownType type = UnknownType.UNKNOWN;
-    assertThrows(IllegalArgumentException.class, () -> type.cast(null));
-    assertThrows(IllegalArgumentException.class, () -> type.cast(true));
-    assertThrows(IllegalArgumentException.class, () -> type.cast("Test","MM"));
+    assertThrows(ConversionException.class, () -> type.cast(null));
+    assertThrows(ConversionException.class, () -> type.cast(true));
+    assertThrows(ConversionException.class, () -> type.cast("Test","MM"));
   }
 
   @Test
