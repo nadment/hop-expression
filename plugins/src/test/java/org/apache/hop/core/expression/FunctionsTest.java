@@ -1130,6 +1130,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Substring('TEST FROM',1,4)", "TEST");
     evalEquals("Substring('TEST FROM',-4)", "FROM");
     evalEquals("Substring('ABCDEFG',1,1)", "A");
+    evalNull("Substring(NULL_STRING,1,1)");
 
     // Compatibility mode
     evalEquals("Substring('ABCDEFG',0,1)", "A");

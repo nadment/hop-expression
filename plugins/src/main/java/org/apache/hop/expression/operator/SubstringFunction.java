@@ -38,6 +38,9 @@ public class SubstringFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String string = operands[0].getValue(String.class);
+    if ( string==null ) 
+      return null;
+    
     int length = string.length();
     int start = operands[1].getValue(Long.class).intValue();
 
@@ -59,7 +62,6 @@ public class SubstringFunction extends Function {
     start = Math.max(start, 1);
     end = Math.min(end, length + 1);
     if (start > length || end <= start) {
-      // TODO: option to treatEmptyStringsAsNull
       return null;
     }
 
