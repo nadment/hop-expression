@@ -14,13 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= SEC
+= SECH
 
-Calculates the trigonometric secant of the angle in radians.
+Calculates the hyperbolic secant of the angle in radians.
 
 == Syntax
 ----
-SEC( numeric )
+SECH( numeric )
 ----
 
 Return:: Number
@@ -28,4 +28,4 @@ Return:: Number
 == Usage
 
 * The argument should be expressed in radians.
-* SEC(x) is equivalent to 1 / COS(x)
+* SECH(x) is equivalent to 1 / COSH(x)

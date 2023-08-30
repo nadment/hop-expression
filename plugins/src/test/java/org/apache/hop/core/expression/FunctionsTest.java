@@ -1424,6 +1424,21 @@ public class FunctionsTest extends ExpressionTest {
     returnType("Sec(Pi())", NumberType.NUMBER);
   }
 
+  
+  @Test
+  public void Sech() throws Exception {
+    evalEquals("Sech(0)", 1L);
+    evalEquals("Sech(1)", 0L);
+    evalNull("Sech(NULL_INTEGER)");
+    
+    evalFails("Sech()");
+    evalFails("Sech(FIELD_STRING)");
+    evalFails("Sech(1,0)");
+    returnType("Sech(Pi()/2)", NumberType.NUMBER);
+    returnType("Sech(Pi())", NumberType.NUMBER);
+  }
+
+  
   @Test
   public void Tan() throws Exception {
     evalEquals("Tan(84.4)",  new BigDecimal("-0.4501776460619505196041288142345458"));                        

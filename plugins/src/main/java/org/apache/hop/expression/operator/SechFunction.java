@@ -17,34 +17,31 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
- * Calculates the trigonometric secant of the angle in radians.
+ * Calculates the hyperbolic secant of the angle in radians.
  */
 @FunctionPlugin
-public class SecFunction extends Function {
+public class SechFunction extends Function {
 
-  public SecFunction() {
-    super("SEC", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/sec.html");
+  public SechFunction() {
+    super("SECH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/sech.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
-      return null;
-
-    if (value.signum() == 0)
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
-
-    return BigDecimal.ONE.divide(BigDecimalMath.cos(value, DECIMAL128));
+      return null;   
+    
+    return BigDecimal.ONE.divide(BigDecimalMath.cosh(value, DECIMAL128), MathContext.DECIMAL128);
   }
 }
