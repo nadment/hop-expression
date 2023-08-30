@@ -24,16 +24,17 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
- * Calculates the trigonometric cosecant of the specified angle in radians.
+ * Calculates the hyperbolic cosecant of the specified angle in radians.
  */
 @FunctionPlugin
-public class CscFunction extends Function {
+public class CschFunction extends Function {
 
-  public CscFunction() {
-    super("CSC", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/csc.html");
+  public CschFunction() {
+    super("CSCH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/csch.html");
   }
 
   @Override
@@ -41,10 +42,10 @@ public class CscFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-
-    if (value == BigDecimal.ZERO)
+    
+    if (value.signum() == 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
-
-    return BigDecimal.ONE.divide(BigDecimalMath.sin(value, DECIMAL128), DECIMAL128);
+    
+    return BigDecimal.ONE.divide(BigDecimalMath.sinh(value, DECIMAL128), MathContext.DECIMAL128);
   }
 }

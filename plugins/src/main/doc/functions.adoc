@@ -73,6 +73,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/countif.adoc[COUNTIF] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/crc32.adoc[CRC32]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/csc.adoc[CSC]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/csch.adoc[CSCH]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_date.adoc[CURRENT_DATE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_timestamp.adoc[CURRENT_TIMESTAMP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_timezone.adoc[CURRENT_TIMEZONE]

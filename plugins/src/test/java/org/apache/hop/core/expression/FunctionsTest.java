@@ -1412,6 +1412,20 @@ public class FunctionsTest extends ExpressionTest {
   }
   
   @Test
+  public void Csch() throws Exception {
+    evalEquals("Csch(1.5)",  new BigDecimal("0.4696424405952245847295644318870135"));
+    evalEquals("Csch(Pi())", 0L);
+
+    evalNull("Csch(NULL_INTEGER)");
+    evalFails("Csch(0)");
+    evalFails("Csch()");
+    evalFails("Csch(FIELD_STRING)");    
+    evalFails("Csch(1,0)");
+    returnType("Csch(Pi())", NumberType.NUMBER);
+    returnType("Csch(Pi()/2)", NumberType.NUMBER);
+  }
+  
+  @Test
   public void Sec() throws Exception {
     evalEquals("Sec(Pi())", -1L);
 

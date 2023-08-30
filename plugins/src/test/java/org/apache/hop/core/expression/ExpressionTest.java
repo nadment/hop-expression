@@ -354,6 +354,8 @@ public class ExpressionTest {
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
     //evalNull("Json_Value(NULL_JSON,'$.name')");
 
+    evalFails("Sinh(FIELD_STRING)");
+
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

@@ -14,13 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CSC
+= CSCH
 
-Calculates the trigonometric cosecant of the angle in radians.
+Calculates the hyperbolic cosecant of the angle in radians.
 
 == Syntax
 ----
-CSC( numeric )
+CSCH( numeric )
 ----
 
 Return:: Number
@@ -28,4 +28,4 @@ Return:: Number
 == Usage
 
 * The argument should be expressed in radians.
-* CSC(x) is equivalent to 1 / SIN(x)
+* CSCH(x) is equivalent to 1 / SINH(x)
