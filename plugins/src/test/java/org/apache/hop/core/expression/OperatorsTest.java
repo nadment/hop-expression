@@ -1046,7 +1046,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("40/-10", -4L);
     evalEquals("-40/-10", 4L);
     evalEquals("5/2", 2.5D);
-    evalEquals("10.1/2.1",  new BigDecimal("4.809523809523809523809523809523810"));
+    evalEquals("10.1/2.1",  new BigDecimal("4.8095238095238095238095238095238"));
     evalEquals("0.1/0.0000000000001", 1000000000000L);
     evalNull("NULL_INTEGER/1");
     evalNull("NULL_INTEGER/0");

@@ -75,7 +75,7 @@ public class DivOperator extends Operator {
     if (divisor.signum() == 0)
       throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
 
-    return value.divide(divisor, DECIMAL128);
+    return value.divide(divisor, MATH_CONTEXT);
   }
 
   @Override

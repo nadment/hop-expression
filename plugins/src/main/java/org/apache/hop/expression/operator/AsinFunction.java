@@ -41,6 +41,6 @@ public class AsinFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.asin(value, DECIMAL128);
+    return BigDecimalMath.asin(value, MATH_CONTEXT);
   }
 }

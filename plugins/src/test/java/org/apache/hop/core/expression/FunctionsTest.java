@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -28,7 +29,6 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.Test;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -318,7 +318,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Pi()", PI);
     evalFails("Pi(123)");
     
-    optimize("PI()", "3.141592653589793238462643383279503");
+    optimize("PI()", "3.1415926535897932384626433832795");
     
     returnType("Pi()", NumberType.NUMBER);
   }
@@ -1234,7 +1234,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Abs(NULL_BIGNUMBER)");
     
     evalFails("Abs()");
-
+    evalFails("Abs(FIELD_STRING)");
+    
     optimize("ABS(-FIELD_INTEGER)");
 
     // Function repetition
@@ -1258,7 +1259,7 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Acosh() throws Exception {
     evalEquals("Acosh(1)", 0L);
-    evalEquals("Acosh(3)", new BigDecimal("1.762747174039086050465218649959585"));
+    evalEquals("Acosh(3)", new BigDecimal("1.7627471740390860504652186499596"));
     evalNull("Acosh(NULL_INTEGER)");
     
     evalFails("Acosh()");
@@ -1273,12 +1274,14 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Asin(sin(0.5))", 0.5D);
     evalNull("Asin(NULL_INTEGER)");
     evalFails("Asin()");
+    evalFails("Asin(FIELD_STRING)");
+    
     returnType("Asin(0.5)", NumberType.NUMBER);
   }
 
   @Test
   public void Asinh() throws Exception {
-    evalEquals("Asinh(asin(0.5))", new BigDecimal("0.5022189850346116082870390019347943"));
+    evalEquals("Asinh(asin(0.5))", new BigDecimal("0.50221898503461160828703900193479"));
     evalNull("Asinh(NULL_INTEGER)");
     evalFails("Asinh()");
     evalFails("Asinh(FIELD_STRING)");
@@ -1288,7 +1291,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Atan() throws Exception {
-    evalEquals("Atan(0.5)", new BigDecimal("0.4636476090008061162142562314612144"));
+    evalEquals("Atan(0.5)", new BigDecimal("0.46364760900080611621425623146121"));
     evalEquals("Atan(Tan(0.5))", 0.5);
     evalNull("Atan(NULL_INTEGER)");
     evalFails("Atan()");
@@ -1312,7 +1315,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Atanh() throws Exception {
-    evalEquals("Atanh(0.2)", new BigDecimal("0.2027325540540821909890065577321746"));
+    evalEquals("Atanh(0.2)", new BigDecimal("0.20273255405408219098900655773217"));
     evalNull("Atanh(NULL_INTEGER)");
     
     evalFails("Atanh()");
@@ -1345,7 +1348,7 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Cos() throws Exception {
     evalEquals("Cos(0)", 1L);
-    evalEquals("Cos(1)", new BigDecimal("0.5403023058681397174009366074429766"));
+    evalEquals("Cos(1)", new BigDecimal("0.54030230586813971740093660744298"));
     evalEquals("Cos(Pi())", -1L);    
     evalNull("Cos(NULL_NUMBER)");
     evalFails("Cos()");
@@ -1355,7 +1358,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Cosh() throws Exception {
-    evalEquals("Cosh(1.234)", new BigDecimal("1.863033801698422589073643750256062"));
+    evalEquals("Cosh(1.234)", new BigDecimal("1.8630338016984225890736437502561"));
     evalEquals("Cosh(0)", 1L);
     evalNull("Cosh(NULL_NUMBER)");
     evalFails("Cosh()");
@@ -1366,7 +1369,7 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Sin() throws Exception {
     evalEquals("Sin(0)", 0L);
-    evalEquals("Sin(1)", new BigDecimal("0.8414709848078965066525023216302990"));
+    evalEquals("Sin(1)", new BigDecimal("0.84147098480789650665250232163030"));
     evalEquals("Sin(Pi()/2)", 1L);
     evalNull("Sin(NULL_NUMBER)");
     evalFails("Sin()");
@@ -1376,7 +1379,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Sinh() throws Exception {
-    evalEquals("Sinh(84.4)", new BigDecimal("2.256442530767091418845536783202726E+36"));
+    evalEquals("Sinh(84.4)", new BigDecimal("2.2564425307670914188455367832027E+36"));
     evalEquals("Sinh(0)", 0L);
     evalNull("Sinh(NULL_NUMBER)");
     evalFails("Sinh()");
@@ -1388,7 +1391,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Cot() throws Exception {
-    evalEquals("Cot(1)", new BigDecimal("0.6420926159343307030064199865942656"));
+    evalEquals("Cot(1)", new BigDecimal("0.64209261593433070300641998659427"));
     // evalEquals("Cot(0)", Double.POSITIVE_INFINITY);
     evalNull("Cot(NULL_NUMBER)");
     evalFails("Cot(0)");
@@ -1413,7 +1416,7 @@ public class FunctionsTest extends ExpressionTest {
   
   @Test
   public void Csch() throws Exception {
-    evalEquals("Csch(1.5)",  new BigDecimal("0.4696424405952245847295644318870135"));
+    evalEquals("Csch(1.5)",  new BigDecimal("0.4696424405952245847295644318870206"));
     evalEquals("Csch(Pi())", 0L);
 
     evalNull("Csch(NULL_INTEGER)");
@@ -1455,7 +1458,7 @@ public class FunctionsTest extends ExpressionTest {
   
   @Test
   public void Tan() throws Exception {
-    evalEquals("Tan(84.4)",  new BigDecimal("-0.4501776460619505196041288142345458"));                        
+    evalEquals("Tan(84.4)",  new BigDecimal("-0.45017764606195051960412881423455"));                        
     evalEquals("Tan(0)", 0L);
     evalNull("Tan(NULL_NUMBER)");
     evalFails("Tan()");
@@ -1466,7 +1469,7 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Tanh() throws Exception {
-    evalEquals("Tanh(1.234)", new BigDecimal("0.8437356625893301939170200000435514"));
+    evalEquals("Tanh(1.234)", new BigDecimal("0.84373566258933019391702000004355"));
     evalEquals("Tanh(0)", 0L);
     evalNull("Tanh(NULL_INTEGER)");
     evalFails("Tanh()");    
@@ -1477,15 +1480,15 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void Exp() throws Exception {
-    evalEquals("Exp(1)", BigDecimalMath.exp(BigDecimal.ONE, MathContext.DECIMAL128));
-    evalEquals("Exp(2)", new BigDecimal("7.389056098930650227230427460575008"));
+    evalEquals("Exp(1)", BigDecimalMath.exp(BigDecimal.ONE, Operator.MATH_CONTEXT));
+    evalEquals("Exp(2)", new BigDecimal("7.3890560989306502272304274605750"));
     
     evalNull("Exp(NULL_INTEGER)");
     
     evalFails("Exp()");
     evalFails("Exp(1,2)");
         
-    optimize("EXP(1)", "2.718281828459045235360287471352662");
+    optimize("EXP(1)", "2.7182818284590452353602874713527");
     
     returnType("Exp(1)", NumberType.NUMBER);
   }
@@ -1513,7 +1516,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Power(-4,2)", 16L);
     evalEquals("Power(FIELD_INTEGER,0)", 1L);
     evalEquals("Power(999,0)", 1L);
-    evalEquals("Power(2,2.5)", new BigDecimal("5.656854249492380195206754896838792"));
+    evalEquals("Power(2,2.5)", new BigDecimal("5.6568542494923801952067548968388"));
     evalEquals("Power(2,-3)", 0.125D);
 
     evalNull("Power(NULL_INTEGER,2)");
@@ -2651,6 +2654,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Reverse(NULL_BINARY)");
     
     evalFails("Reverse()");
+    evalFails("Reverse(FIELD_DATE)");
     
     returnType("Reverse(FIELD_STRING)", StringType.STRING);
     returnType("Reverse(FIELD_BINARY)", BinaryType.BINARY);
@@ -2661,8 +2665,11 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Soundex('Wikipedia')", "W213");
     evalEquals("Soundex('I LOVE ROCKS.')", "I416");
     evalEquals("Soundex('I LOVE ROCK AND ROLL MUSIC.')", "I416");
+    
     evalNull("Soundex(NULL_STRING)");
     evalFails("Soundex()");
+    evalFails("Soundex(FIELD_DATE)");
+
     returnType("Soundex('Wikipedia')", StringType.STRING);
   }
 
@@ -3208,7 +3215,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Ln() throws Exception {
     evalEquals("Ln(1)", 0L);
     evalEquals("Ln(Exp(2.4))", 2.4D);
-    evalEquals("Ln(10)", new BigDecimal("2.302585092994045684017991454684364"));
+    evalEquals("Ln(10)", new BigDecimal("2.3025850929940456840179914546844"));
     
     evalNull("Ln(NULL_INTEGER)");
     evalNull("Ln(NULL_NUMBER)");

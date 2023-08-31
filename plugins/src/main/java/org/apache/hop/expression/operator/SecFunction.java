@@ -45,6 +45,6 @@ public class SecFunction extends Function {
     if (value.signum() == 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
 
-    return BigDecimal.ONE.divide(BigDecimalMath.cos(value, DECIMAL128), DECIMAL128);
+    return BigDecimal.ONE.divide(BigDecimalMath.cos(value, MATH_CONTEXT), MATH_CONTEXT);
   }
 }

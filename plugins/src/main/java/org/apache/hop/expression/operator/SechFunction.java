@@ -42,6 +42,6 @@ public class SechFunction extends Function {
     if (value == null)
       return null;   
     
-    return BigDecimal.ONE.divide(BigDecimalMath.cosh(value, DECIMAL128), MathContext.DECIMAL128);
+    return BigDecimal.ONE.divide(BigDecimalMath.cosh(value, MATH_CONTEXT), MathContext.DECIMAL128);
   }
 }

@@ -42,6 +42,6 @@ public class AtanhFunction extends Function {
     if (value == null)
       return null;
 
-    return BigDecimalMath.atanh(value, DECIMAL128);
+    return BigDecimalMath.atanh(value, MATH_CONTEXT);
   }
 }

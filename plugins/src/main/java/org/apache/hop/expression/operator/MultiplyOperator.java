@@ -81,7 +81,7 @@ public class MultiplyOperator extends Operator {
     if (right == null)
       return null;
 
-    return left.multiply(right, DECIMAL128);
+    return left.multiply(right, MATH_CONTEXT);
   }
 
   @Override

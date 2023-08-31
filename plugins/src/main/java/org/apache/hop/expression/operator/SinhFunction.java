@@ -41,6 +41,6 @@ public class SinhFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.sinh(value, DECIMAL128);
+    return BigDecimalMath.sinh(value, MATH_CONTEXT);
   }
 }

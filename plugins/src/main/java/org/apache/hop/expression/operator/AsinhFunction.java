@@ -42,6 +42,6 @@ public class AsinhFunction extends Function {
     if (value == null)
       return null;
 
-    return BigDecimalMath.asinh(value, DECIMAL128);
+    return BigDecimalMath.asinh(value, MATH_CONTEXT);
   }
 }

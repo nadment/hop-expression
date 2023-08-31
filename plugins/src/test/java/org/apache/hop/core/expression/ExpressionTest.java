@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class ExpressionTest {
 
-  protected static final BigDecimal PI = new BigDecimal("3.141592653589793238462643383279503");
+  protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
 
   protected static final String ANSI_RESET = "\u001B[0m";
   protected static final String ANSI_BLACK = "\u001B[30m";

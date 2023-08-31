@@ -42,6 +42,6 @@ public class CoshFunction extends Function {
     if (value == null)
       return null;
 
-    return BigDecimalMath.cosh(value, DECIMAL128);
+    return BigDecimalMath.cosh(value, MATH_CONTEXT);
   }
 }

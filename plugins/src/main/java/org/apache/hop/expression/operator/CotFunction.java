@@ -45,6 +45,6 @@ public class CotFunction extends Function {
     if (value.signum() == 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
 
-    return BigDecimalMath.cot(value, DECIMAL128);
+    return BigDecimalMath.cot(value, MATH_CONTEXT);
   }
 }

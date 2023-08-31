@@ -22,6 +22,7 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.util.Documentations;
 import java.io.StringWriter;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -38,7 +39,10 @@ import java.util.function.Predicate;
 public abstract class Operator implements Comparable<Operator> {
 
 
-  protected static final MathContext DECIMAL128 = MathContext.DECIMAL128;
+  /**
+   *  A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN HALF_EVEN}.
+   */
+  public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);;
 
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;

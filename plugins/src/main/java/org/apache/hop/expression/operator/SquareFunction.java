@@ -42,6 +42,6 @@ public class SquareFunction extends Function {
     if (value == null)
       return null;
 
-    return value.multiply(value, DECIMAL128);
+    return value.multiply(value, MATH_CONTEXT);
   }
 }

@@ -29,7 +29,6 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -51,7 +50,7 @@ public final class Literal implements IExpression {
   public static final Literal ZERO = new Literal(0L, IntegerType.INTEGER);
   public static final Literal ONE = new Literal(1L, IntegerType.INTEGER);
   public static final Literal PI =
-      new Literal(BigDecimalMath.pi(MathContext.DECIMAL128), NumberType.NUMBER);
+      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER);
 
   public static Literal of(final Object value) {
     if (value == null)

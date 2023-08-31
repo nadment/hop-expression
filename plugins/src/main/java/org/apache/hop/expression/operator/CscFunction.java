@@ -45,6 +45,6 @@ public class CscFunction extends Function {
     if (value == BigDecimal.ZERO)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
 
-    return BigDecimal.ONE.divide(BigDecimalMath.sin(value, DECIMAL128), DECIMAL128);
+    return BigDecimal.ONE.divide(BigDecimalMath.sin(value, MATH_CONTEXT), MATH_CONTEXT);
   }
 }

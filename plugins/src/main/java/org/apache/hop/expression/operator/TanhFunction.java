@@ -41,6 +41,6 @@ public class TanhFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.tanh(value, DECIMAL128);
+    return BigDecimalMath.tanh(value, MATH_CONTEXT);
   }
 }

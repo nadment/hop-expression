@@ -46,6 +46,6 @@ public class CbrtFunction extends Function {
     if (value == null)
       return null;
 
-    return BigDecimalMath.root(value, TREE, DECIMAL128);
+    return BigDecimalMath.root(value, TREE, MATH_CONTEXT);
   }
 }

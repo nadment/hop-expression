@@ -41,6 +41,6 @@ public class DegreesFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.toDegrees(value, DECIMAL128);
+    return BigDecimalMath.toDegrees(value, MATH_CONTEXT);
   }
 }

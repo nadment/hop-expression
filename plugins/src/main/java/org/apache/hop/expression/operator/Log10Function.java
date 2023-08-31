@@ -45,6 +45,6 @@ public class Log10Function extends Function {
 
     if (value.signum() <= 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
-    return BigDecimalMath.log10(value, DECIMAL128);
+    return BigDecimalMath.log10(value, MATH_CONTEXT);
   }
 }

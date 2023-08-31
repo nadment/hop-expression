@@ -36,7 +36,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 @FunctionPlugin
 public class ExpFunction extends Function {
 
-  private static final Literal E = new Literal(BigDecimalMath.e(DECIMAL128), NumberType.NUMBER);
+  private static final Literal E = new Literal(BigDecimalMath.e(MATH_CONTEXT), NumberType.NUMBER);
 
   public ExpFunction() {
     super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/exp.html");
@@ -58,6 +58,6 @@ public class ExpFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.exp(value, DECIMAL128);
+    return BigDecimalMath.exp(value, MATH_CONTEXT);
   }
 }

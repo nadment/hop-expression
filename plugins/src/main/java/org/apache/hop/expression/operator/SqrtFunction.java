@@ -46,6 +46,6 @@ public class SqrtFunction extends Function {
       return null;
     if (value.signum() < 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
-    return BigDecimalMath.sqrt(value, DECIMAL128);
+    return BigDecimalMath.sqrt(value, MATH_CONTEXT);
   }
 }

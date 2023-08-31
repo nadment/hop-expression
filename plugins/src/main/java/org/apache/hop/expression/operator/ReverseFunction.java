@@ -44,14 +44,10 @@ public class ReverseFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeName.STRING)) {
-      return new Call(ReverseStringFunction.INSTANCE, call.getOperand(0));
-    }
-
     if (type.is(TypeName.BINARY)) {
       return new Call(ReverseBinaryFunction.INSTANCE, call.getOperand(0));
     }
 
-    return call;
+    return new Call(ReverseStringFunction.INSTANCE, call.getOperand(0));
   }
 }

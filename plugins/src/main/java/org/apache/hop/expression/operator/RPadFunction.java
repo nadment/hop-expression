@@ -49,14 +49,10 @@ public class RPadFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeName.STRING)) {
-      return new Call(RPadStringFunction.INSTANCE, call.getOperands());
-    }
-
     if (type.is(TypeName.BINARY)) {
       return new Call(RPadBinaryFunction.INSTANCE, call.getOperands());
     }
 
-    return call;
+    return new Call(RPadStringFunction.INSTANCE, call.getOperands());
   }
 }

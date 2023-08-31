@@ -19,6 +19,7 @@ package org.apache.hop.expression.type;
 import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -152,6 +153,7 @@ public abstract class Type {
    *
    * @param value the value to convert
    * @return the converted value
+   * @throws ConversionException if the casting fail 
    */
   public abstract Object cast(final Object value) throws ConversionException;
 
@@ -162,6 +164,7 @@ public abstract class Type {
    * @param pattern the optional pattern to use for conversion to string when value is date or
    *        numeric, or null if none
    * @return the converted value
+   * @throws ConversionException if the casting fail 
    */
   public abstract Object cast(final Object value, final String pattern) throws ConversionException;
 

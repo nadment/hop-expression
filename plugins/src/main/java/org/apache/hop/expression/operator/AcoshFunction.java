@@ -41,6 +41,6 @@ public class AcoshFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.acosh(value, DECIMAL128);
+    return BigDecimalMath.acosh(value, MATH_CONTEXT);
   }
 }

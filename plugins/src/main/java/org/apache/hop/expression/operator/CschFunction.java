@@ -46,6 +46,6 @@ public class CschFunction extends Function {
     if (value.signum() == 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
     
-    return BigDecimal.ONE.divide(BigDecimalMath.sinh(value, DECIMAL128), MathContext.DECIMAL128);
+    return BigDecimal.ONE.divide(BigDecimalMath.sinh(value, MATH_CONTEXT), MathContext.DECIMAL128);
   }
 }

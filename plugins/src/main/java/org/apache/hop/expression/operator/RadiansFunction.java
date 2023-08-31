@@ -42,6 +42,6 @@ public class RadiansFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    return BigDecimalMath.toRadians(value, DECIMAL128);
+    return BigDecimalMath.toRadians(value, MATH_CONTEXT);
   }
 }

@@ -51,7 +51,7 @@ public class PowerFunction extends Function {
       return null;
     }
 
-    return BigDecimalMath.pow(number, exponent, DECIMAL128);
+    return BigDecimalMath.pow(number, exponent, MATH_CONTEXT);
   }
 
   @Override

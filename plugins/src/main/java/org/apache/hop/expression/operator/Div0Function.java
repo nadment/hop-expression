@@ -76,6 +76,6 @@ public class Div0Function extends Function {
     if (divisor.signum() == 0)
       return BigDecimal.ZERO;
 
-    return value.divide(divisor, DECIMAL128);
+    return value.divide(divisor, MATH_CONTEXT);
   }
 }

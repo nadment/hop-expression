@@ -45,6 +45,6 @@ public class Atan2Function extends Function {
     if (value1 == null)
       return null;
 
-    return BigDecimalMath.atan2(value0, value1, DECIMAL128);
+    return BigDecimalMath.atan2(value0, value1, MATH_CONTEXT);
   }
 }
