@@ -110,10 +110,13 @@ public class Identifier implements IExpression {
     if (row == null) {
       throw new ExpressionException(position, ExpressionError.CONTEXT_ERROR);
     }
-
+    
+    IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
+    if (valueMeta == null) {
+      throw new ExpressionException(position, ExpressionError.UNRESOLVED_IDENTIFIER, name);
+    }
+    
     try {
-      IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
-
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN:
           return rowMeta.getBoolean(row, ordinal);
@@ -143,22 +146,22 @@ public class Identifier implements IExpression {
               valueMeta.getTypeDesc());
       }
     } catch (Exception e) {
-      throw new ExpressionException(position, ExpressionError.UNRESOLVED_IDENTIFIER, getName());
+      // Ignore
     }
+    throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal]);
   }
 
   @Override
   public <T> T getValue(Class<T> clazz) {
     IRowMeta rowMeta = context.getRowMeta();
-    IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
-
-    if (valueMeta == null) {
-      throw new ExpressionException(position, ExpressionError.UNRESOLVED_IDENTIFIER, name);
-    }
-
     Object[] row = context.getRow();
     if (row == null) {
       throw new ExpressionException(position, ExpressionError.CONTEXT_ERROR);
+    }
+
+    IValueMeta valueMeta = rowMeta.getValueMeta(ordinal);
+    if (valueMeta == null) {
+      throw new ExpressionException(position, ExpressionError.UNRESOLVED_IDENTIFIER, name);
     }
 
     try {
@@ -324,16 +327,14 @@ public class Identifier implements IExpression {
         default:
           throw new ExpressionException(position, ExpressionError.UNSUPPORTED_VALUEMETA, getName(),
               valueMeta.getTypeDesc());
+
       }
-    } catch (ClassCastException e) {
-      throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal], clazz);
     } catch (ConversionException e) {
       throw e;
     } catch (Exception e) {
       // Ignore
     }
-
-    throw new ExpressionException(position, ExpressionError.UNRESOLVED_IDENTIFIER, getName());
+    throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal], clazz);
   }
   
   /**

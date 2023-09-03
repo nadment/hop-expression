@@ -498,7 +498,7 @@ public class FunctionsTest extends ExpressionTest {
 
     evalFails("Next_Day()");
     evalFails("Next_Day(FIELD_INTEGER, 'monday')");
-    evalFails("Next_Day(FIELD_STRIN, 'monday')");
+    evalFails("Next_Day(FIELD_STRING, 'monday')");
     evalFails("Next_Day(FIELD_DATE)");
     evalFails("Next_Day(FIELD_DATE, HOUR)");
 
