@@ -49,8 +49,6 @@ public final class Literal implements IExpression {
   public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, IntegerType.INTEGER);
   public static final Literal ONE = new Literal(1L, IntegerType.INTEGER);
-  public static final Literal PI =
-      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER);
 
   public static Literal of(final Object value) {
     if (value == null)
