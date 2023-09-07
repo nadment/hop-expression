@@ -45,7 +45,7 @@ public class IfFunction extends Function {
       throws ExpressionException {
 
     if (call.getOperandCount() == 2) {
-      return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1), Literal.NULL);
+      return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1), new Literal(null, call.getType()));
     }
 
     IExpression condition = call.getOperand(0);
@@ -67,7 +67,7 @@ public class IfFunction extends Function {
           call.getOperand(2));
     }
 
-    if (condition.is(Operators.EQUAL) && call.getOperand(1) == Literal.NULL) {
+    if (condition.is(Operators.EQUAL) && call.getOperand(1).isNull()) {
 
       // IF(x=y,NULL,x) → NULLIF(x, y)
       if (condition.asCall().getOperand(0).equals(call.getOperand(2))) {

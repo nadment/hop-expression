@@ -17,7 +17,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
 
 public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
@@ -35,7 +34,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     Type valueType = call.getOperand(0).getType();
 
     // Searched case operator
-    if (call.getOperand(0) == Literal.NULL) {
+    if (call.getOperand(0).isNull()) {
       valueType = BooleanType.BOOLEAN;
     }
     // Simple case operator

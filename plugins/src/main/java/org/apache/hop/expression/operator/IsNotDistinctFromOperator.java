@@ -61,10 +61,10 @@ public class IsNotDistinctFromOperator extends Operator {
 
     // The DISTINCT predicate is a verbose way of NULL safe comparisons.
     // If one of the operands is NULL, then it can be simplified to the IS NULL predicate.
-    if (left == Literal.NULL) {
+    if (left.isNull()) {
       return new Call(Operators.IS_NULL, right);
     }
-    if (right == Literal.NULL) {
+    if (right.isNull()) {
       return new Call(Operators.IS_NULL, left);
     }
 

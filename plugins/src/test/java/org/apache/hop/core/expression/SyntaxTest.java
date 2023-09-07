@@ -183,11 +183,12 @@ public class SyntaxTest extends ExpressionTest {
     evalFails("3*(1+2");
     evalFails(")+1");
     evalFails("'missing end");
-    evalFails("Year(");
+    evalFails("Year(");    
     evalFails("Year(2020");
     evalFails("Year)");
     evalFails("Year()");
     evalFails("Year(()");
+    evalFails("Year+3");
     evalFails("Today())");
     evalFails("Date '2022-05-01' AT TIME");
     evalFails("Date '2022-05-01' AT TIME ZONE");

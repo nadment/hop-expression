@@ -53,7 +53,7 @@ public class CaseOperator extends Operator {
     IExpression elseExpression = operands[3];
 
     // Search case
-    if (valueExpression == Literal.NULL) {
+    if (valueExpression == Literal.UNKNOWN) {
       for (IExpression whenOperand : whenTuple) {
         Boolean predicat = whenOperand.getValue(Boolean.class);
         if (predicat != null && predicat) {
@@ -98,13 +98,13 @@ public class CaseOperator extends Operator {
     IExpression elseTerm = call.getOperand(3);
 
     // Search CASE
-    if (call.getOperand(0) == Literal.NULL) {
+    if (call.getOperand(0) == Literal.UNKNOWN) {
 
       // Flatten search case
       //
       // When a searched CASE expression nests another CASE expression in its ELSE clause, that can
       // be flattened into the top level CASE expression.
-      if (elseTerm.is(Operators.CASE) && elseTerm.asCall().getOperand(0) == Literal.NULL) {
+      if (elseTerm.is(Operators.CASE) && elseTerm.asCall().getOperand(0) == Literal.UNKNOWN) {
         List<IExpression> whenOperands = new ArrayList<>();
         whenTerm.forEach(whenOperands::add);
         elseTerm.asCall().getOperand(1).asTuple().forEach(whenOperands::add);
@@ -113,7 +113,7 @@ public class CaseOperator extends Operator {
         thenTerm.forEach(thenOperands::add);
         elseTerm.asCall().getOperand(2).asTuple().forEach(thenOperands::add);
 
-        return new Call(Operators.CASE, Literal.NULL, new Tuple(whenOperands),
+        return new Call(Operators.CASE, Literal.UNKNOWN, new Tuple(whenOperands),
             new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
       }
 
@@ -130,7 +130,7 @@ public class CaseOperator extends Operator {
         }
 
         // CASE WHEN x=y THEN NULL ELSE x END → NULLIF(x,y)
-        if (whenTerm0.is(Operators.EQUAL) && thenTerm0 == Literal.NULL) {
+        if (whenTerm0.is(Operators.EQUAL) && thenTerm0.isNull()) {
 
           if (whenTerm0.asCall().getOperand(0).equals(elseTerm)) {
             return new Call(Operators.NULLIF, whenTerm0.asCall().getOperand(0),
@@ -181,7 +181,7 @@ public class CaseOperator extends Operator {
 
     // Simple case
     IExpression valueExpression = operands[0];
-    if (valueExpression != Literal.NULL) {
+    if (valueExpression != Literal.UNKNOWN) {
       writer.append(' ');
       valueExpression.unparse(writer);
     }
@@ -198,7 +198,7 @@ public class CaseOperator extends Operator {
     }
 
     IExpression elseExpression = operands[3];
-    if (elseExpression != Literal.NULL) {
+    if (elseExpression != Literal.UNKNOWN) {
       writer.append(" ELSE ");
       elseExpression.unparse(writer);
     }

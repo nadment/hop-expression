@@ -20,7 +20,6 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
@@ -69,8 +68,8 @@ public class InOperator extends Operator {
     Tuple tuple = call.getOperand(1).asTuple();
 
     // NULL if left side expression is always NULL
-    if (reference == Literal.NULL) {
-      return Literal.NULL;
+    if (reference.isNull()) {
+      return reference;
     }
 
     // Try to evaluate all operands to detect error like division by zero X IN (1,2,3/0)

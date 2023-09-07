@@ -17,9 +17,9 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -197,6 +197,8 @@ public abstract class Type {
       return DateType.DATE;
     if (value instanceof JsonNode)
       return JsonType.JSON;
+    if (value instanceof TimeUnit)
+      return UnknownType.SYMBOL;
     if (value instanceof byte[])
       return BinaryType.BINARY;
 

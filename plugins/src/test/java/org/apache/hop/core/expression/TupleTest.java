@@ -33,10 +33,10 @@ public class TupleTest extends ExpressionTest {
   @Test
   public void test() throws Exception {
     Tuple tuple0 = new Tuple();
-    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);    
-    Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
-    Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
-    Tuple tuple4 = new Tuple(Literal.NULL, Literal.ZERO, Literal.NULL);    
+    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.UNKNOWN);    
+    Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.UNKNOWN);
+    Tuple tuple3 = new Tuple(Literal.UNKNOWN, Literal.UNKNOWN, Literal.UNKNOWN);
+    Tuple tuple4 = new Tuple(Literal.UNKNOWN, Literal.ZERO, Literal.UNKNOWN);    
     Tuple tuple5 = new Tuple(Literal.TRUE, Literal.FALSE);
     Tuple tuple6 = new Tuple(Literal.of("A"), Literal.of("B"));
     Tuple tuple7 = new Tuple(Literal.of("A"), Literal.of("B"));

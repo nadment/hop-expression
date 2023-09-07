@@ -44,15 +44,22 @@ public final class Literal implements IExpression {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
-  public static final Literal NULL = new Literal(null, UnknownType.UNKNOWN);
+  /**
+   * UNKNOWN literal is null value without known data type 
+   */
+  public static final Literal UNKNOWN = new Literal(null, UnknownType.UNKNOWN);
+  /**
+   * NULL literal is a boolean data type with null value
+   */
+  public static final Literal NULL = new Literal(null, BooleanType.BOOLEAN);
   public static final Literal TRUE = new Literal(Boolean.TRUE, BooleanType.BOOLEAN);
   public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, IntegerType.INTEGER);
   public static final Literal ONE = new Literal(1L, IntegerType.INTEGER);
-
+  
   public static Literal of(final Object value) {
     if (value == null)
-      return NULL;
+      return UNKNOWN;
 
     if (value instanceof Boolean) {
       return ((boolean) value) ? TRUE : FALSE;
@@ -116,7 +123,7 @@ public final class Literal implements IExpression {
     }
 
     // Special internal case TimeUnit, DataType, Random
-    return new Literal(value, UnknownType.UNKNOWN);
+    return new Literal(value, UnknownType.SYMBOL);
   }
 
   /**
@@ -130,13 +137,15 @@ public final class Literal implements IExpression {
   private final Object value;
 
   /**
-   * For internal use only
+   * Create a typed literal value
+   * 
+   * @param type
    */
   public Literal(final Object value, final Type type) {
     this.value = value;
     this.type = type;
   }
-
+  
   @Override
   public Object getValue() {
     return value;
@@ -223,6 +232,7 @@ public final class Literal implements IExpression {
       case DATE:
       case ANY:
       case UNKNOWN:
+      case SYMBOL:
         break;
     }
 

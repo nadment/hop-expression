@@ -57,7 +57,7 @@ public class RandomFunction extends Function {
   @Override
   public IExpression compile(final IExpressionContext context, final Call call) {
     if (call.getOperandCount() == 0) {
-      return new Call(call.getOperator(), Literal.NULL, Literal.of(new Random()));
+      return new Call(call.getOperator(), Literal.UNKNOWN, Literal.of(new Random()));
     }
     
     if (call.getOperandCount() == 1) {

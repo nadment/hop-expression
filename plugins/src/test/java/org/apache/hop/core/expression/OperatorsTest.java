@@ -683,7 +683,8 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("CAST(12345678901234567890123456789012345678 as Boolean)");
    
     // Null
-    evalNull("CAST(NULL as Boolean)");
+    evalNull("CAST(NULL_INTEGER as Boolean)");
+    evalNull("CAST(NULL_NUMBER as Boolean)");
     evalNull("CAST(NULL_BOOLEAN as Boolean)");
 
     // Unsupported conversion    
@@ -726,7 +727,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST(BINARY '123' as Integer)", 291L);
     
     // Null
-    evalNull("CAST(NULL as Integer)");
+    evalNull("CAST(NULL_NUMBER as Integer)");
     evalNull("CAST(NULL_INTEGER as Integer)");
     
     // Accept DataType quoted like a String
@@ -777,7 +778,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST('  -1e-37  ' as Number)", -1e-37d);
     
     // Null
-    evalNull("CAST(NULL as Number)");
+    evalNull("CAST(NULL_INTEGER as Number)");
     evalNull("CAST(NULL_NUMBER as Number)");
     evalNull("CAST(NULL_BIGNUMBER as Number)");
     
@@ -827,7 +828,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST('abcdefg' AS String(20))", "abcdefg");
     
     // Null
-    evalNull("CAST(NULL as STRING)");
+    evalNull("CAST(NULL_BINARY as STRING)");
     evalNull("CAST(NULL_STRING as String)");
             
     optimize("CAST(FIELD_STRING AS STRING)", "FIELD_STRING");
@@ -879,7 +880,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST('AB' as BINARY)", "AB".getBytes());
     
     // Null
-    evalNull("CAST(NULL as Binary)");
+    evalNull("CAST(NULL_STRING as Binary)");
     evalNull("CAST(NULL_BINARY as Binary)");
     
     optimize("CAST(FIELD_STRING AS BINARY)", "CAST(FIELD_STRING AS BINARY)");
@@ -1390,21 +1391,19 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("'ABCDEFG' like '%DEFG'");
     evalTrue("'ABCDEFG' like '%CDE%'");
 
-    // Null
-    evalNull("NULL_STRING like 'NULL'");
-    evalNull("'test' LIKE NULL_STRING");
-    evalNull("NULL LIKE '%'");
-    evalNull("'a' LIKE NULL");
-    
     // NULL does not match NULL
     evalNull("NULL_STRING like NULL_STRING");
-
+    evalNull("NULL_STRING like 'NULL'");
+    evalNull("NULL_STRING LIKE '%'");
+    evalNull("'test' LIKE NULL_STRING");
+    evalNull("'a' LIKE NULL");
+    
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
     evalFails("'test' LIKE 'TEST' escape NULL");
     evalFails("'a' LIKE '%' ESCAPE NULL");
        
     optimize("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
-    optimize("FIELD_STRING LIKE '%'", "FIELD_STRING IS NOT NULL");
+    optimize("FIELD_STRING LIKE '%'", "IFNULL(FIELD_STRING,NULL,TRUE)");
     optimize("FIELD_STRING LIKE 'Hello'", "'Hello'=FIELD_STRING");
     optimize("FIELD_STRING LIKE 'H%'", "STARTSWITH(FIELD_STRING,'H')");
     optimize("FIELD_STRING LIKE 'ADD%'","STARTSWITH(FIELD_STRING,'ADD')");

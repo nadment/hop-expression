@@ -73,7 +73,7 @@ public class CoalesceFunction extends Function {
     
     switch (operands.size()) {
       case 0: // Nothing to coalesce
-        return Literal.NULL;
+        return new Literal(null, call.getType());
       case 1: // Coalesce(X) → X
         return operands.get(0);
       default:

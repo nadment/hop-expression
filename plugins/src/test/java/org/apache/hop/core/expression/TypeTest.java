@@ -102,7 +102,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(new NumberType(9,3), Type.of(BigDecimal.valueOf(123456123,3)));
     assertEquals(DateType.DATE, Type.of(ZonedDateTime.now()));
     assertEquals(BinaryType.BINARY, Type.of(new byte[] {0xF}));
-    assertEquals(UnknownType.UNKNOWN, Type.of(TimeUnit.CENTURY));
+    assertEquals(UnknownType.SYMBOL, Type.of(TimeUnit.CENTURY));
   }
 
   @Test

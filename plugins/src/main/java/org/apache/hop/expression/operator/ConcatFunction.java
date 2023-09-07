@@ -73,7 +73,7 @@ public class ConcatFunction extends Function {
 
     switch (operands.size()) {
       case 0: // Nothing to concat
-        return Literal.NULL;
+        return new Literal(null, call.getType());
       case 1: // Concat(X) => X
         return operands.get(0);
       default:

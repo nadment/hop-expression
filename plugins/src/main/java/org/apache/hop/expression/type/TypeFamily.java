@@ -22,7 +22,7 @@ public enum TypeFamily {
   // Primary
   BINARY, NUMERIC, TEMPORAL, BOOLEAN, STRING, JSON,
   // Secondary
-  NONE, ANY;
+  NONE, ANY, SYMBOL;
 
   /** Return the default {@link Type} that belongs to this family. */
   public Type getDefaultDataType() {
@@ -102,6 +102,7 @@ public enum TypeFamily {
       case ANY:
       case NONE:
         return true;
+      case SYMBOL:
       default:
         return false;
     }

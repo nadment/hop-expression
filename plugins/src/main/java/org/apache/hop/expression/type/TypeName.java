@@ -37,6 +37,8 @@ public enum TypeName {
   /** A unknown type */
   UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, -1, Void.class),
 
+  SYMBOL(TypeFamily.SYMBOL, PrecScale.NO_NO, -1, Void.class),
+  
   ANY(TypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, -1, Object.class),
 
   /** Unlimited length text */

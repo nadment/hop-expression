@@ -75,20 +75,20 @@ public class LikeOperator extends Operator {
 
       // FIELD LIKE NULL → NULL
       if (pattern == null)
-        return Literal.NULL;
+        return new Literal(null, call.getType());
 
-      if (call.getOperandCount() == 3) {
-        String escape = call.getOperand(2).getValue(String.class);
-        if (escape == null)
+      if (call.getOperandCount() == 3) {        
+        if (call.getOperand(2).isNull())
           return Literal.NULL;
 
         // For now don't optimize if special escape char
         return call;
       }
 
-      // field LIKE '%' → field IS NOT NULL
+      // field LIKE '%' → IFNULL(field,NULL,TRUE)
       if ("%".equals(pattern)) {
-        return new Call(Operators.IS_NOT_NULL, value);
+        //return new Call(Operators.IS_NOT_NULL, value);
+        return new Call(Operators.IFNULL, value, Literal.NULL, Literal.TRUE);
       }
 
       // field LIKE '%foo%' → CONTAINS(field,'foo')

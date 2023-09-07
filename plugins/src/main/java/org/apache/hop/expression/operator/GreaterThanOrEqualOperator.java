@@ -72,8 +72,8 @@ public class GreaterThanOrEqualOperator extends Operator {
     }
 
     // Simplify x>=NULL → NULL
-    if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
-      return Literal.NULL;
+    if (left.isNull() || right.isNull()) {
+      return new Literal(null, call.getType());
     }
 
     // Simplify x>=x → NULL OR x IS NOT NULL

@@ -53,7 +53,7 @@ public class NullIfFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     if (call.getOperand(0).isNull()) {
-      return Literal.NULL;
+      return new Literal(null, call.getType());
     }
 
     return call;

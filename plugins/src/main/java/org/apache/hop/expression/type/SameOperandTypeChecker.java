@@ -18,7 +18,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Literal;
 
 /**
  * Operand type-checking strategy which checks all operand types must be the same.
@@ -48,7 +47,7 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
       IExpression operand = call.getOperand(i);
 
       // Ignore null
-      if (operand == Literal.NULL)
+      if (operand.isNull())
         continue;
 
       Type type = operand.getType();

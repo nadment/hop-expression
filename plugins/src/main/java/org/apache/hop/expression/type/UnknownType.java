@@ -24,7 +24,8 @@ public final class UnknownType extends Type {
 
   public static final UnknownType UNKNOWN = new UnknownType(TypeName.UNKNOWN);
   public static final UnknownType ANY = new UnknownType(TypeName.ANY);
-
+  public static final UnknownType SYMBOL = new UnknownType(TypeName.SYMBOL);
+  
   private UnknownType(TypeName name) {
     super(name);
   }

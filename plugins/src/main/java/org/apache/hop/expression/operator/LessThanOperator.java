@@ -73,7 +73,7 @@ public class LessThanOperator extends Operator {
     }
 
     // Simplify x<NULL → NULL
-    if (left.equals(Literal.NULL) || right.equals(Literal.NULL)) {
+    if (left.isNull() || right.isNull()) {
       return Literal.NULL;
     }
 

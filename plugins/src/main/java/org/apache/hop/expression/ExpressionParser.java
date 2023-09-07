@@ -134,7 +134,7 @@ public class ExpressionParser {
 
     // Empty source return NULL
     if (tokens.isEmpty())
-      return Literal.NULL;
+      return Literal.UNKNOWN;
 
     IExpression expression = this.parseLogicalOr();
 
@@ -426,7 +426,7 @@ public class ExpressionParser {
       case FALSE:
         return Literal.FALSE;
       case NULL:
-        return Literal.NULL;
+        return Literal.UNKNOWN;
       case IDENTIFIER:
         return new Identifier(token.start(), token.text());
       case LITERAL_STRING:
@@ -745,8 +745,8 @@ public class ExpressionParser {
 
   /** Case When Then Else End ) */
   private IExpression parseCase() throws ExpressionException {
-    IExpression valueExpression = Literal.NULL;
-    IExpression elseExpression = Literal.NULL;
+    IExpression valueExpression = Literal.UNKNOWN;
+    IExpression elseExpression = Literal.UNKNOWN;
     List<IExpression> whenList = new ArrayList<>();
     List<IExpression> thenList = new ArrayList<>();
 
