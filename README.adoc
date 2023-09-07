@@ -18,6 +18,7 @@ under the License.
 :url-sonarcloud: https://sonarcloud.io/dashboard?id=hop-expression
 
 image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=alert_status[Sonarcloud,link={url-sonarcloud}]
+image:https://sonarcloud.io/api/project_badges/measure?project=hop-expression&metric=coverage[Sonarcloud,link={url-sonarcloud}]
 
 ## Overview
 
