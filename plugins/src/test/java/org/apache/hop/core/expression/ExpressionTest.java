@@ -25,6 +25,7 @@ import org.apache.hop.core.row.value.ValueMetaBinary;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaInternetAddress;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNumber;
 import org.apache.hop.core.row.value.ValueMetaString;
@@ -47,6 +48,7 @@ import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -100,10 +102,12 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
     rowMeta.addValueMeta(new ValueMetaTimestamp("FIELD_TIMESTAMP"));
-    rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN_TRUE"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("FIELD_BOOLEAN_FALSE"));
     rowMeta.addValueMeta(new ValueMetaBinary("FIELD_BINARY"));
+    rowMeta.addValueMeta(new ValueMetaInternetAddress("FIELD_INET"));
     rowMeta.addValueMeta(new ValueMetaJson("FIELD_JSON"));
-
+    
     // Null values
     rowMeta.addValueMeta(new ValueMetaString("NULL_STRING"));
     rowMeta.addValueMeta(new ValueMetaBoolean("NULL_BOOLEAN"));
@@ -114,16 +118,24 @@ public class ExpressionTest {
     rowMeta.addValueMeta(new ValueMetaTimestamp("NULL_TIMESTAMP"));
     rowMeta.addValueMeta(new ValueMetaBinary("NULL_BINARY"));
     rowMeta.addValueMeta(new ValueMetaJson("NULL_JSON"));
-
+    
+    // Zero values
+    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER_ZERO"));
+    rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER_ZERO"));
+    rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER_ZERO"));   
+    
     // For implicit cast
-    rowMeta.addValueMeta(new ValueMetaString("STRING_BOOLEAN"));
-    rowMeta.addValueMeta(new ValueMetaString("STRING_INTEGER"));
-    rowMeta.addValueMeta(new ValueMetaString("STRING_NUMBER"));
-
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_BOOLEAN_TRUE"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_BOOLEAN_FALSE"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_NUMBER"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING_JSON"));
+    
     // Reserved words
     rowMeta.addValueMeta(new ValueMetaInteger("YEAR"));
     rowMeta.addValueMeta(new ValueMetaString("STRING"));
     rowMeta.addValueMeta(new ValueMetaBoolean("CASE"));
+    rowMeta.addValueMeta(new ValueMetaBoolean("ASCII"));
     rowMeta.addValueMeta(new ValueMetaInteger("CENTURY"));
 
     // Special identifier
@@ -137,7 +149,7 @@ public class ExpressionTest {
       Calendar calendar = Calendar.getInstance();
       calendar.set(1981, 5, 23);
 
-      Object[] row = new Object[30];
+      Object[] row = new Object[37];
       row[0] = "TEST";
       row[1] = calendar.getTime();
       row[2] = 40L;
@@ -146,32 +158,47 @@ public class ExpressionTest {
       row[5] = calendar.getTime();
       row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
       row[7] = true;
-      row[8] = "TEST".getBytes();
-      row[9] = JsonType.convert(
-          "{\"student\": [{\"id\":\"01\",\"name\": \"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+      row[8] = false;
+      row[9] = "TEST".getBytes();
+      row[10] = InetAddress.getLocalHost();
+      row[11] = JsonType.convert(
+          "{\"student\": [{\"id\":\"01\",name:\"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
-      row[10] = null;
-      row[11] = null;
+      // Null values
       row[12] = null;
       row[13] = null;
       row[14] = null;
-      row[15] = null;
+      row[16] = null;
       row[16] = null;
       row[17] = null;
       row[18] = null;
+      row[19] = null;
+      row[20] = null;
 
-      row[19] = "True";
-      row[20] = "25";
-      row[21] = "-12.56";
+      // Zero values
+      row[21] = 0L;
+      row[22] = 0D;
+      row[23] = BigDecimal.ZERO;
+      
+      // String
+      row[24] = "True";
+      row[25] = "False";
+      row[26] = "25";
+      row[27] = "-12.56";
+      row[28] = "{id:\"01\",name:\"John\",age:29}";
 
-
-      row[22] = 2020L;
-      row[23] = "Paris";
-      row[24] = true;
-      row[25] = 2;
-      row[26] = "SPACE";
-      row[27] = "UNDERSCORE";
-      row[28] = "lower";
+      // Reserved words
+      row[29] = 2020L;
+      row[30] = "Paris";
+      row[31] = true;
+      row[32] = "A";
+      row[33] = 2;
+      
+      // Identifier
+      row[34] = "SPACE";
+      row[35] = "UNDERSCORE";
+      row[36] = "lower";
+       
       context.setRow(row);
     }
 
@@ -353,7 +380,7 @@ public class ExpressionTest {
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
     //evalNull("Json_Value(NULL_JSON,'$.name')");
-    evalFails("Year+3");
+
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

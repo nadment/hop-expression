@@ -35,7 +35,7 @@ public class IsNotTrueOperator extends Operator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
+    Boolean value = operands[0].getValue(Boolean.class);
 
     // NULL is always NOT TRUE
     return value != Boolean.TRUE;

@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.TypeName;
  * The function returns TRUE if the first value ends with second value. Both values must be data
  * type of string or binary.
  *
- * @see {@link StartWith}
+ * @see {@link StartWithFunction}
  */
 @FunctionPlugin
 public class EndsWithFunction extends Function {
@@ -48,15 +48,10 @@ public class EndsWithFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-
-    if (type.is(TypeName.STRING)) {
-      return new Call(EndsWithStringFunction.INSTANCE, call.getOperands());
-    }
-
     if (type.is(TypeName.BINARY)) {
       return new Call(EndsWithBinaryFunction.INSTANCE, call.getOperands());
     }
 
-    return call;
+    return new Call(EndsWithStringFunction.INSTANCE, call.getOperands());
   }
 }

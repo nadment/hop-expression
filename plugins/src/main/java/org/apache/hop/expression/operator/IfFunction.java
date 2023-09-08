@@ -44,6 +44,7 @@ public class IfFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
+    // Standardize IF(condition,x) → IF(condition,x,NULL)
     if (call.getOperandCount() == 2) {
       return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1), new Literal(null, call.getType()));
     }

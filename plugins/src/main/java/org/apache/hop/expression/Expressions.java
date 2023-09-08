@@ -24,16 +24,8 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.DateType;
-import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.NumberType;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
-import org.apache.hop.expression.type.UnknownType;
 
 public class Expressions {
 
@@ -56,10 +48,6 @@ public class Expressions {
 
     try {
       IExpression expression = parser.parse();
-
-      if (expression == null)
-        return expression;
-
       expression.validate(context);
       return compile(context, expression);
     } catch (ExpressionException e) {
@@ -90,28 +78,6 @@ public class Expressions {
   }
 
 
-  public static Type createDataType(IValueMeta valueMeta) {
-    switch (valueMeta.getType()) {
-      case IValueMeta.TYPE_BOOLEAN:
-        return BooleanType.BOOLEAN;
-      case IValueMeta.TYPE_DATE:
-      case IValueMeta.TYPE_TIMESTAMP:
-        return DateType.DATE;
-      case IValueMeta.TYPE_STRING:
-        return new StringType(valueMeta.getLength());
-      case IValueMeta.TYPE_INTEGER:
-        return IntegerType.INTEGER;
-      case IValueMeta.TYPE_NUMBER:
-      case IValueMeta.TYPE_BIGNUMBER:
-        return new NumberType(valueMeta.getLength(), valueMeta.getPrecision());
-      case ValueMetaJson.TYPE_JSON:
-        return JsonType.JSON;
-      case IValueMeta.TYPE_BINARY:
-        return new BinaryType(valueMeta.getLength());
-      default:
-        return UnknownType.UNKNOWN;
-    }
-  }
 
   public static IValueMeta createValueMeta(final String name, final TypeName type) {
 

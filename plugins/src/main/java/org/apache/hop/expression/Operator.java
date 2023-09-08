@@ -42,7 +42,7 @@ public abstract class Operator implements Comparable<Operator> {
   /**
    *  A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN HALF_EVEN}.
    */
-  public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);;
+  public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
   /** The unique identifier of the operator/function. Ex. "COS" or "TRIM" */
   private final String id;

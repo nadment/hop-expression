@@ -81,11 +81,12 @@ public class LiteralTest extends ExpressionTest {
   public void TimeUnit() throws Exception {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
-
+  
+  @Test
   public void Type() throws Exception {
     assertEquals(NumberType.NUMBER, Literal.of(NumberType.NUMBER).getValue());
 
-    evalEquals("Cast(123 as InTeGeR)", 123L);
+
   }
 
   @Test
@@ -206,10 +207,12 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0xG");    
     evalFails("0xF2_");
     evalFails("0xF2__FF");
-
+    evalFails("0xABCDEFg");
+    
     // Octal
     evalEquals("0o0757", 495L);
     evalEquals("0o12345671234567", 718046312823L);
+    evalEquals("0o4575_5712_1475_2577_2555_2561_1231_4567_7110", new BigInteger("457557121475257725552561123145677110",8));
     evalEquals("0O12345", 5349L);
     evalEquals("0O1_2_3_4_5", 5349L);
     evalEquals("0O_12345", 5349L);
@@ -217,6 +220,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0O99");
     evalFails("0o72_");
     evalFails("0O12__345");
+    
 
     // Binary
     evalEquals("0b10", 0b10L);
@@ -311,7 +315,12 @@ public class LiteralTest extends ExpressionTest {
     evalFails("DATE '2021-02-32'");
     evalFails("DATE '21-02-25'");
     evalFails("DATE '201-02-25'");
-
+    // Invalid date
+    evalFails("Date '2020-20-28'");
+    
+    
+    
+    
     optimize("DATE '2021-02-25'");
 
     returnType("DATE '2021-02-25'", DateType.DATE);

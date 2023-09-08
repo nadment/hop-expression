@@ -53,7 +53,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("false = false");
     evalFalse("true = false");
     evalFalse("false = true");
-    evalTrue("FIELD_BOOLEAN = true");
+    evalTrue("FIELD_BOOLEAN_TRUE = true");
     
     // String
     evalTrue("'ABC' = 'ABC'");
@@ -95,10 +95,10 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_INTEGER=40","40=FIELD_INTEGER");
     optimize("FIELD_STRING = NULL", "NULL");    
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
-    optimize("FIELD_BOOLEAN = TRUE", "FIELD_BOOLEAN IS TRUE");
-    optimize("TRUE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
-    optimize("FIELD_BOOLEAN = FALSE", "FIELD_BOOLEAN IS FALSE");
-    optimize("FALSE = FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    optimize("FIELD_BOOLEAN_TRUE = TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("TRUE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("FIELD_BOOLEAN_TRUE = FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("FALSE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
     
     // Simplify comparison with same term
     optimize("FIELD_STRING=FIELD_STRING", "NULL OR FIELD_STRING IS NOT NULL");
@@ -171,16 +171,18 @@ public class OperatorsTest extends ExpressionTest {
 
     evalNull("NULL_BOOLEAN > 0");
     evalNull("NULL_INTEGER > 0");
-    evalNull("NULL_NUMBER > 0");
+    evalNull("NULL_NUMBER > NULL_INTEGER");
     evalNull("1 > NULL_BOOLEAN");
         
     evalFails("> FIELD_INTEGER");
+    evalFails("FIELD_INTEGER >");
     evalFails("FIELD_INTEGER > ");
     evalFails("FIELD_STRING>5");
     
     optimize("10>FIELD_INTEGER");
     optimizeTrue("25>12");
     optimize("FIELD_STRING > NULL", "NULL");
+    optimize("NULL > FIELD_STRING", "NULL");
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
     optimize("FIELD_INTEGER+1>3", "2<FIELD_INTEGER");
     
@@ -219,15 +221,17 @@ public class OperatorsTest extends ExpressionTest {
     
     evalFails(">=FIELD_INTEGER");
     evalFails("FIELD_INTEGER >=");
+    evalFails("FIELD_INTEGER >= ");
     evalFails("FIELD_STRING>=5");
     
     optimize("FIELD_INTEGER>=80","80<=FIELD_INTEGER");
     optimizeTrue("25>=12");
-    optimize("FIELD_BOOLEAN >= TRUE", "FIELD_BOOLEAN IS TRUE");
-    optimize("TRUE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
-    optimize("FIELD_BOOLEAN >= FALSE", "FIELD_BOOLEAN IS FALSE");
-    optimize("FALSE >= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    optimize("FIELD_BOOLEAN_TRUE >= TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("TRUE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("FIELD_BOOLEAN_TRUE >= FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
     optimize("FIELD_STRING >= NULL", "NULL");
+    optimize("NULL >= NULL_BOOLEAN", "NULL");
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
     optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
     
@@ -259,15 +263,18 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("DATE '2019-01-01' < DATE '2018-01-01'");
 
     evalNull("NULL_INTEGER < 1");
-    evalNull("0 < NULL_INTEGER");
+    evalNull("NULL_NUMBER < NULL_INTEGER");
+    evalNull("NULL_STRING < Upper(FIELD_STRING)");
 
     evalFails("< FIELD_INTEGER");
+    evalFails("FIELD_INTEGER <");
     evalFails("FIELD_INTEGER < ");
     evalFails("FIELD_STRING < 5");
     
     optimize("FIELD_INTEGER<80","80>FIELD_INTEGER");
     optimizeFalse("25<12");
     optimize("FIELD_STRING < NULL", "NULL");
+    optimize("NULL < FIELD_STRING", "NULL");
     optimize("FIELD_INTEGER+1<3", "2>FIELD_INTEGER");
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
     
@@ -300,17 +307,19 @@ public class OperatorsTest extends ExpressionTest {
 
     evalNull("NULL_INTEGER <= FIELD_INTEGER");
     evalNull("FIELD_INTEGER <= NULL_INTEGER");
-
+    evalNull("NULL_STRING <= Upper(FIELD_STRING)");
+    
     evalFails("<= FIELD_INTEGER");
     evalFails("FIELD_INTEGER <=");
+    evalFails("FIELD_INTEGER <= ");
     evalFails("FIELD_STRING <=5");
     
     optimize("FIELD_INTEGER<=5","5>=FIELD_INTEGER");
     optimizeFalse("25<=12");
-    optimize("FIELD_BOOLEAN <= TRUE", "FIELD_BOOLEAN IS TRUE");
-    optimize("TRUE <= FIELD_BOOLEAN", "FIELD_BOOLEAN IS TRUE");
-    optimize("FIELD_BOOLEAN <= FALSE", "FIELD_BOOLEAN IS FALSE");
-    optimize("FALSE <= FIELD_BOOLEAN", "FIELD_BOOLEAN IS FALSE");
+    optimize("FIELD_BOOLEAN_TRUE <= TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("TRUE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
     optimize("FIELD_STRING <= NULL", "NULL");    
     optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");    
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
@@ -339,11 +348,19 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("2 in (NULL_INTEGER,NULL_NUMBER)");
     evalFalse("1 not in (NULL_INTEGER,1)");
     evalNull("NULL_INTEGER in (1,2,3)");
-    evalNull("NULL_INTEGER in (1,2,3,NULL_INTEGER)");
+    evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
+    evalNull("NULL in (NULL_NUMBER,2,3,NULL_INTEGER)");
 
-    evalFails("2 in (1,2.5,)");
-    evalFails("2 in ()");
-   
+    evalFails("FIELD_INTEGER in 1,2)");
+    evalFails("FIELD_INTEGER in (1,2.5,)");
+    evalFails("FIELD_INTEGER in ()");
+    evalFails("FIELD_INTEGER in ()    ");
+    evalFails("FIELD_INTEGER in 40");
+    evalFails("FIELD_INTEGER in (,2,3)");
+    evalFails("FIELD_INTEGER in (1,2,3");
+    evalFails("FIELD_INTEGER in (1,,3)");
+    evalFails("FIELD_INTEGER in (1,2,)");    
+    
     // TODO: assertExpressionExceptionThrownBy(() -> eval("3 in (2, 4, 3, 5 / 0)")).hasErrorCode(DIVISION_BY_ZERO);
     
     optimize("FIELD_INTEGER IN (10,20,30,40)");
@@ -353,7 +370,7 @@ public class OperatorsTest extends ExpressionTest {
 
     optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')");
-    
+    optimize("NULL in (NULL_NUMBER,2,3,NULL_INTEGER)","NULL");
 
    // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
     
@@ -375,45 +392,52 @@ public class OperatorsTest extends ExpressionTest {
   public void IsTrue() throws Exception {
     evalTrue("True IS True");
     evalTrue("True IS NOT False");
-    evalTrue("FIELD_BOOLEAN is True");
+    evalTrue("FIELD_BOOLEAN_TRUE is True");
     evalFalse("NULL_BOOLEAN IS True");  
-    evalTrue("False IS NOT TRUE");      
+    evalFalse("FIELD_STRING='XX' IS TRUE");
+    evalTrue("FIELD_STRING='XX' IS NOT TRUE");
+          
     evalFalse("NULL_BOOLEAN is True");
     evalTrue("NULL_BOOLEAN IS NOT True");
+    
     
     evalFails("NOM IS ");
     evalFails("IS TRUE");
     evalFails("IS NOT TRUE");
     
-    optimize("FIELD_BOOLEAN IS TRUE");
-    optimize("FIELD_BOOLEAN IS NOT TRUE");
+    optimize("FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("FIELD_BOOLEAN_TRUE IS NOT TRUE");
     optimizeTrue("true is true");
+    optimizeFalse("true is not true");
     optimizeTrue("false is not true");
+    optimizeFalse("false is true");
 
     
-    returnType("FIELD_BOOLEAN IS TRUE", BooleanType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT TRUE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS TRUE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS NOT TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
   public void IsFalse() throws Exception {
-    evalTrue("True IS NOT False");
-    evalFalse("True IS False");
-    evalTrue("False IS False");
+    evalFalse("FIELD_BOOLEAN_TRUE IS FALSE");
+    evalTrue("FIELD_BOOLEAN_TRUE IS NOT FALSE");    
+    evalTrue("FIELD_STRING='XX' IS FALSE");
+    evalFalse("FIELD_STRING='XX' IS NOT FALSE");
+    
     evalFalse("NULL_BOOLEAN IS False");        
     evalTrue("NULL_BOOLEAN IS NOT False");
 
     evalFails("IS FALSE");
     evalFails("IS NOT FALSE");
     
-    optimize("FIELD_BOOLEAN IS FALSE");
-    optimize("FIELD_BOOLEAN IS NOT FALSE");
+    optimize("FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("FIELD_BOOLEAN_TRUE IS NOT FALSE");
     optimizeTrue("false is false");
     optimizeFalse("true is false");
     optimizeTrue("true is not false");
     
-    returnType("FIELD_BOOLEAN IS FALSE", BooleanType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT FALSE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS FALSE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS NOT FALSE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -428,8 +452,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("IS NULL");
     evalFails("IS NOT NULL");
     
-    optimize("FIELD_BOOLEAN IS NULL");
-    optimize("FIELD_BOOLEAN IS NOT NULL");
+    optimize("FIELD_BOOLEAN_TRUE IS NULL");
+    optimize("FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimizeFalse("true is null");
     optimizeFalse("false is null");
     optimizeTrue("NULL IS NULL");
@@ -445,8 +469,8 @@ public class OperatorsTest extends ExpressionTest {
     // 'CAST(x AS type) IS NOT NULL' to 'x IS NOT NULL'
     optimize("CAST(FIELD_NUMBER AS STRING) IS NOT NULL","FIELD_NUMBER IS NOT NULL");
     
-    returnType("FIELD_BOOLEAN IS NULL", BooleanType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT NULL", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS NULL", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS NOT NULL", BooleanType.BOOLEAN);
   }
   
   @Test
@@ -470,8 +494,8 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("FIELD_STRING IS NOT DISTINCT FROM ");
     evalFails("FIELD_STRING IS DISTINCT 'TEST' ");
 
-    optimize("FIELD_BOOLEAN IS DISTINCT FROM TRUE");
-    optimize("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE");
+    optimize("FIELD_BOOLEAN_TRUE IS DISTINCT FROM TRUE");
+    optimize("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE");
     optimizeTrue("NULL IS NOT DISTINCT FROM NULL");
     optimizeFalse("NULL IS DISTINCT FROM NULL");
     optimizeFalse("NULL IS NOT DISTINCT FROM TRUE");
@@ -490,8 +514,8 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_STRING IS NOT DISTINCT FROM NULL", "FIELD_STRING IS NULL");
     optimize("NULL IS NOT DISTINCT FROM FIELD_STRING", "FIELD_STRING IS NULL");
     
-    returnType("FIELD_BOOLEAN IS DISTINCT FROM TRUE", BooleanType.BOOLEAN);
-    returnType("FIELD_BOOLEAN IS NOT DISTINCT FROM TRUE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS DISTINCT FROM TRUE", BooleanType.BOOLEAN);
+    returnType("FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -519,6 +543,11 @@ public class OperatorsTest extends ExpressionTest {
     
     evalNull("NULL_STRING SIMILAR TO 'A'");
     evalNull("'A' SIMILAR TO NULL_STRING");
+    
+    evalFails("FIELD_STRING IS ");
+    evalFails("FIELD_STRING IS SIMILAR");    
+    evalFails("FIELD_STRING IS SIMILAR TO ");
+    evalFails("FIELD_STRING IS SIMILAR AND TO ");
     
     optimize("FIELD_STRING SIMILAR TO 'a{2,4}'");
   }
@@ -626,7 +655,10 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("FIELD_INTEGER between and 10");
     evalFails("FIELD_INTEGER between and ");
     evalFails("FIELD_INTEGER between FIELD_DATE and FIELD_STRING");
-
+    evalFails("FIELD_INTEGER BETWEEN 4 AND");
+    evalFails("FIELD_INTEGER BETWEEN  AND 7");
+    evalFails("FIELD_INTEGER BETWEEN 4 OR 6");
+    
     optimize("FIELD_INTEGER BETWEEN 10 AND 20");
     optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20");
     optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
@@ -669,7 +701,9 @@ public class OperatorsTest extends ExpressionTest {
     evalFalse("CAST('FALSE' as Boolean)");
     evalFalse("CAST('false' as Boolean)");
     evalFalse("CAST('False' as Boolean)");
-
+    evalTrue("CAST(Upper(FIELD_STRING_BOOLEAN_TRUE) as Boolean)");
+    
+    
     // Integer
     evalTrue("CAST(1 as Boolean)");
     evalTrue("CAST(-123 as Boolean)");
@@ -691,7 +725,7 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("CAST(DATE '2019-02-25' AS BOOLEAN)");
     
     // Remove lossless cast
-    optimize("CAST(FIELD_BOOLEAN AS BOOLEAN)", "FIELD_BOOLEAN");
+    optimize("CAST(FIELD_BOOLEAN_TRUE AS BOOLEAN)", "FIELD_BOOLEAN_TRUE");
         
     //optimize("CAST(FIELD_STRING AS BOOLEAN)", "TO_BOOLEAN(FIELD_STRING)");
     //optimize("FIELD_STRING::BOOLEAN", "TO_BOOLEAN(FIELD_STRING)");
@@ -804,12 +838,14 @@ public class OperatorsTest extends ExpressionTest {
     // Boolean
     evalEquals("CAST(true as String)", "TRUE");
     evalEquals("CAST(false as String)", "FALSE");  
+    evalEquals("CAST(FIELD_BOOLEAN_TRUE as String)","TRUE");
     evalEquals("true::String", "TRUE");
     
     // Integer
     evalEquals("CAST(12923 AS STRING)", "12923");
     evalEquals("CAST(-1234 AS STRING FORMAT '9999MI')", "1234-");
-
+    evalEquals("CAST(FIELD_INTEGER AS STRING)", "40");
+        
     // Number
     evalEquals("CAST(123.6 as String)", "123.6");
     evalEquals("123.6::String", "123.6");
@@ -817,6 +853,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("CAST(0.45 AS STRING FORMAT 'FM000.00')", "000.45");
     evalEquals("CAST(1234.56 AS STRING FORMAT '9999MI')", "1234 ");
     evalEquals("CAST(12345678901234567890.123 AS STRING)", "12345678901234567890.123");
+    evalEquals("CAST(FIELD_NUMBER as String)", "-5.12");
     
     // Date
     evalEquals("CAST(DATE '2019-02-25' AS String)", "2019-02-25");
@@ -919,6 +956,12 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("CAST(1234 AS STRING FORMAT )");    
     evalFails("CAST(DATE '2019-02-25' AS String FORMAT )");
     evalFails("CAST(DATE '2019-02-25' AS String FORMAT NULL)");
+    evalFails("CAST 3 as BOOLEAN)");
+    evalFails("CAST(3 as BOOLEAN");
+    evalFails("CAST(3 as NILL)");
+    evalFails("CAST(3 as )");
+    evalFails("CAST(3 as");
+    evalFails("CAST(3 STRING");    
     
     // Unknown data type
     evalFails("Cast(123 as Nill)");
@@ -1027,7 +1070,8 @@ public class OperatorsTest extends ExpressionTest {
         
     evalNull("NULL_INTEGER*1");
     evalNull("1*NULL_INTEGER");
-
+    evalNull("FIELD_STRING_INTEGER::INTEGER*NULL_INTEGER");
+    
     optimize("FIELD_INTEGER*4","4*FIELD_INTEGER");
     optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
     optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
@@ -1147,7 +1191,7 @@ public class OperatorsTest extends ExpressionTest {
 
   @Test
   public void BoolNot() throws Exception {
-    evalTrue("FIELD_BOOLEAN is not false");
+    evalTrue("FIELD_BOOLEAN_TRUE is not false");
     evalTrue("NULL_BOOLEAN is null");
     evalTrue("NOT (NULL_BOOLEAN is not null)");
     evalFalse("NOT 1");
@@ -1155,39 +1199,39 @@ public class OperatorsTest extends ExpressionTest {
     
     evalTrue("NOT NOT True");
     evalNull("NOT NULL_BOOLEAN");
-    evalFails("FIELD_BOOLEAN is ");
+    evalFails("FIELD_BOOLEAN_TRUE is ");
     evalFails("NOT");
     
     // Function syntax
     evalTrue("NOT(FALSE)");
     
-    optimize("NOT FIELD_BOOLEAN");
-    optimize("NOT NOT FIELD_BOOLEAN","FIELD_BOOLEAN");
-    optimize("NOT NOT NOT FIELD_BOOLEAN","NOT FIELD_BOOLEAN");
+    optimize("NOT FIELD_BOOLEAN_TRUE");
+    optimize("NOT NOT FIELD_BOOLEAN_TRUE","FIELD_BOOLEAN_TRUE");
+    optimize("NOT NOT NOT FIELD_BOOLEAN_TRUE","NOT FIELD_BOOLEAN_TRUE");
     optimizeFalse("not true");
     optimizeTrue("not false");
     optimizeTrue("not not true");
     optimizeFalse("not not false");
-    optimize("NOT (NOT(FIELD_BOOLEAN))", "FIELD_BOOLEAN");
+    optimize("NOT (NOT(FIELD_BOOLEAN_TRUE))", "FIELD_BOOLEAN_TRUE");
     optimize("NOT (FIELD_INTEGER>5)", "5>=FIELD_INTEGER");
     optimize("NOT (FIELD_INTEGER>=5)", "5>FIELD_INTEGER");
     optimize("NOT (FIELD_INTEGER<5)", "5<=FIELD_INTEGER");
     optimize("NOT (FIELD_INTEGER<=5)", "5<FIELD_INTEGER");
     optimize("NOT (FIELD_INTEGER=5)", "5!=FIELD_INTEGER");
     optimize("NOT (FIELD_INTEGER<>5)", "5=FIELD_INTEGER");
-    optimize("NOT (FIELD_BOOLEAN IS TRUE)", "FIELD_BOOLEAN IS NOT TRUE");
-    optimize("NOT (FIELD_BOOLEAN IS NOT TRUE)", "FIELD_BOOLEAN IS TRUE");
-    optimize("NOT (FIELD_BOOLEAN IS FALSE)", "FIELD_BOOLEAN IS NOT FALSE");
-    optimize("NOT (FIELD_BOOLEAN IS NOT FALSE)", "FIELD_BOOLEAN IS FALSE");
-    optimize("NOT (FIELD_BOOLEAN IS NOT NULL)", "FIELD_BOOLEAN IS NULL");
-    optimize("NOT (FIELD_BOOLEAN IS NULL)", "FIELD_BOOLEAN IS NOT NULL");
-    optimize("NOT (FIELD_BOOLEAN IS DISTINCT FROM NULL_BOOLEAN)",
-        "FIELD_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN");
-    optimize("NOT (FIELD_BOOLEAN IS NOT DISTINCT FROM NULL_BOOLEAN)",
-        "FIELD_BOOLEAN IS DISTINCT FROM NULL_BOOLEAN");
-    // optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN IS NOT NULL","FIELD_BOOLEAN IS NOT NULL");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS TRUE)", "FIELD_BOOLEAN_TRUE IS NOT TRUE");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS NOT TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS FALSE)", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS NOT FALSE)", "FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS NOT NULL)", "FIELD_BOOLEAN_TRUE IS NULL");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS NULL)", "FIELD_BOOLEAN_TRUE IS NOT NULL");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS DISTINCT FROM NULL_BOOLEAN)",
+        "FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM NULL_BOOLEAN");
+    optimize("NOT (FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM NULL_BOOLEAN)",
+        "FIELD_BOOLEAN_TRUE IS DISTINCT FROM NULL_BOOLEAN");
+    // optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN_TRUE IS NOT NULL","FIELD_BOOLEAN_TRUE IS NOT NULL");
     
-    returnType("NOT FIELD_BOOLEAN", BooleanType.BOOLEAN);
+    returnType("NOT FIELD_BOOLEAN_TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -1197,9 +1241,9 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("false OR true");
     evalFalse("false OR false");
     evalTrue("true OR NULL_BOOLEAN");
-    evalTrue("true OR FIELD_BOOLEAN");
+    evalTrue("true OR FIELD_BOOLEAN_TRUE");
     evalTrue("NULL_BOOLEAN OR true");
-    evalTrue("FIELD_BOOLEAN OR false");
+    evalTrue("FIELD_BOOLEAN_TRUE OR false");
     evalNull("false OR NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN OR false");
     evalNull("NULL_BOOLEAN OR NULL_BOOLEAN");
@@ -1207,7 +1251,7 @@ public class OperatorsTest extends ExpressionTest {
     evalFails("false OR");
     evalFails("OR false");
     
-    optimize("FIELD_BOOLEAN OR NULL_BOOLEAN");
+    optimize("FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN");
     optimizeTrue("true or true");
     optimizeTrue("true or false");
     optimizeTrue("false or true");
@@ -1216,20 +1260,20 @@ public class OperatorsTest extends ExpressionTest {
     optimizeTrue("NULL_BOOLEAN or true");
     optimize("NULL_BOOLEAN or NULL_BOOLEAN", "NULL_BOOLEAN");
 
-    optimizeTrue("FIELD_BOOLEAN or true");
+    optimizeTrue("FIELD_BOOLEAN_TRUE or true");
     optimizeTrue("true or FIELD_STRING");
-    optimizeTrue("true or FIELD_BOOLEAN");
-    optimizeTrue("FIELD_BOOLEAN or true");
-    optimize("false or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
-    optimize("FIELD_BOOLEAN or false", "FALSE OR FIELD_BOOLEAN");
-    optimize("FIELD_BOOLEAN or FIELD_BOOLEAN", "FIELD_BOOLEAN");
-    optimize("FIELD_BOOLEAN OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN",
-        "FIELD_BOOLEAN OR NULL_BOOLEAN OR 0<FIELD_INTEGER");
+    optimizeTrue("true or FIELD_BOOLEAN_TRUE");
+    optimizeTrue("FIELD_BOOLEAN_TRUE or true");
+    optimize("false or FIELD_BOOLEAN_TRUE", "FALSE OR FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE or false", "FALSE OR FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE or FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN OR (FIELD_INTEGER>0) OR FIELD_BOOLEAN_TRUE",
+        "FIELD_BOOLEAN_TRUE OR NULL_BOOLEAN OR 0<FIELD_INTEGER");
 
-    optimize("false and true or FIELD_BOOLEAN", "FALSE OR FIELD_BOOLEAN");
+    optimize("false and true or FIELD_BOOLEAN_TRUE", "FALSE OR FIELD_BOOLEAN_TRUE");
     
     // Duplicate predicate
-    optimize("FIELD_BOOLEAN OR FIELD_BOOLEAN", "FIELD_BOOLEAN");
+    optimize("FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
     optimize("FIELD_INTEGER=2 OR FIELD_INTEGER=2", "2=FIELD_INTEGER");
 
     // "x < a OR x = a" to "x <= a"
@@ -1249,30 +1293,30 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (3,4,1,2)");
     optimize("FIELD_STRING='1' OR NULL_INTEGER in (1,2)", "'1'=FIELD_STRING OR NULL_INTEGER IN (1,2)");
     
-    returnType("false OR FIELD_BOOLEAN", BooleanType.BOOLEAN);
+    returnType("false OR FIELD_BOOLEAN_TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
   public void BoolAnd() throws Exception {
     evalTrue("true AND true");
-    evalTrue("true AND STRING_BOOLEAN");    
+    evalTrue("true AND FIELD_STRING_BOOLEAN_TRUE");    
     evalFalse("true AND false");    
     evalFalse("false AND true");
     evalFalse("false AND false");
-    evalFalse("false AND FIELD_BOOLEAN");
+    evalFalse("false AND FIELD_BOOLEAN_TRUE");
     evalFalse("false AND NULL_BOOLEAN");
     evalFalse("NULL_BOOLEAN AND false");
     
-    evalNull("FIELD_BOOLEAN AND NULL_BOOLEAN");
-    evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN");
+    evalNull("FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN");
+    evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN_TRUE");
     evalNull("true AND NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN AND true");
-    evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN");
+    evalNull("NULL_BOOLEAN AND FIELD_BOOLEAN_TRUE");
     
     evalFails("false AND");
     evalFails("AND false");
 
-    optimize("FIELD_BOOLEAN AND NULL_BOOLEAN");
+    optimize("FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN");
     optimizeTrue("25>=12 and 14<15");
     optimizeTrue("true and true");
     optimizeFalse("true and false");
@@ -1280,36 +1324,36 @@ public class OperatorsTest extends ExpressionTest {
     optimizeFalse("false and false");
     optimizeFalse("NULL and false");
     optimizeFalse("false and NULL");
-    optimizeFalse("false and FIELD_BOOLEAN");
-    optimizeFalse("FIELD_BOOLEAN and false");    
+    optimizeFalse("false and FIELD_BOOLEAN_TRUE");
+    optimizeFalse("FIELD_BOOLEAN_TRUE and false");    
     optimizeFalse("null AND null AND null AND false");
     optimizeNull("null AND null AND null AND true");    
     
     // Duplicate predicate
-    optimize("FIELD_BOOLEAN and FIELD_BOOLEAN", "FIELD_BOOLEAN");
-    optimize("FIELD_BOOLEAN AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN",
-        "FIELD_BOOLEAN AND NULL_BOOLEAN AND 0<FIELD_INTEGER");
-    optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN AND (2*FIELD_INTEGER>1)",
-        "FIELD_BOOLEAN AND 1<2*FIELD_INTEGER");
-    optimize("FIELD_INTEGER=1 OR FIELD_BOOLEAN OR FIELD_INTEGER=1",
-        "FIELD_BOOLEAN OR 1=FIELD_INTEGER");
-    optimize("(FIELD_INTEGER*2>1) OR FIELD_BOOLEAN OR (2*FIELD_INTEGER>1)",
-        "FIELD_BOOLEAN OR 1<2*FIELD_INTEGER");
+    optimize("FIELD_BOOLEAN_TRUE and FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN AND (FIELD_INTEGER>0) AND FIELD_BOOLEAN_TRUE",
+        "FIELD_BOOLEAN_TRUE AND NULL_BOOLEAN AND 0<FIELD_INTEGER");
+    optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN_TRUE AND (2*FIELD_INTEGER>1)",
+        "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
+    optimize("FIELD_INTEGER=1 OR FIELD_BOOLEAN_TRUE OR FIELD_INTEGER=1",
+        "FIELD_BOOLEAN_TRUE OR 1=FIELD_INTEGER");
+    optimize("(FIELD_INTEGER*2>1) OR FIELD_BOOLEAN_TRUE OR (2*FIELD_INTEGER>1)",
+        "FIELD_BOOLEAN_TRUE OR 1<2*FIELD_INTEGER");
 
     // Simplify IS NULL
-    optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN>5");
-    optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN=5");
-    optimizeFalse("FIELD_BOOLEAN IS NULL AND FIELD_BOOLEAN<>5");
+    optimizeFalse("FIELD_BOOLEAN_TRUE IS NULL AND FIELD_BOOLEAN_TRUE>5");
+    optimizeFalse("FIELD_BOOLEAN_TRUE IS NULL AND FIELD_BOOLEAN_TRUE=5");
+    optimizeFalse("FIELD_BOOLEAN_TRUE IS NULL AND FIELD_BOOLEAN_TRUE<>5");
 
     // Simplify IS NOT NULL
-    optimize("FIELD_BOOLEAN>5 AND FIELD_BOOLEAN IS NOT NULL AND FIELD_BOOLEAN>5",
-        "5<FIELD_BOOLEAN");
+    optimize("FIELD_BOOLEAN_TRUE>5 AND FIELD_BOOLEAN_TRUE IS NOT NULL AND FIELD_BOOLEAN_TRUE>5",
+        "5<FIELD_BOOLEAN_TRUE");
 
     // Not satisfiable equality constant
-    optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN AND FIELD_INTEGER=2");
-    optimizeFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN AND NULL_INTEGER=2");
+    optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=2");
+    optimizeFalse("NULL_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND NULL_INTEGER=2");
     
-    returnType("false AND FIELD_BOOLEAN", BooleanType.BOOLEAN);
+    returnType("false AND FIELD_BOOLEAN_TRUE", BooleanType.BOOLEAN);
   }
 
   @Test

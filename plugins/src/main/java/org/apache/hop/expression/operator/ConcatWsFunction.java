@@ -44,15 +44,10 @@ public class ConcatWsFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-
-    if (type.is(TypeName.STRING)) {
-      return new Call(ConcatWsStringFunction.INSTANCE, call.getOperands());
-    }
-
     if (type.is(TypeName.BINARY)) {
       return new Call(ConcatWsBinaryFunction.INSTANCE, call.getOperands());
     }
 
-    return call;
+    return new Call(ConcatWsStringFunction.INSTANCE, call.getOperands());
   }
 }

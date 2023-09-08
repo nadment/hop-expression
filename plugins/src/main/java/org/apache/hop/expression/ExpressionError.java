@@ -26,8 +26,10 @@ public enum ExpressionError {
   NULL_SOURCE_ERROR("Expression.NullSourceError"),
   /** Syntax error: {0} */
   SYNTAX_ERROR("Expression.SyntaxError"), 
-  /** Syntax error with operator {0} */
-  SYNTAX_ERROR_OPERATOR("Expression.SyntaxErrorOperator"),
+  /** Incorrect syntax near keyword ''{0}'' */
+  SYNTAX_ERROR_NEAR_KEYWORD("Expression.SyntaxErrorNearKeyword"),
+  /** Incorrect syntax for function ''{0}'' */
+  SYNTAX_ERROR_FUNCTION("Expression.SyntaxErrorFunction"),
   /** Syntax error: Invalid data type ''{0}'' */
   SYNTAX_ERROR_DATATYPE("Expression.SyntaxErrorDataType"),
   /** {0} {1} */

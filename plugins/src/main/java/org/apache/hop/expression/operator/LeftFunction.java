@@ -46,15 +46,10 @@ public class LeftFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-
-    if (type.is(TypeName.STRING)) {
-      return new Call(LeftStringFunction.INSTANCE, call.getOperands());
-    }
-
     if (type.is(TypeName.BINARY)) {
       return new Call(LeftBinaryFunction.INSTANCE, call.getOperands());
     }
 
-    return call;
+    return new Call(LeftStringFunction.INSTANCE, call.getOperands());
   }
 }

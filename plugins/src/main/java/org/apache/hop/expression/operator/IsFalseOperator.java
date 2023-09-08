@@ -35,7 +35,7 @@ public class IsFalseOperator extends Operator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
+    Boolean value = operands[0].getValue(Boolean.class);
 
     // NULL is never FALSE
     return value == Boolean.FALSE;

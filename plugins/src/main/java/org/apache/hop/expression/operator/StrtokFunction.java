@@ -30,11 +30,7 @@ import org.apache.hop.expression.type.StringType;
 /**
  * Splits a string on the specified list of delimiter characters and returns the part at the
  * specified position.
- * 
- * @param context The expression context
- * @param operands The operands
- * @return value
- * @throws Exception
+ *
  * @See {@link SplitPartFunction}
  */
 @FunctionPlugin
@@ -91,7 +87,4 @@ public class StrtokFunction extends Function {
 
     return parts[index - 1];
   }
-
-
-
 }

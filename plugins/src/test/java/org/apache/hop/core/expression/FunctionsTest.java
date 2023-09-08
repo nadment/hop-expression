@@ -17,9 +17,11 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Attribute;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.operator.RightStringFunction;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -112,7 +114,8 @@ public class FunctionsTest extends ExpressionTest {
   public void Try_To_Boolean() throws Exception {
     evalTrue("TRY_TO_BOOLEAN('True')");
     evalFalse("TRY_TO_BOOLEAN('falSE')");
-    evalNull("TRY_TO_BOOLEAN('test')");
+    evalNull("TRY_TO_BOOLEAN('test')");    
+    evalNull("TRY_TO_BOOLEAN(NULL_STRING)");
     evalFails("TRY_TO_BOOLEAN()");
     returnType("TRY_TO_BOOLEAN('True')", BooleanType.BOOLEAN);
   }
@@ -124,6 +127,8 @@ public class FunctionsTest extends ExpressionTest {
     // Return NULL if parsing failed
     evalNull("TRY_TO_NUMBER('54Z67z12', '999999D99')");
 
+    evalNull("TRY_TO_NUMBER(NULL_STRING)");
+    
     // Failed if format is bad 
     evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')");
     evalFails("TRY_TO_NUMBER()");
@@ -139,9 +144,29 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("TRY_TO_DATE('2019-13-13','YYYY-MM-DD')");
     evalNull("TRY_TO_DATE('20x9-13-13','YYYY-MM-DD')");   
     
+    evalNull("TRY_TO_DATE(NULL_STRING,'FXDD/MM/YYYY')");
+    
     // Failed if format is bad 
     evalFails("TRY_TO_DATE('2019-12-01','OOOO-MM-DD')");
   }  
+  
+  @Test
+  public void Try_To_Json() throws Exception {
+
+    evalEquals("Try_To_Json('{\"name\":\"Smith\", \"age\":29}')", JsonType.convert("{\"name\":\"Smith\",\"age\":29}"));
+    evalEquals("Try_To_Json('true')",JsonType.convert("true"));    
+    evalEquals("Try_To_Json('null')",JsonType.convert("null"));    
+    
+    evalNull("Try_To_Json(NULL_STRING)");
+    evalNull("Try_To_Json('BAD JSON ;')");
+    evalNull("Try_To_Json('{\"name\":\"Smith\"; \"age\":29}')");
+    
+    evalFails("Try_To_Json()");
+    evalFails("Try_To_Json(BOOLEAN_FIELD)");
+    
+    returnType("Try_To_Json('{\"name\":\"Smith\", \"age\":29}')", JsonType.JSON);
+  }  
+  
   
   @Test
   public void Coalesce() throws Exception {
@@ -205,10 +230,10 @@ public class FunctionsTest extends ExpressionTest {
     // "IF(x=y,NULL,y)" to "NULLIF(y, x)"
     optimize("IF(3=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,3)");
     
-    returnType("If(FIELD_BOOLEAN,'A','B')", StringType.STRING);
-    returnType("If(FIELD_BOOLEAN,1,2)", IntegerType.INTEGER);
-    returnType("If(FIELD_BOOLEAN,2,2.3)", new NumberType(38,1));
-    returnType("If(FIELD_BOOLEAN,Date '2023-01-01',Date '2023-02-01')", DateType.DATE);
+    returnType("If(FIELD_BOOLEAN_TRUE,'A','B')", StringType.STRING);
+    returnType("If(FIELD_BOOLEAN_TRUE,1,2)", IntegerType.INTEGER);
+    returnType("If(FIELD_BOOLEAN_TRUE,2,2.3)", new NumberType(38,1));
+    returnType("If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", DateType.DATE);
   }
 
   @Test
@@ -364,7 +389,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("CONVERT_TIMEZONE('America/Los_Angeles', TIMESTAMP '2023-01-01 14:00:00 +02:00')", LocalDateTime.of(2023, Month.JANUARY, 1, 04, 00, 00));
     evalEquals("CONVERT_TIMEZONE('Asia/Tokyo', TIMESTAMP '2023-01-01 14:00:00')", LocalDateTime.of(2023, Month.JANUARY, 1, 23, 00, 00));
     evalEquals("CONVERT_TIMEZONE('+00:00','+10:00', TIMESTAMP '2023-01-01 12:00:00')", ZonedDateTime.of(2023, 1, 1, 22, 00, 00, 00000000, ZoneOffset.ofHoursMinutes(10,0)));
-        
+
+    evalNull("CONVERT_TIMEZONE('Europe/Paris', NULL_TIMESTAMP)");
     evalNull("CONVERT_TIMEZONE('Europe/Paris', 'America/New_York', NULL_TIMESTAMP)");
     
     evalFails("CONVERT_TIMEZONE(Null, '2023-01-01 14:00:00')");
@@ -422,6 +448,21 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("TIMESTAMP_FROM_PARTS(2020,1,1,23,15,59,123456789,9999)");
 
     returnType("TIMESTAMP_FROM_PARTS(2019,01,1,23,15,59)", DateType.DATE);
+  }
+  
+  @Test
+  public void FirstValue() throws Exception {
+    returnType("First_Value(FIELD_DATE)", DateType.DATE);
+  }
+  
+  @Test
+  public void LastValue() throws Exception {
+    returnType("Last_Value(FIELD_DATE)", DateType.DATE);
+  }
+
+  @Test
+  public void ListAgg() throws Exception {
+    returnType("ListAGG(FIELD_STRING,',')", StringType.STRING);
   }
   
   @Test
@@ -1224,7 +1265,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Abs(-1)", 1L);
     evalEquals("Abs(FIELD_INTEGER)", 40L);
     evalEquals("Abs(FIELD_NUMBER)", 5.12D);
-    evalEquals("Abs(STRING_NUMBER)", 12.56D);
+    evalEquals("Abs(FIELD_STRING_NUMBER)", 12.56D);
     evalEquals("Abs(-1::INTEGER)", 1L);
     evalEquals("Abs(-1.12345679)", 1.12345679D);
     evalEquals("Abs(-1.1234567912345679123456791234567912345679)", new BigDecimal("1.1234567912345679123456791234567912345679"));
@@ -1234,12 +1275,16 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Abs(NULL_BIGNUMBER)");
     
     evalFails("Abs()");
+    evalFails("Abs(");
     evalFails("Abs(FIELD_STRING)");
     
     optimize("ABS(-FIELD_INTEGER)");
 
     // Function repetition
     optimize("ABS(ABS(FIELD_INTEGER))", "ABS(FIELD_INTEGER)");
+    
+    returnType("ABS(FIELD_INTEGER)", IntegerType.INTEGER);
+    returnType("ABS(FIELD_NUMBER)", NumberType.NUMBER);
   }
 
   @Test
@@ -1570,7 +1615,7 @@ public class FunctionsTest extends ExpressionTest {
   public void Square() throws Exception {
     evalEquals("Square(1)", 1L);
     evalEquals("Square(-5)", 25L);
-    evalEquals("Square(STRING_INTEGER)", 25L*25L);
+    evalEquals("Square(FIELD_STRING_INTEGER)", 25L*25L);
     evalFails("Square()");
     evalNull("Square(NULL_INTEGER)");
   }
@@ -1652,7 +1697,7 @@ public class FunctionsTest extends ExpressionTest {
     // Data type mixed
     evalFails("Greatest(123,'str',123)");
     
-    returnType("Greatest(FIELD_BOOLEAN, true)", BooleanType.BOOLEAN);
+    returnType("Greatest(FIELD_BOOLEAN_TRUE, true)", BooleanType.BOOLEAN);
     returnType("Greatest(FIELD_STRING,'st','bf')", StringType.STRING);
     returnType("Greatest(123,FIELD_INTEGER,789)", IntegerType.INTEGER);
     returnType("Greatest(FIELD_INTEGER,FIELD_NUMBER,789)", NumberType.NUMBER);
@@ -1682,7 +1727,7 @@ public class FunctionsTest extends ExpressionTest {
     // Data type mixed
     evalFails("Least(123,'str',123)");    
     
-    returnType("Least(FIELD_BOOLEAN, true)", BooleanType.BOOLEAN);
+    returnType("Least(FIELD_BOOLEAN_TRUE, true)", BooleanType.BOOLEAN);
     returnType("Least(FIELD_STRING,'st','bf')", StringType.STRING);
     returnType("Least(123,FIELD_INTEGER,789)", IntegerType.INTEGER);
     returnType("Least(FIELD_INTEGER,FIELD_NUMBER,789)", NumberType.NUMBER);
@@ -1844,7 +1889,7 @@ public class FunctionsTest extends ExpressionTest {
     optimize("IS_NUMBER(FIELD_INTEGER)","FIELD_INTEGER IS NOT NULL");
     
     // Other data type
-    evalFalse("IS_NUMBER(FIELD_BOOLEAN)");
+    evalFalse("IS_NUMBER(FIELD_BOOLEAN_TRUE)");
     evalFalse("IS_NUMBER(FIELD_DATE)");
     evalFalse("IS_NUMBER(FIELD_BINARY)");
     evalFalse("IS_NUMBER(FIELD_JSON)");
@@ -1861,9 +1906,13 @@ public class FunctionsTest extends ExpressionTest {
     evalTrue("IS_JSON('{id:1,coordinates:[10,20]}')");
     evalTrue("IS_JSON('[1,2]')");
     evalFalse("IS_JSON('name:\"Smith\", age:29}')");    
+    evalFalse("IS_JSON(NULL_STRING)");
     
     //evalFalse("IS_JSON(TRUE)");
      
+    optimize("IS_JSON(FIELD_JSON)","FIELD_JSON IS NOT NULL");
+    optimizeFalse("IS_JSON(FIELD_DATE)");
+    
     evalFails("IS_JSON()");
     
     returnType("IS_JSON(FIELD_STRING)", BooleanType.BOOLEAN);
@@ -1878,6 +1927,8 @@ public class FunctionsTest extends ExpressionTest {
     evalTrue("IS_DATE('01/05/2023','DD/MM/YYYY')");    
     evalFalse("IS_DATE('2023-02-31','YYYY-MM-DD')");
     evalFalse("IS_DATE('2023-02-31','YYYY.MM.DD')");
+    evalFalse("IS_DATE(NULL_STRING,'YYYY.MM.DD')");
+    
     
     // Date or Timestamp
     evalTrue("IS_DATE(FIELD_DATE,'YYYY-MM-DD')");
@@ -1888,7 +1939,7 @@ public class FunctionsTest extends ExpressionTest {
     optimize("IS_DATE(NULL_TIMESTAMP,'YYYY-MM-DD HH24:MI:SS')","NULL_TIMESTAMP IS NOT NULL");
     
     // Other data type
-    evalFalse("IS_DATE(FIELD_BOOLEAN,'YYYY-MM-DD')");
+    evalFalse("IS_DATE(FIELD_BOOLEAN_TRUE,'YYYY-MM-DD')");
     evalFalse("IS_DATE(FIELD_NUMBER,'YYYY-MM-DD')");
     evalFalse("IS_DATE(FIELD_BINARY,'YYYY-MM-DD')");
     evalFalse("IS_DATE(FIELD_JSON,'YYYY-MM-DD')");
@@ -2064,9 +2115,11 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void To_Char() throws Exception {
-    // Text
+    // Null
     evalNull("TO_CHAR(NULL_NUMBER)");
-
+    evalNull("TO_CHAR(NULL_DATE)");
+    evalNull("TO_CHAR(NULL_BINARY)");
+    
     // Default format
     evalEquals("TO_CHAR(0.45)", "0.45");
     evalEquals("TO_CHAR(12923)", "12923");
@@ -2639,6 +2692,7 @@ public class FunctionsTest extends ExpressionTest {
     
     evalFails("Json_Object(KEY 'name' VALUE )");
     evalFails("Json_Object(KEY VALUE 'Smith')");
+    evalFails("Json_Object(KEY 'name' VALUE 'Smith'");
 
     optimize("JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')");
     
@@ -3594,12 +3648,17 @@ public class FunctionsTest extends ExpressionTest {
     // Alias
     evalEquals("Date_Part(HOUR,TIMESTAMP '2020-05-25 23:48:59')", 23L);
     
+    evalFails("Extract(");
+    evalFails("Extract()");
+    evalFails("Extract(MONTH)");
+    evalFails("Extract(MONTH DATE '2023-12-01')");
+    evalFails("Extract(MONTH FROM DATE '2023-12-01'");
     evalFails("Extract(123 from DATE '2021-01-01')");
     evalFails("Extract('TEST' from DATE '2021-01-01')");
     evalFails("Extract(NULL from DATE '2021-01-01')");
     evalFails("Extract(BIDON from NULL)");
-    evalFails("Extract(DAY DATE '2021-01-01')");
-
+    evalFails("Extract(DAY DATE '2021-01-01')"); 
+    
     optimize("EXTRACT(CENTURY FROM FIELD_DATE)");
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");
     optimize("EXTRACT(ISOYEAR FROM FIELD_DATE)", "ISOYEAR(FIELD_DATE)");
