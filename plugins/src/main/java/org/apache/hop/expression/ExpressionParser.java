@@ -412,7 +412,7 @@ public class ExpressionParser {
       Literal type = parseLiteralDataType(next());
       return new Call(Operators.CAST, expression, type);
     }
-    if (isThenNext(Id.AT)) {
+    if (isThenNext(Id.AT) ) {
       if (isThenNext(Id.TIME) && isThenNext(Id.ZONE)) {
         return new Call(getPosition(), Operators.AT_TIME_ZONE, expression, this.parseTerm());
       }
@@ -808,10 +808,6 @@ public class ExpressionParser {
   private IExpression parseFunctionCast(Token token, Function function) throws ExpressionException {
     List<IExpression> operands = new ArrayList<>();
 
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
-
     operands.add(this.parseLogicalOr());
 
     if (isNotThenNext(Id.AS)) {
@@ -843,11 +839,6 @@ public class ExpressionParser {
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
-
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
-
     operands.add(this.parseAdditive());
 
     if (isNotThenNext(Id.IN)) {
@@ -871,9 +862,6 @@ public class ExpressionParser {
   private IExpression parseFunctionFirstLastValue(Token token, final Function function)
       throws ExpressionException {
 
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
     List<IExpression> operands = new ArrayList<>();
     operands.add(this.parseLogicalOr());
 
@@ -905,10 +893,6 @@ public class ExpressionParser {
   private IExpression parseFunctionExtract(Token token, final Function function)
       throws ExpressionException {
 
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
-
     List<IExpression> operands = new ArrayList<>();
 
     operands.add(this.parseLiteralTimeUnit(next()));
@@ -934,11 +918,6 @@ public class ExpressionParser {
       throws ExpressionException {
 
     AggregateFunction aggregator = Operators.COUNT_VALUE;
-
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
-
     List<IExpression> operands = new ArrayList<>();
 
     // COUNT(*) no operand
@@ -966,10 +945,6 @@ public class ExpressionParser {
 
     AggregateFunction aggregator = Operators.LISTAGG_ALL;
 
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
-
     List<IExpression> operands = new ArrayList<>();
 
     if (isThenNext(Id.DISTINCT)) {
@@ -995,10 +970,6 @@ public class ExpressionParser {
   private IExpression parseFunctionJsonObject(Token token, final Function function)
       throws ExpressionException {
 
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
-
     List<IExpression> operands = new ArrayList<>();
     boolean comma;
     do {
@@ -1006,8 +977,8 @@ public class ExpressionParser {
       if (isThenNext(Id.KEY)) {
         // KEY is optional
       }
-      token = next();
-      operands.add(this.parseLiteralString(token));
+      
+      operands.add(this.parseLiteralString(next()));
 
       if (isThenNext(Id.VALUE)) {
         operands.add(this.parsePrimary());
@@ -1040,6 +1011,10 @@ public class ExpressionParser {
           token.text());
     }
 
+    if (isNotThenNext(Id.LPARENTHESIS)) {
+      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
+    }
+    
     // Function with custom syntax
     switch (token.text()) {
       case "CAST":
@@ -1062,9 +1037,7 @@ public class ExpressionParser {
 
     List<IExpression> operands = new ArrayList<>();
 
-    if (isNotThenNext(Id.LPARENTHESIS)) {
-      throw new ExpressionException(token.start(), ExpressionError.MISSING_LEFT_PARENTHESIS);
-    }
+
 
     // No param function
     if (isThenNext(Id.RPARENTHESIS)) {

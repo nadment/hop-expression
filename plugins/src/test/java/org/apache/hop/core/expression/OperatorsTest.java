@@ -540,12 +540,13 @@ public class OperatorsTest extends ExpressionTest {
     // An empty pattern '' matches nothing
     evalFalse("'' SIMILAR TO  ''");
     evalFalse("'ABC' SIMILAR TO ''");
-    
+   
     evalNull("NULL_STRING SIMILAR TO 'A'");
     evalNull("'A' SIMILAR TO NULL_STRING");
     
     evalFails("FIELD_STRING IS ");
     evalFails("FIELD_STRING IS SIMILAR");    
+    evalFails("FIELD_STRING IS SIMILAR 'A'");    
     evalFails("FIELD_STRING IS SIMILAR TO ");
     evalFails("FIELD_STRING IS SIMILAR AND TO ");
     
@@ -632,7 +633,7 @@ public class OperatorsTest extends ExpressionTest {
     evalTrue("3 between 1 and 5");
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
-    evalFalse("5 between 5 and 3");
+    evalFalse("5 between asymmetric 5 and 3");
     evalTrue("FIELD_INTEGER between symmetric 30 and 50");
     evalTrue("FIELD_INTEGER between symmetric 50 and 30");
     evalTrue("FIELD_INTEGER between -3+27 and 50");
@@ -979,8 +980,13 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'CET'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("CET")));
     evalEquals("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'EET'", ZonedDateTime.of(2023, 5, 25, 20,48,00,0,ZoneId.of("EET")));
     evalEquals("(TIMESTAMP '2023-05-25 10:48:00' AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Singapore'", ZonedDateTime.of(2023, 5, 25, 10,48,00,0,ZoneId.of("Asia/Singapore")));    
+    
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'XYZ'");
- 
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME 'Europe/Paris'");
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE");
+    evalFails("TIMESTAMP '2023-05-25 20:48:00' AT ZONE 'Europe/Paris'");
+    
+    
     optimize("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
   

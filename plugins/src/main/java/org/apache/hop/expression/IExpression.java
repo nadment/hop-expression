@@ -106,7 +106,7 @@ public interface IExpression {
    * @param context The context against which the expression will be validated.
    * @throws ExpressionException if an error occurs.
    */
-  public default void validate(IExpressionContext context) throws ExpressionException {}
+  public void validate(IExpressionContext context) throws ExpressionException;
 
   /**
    * Compile and optimize the expression

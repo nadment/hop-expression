@@ -140,6 +140,7 @@ public class ParserTest extends ExpressionTest {
     assertThrows(UnsupportedOperationException.class, () -> optimize("123").asCall());
     assertThrows(UnsupportedOperationException.class, () -> optimize("ABS(FIELD_INTEGER)").asIdentifier());
     assertThrows(UnsupportedOperationException.class, () -> optimize("FIELD_INTEGER").asLiteral());
+    assertThrows(UnsupportedOperationException.class, () -> optimize("FIELD_INTEGER").asTuple());
   }
   
   @Test
