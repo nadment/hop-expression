@@ -379,8 +379,8 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
-    //evalNull("Json_Value(NULL_JSON,'$.name')");
-    evalTrue("FIELD_INTEGER IS TRUE");
+    //evalNull("Json_Value(NULL_JSON,'$.name')");       
+   // optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

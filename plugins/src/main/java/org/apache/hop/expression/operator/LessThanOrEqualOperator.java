@@ -58,11 +58,11 @@ public class LessThanOrEqualOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Normalize
+    // Normalize low cost operand to the left
     if (left.getCost() > right.getCost()) {
       return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
     }
-    // Normalize, order identifier by name
+    // Normalize the order of identifier by name
     if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
       return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
@@ -96,12 +96,6 @@ public class LessThanOrEqualOperator extends Operator {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
-    }
-
-    // Simplify X+1<=3 → X<=3-1
-    if (left.is(Operators.ADD) && right.isConstant() && left.asCall().getOperand(0).isConstant()) {
-      return new Call(call.getOperator(), left.asCall().getOperand(1),
-          new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));
     }
 
     return call;

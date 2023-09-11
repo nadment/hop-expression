@@ -39,7 +39,7 @@ public class ContainsBinaryFunction extends ContainsFunction {
       return null;
 
     if (search.length == 0) {
-      return 0;
+      return Boolean.FALSE;
     }
 
     outer: for (int i = 0; i < value.length - search.length + 1; i++) {

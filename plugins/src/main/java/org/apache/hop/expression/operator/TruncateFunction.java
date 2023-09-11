@@ -43,9 +43,9 @@ public class TruncateFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Idempotent function repetition
     if (call.getOperandCount() == 1) {
-      // Idempotent function repetition
-      if (call.getOperand(0).is(call.getOperator())) {
+      if (call.getOperand(0).is(call.getOperator()) && call.getOperand(0).asCall().getOperandCount()==1 ) {
         return call.getOperand(0);
       }
     }

@@ -321,7 +321,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
     optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
     optimize("FIELD_STRING <= NULL", "NULL");    
-    optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");    
+    optimize("3<=FIELD_INTEGER+1", "2<=FIELD_INTEGER");    
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
     
     // Simplify comparison with same term

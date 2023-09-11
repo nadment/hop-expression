@@ -219,16 +219,19 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("If(true,2,'2')");
     evalFails("If(Date '2023-01-01',1,2)");
     
-    // "IF(x IS NULL,y,x)" to "IFNULL(x, y)"
+    // Simplify IF(x IS NULL,y,x)→ IFNULL(x, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",FIELD_INTEGER)", "IFNULL(FIELD_INTEGER,\"YEAR\")");    
-    // "IF(x IS NULL,y,z)" to "NVL2(x, z, y)"
+    // Simplify IF(x IS NULL,y,z) → NVL2(x, z, y)
     optimize("IF(FIELD_INTEGER IS NULL,\"YEAR\",NULL_INTEGER)", "NVL2(FIELD_INTEGER,NULL_INTEGER,\"YEAR\")");       
-    // "IF(x IS NOT NULL,y,z)" to "NVL2(x, y, z)"
+    // Simplify IF(x IS NOT NULL,y,z) → NVL2(x, y, z)
     optimize("IF(FIELD_INTEGER IS NOT NULL,\"YEAR\",NULL_INTEGER)", "NVL2(FIELD_INTEGER,\"YEAR\",NULL_INTEGER)");        
-    // "IF(x=y,NULL,x)" to "NULLIF(x, y)"
-    optimize("IF(FIELD_INTEGER=3,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,3)");
-    // "IF(x=y,NULL,y)" to "NULLIF(y, x)"
-    optimize("IF(3=FIELD_INTEGER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,3)");
+    // Simplify IF(x=y,NULL,x) → NULLIF(x, y)    
+    optimize("IF(FIELD_INTEGER=FIELD_NUMBER,NULL,FIELD_INTEGER)", "NULLIF(FIELD_INTEGER,FIELD_NUMBER)");
+    // Simplify IF(x=y,NULL,y) → NULLIF(y, x)
+    optimize("IF(FIELD_INTEGER=FIELD_NUMBER,NULL,FIELD_NUMBER)", "NULLIF(FIELD_NUMBER,FIELD_INTEGER)");
+    // No simplify
+    optimize("IF(FIELD_INTEGER=FIELD_NUMBER,NULL,FIELD_BOOLEAN_TRUE)", "IF(FIELD_INTEGER=FIELD_NUMBER,NULL,FIELD_BOOLEAN_TRUE)");
+    
     
     returnType("If(FIELD_BOOLEAN_TRUE,'A','B')", StringType.STRING);
     returnType("If(FIELD_BOOLEAN_TRUE,1,2)", IntegerType.INTEGER);
@@ -1772,10 +1775,12 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Left('TEST',10)", "TEST");
     evalEquals("Left('TEST',-1)", "");
     evalNull("Left(NULL_STRING,4)");
-    evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
-
+    evalNull("Left(FIELD_STRING,NULL_INTEGER)");
+    
     // Binary
-    evalEquals("Left(BINARY '1234567890', 2)", new byte[] {0x12, 0x34});
+    evalEquals("Left(BINARY '12345678', 4)", new byte[] {0x12, 0x34,0x56,0x78});
+    evalEquals("Left(BINARY '12345678', 2)", new byte[] {0x12, 0x34});
+    evalEquals("Left(BINARY '12345678', -2)", new byte[] {});
     evalNull("Left(NULL_BINARY,4)");
     evalNull("Left(FIELD_BINARY,NULL_INTEGER)");
     
@@ -1826,9 +1831,14 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Right('TEST',NULL_INTEGER)");
     
     // Binary
-    evalEquals("Right(BINARY '1234567890', 2)", new byte[] {0x78, (byte) 0x90});
+    evalEquals("Right(BINARY '12345678', 2)", new byte[] {0x56, 0x78});   
+    evalEquals("Right(BINARY '12345678', 4)", new byte[] {0x12, 0x34, 0x56, 0x78});
+    evalEquals("Right(BINARY '12345678', -2)", new byte[] {});
+    
     evalNull("Right(NULL_BINARY,4)");
+    evalNull("Right(FIELD_BINARY,NULL_INTEGER)");    
     evalNull("Right(FIELD_BINARY,NULL_INTEGER)");
+    
     
     evalFails("Right()");
     
@@ -2842,6 +2852,7 @@ public class FunctionsTest extends ExpressionTest {
     evalTrue("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '5E6F')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '0A2B')");
     evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '6F6F')");
+    evalFalse("CONTAINS(BINARY '1A2B3C4D5E6F',BINARY '')");    
     evalNull("CONTAINS(NULL_BINARY,BINARY '1A2B3C')");
     evalNull("CONTAINS(BINARY '1A2B3C',NULL_BINARY)");
     
@@ -3014,11 +3025,13 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Concat('a','b','c')", "abc");
     evalEquals("Concat(NULL_STRING,'a')", "a");
     evalEquals("Concat('a',NULL_STRING)", "a");
-
+    evalNull("Concat(NULL_STRING,NULL_STRING)");
+    
     // Binary
     evalEquals("Concat(BINARY '1F',BINARY '2A3B')", new byte[] {0x1F, 0x2A, 0x3B});
+    evalNull("Concat(NULL_BINARY,NULL_BINARY)");
+    
 
-    evalNull("Concat(NULL_STRING,NULL_STRING)");
 
     evalFails("Concat()");
 
@@ -3428,6 +3441,9 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Uuid() throws Exception {
     assertFalse(FunctionRegistry.getFunction("UUID").isDeterministic());
+    
+    evalEquals("Length(Uuid())", 36L);
+    
     returnType("UUID()", StringType.STRING);
   }
   @Test
@@ -3609,6 +3625,11 @@ public class FunctionsTest extends ExpressionTest {
     optimize("COUNTIF(FIELD_INTEGER>=10)","COUNTIF(10<=FIELD_INTEGER)");
   }
 
+  @Test
+  public void Sum() throws Exception {
+    returnType("SUM(FIELD_INTEGER)", NumberType.NUMBER);
+  }
+  
   @Test
   public void Extract() throws Exception {
     evalEquals("Extract(MILLENNIUM from TIMESTAMP '2020-05-25 23:48:59')", 3L);

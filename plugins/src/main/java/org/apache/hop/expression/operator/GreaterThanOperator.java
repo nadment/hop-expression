@@ -87,12 +87,6 @@ public class GreaterThanOperator extends Operator {
           right.asCall().getOperand(1));
     }
 
-    // Simplify X+1>3 → X>3-1
-    if (left.is(Operators.ADD) && right.isConstant() && left.asCall().getOperand(0).isConstant()) {
-      return new Call(call.getOperator(), left.asCall().getOperand(1),
-          new Call(Operators.SUBTRACT, right, left.asCall().getOperand(0)));
-    }
-
     return call;
   }
 
