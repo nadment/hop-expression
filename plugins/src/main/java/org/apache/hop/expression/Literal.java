@@ -19,6 +19,7 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -45,7 +46,7 @@ public final class Literal implements IExpression {
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   /**
-   * UNKNOWN literal is null value without known data type 
+   * UNKNOWN literal is null value without known data type
    */
   public static final Literal UNKNOWN = new Literal(null, UnknownType.UNKNOWN);
   /**
@@ -56,7 +57,7 @@ public final class Literal implements IExpression {
   public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN);
   public static final Literal ZERO = new Literal(0L, IntegerType.INTEGER);
   public static final Literal ONE = new Literal(1L, IntegerType.INTEGER);
-  
+
   public static Literal of(final Object value) {
     if (value == null)
       return UNKNOWN;
@@ -122,6 +123,19 @@ public final class Literal implements IExpression {
       return new Literal(value, JsonType.JSON);
     }
 
+    if (value instanceof YearToMonth) {
+      return new Literal(value, IntervalType.YEAR_TO_MONTH);
+    }
+
+    if (value instanceof DayToSecond) {
+      return new Literal(value, IntervalType.DAY_TO_SECOND);
+    }
+    
+    if (value instanceof JsonNode) {
+      return new Literal(value, JsonType.JSON);
+    }
+
+    
     // Special internal case TimeUnit, DataType, Random
     return new Literal(value, UnknownType.SYMBOL);
   }
@@ -145,7 +159,7 @@ public final class Literal implements IExpression {
     this.value = value;
     this.type = type;
   }
-  
+
   @Override
   public Object getValue() {
     return value;
@@ -233,6 +247,7 @@ public final class Literal implements IExpression {
       case ANY:
       case UNKNOWN:
       case SYMBOL:
+      default:
         break;
     }
 
@@ -374,6 +389,15 @@ public final class Literal implements IExpression {
             }
           }
           writer.append('\'');
+          break;
+        }
+        case YEAR_TO_MONTH:
+        case DAY_TO_SECOND:
+        {
+          writer.append("INTERVAL '");
+          writer.append(value.toString());
+          writer.append("' ");
+          writer.append(type.toString());
           break;
         }
         case JSON:

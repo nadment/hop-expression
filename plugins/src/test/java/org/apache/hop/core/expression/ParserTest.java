@@ -39,7 +39,7 @@ public class ParserTest extends ExpressionTest {
     assertTrue(ExpressionParser.isReservedWord("BETWEEN"));
     assertFalse(ExpressionParser.isReservedWord("XXX"));
     assertFalse(ExpressionParser.isReservedWord(null));
-    assertEquals(38, ExpressionParser.getReservedWords().size());
+    assertEquals(39, ExpressionParser.getReservedWords().size());
   }
   
   @Test

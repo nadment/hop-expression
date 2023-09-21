@@ -16,25 +16,30 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.Interval;
+import java.time.ZonedDateTime;
 
 /**
- * This function returns the data type of an expression.
+ * Adds a specified interval to a date or timestamp
  */
-@FunctionPlugin
-public class TypeOfFunction extends Function {
-
-  public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
+public class AddDateIntervalOperator extends AddOperator {
+  public static final AddDateIntervalOperator INSTANCE = new AddDateIntervalOperator();
+  
+  public AddDateIntervalOperator() {
+    super("ADD_DATE_INTERVAL");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return operands[0].getType().toString();
+    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
+    if (datetime == null)
+      return null;
+
+    Interval interval = operands[1].getValue(Interval.class);
+    if (interval == null)
+      return null;
+
+    return interval.addTo(datetime);
   }
 }

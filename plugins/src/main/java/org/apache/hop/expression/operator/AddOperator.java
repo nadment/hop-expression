@@ -20,25 +20,28 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeFamily;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 
 
 /**
- * Arithmetic addition operator.
+ * Generic addition operator.
  * <br>
  * <strong>Syntax:</strong> <code>x + y</code>
  */
 public class AddOperator extends Operator {
 
   public AddOperator() {
-    super("ADD", "+", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
+    this("ADD");
+  }
+  
+  protected AddOperator(String id) {
+    super(id, "+", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.DATE_INTERVAL).or(OperandTypes.DATE_NUMERIC).or(OperandTypes.INTERVAL_INTERVAL),
         Category.MATHEMATICAL, "/docs/add.html");
   }
 
@@ -47,42 +50,19 @@ public class AddOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic "0 + A" => "A"
-    if (Literal.ZERO.equals(left)) {
-      return right;
+    if (left.getType().isSameFamily(TypeFamily.TEMPORAL)) {
+      // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
+      // - } <integer>
+      if ( right.getType().isSameFamily(TypeFamily.NUMERIC)) {
+        return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
+      }      
+      return new Call(call.getPosition(), Operators.ADD_DATE_INTERVAL, call.getOperands());
     }
-
-    // Simplify arithmetic "A + (-B)" => "A - B"
-    if (right.is(Operators.NEGATIVE)) {
-      return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
+    else if (left.getType().isSameFamily(TypeFamily.INTERVAL)) {
+      return new Call(call.getPosition(), Operators.ADD_INTERVAL, call.getOperands());
     }
-
-    // Pull up literal
-    if (left.isConstant() && right.is(Operators.ADD) && right.asCall().getOperand(0).isConstant()) {
-      Call expression = new Call(Operators.ADD, left, right.asCall().getOperand(0));
-      Literal literal = Literal.of(expression.getValue());
-      return new Call(Operators.ADD, literal, right.asCall().getOperand(1));
-    }
-
-    return call;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    BigDecimal left = operands[0].getValue(BigDecimal.class);
-    if (left == null)
-      return null;
-    BigDecimal right = operands[1].getValue(BigDecimal.class);
-    if (right == null)
-      return null;
-
-    return left.add(right);
-  }
-
-  @Override
-  public boolean isSymmetrical() {
-    return true;
-  }
+    return new Call(call.getPosition(), Operators.ADD_NUMERIC, call.getOperands());   
+   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {

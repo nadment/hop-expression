@@ -24,7 +24,6 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
@@ -43,9 +42,9 @@ public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
       Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
-          "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "IS", "JSON",
-          "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR", "SYMMETRIC",
-          "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
+          "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "INTERVAL",
+          "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR",
+          "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -145,10 +144,10 @@ public class ExpressionParser {
     }
 
     // Symbol only are not expected here
-    if ( expression.getType().is(TypeName.SYMBOL) ) {
+    if (expression.getType().is(TypeName.SYMBOL)) {
       throw new ExpressionException(0, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, source);
     }
-    
+
     return expression;
   }
 
@@ -230,7 +229,8 @@ public class ExpressionParser {
                 (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM, expression,
                 parseLogicalNot());
           }
-          throw new ExpressionException(start, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, Id.DISTINCT);
+          throw new ExpressionException(start, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD,
+              Id.DISTINCT);
         default:
           throw new ExpressionException(start, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, Id.IS);
       }
@@ -272,8 +272,8 @@ public class ExpressionParser {
         expression = new Call(Operators.ILIKE, expression, pattern);
       }
     } else if (isThenNext(Id.IN)) {
-      
-            
+
+
       expression = new Call(Operators.IN, expression, this.parseTuple());
     } else if (isThenNext(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN_ASYMMETRIC;
@@ -285,7 +285,8 @@ public class ExpressionParser {
 
       IExpression start = this.parseAdditive();
       if (isNotThenNext(Id.AND)) {
-        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, Id.BETWEEN);
+        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD,
+            Id.BETWEEN);
       }
       IExpression end = this.parseAdditive();
 
@@ -296,7 +297,8 @@ public class ExpressionParser {
       if (isThenNext(Id.TO)) {
         expression = new Call(Operators.SIMILAR_TO, expression, parseAdditive());
       } else
-        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, Id.SIMILAR);
+        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD,
+            Id.SIMILAR);
     }
 
     if (not) {
@@ -412,11 +414,12 @@ public class ExpressionParser {
       Literal type = parseLiteralDataType(next());
       return new Call(Operators.CAST, expression, type);
     }
-    if (isThenNext(Id.AT) ) {
+    if (isThenNext(Id.AT)) {
       if (isThenNext(Id.TIME) && isThenNext(Id.ZONE)) {
         return new Call(getPosition(), Operators.AT_TIME_ZONE, expression, this.parseTerm());
       }
-      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, Id.AT);
+      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD,
+          Id.AT);
     }
     return expression;
   }
@@ -452,11 +455,11 @@ public class ExpressionParser {
         if (token == null)
           break;
         return parseLiteralDate(token);
-//      case TIME:
-//        token = next();
-//        if (token == null)
-//          break;
-//        return parseLiteralTime(token);
+      // case TIME:
+      // token = next();
+      // if (token == null)
+      // break;
+      // return parseLiteralTime(token);
       case TIMESTAMP:
         token = next();
         if (token == null)
@@ -472,6 +475,8 @@ public class ExpressionParser {
         if (token == null)
           break;
         return parseLiteralJson(token);
+      case INTERVAL:
+        return parseLiteralInterval(token);
       case CASE:
         return parseCase();
       case FUNCTION:
@@ -525,20 +530,9 @@ public class ExpressionParser {
       int start = this.getPosition();
 
       if (isThenNext(Id.PLUS)) {
-        // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
-        // - } <integer>
-        if (expression.getType().getName().isSameFamily(TypeFamily.TEMPORAL)) {
-          expression = new Call(start, Operators.ADD_DAYS, expression, this.parseBitwiseOr());
-        } else {
           expression = new Call(start, Operators.ADD, expression, this.parseBitwiseOr());
-        }
       } else if (isThenNext(Id.MINUS)) {
-        if (expression.getType().getName().isSameFamily(TypeFamily.TEMPORAL)) {
-          expression = new Call(start, Operators.ADD_DAYS, expression,
-              new Call(Operators.NEGATIVE, this.parseBitwiseOr()));
-        } else {
           expression = new Call(start, Operators.SUBTRACT, expression, this.parseBitwiseOr());
-        }
       } else if (isThenNext(Id.CONCAT)) {
         expression = new Call(start, Operators.CONCAT, expression, this.parseBitwiseOr());
       } else
@@ -621,16 +615,16 @@ public class ExpressionParser {
   }
 
   /** Parses a time literal. */
-//  private Literal parseLiteralTime(Token token) throws ExpressionException {
-//    DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
-//    try {
-//      ZonedDateTime datetime = format.parse(token.text());
-//      return Literal.of(datetime);
-//    } catch (Exception e) {
-//      throw new ExpressionException(token.start(), ExpressionError.UNPARSABLE_DATE_WITH_FORMAT,
-//          token.text(), format);
-//    }
-//  }
+  // private Literal parseLiteralTime(Token token) throws ExpressionException {
+  // DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
+  // try {
+  // ZonedDateTime datetime = format.parse(token.text());
+  // return Literal.of(datetime);
+  // } catch (Exception e) {
+  // throw new ExpressionException(token.start(), ExpressionError.UNPARSABLE_DATE_WITH_FORMAT,
+  // token.text(), format);
+  // }
+  // }
 
   /**
    * Parses a timestamp literal with ISO Formats.
@@ -795,7 +789,8 @@ public class ExpressionParser {
     }
 
     if (isNotThenNext(Id.END)) {
-      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, Id.CASE);
+      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD,
+          Id.CASE);
     }
 
     return new Call(start, Operators.CASE, valueExpression, new Tuple(whenList),
@@ -977,7 +972,7 @@ public class ExpressionParser {
       if (isThenNext(Id.KEY)) {
         // KEY is optional
       }
-      
+
       operands.add(this.parseLiteralString(next()));
 
       if (isThenNext(Id.VALUE)) {
@@ -1014,7 +1009,7 @@ public class ExpressionParser {
     if (isNotThenNext(Id.LPARENTHESIS)) {
       throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
-    
+
     // Function with custom syntax
     switch (token.text()) {
       case "CAST":
@@ -1066,6 +1061,60 @@ public class ExpressionParser {
     return Literal.of(unit);
   }
 
+  private Literal parseLiteralInterval(Token token) throws ExpressionException {
+    
+    boolean negative = false;
+    Token value = next();
+    if (value == null)
+      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+    if (value.is(Id.MINUS)) {
+      negative = true;
+      value = next();
+      if (value == null)
+        throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+    }
+        
+    Token start = next();
+    if (start == null)
+      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+    TimeUnit startUnit = TimeUnit.of(start.text());
+    TimeUnit endUnit = null;
+
+    String text = value.text();
+    if (value.is(Id.LITERAL_STRING)) {      
+      Token end = null;
+      if (this.isThenNext(Id.TO)) {
+        end = next();
+        if (end == null)
+          throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+        endUnit = (end == null) ? null : TimeUnit.of(end.text());
+      }
+      
+      if ( text.length()>0 &&  text.charAt(0)=='-' ) {
+        negative = true;
+        text = text.substring(1);
+      }
+    }
+    
+//    IntervalType type = IntervalType.of(startUnit, endUnit);
+//    if ( type==null )
+//      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+
+    IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
+    if ( qualifier==null )
+      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+
+    
+    Interval interval = qualifier.parse(text);
+    if ( interval==null )
+      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+
+    if ( negative ) 
+      interval = interval.negated();
+    
+    return Literal.of(interval);    
+  }
+  
   private Literal parseLiteralDataType(Token token) throws ExpressionException {
 
     TypeName name = TypeName.of(token.text());

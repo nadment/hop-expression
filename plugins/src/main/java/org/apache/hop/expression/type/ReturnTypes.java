@@ -71,6 +71,16 @@ public final class ReturnTypes {
   public static final IReturnTypeInference JSON = explicit(JsonType.JSON);
 
   /**
+   * Type-inference strategy whereby the result type of a call is INTERVAL YEAR TO MONTH.
+   */
+  public static final IReturnTypeInference INTERVAL_YEAR_TO_MONTH = explicit(IntervalType.YEAR_TO_MONTH);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is INTERVAL DAY TO SECOND.
+   */
+  public static final IReturnTypeInference INTERVAL_DAY_TO_SECOND = explicit(IntervalType.DAY_TO_SECOND);
+  
+  /**
    * Type-inference strategy whereby the result type of a call is the type of the operand #0.
    */
   public static final IReturnTypeInference ARG0 = new OrdinalReturnTypeInference(0);

@@ -92,6 +92,8 @@ public enum ExpressionError {
   //
   INVALID_INTEGER("Expression.InvalidInteger"),
   //
+  INVALID_INTERVAL("Expression.InvalidInterval"),
+  //
   INVALID_NUMBER("Expression.InvalidNumber"),
   //
   INVALID_NUMBER_FORMAT("Expression.InvalidNumberFormat"),

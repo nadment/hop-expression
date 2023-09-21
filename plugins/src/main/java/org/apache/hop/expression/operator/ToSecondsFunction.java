@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -24,17 +25,22 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * This function returns the data type of an expression.
+ * Converts the integer expression to a interval of seconds.
  */
 @FunctionPlugin
-public class TypeOfFunction extends Function {
+public class ToSecondsFunction extends Function {
 
-  public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
+  public ToSecondsFunction() {
+    super("TO_SECONDS", ReturnTypes.INTERVAL_DAY_TO_SECOND, OperandTypes.NUMERIC, Category.CONVERSION,
+        "/docs/to_seconds.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return operands[0].getType().toString();
+    final Long value = operands[0].getValue(Long.class);
+    if (value == null)
+      return null;
+
+    return new DayToSecond(0, 0, 0, value.intValue());
   }
 }

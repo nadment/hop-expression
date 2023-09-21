@@ -48,9 +48,9 @@ public class NegateOperator extends Operator {
     }
 
     // Simplify arithmetic -(A-B) → B-A
-    if (operand.is(Operators.SUBTRACT)) {
+    if (operand.is(Operators.SUBTRACT_NUMERIC)) {
       Call subtract = (Call) operand;
-      return new Call(Operators.SUBTRACT, subtract.getOperand(1), subtract.getOperand(0));
+      return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
     }
 
     return call;

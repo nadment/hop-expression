@@ -34,29 +34,29 @@ Return type:: Integer
 
 [cols="^2,^2,<5", options="header"]
 |===
-|Unit|Abbreviations or variations|Description
+|Unit|Synonyms|Description
 |CENTURY||The century is the year divided by 100
-|DAYOFMONTH|DAY|The day of the month (1-31)
+|DAYOFMONTH|DAY, DAYS|The day of the month (1-31)
 |DAYOFWEEK||The day of week (1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday)
 |DAYOFYEAR||The day of year (1-365/366)
-|DECADE||The decade is the year divided by 10
+|DECADE|DECADES|The decade is the year divided by 10
 |EPOCH||The number of seconds since 1970-01-01 00:00:00 UTC
-|HOUR||The hour (0-23)
+|HOUR|HOURS|The hour (0-23)
 |ISODAYOFWEEK||The day of week following the ISO-8601 standard (1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday, 7=Sunday)
 |ISOWEEKOFYEAR|ISOWEEK|The week of year (01-52 or 01-53) based on the ISO-8601 standard. The first week of each ISO year begins on the Monday before the first Thursday of the Gregorian calendar year.
 |ISOYEAR||The ISO year of week
-|MILLENNIUM||The millennium is the year divided by 1000 
-|MILLISECOND||Seconds (and fractional seconds) multiplied by 1,000
-|MICROSECOND||Seconds (and fractional seconds) multiplied by 1,000,000
-|MINUTE||The minute (0-59)
-|MONTH||The month (1-12)
+|MILLENNIUM|MILLENNIUMS|The millennium is the year divided by 1000 
+|MILLISECOND|MILLISECONDS|Seconds (and fractional seconds) multiplied by 1,000
+|MICROSECOND|MICROSECONDS|Seconds (and fractional seconds) multiplied by 1,000,000
+|MINUTE|MINUTES|The minute (0-59)
+|MONTH|MONTHS|The month (1-12)
 |NANOSECOND||The nanosecond
-|QUARTER||The quarter of the year (1-4)
-|SECOND||The second (and fractional seconds)
+|QUARTER|QUARTERS|The quarter of the year (1-4)
+|SECOND|SECONDS|The second (and fractional seconds)
 |TIMEZONE_HOUR||The hour of the time zone offset
 |TIMEZONE_MINUTE||The minute of the time zone offset
 |WEEKOFYEAR|WEEK|The aligned week of year (01-53) where week 1 starts on the first day of the year.
-|YEAR||The year
+|YEAR|YEARS|The year
 
 |===
 

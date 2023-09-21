@@ -14,7 +14,9 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.operator.AddDaysFunction;
+import org.apache.hop.expression.operator.AddDateIntervalOperator;
+import org.apache.hop.expression.operator.AddIntervalOperator;
+import org.apache.hop.expression.operator.AddNumericOperator;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenOperator;
@@ -61,6 +63,8 @@ import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NullIfFunction;
 import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SimilarToOperator;
+import org.apache.hop.expression.operator.SubtractDateIntervalOperator;
+import org.apache.hop.expression.operator.SubtractNumericOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -124,7 +128,12 @@ public class Operators {
   public static final Operator DIVIDE = new DivOperator();
   public static final Operator MODULUS = new ModFunction("%");
   public static final Operator ADD = new AddOperator();
+  public static final Operator ADD_NUMERIC = new AddNumericOperator();
+  public static final Operator ADD_INTERVAL = new AddIntervalOperator();
+  public static final Operator ADD_DATE_INTERVAL = new AddDateIntervalOperator();
   public static final Operator SUBTRACT = new SubtractOperator();
+  public static final Operator SUBTRACT_NUMERIC = new SubtractNumericOperator();
+  public static final Operator SUBTRACT_DATE_INTERVAL = new SubtractDateIntervalOperator();
 
   // -------------------------------------------------------------
   // DATE OPERATORS
@@ -138,7 +147,6 @@ public class Operators {
   public static final Operator CAST_FUNCTION = new CastFunction();
   public static final Function CONCAT = new ConcatFunction("||");
   public static final Function EXTRACT = new ExtractFunction();
-  public static final Function ADD_DAYS = new AddDaysFunction();
 
   // -------------------------------------------------------------
   // AGGREGATE FUNCTIONS with custom syntax

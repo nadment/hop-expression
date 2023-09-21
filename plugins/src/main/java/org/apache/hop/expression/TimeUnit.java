@@ -14,6 +14,9 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.commons.collections4.SetUtils;
+import java.util.Set;
+
 /**
  * Enumeration of time units.
  * <br>
@@ -24,25 +27,25 @@ public enum TimeUnit {
   EPOCH,
 
   /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
-  MILLENNIUM,
+  MILLENNIUM("MILLENNIUMS"),
 
   /** The century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
   CENTURY,
 
   /** First day of its decade. The year divided by 10. */
-  DECADE,
+  DECADE("DECADES"),
 
   /** The years */
-  YEAR,
+  YEAR("YEARS"),
 
   /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
   ISOYEAR,
 
   /** The number (1 - 12) of the month */
-  MONTH,
+  MONTH("MONTHS"),
 
   /** The number (1 - 31) of the day */
-  DAY("DAYOFMONTH"),
+  DAY("DAYS","DAYOFMONTH"),
 
   /** A number (1 = Sunday, 2 = Monday, 7 = Saturday) indicating the day of the week */
   DAYOFWEEK,
@@ -60,7 +63,7 @@ public enum TimeUnit {
    * The number (1 - 54) of the week of the year.
    * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
    */
-  WEEK("WEEKOFYEAR"),
+  WEEK("WEEKS","WEEKOFYEAR"),
 
   /**
    * The number (1 - 53) of the week of the year ISO 8601.
@@ -72,25 +75,25 @@ public enum TimeUnit {
   WEEKOFMONTH,
 
   /** Quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
-  QUARTER,
+  QUARTER("QUARTERS"),
 
   /** Hour (0-23). */
-  HOUR,
+  HOUR("HOURS"),
 
   /** Minute (0-59). */
-  MINUTE,
+  MINUTE("MINUTES"),
 
   /** Second (0-59). */
-  SECOND,
+  SECOND("SECONDS"),
 
   /** Millisecond. */
-  MILLISECOND,
+  MILLISECOND("MILLISECONDS"),
 
   /** Microsecond. */
-  MICROSECOND,
+  MICROSECOND("MICROSECONDS"),
 
   /** The nanosecond. */
-  NANOSECOND,
+  NANOSECOND("NANOSECONDS"),
 
   /** Time zone region abbreviated */
   TIMEZONE_ABBR,
@@ -105,13 +108,16 @@ public enum TimeUnit {
   TIMEZONE_MINUTE;
 
   private final String[] alias;
-
+  private final Set<String> names;
+  
   private TimeUnit() {
     this.alias = new String[0];
+    this.names = Set.of(name());
   }
 
   private TimeUnit(final String... alias) {
-    this.alias = alias;
+    this.alias = alias;       
+    this.names = SetUtils.union(Set.of(name()), Set.of(alias));
   }
 
   /**
@@ -134,5 +140,12 @@ public enum TimeUnit {
     }
 
     return null;
+  }
+  
+  /**
+   * Returns a list of name and alias.
+   */
+  public Set<String> names() {
+    return names;
   }
 }

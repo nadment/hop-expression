@@ -191,7 +191,9 @@ public final class OperandTypes {
       family(TypeFamily.TEMPORAL, TypeFamily.STRING);
   public static final IOperandTypeChecker DATE_OPTIONAL_STRING =
       family(TypeFamily.TEMPORAL, TypeFamily.STRING).optional(i -> i == 1);
-
+  public static final IOperandTypeChecker DATE_INTERVAL =
+      family(TypeFamily.TEMPORAL, TypeFamily.INTERVAL);
+  
   public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT, DATE);
   public static final IOperandTypeChecker TIMEUNIT_NUMERIC_DATE = sequence(TIMEUNIT, NUMERIC, DATE);
   public static final IOperandTypeChecker TIMEUNIT_DATE_DATE = sequence(TIMEUNIT, DATE, DATE);
@@ -251,6 +253,9 @@ public final class OperandTypes {
   public static final IOperandTypeChecker STRING_OPTIONAL_TEXT =
       sequence(STRING, TEXT).optional(i -> i == 1);
 
+  public static final IOperandTypeChecker INTERVAL = family(TypeFamily.INTERVAL);
+  public static final IOperandTypeChecker INTERVAL_INTERVAL = family(TypeFamily.INTERVAL, TypeFamily.INTERVAL);
+  
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
   public static final IOperandTypeChecker JSON_OPTIONAL_STRING = family(TypeFamily.JSON, TypeFamily.STRING).optional(i -> i == 1);

@@ -23,15 +23,6 @@ public class ConversionException extends RuntimeException {
   private static final long serialVersionUID = 8634955627375465878L;
 
   /**
-   * Construct a new conversion exception.
-   * 
-   * @param error a error message
-   */
-  public ConversionException(String error) {
-    super(error);
-  }
-
-  /**
    * Construct a new expression exception.
    * 
    * @param error a error message

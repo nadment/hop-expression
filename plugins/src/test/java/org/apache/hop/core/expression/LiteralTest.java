@@ -19,13 +19,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -76,17 +79,85 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.NULL.getType(), BooleanType.BOOLEAN);
     assertNull(Literal.NULL.getValue());
   }
-  
+
   @Test
   public void TimeUnit() throws Exception {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
-  
+
+  @Test
+  public void Interval() throws Exception {
+        
+    optimize("INTERVAL 20 YEAR");
+    optimize("INTERVAL '20' YEAR");    
+    optimize("INTERVAL '-20' YEAR");
+    
+    evalEquals("INTERVAL 20 YEAR", new YearToMonth(20));
+    evalEquals("INTERVAL -20 YEAR", new YearToMonth(20).negated());
+    evalEquals("INTERVAL '20' YEAR", new YearToMonth(20));
+    evalEquals("INTERVAL '-20' YEAR", new YearToMonth(20).negated());
+    evalEquals("INTERVAL '20-5' YEAR TO MONTH", new YearToMonth(20, 5));
+    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", new YearToMonth(20, 5).negated());
+    evalEquals("INTERVAL 15 MONTH", new YearToMonth(0, 15));
+    evalEquals("INTERVAL -15 MONTH", new YearToMonth(0, 15).negated());
+    evalEquals("INTERVAL '15' MONTH", new YearToMonth(0, 15));
+    evalEquals("INTERVAL '-15' MONTH", new YearToMonth(0, 15).negated());
+
+    evalEquals("INTERVAL 365 DAY", new DayToSecond(365));
+    evalEquals("INTERVAL '365' DAY", new DayToSecond(365));
+    evalEquals("INTERVAL '365 12' DAY TO HOUR", new DayToSecond(365, 12));
+    evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", new DayToSecond(365, 12, 30));
+    evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", new DayToSecond(365, 12, 30, 58));
+
+    evalEquals("INTERVAL 12 HOUR", new DayToSecond(0, 12));
+    evalEquals("INTERVAL -12 HOUR", new DayToSecond(0, 12).negated());
+    evalEquals("INTERVAL '12' HOUR", new DayToSecond(0, 12));
+    evalEquals("INTERVAL '-12' HOUR", new DayToSecond(0, 12).negated());    
+    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", new DayToSecond(0, 12, 30, 0, 0).negated());
+    evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", new DayToSecond(0, 12, 30, 58, 0));
+
+    evalEquals("INTERVAL '-30' MINUTE", new DayToSecond(0, 0, 30, 0, 0).negated());
+    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", new DayToSecond(0, 0, 30, 58, 0).negated());
+    
+    evalEquals("INTERVAL 58 SECOND", new DayToSecond(0, 0, 0, 58, 0));
+    evalEquals("INTERVAL '58' SECOND", new DayToSecond(0, 0, 0, 58, 0));
+    evalEquals("INTERVAL -58 SECOND", new DayToSecond(0, 0, 0, 58, 0).negated());
+    evalEquals("INTERVAL '-58' SECOND", new DayToSecond(0, 0, 0, 58, 0).negated());
+    
+    evalFails("INTERVAL");    
+    evalFails("INTERVAL 5");
+    evalFails("INTERVAL -5");
+    evalFails("INTERVAL '5'");
+    evalFails("INTERVAL '' MONTH");
+    evalFails("INTERVAL MONTH");
+    evalFails("INTERVAL 5 MONTH TO");
+    evalFails("INTERVAL '5' MONTH TO");
+    evalFails("INTERVAL '5 10' TO MONTH");
+    
+    optimize("INTERVAL -5 YEAR", "INTERVAL '-5-0' YEAR TO MONTH");
+    optimize("INTERVAL '-15' MONTH", "INTERVAL '-1-3' YEAR TO MONTH");
+    optimize("INTERVAL '-15-3' YEAR TO MONTH", "INTERVAL '-15-3' YEAR TO MONTH");
+    optimize("INTERVAL 365 DAY", "INTERVAL '+365 00:00:00.000000000' DAY TO SECOND");
+    optimize("INTERVAL 30 HOUR", "INTERVAL '+1 06:00:00.000000000' DAY TO SECOND");
+    
+    returnType("INTERVAL '20' YEAR", IntervalType.YEAR_TO_MONTH);
+    returnType("INTERVAL '15' MONTH", IntervalType.YEAR_TO_MONTH);
+    returnType("INTERVAL '20-5' YEAR TO MONTH", IntervalType.YEAR_TO_MONTH);
+    returnType("INTERVAL '365' DAY", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '365 12' DAY TO HOUR", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '365 12:30' DAY TO MINUTE", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '365 12:30:58' DAY TO SECOND", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '12' HOUR", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '12:30' HOUR TO MINUTE", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '12:30:58' HOUR TO SECOND", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '30' MINUTE", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '30:58' MINUTE TO SECOND", IntervalType.DAY_TO_SECOND);
+    returnType("INTERVAL '58' SECOND", IntervalType.DAY_TO_SECOND);
+  }
+
   @Test
   public void Type() throws Exception {
     assertEquals(NumberType.NUMBER, Literal.of(NumberType.NUMBER).getValue());
-
-
   }
 
   @Test
@@ -163,7 +234,8 @@ public class LiteralTest extends ExpressionTest {
 
     evalEquals("BINARY ''", new byte[] {});
     evalEquals("BINARY '1F'", new byte[] {0x1F});
-    evalEquals("BINARY '1234567812345678'", new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
+    evalEquals("BINARY '1234567812345678'",
+        new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
 
     evalFails("BINARY '0Z'");
 
@@ -192,27 +264,29 @@ public class LiteralTest extends ExpressionTest {
     evalFails("-_123");
     evalFails("+_123");
     evalFails("1__23");
-    
+
     // Hexadecimal
     evalEquals("0x1eee_FFFF", 0x1eee_FFFFL);
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
-    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", new BigInteger("4585589214852587255525691234567890abcDEF",16));
+    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF",
+        new BigInteger("4585589214852587255525691234567890abcDEF", 16));
     evalEquals("0xFFFF_EEEE_0000_AAA0", 0xFFFF_EEEE_0000_AAA0L);
     evalEquals("0X1F", 0x1FL);
     evalEquals("0x0F", 0xFL);
     evalEquals("0x0_F", 0xFL);
-    evalEquals("0x_0F", 0xFL);    
+    evalEquals("0x_0F", 0xFL);
     evalEquals("0xF", 0xFL);
     evalFails("0x");
-    evalFails("0xG");    
+    evalFails("0xG");
     evalFails("0xF2_");
     evalFails("0xF2__FF");
     evalFails("0xABCDEFg");
-    
+
     // Octal
     evalEquals("0o0757", 495L);
     evalEquals("0o12345671234567", 718046312823L);
-    evalEquals("0o4575_5712_1475_2577_2555_2561_1231_4567_7110", new BigInteger("457557121475257725552561123145677110",8));
+    evalEquals("0o4575_5712_1475_2577_2555_2561_1231_4567_7110",
+        new BigInteger("457557121475257725552561123145677110", 8));
     evalEquals("0O12345", 5349L);
     evalEquals("0O1_2_3_4_5", 5349L);
     evalEquals("0O_12345", 5349L);
@@ -220,22 +294,23 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0O99");
     evalFails("0o72_");
     evalFails("0O12__345");
-    
+
 
     // Binary
     evalEquals("0b10", 0b10L);
     evalEquals("0b00000010", 0b10L);
     evalEquals("0b011", 0b11L);
     evalEquals("0b000000011111111", 0b000000011111111L);
-    evalEquals("0b1010000101000101101000010100010110100001010001011010000101000101", 0b1010000101000101101000010100010110100001010001011010000101000101L);
+    evalEquals("0b1010000101000101101000010100010110100001010001011010000101000101",
+        0b1010000101000101101000010100010110100001010001011010000101000101L);
     evalEquals("0B010101", 0b010101L);
     evalEquals("0B0_1_0101", 0b010101L);
-    evalEquals("0B_0001_0101", 0b010101L);    
+    evalEquals("0B_0001_0101", 0b010101L);
     evalFails("0b");
-    evalFails("0b2");    
+    evalFails("0b2");
     evalFails("0b1001_");
     evalFails("0b10__01");
-    
+
     optimize("123456", "123456");
     optimize("0X1F", "31");
 
@@ -268,7 +343,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("-2.3E-2", -2.3E-2D);
     evalEquals("-2.3e-2", -2.3E-2D);
     evalEquals("1_000.5e0_1", 10005D);
-      
+
     // Underscore
     evalFails("1__2");
     evalFails("0.0__1");
@@ -285,7 +360,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("-2.3E_2");
     evalFails("-2.3E2_");
     evalFails("-2.3E1__2");
-    
+
     evalFails("-1.");
     evalFails("..1");
     evalFails(".0.1");
@@ -317,10 +392,9 @@ public class LiteralTest extends ExpressionTest {
     evalFails("DATE '201-02-25'");
     // Invalid date
     evalFails("Date '2020-20-28'");
-    
-    
-    
-    
+
+
+
     optimize("DATE '2021-02-25'");
 
     returnType("DATE '2021-02-25'", DateType.DATE);
@@ -444,8 +518,7 @@ public class LiteralTest extends ExpressionTest {
 
     returnType("TIMESTAMP '2021-12-01 12:01:01'", DateType.DATE);
     returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DateType.DATE);
-    returnType("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'",
-        DateType.DATE);
+    returnType("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'", DateType.DATE);
   }
 }
 

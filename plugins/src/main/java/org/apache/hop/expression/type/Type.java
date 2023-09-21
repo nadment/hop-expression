@@ -17,7 +17,9 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
+import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -72,9 +74,9 @@ public abstract class Type {
   }
 
   public boolean is(TypeName typeName) {
-    return name==typeName;
+    return name == typeName;
   }
-  
+
   public boolean isSameFamily(TypeFamily family) {
     return name.getFamily().isSameFamily(family);
   }
@@ -82,10 +84,11 @@ public abstract class Type {
   public boolean isSameFamily(Type type) {
     return name.getFamily().isSameFamily(type.getFamily());
   }
-  
+
   public boolean isCompatibleWithCoercion(Type type) {
     return name.getFamily().isCompatibleWithCoercion(type.getFamily());
   }
+
   /**
    * Gets the precision of this type.
    *
@@ -153,7 +156,7 @@ public abstract class Type {
    *
    * @param value the value to convert
    * @return the converted value
-   * @throws ConversionException if the casting fail 
+   * @throws ConversionException if the casting fail
    */
   public abstract Object cast(final Object value) throws ConversionException;
 
@@ -164,7 +167,7 @@ public abstract class Type {
    * @param pattern the optional pattern to use for conversion to string when value is date or
    *        numeric, or null if none
    * @return the converted value
-   * @throws ConversionException if the casting fail 
+   * @throws ConversionException if the casting fail
    */
   public abstract Object cast(final Object value, final String pattern) throws ConversionException;
 
@@ -201,6 +204,10 @@ public abstract class Type {
       return UnknownType.SYMBOL;
     if (value instanceof byte[])
       return BinaryType.BINARY;
+    if (value instanceof YearToMonth)
+      return IntervalType.YEAR_TO_MONTH;
+    if (value instanceof DayToSecond)
+      return IntervalType.DAY_TO_SECOND;
 
     return UnknownType.UNKNOWN;
   }

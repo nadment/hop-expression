@@ -20,21 +20,27 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * This function returns the data type of an expression.
+ * Converts the integer expression to a interval of years.
  */
 @FunctionPlugin
-public class TypeOfFunction extends Function {
+public class ToYearsFunction extends Function {
 
-  public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
+  public ToYearsFunction() {
+    super("TO_YEARS", ReturnTypes.INTERVAL_YEAR_TO_MONTH, OperandTypes.NUMERIC, Category.CONVERSION,
+        "/docs/to_years.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return operands[0].getType().toString();
+    final Long value = operands[0].getValue(Long.class);
+    if (value == null)
+      return null;
+
+    return new YearToMonth(value.intValue());
   }
 }

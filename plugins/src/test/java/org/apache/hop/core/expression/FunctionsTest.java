@@ -17,15 +17,16 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.Call;
+import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.operator.RightStringFunction;
+import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -1030,6 +1031,7 @@ public class FunctionsTest extends ExpressionTest {
     
     evalFails("Add_Years(DATE '2019-01-15')");
     evalFails("Add_Years()");
+    optimize("Add_Years(FIELD_DATE,0)","FIELD_DATE");
   }
 
   @Test
@@ -1043,6 +1045,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Add_Months(NULL_DATE,140)");
     evalNull("Add_Months(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Months(DATE '2019-01-15')");
+    optimize("Add_Months(FIELD_DATE,0)","FIELD_DATE");
   }
 
   @Test
@@ -1053,6 +1056,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Add_Weeks(NULL_DATE,140)");
     evalNull("Add_Weeks(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Weeks(DATE '2019-01-15')");
+    optimize("Add_Weeks(FIELD_DATE,0)","FIELD_DATE");
   }
 
   @Test
@@ -1064,6 +1068,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Add_Days(NULL_DATE,140)");
     evalNull("Add_Days(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Days(DATE '2019-01-15')");
+    
+    optimize("Add_Days(FIELD_DATE,0)","FIELD_DATE");
   }
 
   @Test
@@ -1073,6 +1079,8 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Add_Hours(NULL_DATE,140)");
     evalNull("Add_Hours(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Hours(DATE '2019-01-15')");
+    
+    optimize("Add_Hours(FIELD_DATE,0)","FIELD_DATE");
   }
 
   @Test
@@ -1082,6 +1090,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Add_Minutes(NULL_DATE,140)");
     evalNull("Add_Minutes(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_Minutes(DATE '2019-01-15')");
+    optimize("Add_Minutes(FIELD_DATE,0)","FIELD_DATE");
   }
 
   @Test
@@ -1100,6 +1109,7 @@ public class FunctionsTest extends ExpressionTest {
     evalNull("Add_NanoSeconds(NULL_DATE,140)");
     evalNull("Add_NanoSeconds(DATE '2019-01-15',NULL_INTEGER)");
     evalFails("Add_NanoSeconds(DATE '2019-01-15')");
+    optimize("Add_NanoSeconds(FIELD_DATE,0)","FIELD_DATE");
   }
   
   @Test
@@ -2614,6 +2624,42 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
+  public void To_DSInterval() throws Exception {
+    evalEquals("TO_DSINTERVAL('45 22:30:58')", DayToSecond.valueOf("45 22:30:58"));
+    evalEquals("TO_DSINTERVAL('+45 22:30:58')", DayToSecond.valueOf("45 22:30:58"));
+    evalEquals("TO_DSINTERVAL('-45 22:30:58')", DayToSecond.valueOf("-45 22:30:58"));
+    evalNull("TO_DSINTERVAL(NULL_STRING)");
+    
+    optimize("TO_DSINTERVAL('-45 22:30:58')", "INTERVAL '-45 22:30:58.000000000' DAY TO SECOND");
+    
+    returnType("TO_DSINTERVAL('-45 22:30:58')", IntervalType.DAY_TO_SECOND);
+  }
+  
+  @Test
+  public void To_YMInterval() throws Exception {
+    evalEquals("TO_YMINTERVAL('20-11')", YearToMonth.valueOf("20-11"));
+    evalEquals("TO_YMINTERVAL('+20-11')", YearToMonth.valueOf("20-11"));
+    evalEquals("TO_YMINTERVAL('-20-11')", YearToMonth.valueOf("-20-11"));
+    evalNull("TO_YMINTERVAL(NULL_STRING)");
+    
+    optimize("TO_YMINTERVAL('2-11')", "INTERVAL '+2-11' YEAR TO MONTH");
+    
+    returnType("TO_YMINTERVAL('20-11')", IntervalType.YEAR_TO_MONTH);
+  }
+    
+  @Test
+  public void To_Years() throws Exception {
+    evalEquals("TO_YEARS(30)", YearToMonth.year("30"));
+    evalNull("TO_YEARS(NULL_INTEGER)");
+  }
+
+  @Test
+  public void To_Days() throws Exception {
+    evalEquals("TO_DAYS(10)", DayToSecond.day("10"));
+    evalNull("TO_DAYS(NULL_INTEGER)");
+  }
+  
+  @Test
   public void To_Json() throws Exception {
 
     evalEquals("To_Json('{\"name\":\"Smith\", \"age\":29}')", JsonType.convert("{\"name\":\"Smith\",\"age\":29}"));
@@ -3597,6 +3643,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("TypeOf(FIELD_NUMBER)", "NUMBER");
     evalEquals("TypeOf(TRUE)", "BOOLEAN");
     evalEquals("TypeOf(DATE '2023-01-01')", "DATE");
+    evalEquals("TypeOf(TO_YEARS(3))", "YEAR TO MONTH");
+    evalEquals("TypeOf(TO_DAYS(3))", "DAY TO SECOND");
 
     returnType("TypeOf(1.2)", StringType.STRING);
     returnType("TypeOf('str')", StringType.STRING);

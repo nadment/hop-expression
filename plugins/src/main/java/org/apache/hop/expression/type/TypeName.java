@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.DayToSecond;
+import org.apache.hop.expression.YearToMonth;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -33,34 +35,40 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public enum TypeName {
 
-
   /** A unknown type */
-  UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, -1, Void.class),
+  UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, Void.class),
 
-  SYMBOL(TypeFamily.SYMBOL, PrecScale.NO_NO, -1, Void.class),
-  
-  ANY(TypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, -1, Object.class),
+  SYMBOL(TypeFamily.SYMBOL, PrecScale.NO_NO, Void.class),
+
+  ANY(TypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class),
 
   /** Unlimited length text */
-  STRING(TypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, String.class),
+  STRING(TypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, String.class),
 
   /** Boolean (true or false) */
-  BOOLEAN(TypeFamily.BOOLEAN, PrecScale.NO_NO, -1, Boolean.class),
+  BOOLEAN(TypeFamily.BOOLEAN, PrecScale.NO_NO, Boolean.class),
 
   /** Signed integer (64-bit) */
-  INTEGER(TypeFamily.NUMERIC, PrecScale.NO_NO, 19, Long.class),
+  INTEGER(TypeFamily.NUMERIC, PrecScale.NO_NO, Long.class),
 
   /** Unlimited precision number */
-  NUMBER(TypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, 38,
+  NUMBER(TypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
       BigDecimal.class),
 
   /** Date-time value with nanosecond precision and time zone */
-  DATE(TypeFamily.TEMPORAL, PrecScale.NO_NO, -1, ZonedDateTime.class),
+  DATE(TypeFamily.TEMPORAL, PrecScale.NO_NO, ZonedDateTime.class),
 
-  JSON(TypeFamily.JSON, PrecScale.NO_NO, -1, JsonNode.class),
+  JSON(TypeFamily.JSON, PrecScale.NO_NO, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, 16777216, byte[].class);
+  BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
+  /** A interval type for years to months */
+  YEAR_TO_MONTH(TypeFamily.INTERVAL, PrecScale.NO_NO, YearToMonth.class),
+  /** A interval type for days to seconds */
+  DAY_TO_SECOND(TypeFamily.INTERVAL, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, DayToSecond.class),
+  ;
+
+  public static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
 
   protected static final Set<TypeName> STRING_TYPES = Set.of(STRING);
   protected static final Set<TypeName> BINARY_TYPES = Set.of(BINARY);
@@ -68,6 +76,8 @@ public enum TypeName {
   protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
   protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
   protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
+  protected static final Set<TypeName> INTERVAL_TYPES = Set.of(YEAR_TO_MONTH, DAY_TO_SECOND);
+
   protected static final Set<TypeName> ALL_TYPES =
       Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
 
@@ -80,15 +90,12 @@ public enum TypeName {
 
   private final Class<?> javaClass;
 
-  private final int precisionMax;
-
   public static final Set<String> ALL_NAMES =
       Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
-  private TypeName(TypeFamily family, int signature, int precisionMax, Class<?> javaClass) {
+  private TypeName(TypeFamily family, int signature, Class<?> javaClass) {
     this.family = family;
     this.signature = signature;
-    this.precisionMax = precisionMax;
     this.javaClass = javaClass;
   }
 
@@ -183,7 +190,49 @@ public enum TypeName {
     return UNKNOWN;
   }
 
+  /**
+   * Returns the minimum precision (or length) allowed for this type, or -1 if
+   * precision/length are not applicable for this type.
+   *
+   * @return Minimum allowed precision
+   */
+  public int getMinPrecision() {
+    switch (this) {
+      case STRING:
+      case BINARY:
+      case DATE:
+      case INTEGER:
+      case NUMBER:
+        return 1;   
+      case YEAR_TO_MONTH:
+      case DAY_TO_SECOND:
+        return 6;
+      default:
+        return -1;
+    }
+  }
+
+  /**
+   * Returns the maximum precision (or length) allowed for this type, or -1 if
+   * precision/length are not applicable for this type.
+   *
+   * @return Maximum allowed precision
+   */
   public int getMaxPrecision() {
-    return precisionMax;
+    switch (this) {
+      case STRING:
+      case BINARY:
+        return 16777216;
+      case INTEGER:
+        return 19;
+      case NUMBER:
+        return 38;
+      case DATE:
+      case YEAR_TO_MONTH:
+      case DAY_TO_SECOND:
+        return 9;
+      default:
+        return -1;
+    }
   }
 }

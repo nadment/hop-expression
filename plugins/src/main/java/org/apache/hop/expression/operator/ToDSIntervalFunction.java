@@ -17,6 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -24,17 +25,26 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * This function returns the data type of an expression.
+ * Converts a string expression to a DAY TO SECOND interval.
  */
 @FunctionPlugin
-public class TypeOfFunction extends Function {
+public class ToDSIntervalFunction extends Function {
 
-  public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
+  public ToDSIntervalFunction() {
+    this("TO_DSINTERVAL");
+  }
+
+  protected ToDSIntervalFunction(String id) {
+    super(id, ReturnTypes.INTERVAL_DAY_TO_SECOND, OperandTypes.STRING, Category.CONVERSION,
+        "/docs/to_dsinterval.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return operands[0].getType().toString();
+    String value = operands[0].getValue(String.class);
+    if (value == null)
+      return null;
+
+    return DayToSecond.valueOf(value);
   }
 }

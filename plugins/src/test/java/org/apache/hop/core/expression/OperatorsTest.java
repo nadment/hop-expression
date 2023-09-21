@@ -562,9 +562,18 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
 
-    evalEquals("TRUE+FALSE", 1L);
+    evalEquals("FIELD_BOOLEAN_TRUE+FIELD_BOOLEAN_FALSE", 1L);
     
-    // Addition of days to DATE or TIMESTAMP
+    // Addition of interval to a temporal 
+    evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+INTERVAL '2-11' YEAR TO MONTH", LocalDateTime.of(2022, 1, 25, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+TO_YMINTERVAL('2-11')", LocalDateTime.of(2022, 1, 25, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 25, 12, 0, 0));
+    evalEquals("DATE '2019-02-25'+INTERVAL -12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+    evalEquals("DATE '2019-02-25'+INTERVAL '10 4' DAY TO HOUR", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
+    evalEquals("DATE '2019-02-25'+TO_DSINTERVAL('10 4:0:0')", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
+    
+    // Addition of days to a temporal
     evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
     evalEquals("DATE '2019-02-25'+2", LocalDate.of(2019, 2, 27));
     evalEquals("Timestamp '2019-02-25'+2", LocalDate.of(2019, 2, 27));
@@ -573,6 +582,7 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
 
+        
     evalNull("5+NULL_INTEGER+5");
     evalNull("+NULL_INTEGER+5");
     evalFails("5+");
@@ -601,13 +611,18 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER-0.5", 39.5D);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
 
+    // Subtraction boolean
     evalEquals("TRUE-FALSE", 1L);
+    evalEquals("FALSE-TRUE", -1L);
+
+    // Subtraction interval to a temporal 
+    evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
+
     
-    // Subtraction of days to DATE or TIMESTAMP
+    // Subtraction of days to a temporal
     evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));
     evalEquals("DATE '2019-02-25'-28", LocalDate.of(2019, 1, 28));
     evalEquals("Timestamp '2019-02-25'-2", LocalDate.of(2019, 2, 23));
-    
     //evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     //evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 

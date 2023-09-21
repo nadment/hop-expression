@@ -66,6 +66,8 @@ public class Token {
     BINARY,
     /** The "JSON" word for literal JSON. */
     JSON,
+    /** The "INTERVAL" word for literal INTERVAL '...' YEAR TO MONTH.*/
+    INTERVAL,
     /** The BETWEEN ASYMMETRIC operator */
     ASYMMETRIC,
     /** The BETWEEN SYMMETRIC operator */
@@ -144,7 +146,7 @@ public class Token {
     TRUE,
     /** The literal value "FALSE". */
     FALSE, ELSE, THEN, END, WHEN, TRY,
-    /** The "SIMILAR TO" operator. */
+    /** The "SIMILAR TO" operator or INTERVAL '...' YEAR TO MONTH */
     TO,
     /** The "SIMILAR TO" operator. */
     SIMILAR,

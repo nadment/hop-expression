@@ -16,25 +16,30 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.YearToMonth;
 
 /**
- * This function returns the data type of an expression.
+ * Adds a specified interval to another interval
  */
-@FunctionPlugin
-public class TypeOfFunction extends Function {
-
-  public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
+public class AddIntervalOperator extends AddOperator {
+  public static final AddIntervalOperator INSTANCE = new AddIntervalOperator();
+  
+  public AddIntervalOperator() {
+    super("ADD_INTERVAL");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return operands[0].getType().toString();
+    Interval left = operands[0].getValue(Interval.class);
+    if (left == null)
+      return null;
+
+    Interval right = operands[1].getValue(Interval.class);
+    if (right == null)
+      return null;
+
+    return new YearToMonth(); //left.plus(right);
   }
 }

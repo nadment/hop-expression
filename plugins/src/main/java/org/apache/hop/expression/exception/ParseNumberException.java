@@ -23,23 +23,10 @@ public class ParseNumberException extends RuntimeException {
   private static final long serialVersionUID = 8634955627375465878L;
 
   /**
-   * Construct a new conversion exception.
-   * 
-   * @param error a error message
-   */
-  public ParseNumberException(String error) {
-    super(error);
-  }
-
-  /**
    * Construct a new expression exception.
    * 
    * @param error a error message
    */
-  public ParseNumberException(ExpressionError error) {
-    super(error.message());
-  }
-
   public ParseNumberException(ExpressionError error, Object... values) {
     super(error.message(values));
   }

@@ -37,6 +37,7 @@ import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.JsonType;
@@ -283,6 +284,11 @@ public class ExpressionTest {
     assertEquals(expected, eval(context, source, Long.class));
   }
 
+  protected void evalEquals(ExpressionContext context, String source, Interval expected)
+      throws Exception {
+    assertEquals(expected, eval(context, source, Interval.class));
+  }
+
   protected void evalEquals(ExpressionContext context, String source, Double expected)
       throws Exception {
     BigDecimal result = eval(context, source, BigDecimal.class);
@@ -294,6 +300,10 @@ public class ExpressionTest {
         eval(createExpressionContext(true), source, BigDecimal.class));
   }
 
+  protected void evalEquals(String source, Interval expected) throws Exception {
+    evalEquals(createExpressionContext(true), source, expected);
+  }
+  
   protected void evalEquals(String source, Double expected) throws Exception {
     evalEquals(createExpressionContext(true), source, expected);
   }
@@ -333,7 +343,7 @@ public class ExpressionTest {
 
     assertEquals(expected, result);
   }
-
+  
   protected void evalFails(final String source) throws Exception {
     IExpressionContext context = createExpressionContext(true);
     assertThrows(ExpressionException.class, () -> eval(context, source));
@@ -379,8 +389,8 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
-    //evalNull("Json_Value(NULL_JSON,'$.name')");       
-   // optimize("FIELD_INTEGER+1>=3", "FIELD_INTEGER>=2");
+    //evalNull("Json_Value(NULL_JSON,'$.name')");           
+    //optimize("TO_YMINTERVAL('2-11')", "INTERVAL '2-11' YEAR TO MONTH");
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

@@ -34,6 +34,8 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Returns the first day of the time unit.
  * 
+ * The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH}, {@link TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
+ * 
  * @see {@link LastDayFunction}
  */
 @FunctionPlugin

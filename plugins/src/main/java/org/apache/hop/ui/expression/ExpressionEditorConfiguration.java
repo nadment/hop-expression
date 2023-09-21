@@ -210,8 +210,10 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
     for (TypeName type : TypeName.values()) {
       rule.addWord(type.name(), extra);
     }
-    for (TimeUnit datapart : TimeUnit.values()) {
-      rule.addWord(datapart.name(), extra);
+    for (TimeUnit unit : TimeUnit.values()) {
+      for (String name : unit.names()) {
+        rule.addWord(name, extra);
+      }
     }
     rules.add(rule);
 

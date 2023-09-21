@@ -17,7 +17,6 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.apache.hop.expression.Identifier;
-import org.apache.hop.expression.type.JsonType;
 import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
