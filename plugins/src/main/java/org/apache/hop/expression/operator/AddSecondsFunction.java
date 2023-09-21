@@ -16,10 +16,14 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZonedDateTime;
@@ -35,6 +39,17 @@ public class AddSecondsFunction extends Function {
         "/docs/add_seconds.html");
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Simplify arithmetic ADD_SECONDS(A,0) → A
+    if (Literal.ZERO.equals(call.getOperand(1))) {
+      return call.getOperand(0);
+    }
+    
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
