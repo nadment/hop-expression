@@ -44,12 +44,12 @@ public class NegateOperator extends Operator {
     
     // Simplify arithmetic -(-(A)) → A
     if (operand.is(Operators.NEGATIVE)) {
-      return ((Call) operand).getOperand(0);
+      return operand.asCall().getOperand(0);
     }
 
     // Simplify arithmetic -(A-B) → B-A
     if (operand.is(Operators.SUBTRACT_NUMERIC)) {
-      Call subtract = (Call) operand;
+      Call subtract = operand.asCall();
       return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
     }
 

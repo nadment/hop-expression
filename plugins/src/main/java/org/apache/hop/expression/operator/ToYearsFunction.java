@@ -20,7 +20,7 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.YearToMonth;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToYearsFunction extends Function {
 
   public ToYearsFunction() {
-    super("TO_YEARS", ReturnTypes.INTERVAL_YEAR_TO_MONTH, OperandTypes.NUMERIC, Category.CONVERSION,
+    super("TO_YEARS", ReturnTypes.INTERVAL, OperandTypes.NUMERIC, Category.CONVERSION,
         "/docs/to_years.html");
   }
 
@@ -41,6 +41,6 @@ public class ToYearsFunction extends Function {
     if (value == null)
       return null;
 
-    return new YearToMonth(value.intValue());
+    return new Interval(value.intValue());
   }
 }

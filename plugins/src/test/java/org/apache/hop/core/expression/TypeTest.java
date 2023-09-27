@@ -20,9 +20,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.DayToSecond;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
@@ -50,29 +49,23 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class TypeTest extends ExpressionTest {
 
-
   @Test
   public void typeFamily() throws Exception {
-   
+    assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.BINARY));
     assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.BOOLEAN));
     assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.NUMERIC));
     assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.TEMPORAL));
     assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.STRING));
-    
-    
-    
+    assertTrue(TypeFamily.ANY.isSameFamily(TypeFamily.INTERVAL));
+        
     assertTrue(TypeFamily.NUMERIC.isSameFamily(TypeFamily.NUMERIC));
     assertTrue(TypeFamily.BOOLEAN.isSameFamily(TypeFamily.BOOLEAN));
     assertTrue(TypeFamily.STRING.isSameFamily(TypeFamily.STRING));
     assertTrue(TypeFamily.TEMPORAL.isSameFamily(TypeFamily.TEMPORAL));
     
-    
     assertFalse(TypeFamily.NUMERIC.isCompatibleWithCoercion(null));
     assertTrue(TypeFamily.BOOLEAN.isCompatibleWithCoercion(TypeFamily.STRING));
     assertTrue(TypeFamily.NUMERIC.isCompatibleWithCoercion(TypeFamily.STRING));
-    
-       
-    
     
     assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeName.INTEGER));
     assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeName.NUMBER));
@@ -117,9 +110,7 @@ public class TypeTest extends ExpressionTest {
     
     assertEquals(TypeName.INTEGER, TypeName.of("INTEGER"));
     assertEquals(TypeName.INTEGER, TypeName.from(Long.class));
-    assertEquals(TypeName.INTEGER, TypeName.from(1L));
-
-    
+    assertEquals(TypeName.INTEGER, TypeName.from(1L));  
     
     assertNull(TypeName.of("NOP"));
   }
@@ -135,8 +126,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(new NumberType(9,3), Type.of(BigDecimal.valueOf(123456123,3)));
     assertEquals(DateType.DATE, Type.of(ZonedDateTime.now()));
     assertEquals(BinaryType.BINARY, Type.of(new byte[] {0xF}));
-    assertEquals(IntervalType.YEAR_TO_MONTH, Type.of(new YearToMonth(5)));
-    assertEquals(IntervalType.DAY_TO_SECOND, Type.of(new DayToSecond(15)));
+    assertEquals(IntervalType.INTERVAL, Type.of(new Interval(5)));
     assertEquals(UnknownType.SYMBOL, Type.of(TimeUnit.CENTURY));
   }
 

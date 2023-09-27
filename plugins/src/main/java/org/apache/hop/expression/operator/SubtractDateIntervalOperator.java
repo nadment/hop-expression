@@ -40,6 +40,6 @@ public class SubtractDateIntervalOperator extends SubtractOperator {
     if (interval == null)
       return null;
 
-    return interval.subtractTo(datetime);
+    return interval.subtractFrom(datetime);
   }
 }

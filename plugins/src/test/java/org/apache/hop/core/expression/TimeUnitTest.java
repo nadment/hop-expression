@@ -26,8 +26,10 @@ public class TimeUnitTest extends ExpressionTest {
   @Test
   public void of() throws Exception {
     assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUM"));
+    assertEquals(TimeUnit.MILLENNIUM, TimeUnit.of("MiLLENNIUMs"));
     assertEquals(TimeUnit.CENTURY, TimeUnit.of("CeNTuRy"));
     assertEquals(TimeUnit.DECADE, TimeUnit.of("DeCaDE"));
+    assertEquals(TimeUnit.DECADE, TimeUnit.of("DECADES"));
     assertEquals(TimeUnit.YEAR, TimeUnit.of("year"));
     assertEquals(TimeUnit.YEAR, TimeUnit.of("yearS"));
     assertEquals(TimeUnit.QUARTER, TimeUnit.of("quarter"));
@@ -44,10 +46,17 @@ public class TimeUnitTest extends ExpressionTest {
     assertEquals(TimeUnit.MINUTE, TimeUnit.of("minuteS"));
     assertEquals(TimeUnit.SECOND, TimeUnit.of("SECOND"));
     assertEquals(TimeUnit.SECOND, TimeUnit.of("secondS"));
+    assertEquals(TimeUnit.MICROSECOND, TimeUnit.of("microsecond"));
+    assertEquals(TimeUnit.MICROSECOND, TimeUnit.of("microsecondS"));
+    assertEquals(TimeUnit.MILLISECOND, TimeUnit.of("millisecond"));
+    assertEquals(TimeUnit.MILLISECOND, TimeUnit.of("millisecondS"));
+    assertEquals(TimeUnit.NANOSECOND, TimeUnit.of("nanosecond"));
+    assertEquals(TimeUnit.NANOSECOND, TimeUnit.of("nanosecondS"));    
     assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeek"));
     assertEquals(TimeUnit.ISOWEEK, TimeUnit.of("IsoWeekOFYEAR"));    
     assertEquals(TimeUnit.ISODAYOFWEEK, TimeUnit.of("IsoDayOfWeek"));
     assertEquals(TimeUnit.ISOYEAR, TimeUnit.of("IsoYEAR"));
+    
     assertNotEquals(TimeUnit.HOUR, TimeUnit.MINUTE);
     assertNotEquals(TimeUnit.of("HOUR"), null);
     assertNull(TimeUnit.of("NOP"));

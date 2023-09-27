@@ -16,35 +16,29 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.YearToMonth;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.Interval;
 
 /**
- * Converts a string expression to a YEAR TO MONTH interval.
+ * Subtracts a specified interval to another interval
  */
-@FunctionPlugin
-public class ToYMIntervalFunction extends Function {
-
-  public ToYMIntervalFunction() {
-    this("TO_YMINTERVAL");
-  }
-
-  protected ToYMIntervalFunction(String id) {
-    super(id, ReturnTypes.INTERVAL_YEAR_TO_MONTH, OperandTypes.STRING, Category.CONVERSION,
-        "/docs/to_yminterval.html");
+public class SubtractIntervalOperator extends SubtractOperator {
+  public static final SubtractIntervalOperator INSTANCE = new SubtractIntervalOperator();
+  
+  public SubtractIntervalOperator() {
+    super("SUBTRACT_INTERVAL");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    String value = operands[0].getValue(String.class);
-    if (value == null)
+    Interval left = operands[0].getValue(Interval.class);
+    if (left == null)
       return null;
 
-    return YearToMonth.valueOf(value);
+    Interval right = operands[1].getValue(Interval.class);
+    if (right == null)
+      return null;
+
+    return left.minus(right);
   }
 }

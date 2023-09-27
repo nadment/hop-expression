@@ -16,8 +16,11 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.exception.ExpressionException;
 import java.time.ZonedDateTime;
 
 /**
@@ -30,6 +33,20 @@ public class AddDateIntervalOperator extends AddOperator {
     super("ADD_DATE_INTERVAL");
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Simplify arithmetic A+INTERVAL 0 → A
+    if (call.getOperand(1) instanceof Interval) {
+      Interval interval = (Interval) call.getOperand(1);       
+      if ( interval.isZero() ) {
+        return call.getOperand(0);
+      }
+    }
+    
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);

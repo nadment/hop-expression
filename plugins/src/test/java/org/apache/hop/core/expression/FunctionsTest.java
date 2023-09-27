@@ -17,11 +17,10 @@ package org.apache.hop.core.expression;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Attribute;
-import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -1115,6 +1114,7 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void Date_Add() throws Exception {
     evalEquals("DATE_ADD(YEAR,1,DATE '2020-02-29')", LocalDate.of(2021, Month.FEBRUARY, 28));
+    evalEquals("DATE_ADD(QUARTER,1,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
     evalEquals("DATE_ADD(MONTH,3,DATE '2019-11-15')", LocalDate.of(2020, Month.FEBRUARY, 15));
     evalEquals("DATE_ADD(WEEK,-3,DATE '2019-01-15')", LocalDate.of(2018, Month.DECEMBER, 25));
     evalEquals("DATE_ADD(DAY,-20,DATE '2019-01-15')", LocalDate.of(2018, Month.DECEMBER, 26));
@@ -2624,40 +2624,52 @@ public class FunctionsTest extends ExpressionTest {
   }
 
   @Test
-  public void To_DSInterval() throws Exception {
-    evalEquals("TO_DSINTERVAL('45 22:30:58')", DayToSecond.valueOf("45 22:30:58"));
-    evalEquals("TO_DSINTERVAL('+45 22:30:58')", DayToSecond.valueOf("45 22:30:58"));
-    evalEquals("TO_DSINTERVAL('-45 22:30:58')", DayToSecond.valueOf("-45 22:30:58"));
-    evalNull("TO_DSINTERVAL(NULL_STRING)");
+  public void To_Interval() throws Exception {
+    evalEquals("TO_INTERVAL('0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
+    evalEquals("TO_INTERVAL('+0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
+    evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", new Interval(0,0,45,22,30,58).negated());   
+    evalNull("TO_INTERVAL(NULL_STRING)");
     
-    optimize("TO_DSINTERVAL('-45 22:30:58')", "INTERVAL '-45 22:30:58.000000000' DAY TO SECOND");
+    optimize("TO_INTERVAL('-0-0 45 22:30:58')", "INTERVAL '-0-0 45 22:30:58.000000000'");
     
-    returnType("TO_DSINTERVAL('-45 22:30:58')", IntervalType.DAY_TO_SECOND);
-  }
-  
-  @Test
-  public void To_YMInterval() throws Exception {
-    evalEquals("TO_YMINTERVAL('20-11')", YearToMonth.valueOf("20-11"));
-    evalEquals("TO_YMINTERVAL('+20-11')", YearToMonth.valueOf("20-11"));
-    evalEquals("TO_YMINTERVAL('-20-11')", YearToMonth.valueOf("-20-11"));
-    evalNull("TO_YMINTERVAL(NULL_STRING)");
-    
-    optimize("TO_YMINTERVAL('2-11')", "INTERVAL '+2-11' YEAR TO MONTH");
-    
-    returnType("TO_YMINTERVAL('20-11')", IntervalType.YEAR_TO_MONTH);
+    returnType("TO_INTERVAL('+0-0 -45 22:30:58')", IntervalType.INTERVAL);
   }
     
   @Test
   public void To_Years() throws Exception {
-    evalEquals("TO_YEARS(30)", YearToMonth.year("30"));
+    evalEquals("TO_YEARS(30)", Interval.year("30"));
     evalNull("TO_YEARS(NULL_INTEGER)");
   }
 
   @Test
+  public void To_Months() throws Exception {
+    evalEquals("TO_MONTHS(30)", Interval.month("30"));
+    evalNull("TO_MONTHS(NULL_INTEGER)");
+  }
+  
+  @Test
   public void To_Days() throws Exception {
-    evalEquals("TO_DAYS(10)", DayToSecond.day("10"));
+    evalEquals("TO_DAYS(365)", Interval.day("365"));
     evalNull("TO_DAYS(NULL_INTEGER)");
   }
+
+  @Test
+  public void To_Hours() throws Exception {
+    evalEquals("TO_HOURS(23)", Interval.hour("23"));
+    evalNull("TO_HOURS(NULL_INTEGER)");
+  }
+
+  @Test
+  public void To_Minutes() throws Exception {
+    evalEquals("TO_MINUTES(30)", Interval.minute("30"));
+    evalNull("TO_MINUTES(NULL_INTEGER)");
+  }
+
+  @Test
+  public void To_Seconds() throws Exception {
+    evalEquals("TO_SECONDS(58)", Interval.second("58"));
+    evalNull("TO_SECONDS(NULL_INTEGER)");
+  }  
   
   @Test
   public void To_Json() throws Exception {
@@ -3643,8 +3655,8 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("TypeOf(FIELD_NUMBER)", "NUMBER");
     evalEquals("TypeOf(TRUE)", "BOOLEAN");
     evalEquals("TypeOf(DATE '2023-01-01')", "DATE");
-    evalEquals("TypeOf(TO_YEARS(3))", "YEAR TO MONTH");
-    evalEquals("TypeOf(TO_DAYS(3))", "DAY TO SECOND");
+    evalEquals("TypeOf(TO_YEARS(3))", "INTERVAL");
+    evalEquals("TypeOf(TO_DAYS(3))", "INTERVAL");
 
     returnType("TypeOf(1.2)", StringType.STRING);
     returnType("TypeOf('str')", StringType.STRING);
@@ -3680,6 +3692,7 @@ public class FunctionsTest extends ExpressionTest {
   
   @Test
   public void Extract() throws Exception {
+    // Extract from temporal
     evalEquals("Extract(MILLENNIUM from TIMESTAMP '2020-05-25 23:48:59')", 3L);
     evalEquals("Extract(CENTURY from TIMESTAMP '2000-12-25 23:48:59')", 20L);
     evalEquals("Extract(CENTURY from TIMESTAMP '2020-05-25 23:48:59')", 21L);

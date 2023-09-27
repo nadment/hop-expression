@@ -25,22 +25,22 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * Converts the integer expression to a interval of hours.
+ * Converts a string expression to a interval.
  */
 @FunctionPlugin
-public class ToHoursFunction extends Function {
+public class ToIntervalFunction extends Function {
 
-  public ToHoursFunction() {
-    super("TO_HOURS", ReturnTypes.INTERVAL, OperandTypes.NUMERIC, Category.CONVERSION,
-        "/docs/to_hours.html");
+  public ToIntervalFunction() {
+    super("TO_INTERVAL", ReturnTypes.INTERVAL, OperandTypes.STRING, Category.CONVERSION,
+        "/docs/to_interval.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    final Long value = operands[0].getValue(Long.class);
+    String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
 
-    return new Interval(0, 0, 0, value.intValue());
+    return Interval.valueOf(value);
   }
 }

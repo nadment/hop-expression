@@ -267,6 +267,7 @@ public final class Call implements IExpression {
         case DATE:
         case SYMBOL:
         case UNKNOWN:
+        default:
           break;
       }
 

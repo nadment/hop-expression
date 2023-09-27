@@ -212,6 +212,9 @@ public class SyntaxTest extends ExpressionTest {
     evalFails("0xABCDEFg");
     evalFails("Date '2020-20-28'");
     
+    // Unknown function 
+    evalFails("BIDON(1)");
+    
     assertThrows(ExpressionException.class, () -> eval("0xABCDEFg"));
   }
 

@@ -374,7 +374,10 @@ public class OperatorsTest extends ExpressionTest {
 
    // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
     
-    // IN with a NULL left side expression is always NULL
+    // IN predicate with one list element
+    optimize("FIELD_INTEGER in (1)", "1=FIELD_INTEGER");
+    
+    // IN predicate with a NULL left side expression is always NULL
     optimize("NULL in ('1','2','1',NULL,null)", "NULL");
 
     // Normalize IN list with single element to comparison
@@ -567,11 +570,11 @@ public class OperatorsTest extends ExpressionTest {
     // Addition of interval to a temporal 
     evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL '2-11' YEAR TO MONTH", LocalDateTime.of(2022, 1, 25, 0, 0, 0));
-    evalEquals("DATE '2019-02-25'+TO_YMINTERVAL('2-11')", LocalDateTime.of(2022, 1, 25, 0, 0, 0));
+    evalEquals("DATE '2019-02-25'+INTERVAL 1 WEEK", LocalDateTime.of(2019, 3, 4, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 25, 12, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL -12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL '10 4' DAY TO HOUR", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
-    evalEquals("DATE '2019-02-25'+TO_DSINTERVAL('10 4:0:0')", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
+    //evalEquals("DATE '2019-02-25'+TO_INTERVAL('10 4:0:0')", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
     
     // Addition of days to a temporal
     evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
@@ -617,7 +620,7 @@ public class OperatorsTest extends ExpressionTest {
 
     // Subtraction interval to a temporal 
     evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
-
+    evalEquals("DATE '2019-02-25'-INTERVAL 2 WEEKS", LocalDateTime.of(2019, 2, 11, 0, 0, 0));
     
     // Subtraction of days to a temporal
     evalEquals("DATE '2019-02-25'-1", LocalDate.of(2019, 2, 24));

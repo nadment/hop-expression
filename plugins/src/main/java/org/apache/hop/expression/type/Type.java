@@ -17,9 +17,8 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
-import org.apache.hop.expression.DayToSecond;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -204,10 +203,8 @@ public abstract class Type {
       return UnknownType.SYMBOL;
     if (value instanceof byte[])
       return BinaryType.BINARY;
-    if (value instanceof YearToMonth)
-      return IntervalType.YEAR_TO_MONTH;
-    if (value instanceof DayToSecond)
-      return IntervalType.DAY_TO_SECOND;
+    if (value instanceof Interval)
+      return IntervalType.INTERVAL;
 
     return UnknownType.UNKNOWN;
   }

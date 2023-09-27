@@ -33,7 +33,8 @@ import java.time.ZonedDateTime;
  */
 @FunctionPlugin
 public class AddNanosecondsFunction extends Function {
-
+  public static final Function INSTANCE = new AddNanosecondsFunction();
+  
   public AddNanosecondsFunction() {
     super("ADD_NANOSECONDS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
         "/docs/add_nanoseconds.html");

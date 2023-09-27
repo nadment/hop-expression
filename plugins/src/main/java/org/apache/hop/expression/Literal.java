@@ -123,18 +123,13 @@ public final class Literal implements IExpression {
       return new Literal(value, JsonType.JSON);
     }
 
-    if (value instanceof YearToMonth) {
-      return new Literal(value, IntervalType.YEAR_TO_MONTH);
-    }
-
-    if (value instanceof DayToSecond) {
-      return new Literal(value, IntervalType.DAY_TO_SECOND);
+    if (value instanceof Interval) {
+      return new Literal(value, IntervalType.INTERVAL);
     }
     
     if (value instanceof JsonNode) {
       return new Literal(value, JsonType.JSON);
     }
-
     
     // Special internal case TimeUnit, DataType, Random
     return new Literal(value, UnknownType.SYMBOL);
@@ -391,13 +386,11 @@ public final class Literal implements IExpression {
           writer.append('\'');
           break;
         }
-        case YEAR_TO_MONTH:
-        case DAY_TO_SECOND:
+        case INTERVAL:        
         {
           writer.append("INTERVAL '");
           writer.append(value.toString());
-          writer.append("' ");
-          writer.append(type.toString());
+          writer.append("'");          
           break;
         }
         case JSON:

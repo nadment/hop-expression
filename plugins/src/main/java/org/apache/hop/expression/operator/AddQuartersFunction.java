@@ -16,35 +16,51 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.time.ZonedDateTime;
 
 /**
- * Converts a string expression to a DAY TO SECOND interval.
+ * Adds or subtracts a specified number of quarters to a date or timestamp
  */
 @FunctionPlugin
-public class ToDSIntervalFunction extends Function {
+public class AddQuartersFunction extends Function {
+  public static final Function INSTANCE = new AddQuartersFunction();
 
-  public ToDSIntervalFunction() {
-    this("TO_DSINTERVAL");
+  public AddQuartersFunction() {
+    super("ADD_QUARTERS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
+        "/docs/add_quarters.html");
   }
 
-  protected ToDSIntervalFunction(String id) {
-    super(id, ReturnTypes.INTERVAL_DAY_TO_SECOND, OperandTypes.STRING, Category.CONVERSION,
-        "/docs/to_dsinterval.html");
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Simplify arithmetic ADD_MONTHS(A,0) → A
+    if (Literal.ZERO.equals(call.getOperand(1))) {
+      return call.getOperand(0);
+    }
+
+    return call;
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    String value = operands[0].getValue(String.class);
+    ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;
 
-    return DayToSecond.valueOf(value);
+    Long quarters = operands[1].getValue(Long.class);
+    if (quarters == null)
+      return null;
+
+    return value.plusMonths(3 * quarters);
   }
 }

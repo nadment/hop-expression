@@ -34,9 +34,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class ExpressionParser {
 
@@ -394,14 +391,17 @@ public class ExpressionParser {
   }
 
   /** Literal Json */
-  private Literal parseLiteralJson(Token token) throws ExpressionException {
-    try {
-      ObjectMapper objectMapper =
-          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
-      return Literal.of(objectMapper.readTree(token.text()));
-    } catch (Exception e) {
-      throw new ExpressionException(token.start(), ExpressionError.INVALID_JSON, token.text());
-    }
+  private IExpression parseLiteralJson(Token token) throws ExpressionException  {
+    
+    return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(JsonType.JSON));
+//    
+//    try {
+//      ObjectMapper objectMapper =
+//          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+//      return Literal.of(objectMapper.readTree(token.text()));
+//    } catch (Exception e) {
+//      throw new ExpressionException(token.start(), ExpressionError.INVALID_JSON, token.text());
+//    }
   }
 
   /**
@@ -603,7 +603,11 @@ public class ExpressionParser {
    * Parses a date literal.
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
-  private Literal parseLiteralDate(Token token) throws ExpressionException {
+  private IExpression parseLiteralDate(Token token) throws ExpressionException {
+    
+    // return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(DateType.DATE));
+    
+    // Literal date use exact mode
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
     try {
       ZonedDateTime datetime = format.parse(token.text());
@@ -1087,7 +1091,7 @@ public class ExpressionParser {
         end = next();
         if (end == null)
           throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
-        endUnit = (end == null) ? null : TimeUnit.of(end.text());
+        endUnit = TimeUnit.of(end.text());
       }
       
       if ( text.length()>0 &&  text.charAt(0)=='-' ) {
@@ -1096,14 +1100,9 @@ public class ExpressionParser {
       }
     }
     
-//    IntervalType type = IntervalType.of(startUnit, endUnit);
-//    if ( type==null )
-//      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
-
     IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
     if ( qualifier==null )
       throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
-
     
     Interval interval = qualifier.parse(text);
     if ( interval==null )

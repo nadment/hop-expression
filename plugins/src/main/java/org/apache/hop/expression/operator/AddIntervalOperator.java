@@ -18,7 +18,6 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.YearToMonth;
 
 /**
  * Adds a specified interval to another interval
@@ -40,6 +39,6 @@ public class AddIntervalOperator extends AddOperator {
     if (right == null)
       return null;
 
-    return new YearToMonth(); //left.plus(right);
+    return left.plus(right);
   }
 }

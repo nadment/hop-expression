@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.DayToSecond;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -31,8 +31,8 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToMinutesFunction extends Function {
 
   public ToMinutesFunction() {
-    super("TO_MINUTES", ReturnTypes.INTERVAL_DAY_TO_SECOND, OperandTypes.NUMERIC, Category.CONVERSION,
-        "/docs/to_minutes.html");
+    super("TO_MINUTES", ReturnTypes.INTERVAL, OperandTypes.NUMERIC,
+        Category.CONVERSION, "/docs/to_minutes.html");
   }
 
   @Override
@@ -41,6 +41,6 @@ public class ToMinutesFunction extends Function {
     if (value == null)
       return null;
 
-    return new DayToSecond(0, 0, value.intValue());
+    return new Interval(0, 0, 0, 0, value.intValue());
   }
 }

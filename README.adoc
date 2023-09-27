@@ -57,13 +57,13 @@ case
 end
 ----
 * Supports 7 data types: `Boolean` `Integer` `Number` `String` `Date` `Binary` `Json` 
-* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `Date` '2022-04-25', `Timestamp` '2022-04-25 05:28:59',  `Binary` 'FA6CB', `Json` '{"name":"John"}'
+* Constant value: `TRUE`, `FALSE`, `NULL`, 'String', 1234, -45e-2, 0xF0A1, 0b10110111, `DATE` '2022-04-25', `TIMESTAMP` '2022-04-25 05:28:59', `BINARY` 'FA6CB', `JSON` '{"name":"John"}', `INTERVAL` 3 `YEAR`
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
 * Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` `LIKE` `ILIKE` `SIMILAR TO`
 * Concatenate operator `||`
-* Conditional operator `CASE WHEN` `IF` `IFNULL` `NULLIF`
+* Conditional operator `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 * Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
 * User Defined Function (UDF) support has metadata

@@ -17,83 +17,79 @@
 
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.type.TypeName;
-
 public enum IntervalQualifier {
-  YEAR(TypeName.YEAR_TO_MONTH),
-  YEAR_TO_MONTH(TypeName.YEAR_TO_MONTH), 
-  MONTH(TypeName.YEAR_TO_MONTH),
-  DAY(TypeName.DAY_TO_SECOND),
-  DAY_TO_HOUR(TypeName.DAY_TO_SECOND),
-  DAY_TO_MINUTE(TypeName.DAY_TO_SECOND),
-  DAY_TO_SECOND(TypeName.DAY_TO_SECOND),
-  HOUR(TypeName.DAY_TO_SECOND),
-  HOUR_TO_MINUTE(TypeName.DAY_TO_SECOND),
-  HOUR_TO_SECOND(TypeName.DAY_TO_SECOND),
-  MINUTE(TypeName.DAY_TO_SECOND),
-  MINUTE_TO_SECOND(TypeName.DAY_TO_SECOND),
-  SECOND(TypeName.DAY_TO_SECOND);
+  YEAR, YEAR_TO_MONTH, QUARTER, MONTH, WEEK, DAY, DAY_TO_HOUR, DAY_TO_MINUTE, DAY_TO_SECOND, HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND, MINUTE, MINUTE_TO_SECOND, SECOND;
 
   /**
    * Returns a {@link IntervalQualifier} with a given start and end {@link TimeUnit}.
    * 
    * @param startUnit The start time unit
-   * @param endUnit The end time  unit or null if not applicable
+   * @param endUnit The end time unit or null if not applicable
    * @return qualifier, or null if not valid
    */
   public static IntervalQualifier of(TimeUnit startUnit, TimeUnit endUnit) {
-    if ( startUnit==null)
+    if (startUnit == null)
       return null;
-    
+
     switch (startUnit) {
       case YEAR:
+        if (endUnit == null)
+          return YEAR;
         if (endUnit == TimeUnit.MONTH)
           return YEAR_TO_MONTH;
-        return YEAR;
+        break;
       case MONTH:
-        return MONTH;
-
+        if (endUnit == null)
+          return MONTH;
+        break;
+      case QUARTER:
+        if (endUnit == null)
+          return QUARTER;
+        break;
+      case WEEK:
+        if (endUnit == null)
+          return WEEK;
+        break;
       case DAY:
+        if (endUnit == null)
+          return DAY;
         if (endUnit == TimeUnit.HOUR)
           return DAY_TO_HOUR;
         if (endUnit == TimeUnit.MINUTE)
           return DAY_TO_MINUTE;
         if (endUnit == TimeUnit.SECOND)
           return DAY_TO_SECOND;
-        return DAY;
-
+        break;
       case HOUR:
+        if (endUnit == null)
+          return HOUR;
         if (endUnit == TimeUnit.MINUTE)
           return HOUR_TO_MINUTE;
         if (endUnit == TimeUnit.SECOND)
           return HOUR_TO_SECOND;
-        return HOUR;
-
+        break;
       case MINUTE:
+        if (endUnit == null)
+          return MINUTE;
         if (endUnit == TimeUnit.SECOND)
           return MINUTE_TO_SECOND;
-        return MINUTE;
-
+        break;
       case SECOND:
-        return SECOND;
-
+        if (endUnit == null)
+          return SECOND;
+        break;
+        
       default:
-        return null;
     }
+    return null;
   }
-  
+
   private final String string;
-  private final TypeName type;
-  
-  private IntervalQualifier(TypeName type) {
-    this.type = type;
+
+  private IntervalQualifier() {
     this.string = name().replace('_', ' ').intern();
   }
 
-  public TypeName getTypeName() {
-    return type;
-  }
-  
   /**
    * Returns {@code HOUR} for {@code HOUR TO SECOND} and{@code HOUR}, {@code SECOND} for
    * {@code SECOND}.
@@ -103,8 +99,12 @@ public enum IntervalQualifier {
       case YEAR:
       case YEAR_TO_MONTH:
         return TimeUnit.YEAR;
+      case QUARTER:
+        return TimeUnit.QUARTER;
       case MONTH:
         return TimeUnit.MONTH;
+      case WEEK:
+        return TimeUnit.WEEK;
       case DAY:
       case DAY_TO_HOUR:
       case DAY_TO_MINUTE:
@@ -131,9 +131,13 @@ public enum IntervalQualifier {
     switch (this) {
       case YEAR:
         return TimeUnit.YEAR;
+      case QUARTER:
+        return TimeUnit.QUARTER;
       case YEAR_TO_MONTH:
       case MONTH:
         return TimeUnit.MONTH;
+      case WEEK:
+        return TimeUnit.WEEK;
       case DAY:
         return TimeUnit.DAY;
       case DAY_TO_HOUR:
@@ -152,36 +156,40 @@ public enum IntervalQualifier {
         throw new AssertionError(this);
     }
   }
-  
+
   public Interval parse(final String text) {
     switch (this) {
       case YEAR:
-        return YearToMonth.year(text);
+        return Interval.year(text);
       case YEAR_TO_MONTH:
-        return YearToMonth.yearToMonth(text);
+        return Interval.yearToMonth(text);
+      case QUARTER:
+        return Interval.quarter(text);
       case MONTH:
-        return YearToMonth.month(text);
+        return Interval.month(text);
+      case WEEK:
+        return Interval.week(text);
       case DAY:
-        return DayToSecond.day(text);
+        return Interval.day(text);
       case DAY_TO_HOUR:
-        return DayToSecond.dayToHour(text);
+        return Interval.dayToHour(text);
       case DAY_TO_MINUTE:
-        return DayToSecond.dayToMinute(text);
+        return Interval.dayToMinute(text);
       case DAY_TO_SECOND:
-        return DayToSecond.dayToSecond(text);
+        return Interval.dayToSecond(text);
       case HOUR:
-        return DayToSecond.hour(text);
+        return Interval.hour(text);
       case HOUR_TO_MINUTE:
-        return DayToSecond.hourToMinute(text);
+        return Interval.hourToMinute(text);
       case HOUR_TO_SECOND:
-        return DayToSecond.hourToSecond(text);
+        return Interval.hourToSecond(text);
       case MINUTE:
-        return DayToSecond.minute(text);
+        return Interval.minute(text);
       case MINUTE_TO_SECOND:
-        return DayToSecond.minuteToSecond(text);
+        return Interval.minuteToSecond(text);
       case SECOND:
-        return DayToSecond.second(text);
-      default:        
+        return Interval.second(text);
+      default:
     }
     return null;
   }
@@ -209,6 +217,7 @@ public enum IntervalQualifier {
   public boolean hasMonths() {
     switch (this) {
       case MONTH:
+      case QUARTER:
       case YEAR_TO_MONTH:
         return true;
       default:
@@ -227,6 +236,7 @@ public enum IntervalQualifier {
       case DAY_TO_HOUR:
       case DAY_TO_MINUTE:
       case DAY_TO_SECOND:
+      case WEEK:
         return true;
       default:
         return false;

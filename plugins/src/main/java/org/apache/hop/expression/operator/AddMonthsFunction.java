@@ -33,7 +33,8 @@ import java.time.ZonedDateTime;
  */
 @FunctionPlugin
 public class AddMonthsFunction extends Function {
-
+  public static final Function INSTANCE = new AddMonthsFunction();
+  
   public AddMonthsFunction() {
     super("ADD_MONTHS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
         "/docs/add_months.html");

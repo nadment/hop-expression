@@ -33,7 +33,8 @@ import java.time.ZonedDateTime;
  */
 @FunctionPlugin
 public class AddWeeksFunction extends Function {
-
+  public static final Function INSTANCE = new AddWeeksFunction();
+  
   public AddWeeksFunction() {
     super("ADD_WEEKS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
         "/docs/add_weeks.html");

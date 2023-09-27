@@ -19,12 +19,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.DayToSecond;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.YearToMonth;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
@@ -85,46 +84,51 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
 
+  /**
+   * @throws Exception
+   */
   @Test
   public void Interval() throws Exception {
-        
+
     optimize("INTERVAL 20 YEAR");
-    optimize("INTERVAL '20' YEAR");    
+    optimize("INTERVAL '20' YEAR");
     optimize("INTERVAL '-20' YEAR");
-    
-    evalEquals("INTERVAL 20 YEAR", new YearToMonth(20));
-    evalEquals("INTERVAL -20 YEAR", new YearToMonth(20).negated());
-    evalEquals("INTERVAL '20' YEAR", new YearToMonth(20));
-    evalEquals("INTERVAL '-20' YEAR", new YearToMonth(20).negated());
-    evalEquals("INTERVAL '20-5' YEAR TO MONTH", new YearToMonth(20, 5));
-    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", new YearToMonth(20, 5).negated());
-    evalEquals("INTERVAL 15 MONTH", new YearToMonth(0, 15));
-    evalEquals("INTERVAL -15 MONTH", new YearToMonth(0, 15).negated());
-    evalEquals("INTERVAL '15' MONTH", new YearToMonth(0, 15));
-    evalEquals("INTERVAL '-15' MONTH", new YearToMonth(0, 15).negated());
 
-    evalEquals("INTERVAL 365 DAY", new DayToSecond(365));
-    evalEquals("INTERVAL '365' DAY", new DayToSecond(365));
-    evalEquals("INTERVAL '365 12' DAY TO HOUR", new DayToSecond(365, 12));
-    evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", new DayToSecond(365, 12, 30));
-    evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", new DayToSecond(365, 12, 30, 58));
+    evalEquals("INTERVAL 20 YEAR", new Interval(20));
+    evalEquals("INTERVAL -20 YEAR", new Interval(20).negated());
+    evalEquals("INTERVAL '20' YEAR", new Interval(20));
+    evalEquals("INTERVAL '-20' YEAR", new Interval(20).negated());
+    evalEquals("INTERVAL '20-5' YEAR TO MONTH", new Interval(20, 5));
+    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", new Interval(20, 5).negated());
+    evalEquals("INTERVAL 2 QUARTER", new Interval(0, 6));
+    evalEquals("INTERVAL 5 QUARTER", new Interval(1, 3));
+    evalEquals("INTERVAL 15 MONTH", new Interval(0, 15));
+    evalEquals("INTERVAL -15 MONTH", new Interval(0, 15).negated());
+    evalEquals("INTERVAL '15' MONTH", new Interval(0, 15));
+    evalEquals("INTERVAL '-15' MONTH", new Interval(0, 15).negated());
 
-    evalEquals("INTERVAL 12 HOUR", new DayToSecond(0, 12));
-    evalEquals("INTERVAL -12 HOUR", new DayToSecond(0, 12).negated());
-    evalEquals("INTERVAL '12' HOUR", new DayToSecond(0, 12));
-    evalEquals("INTERVAL '-12' HOUR", new DayToSecond(0, 12).negated());    
-    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", new DayToSecond(0, 12, 30, 0, 0).negated());
-    evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", new DayToSecond(0, 12, 30, 58, 0));
+    evalEquals("INTERVAL 365 DAY", new Interval(0, 0, 365));
+    evalEquals("INTERVAL '365' DAY", new Interval(0, 0, 365));
+    evalEquals("INTERVAL '365 12' DAY TO HOUR", new Interval(0, 0, 365, 12));
+    evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", new Interval(0, 0, 365, 12, 30));
+    evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", new Interval(0, 0, 365, 12, 30, 58));
 
-    evalEquals("INTERVAL '-30' MINUTE", new DayToSecond(0, 0, 30, 0, 0).negated());
-    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", new DayToSecond(0, 0, 30, 58, 0).negated());
-    
-    evalEquals("INTERVAL 58 SECOND", new DayToSecond(0, 0, 0, 58, 0));
-    evalEquals("INTERVAL '58' SECOND", new DayToSecond(0, 0, 0, 58, 0));
-    evalEquals("INTERVAL -58 SECOND", new DayToSecond(0, 0, 0, 58, 0).negated());
-    evalEquals("INTERVAL '-58' SECOND", new DayToSecond(0, 0, 0, 58, 0).negated());
-    
-    evalFails("INTERVAL");    
+    evalEquals("INTERVAL 12 HOUR", new Interval(0, 0, 0, 12));
+    evalEquals("INTERVAL -12 HOUR", new Interval(0, 0, 0, 12).negated());
+    evalEquals("INTERVAL '12' HOUR", new Interval(0, 0, 0, 12));
+    evalEquals("INTERVAL '-12' HOUR", new Interval(0, 0, 0, 12).negated());
+    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", new Interval(0, 0, 0, 12, 30).negated());
+    evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", new Interval(0, 0, 0, 12, 30, 58));
+
+    evalEquals("INTERVAL '-30' MINUTE", new Interval(0, 0, 0, 0, 30).negated());
+    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", new Interval(0, 0, 0, 0, 30, 58).negated());
+
+    evalEquals("INTERVAL 58 SECOND", new Interval(0, 0, 0, 0, 0, 58));
+    evalEquals("INTERVAL '58' SECOND", new Interval(0, 0, 0, 0, 0, 58));
+    evalEquals("INTERVAL -58 SECOND", new Interval(0, 0, 0, 0, 0, 58).negated());
+    evalEquals("INTERVAL '-58' SECOND", new Interval(0, 0, 0, 0, 0, 58).negated());
+
+    evalFails("INTERVAL");
     evalFails("INTERVAL 5");
     evalFails("INTERVAL -5");
     evalFails("INTERVAL '5'");
@@ -133,26 +137,26 @@ public class LiteralTest extends ExpressionTest {
     evalFails("INTERVAL 5 MONTH TO");
     evalFails("INTERVAL '5' MONTH TO");
     evalFails("INTERVAL '5 10' TO MONTH");
-    
-    optimize("INTERVAL -5 YEAR", "INTERVAL '-5-0' YEAR TO MONTH");
-    optimize("INTERVAL '-15' MONTH", "INTERVAL '-1-3' YEAR TO MONTH");
-    optimize("INTERVAL '-15-3' YEAR TO MONTH", "INTERVAL '-15-3' YEAR TO MONTH");
-    optimize("INTERVAL 365 DAY", "INTERVAL '+365 00:00:00.000000000' DAY TO SECOND");
-    optimize("INTERVAL 30 HOUR", "INTERVAL '+1 06:00:00.000000000' DAY TO SECOND");
-    
-    returnType("INTERVAL '20' YEAR", IntervalType.YEAR_TO_MONTH);
-    returnType("INTERVAL '15' MONTH", IntervalType.YEAR_TO_MONTH);
-    returnType("INTERVAL '20-5' YEAR TO MONTH", IntervalType.YEAR_TO_MONTH);
-    returnType("INTERVAL '365' DAY", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '365 12' DAY TO HOUR", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '365 12:30' DAY TO MINUTE", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '365 12:30:58' DAY TO SECOND", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '12' HOUR", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '12:30' HOUR TO MINUTE", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '12:30:58' HOUR TO SECOND", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '30' MINUTE", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '30:58' MINUTE TO SECOND", IntervalType.DAY_TO_SECOND);
-    returnType("INTERVAL '58' SECOND", IntervalType.DAY_TO_SECOND);
+
+    optimize("INTERVAL -5 YEAR", "INTERVAL '-5-0 0 00:00:00.000000000'");
+    optimize("INTERVAL '-15' MONTH", "INTERVAL '-1-3 0 00:00:00.000000000'");
+    optimize("INTERVAL '-15-3' YEAR TO MONTH", "INTERVAL '-15-3 0 00:00:00.000000000'");
+    optimize("INTERVAL 365 DAY", "INTERVAL '+0-0 365 00:00:00.000000000'");
+    optimize("INTERVAL 30 HOUR", "INTERVAL '+0-0 1 06:00:00.000000000'");
+
+    returnType("INTERVAL '20' YEAR", IntervalType.INTERVAL);
+    returnType("INTERVAL '15' MONTH", IntervalType.INTERVAL);
+    returnType("INTERVAL '20-5' YEAR TO MONTH", IntervalType.INTERVAL);
+    returnType("INTERVAL '365' DAY", IntervalType.INTERVAL);
+    returnType("INTERVAL '365 12' DAY TO HOUR", IntervalType.INTERVAL);
+    returnType("INTERVAL '365 12:30' DAY TO MINUTE", IntervalType.INTERVAL);
+    returnType("INTERVAL '365 12:30:58' DAY TO SECOND", IntervalType.INTERVAL);
+    returnType("INTERVAL '12' HOUR", IntervalType.INTERVAL);
+    returnType("INTERVAL '12:30' HOUR TO MINUTE", IntervalType.INTERVAL);
+    returnType("INTERVAL '12:30:58' HOUR TO SECOND", IntervalType.INTERVAL);
+    returnType("INTERVAL '30' MINUTE", IntervalType.INTERVAL);
+    returnType("INTERVAL '30:58' MINUTE TO SECOND", IntervalType.INTERVAL);
+    returnType("INTERVAL '58' SECOND", IntervalType.INTERVAL);
   }
 
   @Test

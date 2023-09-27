@@ -22,9 +22,11 @@ import org.apache.hop.expression.exception.ConversionException;
 
 public final class IntervalType extends Type {
 
-  public static final IntervalType YEAR_TO_MONTH = new IntervalType(TypeName.YEAR_TO_MONTH);
+  public static final IntervalType INTERVAL = new IntervalType(TypeName.INTERVAL);
   
-  public static final IntervalType DAY_TO_SECOND = new IntervalType(TypeName.DAY_TO_SECOND);
+  //public static final IntervalType YEAR_TO_MONTH = new IntervalType(TypeName.YEAR_TO_MONTH);
+  
+ // public static final IntervalType DAY_TO_SECOND = new IntervalType(TypeName.DAY_TO_SECOND);
 
   private final String string;
 
@@ -47,4 +49,3 @@ public final class IntervalType extends Type {
     throw new ConversionException(ExpressionError.INTERNAL_ERROR);
   }
 }
-

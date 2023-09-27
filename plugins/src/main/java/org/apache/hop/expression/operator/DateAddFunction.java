@@ -16,21 +16,24 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
 /**
  * Adds or subtracts a specified number of time unit to a date or timestamp
  * 
  * @see AddDaysFunction
  * @see AddWeeksFunction
+ * @see AddQuartersFunction
  * @see AddMonthsFunction
  * @see AddYearsFunction
  * @see AddHoursFunction
@@ -47,37 +50,30 @@ public class DateAddFunction extends Function {
   }
 
   @Override
-  public Object eval(final IExpression[] operands) {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    TimeUnit unit = operands[0].getValue(TimeUnit.class);
-
-    Long value = operands[1].getValue(Long.class);
-    if (value == null)
-      return null;
-
-    ZonedDateTime datetime = operands[2].getValue(ZonedDateTime.class);
-    if (datetime == null)
-      return null;
-
+    TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
     switch (unit) {
       case YEAR:
-        return datetime.plusYears(value);
+        return new Call(AddYearsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
+      case QUARTER:
+        return new Call(AddQuartersFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case MONTH:
-        return datetime.plusMonths(value);
+        return new Call(AddMonthsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case WEEK:
-        return datetime.plusWeeks(value);
+        return new Call(AddWeeksFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case DAY:
-        return datetime.plusDays(value);
+        return new Call(AddDaysFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case HOUR:
-        return datetime.plusHours(value);
+        return new Call(AddHoursFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case MINUTE:
-        return datetime.plusMinutes(value);
+        return new Call(AddMinutesFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case SECOND:
-        return datetime.plusSeconds(value);
+        return new Call(AddSecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       case NANOSECOND:
-        return datetime.plusNanos(value);
+        return new Call(AddNanosecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       default:
         throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
-  }
+  }  
 }

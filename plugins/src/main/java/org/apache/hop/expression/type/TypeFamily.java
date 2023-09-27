@@ -19,9 +19,10 @@ package org.apache.hop.expression.type;
 import java.util.Set;
 
 public enum TypeFamily {
-  //-------------------------------------------
+  // -------------------------------------------
   // Primary
-  //-------------------------------------------
+  // -------------------------------------------
+  //
   BINARY,
   //
   NUMERIC,
@@ -35,13 +36,15 @@ public enum TypeFamily {
   JSON,
   //
   INTERVAL,
-  //INTERVAL_YEAR_MONTH,
-  // 
-  //INTERVAL_DAY_TIME,
-  //-------------------------------------------
+  // -------------------------------------------
   // Secondary
-  //-------------------------------------------
-  NONE, ANY, SYMBOL;
+  // -------------------------------------------
+  //
+  NONE,
+  //
+  ANY,
+  //
+  SYMBOL;
 
   /** Return the default {@link Type} that belongs to this family. */
   public Type getDefaultDataType() {
@@ -120,8 +123,6 @@ public enum TypeFamily {
         return family.isSameFamily(JSON, STRING);
       case INTERVAL:
         return family.isSameFamily(INTERVAL);
-//      case INTERVAL_DAY_TIME:
-//        return family.isSameFamily(INTERVAL_DAY_TIME);
       case ANY:
       case NONE:
         return true;

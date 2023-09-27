@@ -16,8 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.DayToSecond;
-import org.apache.hop.expression.YearToMonth;
+import org.apache.hop.expression.Interval;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -62,10 +61,15 @@ public enum TypeName {
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
+
   /** A interval type for years to months */
-  YEAR_TO_MONTH(TypeFamily.INTERVAL, PrecScale.NO_NO, YearToMonth.class),
+  INTERVAL(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
+
+  
+  /** A interval type for years to months */
+  //YEAR_TO_MONTH(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
   /** A interval type for days to seconds */
-  DAY_TO_SECOND(TypeFamily.INTERVAL, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, DayToSecond.class),
+  //DAY_TO_SECOND(TypeFamily.INTERVAL, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Interval.class),
   ;
 
   public static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
@@ -76,7 +80,7 @@ public enum TypeName {
   protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
   protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
   protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
-  protected static final Set<TypeName> INTERVAL_TYPES = Set.of(YEAR_TO_MONTH, DAY_TO_SECOND);
+  protected static final Set<TypeName> INTERVAL_TYPES = Set.of(INTERVAL);
 
   protected static final Set<TypeName> ALL_TYPES =
       Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
@@ -204,8 +208,7 @@ public enum TypeName {
       case INTEGER:
       case NUMBER:
         return 1;   
-      case YEAR_TO_MONTH:
-      case DAY_TO_SECOND:
+      case INTERVAL:
         return 6;
       default:
         return -1;
@@ -228,8 +231,7 @@ public enum TypeName {
       case NUMBER:
         return 38;
       case DATE:
-      case YEAR_TO_MONTH:
-      case DAY_TO_SECOND:
+      case INTERVAL:
         return 9;
       default:
         return -1;

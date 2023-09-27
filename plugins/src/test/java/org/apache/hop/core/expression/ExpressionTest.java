@@ -390,7 +390,7 @@ public class ExpressionTest {
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
     //evalNull("Json_Value(NULL_JSON,'$.name')");           
-    //optimize("TO_YMINTERVAL('2-11')", "INTERVAL '2-11' YEAR TO MONTH");
+    evalEquals("TO_INTERVAL('0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

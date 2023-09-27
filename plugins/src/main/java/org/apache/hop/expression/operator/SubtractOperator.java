@@ -56,6 +56,9 @@ public class SubtractOperator extends Operator {
       }      
       return new Call(Operators.SUBTRACT_DATE_INTERVAL, call.getOperands());
     }
+    else if (left.getType().isSameFamily(TypeFamily.INTERVAL)) {
+      return new Call(call.getPosition(), Operators.SUBTRACT_INTERVAL, call.getOperands());
+    }
 
     return new Call(Operators.SUBTRACT_NUMERIC, call.getOperands()); 
   }

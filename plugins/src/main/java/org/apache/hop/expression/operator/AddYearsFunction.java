@@ -33,7 +33,8 @@ import java.time.ZonedDateTime;
  */
 @FunctionPlugin
 public class AddYearsFunction extends Function {
-
+  public static final Function INSTANCE = new AddYearsFunction();
+  
   public AddYearsFunction() {
     super("ADD_YEARS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
         "/docs/add_years.html");
