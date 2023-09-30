@@ -24,7 +24,7 @@ import java.math.BigDecimal;
  * Converts a numeric expression to a string value.
  */
 public class ToCharNumberFunction extends ToCharFunction {
-  static final ToCharNumberFunction INSTANCE = new ToCharNumberFunction();
+  public static final ToCharNumberFunction INSTANCE = new ToCharNumberFunction();
 
   public ToCharNumberFunction() {
     super();

@@ -603,7 +603,7 @@ public class ExpressionParser {
    * Parses a date literal.
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
-  private IExpression parseLiteralDate(Token token) throws ExpressionException {
+  private Literal parseLiteralDate(Token token) throws ExpressionException {
     
     // return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(DateType.DATE));
     
@@ -617,18 +617,6 @@ public class ExpressionParser {
           token.text(), format);
     }
   }
-
-  /** Parses a time literal. */
-  // private Literal parseLiteralTime(Token token) throws ExpressionException {
-  // DateTimeFormat format = DateTimeFormat.of("HH12:MI:SS AM|HH24:MI:SS|HH12:MI AM|HH24:MI");
-  // try {
-  // ZonedDateTime datetime = format.parse(token.text());
-  // return Literal.of(datetime);
-  // } catch (Exception e) {
-  // throw new ExpressionException(token.start(), ExpressionError.UNPARSABLE_DATE_WITH_FORMAT,
-  // token.text(), format);
-  // }
-  // }
 
   /**
    * Parses a timestamp literal with ISO Formats.
@@ -1109,7 +1097,7 @@ public class ExpressionParser {
       throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
 
     if ( negative ) 
-      interval = interval.negated();
+      interval = interval.negate();
     
     return Literal.of(interval);    
   }

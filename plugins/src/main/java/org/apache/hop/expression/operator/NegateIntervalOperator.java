@@ -17,50 +17,47 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
-import org.apache.hop.expression.Function;
-import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
-import java.time.ZonedDateTime;
 
 /**
- * Adds or subtracts a specified number of days to a date or timestamp
+ * Arithmetic unary minus (negative) operator '<code>-</code>'.
  */
-@FunctionPlugin
-public class AddDaysFunction extends Function {
-  public static final Function INSTANCE = new AddDaysFunction();
+public class NegateIntervalOperator extends NegateOperator {
   
-  public AddDaysFunction() {
-    super("ADD_DAYS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
-        "/docs/add_days.html");
+  public static final NegateIntervalOperator INSTANCE = new NegateIntervalOperator();
+  
+  public NegateIntervalOperator() {
+    super();
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
-    // Simplify arithmetic ADD_DAYS(A,0) → A
-    if (Literal.ZERO.equals(call.getOperand(1))) {
-      return call.getOperand(0);
-    }
+    IExpression operand = call.getOperand(0);
     
+    // Simplify arithmetic -(-(A)) → A
+    if (operand.is(Operators.NEGATIVE)) {
+      return operand.asCall().getOperand(0);
+    }
+
+    // Simplify arithmetic -(A-B) → B-A
+//    if (operand.is(Operators.SUBTRACT_NUMERIC)) {
+//      Call subtract = operand.asCall();
+//      return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
+//    }
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
-    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
-    if (datetime == null)
+    Interval interval = operands[0].getValue(Interval.class);
+    if (interval == null)
       return null;
 
-    Long days = operands[1].getValue(Long.class);
-    if (days == null)
-      return null;
-
-    return datetime.plusDays(days);
+    return interval.negate();
   }
 }

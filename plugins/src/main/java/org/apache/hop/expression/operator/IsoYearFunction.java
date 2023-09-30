@@ -32,7 +32,7 @@ import java.time.temporal.IsoFields;
 public class IsoYearFunction extends Function {
 
   public IsoYearFunction() {
-    super("ISOYEAR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/isoyear.html");
+    super("ISOYEAR", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/isoyear.html");
   }
 
   @Override

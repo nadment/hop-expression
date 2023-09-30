@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.operator.AddDateIntervalOperator;
+import org.apache.hop.expression.operator.AddIntervalOperator;
 import org.apache.hop.expression.operator.AddIntervalOperator;
 import org.apache.hop.expression.operator.AddNumericOperator;
 import org.apache.hop.expression.operator.AddOperator;
@@ -63,7 +63,7 @@ import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NullIfFunction;
 import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SimilarToOperator;
-import org.apache.hop.expression.operator.SubtractDateIntervalOperator;
+import org.apache.hop.expression.operator.SubtractIntervalOperator;
 import org.apache.hop.expression.operator.SubtractIntervalOperator;
 import org.apache.hop.expression.operator.SubtractNumericOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
@@ -141,9 +141,7 @@ public class Operators {
   // DATE OPERATORS
   // -------------------------------------------------------------
   public static final Operator ADD_INTERVAL = new AddIntervalOperator();
-  public static final Operator ADD_DATE_INTERVAL = new AddDateIntervalOperator();
   public static final Operator SUBTRACT_INTERVAL = new SubtractIntervalOperator();
-  public static final Operator SUBTRACT_DATE_INTERVAL = new SubtractDateIntervalOperator();
   public static final Operator AT_TIME_ZONE = new AtTimeZoneOperator();
 
   // -------------------------------------------------------------

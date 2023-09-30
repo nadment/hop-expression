@@ -18,27 +18,28 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
+import java.time.ZonedDateTime;
 
 /**
- * Subtracts a specified interval to another interval
+ * Subtracts a specified interval to a date or timestamp
  */
 public class SubtractIntervalOperator extends SubtractOperator {
   public static final SubtractIntervalOperator INSTANCE = new SubtractIntervalOperator();
   
   public SubtractIntervalOperator() {
-    super("SUBTRACT_INTERVAL");
+    super();
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Interval left = operands[0].getValue(Interval.class);
-    if (left == null)
+    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
+    if (datetime == null)
       return null;
 
-    Interval right = operands[1].getValue(Interval.class);
-    if (right == null)
+    Interval interval = operands[1].getValue(Interval.class);
+    if (interval == null)
       return null;
 
-    return left.minus(right);
+    return interval.subtractFrom(datetime);
   }
 }

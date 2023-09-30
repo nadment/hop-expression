@@ -44,7 +44,7 @@ public class LastDayFunction extends Function {
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
   public LastDayFunction() {
-    super("LAST_DAY", ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT, Category.DATE,
+    super("LAST_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT), Category.DATE,
         "/docs/last_day.html");
   }
 

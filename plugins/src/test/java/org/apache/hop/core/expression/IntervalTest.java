@@ -35,9 +35,9 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(0, interval.getHours());
     assertEquals(0, interval.getMinutes());
     assertEquals(0, interval.getSeconds());
-    assertEquals(0, interval.getMillis());
-    assertEquals(0, interval.getMicros());
-    assertEquals(0, interval.getNanos());
+    assertEquals(0, interval.getMilliseconds());
+    assertEquals(0, interval.getMicroseconds());
+    assertEquals(0, interval.getNanoseconds());
     assertEquals(1, interval.getSign());
     assertEquals("+0-0 0 00:00:00.000000000", interval.toString());
     assertTrue(interval.isZero());
@@ -64,7 +64,16 @@ public class IntervalTest extends ExpressionTest {
 
   @Test
   public void intervalParseFail() throws Exception {
-    assertNotEquals(null, Interval.yearToMonth("5-24"));    
+    assertNotEquals(null, Interval.yearToMonth("5-24"));
+    assertNull(Interval.year("Z"));    
+    assertNull(Interval.yearToMonth("5-Z"));
+    assertNull(Interval.quarter("Z"));
+    assertNull(Interval.month("Z"));
+    assertNull(Interval.week("Z"));
+    assertNull(Interval.day("Z"));
+    assertNull(Interval.hour("Z"));
+    assertNull(Interval.minute("Z"));
+    assertNull(Interval.second("1123.Z"));
   }
   
   @Test
@@ -76,9 +85,9 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(22, interval.getHours());
     assertEquals(30, interval.getMinutes());    
     assertEquals(58, interval.getSeconds());
-    assertEquals(123, interval.getMillis());
-    assertEquals(123456, interval.getMicros());
-    assertEquals(123456789, interval.getNanos());
+    assertEquals(123, interval.getMilliseconds());
+    assertEquals(123456, interval.getMicroseconds());
+    assertEquals(123456789, interval.getNanoseconds());
     assertEquals("+7-1 44 22:30:58.123456789", interval.toString());
   }
 
@@ -88,9 +97,9 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(new Interval(5), Interval.year("5"));
     assertEquals(new Interval(1), Interval.yearToMonth("+0-12"));
     assertEquals(new Interval(5, 25), Interval.yearToMonth("6-13"));
-    assertNotEquals(new Interval(5, 25), Interval.yearToMonth("-5-25"));
+    assertNotEquals(new Interval(5, 25), Interval.yearToMonth("-5-25 "));
     assertNotEquals(new Interval(5, 25), Interval.yearToMonth("6-25"));
-    assertNotEquals(new Interval(5, 25), Interval.yearToMonth("5-24"));
+    assertNotEquals(new Interval(5, 25), Interval.yearToMonth(" 5-24"));
     assertEquals(new Interval(0, 6), Interval.quarter("2"));
     assertEquals(new Interval(2, 1), Interval.month("25"));
     assertNotEquals(new Interval(25), Interval.month("25"));
@@ -100,23 +109,27 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(new Interval(0, 0, 5, 14, 38, 56), Interval.dayToSecond("5 14:38:56"));
     assertEquals(new Interval(0, 0, 5, 14, 38, 56, 987654321),
         Interval.dayToSecond("5 14:38:56.987654321"));
-    assertEquals(new Interval(0, 0, 5, 14, 38, 56, 987654321).negated(),
+    assertEquals(new Interval(0, 0, 5, 14, 38, 56, 987654321).negate(),
         Interval.dayToSecond("-5 14:38:56.987654321"));
     assertEquals(new Interval(0, 0, 0, 14), Interval.hour("14"));
     assertEquals(new Interval(0, 0, 0, 14, 38), Interval.hourToMinute("14:38"));
     assertEquals(new Interval(0, 0, 0, 14, 38, 56), Interval.hourToSecond("14:38:56"));
     assertEquals(new Interval(0, 0, 0, 0, 38), Interval.minute("38"));
     assertEquals(new Interval(0, 0, 0, 0, 38, 56), Interval.minuteToSecond("38:56"));
-
+    assertEquals(new Interval(0, 0, 0, 0, 38, 56, 123456789), Interval.minuteToSecond("38:56.123456789"));
+    assertEquals(new Interval(0, 0, 0, 0, 38, 56, 123456789).negate(), Interval.minuteToSecond("-38:56.123456789"));
+    assertEquals(new Interval(0, 0, 0, 0, 0, 56, 123456789), Interval.second("56.123456789"));
+    assertEquals(new Interval(0, 0, 0, 0, 0, 56, 123456789).negate(), Interval.second("-56.123456789"));
+    
     assertEquals(7, Interval.yearToMonth("7-3").getYears());
     assertEquals(3, Interval.yearToMonth("7-3").getMonths());
     assertEquals(5, Interval.dayToSecond("-5 14:38:56.987654321").getDays());  
     assertEquals(14, Interval.dayToSecond("-5 14:38:56.987654321").getHours());
     assertEquals(38, Interval.dayToSecond("-5 14:38:56.987654321").getMinutes());
     assertEquals(56, Interval.dayToSecond("-5 14:38:56.987654321").getSeconds());
-    assertEquals(987, Interval.dayToSecond("-5 14:38:56.987654321").getMillis());
-    assertEquals(987654, Interval.dayToSecond("-5 14:38:56.987654321").getMicros());
-    assertEquals(987654321, Interval.dayToSecond("-5 14:38:56.987654321").getNanos());
+    assertEquals(987, Interval.dayToSecond("-5 14:38:56.987654321").getMilliseconds());
+    assertEquals(987654, Interval.dayToSecond("-5 14:38:56.987654321").getMicroseconds());
+    assertEquals(987654321, Interval.dayToSecond("-5 14:38:56.987654321").getNanoseconds());
     
     
     // ISO format 8601
@@ -132,7 +145,7 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(-1, Interval.yearToMonth("-5-24").getSign());
     assertEquals(-1, Interval.dayToSecond("-5 14:38:56.987654321").getSign());
   }
-    
+      
   @Test
   public void intervalQualifierOf() throws Exception {
     assertNull(IntervalQualifier.of(TimeUnit.CENTURY, null));

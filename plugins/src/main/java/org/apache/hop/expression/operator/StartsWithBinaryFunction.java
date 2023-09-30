@@ -24,7 +24,7 @@ import org.apache.hop.expression.IExpression;
  */
 public class StartsWithBinaryFunction extends StartsWithFunction {
 
-  static final StartsWithBinaryFunction INSTANCE = new StartsWithBinaryFunction();
+  public static final StartsWithBinaryFunction INSTANCE = new StartsWithBinaryFunction();
 
   public StartsWithBinaryFunction() {
     super();

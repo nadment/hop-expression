@@ -36,7 +36,7 @@ public class AddQuartersFunction extends Function {
   public static final Function INSTANCE = new AddQuartersFunction();
 
   public AddQuartersFunction() {
-    super("ADD_QUARTERS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
+    super("ADD_QUARTERS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_quarters.html");
   }
 

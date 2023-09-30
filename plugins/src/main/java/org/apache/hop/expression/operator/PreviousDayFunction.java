@@ -33,7 +33,7 @@ import java.time.temporal.TemporalAdjusters;
 public class PreviousDayFunction extends Function {
 
   public PreviousDayFunction() {
-    super("PREVIOUS_DAY", ReturnTypes.DATE, OperandTypes.DATE_STRING, Category.DATE,
+    super("PREVIOUS_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL_STRING, Category.DATE,
         "/docs/previous_day.html");
   }
 

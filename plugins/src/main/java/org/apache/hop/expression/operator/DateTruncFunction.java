@@ -36,7 +36,7 @@ import java.time.temporal.TemporalAdjusters;
 public class DateTruncFunction extends Function {
 
   public DateTruncFunction() {
-    super("DATE_TRUNC", ReturnTypes.DATE, OperandTypes.TIMEUNIT_DATE, Category.DATE,
+    super("DATE_TRUNC", ReturnTypes.DATE, OperandTypes.TIMEUNIT_TEMPORAL, Category.DATE,
         "/docs/date_trunc.html");
   }
 

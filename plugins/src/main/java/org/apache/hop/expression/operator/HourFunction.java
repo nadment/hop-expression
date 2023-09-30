@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class HourFunction extends Function {
 
   public HourFunction() {
-    super("HOUR", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/hour.html");
+    super("HOUR", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/hour.html");
   }
 
   @Override

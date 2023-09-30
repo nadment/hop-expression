@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
  * The function returns the number of characters of the specified string.
  */
 public class LengthBinaryFunction extends LengthFunction {
-  static final LengthBinaryFunction INSTANCE = new LengthBinaryFunction();
+  public static final LengthBinaryFunction INSTANCE = new LengthBinaryFunction();
 
   public LengthBinaryFunction() {
     super();

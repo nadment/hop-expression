@@ -84,6 +84,37 @@ public enum IntervalQualifier {
     return null;
   }
 
+  public static IntervalQualifier of(final Interval interval) {
+    TimeUnit start = null;
+    TimeUnit end = null;
+    
+    if ( interval.getYears()!=0) {
+        start = TimeUnit.YEAR;        
+    }
+    if ( interval.getMonths()!=0) {
+      if ( start==null) start = TimeUnit.MONTH;
+      else end = TimeUnit.MONTH;
+    }
+    if ( interval.getDays()!=0) {
+      if ( start==null) start = TimeUnit.DAY;
+      else end = TimeUnit.DAY;
+    }
+    if ( interval.getHours()!=0) {
+      if ( start==null) start = TimeUnit.HOUR;
+      else end = TimeUnit.HOUR;
+    }
+    if ( interval.getMinutes()!=0) {
+      if ( start==null) start = TimeUnit.MINUTE;
+      else end = TimeUnit.MINUTE;
+    }
+    if ( interval.getSeconds()!=0) {
+      if ( start==null) start = TimeUnit.SECOND;
+      else end = TimeUnit.SECOND;
+    }
+    
+    return of(start,end);
+  }
+  
   private final String string;
 
   private IntervalQualifier() {

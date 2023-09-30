@@ -24,7 +24,7 @@ import org.apache.hop.expression.IExpression;
  */
 public class RPadBinaryFunction extends RPadFunction {
   private static final byte[] DEFAULT = new byte[] {0x00};
-  static final RPadBinaryFunction INSTANCE = new RPadBinaryFunction();
+  public static final RPadBinaryFunction INSTANCE = new RPadBinaryFunction();
 
   public RPadBinaryFunction() {
     super();

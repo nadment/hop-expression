@@ -174,6 +174,26 @@ The UTC offset form can be further refined to include the regional time zone, en
 
 NOTE: Time zone names are case-sensitive and must be enclosed in single quotes (e.g. 'UTC'). A time zone name is valid if recognized by Java’s ZoneId.of.
 
+=== Interval
+
+Interval literals defines a constant elapsed time. You can use these interval literals in conditions and calculations that involve datetime expressions. 
+
+----
+INTERVAL 1 YEAR
+INTERVAL 5 DAYS
+INTERVAL -12 HOURS
+----
+
+Plurals of each unit are also supported.
+
+Interval constants can also be expressed using the following formats: INTERVAL 'Y-M D H:M:S'
+
+The following subtracts 4 months from March 31, 2023 and the result is November 30, 2022. The calculation considers the number of days in a month.
+----
+DATE '2023-03-31' - INTERVAL 4 MONTHS
+----
+
+
 === Json
 
 Literal json.

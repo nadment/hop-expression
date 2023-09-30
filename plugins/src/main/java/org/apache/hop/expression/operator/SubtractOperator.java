@@ -34,13 +34,9 @@ import java.io.StringWriter;
  * <strong>Syntax:</strong> <code>x - y</code>
  */
 public class SubtractOperator extends Operator {
-
-  public SubtractOperator() {
-    this("SUBTRACT");
-  }
   
-  protected SubtractOperator(String id) {
-    super(id, "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.DATE_INTERVAL).or(OperandTypes.DATE_NUMERIC).or(OperandTypes.INTERVAL_INTERVAL),
+  public SubtractOperator() {
+    super("SUBTRACT", "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL).or(OperandTypes.TEMPORAL_NUMERIC).or(OperandTypes.INTERVAL_INTERVAL),
         Category.MATHEMATICAL, "/docs/subtract.html");
   }
 
@@ -54,10 +50,7 @@ public class SubtractOperator extends Operator {
       if ( right.getType().isSameFamily(TypeFamily.NUMERIC)) {
         return new Call(AddDaysFunction.INSTANCE, left, new Call(call.getPosition(), Operators.NEGATIVE, right));
       }      
-      return new Call(Operators.SUBTRACT_DATE_INTERVAL, call.getOperands());
-    }
-    else if (left.getType().isSameFamily(TypeFamily.INTERVAL)) {
-      return new Call(call.getPosition(), Operators.SUBTRACT_INTERVAL, call.getOperands());
+      return new Call(Operators.SUBTRACT_INTERVAL, call.getOperands());
     }
 
     return new Call(Operators.SUBTRACT_NUMERIC, call.getOperands()); 

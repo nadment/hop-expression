@@ -95,17 +95,17 @@ public class LiteralTest extends ExpressionTest {
     optimize("INTERVAL '-20' YEAR");
 
     evalEquals("INTERVAL 20 YEAR", new Interval(20));
-    evalEquals("INTERVAL -20 YEAR", new Interval(20).negated());
+    evalEquals("INTERVAL -20 YEAR", new Interval(20).negate());
     evalEquals("INTERVAL '20' YEAR", new Interval(20));
-    evalEquals("INTERVAL '-20' YEAR", new Interval(20).negated());
+    evalEquals("INTERVAL '-20' YEAR", new Interval(20).negate());
     evalEquals("INTERVAL '20-5' YEAR TO MONTH", new Interval(20, 5));
-    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", new Interval(20, 5).negated());
+    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", new Interval(20, 5).negate());
     evalEquals("INTERVAL 2 QUARTER", new Interval(0, 6));
     evalEquals("INTERVAL 5 QUARTER", new Interval(1, 3));
     evalEquals("INTERVAL 15 MONTH", new Interval(0, 15));
-    evalEquals("INTERVAL -15 MONTH", new Interval(0, 15).negated());
+    evalEquals("INTERVAL -15 MONTH", new Interval(0, 15).negate());
     evalEquals("INTERVAL '15' MONTH", new Interval(0, 15));
-    evalEquals("INTERVAL '-15' MONTH", new Interval(0, 15).negated());
+    evalEquals("INTERVAL '-15' MONTH", new Interval(0, 15).negate());
 
     evalEquals("INTERVAL 365 DAY", new Interval(0, 0, 365));
     evalEquals("INTERVAL '365' DAY", new Interval(0, 0, 365));
@@ -114,36 +114,75 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", new Interval(0, 0, 365, 12, 30, 58));
 
     evalEquals("INTERVAL 12 HOUR", new Interval(0, 0, 0, 12));
-    evalEquals("INTERVAL -12 HOUR", new Interval(0, 0, 0, 12).negated());
+    evalEquals("INTERVAL -12 HOUR", new Interval(0, 0, 0, 12).negate());
     evalEquals("INTERVAL '12' HOUR", new Interval(0, 0, 0, 12));
-    evalEquals("INTERVAL '-12' HOUR", new Interval(0, 0, 0, 12).negated());
-    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", new Interval(0, 0, 0, 12, 30).negated());
+    evalEquals("INTERVAL '-12' HOUR", new Interval(0, 0, 0, 12).negate());
+    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", new Interval(0, 0, 0, 12, 30).negate());
     evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", new Interval(0, 0, 0, 12, 30, 58));
 
-    evalEquals("INTERVAL '-30' MINUTE", new Interval(0, 0, 0, 0, 30).negated());
-    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", new Interval(0, 0, 0, 0, 30, 58).negated());
+    evalEquals("INTERVAL '-30' MINUTE", new Interval(0, 0, 0, 0, 30).negate());
+    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", new Interval(0, 0, 0, 0, 30, 58).negate());
 
     evalEquals("INTERVAL 58 SECOND", new Interval(0, 0, 0, 0, 0, 58));
     evalEquals("INTERVAL '58' SECOND", new Interval(0, 0, 0, 0, 0, 58));
-    evalEquals("INTERVAL -58 SECOND", new Interval(0, 0, 0, 0, 0, 58).negated());
-    evalEquals("INTERVAL '-58' SECOND", new Interval(0, 0, 0, 0, 0, 58).negated());
+    evalEquals("INTERVAL -58 SECOND", new Interval(0, 0, 0, 0, 0, 58).negate());
+    evalEquals("INTERVAL '-58' SECOND", new Interval(0, 0, 0, 0, 0, 58).negate());
 
     evalFails("INTERVAL");
     evalFails("INTERVAL 5");
     evalFails("INTERVAL -5");
     evalFails("INTERVAL '5'");
     evalFails("INTERVAL '' MONTH");
+    evalFails("INTERVAL '' YEAR");
     evalFails("INTERVAL MONTH");
     evalFails("INTERVAL 5 MONTH TO");
     evalFails("INTERVAL '5' MONTH TO");
     evalFails("INTERVAL '5 10' TO MONTH");
+    evalFails("INTERVAL '5' YEAR TO MONTH");
+    evalFails("INTERVAL '5-' DAY TO HOUR");
+    evalFails("INTERVAL '5' DAY TO MINUTE");
+    evalFails("INTERVAL '5' DAY TO SECOND");
+    evalFails("INTERVAL '5' HOUR TO MINUTE");
+    evalFails("INTERVAL '5' HOUR TO SECOND");
+    evalFails("INTERVAL '5' MINUTE TO SECOND");
 
-    optimize("INTERVAL -5 YEAR", "INTERVAL '-5-0 0 00:00:00.000000000'");
-    optimize("INTERVAL '-15' MONTH", "INTERVAL '-1-3 0 00:00:00.000000000'");
-    optimize("INTERVAL '-15-3' YEAR TO MONTH", "INTERVAL '-15-3 0 00:00:00.000000000'");
-    optimize("INTERVAL 365 DAY", "INTERVAL '+0-0 365 00:00:00.000000000'");
-    optimize("INTERVAL 30 HOUR", "INTERVAL '+0-0 1 06:00:00.000000000'");
-
+    optimize("INTERVAL -5 YEARS", "INTERVAL -5 YEAR");
+    optimize("INTERVAL '-15' MONTHS", "INTERVAL '-1-3' YEAR TO MONTH");
+    optimize("INTERVAL '15' MONTHS", "INTERVAL '+1-3' YEAR TO MONTH");
+    optimize("INTERVAL 365 DAYS", "INTERVAL 365 DAY");
+    optimize("INTERVAL 2 QUARTERS", "INTERVAL 6 MONTH");
+    optimize("INTERVAL -2 QUARTERS", "INTERVAL -6 MONTH");
+    optimize("INTERVAL 3 WEEKS", "INTERVAL 21 DAY");
+    optimize("INTERVAL -3 WEEKS", "INTERVAL -21 DAY");
+    optimize("INTERVAL 21 DAYS", "INTERVAL 21 DAY");
+    optimize("INTERVAL 23 HOURS", "INTERVAL 23 HOUR");
+    optimize("INTERVAL 2 HOUR", "INTERVAL 2 HOUR");
+    optimize("INTERVAL -23 HOURS", "INTERVAL -23 HOUR");
+    optimize("INTERVAL 5 MINUTES", "INTERVAL 5 MINUTE");
+    optimize("INTERVAL 30 MINUTES", "INTERVAL 30 MINUTE");
+    optimize("INTERVAL -30 MINUTES", "INTERVAL -30 MINUTE");
+    optimize("INTERVAL 58 SECONDS", "INTERVAL 58 SECOND");
+    optimize("INTERVAL -58 SECONDS", "INTERVAL -58 SECOND");
+    optimize("INTERVAL 58.123456789 SECONDS", "INTERVAL 58.123456789 SECOND");
+    optimize("INTERVAL '-15-3' YEAR TO MONTH", "INTERVAL '-15-3' YEAR TO MONTH");
+    optimize("INTERVAL '5 23' DAY TO HOUR", "INTERVAL '+5 23' DAY TO HOUR");
+    optimize("INTERVAL 30 HOUR", "INTERVAL '+1 06' DAY TO HOUR");
+    optimize("INTERVAL -30 HOUR", "INTERVAL '-1 06' DAY TO HOUR");
+    optimize("INTERVAL '5 23:30:58' DAY TO SECOND", "INTERVAL '+5 23:30:58' DAY TO SECOND");
+    optimize("INTERVAL '5 23:03:58' DAY TO SECOND", "INTERVAL '+5 23:03:58' DAY TO SECOND");
+    optimize("INTERVAL '5 23:03:08' DAY TO SECOND", "INTERVAL '+5 23:03:08' DAY TO SECOND");
+    optimize("INTERVAL '23:30' HOUR TO MINUTE", "INTERVAL '+23:30' HOUR TO MINUTE");
+    optimize("INTERVAL '-23:30' HOUR TO MINUTE", "INTERVAL '-23:30' HOUR TO MINUTE");
+    optimize("INTERVAL '23:30:58' HOUR TO SECOND", "INTERVAL '+23:30:58' HOUR TO SECOND");
+    optimize("INTERVAL '-23:30:58' HOUR TO SECOND", "INTERVAL '-23:30:58' HOUR TO SECOND");    
+    optimize("INTERVAL '30:58' MINUTE TO SECOND", "INTERVAL '+30:58' MINUTE TO SECOND");
+    optimize("INTERVAL '-30:58' MINUTE TO SECOND", "INTERVAL '-30:58' MINUTE TO SECOND");
+    optimize("INTERVAL '-30:58.123456789' MINUTE TO SECOND", "INTERVAL '-30:58.123456789' MINUTE TO SECOND");
+    
+    
+    optimize("INTERVAL '-30 23:30:58.123456789' DAY TO SECOND", "INTERVAL '-30 23:30:58.123456789' DAY TO SECOND");
+    //optimize("INTERVAL '-4-11 30 23:30:58.123456789' DAY TO SECOND", "INTERVAL '-4-11 30 23:30:58.123456789'");
+    
     returnType("INTERVAL '20' YEAR", IntervalType.INTERVAL);
     returnType("INTERVAL '15' MONTH", IntervalType.INTERVAL);
     returnType("INTERVAL '20-5' YEAR TO MONTH", IntervalType.INTERVAL);

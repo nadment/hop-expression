@@ -36,7 +36,7 @@ public class AddHoursFunction extends Function {
   public static final Function INSTANCE = new AddHoursFunction();
   
   public AddHoursFunction() {
-    super("ADD_HOURS", ReturnTypes.DATE, OperandTypes.DATE_NUMERIC, Category.DATE,
+    super("ADD_HOURS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_hours.html");
   }
 

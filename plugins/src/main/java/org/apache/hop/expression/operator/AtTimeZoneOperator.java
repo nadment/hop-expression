@@ -34,7 +34,7 @@ import java.time.ZonedDateTime;
 public class AtTimeZoneOperator extends Operator {
 
   public AtTimeZoneOperator() {
-    super("TIMEZONE", "AT TIME ZONE", 10, true, ReturnTypes.DATE, OperandTypes.DATE_STRING,
+    super("TIMEZONE", "AT TIME ZONE", 10, true, ReturnTypes.DATE, OperandTypes.TEMPORAL_STRING,
         Category.CONVERSION, "/docs/attimezone.html");
   }
 

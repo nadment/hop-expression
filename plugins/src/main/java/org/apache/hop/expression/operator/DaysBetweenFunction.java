@@ -32,7 +32,7 @@ import java.time.temporal.ChronoUnit;
 public class DaysBetweenFunction extends Function {
 
   public DaysBetweenFunction() {
-    super("DAYS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE, Category.DATE,
+    super("DAYS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
         "/docs/days_between.html");
   }
 

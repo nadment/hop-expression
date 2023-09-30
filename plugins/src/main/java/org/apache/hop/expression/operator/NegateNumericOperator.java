@@ -17,46 +17,57 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import java.time.ZonedDateTime;
+import org.apache.hop.expression.type.NumberType;
+import java.io.StringWriter;
 
 /**
- * Adds a specified interval to a date or timestamp
+ * Arithmetic unary minus (negative) operator '<code>-</code>'.
  */
-public class AddDateIntervalOperator extends AddOperator {
-  public static final AddDateIntervalOperator INSTANCE = new AddDateIntervalOperator();
+public class NegateNumericOperator extends NegateOperator {
   
-  public AddDateIntervalOperator() {
-    super("ADD_DATE_INTERVAL");
+  public static final NegateNumericOperator INSTANCE = new NegateNumericOperator();
+  
+  public NegateNumericOperator() {
+    super();
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
-    // Simplify arithmetic A+INTERVAL 0 → A
-    if (call.getOperand(1) instanceof Interval) {
-      Interval interval = (Interval) call.getOperand(1);       
-      if ( interval.isZero() ) {
-        return call.getOperand(0);
-      }
-    }
+    IExpression operand = call.getOperand(0);
     
+    // Simplify arithmetic -(-(A)) → A
+    if (operand.is(Operators.NEGATIVE)) {
+      return operand.asCall().getOperand(0);
+    }
+
+    // Simplify arithmetic -(A-B) → B-A
+    if (operand.is(Operators.SUBTRACT_NUMERIC)) {
+      Call subtract = operand.asCall();
+      return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
+    }
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
-    ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);
-    if (datetime == null)
+    Object v0 = operands[0].getValue();
+    if (v0 == null)
       return null;
 
-    Interval interval = operands[1].getValue(Interval.class);
-    if (interval == null)
-      return null;
+    if (v0 instanceof Long) {
+      Long value = (Long) v0;
+      if (value == Long.MIN_VALUE) {
+        throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
+      }
+      return Long.valueOf(-value);
+    }
 
-    return interval.addTo(datetime);
+    return NumberType.coerce(v0).negate();
   }
 }

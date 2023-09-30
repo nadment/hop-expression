@@ -2627,10 +2627,10 @@ public class FunctionsTest extends ExpressionTest {
   public void To_Interval() throws Exception {
     evalEquals("TO_INTERVAL('0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
     evalEquals("TO_INTERVAL('+0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
-    evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", new Interval(0,0,45,22,30,58).negated());   
+    evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", new Interval(0,0,45,22,30,58).negate());   
     evalNull("TO_INTERVAL(NULL_STRING)");
     
-    optimize("TO_INTERVAL('-0-0 45 22:30:58')", "INTERVAL '-0-0 45 22:30:58.000000000'");
+    optimize("TO_INTERVAL('-0-0 45 22:30:58')", "INTERVAL '-45 22:30:58' DAY TO SECOND");
     
     returnType("TO_INTERVAL('+0-0 -45 22:30:58')", IntervalType.INTERVAL);
   }
@@ -3692,7 +3692,7 @@ public class FunctionsTest extends ExpressionTest {
   
   @Test
   public void Extract() throws Exception {
-    // Extract from temporal
+    // Extract part from temporal
     evalEquals("Extract(MILLENNIUM from TIMESTAMP '2020-05-25 23:48:59')", 3L);
     evalEquals("Extract(CENTURY from TIMESTAMP '2000-12-25 23:48:59')", 20L);
     evalEquals("Extract(CENTURY from TIMESTAMP '2020-05-25 23:48:59')", 21L);
@@ -3711,7 +3711,9 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Extract(ISOWEEK from Date '2016-01-04')", 1L);
     evalEquals("Extract(ISODAYOFWEEK from Date '2003-12-28')", 7L);
     evalEquals("Extract(DAY from TIMESTAMP '2020-05-25 23:48:59')", 25L);
+    evalEquals("Extract(DAYOFWEEK from TIMESTAMP '2020-05-24 23:48:59')", 1L);
     evalEquals("Extract(DAYOFWEEK from TIMESTAMP '2020-05-25 23:48:59')", 2L);
+    evalEquals("Extract(DAYOFYEAR from TIMESTAMP '2020-05-25 23:48:59')", 146L);    
     evalEquals("Extract(HOUR from TIMESTAMP '2020-05-25 23:48:59')", 23L);
     evalEquals("Extract(MINUTE from TIMESTAMP '2020-05-25 23:48:59')", 48L);
     evalEquals("Extract(SECOND from TIMESTAMP '2020-05-25 23:48:59')", 59L);
@@ -3729,6 +3731,27 @@ public class FunctionsTest extends ExpressionTest {
     
     // Alias
     evalEquals("Date_Part(HOUR,TIMESTAMP '2020-05-25 23:48:59')", 23L);
+        
+    // Extract part from interval
+    evalEquals("Extract(MILLENNIUM from INTERVAL 1234 YEAR)", 1L);
+    evalEquals("Extract(CENTURY from INTERVAL 1234 YEAR)", 12L);
+    evalEquals("Extract(DECADE from INTERVAL 1234 YEAR)", 123L);
+    evalEquals("Extract(YEAR from INTERVAL 10 YEAR)", 10L);
+    evalEquals("Extract(YEAR from -INTERVAL 10 YEAR)", -10L);
+    evalEquals("Extract(YEAR from INTERVAL '-10' YEAR)", -10L);
+    evalEquals("Extract(YEAR from INTERVAL '0-25' YEAR TO MONTH)", 2L);
+    evalEquals("Extract(YEAR from INTERVAL 30 MINUTES)", 0L);
+    evalEquals("Extract(MONTH from INTERVAL 30 MONTHS)", 6L);
+    evalEquals("Extract(DAY from INTERVAL 30 MONTHS)", 0L);
+    evalEquals("Extract(DAY from INTERVAL -45 DAYS)", -45L);
+    evalEquals("Extract(HOUR from INTERVAL 30 HOURS)", 6L);
+    evalEquals("Extract(MINUTE from INTERVAL 30 MINUTES)", 30L);
+    evalEquals("Extract(SECOND from INTERVAL 59 SECONDS)", 59L);
+    evalEquals("Extract(MILLISECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987L);
+    evalEquals("Extract(MICROSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654L);
+    evalEquals("Extract(NANOSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654321L);
+    
+    
     
     evalFails("Extract(");
     evalFails("Extract()");
@@ -3739,7 +3762,9 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Extract('TEST' from DATE '2021-01-01')");
     evalFails("Extract(NULL from DATE '2021-01-01')");
     evalFails("Extract(BIDON from NULL)");
+    evalFails("Extract(BIDON from DATE '2021-01-01')");
     evalFails("Extract(DAY DATE '2021-01-01')"); 
+    evalFails("Extract(EPOCH from INTERVAL -45 DAYS)");
     
     optimize("EXTRACT(CENTURY FROM FIELD_DATE)");
     optimize("EXTRACT(YEAR FROM FIELD_DATE)", "YEAR(FIELD_DATE)");

@@ -45,7 +45,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class DateAddFunction extends Function {
 
   public DateAddFunction() {
-    super("DATE_ADD", ReturnTypes.DATE, OperandTypes.TIMEUNIT_NUMERIC_DATE, Category.DATE,
+    super("DATE_ADD", ReturnTypes.DATE, OperandTypes.TIMEUNIT_NUMERIC_TEMPORAL, Category.DATE,
         "/docs/date_add.html");
   }
 

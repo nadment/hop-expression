@@ -35,7 +35,7 @@ import java.time.temporal.ChronoUnit;
 public class MonthsBetweenFunction extends Function {
 
   public MonthsBetweenFunction() {
-    super("MONTHS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.DATE_DATE, Category.DATE,
+    super("MONTHS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
         "/docs/months_between.html");
   }
 

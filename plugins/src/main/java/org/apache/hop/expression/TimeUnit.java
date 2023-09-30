@@ -95,12 +95,6 @@ public enum TimeUnit {
   /** The nanosecond. */
   NANOSECOND("NANOSECONDS"),
 
-  /** Time zone region abbreviated */
-  TIMEZONE_ABBR,
-
-  /** Time zone region */
-  TIMEZONE_REGION,
-
   /** Time zone offset's hour part. */
   TIMEZONE_HOUR,
 

@@ -19,24 +19,19 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import java.io.StringWriter;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.IsoFields;
 
 /**
- * Extracts the specified date or time part from a date, time, or timestamp.
+ * Extracts the specified time unit from a date, timestamp or interval.
  * 
  * Time unit: DECADE | YEAR | MONTH | WEEK | DAY | HOUR | MINUTE | SECOND...
  */
@@ -44,95 +39,28 @@ import java.time.temporal.IsoFields;
 public class ExtractFunction extends Function {
 
   public ExtractFunction() {
-    super("EXTRACT", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE, Category.DATE,
+    super("EXTRACT", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL), Category.DATE,
         "/docs/extract.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    // Replace EXTRACT with the corresponding function YEAR, DAY, HOUR... only if without time zone
-    TimeUnit unit = call.getOperand(0).getValue(TimeUnit.class);
-    Function function = FunctionRegistry.getFunction(unit.name());
-    if (function != null && !(function instanceof UserDefinedFunction)) {
-      return new Call(function, call.getOperand(1));
-    }
-
-    return call;
+    Type type = call.getOperand(1).getType();
+    if (type.is(TypeName.INTERVAL)) {
+      return new Call(ExtractIntervalFunction.INSTANCE, call.getOperands());
+    }    
+    return new Call(ExtractDateFunction.INSTANCE, call.getOperands());
   }
 
-  @Override
-  public Object eval(final IExpression[] operands) {
-
-    TimeUnit unit = operands[0].getValue(TimeUnit.class);
-
-    ZonedDateTime datetime = operands[1].getValue(ZonedDateTime.class);
-    if (datetime == null)
-      return null;
-
-    switch (unit) {
-      case DAY:
-        return Long.valueOf(datetime.getDayOfMonth());
-      case DAYOFYEAR:
-        return Long.valueOf(datetime.getDayOfYear());
-      case DAYOFWEEK:
-        int dow = datetime.getDayOfWeek().getValue() + 1;
-        if (dow == 8)
-          dow = 1;
-        return Long.valueOf(dow);
-      case ISODAYOFWEEK:
-        return Long.valueOf(datetime.getDayOfWeek().getValue());
-      case WEEK:
-        return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
-      case ISOWEEK:
-        return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
-      case WEEKOFMONTH:
-        return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
-      case MONTH:
-        return Long.valueOf(datetime.getMonthValue());
-      case QUARTER:
-        return Long.valueOf(datetime.get(IsoFields.QUARTER_OF_YEAR));
-      case YEAR:
-        return Long.valueOf(datetime.getYear());
-      case ISOYEAR:
-        return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
-      case DECADE:
-        return Long.valueOf(decade(datetime.getYear()));
-      case CENTURY:
-        return Long.valueOf(century(datetime.getYear()));
-      case MILLENNIUM:
-        return Long.valueOf(millennium(datetime.getYear()));
-      case HOUR:
-        return Long.valueOf(datetime.getHour());
-      case MINUTE:
-        return Long.valueOf(datetime.getMinute());
-      case SECOND:
-        return Long.valueOf(datetime.getSecond());
-      case MILLISECOND:
-        return Long.valueOf(datetime.get(ChronoField.MILLI_OF_SECOND));
-      case MICROSECOND:
-        return Long.valueOf(datetime.get(ChronoField.MICRO_OF_SECOND));
-      case NANOSECOND:
-        return Long.valueOf(datetime.getNano());
-      case EPOCH:
-        return datetime.toEpochSecond();
-      case TIMEZONE_HOUR:
-        return Long.valueOf(datetime.getOffset().getTotalSeconds() / (60 * 60));
-      case TIMEZONE_MINUTE:
-        return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
-      default:
-        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
-    }
-  }
-
-  private static int millennium(int year) {
+  protected static int millennium(int year) {
     return year > 0 ? (year + 999) / 1000 : year / 1000;
   }
 
-  private static int century(int year) {
+  protected static int century(int year) {
     return year > 0 ? (year + 99) / 100 : year / 100;
   }
 
-  private static int decade(int year) {
+  protected static int decade(int year) {
     return year >= 0 ? year / 10 : (year - 9) / 10;
   }
 

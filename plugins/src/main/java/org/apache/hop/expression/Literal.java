@@ -388,9 +388,25 @@ public final class Literal implements IExpression {
         }
         case INTERVAL:        
         {
-          writer.append("INTERVAL '");
-          writer.append(value.toString());
-          writer.append("'");          
+          Interval interval = (Interval) value;
+          IntervalQualifier qualifier =  IntervalQualifier.of(interval);
+          
+          if ( qualifier==null ) {
+            writer.append("INTERVAL '");
+            writer.append(interval.toString());
+            writer.append("'");                      
+          }
+          else if ( qualifier.getStartUnit()==qualifier.getEndUnit() ) {
+            writer.append("INTERVAL ");
+            writer.append(interval.toString(qualifier));
+            writer.append(' ');
+            writer.append(qualifier.toString());                      
+          } else {
+            writer.append("INTERVAL '");
+            writer.append(interval.toString(qualifier));
+            writer.append("' ");
+            writer.append(qualifier.toString());
+          }
           break;
         }
         case JSON:

@@ -43,7 +43,7 @@ public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
 
   public FirstDayFunction() {
-    super("FIRST_DAY", ReturnTypes.DATE, OperandTypes.DATE_OPTIONAL_TIMEUNIT, Category.DATE,
+    super("FIRST_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT), Category.DATE,
         "/docs/first_day.html");
   }
 

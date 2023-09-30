@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class MinuteFunction extends Function {
 
   public MinuteFunction() {
-    super("MINUTE", ReturnTypes.INTEGER, OperandTypes.DATE, Category.DATE, "/docs/minute.html");
+    super("MINUTE", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/minute.html");
   }
 
   @Override

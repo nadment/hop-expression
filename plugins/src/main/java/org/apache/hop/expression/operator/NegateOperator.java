@@ -18,59 +18,34 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
-import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeFamily;
 import java.io.StringWriter;
 
 /**
- * Arithmetic unary minus (negative) operator '<code>-</code>'.
+ * Generic arithmetic unary minus (negative) operator '<code>-</code>'.
  */
 public class NegateOperator extends Operator {
   public NegateOperator() {
-    super("NEGATE", "-", 30, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC,
+    super("NEGATE", "-", 30, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL),
         Category.MATHEMATICAL, "/docs/negate.html");
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    IExpression operand = call.getOperand(0);
-    
-    // Simplify arithmetic -(-(A)) → A
-    if (operand.is(Operators.NEGATIVE)) {
-      return operand.asCall().getOperand(0);
+    Type type = call.getOperand(0).getType();
+
+    if (type.isSameFamily(TypeFamily.INTERVAL)) {
+      return new Call(call.getPosition(), NegateIntervalOperator.INSTANCE, call.getOperands());
     }
 
-    // Simplify arithmetic -(A-B) → B-A
-    if (operand.is(Operators.SUBTRACT_NUMERIC)) {
-      Call subtract = operand.asCall();
-      return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
-    }
-
-    return call;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    Object v0 = operands[0].getValue();
-    if (v0 == null)
-      return null;
-
-    if (v0 instanceof Long) {
-      Long value = (Long) v0;
-      if (value == Long.MIN_VALUE) {
-        throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
-      }
-      return Long.valueOf(-value);
-    }
-
-    return NumberType.coerce(v0).negate();
+    return new Call(call.getPosition(), NegateNumericOperator.INSTANCE, call.getOperands());
   }
 
   @Override

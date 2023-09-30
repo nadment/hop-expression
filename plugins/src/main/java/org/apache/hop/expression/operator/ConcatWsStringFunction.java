@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpression;
  * String concatenation function with separator
  */
 public class ConcatWsStringFunction extends ConcatWsFunction {
-  static final ConcatWsStringFunction INSTANCE = new ConcatWsStringFunction();
+  public static final ConcatWsStringFunction INSTANCE = new ConcatWsStringFunction();
 
   public ConcatWsStringFunction() {
     super();

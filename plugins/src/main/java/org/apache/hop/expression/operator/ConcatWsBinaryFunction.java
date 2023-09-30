@@ -25,7 +25,7 @@ import java.io.IOException;
  * Binary concatenation function with separator
  */
 public class ConcatWsBinaryFunction extends ConcatWsFunction {
-  static final ConcatWsBinaryFunction INSTANCE = new ConcatWsBinaryFunction();
+  public static final ConcatWsBinaryFunction INSTANCE = new ConcatWsBinaryFunction();
 
   public ConcatWsBinaryFunction() {
     super();

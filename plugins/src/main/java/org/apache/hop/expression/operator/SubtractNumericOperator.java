@@ -31,8 +31,9 @@ import java.math.BigDecimal;
  */
 public class SubtractNumericOperator extends SubtractOperator {
   public static final SubtractNumericOperator INSTANCE = new SubtractNumericOperator();
+  
   public SubtractNumericOperator() {
-    super("SUBTRACT_NUMERIC");
+    super();
   }
 
   @Override

@@ -34,7 +34,7 @@ public class AddNumericOperator extends AddOperator {
   public static final AddNumericOperator INSTANCE = new AddNumericOperator();
   
   public AddNumericOperator() {
-    super("ADD_NUMERIC");
+    super();
   }
 
   @Override

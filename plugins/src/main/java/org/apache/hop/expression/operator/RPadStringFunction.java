@@ -26,7 +26,7 @@ import org.apache.hop.expression.IExpression;
  */
 public class RPadStringFunction extends RPadFunction {
 
-  static final RPadStringFunction INSTANCE = new RPadStringFunction();
+  public static final RPadStringFunction INSTANCE = new RPadStringFunction();
 
   public RPadStringFunction() {
     super();

@@ -182,22 +182,25 @@ public final class OperandTypes {
   public static final IOperandTypeChecker OPTIONAL_NUMERIC =
       family(TypeFamily.NUMERIC).optional(i -> i == 0);
 
-  public static final IOperandTypeChecker DATE = family(TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker DATE_DATE =
+  public static final IOperandTypeChecker TEMPORAL = family(TypeFamily.TEMPORAL);
+  public static final IOperandTypeChecker TEMPORAL_TEMPORAL =
       family(TypeFamily.TEMPORAL, TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker DATE_NUMERIC =
+  public static final IOperandTypeChecker TEMPORAL_NUMERIC =
       family(TypeFamily.TEMPORAL, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker DATE_STRING =
+  public static final IOperandTypeChecker TEMPORAL_STRING =
       family(TypeFamily.TEMPORAL, TypeFamily.STRING);
-  public static final IOperandTypeChecker DATE_OPTIONAL_STRING =
-      family(TypeFamily.TEMPORAL, TypeFamily.STRING).optional(i -> i == 1);
-  public static final IOperandTypeChecker DATE_INTERVAL =
+  public static final IOperandTypeChecker TEMPORAL_INTERVAL =
       family(TypeFamily.TEMPORAL, TypeFamily.INTERVAL);
   
-  public static final IOperandTypeChecker TIMEUNIT_DATE = sequence(TIMEUNIT, DATE);
-  public static final IOperandTypeChecker TIMEUNIT_NUMERIC_DATE = sequence(TIMEUNIT, NUMERIC, DATE);
-  public static final IOperandTypeChecker TIMEUNIT_DATE_DATE = sequence(TIMEUNIT, DATE, DATE);
-
+  public static final IOperandTypeChecker INTERVAL = family(TypeFamily.INTERVAL);
+  public static final IOperandTypeChecker INTERVAL_INTERVAL = family(TypeFamily.INTERVAL, TypeFamily.INTERVAL);
+  public static final IOperandTypeChecker INTERVAL_TEMPORAL = family(TypeFamily.INTERVAL, TypeFamily.TEMPORAL);
+  
+  public static final IOperandTypeChecker TIMEUNIT_TEMPORAL = sequence(TIMEUNIT, TEMPORAL);
+  public static final IOperandTypeChecker TIMEUNIT_TEMPORAL_TEMPORAL = sequence(TIMEUNIT, TEMPORAL, TEMPORAL);
+  public static final IOperandTypeChecker TIMEUNIT_NUMERIC_TEMPORAL = sequence(TIMEUNIT, NUMERIC, TEMPORAL);
+  public static final IOperandTypeChecker TIMEUNIT_INTERVAL = sequence(TIMEUNIT, INTERVAL);
+  
   public static final IOperandTypeChecker STRING = family(TypeFamily.STRING);
   public static final IOperandTypeChecker STRING_VARIADIC =
       family(TypeFamily.STRING, OperandCountRange.from(1));
@@ -243,22 +246,19 @@ public final class OperandTypes {
           TypeFamily.NUMERIC, TypeFamily.STRING).optional(i -> i >= 2);
   public static final IOperandTypeChecker STRING_DATE =
       family(TypeFamily.STRING, TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker STRING_STRING_DATE =
+  public static final IOperandTypeChecker STRING_STRING_TEMPORAL =
       family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.TEMPORAL);
 
-  public static final IOperandTypeChecker DATE_OPTIONAL_TIMEUNIT =
-      sequence(DATE, TIMEUNIT).optional(i -> i == 1);
-  public static final IOperandTypeChecker DATE_OPTIONAL_TEXT =
-      sequence(DATE, TEXT).optional(i -> i == 1);
+  public static final IOperandTypeChecker TEMPORAL_TIMEUNIT = sequence(TEMPORAL, TIMEUNIT);
+  public static final IOperandTypeChecker TEMPORAL_OPTIONAL_TEXT =
+      sequence(TEMPORAL, TEXT).optional(i -> i == 1);
   public static final IOperandTypeChecker STRING_OPTIONAL_TEXT =
       sequence(STRING, TEXT).optional(i -> i == 1);
 
-  public static final IOperandTypeChecker INTERVAL = family(TypeFamily.INTERVAL);
-  public static final IOperandTypeChecker INTERVAL_INTERVAL = family(TypeFamily.INTERVAL, TypeFamily.INTERVAL);
+
   
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
-  public static final IOperandTypeChecker JSON_OPTIONAL_STRING = family(TypeFamily.JSON, TypeFamily.STRING).optional(i -> i == 1);
   
   public static final IOperandTypeChecker CASE_OPERATOR = new CaseOperatorOperandTypeChecker();
   public static final IOperandTypeChecker CAST_OPERATOR = OperandTypes

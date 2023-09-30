@@ -42,7 +42,7 @@ import java.time.temporal.ChronoUnit;
 public class DateDiffFunction extends Function {
 
   public DateDiffFunction() {
-    super("DATE_DIFF", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_DATE_DATE, Category.DATE,
+    super("DATE_DIFF", ReturnTypes.INTEGER, OperandTypes.TIMEUNIT_TEMPORAL_TEMPORAL, Category.DATE,
         "/docs/date_diff.html");
   }
 

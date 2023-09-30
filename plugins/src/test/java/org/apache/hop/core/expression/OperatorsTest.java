@@ -558,6 +558,7 @@ public class OperatorsTest extends ExpressionTest {
   
   @Test
   public void Add() throws Exception {
+    // Addition of numeric
     evalEquals("10+(-0.5)", 9.5);
     evalEquals("BINARY 'F'::INTEGER+1", 16L);
     evalEquals("0b00011::INTEGER+0", 3L);
@@ -565,16 +566,33 @@ public class OperatorsTest extends ExpressionTest {
     evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
     evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
 
+    // Addition of boolean coerced to numeric
     evalEquals("FIELD_BOOLEAN_TRUE+FIELD_BOOLEAN_FALSE", 1L);
     
     // Addition of interval to a temporal 
     evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
+    evalEquals("INTERVAL 2 YEARS+DATE '2019-02-25'", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL '2-11' YEAR TO MONTH", LocalDateTime.of(2022, 1, 25, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL 1 WEEK", LocalDateTime.of(2019, 3, 4, 0, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 25, 12, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL -12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     evalEquals("DATE '2019-02-25'+INTERVAL '10 4' DAY TO HOUR", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
     //evalEquals("DATE '2019-02-25'+TO_INTERVAL('10 4:0:0')", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
+    evalNull("NULL_DATE+INTERVAL 12 DAYS");
+    evalNull("INTERVAL 12 DAYS+NULL_DATE");
+    evalNull("FIELD_DATE+TO_INTERVAL('z')");
+    
+    // Adjust day to the end of month and leap year.
+    evalEquals("DATE '2019-01-31'+INTERVAL 1 MONTH", LocalDate.of(2019, 2, 28));
+    evalEquals("DATE '2020-01-31'+INTERVAL 1 MONTH", LocalDate.of(2020, 2, 29));
+    evalEquals("DATE '2020-03-31'+INTERVAL 1 MONTH", LocalDate.of(2020, 4, 30));
+    evalEquals("DATE '2020-02-29'+INTERVAL 12 MONTHS", LocalDate.of(2021, 2, 28));
+    
+    evalEquals("DATE '0010-01-01'+INTERVAL 178956970 YEARS", LocalDate.of(178956980, 1, 1));
+    
+    
+    // Add interval to interval
+    // optimize("INTERVAL 1 YEAR+INTERVAL 13 MONTHS", "INTERVAL '+2-1 0 00:00:00.000000000'");    
     
     // Addition of days to a temporal
     evalEquals("DATE '2019-02-25'+1", LocalDate.of(2019, 2, 26));    
@@ -583,8 +601,7 @@ public class OperatorsTest extends ExpressionTest {
     
     // Only integer, round number
     evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
-    evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));
-
+    evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));   
         
     evalNull("5+NULL_INTEGER+5");
     evalNull("+NULL_INTEGER+5");
@@ -601,6 +618,7 @@ public class OperatorsTest extends ExpressionTest {
     optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
     optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
     optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
+    optimize("FIELD_DATE+INTERVAL 0 YEAR", "FIELD_DATE");    
     
     returnType("FIELD_NUMBER+FIELD_INTEGER", new NumberType(20));
     returnType("1::NUMBER(4,1)+3::NUMBER(1,2)", new NumberType(6,2));
@@ -629,6 +647,15 @@ public class OperatorsTest extends ExpressionTest {
     //evalEquals("DATE '2019-02-25'-0.5", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
     //evalEquals("DATE '2019-02-25'-5/(60*24)", LocalDateTime.of(2019, 2, 24, 23, 55, 0));
 
+    // Adjust day to the end of month and leap year.
+    evalEquals("DATE '2019-03-30'-INTERVAL 1 MONTH", LocalDate.of(2019, 2, 28));
+    evalEquals("DATE '2020-03-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 2, 29));
+    evalEquals("DATE '2020-04-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 3, 30));
+    evalEquals("DATE '2020-02-29'-INTERVAL 12 MONTHS", LocalDate.of(2019, 2, 28));
+       
+    
+   // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
+    
     // TODO: Diff of two date
     //evalEquals("DATE '2019-02-25'-DATE '2019-02-23'", 2);
     //evalEquals("DATE '2019-02-23'-DATE '2019-02-25'", -2);
