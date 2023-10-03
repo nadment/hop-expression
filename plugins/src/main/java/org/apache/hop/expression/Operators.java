@@ -15,7 +15,6 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.operator.AddIntervalOperator;
-import org.apache.hop.expression.operator.AddIntervalOperator;
 import org.apache.hop.expression.operator.AddNumericOperator;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
@@ -63,7 +62,6 @@ import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NullIfFunction;
 import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SimilarToOperator;
-import org.apache.hop.expression.operator.SubtractIntervalOperator;
 import org.apache.hop.expression.operator.SubtractIntervalOperator;
 import org.apache.hop.expression.operator.SubtractNumericOperator;
 import org.apache.hop.expression.operator.SubtractOperator;

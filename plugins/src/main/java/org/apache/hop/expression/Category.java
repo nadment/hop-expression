@@ -16,8 +16,10 @@
  */
 
 package org.apache.hop.expression;
-
-public class Category {
+/**
+ * A collection of operator categories.
+ */
+public final class Category {
   /**
    * Private constructor since this is a utility class.
    */

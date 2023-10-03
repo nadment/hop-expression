@@ -17,9 +17,11 @@
 package org.apache.hop.expression;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.util.Characters;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,20 +32,17 @@ import java.util.regex.Pattern;
 @SuppressWarnings("serial")
 public class Interval implements Serializable, Comparable<Interval> {
 
-  private static final Pattern PATTERN_YTS = Pattern
-      .compile("^([+-])?(\\d+)-(\\d+) (?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
-  private static final Pattern PATTERN_YTM = Pattern.compile("^([+-])?(\\d+)-(\\d+)$");
-  private static final Pattern PATTERN_DTS =
-      Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
-  private static final Pattern PATTERN_DTM =
-      Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+)()()$");
-  private static final Pattern PATTERN_DTH = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+)()()()$");
-  private static final Pattern PATTERN_HTS =
-      Pattern.compile("^([+-])?()(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
-  private static final Pattern PATTERN_HTM = Pattern.compile("^([+-])?()(\\d+):(\\d+)()()$");
-  private static final Pattern PATTERN_MTS =
-      Pattern.compile("^([+-])?()()(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final EnumSet<TimeUnit> UNITS = EnumSet.of(TimeUnit.YEAR, TimeUnit.QUARTER, TimeUnit.MONTH, TimeUnit.WEEK, TimeUnit.DAY,
+      TimeUnit.HOUR, TimeUnit.MINUTE, TimeUnit.SECOND);
 
+  private static final Pattern PATTERN_YTS = Pattern.compile("^([+-])?(\\d+)-(\\d+) (?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final Pattern PATTERN_YTM = Pattern.compile("^([+-])?(\\d+)-(\\d+)$");
+  private static final Pattern PATTERN_DTS = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final Pattern PATTERN_DTM = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+):(\\d+)$");
+  private static final Pattern PATTERN_DTH = Pattern.compile("^([+-])?(?:(\\d+) )?(\\d+)$");
+  private static final Pattern PATTERN_HTS = Pattern.compile("^([+-])?(\\d+):(\\d+):(\\d+)(?:\\.(\\d+))?$");
+  private static final Pattern PATTERN_HTM = Pattern.compile("^([+-])?(\\d+):(\\d+)$");
+  private static final Pattern PATTERN_MTS = Pattern.compile("^([+-])?(\\d+):(\\d+)(?:\\.(\\d+))?$");
   /**
    * The number of months per year.
    */
@@ -99,7 +98,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval year(final String string) {
     try {
-      return string == null ? null : new Interval(Integer.parseInt(string));
+      return string == null ? null : new Interval(Integer.parseInt(string), 0, 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -116,10 +115,14 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval yearToMonth(final String string) {
     if (string != null) {
-      Matcher matcher;
+      Matcher matcher = PATTERN_YTM.matcher(string);
 
-      if ((matcher = PATTERN_YTM.matcher(string)).find())
-        return parseYM(matcher);
+      if (matcher.find()) {
+        boolean negative = "-".equals(matcher.group(1));
+        int years = parseField(matcher.group(2));
+        int months = parseField(matcher.group(3));
+        return new Interval(years, months, 0, 0, 0, 0, 0, negative);
+      }
     }
 
     return null;
@@ -135,8 +138,8 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval quarter(final String string) {
     try {
-      
-      return string == null ? null : new Interval(0, 3 * Integer.parseInt(string));
+
+      return string == null ? null : new Interval(0, 3 * Integer.parseInt(string), 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -153,7 +156,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval month(final String string) {
     try {
-      return string == null ? null : new Interval(0, Integer.parseInt(string));
+      return string == null ? null : new Interval(0, Integer.parseInt(string), 0, 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -169,13 +172,13 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval week(final String string) {
     try {
-      
-      return string == null ? null : new Interval(0, 0, 7 * Integer.parseInt(string));
+
+      return string == null ? null : new Interval(0, 0, 7 * Integer.parseInt(string), 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
   }
-  
+
   /**
    * Parse a string representation of a <code>INTERVAL DAY</code>.
    *
@@ -186,7 +189,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval day(final String string) {
     try {
-      return string == null ? null : new Interval(0, 0, Integer.parseInt(string));
+      return string == null ? null : new Interval(0, 0, Integer.parseInt(string), 0, 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -204,8 +207,13 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (string != null) {
       Matcher matcher = PATTERN_DTH.matcher(string);
 
-      if (matcher.find())
-        return parseDS(matcher);
+      if (matcher.find()) {        
+        boolean negative = "-".equals(matcher.group(1));
+        int days = parseField(matcher.group(2));
+        int hours = parseField(matcher.group(3));
+
+        return new Interval(0, 0, days, hours, 0, 0, 0, negative);
+      }
     }
 
     return null;
@@ -223,8 +231,14 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (string != null) {
       Matcher matcher = PATTERN_DTM.matcher(string);
 
-      if (matcher.find())
-        return parseDS(matcher);
+      if (matcher.find()) {
+        boolean negative = "-".equals(matcher.group(1));
+        int days = parseField(matcher.group(2));
+        int hours = parseField(matcher.group(3));
+        int minutes = parseField(matcher.group(4));
+
+        return new Interval(0, 0, days, hours, minutes, 0, 0, negative);
+      }
     }
 
     return null;
@@ -242,8 +256,16 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (string != null) {
       Matcher matcher = PATTERN_DTS.matcher(string);
 
-      if (matcher.find())
-        return parseDS(matcher);
+      if (matcher.find()) {
+        boolean negative = "-".equals(matcher.group(1));
+        int days = parseField(matcher.group(2));
+        int hours = parseField(matcher.group(3));
+        int minutes = parseField(matcher.group(4));
+        int seconds = parseField(matcher.group(5));
+        int nanos = parseField(StringUtils.rightPad(matcher.group(6), 9, "0"));
+
+        return new Interval(0, 0, days, hours, minutes, seconds, nanos, negative);
+      }
     }
 
     return null;
@@ -259,7 +281,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval hour(final String string) {
     try {
-      return string == null ? null : new Interval(0, 0, 0, Integer.parseInt(string));
+      return string == null ? null : new Interval(0, 0, 0, Integer.parseInt(string), 0, 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -277,8 +299,14 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (string != null) {
       Matcher matcher = PATTERN_HTM.matcher(string);
 
-      if (matcher.find())
-        return parseDS(matcher);
+      if (matcher.find()) {
+
+        boolean negative = "-".equals(matcher.group(1));
+        int hours = parseField(matcher.group(2));
+        int minutes = parseField(matcher.group(3));
+
+        return new Interval(0, 0, 0, hours, minutes, 0, 0, negative);        
+      }
     }
 
     return null;
@@ -296,8 +324,15 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (string != null) {
       Matcher matcher = PATTERN_HTS.matcher(string);
 
-      if (matcher.find())
-        return parseDS(matcher);
+      if (matcher.find()) {
+        boolean negative = "-".equals(matcher.group(1));
+        int hours = parseField(matcher.group(2));
+        int minutes = parseField(matcher.group(3));
+        int seconds = parseField(matcher.group(4));
+        int nanos = parseField(StringUtils.rightPad(matcher.group(5), 9, "0"));
+
+        return new Interval(0, 0, 0, hours, minutes, seconds, nanos, negative);
+      }
     }
 
     return null;
@@ -313,7 +348,7 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval minute(final String string) {
     try {
-      return string == null ? null : new Interval(0, 0, 0, 0, Integer.parseInt(string));
+      return string == null ? null : new Interval(0, 0, 0, 0, Integer.parseInt(string), 0, 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
@@ -331,8 +366,14 @@ public class Interval implements Serializable, Comparable<Interval> {
     if (string != null) {
       Matcher matcher = PATTERN_MTS.matcher(string);
 
-      if (matcher.find())
-        return parseDS(matcher);
+      if (matcher.find()) {
+        boolean negative = "-".equals(matcher.group(1));
+        int minutes = parseField(matcher.group(2));
+        int seconds = parseField(matcher.group(3));
+        int nanos = parseField(StringUtils.rightPad(matcher.group(4), 9, "0"));
+
+        return new Interval(0, 0, 0, 0, minutes, seconds, nanos, negative);
+      }
     }
 
     return null;
@@ -347,20 +388,74 @@ public class Interval implements Serializable, Comparable<Interval> {
    *         <code>null</code> if the string could not be parsed.
    */
   public static Interval second(final String string) {
-    if (string == null) return null;
-    
+    if (string == null)
+      return null;
+
     try {
       double value = Double.parseDouble(string);
       double abs = Math.abs(value);
       long seconds = (long) abs;
-      int nanos = (int) ((abs-seconds) * NANOS_PER_SECOND);
-      
-      return new Interval(0, seconds, nanos, value<0);
+      int nanos = (int) ((abs - seconds) * NANOS_PER_SECOND);
+
+      return new Interval(0, seconds, nanos, value < 0);
     } catch (NumberFormatException ignore) {
       return null;
     }
   }
-  
+
+  /**
+   * Create a new year interval.
+   */
+  public static Interval of(int years) {
+    return new Interval(years, 0, 0, 0, 0, 0, 0, false);
+  }
+
+  /**
+   * Create a new year-month interval.
+   */
+  public static Interval of(int years, int months) {
+    return new Interval(years, months, 0, 0, 0, 0, 0, false);
+  }
+
+
+  /**
+   * Create a new year-day interval.
+   */
+  public static Interval of(int years, int months, int days) {
+    return new Interval(years, months, days, 0, 0, 0, 0, false);
+  }
+
+  /**
+   * Create a new year-hour interval.
+   */
+  public static Interval of(int years, int months, int days, int hours) {
+    return new Interval(years, months, days, hours, 0, 0, 0, false);
+  }
+
+  /**
+   * Create a new year-minute interval.
+   */
+  public static Interval of(int years, int months, int days, int hours, int minutes) {
+    return new Interval(years, months, days, hours, minutes, 0, 0, false);
+  }
+
+
+  /**
+   * Create a new year-second interval.
+   */
+  public static Interval of(int years, int months, int days, int hours, int minutes, int seconds) {
+    return new Interval(years, months, days, hours, minutes, seconds, 0, false);
+  }
+
+
+  /**
+   * Create a new year-second with nanoseconds interval.
+   */
+  public static Interval of(int years, int months, int days, int hours, int minutes, int seconds,
+      int nanos) {
+    return new Interval(years, months, days, hours, minutes, seconds, nanos, false);
+  }
+
   /**
    * {@code false} for zero or positive intervals, {@code true} for negative
    * intervals.
@@ -377,63 +472,21 @@ public class Interval implements Serializable, Comparable<Interval> {
     this(0, 0, 0, 0, 0, 0, 0, false);
   }
 
-  /**
-   * Create a new year interval.
-   */
-  public Interval(int years) {
-    this(years, 0, 0, 0, 0, 0, 0, false);
-  }
-
-
-  /**
-   * Create a new year-month interval.
-   */
-  public Interval(int years, int months) {
-    this(years, months, 0, 0, 0, 0, 0, false);
-  }
-
-  /**
-   * Create a new year-day interval.
-   */
-  public Interval(int years, int months, int days) {
-    this(years, months, days, 0, 0, 0, 0, false);
-  }
-
-  /**
-   * Create a new year-hour interval.
-   */
-  public Interval(int years, int months, int days, int hours) {
-    this(years, months, days, hours, 0, 0, 0, false);
-  }
-
-  /**
-   * Create a new year-minute interval.
-   */
-  public Interval(int years, int months, int days, int hours, int minutes) {
-    this(years, months, days, hours, minutes, 0, 0, false);
-  }
 
   /**
    * Create a new year-second interval.
    */
-  public Interval(int years, int months, int days, int hours, int minutes, int seconds) {
+  Interval(int years, int months, int days, int hours, int minutes, int seconds, int nanos) {
     this(years, months, days, hours, minutes, seconds, 0, false);
   }
 
-  /**
-   * Create a new year-second with nanoseconds interval.
-   */
-  public Interval(int years, int months, int days, int hours, int minutes, int seconds, int nanos) {
-    this(years, months, days, hours, minutes, seconds, nanos, false);
-  }
-  
   Interval(int years, int months, int days, int hours, int minutes, int seconds, int nanos,
       boolean negative) {
-    
-    
+
+
     // All part must be positive
-    
-    
+
+
     this.months = years * MONTHS_PER_YEAR + months;
     this.seconds =
         days * SECONDS_PER_DAY + hours * SECONDS_PER_HOUR + minutes * SECONDS_PER_MINUTE + seconds;
@@ -456,28 +509,29 @@ public class Interval implements Serializable, Comparable<Interval> {
    * @param milli The number of milliseconds as a fractional number
    * @return The loaded <code>INTERVAL DAY TO SECOND</code> object
    */
-//   public static Interval valueOf(BigDecimal value) {
-//  
-//   BigDecimal abs = value.abs();
-//   long decimal = abs.longValue();
-//   
-//   int decimals = 10;
-//
-//   BigInteger INTEGER = abs.toBigInteger();
-//   BigInteger DECIMAL = ((value.subtract(new BigDecimal(INTEGER))).multiply(new BigDecimal(14).pow(decimals))).toBigInteger();
-//   
-//
-//   double fractional  = abs.doubleValue()-decimal;
-//      
-//   long seconds = INTEGER.longValue() * SECONDS_PER_DAY;
-//   
-//   long nanos = 0L;
-//      
-//   //long seconds = abs.longValue() * SECONDS_PER_DAY;
-//   
-//   
-//   return new Interval(0L, seconds, nanos, value.signum()<0);
-//  }
+  // public static Interval valueOf(BigDecimal value) {
+  //
+  // BigDecimal abs = value.abs();
+  // long decimal = abs.longValue();
+  //
+  // int decimals = 10;
+  //
+  // BigInteger INTEGER = abs.toBigInteger();
+  // BigInteger DECIMAL = ((value.subtract(new BigDecimal(INTEGER))).multiply(new
+  // BigDecimal(14).pow(decimals))).toBigInteger();
+  //
+  //
+  // double fractional = abs.doubleValue()-decimal;
+  //
+  // long seconds = INTEGER.longValue() * SECONDS_PER_DAY;
+  //
+  // long nanos = 0L;
+  //
+  // //long seconds = abs.longValue() * SECONDS_PER_DAY;
+  //
+  //
+  // return new Interval(0L, seconds, nanos, value.signum()<0);
+  // }
 
 
   /**
@@ -490,10 +544,23 @@ public class Interval implements Serializable, Comparable<Interval> {
    */
   public static Interval valueOf(String string) {
     if (string != null) {
-      Matcher matcher = PATTERN_YTS.matcher(string);
 
-      if (matcher.find())
-        return parseYS(matcher);
+      Matcher matcher = PATTERN_YTS.matcher(string);
+      if (matcher.find()) {
+        boolean negative = "-".equals(matcher.group(1));
+        int years = parseField(matcher.group(2));
+        int months = parseField(matcher.group(3));
+        int days = parseField(matcher.group(4));
+        int hours = parseField(matcher.group(5));
+        int minutes = parseField(matcher.group(6));
+        int seconds = parseField(matcher.group(7));
+        int nanos = parseField(StringUtils.rightPad(matcher.group(8), 9, "0"));
+
+        return new Interval(years, months, days, hours, minutes, seconds, nanos, negative);
+      }
+      else {
+        return parse(string);
+      }
     }
 
     return null;
@@ -566,7 +633,7 @@ public class Interval implements Serializable, Comparable<Interval> {
   public final long getMicroseconds() {
     return nanos / 1000;
   }
-  
+
   /**
    * Get the absolute nanoseconds part within seconds of the interval.
    */
@@ -687,41 +754,46 @@ public class Interval implements Serializable, Comparable<Interval> {
 
   public final String toString(final IntervalQualifier qualifier) {
     StringBuilder sb = new StringBuilder();
-    
-    switch( qualifier ) {
+
+    switch (qualifier) {
       case YEAR:
-        if (negative) sb.append('-');
+        if (negative)
+          sb.append('-');
         sb.append(getYears());
         break;
-        
+
       case YEAR_TO_MONTH:
         sb.append(negative ? '-' : '+');
         sb.append(getYears());
-        sb.append('-');       
-        sb.append(getMonths());
-       break;
-      
-      case MONTH:
-        if (negative) sb.append('-');
+        sb.append('-');
         sb.append(getMonths());
         break;
-        
+
+      case MONTH:
+        if (negative)
+          sb.append('-');
+        sb.append(getMonths());
+        break;
+
       case DAY:
-        if (negative) sb.append('-');
+        if (negative)
+          sb.append('-');
         sb.append(getDays());
         break;
-        
+
       case HOUR:
-        if (negative) sb.append('-');
+        if (negative)
+          sb.append('-');
         sb.append(getHours());
         break;
 
       case MINUTE:
-        if (negative) sb.append('-');
+        if (negative)
+          sb.append('-');
         sb.append(getMinutes());
         break;
-        
-      case HOUR_TO_MINUTE: 
+
+      case HOUR_TO_MINUTE:
         sb.append(negative ? '-' : '+');
         toStringHour(sb);
         sb.append(':');
@@ -733,8 +805,8 @@ public class Interval implements Serializable, Comparable<Interval> {
         sb.append(getDays());
         sb.append(' ');
         toStringHour(sb);
-        break;        
-        
+        break;
+
       case DAY_TO_SECOND:
         sb.append(negative ? '-' : '+');
         sb.append(getDays());
@@ -743,53 +815,54 @@ public class Interval implements Serializable, Comparable<Interval> {
         sb.append(':');
         toStringMinute(sb);
         sb.append(':');
-        toStringSecond(sb);                
+        toStringSecond(sb);
         break;
-        
+
       case HOUR_TO_SECOND:
         sb.append(negative ? '-' : '+');
         toStringHour(sb);
         sb.append(':');
         toStringMinute(sb);
         sb.append(':');
-        toStringSecond(sb);        
+        toStringSecond(sb);
         break;
-        
+
       case MINUTE_TO_SECOND:
         sb.append(negative ? '-' : '+');
         toStringMinute(sb);
         sb.append(':');
         toStringSecond(sb);
         break;
-        
-      case SECOND: 
-        if (negative) sb.append('-');
+
+      case SECOND:
+        if (negative)
+          sb.append('-');
         toStringSecond(sb);
-        break;      
-        
+        break;
+
       default:
     }
 
-    return sb.toString();    
+    return sb.toString();
   }
-  
+
   private void toStringHour(final StringBuilder sb) {
     long h = getHours();
     if (h < 10) {
       sb.append('0');
     }
-    sb.append(h);    
+    sb.append(h);
   }
-  
+
   private void toStringMinute(final StringBuilder sb) {
     long m = getMinutes();
     if (m < 10) {
       sb.append('0');
     }
-    sb.append(m);    
+    sb.append(m);
   }
-  
-  private void toStringSecond(final StringBuilder sb) {    
+
+  private void toStringSecond(final StringBuilder sb) {
     long s = getSeconds();
     if (s < 10) {
       sb.append('0');
@@ -797,26 +870,30 @@ public class Interval implements Serializable, Comparable<Interval> {
     sb.append(s);
 
     // TODO: Use precision for nanoseconds
-    if ( nanos!=0 ) {
+    if (nanos != 0) {
       sb.append('.');
       sb.append(StringUtils.leftPad("" + nanos, 9, "0"));
     }
   }
-  
+
   public Interval minus(Interval other) {
     if (other.negative) {
-      return new Interval(months+other.months, seconds+other.seconds, nanos+other.nanos, negative);
-    }    
-    return new Interval(months-other.months, seconds-other.seconds, nanos-other.nanos, negative);
+      return new Interval(months + other.months, seconds + other.seconds, nanos + other.nanos,
+          negative);
+    }
+    return new Interval(months - other.months, seconds - other.seconds, nanos - other.nanos,
+        negative);
   }
 
   public Interval plus(Interval other) {
     if (other.negative) {
-      return new Interval(months-other.months, seconds-other.seconds, nanos-other.nanos, negative);
+      return new Interval(months - other.months, seconds - other.seconds, nanos - other.nanos,
+          negative);
     }
-    return new Interval(months+other.months, seconds+other.seconds, nanos+other.nanos, negative);
+    return new Interval(months + other.months, seconds + other.seconds, nanos + other.nanos,
+        negative);
   }
-  
+
   /**
    * Adds this interval to the specified temporal object.
    * 
@@ -885,35 +962,100 @@ public class Interval implements Serializable, Comparable<Interval> {
     return Integer.parseInt(str);
   }
 
-  protected static Interval parseYM(Matcher matcher) {
-    boolean negative = "-".equals(matcher.group(1));
-    int years = parseField(matcher.group(2));
-    int months = parseField(matcher.group(3));
+  protected static Interval parse(final String text) {
+    int years = 0;
+    int months = 0;
+    int days = 0;
+    int hours = 0;
+    int minutes = 0;
+    int seconds = 0;
+    int nanos = 0;
 
-    return new Interval(years, months, 0, 0, 0, 0, 0, negative);
-  }
+    int length = text.length();
+    int index = 0;
+    while (index < length) {
 
-  protected static Interval parseDS(Matcher matcher) {
-    boolean negative = "-".equals(matcher.group(1));
-    int days = parseField(matcher.group(2));
-    int hours = parseField(matcher.group(3));
-    int minutes = parseField(matcher.group(4));
-    int seconds = parseField(matcher.group(5));
-    int nanos = parseField(StringUtils.rightPad(matcher.group(6), 9, "0"));
+      // Skip space
+      if (Characters.isSpace(text.charAt(index))) {
+        index++;
+        continue;
+      }
 
-    return new Interval(0, 0, days, hours, minutes, seconds, nanos, negative);
-  }
+      int quantity = 0; // this.parseInt();
+      int start = index;
+      while (index < length) {
+        char ch = text.charAt(index);
+        int digit = Character.digit(ch, 10);
+        if (digit < 0) {
+          break;
+        }
+        index++;
+        quantity *= 10;
+        quantity += digit;
+      }
 
-  protected static Interval parseYS(Matcher matcher) {
-    boolean negative = "-".equals(matcher.group(1));
-    int years = parseField(matcher.group(2));
-    int months = parseField(matcher.group(3));
-    int days = parseField(matcher.group(4));
-    int hours = parseField(matcher.group(5));
-    int minutes = parseField(matcher.group(6));
-    int seconds = parseField(matcher.group(7));
-    int nanos = parseField(StringUtils.rightPad(matcher.group(8), 9, "0"));
+      if (index == start) {
+        // throw new ExpressionException(ExpressionError.INVALID_INTERVAL, text);
+        return null;
+      }
 
-    return new Interval(years, months, days, hours, minutes, seconds, nanos, negative);
+      // Skip space
+      while (index < length && Characters.isSpace(text.charAt(index))) {
+        index++;
+      }
+
+      boolean noMatch = true;;
+      for (TimeUnit unit : UNITS) {
+        if (text.regionMatches(true, index, unit.name(), 0, unit.name().length())) {
+          switch (unit) {
+            case YEAR:
+              years += quantity;
+              break;
+            case QUARTER:
+              months += 3 * quantity;
+              break;
+            case MONTH:
+              months += quantity;
+              break;
+            case WEEK:
+              days += 7 * quantity;
+              break;
+            case DAY:
+              days += quantity;
+              break;
+            case HOUR:
+              hours += quantity;
+              break;
+            case MINUTE:
+              minutes += quantity;
+              break;
+            case SECOND:
+              seconds += quantity;
+              break;
+            default:
+              return null;
+          }
+
+          index += unit.name().length();
+          if (index < length) {
+            char ch = text.charAt(index);
+            if (ch == 's' || ch == 'S')
+              index++;
+          }
+
+          noMatch = false;
+          break;
+        }
+      }
+
+      if (noMatch)
+        return null;
+
+      if (index < length && text.charAt(index) == ',') {
+        index++;
+      }
+    }
+
+    return new Interval(years, months, days, hours, minutes, seconds, nanos, false);
   }
 }

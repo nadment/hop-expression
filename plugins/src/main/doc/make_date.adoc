@@ -14,16 +14,27 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= IS NULL
+= MAKE_DATE
 
-Check if the value is null.
-
+Creates a date from individual numeric components.
+		
 == Syntax
-[source,sql]
 ----
-expression IS [NOT] NULL
+MAKE_DATE( year, month, day )
 ----
 
-Returns:: Boolean
+Returns:: Date
 
-NOTE: Do not write expression = NULL because NULL is not "equal to" NULL. (The null value represents an unknown value, and it is not known whether two unknown values are equal.)  
+The literal value with ISO format provides alternative syntax.
+----
+DATE 'YYYY-MM-DD'
+----
+
+== Usage
+
+MAKE_DATE is typically used to handle values in normal ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
+
+* If day<1 or day>31 then date month is adjusted: MAKE_DATE(2020, 6, 50) >> 2020 JUNE 21
+* If month<1 or month>12 then date year is adjusted: MAKE_DATE(2020,19,1) >> 2021 JUNE 01
+
+See also xref:make_timestamp.adoc[MAKE_TIMESTAMP]

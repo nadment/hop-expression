@@ -20,6 +20,7 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
@@ -90,6 +91,14 @@ public class ExpressionParser {
     }
 
     return tokens.get(index++);
+  }
+
+  protected Token previous() throws ExpressionException {
+    if (index == 0) {
+      throw new ExpressionException(getPosition(), ExpressionError.INTERNAL_ERROR);
+    }
+
+    return tokens.get(--index);
   }
 
   protected boolean is(final Id id) {
@@ -391,17 +400,18 @@ public class ExpressionParser {
   }
 
   /** Literal Json */
-  private IExpression parseLiteralJson(Token token) throws ExpressionException  {
-    
-    return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(JsonType.JSON));
-//    
-//    try {
-//      ObjectMapper objectMapper =
-//          JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
-//      return Literal.of(objectMapper.readTree(token.text()));
-//    } catch (Exception e) {
-//      throw new ExpressionException(token.start(), ExpressionError.INVALID_JSON, token.text());
-//    }
+  private IExpression parseLiteralJson(Token token) throws ExpressionException {
+
+    return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
+        Literal.of(JsonType.JSON));
+    //
+    // try {
+    // ObjectMapper objectMapper =
+    // JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
+    // return Literal.of(objectMapper.readTree(token.text()));
+    // } catch (Exception e) {
+    // throw new ExpressionException(token.start(), ExpressionError.INVALID_JSON, token.text());
+    // }
   }
 
   /**
@@ -455,11 +465,6 @@ public class ExpressionParser {
         if (token == null)
           break;
         return parseLiteralDate(token);
-      // case TIME:
-      // token = next();
-      // if (token == null)
-      // break;
-      // return parseLiteralTime(token);
       case TIMESTAMP:
         token = next();
         if (token == null)
@@ -530,9 +535,9 @@ public class ExpressionParser {
       int start = this.getPosition();
 
       if (isThenNext(Id.PLUS)) {
-          expression = new Call(start, Operators.ADD, expression, this.parseBitwiseOr());
+        expression = new Call(start, Operators.ADD, expression, this.parseBitwiseOr());
       } else if (isThenNext(Id.MINUS)) {
-          expression = new Call(start, Operators.SUBTRACT, expression, this.parseBitwiseOr());
+        expression = new Call(start, Operators.SUBTRACT, expression, this.parseBitwiseOr());
       } else if (isThenNext(Id.CONCAT)) {
         expression = new Call(start, Operators.CONCAT, expression, this.parseBitwiseOr());
       } else
@@ -604,9 +609,10 @@ public class ExpressionParser {
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
   private Literal parseLiteralDate(Token token) throws ExpressionException {
-    
-    // return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(DateType.DATE));
-    
+
+    // return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
+    // Literal.of(DateType.DATE));
+
     // Literal date use exact mode
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
     try {
@@ -1054,7 +1060,7 @@ public class ExpressionParser {
   }
 
   private Literal parseLiteralInterval(Token token) throws ExpressionException {
-    
+
     boolean negative = false;
     Token value = next();
     if (value == null)
@@ -1065,15 +1071,26 @@ public class ExpressionParser {
       if (value == null)
         throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
     }
-        
-    Token start = next();
-    if (start == null)
-      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
-    TimeUnit startUnit = TimeUnit.of(start.text());
+
+    TimeUnit startUnit = null;
     TimeUnit endUnit = null;
 
+    Token start = next();
+    startUnit = TimeUnit.of(start.text());
+    
+    // Verbose format
+    if (startUnit == null) {
+      previous();
+      
+      Interval interval = Interval.valueOf(value.text());
+      return Literal.of(interval);
+    }
+
+    // Short format with qualifier
+    
+
     String text = value.text();
-    if (value.is(Id.LITERAL_STRING)) {      
+    if (value.is(Id.LITERAL_STRING)) {
       Token end = null;
       if (this.isThenNext(Id.TO)) {
         end = next();
@@ -1081,27 +1098,27 @@ public class ExpressionParser {
           throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
         endUnit = TimeUnit.of(end.text());
       }
-      
-      if ( text.length()>0 &&  text.charAt(0)=='-' ) {
+
+      if ( text.length()>0 && text.charAt(0)=='-' ) {
         negative = true;
         text = text.substring(1);
       }
     }
-    
+
     IntervalQualifier qualifier = IntervalQualifier.of(startUnit, endUnit);
-    if ( qualifier==null )
-      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
-    
-    Interval interval = qualifier.parse(text);
-    if ( interval==null )
+    if (qualifier == null)
       throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
 
-    if ( negative ) 
+    Interval interval = qualifier.parse(text);
+    if (interval == null)
+      throw new ExpressionException(token.start(), ExpressionError.INVALID_INTERVAL);
+
+    if (negative)
       interval = interval.negate();
-    
-    return Literal.of(interval);    
+
+    return Literal.of(interval);
   }
-  
+
   private Literal parseLiteralDataType(Token token) throws ExpressionException {
 
     TypeName name = TypeName.of(token.text());
@@ -1157,6 +1174,10 @@ public class ExpressionParser {
           if (precisionFound)
             break;
           return Literal.of(JsonType.JSON);
+        case INTERVAL:
+          if (precisionFound)
+            break;
+          return Literal.of(IntervalType.INTERVAL);
         default:
       }
     }

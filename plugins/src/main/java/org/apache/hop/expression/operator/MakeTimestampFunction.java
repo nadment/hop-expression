@@ -22,18 +22,20 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
- * Build DATE_FROM_PARTS(YYYY,MM,DD) function
+ * Build a timestamp from its separate year, month, day, hour, minute, second[.fractional]) fields.
  */
 @FunctionPlugin
-public class DateFromPartsFunction extends Function {
+public class MakeTimestampFunction extends Function {
 
-  public DateFromPartsFunction() {
-    super("DATE_FROM_PARTS", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, Category.DATE,
-        "/docs/date_from_parts.html");
+  public MakeTimestampFunction() {
+    super("MAKE_TIMESTAMP", ReturnTypes.DATE,
+        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+        "/docs/make_timestamp.html");
   }
 
   @Override
@@ -50,9 +52,25 @@ public class DateFromPartsFunction extends Function {
     if (v2 == null)
       return null;
 
+    Long v3 = operands[3].getValue(Long.class);
+    if (v3 == null)
+      return null;
+
+    Long v4 = operands[4].getValue(Long.class);
+    if (v4 == null)
+      return null;
+
+    BigDecimal v5 = operands[5].getValue(BigDecimal.class);
+    if (v5 == null)
+      return null;
+
     int year = v0.intValue();
     int month = v1.intValue();
     int day = v2.intValue();
+    int hour = v3.intValue();
+    int minute = v4.intValue();
+    int second = v5.intValue();
+    int nano = v5.remainder(BigDecimal.ONE).movePointRight(9).intValue();
 
     int monthsToAdd = 0;
     if (month < 1 || month > 12) {
@@ -66,13 +84,37 @@ public class DateFromPartsFunction extends Function {
       day = 1;
     }
 
-    LocalDate date = LocalDate.of(year, month, day);
+    int hoursToAdd = 0;
+    if (hour < 0 || hour > 23) {
+      hoursToAdd = hour;
+      hour = 0;
+    }
+
+    int minutesToAdd = 0;
+    if (minute < 0 || minute > 59) {
+      minutesToAdd = minute;
+      minute = 0;
+    }
+
+    int secondsToAdd = 0;
+    if (second < 0 || second > 59) {
+      secondsToAdd = second;
+      second = 0;
+    }
+
+    LocalDateTime datetime = LocalDateTime.of(year, month, day, hour, minute, second, nano);
+
     if (monthsToAdd != 0)
-      date = date.plusMonths(monthsToAdd);
+      datetime = datetime.plusMonths(monthsToAdd);
     if (daysToAdd != 0)
-      date = date.plusDays(daysToAdd);
+      datetime = datetime.plusDays(daysToAdd);
+    if (hoursToAdd != 0)
+      datetime = datetime.plusHours(hoursToAdd);
+    if (minutesToAdd != 0)
+      datetime = datetime.plusMinutes(minutesToAdd);
+    if (secondsToAdd != 0)
+      datetime = datetime.plusSeconds(secondsToAdd);
 
-    return date.atStartOfDay().atZone(ZoneId.systemDefault());
+    return datetime.atZone(ZoneId.systemDefault());
   }
-
 }

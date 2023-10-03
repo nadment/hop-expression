@@ -21,7 +21,7 @@ import org.apache.hop.expression.type.CompositeOperandTypeChecker.Composition;
 import java.util.List;
 
 /**
- * Strategies for checking operand types.
+ * A collection of strategies for checking operand types.
  */
 public final class OperandTypes {
 
@@ -170,9 +170,8 @@ public final class OperandTypes {
       family(TypeFamily.NUMERIC, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC =
       family(TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC);
-  public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_OPTIONAL_NUMERIC =
-      family(TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC,
-          TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC).optional(i -> i == 6);
+  public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC = family(TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC);
+
   public static final IOperandTypeChecker NUMERIC_OPTIONAL_STRING =
       family(TypeFamily.NUMERIC, TypeFamily.STRING).optional(i -> i == 1);
   public static final IOperandTypeChecker NUMERIC_OPTIONAL_NUMERIC =

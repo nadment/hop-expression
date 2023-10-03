@@ -14,25 +14,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= DATE_FROM_PARTS
+= MAKE_INTERVAL
 
-Creates a date from individual numeric components.
+Creates a interval from individual numeric components.
 		
 == Syntax
 ----
-DATE_FROM_PARTS( year, month, day )
+MAKE_INTERVAL( year, month, day, hour, minute, second[.fractional] )
 ----
 
-Returns:: Date
-
-The literal value with ISO format provides alternative syntax.
+The literal provides alternative syntax.
 ----
-DATE 'YYYY-MM-DD'
+INTERVAL '3 years 6 months'
 ----
 
 == Usage
 
-DATE_FROM_PARTS is typically used to handle values in “normal” ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
+You can use interval to add or subtract a period of time to/from a date or timestamp.
 
-* If day<1 or day>31 then date month is adjusted: Date(2020, 6, 50) >> 2020 JUNE 21
-* If month<1 or month>12 then date year is adjusted: Date(2020,19,1) >> 2021 JUNE 01
+See also xref:to_interval.adoc[TO_INTERVAL]

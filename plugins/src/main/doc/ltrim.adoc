@@ -29,4 +29,6 @@ string:: The string expression to be trimmed
 
 characters::  One or more characters to remove from the left side. If the parameter is omitted, the function will remove space characters.
 
-See also xref:rtrim.adoc[RTRIM], xref:trim.adoc[TRIM]
+See also
+* xref:rtrim.adoc[RTRIM]
+* xref:trim.adoc[TRIM]

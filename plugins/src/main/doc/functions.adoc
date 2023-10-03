@@ -79,7 +79,6 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_timestamp.adoc[CURRENT_TIMESTAMP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_timezone.adoc[CURRENT_TIMEZONE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/current_user.adoc[CURRENT_USER]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_from_parts.adoc[DATE_FROM_PARTS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_add.adoc[DATE_ADD]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_diff.adoc[DATE_DIFF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/date_trunc.adoc[DATE_TRUNC]
@@ -132,6 +131,9 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/lower.adoc[LOWER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/lpad.adoc[LPAD]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ltrim.adoc[LTRIM]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/make_date.adoc[MAKE_DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/make_interval.adoc[MAKE_INTERVAL]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/make_timestamp.adoc[MAKE_TIMESTAMP]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/max.adoc[MAX] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/md5.adoc[MD5]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/min.adoc[MIN] aggregate
@@ -188,11 +190,11 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/sum.adoc[SUM] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tan.adoc[TAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/tanh.adoc[TANH]
-* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/timestamp_from_parts.adoc[TIMESTAMP_FROM_PARTS]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_binary.adoc[TO_BINARY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_date.adoc[TO_DATE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_interval.adoc[TO_INTERVAL]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_json.adoc[TO_JSON]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_number.adoc[TO_NUMBER]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/translate.adoc[TRANSLATE]

@@ -23,6 +23,8 @@ Check if a value is a valid JSON.
 IS_JSON( value )
 ----
 
+Returns:: Boolean
+
 == Usage
 
 Return FALSE if a value is NULL. 

@@ -23,6 +23,7 @@ Compares whether two expressions are equal or not equal. The operator is NULL-sa
 expression1 IS [NOT] DISTINCT FROM expression2
 ----
 
+Returns:: Boolean
 
 == See also
 

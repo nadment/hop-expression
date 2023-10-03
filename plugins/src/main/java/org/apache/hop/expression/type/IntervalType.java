@@ -18,34 +18,34 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.exception.ConversionException;
 
 public final class IntervalType extends Type {
 
   public static final IntervalType INTERVAL = new IntervalType(TypeName.INTERVAL);
-  
-  //public static final IntervalType YEAR_TO_MONTH = new IntervalType(TypeName.YEAR_TO_MONTH);
-  
- // public static final IntervalType DAY_TO_SECOND = new IntervalType(TypeName.DAY_TO_SECOND);
-
-  private final String string;
 
   private IntervalType(TypeName name) {
     super(name);
-    this.string = name.toString().replace('_', ' ').intern();
   }
-
-  @Override
-  public String toString() {
-    return string;
-  }
+  
   @Override
   public Object cast(final Object value) throws ConversionException {
-    throw new ConversionException(ExpressionError.INTERNAL_ERROR);
+    return cast(value, null);
   }
 
   @Override
   public Object cast(final Object value, final String pattern) throws ConversionException {
-    throw new ConversionException(ExpressionError.INTERNAL_ERROR);
+    
+    if (value == null) {
+      return null;
+    }
+
+    if (value instanceof String) {
+      return Interval.valueOf((String) value);
+    }
+    
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 }

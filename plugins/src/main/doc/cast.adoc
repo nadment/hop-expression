@@ -20,12 +20,12 @@ Converts a value of one data type into another data type.
 
 == Syntax
 ----
-CAST( value AS dataType [ FORMAT format ] )
-TRY_CAST( value AS dataType [ FORMAT format ] )
+CAST( value AS type [ FORMAT format ] )
+TRY_CAST( value AS type [ FORMAT format ] )
 ----
 The `::` operator provides alternative syntax.
 ----
-value::dataType
+value::type
 ----
 
 == Usage
@@ -34,11 +34,11 @@ If the cast is not possible, CAST raises an error and TRY_CAST return a NULL val
 
 === Supported data type:
 
-* BigNumber		
 * Binary
 * Boolean
 * Date
 * Integer
+* Interval
 * Number
 * String
 * Json
@@ -73,4 +73,11 @@ TRY_CAST(DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')
 
 
 
-See also xref:to_boolean.adoc[TO_BOOLEAN], xref:to_char.adoc[TO_CHAR], xref:to_number.adoc[TO_NUMBER], xref:to_date.adoc[TO_DATE]
+See also 
+* xref:to_binary.adoc[TO_BINARY] 
+* xref:to_boolean.adoc[TO_BOOLEAN]
+* xref:to_char.adoc[TO_CHAR]
+* xref:to_date.adoc[TO_DATE]
+* xref:to_interval.adoc[TO_INTERVAL]
+* xref:to_json.adoc[TO_JSON]
+* xref:to_number.adoc[TO_NUMBER]

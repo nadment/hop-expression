@@ -408,49 +408,64 @@ public class FunctionsTest extends ExpressionTest {
   }  
   
   @Test
-  public void DateFromParts() throws Exception {
-    evalEquals("DATE_FROM_PARTS(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
-    evalEquals("DATE_FROM_PARTS(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
-    evalEquals("DATE_FROM_PARTS(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
-    evalEquals("DATE_FROM_PARTS(2020, 0, 1)", LocalDate.of(2019, Month.DECEMBER, 1));
-    evalEquals("DATE_FROM_PARTS(2020,-1,1)", LocalDate.of(2019, Month.NOVEMBER, 1));
-    evalEquals("DATE_FROM_PARTS(2020,-2, 1)", LocalDate.of(2019, Month.OCTOBER, 1));
-    evalEquals("DATE_FROM_PARTS(2020,-6,1)", LocalDate.of(2019, Month.JUNE, 1));
-    evalEquals("DATE_FROM_PARTS(2020, 6, 50)", LocalDate.of(2020, Month.JULY, 20));    
-    evalEquals("DATE_FROM_PARTS(2020, 2, 0)", LocalDate.of(2020, Month.JANUARY, 31));
-    evalEquals("DATE_FROM_PARTS(2020, 2, -1)", LocalDate.of(2020, Month.JANUARY, 30));
+  public void MakeDate() throws Exception {
+    evalEquals("MAKE_DATE(2019,01,1)", LocalDate.of(2019, Month.JANUARY, 1));
+    evalEquals("MAKE_DATE(2020,02,27)", LocalDate.of(2020, Month.FEBRUARY, 27));
+    evalEquals("MAKE_DATE(2020,19,1)", LocalDate.of(2021, Month.JULY, 1));
+    evalEquals("MAKE_DATE(2020, 0, 1)", LocalDate.of(2019, Month.DECEMBER, 1));
+    evalEquals("MAKE_DATE(2020,-1,1)", LocalDate.of(2019, Month.NOVEMBER, 1));
+    evalEquals("MAKE_DATE(2020,-2, 1)", LocalDate.of(2019, Month.OCTOBER, 1));
+    evalEquals("MAKE_DATE(2020,-6,1)", LocalDate.of(2019, Month.JUNE, 1));
+    evalEquals("MAKE_DATE(2020, 6, 50)", LocalDate.of(2020, Month.JULY, 20));    
+    evalEquals("MAKE_DATE(2020, 2, 0)", LocalDate.of(2020, Month.JANUARY, 31));
+    evalEquals("MAKE_DATE(2020, 2, -1)", LocalDate.of(2020, Month.JANUARY, 30));
     
-    evalNull("DATE_FROM_PARTS(NULL_INTEGER,-1,1)");
-    evalNull("DATE_FROM_PARTS(2020,NULL_INTEGER,1)");
-    evalNull("DATE_FROM_PARTS(2020,-1,NULL_INTEGER)");
+    evalNull("MAKE_DATE(NULL_INTEGER,-1,1)");
+    evalNull("MAKE_DATE(2020,NULL_INTEGER,1)");
+    evalNull("MAKE_DATE(2020,-1,NULL_INTEGER)");
 
-    evalFails("DATE_FROM_PARTS()");
-    evalFails("DATE_FROM_PARTS(2020)");
-    evalFails("DATE_FROM_PARTS(2020,15)");
-    evalFails("DATE_FROM_PARTS(2020,1,1,1)");
+    evalFails("MAKE_DATE()");
+    evalFails("MAKE_DATE(2020)");
+    evalFails("MAKE_DATE(2020,15)");
+    evalFails("MAKE_DATE(2020,1,1,1)");
 
-    returnType("DATE_FROM_PARTS(2019,01,1)", DateType.DATE);
+    returnType("MAKE_DATE(2019,01,1)", DateType.DATE);
   }
 
   @Test
-  public void Timestamp() throws Exception {
-    evalEquals("TIMESTAMP_FROM_PARTS(2019,01,1,23,15,59)", LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59));
-    evalEquals("TIMESTAMP_FROM_PARTS(2020,-6,1,23,15,59)", LocalDateTime.of(2019, Month.JUNE, 1, 23, 15, 59));
-    evalEquals("TIMESTAMP_FROM_PARTS(2020,0,1,23,15,59)", LocalDateTime.of(2019, Month.DECEMBER, 1, 23, 15, 59));
-    evalEquals("TIMESTAMP_FROM_PARTS(2020,-1,1,23,15,59)", LocalDateTime.of(2019, Month.NOVEMBER, 1, 23, 15, 59));
-    evalEquals("TIMESTAMP_FROM_PARTS(2020,6,50,23,15,59)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59));
-    evalEquals("TIMESTAMP_FROM_PARTS(2020,6,50,23,15,59,123456789)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456789));
+  public void MakeTimestamp() throws Exception {
+    evalEquals("MAKE_TIMESTAMP(2019,01,1,23,15,59)", LocalDateTime.of(2019, Month.JANUARY, 1, 23, 15, 59));
+    evalEquals("MAKE_TIMESTAMP(2020,-6,1,23,15,59)", LocalDateTime.of(2019, Month.JUNE, 1, 23, 15, 59));
+    evalEquals("MAKE_TIMESTAMP(2020,0,1,23,15,59)", LocalDateTime.of(2019, Month.DECEMBER, 1, 23, 15, 59));
+    evalEquals("MAKE_TIMESTAMP(2020,-1,1,23,15,59)", LocalDateTime.of(2019, Month.NOVEMBER, 1, 23, 15, 59));
+    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59));
+    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59.123)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123000000));
+    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59.123456)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456000));
+    evalEquals("MAKE_TIMESTAMP(2020,6,50,23,15,59.123456789)", LocalDateTime.of(2020, Month.JULY, 20, 23, 15, 59, 123456789));
+    
+    evalNull("MAKE_TIMESTAMP(NULL_INTEGER,-1,1,23,15,59)");
+    evalNull("MAKE_TIMESTAMP(2020,NULL_INTEGER,1,23,15,59)");
+    evalNull("MAKE_TIMESTAMP(2020,-1,NULL_INTEGER,23,15,59)");
 
-    evalNull("TIMESTAMP_FROM_PARTS(NULL_INTEGER,-1,1,23,15,59)");
-    evalNull("TIMESTAMP_FROM_PARTS(2020,NULL_INTEGER,1,23,15,59)");
-    evalNull("TIMESTAMP_FROM_PARTS(2020,-1,NULL_INTEGER,23,15,59)");
+    evalFails("MAKE_TIMESTAMP()");
+    evalFails("MAKE_TIMESTAMP(2020)");
+    evalFails("MAKE_TIMESTAMP(2020,15)");
+    evalFails("MAKE_TIMESTAMP(2020,1,1,23,15,59.123456789,9999)");
 
-    evalFails("TIMESTAMP_FROM_PARTS()");
-    evalFails("TIMESTAMP_FROM_PARTS(2020)");
-    evalFails("TIMESTAMP_FROM_PARTS(2020,15)");
-    evalFails("TIMESTAMP_FROM_PARTS(2020,1,1,23,15,59,123456789,9999)");
+    returnType("MAKE_TIMESTAMP(2019,01,1,23,15,59)", DateType.DATE);
+  }
 
-    returnType("TIMESTAMP_FROM_PARTS(2019,01,1,23,15,59)", DateType.DATE);
+  @Test
+  public void MakeInterval() throws Exception {    
+    evalEquals("MAKE_INTERVAL(20,1,1,23,15,59)", Interval.of(20, 1, 1, 23, 15, 59));
+    evalEquals("MAKE_INTERVAL(20,1,1,23,15,59.123)", Interval.of(20, 1, 1, 23, 15, 59, 123000000));
+    
+    evalFails("MAKE_INTERVAL()");
+    evalFails("MAKE_INTERVAL(20)");
+    evalFails("MAKE_INTERVAL(20,15)");
+    evalFails("MAKE_INTERVAL(20,1,1,23,15,59.123456789,9999)");
+    
+    returnType("MAKE_INTERVAL(2019,01,1,23,15,59)", IntervalType.INTERVAL);
   }
   
   @Test
@@ -945,7 +960,7 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Day('text')");    
     
     optimize("DAY(DATE '2019-02-15')", "15");
-    optimize("DAY(DATE_FROM_PARTS(2019,2,15))", "15");
+    optimize("DAY(MAKE_DATE(2019,2,15))", "15");
     
     returnType("Day(DATE '2019-01-01')", IntegerType.INTEGER); 
   }
@@ -1122,6 +1137,13 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("DATE_ADD(MINUTE,20,DATE '2019-01-15')",LocalDateTime.of(2019, Month.JANUARY, 15, 0, 20, 0, 0));
     evalEquals("DATE_ADD(SECOND,140,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 2, 20, 0));
     evalEquals("DATE_ADD(NANOSECOND,23,DATE '2019-01-15')", LocalDateTime.of(2019, Month.JANUARY, 15, 0, 0, 0, 23));
+        
+    optimize("DATE_ADD(YEAR,1,FIELD_DATE)", "ADD_YEARS(FIELD_DATE,1)");
+    optimize("DATE_ADD(QUARTER,1,FIELD_DATE)", "ADD_QUARTERS(FIELD_DATE,1)");
+    optimize("DATE_ADD(MONTH,1,FIELD_DATE)", "ADD_MONTHS(FIELD_DATE,1)");
+    optimize("DATE_ADD(HOUR,1,FIELD_DATE)", "ADD_HOURS(FIELD_DATE,1)");
+    optimize("DATE_ADD(MINUTE,1,FIELD_DATE)", "ADD_MINUTES(FIELD_DATE,1)");
+    optimize("DATE_ADD(SECOND,1,FIELD_DATE)", "ADD_SECONDS(FIELD_DATE,1)");
   }
   
   @Test
@@ -2276,7 +2298,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("To_Char(DATE '2019-07-23','B.C.')", "A.D.");
     evalEquals("To_Char(DATE '2019-07-23','B.c.')", "A.d.");
     evalEquals("To_Char(DATE '2019-07-23','b.c.')", "a.d.");
-    evalEquals("To_Char(DATE_FROM_PARTS(-10,07,23),'b.c.')", "b.c.");
+    evalEquals("To_Char(MAKE_DATE(-10,07,23),'b.c.')", "b.c.");
 
     // Punctuation is reproduced in the result
     evalEquals("To_Char(DATE '2019-07-23','dd/mm/yyyy')", "23/07/2019");
@@ -2625,52 +2647,17 @@ public class FunctionsTest extends ExpressionTest {
 
   @Test
   public void To_Interval() throws Exception {
-    evalEquals("TO_INTERVAL('0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
-    evalEquals("TO_INTERVAL('+0-0 45 22:30:58')", new Interval(0,0,45,22,30,58));
-    evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", new Interval(0,0,45,22,30,58).negate());   
+    evalEquals("TO_INTERVAL('0-0 45 22:30:58')", Interval.of(0,0,45,22,30,58));
+    evalEquals("TO_INTERVAL('+0-0 45 22:30:58')", Interval.of(0,0,45,22,30,58));
+    evalEquals("TO_INTERVAL('45 days 22 hours 30 minutes 58 seconds')", Interval.of(0,0,45,22,30,58));
+    evalEquals("TO_INTERVAL('-0-0 45 22:30:58')", Interval.of(0,0,45,22,30,58).negate());   
     evalNull("TO_INTERVAL(NULL_STRING)");
     
     optimize("TO_INTERVAL('-0-0 45 22:30:58')", "INTERVAL '-45 22:30:58' DAY TO SECOND");
     
     returnType("TO_INTERVAL('+0-0 -45 22:30:58')", IntervalType.INTERVAL);
   }
-    
-  @Test
-  public void To_Years() throws Exception {
-    evalEquals("TO_YEARS(30)", Interval.year("30"));
-    evalNull("TO_YEARS(NULL_INTEGER)");
-  }
-
-  @Test
-  public void To_Months() throws Exception {
-    evalEquals("TO_MONTHS(30)", Interval.month("30"));
-    evalNull("TO_MONTHS(NULL_INTEGER)");
-  }
-  
-  @Test
-  public void To_Days() throws Exception {
-    evalEquals("TO_DAYS(365)", Interval.day("365"));
-    evalNull("TO_DAYS(NULL_INTEGER)");
-  }
-
-  @Test
-  public void To_Hours() throws Exception {
-    evalEquals("TO_HOURS(23)", Interval.hour("23"));
-    evalNull("TO_HOURS(NULL_INTEGER)");
-  }
-
-  @Test
-  public void To_Minutes() throws Exception {
-    evalEquals("TO_MINUTES(30)", Interval.minute("30"));
-    evalNull("TO_MINUTES(NULL_INTEGER)");
-  }
-
-  @Test
-  public void To_Seconds() throws Exception {
-    evalEquals("TO_SECONDS(58)", Interval.second("58"));
-    evalNull("TO_SECONDS(NULL_INTEGER)");
-  }  
-  
+      
   @Test
   public void To_Json() throws Exception {
 
@@ -3651,12 +3638,11 @@ public class FunctionsTest extends ExpressionTest {
   @Test
   public void TypeOf() throws Exception {
     evalEquals("TypeOf('str')", "STRING");
-    evalEquals("TypeOf(Bit_Rotate(1,4))", "INTEGER");
+    evalEquals("TypeOf(25)", "INTEGER");
     evalEquals("TypeOf(FIELD_NUMBER)", "NUMBER");
     evalEquals("TypeOf(TRUE)", "BOOLEAN");
     evalEquals("TypeOf(DATE '2023-01-01')", "DATE");
-    evalEquals("TypeOf(TO_YEARS(3))", "INTERVAL");
-    evalEquals("TypeOf(TO_DAYS(3))", "INTERVAL");
+    evalEquals("TypeOf(INTERVAL '3 years')", "INTERVAL");
 
     returnType("TypeOf(1.2)", StringType.STRING);
     returnType("TypeOf('str')", StringType.STRING);
@@ -3750,8 +3736,7 @@ public class FunctionsTest extends ExpressionTest {
     evalEquals("Extract(MILLISECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987L);
     evalEquals("Extract(MICROSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654L);
     evalEquals("Extract(NANOSECOND from INTERVAL '14:38:56.987654321' HOUR TO SECOND)", 987654321L);
-    
-    
+
     
     evalFails("Extract(");
     evalFails("Extract()");

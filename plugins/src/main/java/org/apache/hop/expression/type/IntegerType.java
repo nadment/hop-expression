@@ -37,14 +37,6 @@ public final class IntegerType extends Type {
     return cast(value, null);
   }
 
-  /**
-   * Convert a value to the specified type {@link IntegerType} with a pattern.
-   *
-   * @param value the value to convert
-   * @param pattern the optional pattern to use for conversion to string when value is date or
-   *        numeric, or null if none
-   * @return the converted value
-   */
   @Override
   public Long cast(final Object value, String pattern) throws ConversionException {
 

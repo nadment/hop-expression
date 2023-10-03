@@ -203,7 +203,6 @@ public class ExpressionTest {
       context.setRow(row);
     }
 
-
     return context;
   }
 
@@ -389,8 +388,11 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
-    //evalNull("Json_Value(NULL_JSON,'$.name')");           
-  //optimize("INTERVAL '23:30:58' HOUR TO MINUTE", "INTERVAL '+23:30:58' HOUR TO SECOND");
+    //evalNull("Json_Value(NULL_JSON,'$.name')");
+   // IntervalParser parser = new IntervalParser(" 5  days  3  minutes ");
+   // assertEquals(new Interval(0, 0, 5), parser.parse());
+    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate());
+    //evalEquals("TypeOf(INTERVAL '3 years')", "INTERVAL");
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

@@ -23,24 +23,54 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.math.BigDecimal;
 
 /**
- * Converts the integer expression to a interval of seconds.
+ * Build a interval from its separate year, month, day, hour, minute, second[.fractional]) fields.
  */
 @FunctionPlugin
-public class ToSecondsFunction extends Function {
+public class MakeIntervalFunction extends Function {
 
-  public ToSecondsFunction() {
-    super("TO_SECONDS", ReturnTypes.INTERVAL, OperandTypes.NUMERIC,
-        Category.CONVERSION, "/docs/to_seconds.html");
+  public MakeIntervalFunction() {
+    super("MAKE_INTERVAL", ReturnTypes.INTERVAL,
+        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+        "/docs/make_interval.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    final Long value = operands[0].getValue(Long.class);
-    if (value == null)
+    Long v0 = operands[0].getValue(Long.class);
+    if (v0 == null)
       return null;
 
-    return new Interval(0, 0, 0, 0, 0, value.intValue());
+    Long v1 = operands[1].getValue(Long.class);
+    if (v1 == null)
+      return null;
+
+    Long v2 = operands[2].getValue(Long.class);
+    if (v2 == null)
+      return null;
+
+    Long v3 = operands[3].getValue(Long.class);
+    if (v3 == null)
+      return null;
+
+    Long v4 = operands[4].getValue(Long.class);
+    if (v4 == null)
+      return null;
+
+    BigDecimal v5 = operands[5].getValue(BigDecimal.class);
+    if (v5 == null)
+      return null;
+
+    int years = v0.intValue();
+    int months = v1.intValue();
+    int days = v2.intValue();
+    int hours = v3.intValue();
+    int minutes = v4.intValue();
+    int seconds = v5.intValue();
+    int nanos = v5.remainder(BigDecimal.ONE).movePointRight(9).intValue();
+    
+    return Interval.of(years, months, days, hours, minutes, seconds, nanos);    
   }
 }

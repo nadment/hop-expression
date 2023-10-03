@@ -126,7 +126,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(new NumberType(9,3), Type.of(BigDecimal.valueOf(123456123,3)));
     assertEquals(DateType.DATE, Type.of(ZonedDateTime.now()));
     assertEquals(BinaryType.BINARY, Type.of(new byte[] {0xF}));
-    assertEquals(IntervalType.INTERVAL, Type.of(new Interval(5)));
+    assertEquals(IntervalType.INTERVAL, Type.of(Interval.of(5)));
     assertEquals(UnknownType.SYMBOL, Type.of(TimeUnit.CENTURY));
   }
 

@@ -14,25 +14,28 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= TIMESTAMP_FROM_PARTS
+= MAKE_TIMESTAMP
 
 Creates a timestamp from individual numeric components.
 		
 == Syntax
 ----
-TIMESTAMP_FROM_PARTS( year, month, day, hour, minute, second [, nanosecond] )
+MAKE_TIMESTAMP( year, month, day, hour, minute, second[.fractional] )
 ----
+
 The literal value with ISO format provides alternative syntax.
 ----
-TIMESTAMP 'YYYY-MM-DD HH.MM.SS'
+TIMESTAMP 'YYYY-MM-DD HH:MM:SS.fffffffff'
 ----
 
 == Usage
 
-TIMESTAMP_FROM_PARTS is typically used to handle values in “normal” ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
+MAKE_TIMESTAMP is typically used to handle values in normal ranges (e.g. months 1-12, days 1-31), but it also handles values from outside these ranges.
 
 * If day<1 or day>31 then month is adjusted
 * If month<1 or month>12 then year is adjusted
 * If hour<0 or hour>23 then day is adjusted
 * If minute<0 or minute>59 then hour is adjusted
 * If second<0 or second>59 then minute is adjusted
+
+See also xref:make_date.adoc[MAKE_DATE]

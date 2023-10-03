@@ -17,7 +17,7 @@
 package org.apache.hop.expression.type;
 
 /**
- * A collection of return-type inference strategies.
+ * A collection of strategies for return type inference.
  */
 public final class ReturnTypes {
 

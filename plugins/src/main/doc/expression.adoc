@@ -134,6 +134,7 @@ NOTE: Leading, trailing and double underscores will produce an error.
 
 Binary literals of the word BINARY followed by a hexadecimal notation (2 hexadecimal digits per byte) surrounded by single quotes `'`.
 
+The following examples illustrate some binary values:
 ----
 BINARY 'ac6F'
 BINARY '4b657276656E'
@@ -143,6 +144,7 @@ BINARY '4b657276656E'
 
 Date literals consist of the word DATE followed by a 10 characters string literal enclosed in apostrophes in a `YYYY-MM-DD` format. 
 
+The following examples illustrate some date values:
 ----
 DATE '2020-05-18'
 '2020-05-18'::DATE
@@ -158,7 +160,7 @@ Literal timestamp can includes a time zone offset or a time zone region.
 ----
 TIMESTAMP 'yyyy-mm-dd hh24:mi:ss.ffffff' [AT TIME ZONE  '...']
 ----
-Examples:
+The following examples illustrate some timestamp values:
 ----
 TIMESTAMP '2020-05-18 23:48'
 TIMESTAMP '2020-05-18 23:48:59'
@@ -176,17 +178,57 @@ NOTE: Time zone names are case-sensitive and must be enclosed in single quotes (
 
 === Interval
 
-Interval literals defines a constant elapsed time. You can use these interval literals in conditions and calculations that involve datetime expressions. 
+Interval literals defines a constant time period. You can use interval to add or subtract a period of time to/from a date or timestamp.
 
 ----
 INTERVAL 1 YEAR
 INTERVAL 5 DAYS
 INTERVAL -12 HOURS
+INTERVAL '2 MONTHS 5 DAYS 12 HOURS'
+INTERVAL '+2-6' YEAR TO MONTH
+INTERVAL '10 23:30:58.999' DAY TO SECOND
 ----
 
-Plurals of each unit are also supported.
+Interval constants can also be expressed using the following formats: 
+	INTERVAL 'Y-M D H:M:S.FFFFFFFFF'
+	INTERVAL 'Y-M' YEAR TO MONTH
+	INTERVAL 'D H:M:S.FFFFFFFFF' DAY TO SECOND
+	INTERVAL 'H:M' HOUR TO MINUTE
 
-Interval constants can also be expressed using the following formats: INTERVAL 'Y-M D H:M:S'
+===== Short format:
+----
+{ + | - } INTERVAL '<format>' [ <qualifier> ]
+----
+
+* `format` the full format is 'Y-M D H:M:S.FFFFFFFFF' but with qualifier DAY TO MINUTE format is 'D H:M'
+* `qualifier` can be any of YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, YEAR TO MONTH, DAY TO HOUR, DAY TO MINUTE, DAY TO SECOND, HOUR TO MINUTE, HOUR TO SECOND, MINUTE TO SECOND
+* If the qualifier is not a range (<unit> TO <unit>), the single quote can be omitted.
+
+
+
+The following examples illustrate some interval values that use the short syntax:
+----
+INTERVAL 2 MONTHS
+INTERVAL '4-2' YEAR TO MONTH
+INTERVAL '15 04:30' DAY TO MINUTE
+INTERVAL '-1-3 10 23:30:58.999'
+----
+
+===== Verbose format:
+
+----
+{ + | - } INTERVAL '<quantity> [ <unit> ] [, <quantity> [ <unit> ] ... ]'
+----
+
+* `quantity` is a number
+* `unit` can be any of YEAR, QUARTER, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND, MILLISECOND, MICROSECOND or plural forms (MONTHS, DAYS, etc.).
+
+The following examples illustrate some interval values that use the verbose syntax:
+----
+INTERVAL '2 MONTHS, 5 DAYS, 12 HOURS'
+INTERVAL '4 WEEKS'
+----
+
 
 The following subtracts 4 months from March 31, 2023 and the result is November 30, 2022. The calculation considers the number of days in a month.
 ----
@@ -261,8 +303,8 @@ When there is no ambiguity about the data type of an expression value, it is imp
 [cols="^1,<5,<1,<1,<1", options="header"]
 |===
 |From|To|Coerce|Cast|Function
-|Boolean|Integer|❌|✔|
-|Boolean|Number|❌|✔|
+|Boolean|Integer|✔|✔|
+|Boolean|Number|✔|✔|
 |Boolean|String|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_char.adoc[TO_CHAR]
 |Integer|Boolean|✔|✔|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/to_boolean.adoc[TO_BOOLEAN]
 |Integer|Number|✔|✔|

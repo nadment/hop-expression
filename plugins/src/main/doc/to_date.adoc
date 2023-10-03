@@ -44,3 +44,4 @@ include::dateformat.adoc[]
 |MONTH|MON 
 |===
 
+See also xref:make_date.adoc[MAKE_DATE], xref:make_timestamp.adoc[MAKE_TIMESTAMP]

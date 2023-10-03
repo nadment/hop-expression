@@ -23,6 +23,8 @@ Check if a value is a valid date or timestamp.
 IS_DATE( value, format )
 ----
 
+Returns:: Boolean
+
 == Usage
 
 Return FALSE if a value is NULL. 

@@ -14,6 +14,7 @@
  */
 package org.apache.hop.core.expression;
 
+import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -983,6 +984,16 @@ public class OperatorsTest extends ExpressionTest {
     // optimize("FIELD_STRING::JSON", "TO_JSON(FIELD_STRING)");
   }
 
+  @Test
+  public void CastToInterval() throws Exception {
+    // String
+    evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5));
+    
+    // Null
+    evalNull("CAST(NULL as INTERVAL)");
+    
+    evalFails("CAST(3 as INTERVAL");
+  }
   
   @Test
   public void Cast() throws Exception {

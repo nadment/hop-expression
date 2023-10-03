@@ -29,4 +29,6 @@ Return:: String
 
 == Usage
 
-See also xref:ltrim.adoc[LTRIM], xref:rtrim.adoc[RTRIM]
+See also
+* xref:ltrim.adoc[LTRIM]
+* xref:rtrim.adoc[RTRIM]

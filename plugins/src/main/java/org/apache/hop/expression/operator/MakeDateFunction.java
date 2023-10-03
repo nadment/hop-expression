@@ -20,27 +20,59 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 /**
- * Converts the integer expression to a interval of hours.
+ * Build a date from its separate year, month and day fields.
  */
 @FunctionPlugin
-public class ToHoursFunction extends Function {
+public class MakeDateFunction extends Function {
 
-  public ToHoursFunction() {
-    super("TO_HOURS", ReturnTypes.INTERVAL, OperandTypes.NUMERIC, Category.CONVERSION,
-        "/docs/to_hours.html");
+  public MakeDateFunction() {
+    super("MAKE_DATE", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+        "/docs/make_date.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
-    final Long value = operands[0].getValue(Long.class);
-    if (value == null)
+    Long v0 = operands[0].getValue(Long.class);
+    if (v0 == null)
       return null;
 
-    return new Interval(0, 0, 0, value.intValue());
+    Long v1 = operands[1].getValue(Long.class);
+    if (v1 == null)
+      return null;
+
+    Long v2 = operands[2].getValue(Long.class);
+    if (v2 == null)
+      return null;
+
+    int year = v0.intValue();
+    int month = v1.intValue();
+    int day = v2.intValue();
+
+    int monthsToAdd = 0;
+    if (month < 1 || month > 12) {
+      monthsToAdd = month - 1;
+      month = 1;
+    }
+
+    int daysToAdd = 0;
+    if (day < 1 || day > 31) {
+      daysToAdd = day - 1;
+      day = 1;
+    }
+
+    LocalDate date = LocalDate.of(year, month, day);
+    if (monthsToAdd != 0)
+      date = date.plusMonths(monthsToAdd);
+    if (daysToAdd != 0)
+      date = date.plusDays(daysToAdd);
+
+    return date.atStartOfDay().atZone(ZoneId.systemDefault());
   }
+
 }
