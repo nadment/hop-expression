@@ -40,8 +40,8 @@ public class ToCharFunction extends Function {
 
   public ToCharFunction() {
     super(
-        "TO_CHAR", ReturnTypes.STRING, OperandTypes.NUMERIC_OPTIONAL_TEXT
-            .or(OperandTypes.TEMPORAL_OPTIONAL_TEXT).or(OperandTypes.BINARY_OPTIONAL_TEXT),
+        "TO_CHAR", ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_TEXT).or(
+            OperandTypes.TEMPORAL).or(OperandTypes.TEMPORAL_TEXT).or(OperandTypes.BINARY).or(OperandTypes.BINARY_TEXT),
         Category.CONVERSION, "/docs/to_char.html");
   }
 

@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ReplaceFunction extends Function {
 
   public ReplaceFunction() {
-    super("REPLACE", ReturnTypes.STRING, OperandTypes.STRING_STRING_OPTIONAL_STRING,
+    super("REPLACE", ReturnTypes.STRING, OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         Category.STRING, "/docs/replace.html");
   }
 

@@ -40,7 +40,7 @@ public class RPadFunction extends Function {
 
   public RPadFunction() {
     super("RPAD", ReturnTypes.ARG0,
-        OperandTypes.STRING_NUMERIC_OPTIONAL_STRING.or(OperandTypes.BINARY_NUMERIC_BINARY),
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.STRING_NUMERIC_STRING).or(OperandTypes.BINARY_NUMERIC_BINARY),
         Category.STRING, "/docs/rpad.html");
   }
 

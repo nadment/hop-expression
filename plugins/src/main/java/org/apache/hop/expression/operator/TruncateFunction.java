@@ -35,7 +35,7 @@ import java.math.RoundingMode;
 public class TruncateFunction extends Function {
 
   public TruncateFunction() {
-    super("TRUNCATE", ReturnTypes.NUMBER, OperandTypes.NUMERIC_OPTIONAL_NUMERIC,
+    super("TRUNCATE", ReturnTypes.NUMBER, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
         Category.MATHEMATICAL, "/docs/truncate.html");
   }
 

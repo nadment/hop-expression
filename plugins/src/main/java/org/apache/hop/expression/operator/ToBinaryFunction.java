@@ -42,7 +42,7 @@ public class ToBinaryFunction extends Function {
   }
 
   protected ToBinaryFunction(String id) {
-    super(id, ReturnTypes.BINARY, OperandTypes.STRING_OPTIONAL_TEXT, Category.CONVERSION,
+    super(id, ReturnTypes.BINARY, OperandTypes.STRING.or(OperandTypes.STRING_TEXT), Category.CONVERSION,
         "/docs/to_binary.html");
   }
 

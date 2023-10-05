@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class LastValueFunction extends AggregateFunction {
 
   public LastValueFunction() {
-    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN,
+    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY.or(OperandTypes.ANY_BOOLEAN),
         "/docs/last_value.html");
   }
 

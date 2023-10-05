@@ -54,7 +54,7 @@ public class LikeOperator extends Operator {
 
 
   public LikeOperator() {
-    super("LIKE", 120, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING_OPTIONAL_STRING,
+    super("LIKE", 120, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
         Category.COMPARISON, "/docs/like.html");
   }
 

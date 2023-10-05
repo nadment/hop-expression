@@ -37,7 +37,7 @@ public class TrimFunction extends Function {
   public static final TrimFunction INSTANCE = new TrimFunction();
 
   public TrimFunction() {
-    super("TRIM", ReturnTypes.STRING, OperandTypes.STRING_OPTIONAL_STRING, Category.STRING,
+    super("TRIM", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING), Category.STRING,
         "/docs/trim.html");
   }
 

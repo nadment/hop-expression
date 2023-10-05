@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class FirstValueFunction extends AggregateFunction {
 
   public FirstValueFunction() {
-    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_OPTIONAL_BOOLEAN,
+    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY.or(OperandTypes.ANY_BOOLEAN),
         "/docs/first_value.html");
   }
 

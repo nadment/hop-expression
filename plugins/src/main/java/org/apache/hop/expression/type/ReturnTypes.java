@@ -104,9 +104,6 @@ public final class ReturnTypes {
     if ( type.is(TypeName.INTEGER ))
       return type;
     
-    if ( type.is(TypeName.NUMBER ))
-      return type;
-    
     // By default Number for coercion
     return NumberType.NUMBER;
   };
