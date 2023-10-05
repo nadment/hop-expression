@@ -67,6 +67,14 @@ public class BoolOrOperator extends Operator {
         return Literal.TRUE;
     }
 
+    // Simplify A OR A IS NOT NULL → A IS NOT NULL 
+    if ( call.getOperand(1).is(Operators.IS_NOT_NULL) ) {
+      if ( call.getOperand(0).equals(call.getOperand(1).asCall().getOperand(0)) ) {
+        return call.getOperand(1);
+      }
+    }
+    
+    
     // Remove duplicate
     // x OR x → x
     // x OR y OR x → x OR y
@@ -162,6 +170,8 @@ public class BoolOrOperator extends Operator {
     }
 
     // X <> A OR X <> B → X IS NOT NULL or NULL
+    
+
 
     // Rebuild disjunctions if more than 1 condition
     if (conditions.size() == 1)

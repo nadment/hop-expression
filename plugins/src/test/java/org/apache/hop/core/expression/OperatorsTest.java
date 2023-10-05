@@ -1338,18 +1338,21 @@ public class OperatorsTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
     optimize("FIELD_INTEGER=2 OR FIELD_INTEGER=2", "2=FIELD_INTEGER");
 
-    // "x < a OR x = a" to "x <= a"
+    // Simplify x < a OR x = a → x <= a
     optimize("FIELD_INTEGER<1 OR FIELD_INTEGER=1", "1>=FIELD_INTEGER");
-    // "x < a OR x != a" to "x != a"
+    // Simplify x < a OR x != a → x != a
     optimize("FIELD_INTEGER<1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");
-    // "x < a OR x > a" to "x != a"
+    // Simplify x < a OR x > a → x != a"
     optimize("FIELD_INTEGER<1 OR FIELD_INTEGER>1", "1!=FIELD_INTEGER");
-    // "x > a OR x != a" to "x != a"
+    // Simplify x > a OR x != a → x != a
     optimize("FIELD_INTEGER>1 OR FIELD_INTEGER!=1", "1!=FIELD_INTEGER");
-    // "x > a OR x = a" to "x >= a"
+    // Simplify x > a OR x = a → x >= a
     optimize("FIELD_INTEGER>1 OR FIELD_INTEGER=1", "1<=FIELD_INTEGER");
 
-    // Simplify "X=1 OR X=2 OR X=3" to X IN (1,2,3)
+    // Simplify A OR A IS NOT NULL → A IS NOT NULL 
+    optimize("FIELD_INTEGER OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
+    
+    // Simplify X=1 OR X=2 OR X=3 → X IN (1,2,3)
     optimize("FIELD_INTEGER=1 OR FIELD_INTEGER=2 OR FIELD_INTEGER=3", "FIELD_INTEGER IN (3,2,1)");
     optimize("FIELD_INTEGER=1 OR FIELD_INTEGER in (2,3)", "FIELD_INTEGER IN (2,3,1)");
     optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (3,4,1,2)");

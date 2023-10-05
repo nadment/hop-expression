@@ -74,10 +74,10 @@ public class IntervalTest extends ExpressionTest {
     assertNull(Interval.hour("Z"));
     assertNull(Interval.minute("Z"));
     assertNull(Interval.second("1123.Z"));
-        
+
     assertNull(Interval.valueOf("Z"));
     assertNull(Interval.valueOf("3"));
-    assertNull(Interval.valueOf(" DAYS"));    
+    assertNull(Interval.valueOf(" DAYS"));
   }
 
   @Test
@@ -91,7 +91,7 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(58, interval.getSeconds());
     assertEquals(123, interval.getMilliseconds());
     assertEquals(123456, interval.getMicroseconds());
-    assertEquals(123456789, interval.getNanoseconds());   
+    assertEquals(123456789, interval.getNanoseconds());
     assertEquals(7, Interval.yearToMonth("7-3").getYears());
     assertEquals(3, Interval.yearToMonth("7-3").getMonths());
     assertEquals(5, Interval.dayToSecond("-5 14:38:56.987654321").getDays());
@@ -100,7 +100,7 @@ public class IntervalTest extends ExpressionTest {
     assertEquals(56, Interval.dayToSecond("-5 14:38:56.987654321").getSeconds());
     assertEquals(987, Interval.dayToSecond("-5 14:38:56.987654321").getMilliseconds());
     assertEquals(987654, Interval.dayToSecond("-5 14:38:56.987654321").getMicroseconds());
-    assertEquals(987654321, Interval.dayToSecond("-5 14:38:56.987654321").getNanoseconds());  
+    assertEquals(987654321, Interval.dayToSecond("-5 14:38:56.987654321").getNanoseconds());
   }
 
   @Test
@@ -137,6 +137,7 @@ public class IntervalTest extends ExpressionTest {
         Interval.second("-56.123456789"));
 
     // Verbose format
+    assertEquals(Interval.of(5, 6, 30, 12, 30, 58, 999000000), Interval.valueOf("5-6 30 12:30:58.999"));
     assertEquals(Interval.of(4), Interval.valueOf(" 4 year"));
     assertEquals(Interval.of(4), Interval.valueOf(" 4 years "));
     assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months"));
@@ -154,9 +155,10 @@ public class IntervalTest extends ExpressionTest {
 
   @Test
   public void intervalFormat() throws Exception {
-    assertEquals("+7-1 44 22:30:58.123456789", Interval.of(5, 25, 44, 22, 30, 58, 123456789).toString());
+    assertEquals("+7-1 44 22:30:58.123456789",
+        Interval.of(5, 25, 44, 22, 30, 58, 123456789).toString());
   }
-  
+
   @Test
   public void intervalSign() throws Exception {
     assertEquals(1, Interval.yearToMonth("5-24").getSign());

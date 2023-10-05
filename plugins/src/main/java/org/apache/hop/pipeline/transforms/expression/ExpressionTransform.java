@@ -50,7 +50,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
     // returns null if no more rows expected
     Object[] row = getRow();
 
-    // if no more rows are expected, indicate step is finished and
+    // if no more rows are expected, indicate transform is finished and
     // processRow() should not be called again
     if (row == null) {
       setOutputDone();
