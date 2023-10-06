@@ -29,11 +29,11 @@ import org.apache.hop.expression.type.TypeFamily;
 import java.io.StringWriter;
 
 /**
- * Generic arithmetic unary minus (negative) operator '<code>-</code>'.
+ * Prefix arithmetic minus (negative) operator '<code>-</code>'.
  */
 public class NegateOperator extends Operator {
   public NegateOperator() {
-    super("NEGATE", "-", 30, true, ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL),
+    super("NEGATE", "-", 30, true, ReturnTypes.ARG0, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL),
         Category.MATHEMATICAL, "/docs/negate.html");
   }
 

@@ -24,7 +24,7 @@ public class NumericReturnTypeInference implements IReturnTypeInference {
   public NumericReturnTypeInference() {}
 
   @Override
-  public Type getReturnType(Call call) {
+  public Type inferReturnType(Call call) {
 
     Type result = call.getType();
 

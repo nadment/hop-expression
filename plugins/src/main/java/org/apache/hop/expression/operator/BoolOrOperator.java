@@ -165,7 +165,7 @@ public class BoolOrOperator extends Operator {
           values.add(pair.getRight());
           conditions.remove(pair.getLeft());
         }
-        conditions.add(new Call(Operators.IN, reference, new Tuple(values)).inferenceType());
+        conditions.add(new Call(Operators.IN, reference, new Tuple(values)).inferReturnType());
       }
     }
 
@@ -178,7 +178,7 @@ public class BoolOrOperator extends Operator {
       return conditions.peek();
     IExpression operand = conditions.poll();
     while (!conditions.isEmpty()) {
-      operand = new Call(Operators.BOOLOR, conditions.poll(), operand).inferenceType();
+      operand = new Call(Operators.BOOLOR, conditions.poll(), operand).inferReturnType();
     }
 
     return operand;

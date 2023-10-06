@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.NumberType;
-import java.io.StringWriter;
 
 /**
  * Arithmetic unary minus (negative) operator '<code>-</code>'.

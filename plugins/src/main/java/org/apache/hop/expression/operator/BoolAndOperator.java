@@ -173,7 +173,7 @@ public class BoolAndOperator extends Operator {
     IExpression expression = conditions.poll();
     while (!conditions.isEmpty()) {
       call = new Call(Operators.BOOLAND, conditions.poll(), expression);
-      call.inferenceType();
+      call.inferReturnType();
       expression = call;
     }
 

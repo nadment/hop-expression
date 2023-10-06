@@ -26,7 +26,7 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public Type getReturnType(Call call) {
+  public Type inferReturnType(Call call) {
     // Least restrictive then expression
     Type result = null;
     for (IExpression operand : call.getOperand(2).asTuple()) {

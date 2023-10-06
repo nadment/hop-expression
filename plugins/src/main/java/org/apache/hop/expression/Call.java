@@ -136,7 +136,7 @@ public final class Call implements IExpression {
     try {
       return operator.eval(operands);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator,
           e.getMessage());
     }
   }
@@ -310,7 +310,7 @@ public final class Call implements IExpression {
     }
 
     // Inference type
-    this.type = operator.getReturnTypeInference().getReturnType(this);
+    this.type = operator.getReturnTypeInference().inferReturnType(this);
   }
   
   /**
@@ -344,7 +344,7 @@ public final class Call implements IExpression {
       }
 
       // Inference return type
-      call.inferenceType();
+      call.inferReturnType();
 
       // If operator is deterministic and all operands are constant try to evaluate
       if (isConstant())
@@ -360,15 +360,15 @@ public final class Call implements IExpression {
     return expression;
   }
 
-  public Call inferenceType() {
-    this.type = this.operator.getReturnTypeInference().getReturnType(this);
+  public Call inferReturnType() {
+    this.type = this.operator.getReturnTypeInference().inferReturnType(this);
     return this;
   }
 
   protected Literal evaluate() {
 
     Object value = getValue();
-    inferenceType();
+    inferReturnType();
 
     // Some operator don't known return type like JSON_VALUE.
     if (TypeName.ANY.equals(type.getName())) {

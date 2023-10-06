@@ -25,7 +25,7 @@ public class CastOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public Type getReturnType(Call call) {
+  public Type inferReturnType(Call call) {
     try {
       return call.getOperand(1).getValue(Type.class);
     } catch (Exception e) {

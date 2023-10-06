@@ -26,7 +26,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
   }
 
   @Override
-  public Type getReturnType(final Call call) {
+  public Type inferReturnType(final Call call) {
 
     if (call.getOperandCount() == 0)
       return UnknownType.UNKNOWN;

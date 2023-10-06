@@ -30,7 +30,7 @@ public class ExplicitReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public Type getReturnType(Call call) {
+  public Type inferReturnType(Call call) {
     return type;
   }
 }

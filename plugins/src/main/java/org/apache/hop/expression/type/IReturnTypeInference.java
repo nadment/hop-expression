@@ -27,7 +27,7 @@ public interface IReturnTypeInference {
    * Infers the return data type of a call to an {@link Operator}.
    * 
    * @param call
-   * @return
+   * @return type
    */
-  public Type getReturnType(Call call);
+  public Type inferReturnType(Call call);
 }

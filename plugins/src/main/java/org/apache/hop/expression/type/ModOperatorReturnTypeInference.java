@@ -28,7 +28,7 @@ public class ModOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public Type getReturnType(Call call) {
+  public Type inferReturnType(Call call) {
     Type x = call.getOperand(0).getType();
     Type y = call.getOperand(1).getType();
 
