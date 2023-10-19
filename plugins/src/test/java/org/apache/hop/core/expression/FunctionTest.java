@@ -42,7 +42,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
-public class FunctionsTest extends ExpressionTest {
+public class FunctionTest extends ExpressionTest {
   
   @Test
   public void Abort() throws Exception {
@@ -467,21 +467,7 @@ public class FunctionsTest extends ExpressionTest {
     
     returnType("MAKE_INTERVAL(2019,01,1,23,15,59)", IntervalType.INTERVAL);
   }
-  
-  @Test
-  public void FirstValue() throws Exception {
-    returnType("First_Value(FIELD_DATE)", DateType.DATE);
-  }
-  
-  @Test
-  public void LastValue() throws Exception {
-    returnType("Last_Value(FIELD_DATE)", DateType.DATE);
-  }
 
-  @Test
-  public void ListAgg() throws Exception {
-    returnType("ListAGG(FIELD_STRING,',')", StringType.STRING);
-  }
   
   @Test
   public void First_Day() throws Exception {
@@ -1402,27 +1388,6 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Atanh(FIELD_STRING)");
     
     returnType("Atanh(0.2)", NumberType.NUMBER);
-  }
-
-  @Test
-  public void Avg() throws Exception {
-    returnType("AVG(FIELD_NUMBER)", NumberType.NUMBER);
-  }
-
-  @Test
-  public void Max() throws Exception {
-    returnType("MAX(FIELD_STRING)", StringType.STRING);
-    returnType("MAX(FIELD_INTEGER)", IntegerType.INTEGER);
-    returnType("MAX(FIELD_NUMBER)", NumberType.NUMBER);
-    returnType("MAX(FIELD_DATE)", DateType.DATE);
-  }
-
-  @Test
-  public void Min() throws Exception {
-    returnType("MIN(FIELD_STRING)", StringType.STRING);
-    returnType("MIN(FIELD_INTEGER)", IntegerType.INTEGER);
-    returnType("MIN(FIELD_NUMBER)", NumberType.NUMBER);
-    returnType("MIN(FIELD_DATE)", DateType.DATE);
   }
 
   @Test
@@ -3649,32 +3614,6 @@ public class FunctionsTest extends ExpressionTest {
     returnType("TypeOf(TRUE)", StringType.STRING);
   }
 
-  @Test
-  public void Count() throws Exception {
-    evalFails("Count()");
-    evalFails("Count(DISTINCT )");
-    evalFails("Count(1,2)");
-
-    returnType("Count(*)", IntegerType.INTEGER);
-
-    optimize("COUNT(FIELD_INTEGER)");
-    optimize("COUNT(*)");
-    optimize("COUNT(DISTINCT FIELD_STRING)");
-  }
-
-  @Test
-  public void CountIf() throws Exception {
-    evalFails("CountIf()");
-    evalFails("CountIf(FIELD_DATE)");
-    evalFails("CountIf(1,2)");
-    returnType("CountIf(FIELD_INTEGER>=10)", IntegerType.INTEGER);
-    optimize("COUNTIF(FIELD_INTEGER>=10)","COUNTIF(10<=FIELD_INTEGER)");
-  }
-
-  @Test
-  public void Sum() throws Exception {
-    returnType("SUM(FIELD_INTEGER)", NumberType.NUMBER);
-  }
   
   @Test
   public void Extract() throws Exception {

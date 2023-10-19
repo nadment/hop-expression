@@ -16,6 +16,9 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
 import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.operator.FirstValueFunction;
+import org.apache.hop.expression.operator.LastValueFunction;
+import org.apache.hop.expression.operator.NthValueFunction;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -114,6 +117,17 @@ public class ExpressionParser {
       return true;
     }
     return false;
+  }
+
+  protected boolean isThenNext(final Id... ids) {
+    for (Id id : ids) {
+      if (hasNext() && tokens.get(index).is(id)) {
+        index++;
+        continue;
+      }
+      return false;
+    }
+    return true;
   }
 
   protected boolean isNotThenNext(final Id id) {
@@ -395,23 +409,14 @@ public class ExpressionParser {
   }
 
   /** Literal String */
-  private Literal parseLiteralString(Token token) {
+  private IExpression parseLiteralString(Token token) {
     return Literal.of(token.text());
   }
 
   /** Literal Json */
   private IExpression parseLiteralJson(Token token) throws ExpressionException {
-
     return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
         Literal.of(JsonType.JSON));
-    //
-    // try {
-    // ObjectMapper objectMapper =
-    // JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
-    // return Literal.of(objectMapper.readTree(token.text()));
-    // } catch (Exception e) {
-    // throw new ExpressionException(token.start(), ExpressionError.INVALID_JSON, token.text());
-    // }
   }
 
   /**
@@ -421,7 +426,7 @@ public class ExpressionParser {
   private IExpression parsePrimary() throws ExpressionException {
     IExpression expression = this.parseTerm();
     if (isThenNext(Id.CAST)) {
-      Literal type = parseLiteralDataType(next());
+      IExpression type = parseLiteralDataType(next());
       return new Call(Operators.CAST, expression, type);
     }
     if (isThenNext(Id.AT)) {
@@ -547,7 +552,7 @@ public class ExpressionParser {
     return expression;
   }
 
-  private Literal parseLiteralNumericDecimal(Token token) throws ExpressionException {
+  private IExpression parseLiteralNumericDecimal(Token token) throws ExpressionException {
     BigDecimal number = NumberFormat.of("TM").parse(token.text());
     try {
       return Literal.of(number.longValueExact());
@@ -556,7 +561,7 @@ public class ExpressionParser {
     }
   }
 
-  private Literal parseLiteralBinary(Token token) throws ExpressionException {
+  private IExpression parseLiteralBinary(Token token) throws ExpressionException {
     try {
       String str = token.text();
       if (str.length() % 2 > 0)
@@ -574,9 +579,9 @@ public class ExpressionParser {
     }
   }
 
-  private Literal parseLiteralNumericHexa(Token token) {
-    String str = token.text();
-    BigInteger value = new BigInteger(str.substring(2), 16);
+  private IExpression parseLiteralNumericHexa(Token token) {
+    String str = token.text().substring(2);
+    BigInteger value = new BigInteger(str, 16);
     try {
       return Literal.of(value.longValueExact());
     } catch (ArithmeticException e) {
@@ -584,9 +589,9 @@ public class ExpressionParser {
     }
   }
 
-  private Literal parseLiteralNumericOctal(Token token) {
-    String str = token.text();
-    BigInteger value = new BigInteger(str.substring(2), 8);
+  private IExpression parseLiteralNumericOctal(Token token) {
+    String str = token.text().substring(2);
+    BigInteger value = new BigInteger(str, 8);
     try {
       return Literal.of(value.longValueExact());
     } catch (ArithmeticException e) {
@@ -594,9 +599,9 @@ public class ExpressionParser {
     }
   }
 
-  private Literal parseLiteralNumericBinary(Token token) {
-    String str = token.text();
-    BigInteger value = new BigInteger(str.substring(2), 2);
+  private IExpression parseLiteralNumericBinary(Token token) {
+    String str = token.text().substring(2);
+    BigInteger value = new BigInteger(str, 2);
     try {
       return Literal.of(value.longValueExact());
     } catch (ArithmeticException e) {
@@ -608,10 +613,9 @@ public class ExpressionParser {
    * Parses a date literal.
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
-  private Literal parseLiteralDate(Token token) throws ExpressionException {
+  private IExpression parseLiteralDate(Token token) throws ExpressionException {
 
-    // return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
-    // Literal.of(DateType.DATE));
+     // return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(DateType.DATE), Literal.of("FXYYYY-MM-DD"));
 
     // Literal date use exact mode
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
@@ -629,7 +633,7 @@ public class ExpressionParser {
    * 
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
-  private Literal parseLiteralTimestamp(Token token) throws ExpressionException {
+  private IExpression parseLiteralTimestamp(Token token) throws ExpressionException {
     try {
       String pattern;
       String str = token.text();
@@ -826,7 +830,7 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse function POSITION(<expression> IN <expression>)
+   * Parse POSITION(expression IN expression)
    */
   private IExpression parseFunctionPosition(Token token, final Function function)
       throws ExpressionException {
@@ -849,40 +853,79 @@ public class ExpressionParser {
   }
 
   /**
-   * FIRST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
-   * LAST_VALUE(<expression> [ IGNORE NULLS | RESPECT NULLS ] )
+   * Parse <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
    */
-  private IExpression parseFunctionFirstLastValue(Token token, final Function function)
+  private IExpression parseFunctionFirstValue(Token token, Function function)
       throws ExpressionException {
 
-    List<IExpression> operands = new ArrayList<>();
-    operands.add(this.parseLogicalOr());
-
-
-    if (isThenNext(Id.IGNORE)) {
-      if (isThenNext(Id.NULLS)) {
-        operands.add(Literal.TRUE);
-      } else
-        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_FUNCTION,
-            function.getName());
-    } else if (isThenNext(Id.RESPECT)) {
-
-      // Default respect null, no operand
-
-      if (isNotThenNext(Id.NULLS)) {
-        throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_FUNCTION,
-            function.getName());
-      }
-    }
+    IExpression operand = this.parseLogicalOr();
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
     }
 
+    // NULL treatment clause
+    if (isThenNext(Id.IGNORE, Id.NULLS)) {
+      function = FirstValueFunction.FIRST_VALUE_IGNORE_NULLS;
+    } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
+      function = FirstValueFunction.FIRST_VALUE_RESPECT_NULLS;
+    }
+
+    return new Call(function, operand);
+  }
+
+  /**
+   * Parse <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
+   */
+  private IExpression parseFunctionLastValue(Token token, Function function)
+      throws ExpressionException {
+
+    IExpression operand = this.parseLogicalOr();
+
+    if (isNotThenNext(Id.RPARENTHESIS)) {
+      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
+    }
+
+    // NULL treatment clause
+    if (isThenNext(Id.IGNORE, Id.NULLS)) {
+      function = LastValueFunction.LAST_VALUE_IGNORE_NULLS;
+    } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
+      function = LastValueFunction.LAST_VALUE_RESPECT_NULLS;
+    } 
+    
+    return new Call(function, operand);
+  }
+  
+  /**
+   * Parse <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code>
+   */
+  private IExpression parseFunctionNthValue(Token token, Function function)
+      throws ExpressionException {
+
+    List<IExpression> operands = new ArrayList<>();
+    operands.add(this.parseLogicalOr());
+    
+    if (isNotThenNext(Id.COMMA)) {
+      throw new ExpressionException(getPosition(), ExpressionError.SYNTAX_ERROR_FUNCTION,
+          function.getName());
+    }
+    operands.add(this.parseLogicalOr());
+    
+    if (isNotThenNext(Id.RPARENTHESIS)) {
+      throw new ExpressionException(token.end(), ExpressionError.MISSING_LEFT_PARENTHESIS);
+    }
+    
+    // NULL treatment clause
+    if (isThenNext(Id.IGNORE, Id.NULLS)) {
+      function = NthValueFunction.NTH_VALUE_IGNORE_NULLS;
+    } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
+      function = NthValueFunction.NTH_VALUE_RESPECT_NULLS;
+    } 
+    
     return new Call(function, operands);
   }
 
-  /** EXTRACT(<part> FROM <expression>) */
+  /** EXTRACT(part FROM expression) */
   private IExpression parseFunctionExtract(Token token, final Function function)
       throws ExpressionException {
 
@@ -905,7 +948,7 @@ public class ExpressionParser {
   }
 
   /**
-   * COUNT(*) | COUNT([DISTINCT] <expression>)
+   * COUNT(*) | COUNT([DISTINCT] expression)
    */
   private IExpression parseFunctionCount(Token token, Function function)
       throws ExpressionException {
@@ -931,7 +974,7 @@ public class ExpressionParser {
   }
 
   /**
-   * LISTAGG([DISTINCT] <expression> [, delimiter] )
+   * LISTAGG([DISTINCT] expression [, delimiter] )
    */
   private IExpression parseFunctionListAgg(Token token, final Function function)
       throws ExpressionException {
@@ -959,7 +1002,7 @@ public class ExpressionParser {
     return new Call(aggregator, operands);
   }
 
-  /** JSON_OBJECT([KEY] <key> VALUE <expression> [, [KEY] <key> VALUE <expression>]...) */
+  /** JSON_OBJECT([KEY] key VALUE expression [, [KEY] key VALUE expression]...) */
   private IExpression parseFunctionJsonObject(Token token, final Function function)
       throws ExpressionException {
 
@@ -1020,8 +1063,11 @@ public class ExpressionParser {
       case "COUNT":
         return parseFunctionCount(token, function);
       case "FIRST_VALUE":
+        return this.parseFunctionFirstValue(token, function);
       case "LAST_VALUE":
-        return this.parseFunctionFirstLastValue(token, function);
+        return this.parseFunctionLastValue(token, function);
+      case "NTH_VALUE":
+        return this.parseFunctionNthValue(token, function);
       case "LISTAGG":
         return this.parseFunctionListAgg(token, function);
       case "JSON_OBJECT":
@@ -1050,16 +1096,15 @@ public class ExpressionParser {
     return new Call(token.start(), function, operands);
   }
 
-  private Literal parseLiteralTimeUnit(Token token) throws ExpressionException {
+  private IExpression parseLiteralTimeUnit(Token token) throws ExpressionException {
     TimeUnit unit = TimeUnit.of(token.text());
-
     if (unit == null) {
       throw new ExpressionException(token.start(), ExpressionError.INVALID_TIMEUNIT, token.text());
     }
     return Literal.of(unit);
   }
 
-  private Literal parseLiteralInterval(Token token) throws ExpressionException {
+  private IExpression parseLiteralInterval(Token token) throws ExpressionException {
 
     boolean negative = false;
     Token value = next();
@@ -1077,17 +1122,17 @@ public class ExpressionParser {
 
     Token start = next();
     startUnit = TimeUnit.of(start.text());
-    
+
     // Verbose format
     if (startUnit == null) {
       previous();
-      
+
       Interval interval = Interval.valueOf(value.text());
       return Literal.of(interval);
     }
 
     // Short format with qualifier
-    
+
 
     String text = value.text();
     if (value.is(Id.LITERAL_STRING)) {
@@ -1099,7 +1144,7 @@ public class ExpressionParser {
         endUnit = TimeUnit.of(end.text());
       }
 
-      if ( text.length()>0 && text.charAt(0)=='-' ) {
+      if (text.length() > 0 && text.charAt(0) == '-') {
         negative = true;
         text = text.substring(1);
       }
@@ -1119,7 +1164,7 @@ public class ExpressionParser {
     return Literal.of(interval);
   }
 
-  private Literal parseLiteralDataType(Token token) throws ExpressionException {
+  private IExpression parseLiteralDataType(Token token) throws ExpressionException {
 
     TypeName name = TypeName.of(token.text());
     if (name != null) {

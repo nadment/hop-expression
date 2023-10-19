@@ -20,19 +20,23 @@ Returns the first value in an ordered set of values over a group of rows.
 
 == Syntax
 ----
-FIRST_VALUE( expression [ IGNORE NULLS | RESPECT NULLS ] )
+FIRST_VALUE( expression ) [ IGNORE NULLS | RESPECT NULLS ]
 ----
 
 Return:: The data type of the returned value is the same as the data type of the input values.
 
 == Usage
 
-* If the first value in the set is null, then the function returns NULL unless you specify IGNORE NULLS.
+* If the first value in the set is null, then the function returns NULL unless you specify `IGNORE NULLS`.
+
+* If `IGNORE NULLS` or `RESPECT NULLS` is not specified, the default is `RESPECT NULLS`
 
 NOTE: This is an analytic function that should only be used in the Aggregate transformation.
+
 == Example
 
 ----
-FIRST_VALUE( City IGNORE NULLS )
+FIRST_VALUE( City ) IGNORE NULLS
 ----
 
+See also xref:last_value.adoc[LAST_VALUE], xref:nth_value.adoc[NTH_VALUE]

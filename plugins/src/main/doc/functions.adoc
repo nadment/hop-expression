@@ -146,6 +146,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/months_between.adoc[MONTHS_BETWEEN]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/next_day.adoc[NEXT_DAY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/normalize.adoc[NORMALIZE]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nth_value.adoc[NTH_VALUE] aggregate
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullif.adoc[NULLIF]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/nullifzero.adoc[NULLIFZERO]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/numberformat.adoc[NUMBERFORMAT]

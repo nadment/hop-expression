@@ -19,33 +19,44 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.io.StringWriter;
 
 /**
  * Returns the last value over a group of rows.
+ * <p>
+ * <code>LAST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
+ * <p>
+ * The default is RESPECT NULLS.
  */
 @FunctionPlugin
 public class LastValueFunction extends AggregateFunction {
+  public static final LastValueFunction LAST_VALUE_RESPECT_NULLS = new LastValueFunction(false);
+  public static final LastValueFunction LAST_VALUE_IGNORE_NULLS = new LastValueFunction(true);
+
+  private final boolean ignoreNulls;
 
   public LastValueFunction() {
-    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY.or(OperandTypes.ANY_BOOLEAN),
-        "/docs/last_value.html");
+    this(false);
+  }
+
+  public LastValueFunction(boolean ignoreNulls) {
+    super("LAST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/last_value.html");
+    this.ignoreNulls = ignoreNulls;
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    boolean ignoreNull = false;
+    return (ignoreNulls) ? new LastValueIgnoreNullsProcessor()
+        : new LastValueRespectNullsProcessor();
+  }
 
-    if (operands.length == 2) {
-      try {
-        ignoreNull = operands[1].getValue(Boolean.class);
-      } catch (ExpressionException e) {
-        // Ignore
-      }
+  @Override
+  public void unparse(StringWriter writer, IExpression[] operands) {
+    super.unparse(writer, operands);
+    if (ignoreNulls) {
+      writer.append(" IGNORE NULLS");
     }
-
-    return new LastValueProcessor(ignoreNull);
   }
 }

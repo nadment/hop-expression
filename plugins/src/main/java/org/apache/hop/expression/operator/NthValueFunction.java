@@ -24,41 +24,42 @@ import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 
 /**
- * Returns the first value over a group of rows.
+ * Returns the nth value over a group of rows.
  * <p>
- * <code>FIRST_VALUE(expression) [ IGNORE NULLS | RESPECT NULLS ]</code>
+ * <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code>
  * <p>
  * The default is RESPECT NULLS.
  */
 @FunctionPlugin
-public class FirstValueFunction extends AggregateFunction {
-
-  public static final FirstValueFunction FIRST_VALUE_RESPECT_NULLS = new FirstValueFunction(false);
-  public static final FirstValueFunction FIRST_VALUE_IGNORE_NULLS = new FirstValueFunction(true);
-
+public class NthValueFunction extends AggregateFunction {
+  public static final NthValueFunction NTH_VALUE_RESPECT_NULLS = new NthValueFunction(false);
+  public static final NthValueFunction NTH_VALUE_IGNORE_NULLS = new NthValueFunction(true);
+  
   private final boolean ignoreNulls;
-
-  public FirstValueFunction() {
+  
+  public NthValueFunction() {
     this(false);
   }
-
-  public FirstValueFunction(boolean ignoreNulls) {
-    super("FIRST_VALUE", ReturnTypes.ARG0, OperandTypes.ANY, "/docs/first_value.html");
-
+  
+  public NthValueFunction(boolean ignoreNulls) {
+    super("NTH_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_NUMERIC,
+        "/docs/nth_value.html");
+    
     this.ignoreNulls = ignoreNulls;
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    return (ignoreNulls) ? new FirstValueIgnoreNullsProcessor()
-        : new FirstValueRespectNullsProcessor();
+     Long offset = operands[1].getValue(Long.class);
+     return (ignoreNulls) ? new NthValueIgnoreNullsProcessor(offset)
+         : new NthValueRespectNullsProcessor(offset);
   }
-
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     super.unparse(writer, operands);
-    if (ignoreNulls) {
-      writer.append(" IGNORE NULLS");
+    if ( ignoreNulls ) {
+      writer.append(" IGNORE NULLS");  
     }
   }
 }

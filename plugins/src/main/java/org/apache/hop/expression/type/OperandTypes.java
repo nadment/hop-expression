@@ -97,6 +97,7 @@ public final class OperandTypes {
 
   public static final IOperandTypeChecker ANY = family(TypeFamily.ANY);
   public static final IOperandTypeChecker ANY_BOOLEAN = family(TypeFamily.ANY, TypeFamily.BOOLEAN);
+  public static final IOperandTypeChecker ANY_NUMERIC = family(TypeFamily.ANY, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker ANY_ANY = family(TypeFamily.ANY, TypeFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY =
       family(TypeFamily.ANY, TypeFamily.ANY, TypeFamily.ANY);

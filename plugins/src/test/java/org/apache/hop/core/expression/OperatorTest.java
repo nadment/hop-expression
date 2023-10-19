@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-public class OperatorsTest extends ExpressionTest {
+public class OperatorTest extends ExpressionTest {
 
   @Test
   public void EqualTo() throws Exception {

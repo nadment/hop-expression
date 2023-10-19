@@ -17,27 +17,20 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 
-public class FirstValueProcessor implements IExpressionProcessor {
+public class LastValueIgnoreNullsProcessor implements IExpressionProcessor {
 
-  private final boolean ignoreNull;
-  private boolean set = false;
   private Object value = null;
 
-  public FirstValueProcessor(boolean ignoreNull) {
-    this.ignoreNull = ignoreNull;
+  public LastValueIgnoreNullsProcessor() {
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (set)
-      return;
-
     Object v = operands[0].getValue();
 
-    if (!this.ignoreNull || v != null) {
+    if (v != null) {
       value = v;
-      set = true;
     }
   }
 

@@ -173,36 +173,40 @@ public class IntervalTest extends ExpressionTest {
   }
 
   @Test
-  public void intervalQualifierTimeUnit() throws Exception {
+  public void intervalQualifierStartUnit() throws Exception {
     assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR.getStartUnit());
-    assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR.getEndUnit());
     assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR_TO_MONTH.getStartUnit());
-    assertEquals(TimeUnit.MONTH, IntervalQualifier.YEAR_TO_MONTH.getEndUnit());
     assertEquals(TimeUnit.QUARTER, IntervalQualifier.QUARTER.getStartUnit());
-    assertEquals(TimeUnit.QUARTER, IntervalQualifier.QUARTER.getEndUnit());
     assertEquals(TimeUnit.MONTH, IntervalQualifier.MONTH.getStartUnit());
-    assertEquals(TimeUnit.MONTH, IntervalQualifier.MONTH.getEndUnit());
     assertEquals(TimeUnit.WEEK, IntervalQualifier.WEEK.getStartUnit());
-    assertEquals(TimeUnit.WEEK, IntervalQualifier.WEEK.getEndUnit());
     assertEquals(TimeUnit.DAY, IntervalQualifier.DAY.getStartUnit());
-    assertEquals(TimeUnit.DAY, IntervalQualifier.DAY.getEndUnit());
     assertEquals(TimeUnit.DAY, IntervalQualifier.DAY_TO_HOUR.getStartUnit());
-    assertEquals(TimeUnit.HOUR, IntervalQualifier.DAY_TO_HOUR.getEndUnit());
     assertEquals(TimeUnit.DAY, IntervalQualifier.DAY_TO_MINUTE.getStartUnit());
-    assertEquals(TimeUnit.MINUTE, IntervalQualifier.DAY_TO_MINUTE.getEndUnit());
     assertEquals(TimeUnit.DAY, IntervalQualifier.DAY_TO_SECOND.getStartUnit());
-    assertEquals(TimeUnit.SECOND, IntervalQualifier.DAY_TO_SECOND.getEndUnit());
     assertEquals(TimeUnit.HOUR, IntervalQualifier.HOUR.getStartUnit());
-    assertEquals(TimeUnit.HOUR, IntervalQualifier.HOUR.getEndUnit());
     assertEquals(TimeUnit.HOUR, IntervalQualifier.HOUR_TO_MINUTE.getStartUnit());
-    assertEquals(TimeUnit.MINUTE, IntervalQualifier.HOUR_TO_MINUTE.getEndUnit());
     assertEquals(TimeUnit.HOUR, IntervalQualifier.HOUR_TO_SECOND.getStartUnit());
-    assertEquals(TimeUnit.SECOND, IntervalQualifier.HOUR_TO_SECOND.getEndUnit());
     assertEquals(TimeUnit.MINUTE, IntervalQualifier.MINUTE.getStartUnit());
-    assertEquals(TimeUnit.MINUTE, IntervalQualifier.MINUTE.getEndUnit());
     assertEquals(TimeUnit.MINUTE, IntervalQualifier.MINUTE_TO_SECOND.getStartUnit());
+    assertEquals(TimeUnit.SECOND, IntervalQualifier.SECOND.getStartUnit());    
+  }
+  
+  @Test
+  public void intervalQualifierEndUnit() throws Exception {    
+    assertEquals(TimeUnit.YEAR, IntervalQualifier.YEAR.getEndUnit());
+    assertEquals(TimeUnit.MONTH, IntervalQualifier.YEAR_TO_MONTH.getEndUnit());
+    assertEquals(TimeUnit.QUARTER, IntervalQualifier.QUARTER.getEndUnit());
+    assertEquals(TimeUnit.MONTH, IntervalQualifier.MONTH.getEndUnit());
+    assertEquals(TimeUnit.WEEK, IntervalQualifier.WEEK.getEndUnit());
+    assertEquals(TimeUnit.DAY, IntervalQualifier.DAY.getEndUnit());
+    assertEquals(TimeUnit.HOUR, IntervalQualifier.DAY_TO_HOUR.getEndUnit());
+    assertEquals(TimeUnit.MINUTE, IntervalQualifier.DAY_TO_MINUTE.getEndUnit());
+    assertEquals(TimeUnit.SECOND, IntervalQualifier.DAY_TO_SECOND.getEndUnit());
+    assertEquals(TimeUnit.HOUR, IntervalQualifier.HOUR.getEndUnit());
+    assertEquals(TimeUnit.MINUTE, IntervalQualifier.HOUR_TO_MINUTE.getEndUnit());
+    assertEquals(TimeUnit.SECOND, IntervalQualifier.HOUR_TO_SECOND.getEndUnit());
+    assertEquals(TimeUnit.MINUTE, IntervalQualifier.MINUTE.getEndUnit());
     assertEquals(TimeUnit.SECOND, IntervalQualifier.MINUTE_TO_SECOND.getEndUnit());
-    assertEquals(TimeUnit.SECOND, IntervalQualifier.SECOND.getStartUnit());
     assertEquals(TimeUnit.SECOND, IntervalQualifier.SECOND.getEndUnit());
   }
 

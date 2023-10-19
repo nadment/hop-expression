@@ -17,25 +17,20 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
 
-/** Returns the number of input values. Null values are not counted. */
-public class CountIfProcessor implements IExpressionProcessor {
+public class LastValueRespectNullsProcessor implements IExpressionProcessor {
 
-  private long count;
+  private Object value = null;
 
-  public CountIfProcessor() {
-    count = 0L;
+  public LastValueRespectNullsProcessor() {
   }
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-    Boolean predicat = operands[0].getValue(Boolean.class);
-    if (predicat==Boolean.TRUE) {
-      count++;
-    }
+   value = operands[0].getValue();
   }
 
   @Override
   public Object getValue() throws Exception {
-    return Long.valueOf(count);
+    return value;
   }
 }

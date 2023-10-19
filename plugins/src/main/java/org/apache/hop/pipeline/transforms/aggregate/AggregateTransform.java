@@ -56,7 +56,6 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
     super(transformMeta, meta, data, copyNr, pipelineMeta, pipeline);
   }
 
-
   public Date convertToDate(final Object value) {
     if (value == null) {
       return null;
