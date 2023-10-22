@@ -68,7 +68,7 @@ public class IsNumberFunction extends Function {
       return Boolean.FALSE;
     
     try {
-      NumberType.convert(value);
+      NumberType.convertStringToNumber(value);
       return Boolean.TRUE;
     } catch (Exception e) {
       return Boolean.FALSE;

@@ -43,6 +43,33 @@ public final class StringType extends Type {
   }
 
   @Override
+  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    if (clazz == Boolean.class) {
+      return clazz.cast(BooleanType.convertStringToBoolean((String) value));
+    }
+    if (clazz == Long.class) {
+      return clazz.cast(IntegerType.convertStringToInteger((String) value));
+    }
+    if (clazz == BigDecimal.class) {
+      return clazz.cast(NumberType.convertStringToNumber((String) value));
+    }
+    if (clazz == byte[].class) {
+      return clazz.cast(BinaryType.convertStringToBinary((String) value));
+    }
+    if (clazz == JsonNode.class) {
+      return clazz.cast(JsonType.convertStringToJson((String) value));
+    }
+    
+    return super.convert(value, clazz);
+  }
+  
+  @Override
   public String cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
@@ -73,7 +100,7 @@ public final class StringType extends Type {
       return str;
     }
     if (value instanceof Boolean) {
-      String result = convert((boolean) value);
+      String result = convertBooleanToString((boolean) value);
       if (checkPrecision(result)) {
         return result;
       }
@@ -132,10 +159,10 @@ public final class StringType extends Type {
       return (String) value;
     }
     if (value instanceof Boolean) {
-      return convert((boolean) value);
+      return convertBooleanToString((boolean) value);
     }
     if (value instanceof BigDecimal) {
-      return convert((BigDecimal) value);
+      return convertNumberToString((BigDecimal) value);
     }
     if (value instanceof byte[]) {
       return new String((byte[]) value, StandardCharsets.UTF_8);
@@ -144,15 +171,15 @@ public final class StringType extends Type {
     return String.valueOf(value);
   }
 
-  public static String convert(final boolean value) {
+  public static String convertBooleanToString(final boolean value) {
     return value ? "TRUE" : "FALSE";
   }
 
-  public static String convert(final BigDecimal value) throws ConversionException {
+  public static String convertNumberToString(final BigDecimal value) throws ConversionException {
     return NumberFormat.of("TM").format(value);
   }
 
-  public static String convert(final byte[] bytes) {
+  public static String convertBinaryToString(final byte[] bytes) {
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
@@ -162,7 +189,7 @@ public final class StringType extends Type {
    * @param json the json to convert
    * @return String
    */
-  public static String convert(final JsonNode json) throws ConversionException {
+  public static String convertJsonToString(final JsonNode json) throws ConversionException {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);

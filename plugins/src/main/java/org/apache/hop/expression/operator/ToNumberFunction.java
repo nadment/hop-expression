@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.NumberFormat;
 
 /**
- * Converts a string expression to a number value.
+ * Converts a string expression to a number value with optional format.
  */
 @FunctionPlugin
 public class ToNumberFunction extends Function {

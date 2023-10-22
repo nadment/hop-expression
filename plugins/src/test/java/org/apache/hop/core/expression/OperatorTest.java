@@ -581,7 +581,8 @@ public class OperatorTest extends ExpressionTest {
     //evalEquals("DATE '2019-02-25'+TO_INTERVAL('10 4:0:0')", LocalDateTime.of(2019, 3, 7, 4, 0, 0));
     evalNull("NULL_DATE+INTERVAL 12 DAYS");
     evalNull("INTERVAL 12 DAYS+NULL_DATE");
-    evalNull("FIELD_DATE+TO_INTERVAL('z')");
+    
+    evalFails("FIELD_DATE+TO_INTERVAL('z')");
     
     // Adjust day to the end of month and leap year.
     evalEquals("DATE '2019-01-31'+INTERVAL 1 MONTH", LocalDate.of(2019, 2, 28));

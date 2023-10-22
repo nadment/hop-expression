@@ -22,7 +22,6 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.type.IOperandTypeChecker;
-import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.StringType;
@@ -60,7 +59,7 @@ public class StrtokFunction extends Function {
         return null;
 
       if (v1 instanceof Number) {
-        index = IntegerType.coerce(v1).intValue();
+        index = ((Number) v1).intValue();
       } else {
         delimiter = StringType.coerce(v1);
       }

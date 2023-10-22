@@ -30,6 +30,18 @@ public final class IntervalType extends Type {
   }
   
   @Override
+  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+       
+    return super.convert(value, clazz);
+  }
+  
+  @Override
   public Object cast(final Object value) throws ConversionException {
     return cast(value, null);
   }
@@ -48,4 +60,19 @@ public final class IntervalType extends Type {
     throw new ConversionException(
         ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
+  
+  /**
+   * Convert String value to Interval.
+   * 
+   * @param str the string to convert
+   * @return Interval
+   */
+  public static Interval convertStringToInterval(final String str) throws ConversionException {
+    if ( str==null) 
+      return null;
+    Interval value = Interval.valueOf(str);
+    if ( value==null)
+          throw new ConversionException(ExpressionError.INVALID_INTERVAL, str);
+    return value;
+   }
 }

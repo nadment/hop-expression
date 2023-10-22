@@ -30,17 +30,13 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
-import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Expression representing a named column in an input row.
@@ -109,7 +105,6 @@ public class Identifier implements IExpression {
 
   @Override
   public Object getValue() {
-    //IRowMeta rowMeta = context.getRowMeta();
     Object[] row = context.getRow();
     if (row == null) {
       throw new ExpressionException(position, ExpressionError.CONTEXT_ERROR);
@@ -160,19 +155,7 @@ public class Identifier implements IExpression {
       switch (valueMeta.getType()) {
         case IValueMeta.TYPE_BOOLEAN: {
           Boolean value = valueMeta.getBoolean(row[ordinal]);
-          if (value == null) {
-            return null;
-          }
-          if (clazz == Boolean.class) {
-            return clazz.cast(value);
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(value ? 1L : 0L);
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(value ? BigDecimal.ONE : BigDecimal.ZERO);
-          }
-          return clazz.cast(value ? "TRUE" : "FALSE");
+          return type.convert(value, clazz);
         }
 
         case IValueMeta.TYPE_TIMESTAMP: {
@@ -193,48 +176,12 @@ public class Identifier implements IExpression {
 
         case IValueMeta.TYPE_STRING: {
           String value = valueMeta.getString(row[ordinal]);
-          if (value == null) {
-            return null;
-          }
-          if (clazz == String.class) {
-            return clazz.cast(value);
-          }
-          if (clazz == Boolean.class) {
-            return clazz.cast(BooleanType.convert(value));
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(IntegerType.convert(value));
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(NumberType.convert(value));
-          }
-          if (clazz == byte[].class) {
-            return clazz.cast(BinaryType.convert(value));
-          }
-          if (clazz == JsonNode.class) {
-            return clazz.cast(JsonType.convert(value));
-          }
-          break;
+          return type.convert(value, clazz);
         }
 
         case IValueMeta.TYPE_INTEGER: {
           Long value = valueMeta.getInteger(row[ordinal]);
-          if (value == null) {
-            return null;
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(value);
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(BigDecimal.valueOf(value));
-          }
-          if (clazz == Boolean.class) {
-            return clazz.cast(value != 0);
-          }
-          if (clazz == String.class) {
-            return clazz.cast(String.valueOf(value));
-          }
-          break;
+          return type.convert(value, clazz);
         }
 
         case IValueMeta.TYPE_NUMBER: {
@@ -259,50 +206,17 @@ public class Identifier implements IExpression {
 
         case IValueMeta.TYPE_BIGNUMBER: {
           BigDecimal value = valueMeta.getBigNumber(row[ordinal]);
-          if (value == null) {
-            return null;
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(value);
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(value.longValue());
-          }
-          if (clazz == Boolean.class) {
-            return clazz.cast(value.unscaledValue() != BigInteger.ZERO);
-          }
-          if (clazz == String.class) {
-            return clazz.cast(NumberFormat.of("TM").format(value));
-          }
-          break;
+          return type.convert(value, clazz);
         }
 
         case ValueMetaJson.TYPE_JSON: {
           Object value = row[ordinal];
-          if (value == null) {
-            return null;
-          }
-          if (clazz.isInstance(value)) {
-            return clazz.cast(value);
-          }
-          if (clazz == String.class) {
-            return clazz.cast(StringType.convert((JsonNode) value));
-          }
-          break;
+          return type.convert(value, clazz);
         }
 
         case IValueMeta.TYPE_BINARY: {
           byte[] value = valueMeta.getBinary(row[ordinal]);
-          if (value == null) {
-            return null;
-          }
-          if (clazz == byte[].class) {
-            return clazz.cast(value);
-          }
-          if (clazz == String.class) {
-            return clazz.cast(new String(value, StandardCharsets.UTF_8));
-          }
-          break;
+          return type.convert(value, clazz);
         }
 
         default:

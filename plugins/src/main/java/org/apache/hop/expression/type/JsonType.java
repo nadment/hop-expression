@@ -34,6 +34,44 @@ public final class JsonType extends Type {
   public JsonType() {
     super(TypeName.JSON);
   }
+  
+  /**
+   * Coerce value to data type JSON
+   * 
+   * @param value the value to coerce
+   * @return String
+   */
+  public  static final JsonNode coerce(final Object value) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof JsonNode) {
+      return (JsonNode) value;
+    }
+    if (value instanceof String) {
+      return JsonType.convertStringToJson((String) value);
+    }
+
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.JSON);
+  }
+
+  
+  @Override
+  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
+
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    if (clazz == String.class) {
+      return clazz.cast(StringType.convertJsonToString((JsonNode) value));
+    }
+    
+    return super.convert(value, clazz);
+  }
 
   @Override
   public JsonNode cast(final Object value) throws ConversionException {
@@ -60,33 +98,11 @@ public final class JsonType extends Type {
     }
 
     if (value instanceof String) {
-      return convert((String) value);
+      return convertStringToJson((String) value);
     }
 
     throw new ConversionException(
         ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
-  }
-
-
-  /**
-   * Coerce value to data type JSON
-   * 
-   * @param value the value to coerce
-   * @return String
-   */
-  public static final JsonNode coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof JsonNode) {
-      return (JsonNode) value;
-    }
-    if (value instanceof String) {
-      return JsonType.convert((String) value);
-    }
-
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.JSON);
   }
 
   /**
@@ -95,7 +111,9 @@ public final class JsonType extends Type {
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode convert(final String str) throws ConversionException {
+  public static JsonNode convertStringToJson(final String str) throws ConversionException {
+    if ( str==null) 
+      return null;
     try {
       ObjectMapper objectMapper =
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();

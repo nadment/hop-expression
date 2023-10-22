@@ -34,6 +34,41 @@ public final class BinaryType extends Type {
   public BinaryType(int precision) {
     super(TypeName.BINARY, precision);
   }
+  
+  /**
+   * Coerce value to data type BINARY
+   * 
+   * @param value the value to coerce
+   * @return bytes array
+   */
+  public static final byte[] coerce(final Object value) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof byte[]) {
+      return (byte[]) value;
+    }
+    if (value instanceof String) {
+      return ((String) value).getBytes(StandardCharsets.UTF_8);
+    }
+
+    throw new ConversionException(
+        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.BINARY);
+  }
+  
+  @Override
+  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+    if (value == null)
+      return null;
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }    
+    if (clazz == String.class) {
+      return clazz.cast(StringType.convertBinaryToString((byte[]) value));
+    }
+    
+    return super.convert(value, clazz);
+  }
 
   @Override
   public byte[] cast(final Object value) throws ConversionException {
@@ -66,28 +101,7 @@ public final class BinaryType extends Type {
         ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 
-  /**
-   * Coerce value to data type BINARY
-   * 
-   * @param value the value to coerce
-   * @return bytes array
-   */
-  public static final byte[] coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof byte[]) {
-      return (byte[]) value;
-    }
-    if (value instanceof String) {
-      return ((String) value).getBytes(StandardCharsets.UTF_8);
-    }
-
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.BINARY);
-  }
-
-  public static byte[] convert(Long number) throws ConversionException {
+  public static byte[] convertIntegerToBinary(Long number) throws ConversionException {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
       result[i] = (byte) (number & 0xFF);
@@ -96,7 +110,7 @@ public final class BinaryType extends Type {
     return result;
   }
 
-  public static byte[] convert(final String str) throws ConversionException {
+  public static byte[] convertStringToBinary(final String str) throws ConversionException {
     return str.getBytes(StandardCharsets.UTF_8);
   }
 }

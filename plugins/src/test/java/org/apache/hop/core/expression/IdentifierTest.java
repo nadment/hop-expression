@@ -120,7 +120,7 @@ public class IdentifierTest extends ExpressionTest {
   }
   
   @Test
-  public void coercion() throws Exception {
+  public void coercionValueMetaInet() throws Exception {
       // Unsupported value meta
       evalFails("UPPER(FIELD_INET)");
   }

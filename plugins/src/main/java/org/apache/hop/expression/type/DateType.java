@@ -34,6 +34,18 @@ public final class DateType extends Type {
   }
 
   @Override
+  public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+       
+    return super.convert(value, clazz);
+  }
+  
+  @Override
   public ZonedDateTime cast(final Object value) throws ConversionException {
     return cast(value, null);
   }

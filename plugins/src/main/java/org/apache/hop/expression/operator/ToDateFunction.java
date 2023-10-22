@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /**
- * Converts a string expression to a date value.
+ * Converts a string expression to a date value with optional format.
  */
 @FunctionPlugin
 public class ToDateFunction extends Function {

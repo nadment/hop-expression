@@ -18,25 +18,15 @@ package org.apache.hop.expression;
 
 import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
-import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.NumberType;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
-import org.apache.hop.expression.util.NumberFormat;
 import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
@@ -44,9 +34,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public final class Call implements IExpression {
 
   protected Type type = UnknownType.UNKNOWN;
-  // The position of this expression in the source before compilation else 0.  
+  // The position of this expression in the source before compilation else 0.
   protected final int position;
-  
+
   protected final Operator operator;
   protected final IExpression[] operands;
 
@@ -57,7 +47,7 @@ public final class Call implements IExpression {
   public Call(Operator operator, Collection<IExpression> operands) {
     this(0, operator, operands);
   }
-  
+
   public Call(int position, Operator operator, IExpression... operands) {
     this.operator = requireNonNull(operator, "operator");
     this.operands = requireNonNull(operands, "operands");
@@ -100,7 +90,7 @@ public final class Call implements IExpression {
   public int getPosition() {
     return position;
   }
-  
+
   /**
    * Get the operator
    *
@@ -136,146 +126,17 @@ public final class Call implements IExpression {
     try {
       return operator.eval(operands);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator,
-          e.getMessage());
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator, e.getMessage());
     }
   }
 
   @Override
-  public <T> T getValue(Class<T> clazz) {
+  public <T> T getValue(final Class<T> clazz) {
     try {
       Object value = operator.eval(operands);
-
-      if (clazz.isInstance(value)) {
-        return clazz.cast(value);
-      }
-
-      if (value == null)
-        return null;
-
-      switch (type.getName()) {
-
-        case BOOLEAN:
-          if (clazz == String.class) {
-            return clazz.cast(String.valueOf(value));
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(((boolean) value) ? 1L : 0L);
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
-          }
-          break;
-
-        case STRING:
-          if (clazz == Boolean.class) {
-            return clazz.cast(BooleanType.convert((String) value));
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(IntegerType.convert((String) value));
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(NumberType.convert((String) value));
-          }
-          if (clazz == byte[].class) {
-            return clazz.cast(BinaryType.convert((String) value));
-          }
-          if (clazz == JsonNode.class) {
-            return clazz.cast(JsonType.convert((String) value));
-          }
-          break;
-
-        case INTEGER:
-          if (clazz == Boolean.class) {
-            return clazz.cast(((Long) value) != 0);
-          }
-          if (clazz == BigDecimal.class) {
-            return clazz.cast(BigDecimal.valueOf((Long) value));
-          }
-          if (clazz == String.class) {
-            return clazz.cast(String.valueOf(value));
-          }
-          break;
-
-        case NUMBER:
-          if (clazz == Boolean.class) {
-            return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
-          }
-          if (clazz == Long.class) {
-            return clazz.cast(((BigDecimal) value).longValue());
-          }
-          if (clazz == String.class) {
-            return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
-          }
-          break;
-
-        case BINARY:
-          if (clazz == String.class) {
-            return clazz.cast(StringType.convert((byte[]) value));
-          }
-          break;
-
-        case JSON:
-          if (clazz == String.class) {
-            return clazz.cast(JsonType.convert((String) value));
-          }
-          break;
-
-        case ANY:
-          // JSon function return type ANY
-          if (value instanceof String) {
-            if (clazz == Boolean.class) {
-              return clazz.cast(BooleanType.convert((String) value));
-            }
-            if (clazz == Long.class) {
-              return clazz.cast(IntegerType.convert((String) value));
-            }
-            if (clazz == BigDecimal.class) {
-              return clazz.cast(NumberType.convert((String) value));
-            }
-            if (clazz == byte[].class) {
-              return clazz.cast(BinaryType.convert((String) value));
-            }
-            if (clazz == JsonNode.class) {
-              return clazz.cast(JsonType.convert((String) value));
-            }
-          }
-          if (value instanceof BigDecimal) {
-            if (clazz == Boolean.class) {
-              return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
-            }
-            if (clazz == Long.class) {
-              return clazz.cast(((BigDecimal) value).longValue());
-            }
-            if (clazz == String.class) {
-              return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
-            }
-          }
-          if (value instanceof Boolean) {
-            if (clazz == String.class) {
-              return clazz.cast(String.valueOf(value));
-            }
-            if (clazz == Long.class) {
-              return clazz.cast(((boolean) value) ? 1L : 0L);
-            }
-            if (clazz == BigDecimal.class) {
-              return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
-            }
-          }
-
-          break;
-        case DATE:
-        case SYMBOL:
-        case UNKNOWN:
-        default:
-          break;
-      }
-
-      throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value,
-          TypeName.from(value), TypeName.from(clazz));
+      return type.convert(value, clazz);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator.getName(),
-          e.getMessage());
+      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator, e.getMessage());
     }
   }
 
@@ -312,11 +173,11 @@ public final class Call implements IExpression {
     // Inference type
     this.type = operator.getReturnTypeInference().inferReturnType(this);
   }
-  
+
   /**
    * Compile and optimize the call in the context
    * 
-   * @param context The context against which the expression will be compiled. 
+   * @param context The context against which the expression will be compiled.
    * @return the compiled expression
    */
   public IExpression compile(final IExpressionContext context) throws ExpressionException {

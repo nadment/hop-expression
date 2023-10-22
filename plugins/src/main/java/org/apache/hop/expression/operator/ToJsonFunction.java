@@ -35,16 +35,12 @@ public class ToJsonFunction extends Function {
   }
 
   protected ToJsonFunction(String id) {
-    super(id, ReturnTypes.JSON, OperandTypes.STRING,
-        Category.CONVERSION, "/docs/to_json.html");
+    super(id, ReturnTypes.JSON, OperandTypes.STRING, Category.CONVERSION, "/docs/to_json.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
-
-    return JsonType.JSON.cast(value, null);
+    return JsonType.convertStringToJson(value);
   }
 }

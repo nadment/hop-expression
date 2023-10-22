@@ -17,6 +17,7 @@
 package org.apache.hop.expression.type;
 
 import static java.util.Objects.requireNonNull;
+import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.exception.ConversionException;
@@ -150,6 +151,19 @@ public abstract class Type {
     return builder.toString();
   }
 
+  /**
+   * Convert a value from this data type to the specified Java type.
+   *
+   * @param value the value to convert
+   * @param clazz Desired Java type 
+   * @return the converted value
+   * @throws ConversionException if the casting fail
+   */
+  public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value,
+        TypeName.from(value), TypeName.from(clazz));
+  }
+  
   /**
    * Convert a value to the specified {@link Type}.
    *

@@ -22,6 +22,7 @@ import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.exception.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 public final class NumberType extends Type {
@@ -45,7 +46,29 @@ public final class NumberType extends Type {
   public NumberType(int precision, int scale) {
     super(TypeName.NUMBER, precision, scale);
   }
+  
+  @Override
+  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    if (clazz == Boolean.class) {
+      return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
+    }
+    if (clazz == Long.class) {
+      return clazz.cast(((BigDecimal) value).longValue());
+    }
+    if (clazz == String.class) {
+      return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
+    }
+    
+    return super.convert(value, clazz);
+  }
+  
   @Override
   public BigDecimal cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -93,11 +116,11 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
-      return convert((String) value);
+      return convertStringToNumber((String) value);
 
     }
     if (value instanceof byte[]) {
-      return convert((byte[]) value);
+      return convertBinaryToNumber((byte[]) value);
     }
 
     throw new ConversionException (
@@ -137,13 +160,13 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
-      return convert((String) value);
+      return convertStringToNumber((String) value);
     }
     throw new ConversionException(
         ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.NUMBER);
   }
 
-  public static final BigDecimal convert(final String str) throws ConversionException {
+  public static final BigDecimal convertStringToNumber(final String str) throws ConversionException {
     try {
       return FORMAT.parse(str);
     } catch (ParseNumberException e) {
@@ -152,7 +175,7 @@ public final class NumberType extends Type {
     }
   }
 
-  public static BigDecimal convert(final byte[] bytes) throws ConversionException {
+  public static BigDecimal convertBinaryToNumber(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
           ExpressionError.CONVERSION_ERROR, bytes, TypeName.BINARY, TypeName.NUMBER);

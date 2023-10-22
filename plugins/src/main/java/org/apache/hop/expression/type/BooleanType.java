@@ -19,6 +19,7 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.exception.ConversionException;
+import java.math.BigDecimal;
 
 public final class BooleanType extends Type {
 
@@ -28,7 +29,47 @@ public final class BooleanType extends Type {
     super(TypeName.BOOLEAN, PRECISION_NOT_SPECIFIED);
   }
 
+  /**
+   * Coerce value to data type BOOLEAN
+   * 
+   * @param value the value to coerce
+   * @return Boolean
+   */
+  public static final Boolean coerce(final Object value) throws ConversionException {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Boolean) {
+      return (Boolean) value;
+    }
+    if (value instanceof Number) {
+      return ((Number) value).intValue() != 0;
+    }
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value),
+        TypeName.BOOLEAN);
+  }
+  
+  @Override
+  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
+    if (value == null)
+      return null;
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    if (clazz == String.class) {
+      return clazz.cast((boolean)value ? "TRUE":"FALSE");
+    }
+    if (clazz == Long.class) {
+      return clazz.cast(((boolean) value) ? 1L : 0L);
+    }
+    if (clazz == BigDecimal.class) {
+      return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
+    }
+    
+    return super.convert(value, clazz);
+  }
+  
   @Override
   public Boolean cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -56,34 +97,14 @@ public final class BooleanType extends Type {
       return number.intValue() != 0;
     }
     if (value instanceof String) {
-      return convert((String) value);
+      return convertStringToBoolean((String) value);
     }
 
     throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
         TypeName.from(value), this);
   }
 
-  /**
-   * Coerce value to data type BOOLEAN
-   * 
-   * @param value the value to coerce
-   * @return Boolean
-   */
-  public static final Boolean coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof Boolean) {
-      return (Boolean) value;
-    }
-    if (value instanceof Number) {
-      return ((Number) value).intValue() != 0;
-    }
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value),
-        TypeName.BOOLEAN);
-  }
-
-  public static final Boolean convert(final String str) throws ConversionException {
+  public static final Boolean convertStringToBoolean(final String str) throws ConversionException {
     switch (str.length()) {
       case 1:
         if (str.equals("1") || str.equalsIgnoreCase("t") || str.equalsIgnoreCase("y")) {

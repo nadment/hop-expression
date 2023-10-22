@@ -29,7 +29,6 @@ import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -162,92 +161,7 @@ public final class Literal implements IExpression {
 
   @Override
   public <T> T getValue(final Class<T> clazz) {
-
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
-
-    if (value == null)
-      return null;
-
-    switch (type.getName()) {
-
-      case BOOLEAN:
-        if (clazz == String.class) {
-          return clazz.cast(String.valueOf(value));
-        }
-        if (clazz == Long.class) {
-          return clazz.cast(((boolean) value) ? 1L : 0L);
-        }
-        if (clazz == BigDecimal.class) {
-          return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
-        }
-        break;
-
-      case STRING:
-        if (clazz == Boolean.class) {
-          return clazz.cast(BooleanType.convert((String) value));
-        }
-        if (clazz == Long.class) {
-          return clazz.cast(IntegerType.convert((String) value));
-        }
-        if (clazz == BigDecimal.class) {
-          return clazz.cast(NumberType.convert((String) value));
-        }
-        if (clazz == byte[].class) {
-          return clazz.cast(BinaryType.convert((String) value));
-        }
-        if (clazz == JsonNode.class) {
-          return clazz.cast(JsonType.convert((String) value));
-        }
-        break;
-
-      case INTEGER:
-        if (clazz == BigDecimal.class) {
-          return clazz.cast(BigDecimal.valueOf((Long) value));
-        }
-        if (clazz == Boolean.class) {
-          return clazz.cast(((Long) value) != 0);
-        }
-        if (clazz == String.class) {
-          return clazz.cast(String.valueOf(value));
-        }
-        break;
-
-      case NUMBER:
-        if (clazz == Boolean.class) {
-          return clazz.cast(((BigDecimal) value).unscaledValue() != BigInteger.ZERO);
-        }
-        if (clazz == Long.class) {
-          return clazz.cast(((BigDecimal) value).longValue());
-        }
-        if (clazz == String.class) {
-          return clazz.cast(StringType.convert((BigDecimal) value));
-        }
-        break;
-
-      case BINARY:
-        if (clazz == String.class) {
-          return clazz.cast(StringType.convert((byte[]) value));
-        }
-        break;
-
-      case JSON:
-        if (clazz == String.class) {
-          return clazz.cast(JsonType.convert((String) value));
-        }
-        break;
-
-      case DATE:
-      case ANY:
-      case UNKNOWN:
-      case SYMBOL:
-      default:
-        break;
-    }
-
-    throw new ExpressionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value),
-        TypeName.from(clazz));
+    return type.convert(value, clazz);
   }
 
   @Override
@@ -306,7 +220,7 @@ public final class Literal implements IExpression {
   }
 
   @Override
-  public void unparse(StringWriter writer) {
+  public void unparse(final StringWriter writer) {
 
     if (value == null) {
       writer.append("NULL");
@@ -331,7 +245,7 @@ public final class Literal implements IExpression {
           writer.append(((Long) value).toString());
           break;
         case NUMBER:
-          writer.append(StringType.convert((BigDecimal) value));
+          writer.append(StringType.convertNumberToString((BigDecimal) value));
           break;
         case BINARY:
           writer.append("BINARY '");

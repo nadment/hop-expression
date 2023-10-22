@@ -20,7 +20,7 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
@@ -38,9 +38,6 @@ public class ToIntervalFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
-
-    return Interval.valueOf(value);
+    return IntervalType.convertStringToInterval(value);  
   }
 }

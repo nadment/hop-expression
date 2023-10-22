@@ -32,6 +32,58 @@ public final class IntegerType extends Type {
     super(TypeName.INTEGER, precision, 0);
   }
 
+  /**
+   * Coerce value to data type INTEGER
+   * 
+   * @param value the value to coerce
+   * @return Long
+   */
+  public  static final Long coerce(final Object value) throws ConversionException {   
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Long) {
+      return (Long) value;
+    }
+    if (value instanceof Number) {
+      return ((Number) value).longValue();
+    }
+    if (value instanceof String) {
+      return IntegerType.convertStringToInteger((String) value);
+    }
+    // if (value instanceof Boolean) {
+    // return ((boolean) value) ? 1L : 0L;
+    // }
+    // if (value instanceof byte[]) {
+    // return toInteger((byte[]) value);
+    // }
+
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value,
+        TypeName.from(value), TypeName.INTEGER);
+  }
+  
+  @Override
+  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
+
+    if (value == null) {
+      return null;
+    }
+    if (clazz.isInstance(value)) {
+      return clazz.cast(value);
+    }
+    if (clazz == Boolean.class) {
+      return clazz.cast(((Long) value) != 0);
+    }
+    if (clazz == BigDecimal.class) {
+      return clazz.cast(BigDecimal.valueOf((Long) value));
+    }
+    if (clazz == String.class) {
+      return clazz.cast(String.valueOf(value));
+    }
+    
+    return super.convert(value, clazz);
+  }
+  
   @Override
   public Long cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -55,47 +107,17 @@ public final class IntegerType extends Type {
       return ((boolean) value) ? 1L : 0L;
     }
     if (value instanceof String) {
-      return convert((String) value);
+      return convertStringToInteger((String) value);
     }
     if (value instanceof byte[]) {
-      return convert((byte[]) value);
+      return convertBinaryToInteger((byte[]) value);
     }
 
     throw new ConversionException(
         ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
   }
 
-  /**
-   * Coerce value to data type INTEGER
-   * 
-   * @param value the value to coerce
-   * @return Long
-   */
-  public static final Long coerce(final Object value) throws ConversionException {
-    if (value == null) {
-      return null;
-    }
-    if (value instanceof Long) {
-      return (Long) value;
-    }
-    if (value instanceof Number) {
-      return ((Number) value).longValue();
-    }
-    if (value instanceof String) {
-      return IntegerType.convert((String) value);
-    }
-    // if (value instanceof Boolean) {
-    // return ((boolean) value) ? 1L : 0L;
-    // }
-    // if (value instanceof byte[]) {
-    // return toInteger((byte[]) value);
-    // }
-
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value,
-        TypeName.from(value), TypeName.INTEGER);
-  }
-
-  public static final Long convert(final String str) throws ConversionException {
+  public static final Long convertStringToInteger(final String str) throws ConversionException {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
@@ -104,7 +126,7 @@ public final class IntegerType extends Type {
     }
   }
 
-  public static Long convert(final byte[] bytes) throws ConversionException {
+  public static final Long convertBinaryToInteger(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(
           ExpressionError.CONVERSION_ERROR, TypeName.BINARY, bytes, TypeName.INTEGER);

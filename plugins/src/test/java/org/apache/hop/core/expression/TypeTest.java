@@ -106,7 +106,7 @@ public class TypeTest extends ExpressionTest {
     
     assertEquals(TypeName.JSON, TypeName.of("Json"));
     assertEquals(TypeName.JSON, TypeName.from(JsonNode.class));
-    assertEquals(TypeName.JSON, TypeName.from(JsonType.convert("{\"name\":\"Smith\"}")));
+    assertEquals(TypeName.JSON, TypeName.from(JsonType.convertStringToJson("{\"name\":\"Smith\"}")));
     
     assertEquals(TypeName.INTEGER, TypeName.of("INTEGER"));
     assertEquals(TypeName.INTEGER, TypeName.from(Long.class));
@@ -240,6 +240,21 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
+  public void convertFromBoolean() throws Exception {
+    BooleanType type = BooleanType.BOOLEAN;
+    assertNull(type.convert(null, Boolean.class));
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.TRUE, type.convert(true, Boolean.class));
+    assertEquals("TRUE", type.convert(true, String.class));
+    assertEquals(Long.valueOf(1), type.convert(true, Long.class));
+    assertEquals(BigDecimal.ONE, type.convert(true, BigDecimal.class));
+    assertEquals(BigDecimal.ZERO, type.convert(false, BigDecimal.class));
+    assertThrows(ConversionException.class, () -> type.convert(true, ZonedDateTime.class));
+  }
+  
+  @Test
   public void coerceToBinary() throws Exception {
     assertNull(BinaryType.coerce(null));
     assertThrows(ConversionException.class, () -> BinaryType.coerce(true));
@@ -307,6 +322,20 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
+  public void convertFromString() throws Exception {
+    StringType type = StringType.STRING;
+    assertNull(type.convert(null, Boolean.class));
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.TRUE, type.convert("True", Boolean.class));
+    assertEquals("Test", type.convert("Test", String.class));
+    assertEquals(Long.valueOf(123), type.convert("123", Long.class));
+    assertEquals(BigDecimal.ONE, type.convert("1", BigDecimal.class));
+    assertThrows(ConversionException.class, () -> type.convert(true, ZonedDateTime.class));
+  }
+  
+  @Test
   public void coerceToInteger() throws Exception {
     assertNull(IntegerType.coerce(null));
     assertEquals(Long.valueOf(1L), IntegerType.coerce(1));
@@ -338,11 +367,25 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(-5L), type.cast("-5.2"));
     assertEquals(Long.valueOf(15L), type.cast(new byte[] {0xF}));
   }
-
+  
   @Test
-  public void coerceToBigNumber() throws Exception {
-    assertNull(NumberType.coerce(null));
+  public void convertFromInteger() throws Exception {
+    IntegerType type = IntegerType.INTEGER;
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, BigDecimal.class));
+    assertNull(type.convert(null, String.class));
 
+    assertEquals(Boolean.FALSE, type.convert(0L, Boolean.class));
+    assertEquals(Boolean.TRUE, type.convert(1L, Boolean.class));
+    assertEquals("123", type.convert(123L, String.class));
+    assertEquals(Long.valueOf(123), type.convert(123L, Long.class));
+    assertEquals(new BigDecimal("123"), type.convert(123L, BigDecimal.class));
+    assertThrows(ConversionException.class, () -> type.convert(123L, ZonedDateTime.class));
+  }
+  
+  @Test
+  public void coerceToNumber() throws Exception {
+    assertNull(NumberType.coerce(null));
     assertEquals(BigDecimal.ZERO, NumberType.coerce(0L));
     assertEquals(BigDecimal.ZERO, NumberType.coerce(0D));
     assertEquals(BigDecimal.ZERO, NumberType.coerce(BigDecimal.ZERO));
@@ -390,6 +433,21 @@ public class TypeTest extends ExpressionTest {
     assertThrows(ConversionException.class, () -> type.cast("TRUE"));
   }
 
+  @Test
+  public void convertFromNumber() throws Exception {
+    NumberType type = NumberType.NUMBER;
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, BigDecimal.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.FALSE, type.convert(BigDecimal.ZERO, Boolean.class));
+    assertEquals(Boolean.TRUE, type.convert(BigDecimal.ONE, Boolean.class));
+    assertEquals("-123.045", type.convert(new BigDecimal("-123.045"), String.class));
+    assertEquals(Long.valueOf(-123), type.convert(new BigDecimal("-123.045"), Long.class));
+    assertEquals(new BigDecimal("-123.045"), type.convert(new BigDecimal("-123.045"), BigDecimal.class));
+    assertThrows(ConversionException.class, () -> type.convert(new BigDecimal("-123.045"), ZonedDateTime.class));
+  }
+  
   @Test
   public void castToUnknown() throws Exception {
     UnknownType type = UnknownType.UNKNOWN;
