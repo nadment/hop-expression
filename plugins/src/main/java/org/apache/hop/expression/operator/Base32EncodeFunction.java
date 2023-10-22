@@ -21,10 +21,8 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.nio.charset.StandardCharsets;
 
 /**
  * The function encode the input (string or binary) using Base32 encoding.
@@ -42,15 +40,10 @@ public class Base32EncodeFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
+    byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return null;
 
-    if (value instanceof String) {
-      String str = (String) value;
-      return BASE32.encodeToString(str.getBytes(StandardCharsets.UTF_8));
-    }
-
-    return BASE32.encodeToString(BinaryType.coerce(value));
+    return BASE32.encodeToString(value);
   }
 }

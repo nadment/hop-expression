@@ -20,10 +20,8 @@ import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 
@@ -43,15 +41,10 @@ public class Base64EncodeFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Object value = operands[0].getValue();
+    byte[] value = operands[0].getValue(byte[].class);
     if (value == null)
       return null;
 
-    if (value instanceof String) {
-      String str = (String) value;
-      return ENCODER.encodeToString(str.getBytes(StandardCharsets.UTF_8));
-    }
-
-    return ENCODER.encodeToString(BinaryType.coerce(value));
+    return ENCODER.encodeToString(value);
   }
 }
