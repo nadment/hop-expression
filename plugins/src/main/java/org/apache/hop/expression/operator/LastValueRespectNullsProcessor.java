@@ -19,9 +19,10 @@ import org.apache.hop.expression.IExpressionProcessor;
 
 public class LastValueRespectNullsProcessor implements IExpressionProcessor {
 
-  private Object value = null;
+  private Object value;
 
   public LastValueRespectNullsProcessor() {
+    value = null;
   }
 
   @Override

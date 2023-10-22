@@ -295,8 +295,8 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(Literal.ONE, Literal.of(1L));
 
     // For internal use int.class are supported
-    assertEquals(Literal.ZERO, Literal.of(0L));
-    assertEquals(Literal.ONE, Literal.of(1L));
+    assertEquals(Literal.ZERO, Literal.of((int) 0));
+    assertEquals(Literal.ONE, Literal.of((int) 1));
 
     assertEquals("-123456", Literal.of(-123456L).toString());
 

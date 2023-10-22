@@ -32,17 +32,13 @@ import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  * Constant value in a expression.
  */
 public final class Literal implements IExpression {
-
-  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   /**
    * UNKNOWN literal is null value without known data type
@@ -125,11 +121,7 @@ public final class Literal implements IExpression {
     if (value instanceof Interval) {
       return new Literal(value, IntervalType.INTERVAL);
     }
-    
-    if (value instanceof JsonNode) {
-      return new Literal(value, JsonType.JSON);
-    }
-    
+
     // Special internal case TimeUnit, DataType, Random
     return new Literal(value, UnknownType.SYMBOL);
   }
@@ -239,7 +231,7 @@ public final class Literal implements IExpression {
           writer.append('\'');
           break;
         case BOOLEAN:
-          writer.append(((boolean) value) ? "TRUE" : "FALSE");
+          writer.append(StringType.convertBooleanToString((boolean) value));
           break;
         case INTEGER:
           writer.append(((Long) value).toString());
@@ -256,7 +248,6 @@ public final class Literal implements IExpression {
           writer.append('\'');
           break;
         case DATE: {
-          // ZonedDateTime datetime = ((LocalDateTime) value).atZone(ZoneId.systemDefault());
           ZonedDateTime datetime = (ZonedDateTime) value;
           int nano = datetime.getNano();
           if (nano > 0) {
@@ -300,21 +291,19 @@ public final class Literal implements IExpression {
           writer.append('\'');
           break;
         }
-        case INTERVAL:        
-        {
+        case INTERVAL: {
           Interval interval = (Interval) value;
-          IntervalQualifier qualifier =  IntervalQualifier.of(interval);
-          
-          if ( qualifier==null ) {
+          IntervalQualifier qualifier = IntervalQualifier.of(interval);
+
+          if (qualifier == null) {
             writer.append("INTERVAL '");
             writer.append(interval.toString());
-            writer.append("'");                      
-          }
-          else if ( qualifier.getStartUnit()==qualifier.getEndUnit() ) {
+            writer.append("'");
+          } else if (qualifier.getStartUnit() == qualifier.getEndUnit()) {
             writer.append("INTERVAL ");
             writer.append(interval.toString(qualifier));
             writer.append(' ');
-            writer.append(qualifier.toString());                      
+            writer.append(qualifier.toString());
           } else {
             writer.append("INTERVAL '");
             writer.append(interval.toString(qualifier));
@@ -324,13 +313,9 @@ public final class Literal implements IExpression {
           break;
         }
         case JSON:
-          try {
-            writer.append("JSON '");
-            writer.append(MAPPER.writeValueAsString(value));
-            writer.append('\'');
-          } catch (JsonProcessingException e) {
-            throw new RuntimeException("Unable to unparse json object ", e);
-          }
+          writer.append("JSON '");
+          writer.append(StringType.convertJsonToString((JsonNode) value));
+          writer.append('\'');
           break;
         case UNKNOWN:
           writer.append(String.valueOf(value));

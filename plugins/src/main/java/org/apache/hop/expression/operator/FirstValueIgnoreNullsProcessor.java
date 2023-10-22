@@ -19,10 +19,12 @@ import org.apache.hop.expression.IExpressionProcessor;
 
 public class FirstValueIgnoreNullsProcessor implements IExpressionProcessor {
 
-  private boolean set = false;
-  private Object value = null;
+  private boolean set;
+  private Object value;
 
   public FirstValueIgnoreNullsProcessor() {
+    set = false;
+    value = null;
   }
 
   @Override

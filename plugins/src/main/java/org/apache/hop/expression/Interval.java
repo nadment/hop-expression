@@ -981,7 +981,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         continue;
       }
 
-      int quantity = 0; // this.parseInt();
+      int quantity = 0;
       int start = index;
       while (index < length) {
         char ch = text.charAt(index);
@@ -994,8 +994,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         quantity += digit;
       }
 
-      if (index == start) {
-        // throw new ExpressionException(ExpressionError.INVALID_INTERVAL, text);
+      if (index == start) {     
         return null;
       }
 

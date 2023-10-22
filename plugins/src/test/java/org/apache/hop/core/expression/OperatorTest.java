@@ -1511,7 +1511,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("'give me 30% discount' like '%30!%%' escape '!!'");
     evalFails("'test' LIKE 'TEST' escape NULL");
     evalFails("'a' LIKE '%' ESCAPE NULL");
-       
+    
+    optimize("FIELD_STRING LIKE 'AD%D'");
     optimize("FIELD_STRING LIKE '%ADD!_%' ESCAPE '!'");
     optimize("FIELD_STRING LIKE '%'", "IFNULL(FIELD_STRING,NULL,TRUE)");
     optimize("FIELD_STRING LIKE 'Hello'", "'Hello'=FIELD_STRING");

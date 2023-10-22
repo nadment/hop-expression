@@ -31,8 +31,6 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 @FunctionPlugin
 public class ExpFunction extends Function {
 
-  // private static final Literal E = new Literal(BigDecimalMath.e(MATH_CONTEXT), NumberType.NUMBER);
-
   public ExpFunction() {
     super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/exp.html");
   }

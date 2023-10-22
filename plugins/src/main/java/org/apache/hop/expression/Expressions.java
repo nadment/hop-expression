@@ -29,6 +29,10 @@ import org.apache.hop.expression.type.TypeName;
 
 public class Expressions {
 
+  private Expressions() {
+    // Utility class
+  }
+  
   /* package */ static IExpression compile(final IExpressionContext context, IExpression expression)
       throws ExpressionException {
     IExpression original;
@@ -53,30 +57,9 @@ public class Expressions {
     } catch (ExpressionException e) {
       throw e;
     } catch (IllegalArgumentException e) {
-      //throw createException(parser.getSource(), parser.getPosition(), e);
       throw new ExpressionException(parser.getPosition(), ExpressionError.SYNTAX_ERROR, e.getMessage());
     }
   }
-
-//  protected static ParseExpressionException createException(String source, int offset, Exception e) {
-//    int line = 1;
-//    int column = 1;
-//    for (int index = 0; index < offset; index++) {
-//      char c = source.charAt(index);
-//      if (c == '\n' || c == '\r') {
-//        line++;
-//        column = 1;
-//      } else
-//        column++;
-//    }
-//    return new ExpressionException(ExpressionError.SYNTAX_ERROR, offset + 1, line, column,
-//        e.getMessage());
-//  }
-
-  private Expressions() {
-    // Utility class
-  }
-
 
 
   public static IValueMeta createValueMeta(final String name, final TypeName type) {
