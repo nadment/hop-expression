@@ -64,6 +64,16 @@ public class NotEqualOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Simplify TRUE<>x → X IS NOT TRUE
+    if (left.equals(Literal.TRUE)) {
+      return new Call(Operators.IS_NOT_TRUE, right);
+    }
+    
+    // Simplify FALSE<>x → X IS NOT FALSE
+    if (left.equals(Literal.FALSE)) {
+      return new Call(Operators.IS_NOT_FALSE, right);
+    }
+    
     // Simplify x!=x → NULL AND x IS NULL
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));

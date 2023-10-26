@@ -77,21 +77,20 @@ public class EqualOperator extends Operator {
       return Literal.NULL;
     }
 
-    // Simplify x=TRUE → x IS TRUE
+    // Simplify TRUE=x → x IS TRUE
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, right);
     }
-    if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, left);
-    }
 
-    // Simplify x=FALSE → x IS FALSE
+    // Simplify FALSE=x → x IS FALSE
     if (left.equals(Literal.FALSE)) {
       return new Call(Operators.IS_FALSE, right);
     }
-    if (right.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, left);
-    }
+    /*
+     * if (right.equals(Literal.FALSE)) {
+     * return new Call(Operators.IS_FALSE, left);
+     * }
+     */
 
     // Simplify 3=X+1 → 3-1=X
     if (left.isConstant() && right.is(Operators.ADD_NUMERIC) && right.asCall().getOperand(0).isConstant()) {

@@ -41,6 +41,10 @@ import java.util.Queue;
 
 /**
  * Logical disjunction <code>OR</code> operator.
+ * 
+ * <p>If any of the arguments are true, result is true;
+ * else if any arguments are null, result is null;
+ * else false.
  */
 public class BoolOrOperator extends Operator {
 
@@ -72,9 +76,8 @@ public class BoolOrOperator extends Operator {
       if ( call.getOperand(0).equals(call.getOperand(1).asCall().getOperand(0)) ) {
         return call.getOperand(1);
       }
-    }
-    
-    
+    }    
+
     // Remove duplicate
     // x OR x → x
     // x OR y OR x → x OR y

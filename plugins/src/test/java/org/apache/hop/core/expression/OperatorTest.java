@@ -140,7 +140,11 @@ public class OperatorTest extends ExpressionTest {
     evalFails("NOM <> ");
     evalFails("NOM!");
     evalFails("NOM ! ");
-    
+
+    optimize("FIELD_BOOLEAN_TRUE<>TRUE","FIELD_BOOLEAN_TRUE IS NOT TRUE");
+    optimize("TRUE<>FIELD_BOOLEAN_TRUE","FIELD_BOOLEAN_TRUE IS NOT TRUE");
+    optimize("FIELD_BOOLEAN_TRUE<>FALSE","FIELD_BOOLEAN_TRUE IS NOT FALSE");
+    optimize("FALSE<>FIELD_BOOLEAN_TRUE","FIELD_BOOLEAN_TRUE IS NOT FALSE");
     optimize("10!=FIELD_INTEGER");
     optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");
     optimize("FIELD_STRING!=FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
