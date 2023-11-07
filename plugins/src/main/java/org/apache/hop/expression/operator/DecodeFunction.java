@@ -16,13 +16,18 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Compares the select expression to each search expression in order. As soon as a search
@@ -35,7 +40,38 @@ public class DecodeFunction extends Function {
     super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, Category.CONDITIONAL,
         "/docs/decode.html");
   }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
+    // Simplify unreachable DECODE clauses
+    // DECODE(a, b, 1, c, 2, b, 3) → DECODE(a, b, 1, c, 2)
+    // DECODE(a, b, 1, c, 2, b, 3, 4) → DECODE(a, b, 1, c, 2, 4)     
+    
+    List<IExpression> operands = new ArrayList<>();
+    List<IExpression> searchs = new ArrayList<>();
+    
+    int count = ((call.getOperandCount() - 1) / 2) * 2;
+    
+    operands.add(call.getOperand(0));
+    
+    for (int i=1; i<count; i+=2 ) {
+      IExpression search  = call.getOperand(i);
+      if ( ! searchs.contains(search)) {
+        searchs.add(search);
+        operands.add(search);
+        operands.add(call.getOperand(i+1));        
+      }
+    }
+    
+    // Check type if function has a default value
+    if ((call.getOperandCount() - 1) > count ) {
+      operands.add(call.getOperand(call.getOperandCount()-1));
+    }
+    
+    return new Call(call.getOperator(), operands);
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();

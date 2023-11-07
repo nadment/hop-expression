@@ -339,6 +339,10 @@ public class FunctionsTest extends ExpressionTest {
     evalFails("Decode(1,2)");
     // Mixed type
     evalFails("Decode(AGE,1,'baby',20,false,true)");
+    
+    // Simplify unreachable DECODE clauses
+    optimize("DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,FIELD_INTEGER,3)","DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2)");
+    optimize("DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,FIELD_INTEGER,3,4)","DECODE(FIELD_NUMBER,FIELD_INTEGER,1,2,2,4)");   
   }
 
   @Test
