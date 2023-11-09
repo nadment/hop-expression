@@ -26,7 +26,6 @@ import java.math.RoundingMode;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.function.Predicate;
 
 /**
@@ -38,9 +37,8 @@ import java.util.function.Predicate;
  */
 public abstract class Operator implements Comparable<Operator> {
 
-
   /**
-   *  A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN HALF_EVEN}.
+   *  A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
@@ -306,11 +304,11 @@ public abstract class Operator implements Comparable<Operator> {
     return operands;
   }
 
-  protected Queue<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
+  protected Deque<IExpression> getChainedOperands(Call call, boolean allowDuplicate) {
     return getChainedOperands(call, new LinkedList<>(), allowDuplicate);
   }
 
-  private Queue<IExpression> getChainedOperands(Call call, Deque<IExpression> operands,
+  private Deque<IExpression> getChainedOperands(Call call, Deque<IExpression> operands,
       boolean allowDuplicate) {
     for (IExpression operand : call.getOperands()) {
       if (operand.is(call.getOperator())) {

@@ -51,25 +51,11 @@ public class Comparison {
     if (left instanceof byte[] || right instanceof byte[]) {
       return compareTo(BinaryType.coerce(left), BinaryType.coerce(right));
     }
-
     if (left instanceof JsonNode || right instanceof JsonNode) {
-
-      JsonNode l = JsonType.coerce(left);
-      JsonNode r = JsonType.coerce(right);
-
-      // Ignores the order of attributes
-      return l.equals(JSON_COMPARATOR, r) ? 0 : 1;
+      return compareTo(JsonType.coerce(left), JsonType.coerce(right));
     }
-
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
-      ZonedDateTime dt1 = DateType.coerce(left);
-      ZonedDateTime dt2 = DateType.coerce(right);
-      // Two timestamp are equal if they represent the same moment in time:
-      // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
-      if (dt1.isEqual(dt2)) {
-        return 0;
-      }
-      return dt1.compareTo(dt2);
+      return compareTo(DateType.coerce(left), DateType.coerce(right));
     }
     if (left instanceof BigDecimal || right instanceof BigDecimal) {
       return NumberType.coerce(left).compareTo(NumberType.coerce(right));
@@ -83,7 +69,25 @@ public class Comparison {
 
     return StringType.coerce(left).compareTo(StringType.coerce(right));
   }
-
+  
+  protected static int compareTo(final JsonNode left, final JsonNode right) {
+    // Ignores the order of attributes
+    return left.equals(JSON_COMPARATOR, right) ? 0 : 1;
+  }
+  
+  protected static int compareTo(final ZonedDateTime left, final ZonedDateTime right) {
+    // Two timestamp are equal if they represent the same moment in time:
+    // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
+    if (left.isEqual(right)) {
+      return 0;
+    }
+    return left.compareTo(right);
+  }
+  
+  protected static int compareTo(final String left, final String right) {
+    return left.compareTo(right);
+  }
+  
   protected static int compareTo(final byte[] left, final byte[] right) {
     int length = left.length < right.length ? left.length : right.length;
 

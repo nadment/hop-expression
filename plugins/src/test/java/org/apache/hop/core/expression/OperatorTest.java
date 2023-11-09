@@ -71,6 +71,11 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
     
+    // Interval
+    evalTrue("INTERVAL 1 YEARS = INTERVAL 12 MONTHS");
+    evalFalse("INTERVAL 3 YEARS = INTERVAL 3 MONTHS");
+    
+    
     // NULL is not equal ( = ) to anything not even to another NULL.
     evalNull("1 = NULL_INTEGER");
     evalFalse("NULL_BOOLEAN = true");
@@ -132,6 +137,10 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'UTC' <> Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'US/Pacific'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -8:00' <> Timestamp '2019-01-01 11:00:00 -5:00'");
     
+    // Interval
+    evalFalse("INTERVAL 1 YEARS <> INTERVAL 12 MONTHS");
+    evalTrue("INTERVAL 3 YEARS <> INTERVAL 3 MONTHS");
+    
     evalNull("NULL_STRING <> 'bar'");
     evalNull("'bar' <> NULL_STRING");
     evalNull("NULL_STRING <> NULL_STRING");
@@ -174,6 +183,9 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("DATE '2019-01-01' > DATE '2019-01-01'");
     evalFalse("DATE '2018-01-01' > DATE '2019-01-01'");
 
+    evalFalse("INTERVAL 3 DAYS > INTERVAL 3 MONTHS");
+    evalTrue("INTERVAL 3 YEARS > INTERVAL 3 MONTHS");
+    
     evalNull("NULL_BOOLEAN > 0");
     evalNull("NULL_INTEGER > 0");
     evalNull("NULL_NUMBER > NULL_INTEGER");
@@ -193,8 +205,6 @@ public class OperatorTest extends ExpressionTest {
     
     // Simplify comparison with same term
     optimize("FIELD_STRING>FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
-    
-    
     
     returnType("'bar' > 'foo'", BooleanType.BOOLEAN);
   }
@@ -220,6 +230,9 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("DATE '2019-01-01' >= DATE '2019-01-01'");
     evalFalse("DATE '2018-01-01' >= DATE '2019-01-01'");
 
+    evalFalse("INTERVAL 3 DAYS >= INTERVAL 3 MONTHS");
+    evalTrue("INTERVAL 3 YEARS >= INTERVAL 3 MONTHS");
+    
     evalNull("NULL_BOOLEAN >= 0");
     evalNull("1 >= NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN >= NULL_INTEGER");
@@ -266,7 +279,10 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("DATE '2019-01-01' < DATE '2019-02-01'");
     evalFalse("DATE '2019-01-01' < DATE '2019-01-01'");
     evalFalse("DATE '2019-01-01' < DATE '2018-01-01'");
-
+    
+    evalTrue("INTERVAL 3 DAYS < INTERVAL 3 MONTHS");
+    evalFalse("INTERVAL 3 YEARS < INTERVAL 3 MONTHS");
+    
     evalNull("NULL_INTEGER < 1");
     evalNull("NULL_NUMBER < NULL_INTEGER");
     evalNull("NULL_STRING < Upper(FIELD_STRING)");
@@ -310,6 +326,9 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("DATE '2019-01-01' <= DATE '2019-01-01'");
     evalFalse("DATE '2019-01-01' <= DATE '2018-01-01'");
 
+    evalTrue("INTERVAL 3 DAYS <= INTERVAL 3 MONTHS");
+    evalFalse("INTERVAL 3 YEARS <= INTERVAL 3 MONTHS");
+    
     evalNull("NULL_INTEGER <= FIELD_INTEGER");
     evalNull("FIELD_INTEGER <= NULL_INTEGER");
     evalNull("NULL_STRING <= Upper(FIELD_STRING)");

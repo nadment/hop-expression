@@ -392,7 +392,7 @@ public class ExpressionTest {
    // IntervalParser parser = new IntervalParser(" 5  days  3  minutes ");
    // assertEquals(new Interval(0, 0, 5), parser.parse());
 
-    evalFails("TO_INTERVAL('z')");
+    evalTrue("INTERVAL 3 DAYS < INTERVAL 3 MONTHS");
 
     
     //evalEquals("TypeOf(INTERVAL '3 years')", "INTERVAL");
