@@ -75,7 +75,7 @@ public class LessThanOrEqualOperator extends Operator {
     // Simplify x<=x → NULL OR x IS NOT NULL
     if (left.equals(right)) {
       return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
-    }    
+    }
     // Simplify x<=TRUE → x IS TRUE
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, right);
@@ -92,7 +92,8 @@ public class LessThanOrEqualOperator extends Operator {
     }
 
     // Simplify 3<=X+1 → 3-1<=X
-    if (left.isConstant() && right.is(Operators.ADD_NUMERIC) && right.asCall().getOperand(0).isConstant()) {
+    if (left.isConstant() && right.is(Operators.ADD_NUMERIC)
+        && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT_NUMERIC, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));

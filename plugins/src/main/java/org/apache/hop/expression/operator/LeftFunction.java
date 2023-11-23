@@ -36,6 +36,8 @@ import org.apache.hop.expression.type.TypeName;
  */
 @FunctionPlugin
 public class LeftFunction extends Function {
+  public static final LeftFunction LeftStringFunction = new LeftString();
+  public static final LeftFunction LeftBinaryFunction = new LeftBinary();
 
   public LeftFunction() {
     super("LEFT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
@@ -47,9 +49,63 @@ public class LeftFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeName.BINARY)) {
-      return new Call(LeftBinaryFunction.INSTANCE, call.getOperands());
+      return new Call(LeftBinaryFunction, call.getOperands());
     }
 
-    return new Call(LeftStringFunction.INSTANCE, call.getOperands());
+    return new Call(LeftStringFunction, call.getOperands());
+  }
+
+  /**
+   * The function extracts a number of characters from a string starting from left.
+   */
+  private static final class LeftString extends LeftFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String str = operands[0].getValue(String.class);
+      if (str == null)
+        return null;
+
+      Long v1 = operands[1].getValue(Long.class);
+      if (v1 == null)
+        return null;
+      int length = v1.intValue();
+      if (length < 0) {
+        length = 0;
+      }
+
+      if (str.length() <= length) {
+        return str;
+      }
+      return str.substring(0, length);
+    }
+  }
+
+  /**
+   * The function extracts a number of characters from a binary starting from left.
+   */
+  private static final class LeftBinary extends LeftFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] bytes = operands[0].getValue(byte[].class);
+      if (bytes == null)
+        return null;
+
+      Long v1 = operands[1].getValue(Long.class);
+      if (v1 == null)
+        return null;
+      int length = v1.intValue();
+      if (length < 0) {
+        length = 0;
+      }
+
+      if (bytes.length <= length) {
+        return bytes;
+      }
+
+      byte[] result = new byte[length];
+      System.arraycopy(bytes, 0, result, 0, length);
+      return result;
+
+    }
   }
 }

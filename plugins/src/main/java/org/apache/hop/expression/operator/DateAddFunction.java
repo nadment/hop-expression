@@ -75,5 +75,5 @@ public class DateAddFunction extends Function {
       default:
         throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
     }
-  }  
+  }
 }

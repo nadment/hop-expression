@@ -27,9 +27,9 @@ import org.apache.hop.expression.exception.ExpressionException;
  * Arithmetic unary minus (negative) operator '<code>-</code>'.
  */
 public class NegateIntervalOperator extends NegateOperator {
-  
+
   public static final NegateIntervalOperator INSTANCE = new NegateIntervalOperator();
-  
+
   public NegateIntervalOperator() {
     super();
   }
@@ -37,17 +37,17 @@ public class NegateIntervalOperator extends NegateOperator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
-    
+
     // Simplify arithmetic -(-(A)) → A
     if (operand.is(Operators.NEGATIVE)) {
       return operand.asCall().getOperand(0);
     }
 
     // Simplify arithmetic -(A-B) → B-A
-//    if (operand.is(Operators.SUBTRACT_NUMERIC)) {
-//      Call subtract = operand.asCall();
-//      return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
-//    }
+    // if (operand.is(Operators.SUBTRACT_NUMERIC)) {
+    // Call subtract = operand.asCall();
+    // return new Call(Operators.SUBTRACT_NUMERIC, subtract.getOperand(1), subtract.getOperand(0));
+    // }
 
     return call;
   }

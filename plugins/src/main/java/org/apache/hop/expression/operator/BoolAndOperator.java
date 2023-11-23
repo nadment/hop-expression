@@ -41,7 +41,8 @@ import java.util.Queue;
 /**
  * Logical conjunction <code>AND</code> operator.
  * 
- * <p>If any of the arguments are false, result is false;
+ * <p>
+ * If any of the arguments are false, result is false;
  * else if any arguments are null, result is null;
  * else true.
  */

@@ -35,9 +35,10 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 @FunctionPlugin
 public class PiFunction extends Function {
-  
-  public static final Literal PI =  new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER);
-  
+
+  public static final Literal PI =
+      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER);
+
   public PiFunction() {
     super("PI", ReturnTypes.NUMBER, OperandTypes.NILADIC, Category.MATHEMATICAL, "/docs/pi.html");
   }

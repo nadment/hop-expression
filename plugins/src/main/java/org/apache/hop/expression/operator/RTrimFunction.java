@@ -37,8 +37,8 @@ public class RTrimFunction extends Function {
   public static final RTrimFunction INSTANCE = new RTrimFunction();
 
   public RTrimFunction() {
-    super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING), Category.STRING,
-        "/docs/rtrim.html");
+    super("RTRIM", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        Category.STRING, "/docs/rtrim.html");
   }
 
   @Override

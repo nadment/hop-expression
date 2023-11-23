@@ -34,8 +34,8 @@ public class NormalizeFunction extends Function {
 
 
   public NormalizeFunction() {
-    super("NORMALIZE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING), Category.STRING,
-        "/docs/normalize.html");
+    super("NORMALIZE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        Category.STRING, "/docs/normalize.html");
   }
 
   @Override

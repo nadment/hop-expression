@@ -40,58 +40,57 @@ import org.apache.hop.expression.util.DateTimeFormat;
 public class IsDateFunction extends Function {
 
   public IsDateFunction() {
-    super("IS_DATE", ReturnTypes.BOOLEAN, OperandTypes.ANY_STRING,
-        Category.COMPARISON, "/docs/is_date.html");
+    super("IS_DATE", ReturnTypes.BOOLEAN, OperandTypes.ANY_STRING, Category.COMPARISON,
+        "/docs/is_date.html");
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-        
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.STRING) ) {
+
+    if (call.getOperand(0).getType().isSameFamily(TypeFamily.STRING)) {
       Object value = call.getOperand(1).getValue();
       if (value instanceof DateTimeFormat) {
         // format already compiled
         return call;
       }
-      
-      String pattern = StringType.coerce(value);      
+
+      String pattern = StringType.coerce(value);
       int twoDigitYearStart = Integer
           .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
       // Compile format to check it
       DateTimeFormat format = DateTimeFormat.of(pattern);
       format.setTwoDigitYearStart(twoDigitYearStart);
-      
+
       return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
     }
-    
+
     // Optimize "IS_DATE(d)" to "d IS NOT NULL"
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.TEMPORAL) ) {
+    if (call.getOperand(0).getType().isSameFamily(TypeFamily.TEMPORAL)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
-    
+
     // Other data type are always false
     return Literal.FALSE;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    
-    // Return FALSE if a value is NULL. 
+
+    // Return FALSE if a value is NULL.
     if (value == null)
       return Boolean.FALSE;
-    
+
     DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
-    
+
     try {
-      format.parse(value);     
-    }
-    catch(Exception e) {
+      format.parse(value);
+    } catch (Exception e) {
       return Boolean.FALSE;
     }
-    
+
     return Boolean.TRUE;
   }
 }

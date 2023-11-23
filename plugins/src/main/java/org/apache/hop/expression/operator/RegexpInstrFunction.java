@@ -37,9 +37,11 @@ public class RegexpInstrFunction extends Function {
 
   public RegexpInstrFunction() {
     super("REGEXP_INSTR", ReturnTypes.INTEGER,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC).or(
-        OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC_STRING), Category.STRING,
-        "/docs/regexp_instr.html");
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_NUMERIC_STRING),
+        Category.STRING, "/docs/regexp_instr.html");
   }
 
   @Override

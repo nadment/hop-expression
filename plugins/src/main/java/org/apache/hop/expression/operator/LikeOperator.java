@@ -54,8 +54,9 @@ public class LikeOperator extends Operator {
 
 
   public LikeOperator() {
-    super("LIKE", 120, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
-        Category.COMPARISON, "/docs/like.html");
+    super("LIKE", 120, true, ReturnTypes.BOOLEAN,
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), Category.COMPARISON,
+        "/docs/like.html");
   }
 
   /**
@@ -77,7 +78,7 @@ public class LikeOperator extends Operator {
       if (pattern == null)
         return new Literal(null, call.getType());
 
-      if (call.getOperandCount() == 3) {        
+      if (call.getOperandCount() == 3) {
         if (call.getOperand(2).isNull())
           return Literal.NULL;
 
@@ -87,26 +88,26 @@ public class LikeOperator extends Operator {
 
       // field LIKE '%' → IFNULL(field,NULL,TRUE)
       if ("%".equals(pattern)) {
-        //return new Call(Operators.IS_NOT_NULL, value);
+        // return new Call(Operators.IS_NOT_NULL, value);
         return new Call(Operators.IFNULL, value, Literal.NULL, Literal.TRUE);
       }
 
       // field LIKE '%foo%' → CONTAINS(field,'foo')
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(ContainsStringFunction.INSTANCE, value, Literal.of(search));
+        return new Call(ContainsFunction.ContainsString, value, Literal.of(search));
       }
 
       // field LIKE 'foo%' → STARTSWITH(field,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(StartsWithStringFunction.INSTANCE, value, Literal.of(search));
+        return new Call(StartsWithFunction.StartsWithString, value, Literal.of(search));
       }
 
       // field LIKE '%foo' → ENDSWITH(field,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(EndsWithStringFunction.INSTANCE, value, Literal.of(search));
+        return new Call(EndsWithFunction.EndsWithString, value, Literal.of(search));
       }
 
       // field LIKE 'Hello' → field='Hello'

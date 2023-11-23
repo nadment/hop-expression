@@ -34,7 +34,7 @@ import java.time.ZonedDateTime;
 @FunctionPlugin
 public class AddNanosecondsFunction extends Function {
   public static final Function INSTANCE = new AddNanosecondsFunction();
-  
+
   public AddNanosecondsFunction() {
     super("ADD_NANOSECONDS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_nanoseconds.html");
@@ -47,10 +47,10 @@ public class AddNanosecondsFunction extends Function {
     if (Literal.ZERO.equals(call.getOperand(1))) {
       return call.getOperand(0);
     }
-    
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);

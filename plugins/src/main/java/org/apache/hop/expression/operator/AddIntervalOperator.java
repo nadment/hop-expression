@@ -28,7 +28,7 @@ import java.time.ZonedDateTime;
  */
 public class AddIntervalOperator extends AddOperator {
   public static final AddIntervalOperator INSTANCE = new AddIntervalOperator();
-  
+
   public AddIntervalOperator() {
     super();
   }
@@ -38,16 +38,16 @@ public class AddIntervalOperator extends AddOperator {
 
     // Simplify arithmetic A+INTERVAL 0 → A
     IExpression operand = call.getOperand(1);
-    if (operand.isConstant() && !operand.isNull() ) {
-      Interval interval = operand.getValue(Interval.class);       
-      if ( interval.isZero() ) {
+    if (operand.isConstant() && !operand.isNull()) {
+      Interval interval = operand.getValue(Interval.class);
+      if (interval.isZero()) {
         return call.getOperand(0);
       }
     }
-    
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);

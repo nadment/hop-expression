@@ -38,6 +38,9 @@ import org.apache.hop.expression.type.TypeName;
 @FunctionPlugin
 public class StartsWithFunction extends Function {
 
+  public static final StartsWithFunction StartsWithString = new StartsWithString();
+  public static final StartsWithFunction StartsWithBinary = new StartsWithBinary();
+
   public StartsWithFunction() {
     super("STARTSWITH", ReturnTypes.BOOLEAN,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), Category.COMPARISON,
@@ -49,9 +52,57 @@ public class StartsWithFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeName.BINARY)) {
-      return new Call(StartsWithBinaryFunction.INSTANCE, call.getOperands());
+      return new Call(StartsWithBinary, call.getOperands());
     }
 
-    return new Call(StartsWithStringFunction.INSTANCE, call.getOperands());
+    return new Call(StartsWithString, call.getOperands());
+  }
+
+  /**
+   * The function returns TRUE if the first value starts with second value. Both values must be data
+   * type string or binary.
+   */
+  private static final class StartsWithString extends StartsWithFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+
+      String value = operands[0].getValue(String.class);
+      if (value == null)
+        return null;
+      String prefix = operands[1].getValue(String.class);
+      if (prefix == null)
+        return null;
+
+      return value.startsWith(prefix);
+    }
+  }
+
+  /**
+   * The function returns TRUE if the first value starts with second value. Both values must be data
+   * type binary.
+   */
+  private static final class StartsWithBinary extends StartsWithFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+
+      byte[] value = operands[0].getValue(byte[].class);
+      if (value == null)
+        return null;
+      byte[] prefix = operands[1].getValue(byte[].class);
+      if (prefix == null)
+        return null;
+
+      if (prefix.length > value.length) {
+        return Boolean.TRUE;
+      } else {
+        int end = prefix.length;
+        for (int i = 0; i < end; i++) {
+          if (value[i] != prefix[i]) {
+            return Boolean.FALSE;
+          }
+        }
+      }
+      return Boolean.TRUE;
+    }
   }
 }

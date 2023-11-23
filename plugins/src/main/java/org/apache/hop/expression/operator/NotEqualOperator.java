@@ -68,19 +68,20 @@ public class NotEqualOperator extends Operator {
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_NOT_TRUE, right);
     }
-    
+
     // Simplify FALSE<>x → X IS NOT FALSE
     if (left.equals(Literal.FALSE)) {
       return new Call(Operators.IS_NOT_FALSE, right);
     }
-    
+
     // Simplify x!=x → NULL AND x IS NULL
     if (left.equals(right)) {
       return new Call(Operators.BOOLAND, Literal.NULL, new Call(Operators.IS_NULL, left));
     }
 
     // Simplify 3!=X+1 → 3-1!=X
-    if (left.isConstant() && right.is(Operators.ADD_NUMERIC) && right.asCall().getOperand(0).isConstant()) {
+    if (left.isConstant() && right.is(Operators.ADD_NUMERIC)
+        && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
           new Call(Operators.SUBTRACT_NUMERIC, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));

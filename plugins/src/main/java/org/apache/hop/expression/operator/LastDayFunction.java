@@ -34,7 +34,8 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Returns the last day of the time unit.
  * 
- * The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH}, {@link TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
+ * The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH},
+ * {@link TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
  * 
  * @see {@link FirstDayFunction}
  */
@@ -44,8 +45,8 @@ public class LastDayFunction extends Function {
   private static final LastDayOfQuarter LastDayOfQuarter = new LastDayOfQuarter();
 
   public LastDayFunction() {
-    super("LAST_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT), Category.DATE,
-        "/docs/last_day.html");
+    super("LAST_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
+        Category.DATE, "/docs/last_day.html");
   }
 
   @Override

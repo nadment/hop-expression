@@ -34,32 +34,31 @@ import java.io.StringWriter;
 public class NthValueFunction extends AggregateFunction {
   public static final NthValueFunction NTH_VALUE_RESPECT_NULLS = new NthValueFunction(false);
   public static final NthValueFunction NTH_VALUE_IGNORE_NULLS = new NthValueFunction(true);
-  
+
   private final boolean ignoreNulls;
-  
+
   public NthValueFunction() {
     this(false);
   }
-  
+
   public NthValueFunction(boolean ignoreNulls) {
-    super("NTH_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_NUMERIC,
-        "/docs/nth_value.html");
-    
+    super("NTH_VALUE", ReturnTypes.ARG0, OperandTypes.ANY_NUMERIC, "/docs/nth_value.html");
+
     this.ignoreNulls = ignoreNulls;
   }
 
   @Override
   public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-     Long offset = operands[1].getValue(Long.class);
-     return (ignoreNulls) ? new NthValueIgnoreNullsProcessor(offset)
-         : new NthValueRespectNullsProcessor(offset);
+    Long offset = operands[1].getValue(Long.class);
+    return (ignoreNulls) ? new NthValueIgnoreNullsProcessor(offset)
+        : new NthValueRespectNullsProcessor(offset);
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     super.unparse(writer, operands);
-    if ( ignoreNulls ) {
-      writer.append(" IGNORE NULLS");  
+    if (ignoreNulls) {
+      writer.append(" IGNORE NULLS");
     }
   }
 }

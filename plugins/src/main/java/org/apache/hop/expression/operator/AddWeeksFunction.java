@@ -34,7 +34,7 @@ import java.time.ZonedDateTime;
 @FunctionPlugin
 public class AddWeeksFunction extends Function {
   public static final Function INSTANCE = new AddWeeksFunction();
-  
+
   public AddWeeksFunction() {
     super("ADD_WEEKS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_weeks.html");
@@ -47,10 +47,10 @@ public class AddWeeksFunction extends Function {
     if (Literal.ZERO.equals(call.getOperand(1))) {
       return call.getOperand(0);
     }
-    
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);

@@ -32,7 +32,8 @@ import java.time.temporal.IsoFields;
 public class QuarterFunction extends Function {
 
   public QuarterFunction() {
-    super("QUARTER", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/quarter.html");
+    super("QUARTER", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE,
+        "/docs/quarter.html");
   }
 
   @Override

@@ -34,7 +34,8 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * Returns the first day of the time unit.
  * 
- * The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH}, {@link TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
+ * The supported units of a time are {@link TimeUnit#YEAR}, {@link TimeoUnit#MONTH},
+ * {@link TimeoUnit#QUARTER}, {@link TimeoUnit#WEEK} and {@link TimeUnit#DAY}.
  * 
  * @see {@link LastDayFunction}
  */
@@ -43,8 +44,8 @@ public class FirstDayFunction extends Function {
   private static final FirstDayOfQuarter FirstDayOfQuarter = new FirstDayOfQuarter();
 
   public FirstDayFunction() {
-    super("FIRST_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT), Category.DATE,
-        "/docs/first_day.html");
+    super("FIRST_DAY", ReturnTypes.DATE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
+        Category.DATE, "/docs/first_day.html");
   }
 
   @Override

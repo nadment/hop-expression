@@ -32,7 +32,8 @@ import java.time.temporal.JulianFields;
 public class JulianDayFunction extends Function {
 
   public JulianDayFunction() {
-    super("JULIAN_DAY", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/julian_day.html");
+    super("JULIAN_DAY", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE,
+        "/docs/julian_day.html");
   }
 
   @Override
@@ -40,7 +41,7 @@ public class JulianDayFunction extends Function {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;
-    
+
     return value.getLong(JulianFields.JULIAN_DAY);
   }
 }

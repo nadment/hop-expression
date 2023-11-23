@@ -34,7 +34,8 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CschFunction extends Function {
 
   public CschFunction() {
-    super("CSCH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/csch.html");
+    super("CSCH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+        "/docs/csch.html");
   }
 
   @Override
@@ -42,10 +43,10 @@ public class CschFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return null;
-    
+
     if (value.signum() == 0)
       throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
-    
+
     return BigDecimal.ONE.divide(BigDecimalMath.sinh(value, MATH_CONTEXT), MathContext.DECIMAL128);
   }
 }

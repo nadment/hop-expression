@@ -27,12 +27,17 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * The function repeats a string or binary as many times as specified.
  */
 @FunctionPlugin
 public class RepeatFunction extends Function {
+
+  public static final RepeatFunction RepeatStringFunction = new RepeatString();
+  public static final RepeatFunction RepeatBinaryFunction = new RepeatBinary();
 
   public RepeatFunction() {
     super("REPEAT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
@@ -44,9 +49,58 @@ public class RepeatFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeName.BINARY)) {
-      return new Call(RepeatBinaryFunction.INSTANCE, call.getOperands());
+      return new Call(RepeatBinaryFunction, call.getOperands());
     }
 
-    return new Call(RepeatStringFunction.INSTANCE, call.getOperands());
+    return new Call(RepeatStringFunction, call.getOperands());
+  }
+
+
+  /**
+   * The function repeats a string as many times as specified.
+   */
+  private static final class RepeatString extends RepeatFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String value = operands[0].getValue(String.class);
+      if (value == null)
+        return null;
+      Long repeat = operands[1].getValue(Long.class);
+      if (repeat == null)
+        return null;
+      int count = repeat.intValue();
+
+      StringBuilder builder = new StringBuilder(value.length() * count);
+      while (count-- > 0) {
+        builder.append(value);
+      }
+      return builder.toString();
+    }
+  }
+
+  /**
+   * The function repeats a binary as many times as specified.
+   */
+  private static final class RepeatBinary extends RepeatFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] value = operands[0].getValue(byte[].class);
+      if (value == null)
+        return null;
+      Long repeat = operands[1].getValue(Long.class);
+      if (repeat == null)
+        return null;
+      int count = repeat.intValue();
+
+      try {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream(value.length * count);
+        for (int i = 0; i < count; i++) {
+          buffer.write(value);
+        }
+        return buffer.toByteArray();
+      } catch (IOException e) {
+        return null;
+      }
+    }
   }
 }

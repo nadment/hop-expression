@@ -29,8 +29,9 @@ import java.util.regex.Pattern;
 public class ILikeOperator extends Operator {
 
   public ILikeOperator() {
-    super("ILIKE", 120, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING),
-        Category.COMPARISON, "/docs/ilike.html");
+    super("ILIKE", 120, true, ReturnTypes.BOOLEAN,
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), Category.COMPARISON,
+        "/docs/ilike.html");
   }
 
   @Override

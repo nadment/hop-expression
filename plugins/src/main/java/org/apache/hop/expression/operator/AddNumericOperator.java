@@ -32,7 +32,7 @@ import java.math.BigDecimal;
  */
 public class AddNumericOperator extends AddOperator {
   public static final AddNumericOperator INSTANCE = new AddNumericOperator();
-  
+
   public AddNumericOperator() {
     super();
   }
@@ -46,18 +46,19 @@ public class AddNumericOperator extends AddOperator {
     if (Literal.ZERO.equals(left)) {
       return right;
     }
-    
+
     // Simplify arithmetic A+(-B) → A-B
     if (right.is(Operators.NEGATIVE)) {
       return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
     }
 
     // Pull up literal (1+A)+2 → 3+A
-    if (left.isConstant() && right.is(AddNumericOperator.INSTANCE) && right.asCall().getOperand(0).isConstant()) {
+    if (left.isConstant() && right.is(AddNumericOperator.INSTANCE)
+        && right.asCall().getOperand(0).isConstant()) {
       Call expression = new Call(AddNumericOperator.INSTANCE, left, right.asCall().getOperand(0));
-      
+
       Literal literal = Literal.of(expression.getValue());
-      
+
       return new Call(AddNumericOperator.INSTANCE, literal, right.asCall().getOperand(1));
     }
 

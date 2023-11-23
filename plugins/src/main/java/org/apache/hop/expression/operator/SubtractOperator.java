@@ -34,9 +34,11 @@ import java.io.StringWriter;
  * <strong>Syntax:</strong> <code>x - y</code>
  */
 public class SubtractOperator extends Operator {
-  
+
   public SubtractOperator() {
-    super("SUBTRACT", "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL).or(OperandTypes.TEMPORAL_NUMERIC).or(OperandTypes.INTERVAL_INTERVAL),
+    super("SUBTRACT", "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR,
+        OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL)
+            .or(OperandTypes.TEMPORAL_NUMERIC).or(OperandTypes.INTERVAL_INTERVAL),
         Category.MATHEMATICAL, "/docs/subtract.html");
   }
 
@@ -47,13 +49,14 @@ public class SubtractOperator extends Operator {
 
     if (left.getType().isSameFamily(TypeFamily.TEMPORAL)) {
       // Supports the basic subtraction of days to DATE values
-      if ( right.getType().isSameFamily(TypeFamily.NUMERIC)) {
-        return new Call(AddDaysFunction.INSTANCE, left, new Call(call.getPosition(), Operators.NEGATIVE, right));
-      }      
+      if (right.getType().isSameFamily(TypeFamily.NUMERIC)) {
+        return new Call(AddDaysFunction.INSTANCE, left,
+            new Call(call.getPosition(), Operators.NEGATIVE, right));
+      }
       return new Call(Operators.SUBTRACT_INTERVAL, call.getOperands());
     }
 
-    return new Call(Operators.SUBTRACT_NUMERIC, call.getOperands()); 
+    return new Call(Operators.SUBTRACT_NUMERIC, call.getOperands());
   }
 
   @Override

@@ -55,9 +55,9 @@ public class JsonQueryFunction extends Function {
     if (jsonNode == null)
       return null;
 
-    if ( operands.length==1)
+    if (operands.length == 1)
       return jsonNode;
-    
+
     String path = operands[1].getValue(String.class);
     if (path == null)
       throw new ExpressionException(ExpressionError.JSON_PATH_IS_NULL);

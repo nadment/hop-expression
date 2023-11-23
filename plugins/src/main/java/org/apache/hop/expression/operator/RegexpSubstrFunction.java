@@ -37,8 +37,10 @@ public class RegexpSubstrFunction extends Function {
 
   public RegexpSubstrFunction() {
     super("REGEXP_SUBSTR", ReturnTypes.STRING,
-        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_STRING), Category.STRING,
-        "/docs/regexp_substr.html");
+        OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC)
+            .or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC_STRING),
+        Category.STRING, "/docs/regexp_substr.html");
   }
 
   @Override

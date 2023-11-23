@@ -33,15 +33,16 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class SechFunction extends Function {
 
   public SechFunction() {
-    super("SECH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/sech.html");
+    super("SECH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+        "/docs/sech.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
-      return null;   
-    
+      return null;
+
     return BigDecimal.ONE.divide(BigDecimalMath.cosh(value, MATH_CONTEXT), MathContext.DECIMAL128);
   }
 }

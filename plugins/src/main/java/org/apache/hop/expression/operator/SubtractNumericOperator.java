@@ -31,7 +31,7 @@ import java.math.BigDecimal;
  */
 public class SubtractNumericOperator extends SubtractOperator {
   public static final SubtractNumericOperator INSTANCE = new SubtractNumericOperator();
-  
+
   public SubtractNumericOperator() {
     super();
   }
@@ -41,11 +41,11 @@ public class SubtractNumericOperator extends SubtractOperator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic A-0 →  A
+    // Simplify arithmetic A-0 → A
     if (Literal.ZERO.equals(right)) {
       return left;
     }
-    
+
     // Simplify arithmetic 0-A → -A
     if (Literal.ZERO.equals(left)) {
       return new Call(Operators.NEGATIVE, right);

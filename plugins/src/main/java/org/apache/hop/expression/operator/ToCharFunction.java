@@ -31,6 +31,13 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.util.DateTimeFormat;
+import org.apache.hop.expression.util.Hex;
+import org.apache.hop.expression.util.NumberFormat;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.util.Base64;
 
 /**
  * Converts a numeric or date expression to a string value.
@@ -38,10 +45,14 @@ import org.apache.hop.expression.type.TypeName;
 @FunctionPlugin
 public class ToCharFunction extends Function {
 
+  private static final ToCharFunction ToCharDateFunction = new ToCharDate();
+  private static final ToCharFunction ToCharBinaryFunction = new ToCharBinary();
+  private static final ToCharFunction ToCharNumberFunction = new ToCharNumber();
+
   public ToCharFunction() {
-    super(
-        "TO_CHAR", ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_TEXT).or(
-            OperandTypes.TEMPORAL).or(OperandTypes.TEMPORAL_TEXT).or(OperandTypes.BINARY).or(OperandTypes.BINARY_TEXT),
+    super("TO_CHAR", ReturnTypes.STRING,
+        OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_TEXT).or(OperandTypes.TEMPORAL)
+            .or(OperandTypes.TEMPORAL_TEXT).or(OperandTypes.BINARY).or(OperandTypes.BINARY_TEXT),
         Category.CONVERSION, "/docs/to_char.html");
   }
 
@@ -64,7 +75,7 @@ public class ToCharFunction extends Function {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
 
-      return new Call(ToCharDateFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));
+      return new Call(ToCharDateFunction, call.getOperand(0), Literal.of(pattern));
     }
 
     if (type.isSameFamily(NumberType.NUMBER)) {
@@ -72,7 +83,7 @@ public class ToCharFunction extends Function {
         pattern = "TM";
       }
 
-      return new Call(ToCharNumberFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));
+      return new Call(ToCharNumberFunction, call.getOperand(0), Literal.of(pattern));
     }
 
     if (type.is(TypeName.BINARY)) {
@@ -90,9 +101,71 @@ public class ToCharFunction extends Function {
         throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
       }
 
-      return new Call(ToCharBinaryFunction.INSTANCE, call.getOperand(0), Literal.of(pattern));
+      return new Call(ToCharBinaryFunction, call.getOperand(0), Literal.of(pattern));
     }
 
     return call;
+  }
+
+
+  /**
+   * Converts a date expression to a string value.
+   */
+  private static final class ToCharDate extends ToCharFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
+      if (value == null) {
+        return null;
+      }
+
+      String pattern = operands[1].getValue(String.class);
+
+      return DateTimeFormat.of(pattern).format(value);
+    }
+  };
+
+  /**
+   * Converts a numeric expression to a string value.
+   */
+  private static final class ToCharNumber extends ToCharFunction {
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      BigDecimal value = operands[0].getValue(BigDecimal.class);
+      if (value == null) {
+        return null;
+      }
+
+      String pattern = operands[1].getValue(String.class);
+
+      return NumberFormat.of(pattern).format(value);
+    }
+  }
+
+  /**
+   * Converts a binary expression to a string value.
+   */
+  private static final class ToCharBinary extends ToCharFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] bytes = operands[0].getValue(byte[].class);
+      if (bytes == null) {
+        return null;
+      }
+
+      String pattern = operands[1].getValue(String.class);
+      if (pattern.equals("BASE64")) {
+        return Base64.getEncoder().encodeToString(bytes);
+      }
+      if (pattern.equals("HEX")) {
+        return Hex.encodeToString(bytes);
+      }
+      if (pattern.equals("UTF8")) {
+        return new String(bytes, StandardCharsets.UTF_8);
+      }
+
+      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, pattern);
+    }
   }
 }

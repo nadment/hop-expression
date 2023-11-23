@@ -59,7 +59,7 @@ public class RandomFunction extends Function {
     if (call.getOperandCount() == 0) {
       return new Call(call.getOperator(), Literal.UNKNOWN, Literal.of(new Random()));
     }
-    
+
     if (call.getOperandCount() == 1) {
       try {
         Long seed = call.getOperand(0).getValue(Long.class);

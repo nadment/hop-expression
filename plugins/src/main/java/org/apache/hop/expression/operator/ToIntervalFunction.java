@@ -38,6 +38,6 @@ public class ToIntervalFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    return IntervalType.convertStringToInterval(value);  
+    return IntervalType.convertStringToInterval(value);
   }
 }

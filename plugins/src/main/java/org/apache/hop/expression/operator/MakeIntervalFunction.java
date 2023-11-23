@@ -70,7 +70,7 @@ public class MakeIntervalFunction extends Function {
     int minutes = v4.intValue();
     int seconds = v5.intValue();
     int nanos = v5.remainder(BigDecimal.ONE).movePointRight(9).intValue();
-    
-    return Interval.of(years, months, days, hours, minutes, seconds, nanos);    
+
+    return Interval.of(years, months, days, hours, minutes, seconds, nanos);
   }
 }

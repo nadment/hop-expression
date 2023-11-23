@@ -41,7 +41,8 @@ public class ListAggFunction extends AggregateFunction {
   }
 
   public ListAggFunction(ListAgg option) {
-    super("LISTAGG", ReturnTypes.STRING,OperandTypes.STRING.or(OperandTypes.STRING_STRING), "/docs/listagg.html");
+    super("LISTAGG", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        "/docs/listagg.html");
     this.option = option;
   }
 

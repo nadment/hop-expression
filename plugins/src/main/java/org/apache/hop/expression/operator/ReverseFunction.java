@@ -33,6 +33,8 @@ import org.apache.hop.expression.type.TypeName;
  */
 @FunctionPlugin
 public class ReverseFunction extends Function {
+  public static final ReverseFunction ReverseString = new ReverseString();
+  public static final ReverseFunction ReverseBinary = new ReverseBinary();
 
   public ReverseFunction() {
     super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY), Category.STRING,
@@ -45,9 +47,42 @@ public class ReverseFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.is(TypeName.BINARY)) {
-      return new Call(ReverseBinaryFunction.INSTANCE, call.getOperand(0));
+      return new Call(ReverseBinary, call.getOperand(0));
     }
 
-    return new Call(ReverseStringFunction.INSTANCE, call.getOperand(0));
+    return new Call(ReverseString, call.getOperand(0));
+  }
+
+  /**
+   * The function reverses the order of characters in a string value.
+   */
+  private static final class ReverseString extends ReverseFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String value = operands[0].getValue(String.class);
+      if (value == null)
+        return null;
+
+      StringBuilder builder = new StringBuilder(value);
+      return builder.reverse().toString();
+    }
+  }
+
+  /**
+   * The function reverses the order of bytes in a binary value.
+   */
+  private static final class ReverseBinary extends ReverseFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final byte[] value = operands[0].getValue(byte[].class);
+      if (value == null)
+        return null;
+
+      final byte[] result = new byte[value.length];
+      for (int i = value.length - 1, j = 0; i >= 0; i--, j++) {
+        result[j] = value[i];
+      }
+      return result;
+    }
   }
 }

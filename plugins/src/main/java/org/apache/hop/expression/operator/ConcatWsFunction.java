@@ -27,12 +27,16 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * String or binary concatenation function with separator
  */
 @FunctionPlugin
 public class ConcatWsFunction extends Function {
+  public static final ConcatWsFunction ConcatWsStringFunction = new ConcatWsString();
+  public static final ConcatWsFunction ConcatWsBinaryFunction = new ConcatWsBinary();
 
   public ConcatWsFunction() {
     super("CONCAT_WS", ReturnTypes.FIRST_KNOWN,
@@ -45,9 +49,77 @@ public class ConcatWsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeName.BINARY)) {
-      return new Call(ConcatWsBinaryFunction.INSTANCE, call.getOperands());
+      return new Call(ConcatWsBinaryFunction, call.getOperands());
     }
 
-    return new Call(ConcatWsStringFunction.INSTANCE, call.getOperands());
+    return new Call(ConcatWsStringFunction, call.getOperands());
   }
+
+  /**
+   * String concatenation function with separator
+   */
+  private static final class ConcatWsString extends ConcatWsFunction {
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+
+      String separator = operands[0].getValue(String.class);
+      if (separator == null)
+        return null;
+
+      StringBuilder builder = new StringBuilder();
+      for (int i = 1; i < operands.length; i++) {
+        String value = operands[i].getValue(String.class);
+        if (value != null) {
+          if (builder.length() > 0) {
+            builder.append(separator);
+          }
+          builder.append(value);
+        }
+      }
+
+      if (builder.length() == 0)
+        return null;
+
+      return builder.toString();
+    }
+  }
+
+  /**
+   * Binary concatenation function with separator
+   */
+  private static final class ConcatWsBinary extends ConcatWsFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+
+      byte[] separator = operands[0].getValue(byte[].class);
+      if (separator == null)
+        return null;
+
+      boolean notFirstValue = false;
+
+      try {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        for (int i = 1; i < operands.length; i++) {
+          byte[] value = operands[i].getValue(byte[].class);
+
+          if (value != null) {
+            if (notFirstValue) {
+              output.write(separator);
+            }
+            notFirstValue = true;
+            output.write(value);
+          }
+        }
+
+        if (output.size() == 0)
+          return null;
+
+        return output.toByteArray();
+      } catch (IOException e) {
+        throw new ExpressionException(e.getMessage());
+      }
+    }
+  }
+
 }

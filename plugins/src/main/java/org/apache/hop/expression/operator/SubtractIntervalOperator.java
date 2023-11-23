@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
  */
 public class SubtractIntervalOperator extends SubtractOperator {
   public static final SubtractIntervalOperator INSTANCE = new SubtractIntervalOperator();
-  
+
   public SubtractIntervalOperator() {
     super();
   }

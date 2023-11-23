@@ -37,8 +37,8 @@ public class LTrimFunction extends Function {
   public static final LTrimFunction INSTANCE = new LTrimFunction();
 
   public LTrimFunction() {
-    super("LTRIM", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING), Category.STRING,
-        "/docs/ltrim.html");
+    super("LTRIM", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+        Category.STRING, "/docs/ltrim.html");
   }
 
   @Override
@@ -63,7 +63,7 @@ public class LTrimFunction extends Function {
 
     if (call.getOperandCount() == 1) {
       IExpression operand = call.getOperand(0);
-      
+
       // Repetitions of the same function
       if (operand.is(call.getOperator())) {
         return new Call(call.getOperator(), operand.asCall().getOperand(0));

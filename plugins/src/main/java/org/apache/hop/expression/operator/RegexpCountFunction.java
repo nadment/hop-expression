@@ -40,7 +40,9 @@ import java.util.regex.PatternSyntaxException;
 public class RegexpCountFunction extends Function {
 
   public RegexpCountFunction() {
-    super("REGEXP_COUNT", ReturnTypes.INTEGER, OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_STRING),
+    super(
+        "REGEXP_COUNT", ReturnTypes.INTEGER, OperandTypes.STRING_STRING
+            .or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_STRING),
         Category.STRING, "/docs/regexp_count.html");
   }
 

@@ -70,18 +70,18 @@ public class CoalesceFunction extends Function {
         operands.add(operand);
       }
     }
-    
+
     switch (operands.size()) {
       case 0: // Nothing to coalesce
         return new Literal(null, call.getType());
       case 1: // Coalesce(X) → X
         return operands.get(0);
       default:
-        // First is literal COALESCE(1, a, b)  → 1
-        if ( operands.get(0).isConstant())  {
+        // First is literal COALESCE(1, a, b) → 1
+        if (operands.get(0).isConstant()) {
           return operands.get(0);
         }
-                
+
         return new Call(call.getOperator(), operands);
     }
   }

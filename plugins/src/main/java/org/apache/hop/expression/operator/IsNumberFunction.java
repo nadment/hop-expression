@@ -38,35 +38,35 @@ import org.apache.hop.expression.type.TypeFamily;
 public class IsNumberFunction extends Function {
 
   public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        Category.COMPARISON, "/docs/is_number.html");
+    super("IS_NUMBER", ReturnTypes.BOOLEAN, OperandTypes.ANY, Category.COMPARISON,
+        "/docs/is_number.html");
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.STRING) ) {
+    if (call.getOperand(0).getType().isSameFamily(TypeFamily.STRING)) {
       return call;
     }
-    
+
     // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.NUMERIC) ) {
+    if (call.getOperand(0).getType().isSameFamily(TypeFamily.NUMERIC)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
-    
+
     // Other data type are always false
     return Literal.FALSE;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    
-    // Return FALSE if a value is NULL. 
+
+    // Return FALSE if a value is NULL.
     if (value == null)
       return Boolean.FALSE;
-    
+
     try {
       NumberType.convertStringToNumber(value);
       return Boolean.TRUE;

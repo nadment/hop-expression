@@ -33,7 +33,9 @@ import java.util.Objects;
  */
 public final class Call implements IExpression {
 
+  // The return data type
   protected Type type = UnknownType.UNKNOWN;
+  
   // The position of this expression in the source before compilation else 0.
   protected final int position;
 

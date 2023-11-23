@@ -49,7 +49,7 @@ public class DivOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify arithmetic  A/1 → A
+    // Simplify arithmetic A/1 → A
     if (Literal.ONE.equals(right)) {
       return call.getOperand(0);
     }

@@ -34,11 +34,12 @@ import java.time.ZonedDateTime;
 @FunctionPlugin
 public class AddYearsFunction extends Function {
   public static final Function INSTANCE = new AddYearsFunction();
-  
+
   public AddYearsFunction() {
     super("ADD_YEARS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_years.html");
   }
+
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
@@ -46,10 +47,10 @@ public class AddYearsFunction extends Function {
     if (Literal.ZERO.equals(call.getOperand(1))) {
       return call.getOperand(0);
     }
-    
+
     return call;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     ZonedDateTime datetime = operands[0].getValue(ZonedDateTime.class);

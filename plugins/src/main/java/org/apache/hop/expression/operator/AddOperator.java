@@ -37,7 +37,9 @@ import java.io.StringWriter;
 public class AddOperator extends Operator {
 
   public AddOperator() {
-    super("ADD", "+", 100, true, ReturnTypes.ADDITIVE_OPERATOR, OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL).or(OperandTypes.INTERVAL_TEMPORAL).or(OperandTypes.TEMPORAL_NUMERIC),
+    super("ADD", "+", 100, true, ReturnTypes.ADDITIVE_OPERATOR,
+        OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL)
+            .or(OperandTypes.INTERVAL_TEMPORAL).or(OperandTypes.TEMPORAL_NUMERIC),
         Category.MATHEMATICAL, "/docs/add.html");
   }
 
@@ -49,18 +51,18 @@ public class AddOperator extends Operator {
     if (left.getType().isSameFamily(TypeFamily.TEMPORAL)) {
       // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
       // - } <integer>
-      if ( right.getType().isSameFamily(TypeFamily.NUMERIC)) {
+      if (right.getType().isSameFamily(TypeFamily.NUMERIC)) {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
-      }      
+      }
 
       return new Call(call.getPosition(), Operators.ADD_INTERVAL, call.getOperands());
-    }
-    else if (left.getType().isSameFamily(TypeFamily.INTERVAL)) {
+    } else if (left.getType().isSameFamily(TypeFamily.INTERVAL)) {
       // Normalize operands order DATE+INTERVAL
-      return new Call(call.getPosition(), Operators.ADD_INTERVAL, call.getOperand(1), call.getOperand(0));
+      return new Call(call.getPosition(), Operators.ADD_INTERVAL, call.getOperand(1),
+          call.getOperand(0));
     }
-    return new Call(call.getPosition(), Operators.ADD_NUMERIC, call.getOperands());   
-   }
+    return new Call(call.getPosition(), Operators.ADD_NUMERIC, call.getOperands());
+  }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {

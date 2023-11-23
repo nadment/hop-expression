@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.Function;
@@ -27,15 +28,19 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeName;
+import java.math.BigDecimal;
 
 /**
  * Returns the absolute (positive) value of the numeric value.
  */
 @FunctionPlugin
 public class AbsFunction extends Function {
+  public static final AbsFunction AbsIntegerFunction = new AbsInteger();
+  public static final AbsFunction AbsNumberFunction = new AbsNumber();
 
   public AbsFunction() {
-    super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/abs.html");
+    super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+        "/docs/abs.html");
   }
 
   @Override
@@ -48,10 +53,38 @@ public class AbsFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.is(TypeName.INTEGER)) {
-      return new Call(AbsIntegerFunction.INSTANCE, call.getOperands());
+      return new Call(AbsIntegerFunction, call.getOperands());
     }
 
     // If type Number or String
-    return new Call(AbsNumberFunction.INSTANCE, call.getOperands());
+    return new Call(AbsNumberFunction, call.getOperands());
+  }
+
+  /**
+   * Returns the absolute (positive) value of the integer value.
+   */
+  private static final class AbsInteger extends AbsFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long value = operands[0].getValue(Long.class);
+      if (value == null)
+        return value;
+
+      return FastMath.abs(value);
+    }
+  }
+
+  /**
+   * Returns the absolute (positive) value of the number value.
+   */
+  private static final class AbsNumber extends AbsFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      BigDecimal value = operands[0].getValue(BigDecimal.class);
+      if (value == null)
+        return value;
+
+      return value.abs();
+    }
   }
 }

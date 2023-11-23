@@ -42,8 +42,8 @@ public class ToBinaryFunction extends Function {
   }
 
   protected ToBinaryFunction(String id) {
-    super(id, ReturnTypes.BINARY, OperandTypes.STRING.or(OperandTypes.STRING_TEXT), Category.CONVERSION,
-        "/docs/to_binary.html");
+    super(id, ReturnTypes.BINARY, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        Category.CONVERSION, "/docs/to_binary.html");
   }
 
   @Override

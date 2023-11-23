@@ -33,6 +33,8 @@ import org.apache.hop.expression.type.TypeName;
  */
 @FunctionPlugin
 public class LengthFunction extends Function {
+  public static final LengthFunction LengthString = new LengthString();
+  public static final LengthFunction LengthBinary = new LengthBinary();
 
   public LengthFunction() {
     super("LENGTH", ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
@@ -46,8 +48,34 @@ public class LengthFunction extends Function {
 
     // Binary first
     if (type.is(TypeName.BINARY)) {
-      return new Call(LengthBinaryFunction.INSTANCE, call.getOperand(0));
-    }    
-    return new Call(LengthStringFunction.INSTANCE, call.getOperand(0));
+      return new Call(LengthBinary, call.getOperands());
+    }
+    return new Call(LengthString, call.getOperands());
+  }
+
+  /**
+   * The function returns the number of characters of the specified string.
+   */
+  private static final class LengthString extends LengthFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String value = operands[0].getValue(String.class);
+      if (value == null)
+        return value;
+      return Long.valueOf(value.length());
+    }
+  }
+
+  /**
+   * The function returns the number of characters of the specified binary.
+   */
+  private static final class LengthBinary extends LengthFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] value = operands[0].getValue(byte[].class);
+      if (value == null)
+        return value;
+      return Long.valueOf(value.length);
+    }
   }
 }

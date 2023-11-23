@@ -22,7 +22,7 @@ public class NthValueRespectNullsProcessor implements IExpressionProcessor {
   private long offset;
   private Object value;
 
-  public NthValueRespectNullsProcessor(long offset) {    
+  public NthValueRespectNullsProcessor(long offset) {
     this.offset = offset;
     this.value = null;
   }
@@ -30,10 +30,10 @@ public class NthValueRespectNullsProcessor implements IExpressionProcessor {
   @Override
   public void process(IExpression[] operands) throws Exception {
 
-    if (offset==0) 
+    if (offset == 0)
       return;
-        
-    if (--offset==0) {
+
+    if (--offset == 0) {
       value = operands[0].getValue();
     }
   }

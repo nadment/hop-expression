@@ -46,7 +46,8 @@ public class IfFunction extends Function {
 
     // Normalize IF(condition,x) → IF(condition,x,NULL)
     if (call.getOperandCount() == 2) {
-      return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1), new Literal(null, call.getType()));
+      return new Call(call.getOperator(), call.getOperand(0), call.getOperand(1),
+          new Literal(null, call.getType()));
     }
 
     IExpression condition = call.getOperand(0);

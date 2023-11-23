@@ -34,6 +34,9 @@ import org.apache.hop.expression.type.TypeName;
 @FunctionPlugin
 public class ContainsFunction extends Function {
 
+  public static final ContainsFunction ContainsString = new ContainsString();
+  public static final ContainsFunction ContainsBinary = new ContainsBinary();
+
   public ContainsFunction() {
     super("CONTAINS", ReturnTypes.BOOLEAN,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), Category.COMPARISON,
@@ -45,9 +48,61 @@ public class ContainsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.is(TypeName.BINARY)) {
-      return new Call(ContainsBinaryFunction.INSTANCE, call.getOperands());
+      return new Call(ContainsBinary, call.getOperands());
     }
 
-    return new Call(ContainsStringFunction.INSTANCE, call.getOperands());
+    return new Call(ContainsString, call.getOperands());
   }
+
+  /**
+   * Contains string function
+   */
+  private static final class ContainsString extends ContainsFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String value = operands[0].getValue(String.class);
+      if (value == null)
+        return null;
+
+      String search = operands[1].getValue(String.class);
+      if (search == null)
+        return null;
+
+      if (value.contains(search))
+        return Boolean.TRUE;
+
+      return Boolean.FALSE;
+    }
+  }
+
+  /**
+   * Contains binary function
+   */
+  private static final class ContainsBinary extends ContainsFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] value = operands[0].getValue(byte[].class);
+      if (value == null)
+        return null;
+
+      byte[] search = operands[1].getValue(byte[].class);
+      if (search == null)
+        return null;
+
+      if (search.length == 0) {
+        return Boolean.FALSE;
+      }
+
+      outer: for (int i = 0; i < value.length - search.length + 1; i++) {
+        for (int j = 0; j < search.length; j++) {
+          if (value[i + j] != search[j]) {
+            continue outer;
+          }
+        }
+        return Boolean.TRUE;
+      }
+      return Boolean.FALSE;
+    }
+  }
+
 }

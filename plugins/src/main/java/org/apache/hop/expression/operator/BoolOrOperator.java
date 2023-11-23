@@ -42,7 +42,8 @@ import java.util.Queue;
 /**
  * Logical disjunction <code>OR</code> operator.
  * 
- * <p>If any of the arguments are true, result is true;
+ * <p>
+ * If any of the arguments are true, result is true;
  * else if any arguments are null, result is null;
  * else false.
  */
@@ -71,12 +72,12 @@ public class BoolOrOperator extends Operator {
         return Literal.TRUE;
     }
 
-    // Simplify A OR A IS NOT NULL → A IS NOT NULL 
-    if ( call.getOperand(1).is(Operators.IS_NOT_NULL) ) {
-      if ( call.getOperand(0).equals(call.getOperand(1).asCall().getOperand(0)) ) {
+    // Simplify A OR A IS NOT NULL → A IS NOT NULL
+    if (call.getOperand(1).is(Operators.IS_NOT_NULL)) {
+      if (call.getOperand(0).equals(call.getOperand(1).asCall().getOperand(0))) {
         return call.getOperand(1);
       }
-    }    
+    }
 
     // Remove duplicate
     // x OR x → x
@@ -173,7 +174,7 @@ public class BoolOrOperator extends Operator {
     }
 
     // X <> A OR X <> B → X IS NOT NULL or NULL
-    
+
 
 
     // Rebuild disjunctions if more than 1 condition

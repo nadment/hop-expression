@@ -28,9 +28,9 @@ import org.apache.hop.expression.type.NumberType;
  * Arithmetic unary minus (negative) operator '<code>-</code>'.
  */
 public class NegateNumericOperator extends NegateOperator {
-  
+
   public static final NegateNumericOperator INSTANCE = new NegateNumericOperator();
-  
+
   public NegateNumericOperator() {
     super();
   }
@@ -38,7 +38,7 @@ public class NegateNumericOperator extends NegateOperator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
-    
+
     // Simplify arithmetic -(-(A)) → A
     if (operand.is(Operators.NEGATIVE)) {
       return operand.asCall().getOperand(0);

@@ -27,7 +27,7 @@ public class LastValueRespectNullsProcessor implements IExpressionProcessor {
 
   @Override
   public void process(IExpression[] operands) throws Exception {
-   value = operands[0].getValue();
+    value = operands[0].getValue();
   }
 
   @Override

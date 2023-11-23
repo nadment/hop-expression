@@ -37,35 +37,35 @@ import org.apache.hop.expression.type.TypeFamily;
 public class IsJsonFunction extends Function {
 
   public IsJsonFunction() {
-    super("IS_JSON", ReturnTypes.BOOLEAN, OperandTypes.ANY,
-        Category.COMPARISON, "/docs/is_json.html");
+    super("IS_JSON", ReturnTypes.BOOLEAN, OperandTypes.ANY, Category.COMPARISON,
+        "/docs/is_json.html");
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.STRING) ) {
+    if (call.getOperand(0).getType().isSameFamily(TypeFamily.STRING)) {
       return call;
     }
-    
+
     // Optimize "IS_JSON(json)" to "json IS NOT NULL"
-    if ( call.getOperand(0).getType().isSameFamily(TypeFamily.JSON) ) {
+    if (call.getOperand(0).getType().isSameFamily(TypeFamily.JSON)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
-    
+
     // Other data type are always false
     return Literal.FALSE;
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    
-    // Return FALSE if a value is NULL. 
+
+    // Return FALSE if a value is NULL.
     if (value == null)
       return Boolean.FALSE;
-    
+
     try {
       JsonType.convertStringToJson(value);
       return Boolean.TRUE;

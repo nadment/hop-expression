@@ -38,6 +38,8 @@ import java.util.ArrayList;
  */
 @FunctionPlugin
 public class ConcatFunction extends Function {
+  public static final ConcatFunction ConcatStringFunction = new ConcatString();
+  public static final ConcatFunction ConcatBinaryFunction = new ConcatBinary();
 
   // Function
   public ConcatFunction() {
@@ -66,17 +68,16 @@ public class ConcatFunction extends Function {
       operands.add(0, operand);
     }
 
-    Operator operator = ConcatStringFunction.INSTANCE;
-    if (type!=null && type.is(TypeName.BINARY)) {
-      operator = ConcatBinaryFunction.INSTANCE;
-    }
-
     switch (operands.size()) {
       case 0: // Nothing to concat
         return new Literal(null, call.getType());
       case 1: // Concat(X) => X
         return operands.get(0);
       default:
+        Operator operator = ConcatStringFunction;
+        if (type != null && type.is(TypeName.BINARY)) {
+          operator = ConcatBinaryFunction;
+        }
         return new Call(operator, operands);
     }
   }
@@ -90,6 +91,69 @@ public class ConcatFunction extends Function {
       else
         writer.append("||");
       operand.unparse(writer);
+    }
+  }
+
+  /**
+   * String concatenation
+   */
+  private static final class ConcatString extends ConcatFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+
+      String firstNotNull = null;
+      String[] values = new String[operands.length];
+      int i = 0;
+      for (IExpression operand : operands) {
+        String value = operand.getValue(String.class);
+        if (firstNotNull == null && value != null)
+          firstNotNull = value;
+        values[i++] = value;
+      }
+
+      if (firstNotNull == null)
+        return null;
+
+      StringBuilder builder = new StringBuilder();
+      for (IExpression operand : operands) {
+        String value = operand.getValue(String.class);
+        if (value != null)
+          builder.append(value);
+      }
+
+      return builder.toString();
+    }
+  }
+
+  /**
+   * Binary concatenation
+   */
+  private static final class ConcatBinary extends ConcatFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[][] values = new byte[operands.length][];
+      int i = 0;
+      int length = 0;
+      for (IExpression operand : operands) {
+        byte[] value = operand.getValue(byte[].class);
+        values[i++] = value;
+        if (value != null) {
+          length += value.length;
+        }
+      }
+
+      if (length == 0)
+        return null;
+
+      final byte[] result = new byte[length];
+      int index = 0;
+      for (byte[] value : values) {
+        if (value != null) {
+          System.arraycopy(value, 0, result, index, value.length);
+          index += value.length;
+        }
+      }
+      return result;
     }
   }
 }
