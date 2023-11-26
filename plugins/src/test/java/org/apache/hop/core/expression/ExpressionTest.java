@@ -41,6 +41,7 @@ import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
@@ -96,9 +97,9 @@ public class ExpressionTest {
     variables.setVariable("TEST", "12345");
 
     IRowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING"));
+    rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING", 1000, -1));
     rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE2"));
-    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER"));
+    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER", 19, -1));
     rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER"));
     rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
@@ -209,7 +210,7 @@ public class ExpressionTest {
   protected void returnType(String source, Type expected) throws Exception {
     ExpressionContext context = createExpressionContext(false);
     IExpression expression = Expressions.build(context, source);
-    assertEquals(expected, expression.getType());
+    assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
   }
   
   protected Object eval(String source) throws Exception {
@@ -361,7 +362,6 @@ public class ExpressionTest {
         + expression + ANSI_RESET);
 
     return expression;
-
   }
 
   protected void optimize(String source, String expected) throws Exception {
@@ -389,13 +389,7 @@ public class ExpressionTest {
     Locale.setDefault(new Locale("fr", "BE"));
     //evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$[''name'']')", "Smith");
     //evalNull("Json_Value(NULL_JSON,'$.name')");
-   // IntervalParser parser = new IntervalParser(" 5  days  3  minutes ");
-   // assertEquals(new Interval(0, 0, 5), parser.parse());
-
-    evalEquals("To_Char(DATE '2019-07-23','DD')", "23");
-
-    
-    //evalEquals("TypeOf(INTERVAL '3 years')", "INTERVAL");
+      
     //String jsonPath = "$[0]['gender']";
     //Variables variables = new Variables();    
     //String result = variables.resolve("$[0]['name']");

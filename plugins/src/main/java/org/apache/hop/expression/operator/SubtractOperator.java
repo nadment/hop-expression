@@ -47,9 +47,9 @@ public class SubtractOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    if (left.getType().isSameFamily(TypeFamily.TEMPORAL)) {
+    if (left.getType().isFamily(TypeFamily.TEMPORAL)) {
       // Supports the basic subtraction of days to DATE values
-      if (right.getType().isSameFamily(TypeFamily.NUMERIC)) {
+      if (right.getType().isFamily(TypeFamily.NUMERIC)) {
         return new Call(AddDaysFunction.INSTANCE, left,
             new Call(call.getPosition(), Operators.NEGATIVE, right));
       }

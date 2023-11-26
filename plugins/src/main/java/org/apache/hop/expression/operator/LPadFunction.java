@@ -27,7 +27,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeFamily;
 
 /**
  * The function left-pads a string or binary with another string or binary, to a certain length.
@@ -44,7 +44,7 @@ public class LPadFunction extends Function {
   protected static final int PAD_LIMIT = 8192;
 
   public LPadFunction() {
-    super("LPAD", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC
+    super("LPAD", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC
         .or(OperandTypes.STRING_NUMERIC_STRING).or(OperandTypes.BINARY_NUMERIC_BINARY),
         Category.STRING, "/docs/lpad.html");
   }
@@ -53,7 +53,7 @@ public class LPadFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeName.BINARY)) {
+    if (type.isFamily(TypeFamily.BINARY)) {
       return new Call(LPadBinaryFunction, call.getOperands());
     }
 

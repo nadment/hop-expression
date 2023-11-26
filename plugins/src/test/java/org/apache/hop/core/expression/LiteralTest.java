@@ -223,7 +223,7 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("'Test ''Bla'' string'");
 
-    returnType("FIELD_STRING", StringType.STRING);
+    returnType("FIELD_STRING", new StringType(1000));
   }
 
 
@@ -314,8 +314,7 @@ public class LiteralTest extends ExpressionTest {
     // Hexadecimal
     evalEquals("0x1eee_FFFF", 0x1eee_FFFFL);
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
-    evalEquals("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF",
-        new BigInteger("4585589214852587255525691234567890abcDEF", 16));
+    evalEquals("0x85_5892_1485_2587_2555_2569_1234_890ab", new BigInteger("85589214852587255525691234890ab", 16));
     evalEquals("0xFFFF_EEEE_0000_AAA0", 0xFFFF_EEEE_0000_AAA0L);
     evalEquals("0X1F", 0x1FL);
     evalEquals("0x0F", 0xFL);
@@ -361,7 +360,7 @@ public class LiteralTest extends ExpressionTest {
     optimize("0X1F", "31");
 
     returnType("FIELD_INTEGER", IntegerType.INTEGER);
-    returnType("0x4585_5892_1485_2587_2555_2569_123_4567_890ab_cDEF", NumberType.NUMBER);
+    returnType("0x1485_2587_2555_2569_123_4567_890ab_cDEF", NumberType.NUMBER);
   }
 
   @Test

@@ -29,15 +29,17 @@ public class IfFunctionReturnTypeInference implements IReturnTypeInference {
     if (call.getOperandCount() < 2)
       return UnknownType.UNKNOWN;
 
+    ITypeTransform transform = TypeTransforms.TO_MAX_PRECISION;
+
     Type type1 = call.getOperand(1).getType();
     if (call.getOperandCount() == 2) {
-      return type1;
+      return transform.transformType(type1);
     }
     Type type2 = call.getOperand(2).getType();
     if (type1.getName().ordinal() < type2.getName().ordinal()) {
-      return type2;
+      return transform.transformType(type2);
     }
 
-    return type1;
+    return transform.transformType(type1);
   }
 }

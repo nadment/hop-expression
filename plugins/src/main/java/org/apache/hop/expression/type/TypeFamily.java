@@ -18,6 +18,9 @@ package org.apache.hop.expression.type;
 
 import java.util.Set;
 
+/**
+ * Represents a family of related types.
+ */
 public enum TypeFamily {
   // -------------------------------------------
   // Primary
@@ -91,7 +94,7 @@ public enum TypeFamily {
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(final TypeFamily... families) {
+  public boolean isFamily(final TypeFamily... families) {
     if (families == null)
       return false;
     for (TypeFamily family : families) {
@@ -100,6 +103,7 @@ public enum TypeFamily {
     }
     return false;
   }
+
 
   /**
    * Returns whether type are in same type family with implicit coercion.
@@ -110,19 +114,19 @@ public enum TypeFamily {
 
     switch (this) {
       case BOOLEAN:
-        return family.isSameFamily(BOOLEAN, NUMERIC, BINARY, STRING);
+        return family.isFamily(BOOLEAN, NUMERIC, BINARY, STRING);
       case STRING:
-        return family.isSameFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
+        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
       case TEMPORAL:
-        return family.isSameFamily(TEMPORAL);
+        return family.isFamily(TEMPORAL);
       case NUMERIC:
-        return family.isSameFamily(NUMERIC, BOOLEAN, BINARY, STRING);
+        return family.isFamily(NUMERIC, BOOLEAN, BINARY, STRING);
       case BINARY:
-        return family.isSameFamily(BINARY, STRING);
+        return family.isFamily(BINARY, STRING);
       case JSON:
-        return family.isSameFamily(JSON, STRING);
+        return family.isFamily(JSON, STRING);
       case INTERVAL:
-        return family.isSameFamily(INTERVAL);
+        return family.isFamily(INTERVAL);
       case ANY:
       case NONE:
         return true;

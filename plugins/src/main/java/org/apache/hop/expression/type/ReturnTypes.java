@@ -33,12 +33,18 @@ public final class ReturnTypes {
     return new ExplicitReturnTypeInference(type);
   }
 
-  public static final IReturnTypeInference ANY = explicit(UnknownType.ANY);
+  public static final IReturnTypeInference ANY = explicit(AnyType.ANY);
 
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.
    */
   public static final IReturnTypeInference BOOLEAN = explicit(BooleanType.BOOLEAN);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is BOOLEAN NOT NULL.
+   */
+  public static final IReturnTypeInference BOOLEAN_NOT_NULL =
+      BOOLEAN.andThen(TypeTransforms.TO_NOT_NULLABLE);
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY.
@@ -49,6 +55,12 @@ public final class ReturnTypes {
    * Type-inference strategy whereby the result type of a call is STRING.
    */
   public static final IReturnTypeInference STRING = explicit(StringType.STRING);
+
+  /**
+   * Type-inference strategy whereby the result type of a call is STRING NOT NULL.
+   */
+  public static final IReturnTypeInference STRING_NOT_NULL =
+      STRING.andThen(TypeTransforms.TO_NOT_NULLABLE);
 
   /**
    * Type-inference strategy whereby the result type of a call is INTEGER.
@@ -66,6 +78,12 @@ public final class ReturnTypes {
   public static final IReturnTypeInference DATE = explicit(DateType.DATE);
 
   /**
+   * Type-inference strategy whereby the result type of a call is DATE NOT NULL.
+   */
+  public static final IReturnTypeInference DATE_NOT_NULL =
+      DATE.andThen(TypeTransforms.TO_NOT_NULLABLE);
+
+  /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
   public static final IReturnTypeInference JSON = explicit(JsonType.JSON);
@@ -74,7 +92,7 @@ public final class ReturnTypes {
    * Type-inference strategy whereby the result type of a call is INTERVAL.
    */
   public static final IReturnTypeInference INTERVAL = explicit(IntervalType.INTERVAL);
- 
+
   /**
    * Type-inference strategy whereby the result type of a call is the type of the operand #0.
    */
@@ -93,20 +111,24 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARG1_OR_ARG2 =
       chain(new OrdinalReturnTypeInference(1), new OrdinalReturnTypeInference(2));
 
-  public static final IReturnTypeInference FIRST_KNOWN = new FirstKnownReturnTypeInference();
+  public static final IReturnTypeInference FIRST_KNOWN =
+      new FirstKnownReturnTypeInference().andThen(TypeTransforms.TO_MAX_PRECISION);
 
   public static final IReturnTypeInference LEAST_RESTRICTIVE =
-      new LeastRestrictiveReturnTypeInference();
+      new LeastRestrictiveReturnTypeInference().andThen(TypeTransforms.TO_MAX_PRECISION);
 
   public static final IReturnTypeInference ABS_FUNCTION = call -> {
     Type type = call.getOperand(0).getType();
-    
-    if ( type.is(TypeName.INTEGER ))
+
+    if (type.is(TypeName.INTEGER))
       return type;
-    
+
     // By default Number for coercion
     return NumberType.NUMBER;
   };
+
+  public static final IReturnTypeInference ARG0_MAX_PRECISION =
+      new OrdinalReturnTypeInference(0).andThen(TypeTransforms.TO_MAX_PRECISION);
 
   /**
    * TODO: Type-inference strategy whereby the result type of a call is {@link #NUMBER_SCALE0} with
@@ -137,5 +159,13 @@ public final class ReturnTypes {
 
   public static ReturnTypeInferenceChain chain(IReturnTypeInference... rules) {
     return new ReturnTypeInferenceChain(rules);
+  }
+
+  /**
+   * Creates a return-type inference that applies a rule then a sequence of transforms.
+   **/
+  public static ReturnTypeTransformCascade cascade(IReturnTypeInference rule,
+      ITypeTransform... transforms) {
+    return new ReturnTypeTransformCascade(rule, transforms);
   }
 }

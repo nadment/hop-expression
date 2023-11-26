@@ -29,19 +29,29 @@ public final class JsonType extends Type {
   /**
    * Default JSON type.
    */
-  public static final JsonType JSON = new JsonType();
+  public static final JsonType JSON = new JsonType(true);
 
-  public JsonType() {
-    super(TypeName.JSON);
+  private JsonType(boolean nullable) {
+    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }
-  
+
+  @Override
+  public JsonType withNullability(boolean nullable) {
+    return new JsonType(nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.JSON;
+  }
+
   /**
    * Coerce value to data type JSON
    * 
    * @param value the value to coerce
    * @return String
    */
-  public  static final JsonNode coerce(final Object value) throws ConversionException {
+  public static final JsonNode coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -52,11 +62,11 @@ public final class JsonType extends Type {
       return JsonType.convertStringToJson((String) value);
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.JSON);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        JsonType.JSON);
   }
 
-  
+
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
@@ -69,7 +79,7 @@ public final class JsonType extends Type {
     if (clazz == String.class) {
       return clazz.cast(StringType.convertJsonToString((JsonNode) value));
     }
-    
+
     return super.convert(value, clazz);
   }
 
@@ -101,8 +111,8 @@ public final class JsonType extends Type {
       return convertStringToJson((String) value);
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        Type.valueOf(value), this);
   }
 
   /**
@@ -112,7 +122,7 @@ public final class JsonType extends Type {
    * @return JsonNode
    */
   public static JsonNode convertStringToJson(final String str) throws ConversionException {
-    if ( str==null) 
+    if (str == null)
       return null;
     try {
       ObjectMapper objectMapper =

@@ -31,7 +31,7 @@ import java.util.UUID;
 public class UuidFunction extends Function {
 
   public UuidFunction() {
-    super("UUID", ReturnTypes.STRING, OperandTypes.NILADIC, Category.STRING, "/docs/uuid.html");
+    super("UUID", ReturnTypes.STRING_NOT_NULL, OperandTypes.NILADIC, Category.STRING, "/docs/uuid.html");
   }
 
   @Override

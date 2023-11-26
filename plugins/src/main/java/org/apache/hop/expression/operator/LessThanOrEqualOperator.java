@@ -72,21 +72,23 @@ public class LessThanOrEqualOperator extends Operator {
     if (left.isNull() || right.isNull()) {
       return Literal.NULL;
     }
-    // Simplify x<=x → NULL OR x IS NOT NULL
+    // Simplify x<=x → NVL2(x ,TRUE,NULL)
     if (left.equals(right)) {
-      return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
+      return new Call(Operators.NVL2, left, Literal.TRUE, Literal.NULL);
     }
-    // Simplify x<=TRUE → x IS TRUE
+    // Simplify TRUE<=x → x IS TRUE
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, right);
     }
+    // Simplify x<=TRUE → x IS NOT NULL
     if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, left);
+      return new Call(Operators.IS_NOT_NULL, left);
+    }    
+    // Simplify FALSE<=x → x IS NOT NULL
+    if (left.equals(Literal.FALSE)) {
+      return new Call(Operators.IS_NOT_NULL, right);
     }
     // Simplify x<=FALSE → x IS FALSE
-    if (left.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, right);
-    }
     if (right.equals(Literal.FALSE)) {
       return new Call(Operators.IS_FALSE, left);
     }

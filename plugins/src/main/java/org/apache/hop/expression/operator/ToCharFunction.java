@@ -26,11 +26,10 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.Hex;
 import org.apache.hop.expression.util.NumberFormat;
@@ -66,11 +65,11 @@ public class ToCharFunction extends Function {
       pattern = call.getOperand(1).getValue(String.class);
     }
 
-    if (type.is(TypeName.STRING) && call.getOperandCount() == 1) {
+    if (type.isFamily(TypeFamily.STRING) && call.getOperandCount() == 1) {
       return call.getOperand(0);
     }
 
-    if (type.is(TypeName.DATE)) {
+    if (type.isFamily(TypeFamily.TEMPORAL)) {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
@@ -78,7 +77,7 @@ public class ToCharFunction extends Function {
       return new Call(ToCharDateFunction, call.getOperand(0), Literal.of(pattern));
     }
 
-    if (type.isSameFamily(NumberType.NUMBER)) {
+    if (type.isFamily(TypeFamily.NUMERIC)) {
       if (pattern == null) {
         pattern = "TM";
       }
@@ -86,7 +85,7 @@ public class ToCharFunction extends Function {
       return new Call(ToCharNumberFunction, call.getOperand(0), Literal.of(pattern));
     }
 
-    if (type.is(TypeName.BINARY)) {
+    if (type.isFamily(TypeFamily.BINARY)) {
       if (pattern == null) {
         pattern = "HEX";
       }
@@ -123,7 +122,7 @@ public class ToCharFunction extends Function {
 
       return DateTimeFormat.of(pattern).format(value);
     }
-  };
+  }
 
   /**
    * Converts a numeric expression to a string value.

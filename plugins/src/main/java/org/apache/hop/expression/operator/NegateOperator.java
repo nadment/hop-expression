@@ -41,7 +41,7 @@ public class NegateOperator extends Operator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(0).getType();
 
-    if (type.isSameFamily(TypeFamily.INTERVAL)) {
+    if (type.isFamily(TypeFamily.INTERVAL)) {
       return new Call(call.getPosition(), NegateIntervalOperator.INSTANCE, call.getOperands());
     }
 

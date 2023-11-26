@@ -27,6 +27,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeName;
 import java.io.StringWriter;
 
 /**
@@ -69,9 +70,31 @@ public class CastFunction extends Function {
       throws ExpressionException {
 
     // Remove lossless cast
-    IExpression operand = call.getOperand(0);
-    if (call.getType().equals(operand.getType())) {
-      return operand;
+    Type source = call.getOperand(0).getType();
+    Type target = call.getOperand(1).getValue(Type.class);
+
+    // If same type name
+    TypeName name = target.getName();
+    if (source.is(name)) {
+      if (source.getPrecision() == target.getPrecision()
+          && source.getScale() == target.getScale()) {
+        return call.getOperand(0);
+      }
+
+      // // If source precision and scale are specified and less or equal than target
+      // if ( name.allowsScale() && source.getPrecision()!=Type.PRECISION_NOT_SPECIFIED &&
+      // source.getPrecision()<=target.getPrecision() && source.getScale()!=Type.SCALE_NOT_SPECIFIED
+      // && source.getScale()<=target.getScale() ) {
+      // return call.getOperand(0);
+      // }
+      // // If source precision is specified and less or equal than target
+      // else if ( name.allowsPrecNoScale() && source.getPrecision()!=Type.PRECISION_NOT_SPECIFIED
+      // && source.getPrecision()<=target.getPrecision()) {
+      // return call.getOperand(0);
+      // }
+      // else if ( name.allowsNoPrecNoScale() ) {
+      // return call.getOperand(0);
+      // }
     }
 
     return call;

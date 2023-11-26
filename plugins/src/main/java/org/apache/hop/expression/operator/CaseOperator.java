@@ -198,7 +198,7 @@ public class CaseOperator extends Operator {
     }
 
     IExpression elseExpression = operands[3];
-    if (elseExpression != Literal.UNKNOWN) {
+    if (elseExpression != Literal.NULL) {
       writer.append(" ELSE ");
       elseExpression.unparse(writer);
     }

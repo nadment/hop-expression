@@ -42,6 +42,6 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
       result = elseType;
     }
 
-    return result;
+    return TypeTransforms.TO_MAX_PRECISION.transformType(result);
   }
 }

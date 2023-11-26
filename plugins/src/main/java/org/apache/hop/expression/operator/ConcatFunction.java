@@ -28,7 +28,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeFamily;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -75,7 +75,7 @@ public class ConcatFunction extends Function {
         return operands.get(0);
       default:
         Operator operator = ConcatStringFunction;
-        if (type != null && type.is(TypeName.BINARY)) {
+        if (type != null && type.isFamily(TypeFamily.BINARY)) {
           operator = ConcatBinaryFunction;
         }
         return new Call(operator, operands);

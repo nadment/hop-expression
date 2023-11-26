@@ -53,14 +53,20 @@ public class Expressions {
     try {
       IExpression expression = parser.parse();
       expression.validate(context);
-      return compile(context, expression);
+      expression = compile(context, expression);
+      
+      // Unknown are not expected here
+      if (expression.getType().is(TypeName.UNKNOWN)) {
+        throw new ExpressionException(0, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, source);
+      }
+      
+      return expression;
     } catch (ExpressionException e) {
       throw e;
     } catch (IllegalArgumentException e) {
       throw new ExpressionException(parser.getPosition(), ExpressionError.SYNTAX_ERROR, e.getMessage());
     }
   }
-
 
   public static IValueMeta createValueMeta(final String name, final TypeName type) {
 

@@ -81,20 +81,21 @@ public class GreaterThanOrEqualOperator extends Operator {
       return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
     }
 
-    // Simplify x>=TRUE → x IS TRUE
+    // Simplify TRUE>=x → x IS NOT NULL
     if (left.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, right);
-    }
+      return new Call(Operators.IS_NOT_NULL, right);
+    }    
+    // Simplify x>=TRUE → x IS TRUE
     if (right.equals(Literal.TRUE)) {
       return new Call(Operators.IS_TRUE, left);
     }
-
-    // Simplify x>=FALSE → x IS FALSE
+    // Simplify FALSE>=x → x IS FALSE
     if (left.equals(Literal.FALSE)) {
       return new Call(Operators.IS_FALSE, right);
     }
+    // Simplify x>=FALSE → x IS NOT NULL    
     if (right.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, left);
+      return new Call(Operators.IS_NOT_NULL, left);
     }
 
     // Simplify 3>=X+1 → 3-1>= X

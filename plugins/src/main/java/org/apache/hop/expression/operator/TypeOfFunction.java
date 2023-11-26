@@ -24,7 +24,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 
 /**
- * This function returns the data type of an expression.
+ * This function returns the data type name of an expression.
  */
 @FunctionPlugin
 public class TypeOfFunction extends Function {
@@ -35,6 +35,6 @@ public class TypeOfFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    return operands[0].getType().toString();
+    return operands[0].getType().getName().name();
   }
 }

@@ -65,12 +65,22 @@ public enum TypeName {
   /** A interval type for years to months */
   INTERVAL(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
 
-  
+
   /** A interval type for years to months */
-  //YEAR_TO_MONTH(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
+  // YEAR_TO_MONTH(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
   /** A interval type for days to seconds */
-  //DAY_TO_SECOND(TypeFamily.INTERVAL, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Interval.class),
+  // DAY_TO_SECOND(TypeFamily.INTERVAL, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
+  // Interval.class),
   ;
+
+  /**
+   * Flags indicating precision/scale combinations.
+   */
+  private interface PrecScale {
+    int NO_NO = 1;
+    int YES_NO = 2;
+    int YES_YES = 4;
+  }
 
   public static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
 
@@ -117,8 +127,8 @@ public enum TypeName {
   /**
    * Returns whether type are in same type family.
    */
-  public boolean isSameFamily(TypeFamily family) {
-    return this.family.isSameFamily(family);
+  public boolean isFamily(TypeFamily family) {
+    return this.family.isFamily(family);
   }
 
   /**
@@ -151,50 +161,6 @@ public enum TypeName {
   }
 
   /**
-   * Returns a {@link TypeName} with a given name (ignore case).
-   *
-   * @param name The name of the data name
-   * @return data name, or null if not valid
-   */
-  public static TypeName of(final String name) {
-    for (TypeName type : TypeName.values()) {
-      if (type.name().equalsIgnoreCase(name)) {
-        return type;
-      }
-    }
-    return null;
-  }
-
-
-  /**
-   * Search a data name for a value or a java class.
-   *
-   * @return The {@link TypeName}, 'UNKNOWN' if not found
-   */
-  public static TypeName from(final Object value) {
-    if (value == null)
-      return UNKNOWN;
-
-    Class<?> clazz = value.getClass();
-
-    if (value instanceof Class) {
-      clazz = (Class<?>) value;
-    }
-
-    for (TypeName name : TypeName.values()) {
-
-      // Ignore ANY
-      if (name.equals(ANY))
-        continue;
-
-      if (name.javaClass.isAssignableFrom(clazz)) {
-        return name;
-      }
-    }
-    return UNKNOWN;
-  }
-
-  /**
    * Returns the minimum precision (or length) allowed for this type, or -1 if
    * precision/length are not applicable for this type.
    *
@@ -207,7 +173,7 @@ public enum TypeName {
       case DATE:
       case INTEGER:
       case NUMBER:
-        return 1;   
+        return 1;
       case INTERVAL:
         return 6;
       default:
@@ -225,7 +191,7 @@ public enum TypeName {
     switch (this) {
       case STRING:
       case BINARY:
-        return 16777216;
+        return 16_777_216;
       case INTEGER:
         return 19;
       case NUMBER:
@@ -236,5 +202,42 @@ public enum TypeName {
       default:
         return -1;
     }
+  }
+
+  /**
+   * Returns a {@link TypeName} with a given name (ignore case).
+   *
+   * @param name The name of the data name
+   * @return data name, or null if not valid
+   */
+  public static TypeName of(final String name) {
+    for (TypeName type : TypeName.values()) {
+      if (type.name().equalsIgnoreCase(name)) {
+        return type;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Search a data type name for java class.
+   *
+   * @return The {@link TypeName}, 'UNKNOWN' if not found
+   */
+  public static TypeName findTypeName(final Class<?> clazz) {
+    if (clazz == null)
+      return TypeName.UNKNOWN;
+
+    for (TypeName name : TypeName.values()) {
+
+      // Ignore ANY
+      if (name.equals(TypeName.ANY))
+        continue;
+
+      if (name.getJavaClass().isAssignableFrom(clazz)) {
+        return name;
+      }
+    }
+    return TypeName.UNKNOWN;
   }
 }

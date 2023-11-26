@@ -23,12 +23,22 @@ import org.apache.hop.expression.exception.ConversionException;
 
 public final class IntervalType extends Type {
 
-  public static final IntervalType INTERVAL = new IntervalType(TypeName.INTERVAL);
+  public static final IntervalType INTERVAL = new IntervalType(true);
 
-  private IntervalType(TypeName name) {
-    super(name);
+  private IntervalType(boolean nullable) {
+    super(0, 0, nullable);
   }
-  
+
+  @Override
+  public IntervalType withNullability(boolean nullable) {
+    return new IntervalType(nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.INTERVAL;
+  }
+
   @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
     if (value == null) {
@@ -37,10 +47,10 @@ public final class IntervalType extends Type {
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
     }
-       
+
     return super.convert(value, clazz);
   }
-  
+
   @Override
   public Object cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -48,7 +58,7 @@ public final class IntervalType extends Type {
 
   @Override
   public Object cast(final Object value, final String pattern) throws ConversionException {
-    
+
     if (value == null) {
       return null;
     }
@@ -56,11 +66,11 @@ public final class IntervalType extends Type {
     if (value instanceof String) {
       return Interval.valueOf((String) value);
     }
-    
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        Type.valueOf(value), this);
   }
-  
+
   /**
    * Convert String value to Interval.
    * 
@@ -68,11 +78,11 @@ public final class IntervalType extends Type {
    * @return Interval
    */
   public static Interval convertStringToInterval(final String str) throws ConversionException {
-    if ( str==null) 
+    if (str == null)
       return null;
     Interval value = Interval.valueOf(str);
-    if ( value==null)
-          throw new ConversionException(ExpressionError.INVALID_INTERVAL, str);
+    if (value == null)
+      throw new ConversionException(ExpressionError.INVALID_INTERVAL, str);
     return value;
-   }
+  }
 }

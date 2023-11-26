@@ -38,10 +38,8 @@ public class TryToNumberFunction extends ToNumberFunction {
     if (value == null)
       return null;
 
-    String pattern = operands[1].getValue(String.class);
-
-    NumberFormat format = NumberFormat.of(pattern);
-
+    NumberFormat format = operands[1].getValue(NumberFormat.class);
+    
     try {
       return format.parse(value);
     } catch (ParseNumberException e) {

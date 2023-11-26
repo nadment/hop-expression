@@ -30,7 +30,21 @@ public final class DateType extends Type {
   public static final DateType DATE = new DateType();
 
   public DateType() {
-    super(TypeName.DATE, PRECISION_NOT_SPECIFIED, 9);
+    this(true);
+  }
+
+  protected DateType(boolean nullable) {
+    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  }
+
+  @Override
+  public DateType withNullability(final boolean nullable) {
+    return new DateType(nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.DATE;
   }
 
   @Override
@@ -41,10 +55,10 @@ public final class DateType extends Type {
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
     }
-       
+
     return super.convert(value, clazz);
   }
-  
+
   @Override
   public ZonedDateTime cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -72,8 +86,8 @@ public final class DateType extends Type {
       return DateTimeFormat.of(pattern).parse((String) value);
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        Type.valueOf(value), this);
   }
 
   /**
@@ -91,7 +105,7 @@ public final class DateType extends Type {
       return (ZonedDateTime) value;
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.DATE);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        DateType.DATE);
   }
 }

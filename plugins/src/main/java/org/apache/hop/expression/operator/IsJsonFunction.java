@@ -45,12 +45,12 @@ public class IsJsonFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().isSameFamily(TypeFamily.STRING)) {
+    if (call.getOperand(0).getType().isFamily(TypeFamily.STRING)) {
       return call;
     }
 
     // Optimize "IS_JSON(json)" to "json IS NOT NULL"
-    if (call.getOperand(0).getType().isSameFamily(TypeFamily.JSON)) {
+    if (call.getOperand(0).getType().isFamily(TypeFamily.JSON)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
 

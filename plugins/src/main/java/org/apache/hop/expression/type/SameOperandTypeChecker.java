@@ -52,7 +52,7 @@ public class SameOperandTypeChecker implements IOperandTypeChecker {
 
       Type type = operand.getType();
       if (firstFamily != null) {
-        if (!type.isSameFamily(firstFamily)) {
+        if (!type.isFamily(firstFamily)) {
           return false;
         }
       } else {

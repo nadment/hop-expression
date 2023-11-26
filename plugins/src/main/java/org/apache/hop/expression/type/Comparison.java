@@ -69,12 +69,12 @@ public class Comparison {
 
     return StringType.coerce(left).compareTo(StringType.coerce(right));
   }
-  
+
   protected static int compareTo(final JsonNode left, final JsonNode right) {
     // Ignores the order of attributes
     return left.equals(JSON_COMPARATOR, right) ? 0 : 1;
   }
-  
+
   protected static int compareTo(final ZonedDateTime left, final ZonedDateTime right) {
     // Two timestamp are equal if they represent the same moment in time:
     // Timestamp '2019-01-01 8:00:00 -8:00' = Timestamp '2019-01-01 11:00:00 -5:00'
@@ -83,11 +83,11 @@ public class Comparison {
     }
     return left.compareTo(right);
   }
-  
+
   protected static int compareTo(final String left, final String right) {
     return left.compareTo(right);
   }
-  
+
   protected static int compareTo(final byte[] left, final byte[] right) {
     int length = left.length < right.length ? left.length : right.length;
 

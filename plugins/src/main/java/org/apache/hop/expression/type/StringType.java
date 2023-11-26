@@ -30,16 +30,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public final class StringType extends Type {
 
   /**
-   * Default STRING type with max precision.
+   * Default STRING type with maximum precision.
    */
-  public static final StringType STRING = new StringType(TypeName.STRING.getMaxPrecision());
+  public static final StringType STRING = new StringType();
+
+  public static StringType from(final String value) {
+    return new StringType(value.length());
+  }
+
+  protected final int precision;
 
   public StringType() {
-    super(TypeName.STRING);
+    this(TypeName.STRING.getMaxPrecision(), true);
   }
 
   public StringType(int precision) {
-    super(TypeName.STRING, precision);
+    this(precision, true);
+  }
+
+  public StringType(int precision, boolean nullable) {
+    super(precision, SCALE_NOT_SPECIFIED, nullable);
+    this.precision = precision;
+  }
+
+  public StringType withNullability(final boolean nullable) {
+    return new StringType(precision, nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.STRING;
+  }
+
+  @Override
+  public int getPrecision() {
+    return precision;
   }
 
   @Override
@@ -65,10 +90,10 @@ public final class StringType extends Type {
     if (clazz == JsonNode.class) {
       return clazz.cast(JsonType.convertStringToJson((String) value));
     }
-    
+
     return super.convert(value, clazz);
   }
-  
+
   @Override
   public String cast(final Object value) throws ConversionException {
     return cast(value, null);

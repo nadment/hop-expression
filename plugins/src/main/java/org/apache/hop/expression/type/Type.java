@@ -16,10 +16,8 @@
  */
 package org.apache.hop.expression.type;
 
-import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.ExpressionError;
 import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -31,27 +29,30 @@ public abstract class Type {
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
 
-  protected final TypeName name;
-  protected final int precision;
-  protected final int scale;
-  private final String signature;
+  protected boolean nullable;
+  private String signature;
 
-  protected Type(final TypeName name) {
-    this(name, PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED);
-  }
+  protected Type(int precision, int scale, boolean nullable) {
+    this.nullable = nullable;
 
-  protected Type(final TypeName name, final int precision) {
-    this(name, precision, SCALE_NOT_SPECIFIED);
-  }
+    // Generates a string representation of this type.
+    TypeName name = getName();
+    StringBuilder builder = new StringBuilder();
+    builder.append(name.toString());
+    if (precision > 0 && (precision != name.getMaxPrecision() || scale > 0)) {
+      builder.append('(');
+      builder.append(precision);
+      if (scale > 0) {
+        builder.append(',');
+        builder.append(scale);
+      }
+      builder.append(')');
+    }
+    this.signature = builder.toString();
 
-  protected Type(final TypeName name, int precision, int scale) {
-    this.name = requireNonNull(name);
-    this.precision = precision;
-    this.scale = scale;
-    this.signature = generate();
-
+    // Check precision and scale range
     if (precision > name.getMaxPrecision()) {
-      throw new IllegalArgumentException("Precision out of range");
+      throw new IllegalArgumentException(ExpressionError.PRECISION_OUT_OF_RANGE.message(signature));
     }
   }
 
@@ -60,9 +61,7 @@ public abstract class Type {
    *
    * @return name, never null
    */
-  public TypeName getName() {
-    return name;
-  }
+  public abstract TypeName getName();
 
   /**
    * Gets the {@link TypeFamily} of this type.
@@ -70,24 +69,35 @@ public abstract class Type {
    * @return family, never null
    */
   public TypeFamily getFamily() {
-    return name.getFamily();
+    return getName().getFamily();
   }
 
-  public boolean is(TypeName typeName) {
-    return name == typeName;
+  public boolean is(final TypeName typeName) {
+    return getName() == typeName;
   }
 
-  public boolean isSameFamily(TypeFamily family) {
-    return name.getFamily().isSameFamily(family);
+  public boolean isFamily(final TypeFamily family) {
+    return getName().isFamily(family);
   }
 
-  public boolean isSameFamily(Type type) {
-    return name.getFamily().isSameFamily(type.getFamily());
+  public boolean isFamily(final Type type) {
+    return getName().isFamily(type.getFamily());
   }
 
-  public boolean isCompatibleWithCoercion(Type type) {
-    return name.getFamily().isCompatibleWithCoercion(type.getFamily());
+  public boolean isCompatibleWithCoercion(final Type type) {
+    return getName().isCompatibleWithCoercion(type.getFamily());
   }
+
+  /**
+   * Queries whether this type allows null values.
+   *
+   * @return whether type allows null values
+   */
+  public boolean isNullable() {
+    return nullable;
+  }
+
+  public abstract Type withNullability(final boolean nullable);
 
   /**
    * Gets the precision of this type.
@@ -106,7 +116,7 @@ public abstract class Type {
    *         -1 if precision is not valid for this type
    */
   public int getPrecision() {
-    return precision;
+    return PRECISION_NOT_SPECIFIED;
   }
 
   /**
@@ -116,54 +126,34 @@ public abstract class Type {
    * @return number of digits of scale
    */
   public int getScale() {
-    return scale;
+    return SCALE_NOT_SPECIFIED;
   }
 
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || obj instanceof Type && Objects.equals(this.signature, ((Type) obj).signature);
+        || obj instanceof Type && Objects.equals(this.signature, ((Type) obj).signature)
+            && nullable == ((Type) obj).nullable;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(signature);
-  }
-
-  /**
-   * Generates a string representation of this type.
-   *
-   * @return The string representation
-   */
-  private String generate() {
-    StringBuilder builder = new StringBuilder();
-    builder.append(name.toString());
-    if (precision > 0 && (precision != name.getMaxPrecision() || scale > 0)) {
-      builder.append('(');
-      builder.append(this.precision);
-      if (scale > 0) {
-        builder.append(',');
-        builder.append(this.scale);
-      }
-      builder.append(')');
-    }
-
-    return builder.toString();
+    return Objects.hash(signature, nullable);
   }
 
   /**
    * Convert a value from this data type to the specified Java type.
    *
    * @param value the value to convert
-   * @param clazz Desired Java type 
+   * @param clazz Desired Java type
    * @return the converted value
    * @throws ConversionException if the casting fail
    */
   public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value,
-        TypeName.from(value), TypeName.from(clazz));
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        TypeName.findTypeName(clazz));
   }
-  
+
   /**
    * Convert a value to the specified {@link Type}.
    *
@@ -190,35 +180,44 @@ public abstract class Type {
   }
 
   /**
-   * Return a default {@link Type} for a value.
-   *
+   * Return a default {@link Type} from a value.
+   * 
    * @return The type or 'UNKNOWN' if not found
    */
-  public static Type of(final Object value) {
-    if (value == null)
+  public static Type valueOf(final Object value) {
+    if (value == null) {
       return UnknownType.UNKNOWN;
-    if (value instanceof Boolean)
-      return BooleanType.BOOLEAN;
-    if (value instanceof String)
-      return StringType.STRING;
-    if (value instanceof BigDecimal) {
-      BigDecimal number = (BigDecimal) value;
-      return new NumberType(number.precision(), number.scale());
     }
-    if (value instanceof Double)
-      return NumberType.NUMBER;
-    if (value instanceof Long)
-      return IntegerType.INTEGER;
-    if (value instanceof ZonedDateTime)
+    if (value instanceof Boolean) {
+      return BooleanType.BOOLEAN;
+    }
+    if (value instanceof String) {
+      return StringType.from((String) value);
+    }
+    if (value instanceof BigDecimal) {
+      return NumberType.from((BigDecimal) value);
+    }
+    if (value instanceof Double) {
+      return NumberType.from(BigDecimal.valueOf((Double) value));
+    }
+    if (value instanceof Long) {
+      return IntegerType.from((Long) value);
+    }
+    if (value instanceof Integer) {
+      return IntegerType.from((Integer) value);
+    }
+    if (value instanceof byte[]) {
+      return BinaryType.from((byte[]) value);
+    }
+    if (value instanceof ZonedDateTime) {
       return DateType.DATE;
-    if (value instanceof JsonNode)
+    }
+    if (value instanceof JsonNode) {
       return JsonType.JSON;
-    if (value instanceof TimeUnit)
-      return UnknownType.SYMBOL;
-    if (value instanceof byte[])
-      return BinaryType.BINARY;
-    if (value instanceof Interval)
+    }
+    if (value instanceof Interval) {
       return IntervalType.INTERVAL;
+    }
 
     return UnknownType.UNKNOWN;
   }

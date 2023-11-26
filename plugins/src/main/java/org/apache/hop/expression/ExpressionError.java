@@ -72,9 +72,10 @@ public enum ExpressionError {
   ARITHMETIC_OVERFLOW("Expression.ArithmeticOverflow"),
   /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE("Expression.ArgumentOutOfRange"),
+  /** Precision out of range ''{0}'' */
+  PRECISION_OUT_OF_RANGE("Expression.PrecisionOutOfRange"),
   //
   VARIABLE_VALUE_ERROR("Expression.InvalidVariable"),
-
   /** Invalid Boolean ''{0}'' */
   INVALID_BOOLEAN("Expression.InvalidBoolean"),
   //

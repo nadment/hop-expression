@@ -14,20 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.hop.expression.type;
 
 /**
- * Flags indicating precision/scale combinations.
+ * Strategy to transform one type to another.
  */
-
-/* package */ final class PrecScale {
-
-  private PrecScale() {
-
-  }
-
-  public static final int NO_NO = 1;
-  public static final int YES_NO = 2;
-  public static final int YES_YES = 4;
+public interface ITypeTransform {
+  /**
+   * Transforms a {@link Type}.
+   * 
+   * @param type to transform
+   * @return type
+   */
+  public Type transformType(Type type);
 }

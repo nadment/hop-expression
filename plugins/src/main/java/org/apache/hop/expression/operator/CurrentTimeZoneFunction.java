@@ -27,7 +27,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-
+import org.apache.hop.expression.type.StringType;
 
 /**
  * The function return the current time zone
@@ -42,6 +42,6 @@ public class CurrentTimeZoneFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    return Literal.of(Attribute.CURRENT_TIMEZONE.get(context));
+    return new Literal(Attribute.CURRENT_TIMEZONE.get(context), StringType.STRING);
   }
 }

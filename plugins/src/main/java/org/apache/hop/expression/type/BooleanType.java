@@ -26,7 +26,21 @@ public final class BooleanType extends Type {
   public static final BooleanType BOOLEAN = new BooleanType();
 
   public BooleanType() {
-    super(TypeName.BOOLEAN, PRECISION_NOT_SPECIFIED);
+    this(true);
+  }
+
+  public BooleanType(boolean nullable) {
+    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  }
+
+  @Override
+  public BooleanType withNullability(final boolean nullable) {
+    return new BooleanType(nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.BOOLEAN;
   }
 
   /**
@@ -45,10 +59,10 @@ public final class BooleanType extends Type {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value),
-        TypeName.BOOLEAN);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        BooleanType.BOOLEAN);
   }
-  
+
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
@@ -58,7 +72,7 @@ public final class BooleanType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast((boolean)value ? "TRUE":"FALSE");
+      return clazz.cast((boolean) value ? "TRUE" : "FALSE");
     }
     if (clazz == Long.class) {
       return clazz.cast(((boolean) value) ? 1L : 0L);
@@ -66,10 +80,10 @@ public final class BooleanType extends Type {
     if (clazz == BigDecimal.class) {
       return clazz.cast(((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO);
     }
-    
+
     return super.convert(value, clazz);
   }
-  
+
   @Override
   public Boolean cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -101,7 +115,7 @@ public final class BooleanType extends Type {
     }
 
     throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
-        TypeName.from(value), this);
+        Type.valueOf(value), this);
   }
 
   public static final Boolean convertStringToBoolean(final String str) throws ConversionException {

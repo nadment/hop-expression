@@ -28,25 +28,58 @@ import java.math.RoundingMode;
 public final class NumberType extends Type {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
-  
+
+  protected final int precision;
+  protected final int scale;
+
   /**
    * Default NUMBER type with max precision.
    */
   public static final NumberType NUMBER =
-      new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED);
+      new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED, true);
+
+  public static NumberType from(final BigDecimal number) {
+    return new NumberType(number.precision(), number.scale(), true);
+  }
 
   public NumberType() {
-    super(TypeName.NUMBER, TypeName.NUMBER.getMaxPrecision(), 0);
+    this(TypeName.NUMBER.getMaxPrecision(), 0, true);
   }
 
   public NumberType(int precision) {
-    super(TypeName.NUMBER, precision, 0);
+    this(precision, 0, true);
   }
 
   public NumberType(int precision, int scale) {
-    super(TypeName.NUMBER, precision, scale);
+    this(precision, scale, true);
   }
-  
+
+  public NumberType(int precision, int scale, boolean nullable) {
+    super(precision, scale, nullable);
+    this.precision = precision;
+    this.scale = scale;
+  }
+
+  @Override
+  public NumberType withNullability(boolean nullable) {
+    return new NumberType(precision, scale, nullable);
+  }
+
+  @Override
+  public int getPrecision() {
+    return precision;
+  }
+
+  @Override
+  public int getScale() {
+    return scale;
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.NUMBER;
+  }
+
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
@@ -65,10 +98,10 @@ public final class NumberType extends Type {
     if (clazz == String.class) {
       return clazz.cast(NumberFormat.of("TM").format((BigDecimal) value));
     }
-    
+
     return super.convert(value, clazz);
   }
-  
+
   @Override
   public BigDecimal cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -123,8 +156,8 @@ public final class NumberType extends Type {
       return convertBinaryToNumber((byte[]) value);
     }
 
-    throw new ConversionException (
-        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        Type.valueOf(value), this);
   }
 
   /**
@@ -162,23 +195,24 @@ public final class NumberType extends Type {
     if (value instanceof String) {
       return convertStringToNumber((String) value);
     }
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.NUMBER);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        NumberType.NUMBER);
   }
 
-  public static final BigDecimal convertStringToNumber(final String str) throws ConversionException {
+  public static final BigDecimal convertStringToNumber(final String str)
+      throws ConversionException {
     try {
       return FORMAT.parse(str);
     } catch (ParseNumberException e) {
-      throw new ConversionException(
-          ExpressionError.UNSUPPORTED_COERCION, str, TypeName.STRING, TypeName.NUMBER);
+      throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, str, StringType.STRING,
+          NumberType.NUMBER);
     }
   }
 
   public static BigDecimal convertBinaryToNumber(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(
-          ExpressionError.CONVERSION_ERROR, bytes, TypeName.BINARY, TypeName.NUMBER);
+      throw new ConversionException(ExpressionError.CONVERSION_ERROR, bytes, BinaryType.BINARY,
+          NumberType.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

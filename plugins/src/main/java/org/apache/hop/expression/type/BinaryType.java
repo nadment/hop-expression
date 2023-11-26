@@ -23,18 +23,44 @@ import java.nio.charset.StandardCharsets;
 
 public final class BinaryType extends Type {
   /**
-   * Default BINARY type with default parameters.
+   * Default BINARY type with maximum precision.
    */
   public static final BinaryType BINARY = new BinaryType();
 
+  public static BinaryType from(final byte[] value) {
+    return new BinaryType(value.length, value == null);
+  }
+
+  protected final int precision;
+
   public BinaryType() {
-    super(TypeName.BINARY, TypeName.BINARY.getMaxPrecision());
+    this(TypeName.BINARY.getMaxPrecision(), true);
   }
 
   public BinaryType(int precision) {
-    super(TypeName.BINARY, precision);
+    this(precision, true);
   }
-  
+
+  public BinaryType(int precision, boolean nullable) {
+    super(precision, SCALE_NOT_SPECIFIED, nullable);
+    this.precision = precision;
+  }
+
+  @Override
+  public Type withNullability(boolean nullable) {
+    return new BinaryType(precision, nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.BINARY;
+  }
+
+  @Override
+  public int getPrecision() {
+    return precision;
+  }
+
   /**
    * Coerce value to data type BINARY
    * 
@@ -52,21 +78,21 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_COERCION, value, TypeName.from(value), TypeName.BINARY);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        BinaryType.BINARY);
   }
-  
+
   @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
     if (value == null)
       return null;
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
-    }    
+    }
     if (clazz == String.class) {
       return clazz.cast(StringType.convertBinaryToString((byte[]) value));
     }
-    
+
     return super.convert(value, clazz);
   }
 
@@ -97,8 +123,8 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        Type.valueOf(value), this);
   }
 
   public static byte[] convertIntegerToBinary(Long number) throws ConversionException {

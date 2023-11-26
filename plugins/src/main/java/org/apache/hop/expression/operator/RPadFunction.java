@@ -27,7 +27,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeFamily;
 
 /**
  * The function right-pads a string or binary with another string or binary, to a certain length.
@@ -44,7 +44,7 @@ public class RPadFunction extends Function {
   protected static final int PAD_LIMIT = 8192;
 
   public RPadFunction() {
-    super("RPAD", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC
+    super("RPAD", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC
         .or(OperandTypes.STRING_NUMERIC_STRING).or(OperandTypes.BINARY_NUMERIC_BINARY),
         Category.STRING, "/docs/rpad.html");
   }
@@ -54,7 +54,7 @@ public class RPadFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeName.BINARY)) {
+    if (type.isFamily(TypeFamily.BINARY)) {
       return new Call(RPadBinary, call.getOperands());
     }
 

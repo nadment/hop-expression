@@ -48,15 +48,15 @@ public class AddOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    if (left.getType().isSameFamily(TypeFamily.TEMPORAL)) {
+    if (left.getType().isFamily(TypeFamily.TEMPORAL)) {
       // Supports the basic addition and subtraction of days to DATE values, in the form of { + |
       // - } <integer>
-      if (right.getType().isSameFamily(TypeFamily.NUMERIC)) {
+      if (right.getType().isFamily(TypeFamily.NUMERIC)) {
         return new Call(call.getPosition(), AddDaysFunction.INSTANCE, call.getOperands());
       }
 
       return new Call(call.getPosition(), Operators.ADD_INTERVAL, call.getOperands());
-    } else if (left.getType().isSameFamily(TypeFamily.INTERVAL)) {
+    } else if (left.getType().isFamily(TypeFamily.INTERVAL)) {
       // Normalize operands order DATE+INTERVAL
       return new Call(call.getPosition(), Operators.ADD_INTERVAL, call.getOperand(1),
           call.getOperand(0));

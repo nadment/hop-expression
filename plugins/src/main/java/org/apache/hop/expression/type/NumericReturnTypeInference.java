@@ -21,7 +21,9 @@ import org.apache.hop.expression.IExpression;
 
 public class NumericReturnTypeInference implements IReturnTypeInference {
 
-  public NumericReturnTypeInference() {}
+  public NumericReturnTypeInference() {
+    super();
+  }
 
   @Override
   public Type inferReturnType(Call call) {

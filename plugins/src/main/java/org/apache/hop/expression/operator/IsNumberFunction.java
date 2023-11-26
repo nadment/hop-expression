@@ -46,12 +46,12 @@ public class IsNumberFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().isSameFamily(TypeFamily.STRING)) {
+    if (call.getOperand(0).getType().isFamily(TypeFamily.STRING)) {
       return call;
     }
 
     // Optimize "IS_NUMBER(n)" to "n IS NOT NULL"
-    if (call.getOperand(0).getType().isSameFamily(TypeFamily.NUMERIC)) {
+    if (call.getOperand(0).getType().isFamily(TypeFamily.NUMERIC)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
 

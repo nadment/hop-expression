@@ -22,7 +22,7 @@ import org.apache.hop.expression.Tuple;
 public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
 
   public CaseOperatorOperandTypeChecker() {
-    
+
   }
 
   @Override
@@ -43,7 +43,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     }
 
     for (IExpression whenOperand : whenTuple) {
-      if (!whenOperand.getType().isSameFamily(valueType)) {
+      if (!whenOperand.getType().isFamily(valueType)) {
         return false;
       }
     }
@@ -57,17 +57,17 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
       }
     }
 
-    if (thenType.isSameFamily(TypeFamily.NONE)) {
+    if (thenType.isFamily(TypeFamily.NONE)) {
       thenType = elseExpression.getType();
     }
 
     for (IExpression thenOperand : thenTuple) {
-      if (!(thenOperand.getType().isSameFamily(thenType) || thenOperand.isNull())) {
+      if (!(thenOperand.getType().isFamily(thenType) || thenOperand.isNull())) {
         return false;
       }
     }
 
-    return elseExpression.isNull() || elseExpression.getType().isSameFamily(thenType);
+    return elseExpression.isNull() || elseExpression.getType().isFamily(thenType);
   }
 
   @Override

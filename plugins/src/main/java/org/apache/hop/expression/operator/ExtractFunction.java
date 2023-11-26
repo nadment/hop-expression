@@ -32,7 +32,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeFamily;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
@@ -57,7 +57,7 @@ public class ExtractFunction extends Function {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(1).getType();
-    if (type.is(TypeName.INTERVAL)) {
+    if (type.isFamily(TypeFamily.INTERVAL)) {
       return new Call(ExtractIntervalFunction, call.getOperands());
     }
     return new Call(ExtractDateFunction, call.getOperands());

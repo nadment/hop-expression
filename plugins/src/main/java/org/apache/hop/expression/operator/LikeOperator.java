@@ -88,8 +88,8 @@ public class LikeOperator extends Operator {
 
       // field LIKE '%' → IFNULL(field,NULL,TRUE)
       if ("%".equals(pattern)) {
-        // return new Call(Operators.IS_NOT_NULL, value);
-        return new Call(Operators.IFNULL, value, Literal.NULL, Literal.TRUE);
+        //return new Call(Operators.EQUAL, value, value);
+        return new Call(Operators.NVL2, value, Literal.TRUE, Literal.NULL);
       }
 
       // field LIKE '%foo%' → CONTAINS(field,'foo')

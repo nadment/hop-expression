@@ -24,7 +24,6 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
@@ -48,14 +47,14 @@ public final class Literal implements IExpression {
    * NULL literal is a boolean data type with null value
    */
   public static final Literal NULL = new Literal(null, BooleanType.BOOLEAN);
-  public static final Literal TRUE = new Literal(Boolean.TRUE, BooleanType.BOOLEAN);
-  public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN);
-  public static final Literal ZERO = new Literal(0L, IntegerType.INTEGER);
-  public static final Literal ONE = new Literal(1L, IntegerType.INTEGER);
+  public static final Literal TRUE = new Literal(Boolean.TRUE, new BooleanType(false));
+  public static final Literal FALSE = new Literal(Boolean.FALSE, new BooleanType(false));
+  public static final Literal ZERO = new Literal(0L, new IntegerType(1, false));
+  public static final Literal ONE = new Literal(1L, new IntegerType(1, false));
 
   public static Literal of(final Object value) {
     if (value == null)
-      return UNKNOWN;
+      return NULL;
 
     if (value instanceof Boolean) {
       return ((boolean) value) ? TRUE : FALSE;
@@ -70,18 +69,22 @@ public final class Literal implements IExpression {
         return ONE;
       }
       if (BigDecimalMath.isLongValue(number)) {
-        return new Literal(number.longValueExact(), IntegerType.INTEGER);
+        Long longValue = number.longValueExact();      
+        return new Literal(longValue, IntegerType.from(longValue));
       }
-      return new Literal(number, new NumberType(TypeName.NUMBER.getMaxPrecision(), number.scale()));
+      return new Literal(number, NumberType.from(number));
     }
 
     if (value instanceof Double) {
-      Double number = (Double) value;
-      if (number == 0D)
+      Double d = (Double) value;
+      if (d == 0D)
         return ZERO;
-      if (number == 1D)
+      if (d == 1D)
         return ONE;
-      return new Literal(BigDecimal.valueOf(number), NumberType.NUMBER);
+      
+      BigDecimal number = BigDecimal.valueOf(d);
+      
+      return new Literal(number, NumberType.from(number));
     }
 
     if (value instanceof Long) {
@@ -89,8 +92,8 @@ public final class Literal implements IExpression {
       if (number == 0L)
         return ZERO;
       if (number == 1L)
-        return ONE;
-      return new Literal(number, IntegerType.INTEGER);
+        return ONE;      
+      return new Literal(number, IntegerType.from(number));
     }
 
     if (value instanceof Integer) {
@@ -98,16 +101,17 @@ public final class Literal implements IExpression {
       if (number == 0)
         return ZERO;
       if (number == 1)
-        return ONE;
-      return new Literal(number.longValue(), IntegerType.INTEGER);
+        return ONE;      
+      Long longValue = number.longValue();
+      return new Literal(longValue, IntegerType.from(longValue));
     }
 
     if (value instanceof String) {
-      return new Literal(value, StringType.STRING);
+      return new Literal(value, StringType.from((String) value));
     }
 
-    if (value instanceof byte[]) {
-      return new Literal(value, BinaryType.BINARY);
+    if (value instanceof byte[]) {      
+      return new Literal(value, BinaryType.from((byte[]) value));
     }
 
     if (value instanceof ZonedDateTime) {
@@ -123,7 +127,7 @@ public final class Literal implements IExpression {
     }
 
     // Special internal case TimeUnit, DataType, Random
-    return new Literal(value, UnknownType.SYMBOL);
+    return new Literal(value, UnknownType.UNKNOWN);
   }
 
   /**

@@ -22,14 +22,52 @@ import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 
 public final class IntegerType extends Type {
-  public static final IntegerType INTEGER = new IntegerType(TypeName.INTEGER.getMaxPrecision());
+  /**
+   * Default INTEGER type with maximum precision.
+   */
+  public static final IntegerType INTEGER = new IntegerType();
 
-  public IntegerType() {
-    super(TypeName.INTEGER, TypeName.INTEGER.getMaxPrecision(), 0);
+  public static IntegerType from(final Long value) {
+    return new IntegerType(numberOfDigit(value), true);
   }
 
-  protected IntegerType(int precision) {
-    super(TypeName.INTEGER, precision, 0);
+  public static IntegerType from(final Integer value) {
+    return new IntegerType(numberOfDigit(value), true);
+  }
+
+  protected final int precision;
+
+  public IntegerType() {
+    this(TypeName.INTEGER.getMaxPrecision(), true);
+  }
+
+  public IntegerType(int precision) {
+    this(precision, true);
+  }
+
+  public IntegerType(int precision, boolean nullable) {
+    super(precision, SCALE_NOT_SPECIFIED, nullable);
+    this.precision = precision;
+  }
+
+  @Override
+  public Type withNullability(boolean nullable) {
+    return new IntegerType(precision, nullable);
+  }
+
+  @Override
+  public TypeName getName() {
+    return TypeName.INTEGER;
+  }
+
+  @Override
+  public int getPrecision() {
+    return precision;
+  }
+
+  @Override
+  public int getScale() {
+    return 0;
   }
 
   /**
@@ -38,7 +76,7 @@ public final class IntegerType extends Type {
    * @param value the value to coerce
    * @return Long
    */
-  public  static final Long coerce(final Object value) throws ConversionException {   
+  public static final Long coerce(final Object value) throws ConversionException {
     if (value == null) {
       return null;
     }
@@ -54,14 +92,11 @@ public final class IntegerType extends Type {
     // if (value instanceof Boolean) {
     // return ((boolean) value) ? 1L : 0L;
     // }
-    // if (value instanceof byte[]) {
-    // return toInteger((byte[]) value);
-    // }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value,
-        TypeName.from(value), TypeName.INTEGER);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+        IntegerType.INTEGER);
   }
-  
+
   @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
@@ -80,10 +115,10 @@ public final class IntegerType extends Type {
     if (clazz == String.class) {
       return clazz.cast(String.valueOf(value));
     }
-    
+
     return super.convert(value, clazz);
   }
-  
+
   @Override
   public Long cast(final Object value) throws ConversionException {
     return cast(value, null);
@@ -113,8 +148,8 @@ public final class IntegerType extends Type {
       return convertBinaryToInteger((byte[]) value);
     }
 
-    throw new ConversionException(
-        ExpressionError.UNSUPPORTED_CONVERSION, value, TypeName.from(value), this);
+    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+        Type.valueOf(value), this);
   }
 
   public static final Long convertStringToInteger(final String str) throws ConversionException {
@@ -128,13 +163,62 @@ public final class IntegerType extends Type {
 
   public static final Long convertBinaryToInteger(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(
-          ExpressionError.CONVERSION_ERROR, TypeName.BINARY, bytes, TypeName.INTEGER);
+      throw new ConversionException(ExpressionError.CONVERSION_ERROR, TypeName.BINARY, bytes,
+          TypeName.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;
       result |= (bytes[i] & 0xFF);
     }
     return result;
+  }
+
+  protected static int numberOfDigit(int number) {
+    if (number < 100000) {
+      if (number < 100) {
+        if (number < 10) {
+          return 1;
+        } else {
+          return 2;
+        }
+      } else {
+        if (number < 1000) {
+          return 3;
+        } else {
+          if (number < 10000) {
+            return 4;
+          } else {
+            return 5;
+          }
+        }
+      }
+    } else {
+      if (number < 10000000) {
+        if (number < 1000000) {
+          return 6;
+        } else {
+          return 7;
+        }
+      } else {
+        if (number < 100000000) {
+          return 8;
+        } else {
+          if (number < 1000000000) {
+            return 9;
+          } else {
+            return 10;
+          }
+        }
+      }
+    }
+  }
+
+  protected static int numberOfDigit(long number) {
+    int count = 0;
+    while (number != 0) {
+      number = number / 10;
+      ++count;
+    }
+    return count;
   }
 }

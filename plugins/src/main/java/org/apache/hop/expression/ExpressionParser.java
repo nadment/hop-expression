@@ -150,9 +150,10 @@ public class ExpressionParser {
       tokens.add(token);
     }
 
-    // Empty source return NULL
-    if (tokens.isEmpty())
-      return Literal.UNKNOWN;
+    // Empty source return literal NULL
+    if (tokens.isEmpty()) {
+      return Literal.NULL;
+    }
 
     IExpression expression = this.parseLogicalOr();
 
@@ -163,16 +164,11 @@ public class ExpressionParser {
           token.text());
     }
 
-    // Symbol only are not expected here
-    if (expression.getType().is(TypeName.SYMBOL)) {
-      throw new ExpressionException(0, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, source);
-    }
-
     return expression;
   }
 
   /**
-   * Parse logical OR expression
+   * Parse logical OR expression (Disjunction)
    *
    * <p>
    * LogicalAndExpression ( OR LogicalAndExpression )*
@@ -187,7 +183,7 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse logical AND expression
+   * Parse logical AND expression (Conjunction)
    *
    * <p>
    * LogicalNotExpression ( AND LogicalNotExpression )*
@@ -210,7 +206,6 @@ public class ExpressionParser {
    * [NOT] IdentityExpression
    */
   private IExpression parseLogicalNot() throws ExpressionException {
-
     if (isThenNext(Id.NOT)) {
       return new Call(Operators.BOOLNOT, parseLogicalNot());
     }
@@ -219,7 +214,7 @@ public class ExpressionParser {
   }
 
   /**
-   * Parse identity expression
+   * Parse assertion IS expression
    *
    * <p>
    * RelationalExpression IS [NOT] TRUE|FALSE|NULL
@@ -448,7 +443,7 @@ public class ExpressionParser {
       case FALSE:
         return Literal.FALSE;
       case NULL:
-        return Literal.UNKNOWN;
+        return Literal.NULL;
       case IDENTIFIER:
         return new Identifier(token.start(), token.text());
       case LITERAL_STRING:
@@ -1198,9 +1193,9 @@ public class ExpressionParser {
             break;
           return Literal.of(BooleanType.BOOLEAN);
         case INTEGER:
-          if (precisionFound)
+          if (scaleFound)
             break;
-          return Literal.of(IntegerType.INTEGER);
+          return Literal.of(new IntegerType(precision));
         case NUMBER:
           return Literal.of(new NumberType(precision, scale));
         case STRING:

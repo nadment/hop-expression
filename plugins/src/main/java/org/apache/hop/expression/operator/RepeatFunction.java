@@ -26,7 +26,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeFamily;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -40,7 +40,7 @@ public class RepeatFunction extends Function {
   public static final RepeatFunction RepeatBinaryFunction = new RepeatBinary();
 
   public RepeatFunction() {
-    super("REPEAT", ReturnTypes.ARG0, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
+    super("REPEAT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
         Category.STRING, "/docs/repeat.html");
   }
 
@@ -48,7 +48,7 @@ public class RepeatFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-    if (type.is(TypeName.BINARY)) {
+    if (type.isFamily(TypeFamily.BINARY)) {
       return new Call(RepeatBinaryFunction, call.getOperands());
     }
 

@@ -26,6 +26,7 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeName;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -35,7 +36,10 @@ import java.math.BigDecimal;
  * <strong>Syntax:</strong> <code>x * y</code>
  */
 public class MultiplyOperator extends Operator {
-
+    
+  private static final MultiplyOperator MultiplyInteger = new MultiplyIntegerOperator();
+  private static final MultiplyOperator MultiplyNumber = new MultiplyNumberOperator();
+  
   public MultiplyOperator() {
     super("MULTIPLY", "*", 50, true, ReturnTypes.MULTIPLY_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
         Category.MATHEMATICAL, "/docs/multiply.html");
@@ -69,19 +73,12 @@ public class MultiplyOperator extends Operator {
       return new Call(Operators.MULTIPLY, operation, right.asCall().getOperand(1));
     }
 
-    return call;
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    BigDecimal left = operands[0].getValue(BigDecimal.class);
-    if (left == null)
-      return null;
-    BigDecimal right = operands[1].getValue(BigDecimal.class);
-    if (right == null)
-      return null;
-
-    return left.multiply(right, MATH_CONTEXT);
+    // Optimize data type
+    if (call.getType().is(TypeName.INTEGER) ) {
+      return new Call(MultiplyInteger, call.getOperands());
+    }
+    
+    return new Call(MultiplyNumber, call.getOperands());
   }
 
   @Override
@@ -94,5 +91,33 @@ public class MultiplyOperator extends Operator {
     operands[0].unparse(writer);
     writer.append('*');
     operands[1].unparse(writer);
+  }
+  
+  private static final class MultiplyIntegerOperator extends MultiplyOperator {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Long left = operands[0].getValue(Long.class);
+      if (left == null)
+        return null;
+      Long right = operands[1].getValue(Long.class);
+      if (right == null)
+        return null;
+
+      return left*right;
+    }
+  }
+
+  private static final class MultiplyNumberOperator extends MultiplyOperator {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      BigDecimal left = operands[0].getValue(BigDecimal.class);
+      if (left == null)
+        return null;
+      BigDecimal right = operands[1].getValue(BigDecimal.class);
+      if (right == null)
+        return null;
+
+      return left.multiply(right, MATH_CONTEXT);
+    }
   }
 }

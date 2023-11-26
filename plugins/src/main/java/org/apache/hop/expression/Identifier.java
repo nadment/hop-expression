@@ -279,7 +279,7 @@ public class Identifier implements IExpression {
       case IValueMeta.TYPE_STRING:
         return new StringType(meta.getLength());
       case IValueMeta.TYPE_INTEGER:
-        return IntegerType.INTEGER;
+        return new IntegerType(meta.getLength());
       case IValueMeta.TYPE_NUMBER:
       case IValueMeta.TYPE_BIGNUMBER:
         return new NumberType(meta.getLength(), meta.getPrecision());

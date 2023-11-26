@@ -48,7 +48,7 @@ public class IsDateFunction extends Function {
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
 
-    if (call.getOperand(0).getType().isSameFamily(TypeFamily.STRING)) {
+    if (call.getOperand(0).getType().isFamily(TypeFamily.STRING)) {
       Object value = call.getOperand(1).getValue();
       if (value instanceof DateTimeFormat) {
         // format already compiled
@@ -67,7 +67,7 @@ public class IsDateFunction extends Function {
     }
 
     // Optimize "IS_DATE(d)" to "d IS NOT NULL"
-    if (call.getOperand(0).getType().isSameFamily(TypeFamily.TEMPORAL)) {
+    if (call.getOperand(0).getType().isFamily(TypeFamily.TEMPORAL)) {
       return new Call(Operators.IS_NOT_NULL, call.getOperand(0));
     }
 

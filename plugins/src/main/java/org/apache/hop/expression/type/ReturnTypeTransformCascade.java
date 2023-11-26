@@ -14,23 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.Call;
+import java.util.Objects;
+
 /**
- * Describes when a function/operator will return null.
- *
- * <p>
- * STRICT and ANY are similar. STRICT says f(a0, a1) will NEVER return
- * null if a0 and a1 are not null. This means that we can check whether f
- * returns null just by checking its arguments. Use STRICT in preference to
- * ANY whenever possible.
+ * Strategy to infer the type of an operator call from the type of the operands
+ * by using one {@link IReturnTypeInference} rule and a combination of
+ * {@link ITypeTransform}s.
  */
-public enum NullPolicy {
-  /** Returns null if and only if all of the arguments are null. */
-  ALL,
-  /** If any of the arguments are null, return null. */
-  ANY,
-  /** If the first argument is null, return null. */
-  ARG0, NONE
+public class ReturnTypeTransformCascade implements IReturnTypeInference {
+
+  private final IReturnTypeInference rule;
+  private final ITypeTransform[] transforms;
+
+  ReturnTypeTransformCascade(IReturnTypeInference rule, ITypeTransform... transforms) {
+    this.rule = Objects.requireNonNull(rule, "rule");
+    this.transforms = Objects.requireNonNull(transforms, "transforms");
+  }
+
+  @Override
+  public Type inferReturnType(Call call) {
+    Type ret = rule.inferReturnType(call);
+    for (ITypeTransform transform : transforms) {
+      ret = transform.transformType(ret);
+    }
+    return ret;
+  }
 }

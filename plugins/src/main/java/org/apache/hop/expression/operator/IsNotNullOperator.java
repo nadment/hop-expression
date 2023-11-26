@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -41,11 +42,16 @@ public class IsNotNullOperator extends Operator {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);
 
-    // 'CAST(x AS type) IS NOT NULL' to 'x IS NOT NULL'
+    // CAST(x AS type) IS NOT NULL → x IS NOT NULL
     if (operand.is(Operators.CAST)) {
       return new Call(call.getOperator(), operand.asCall().getOperands());
     }
 
+    // If operand is not nullable 
+    if (!operand.getType().isNullable()) {
+      return Literal.TRUE;
+    }
+    
     return call;
   }
 

@@ -20,6 +20,21 @@ import org.apache.hop.expression.Call;
 
 /**
  * Calculate return type precision and scale for x / y
+ * 
+ * <ul>
+ * <li>Let p1, s1 be the precision and scale of the first operand</li>
+ * <li>Let p2, s2 be the precision and scale of the second operand</li>
+ * <li>Let p, s be the precision and scale of the result</li>
+ * <li>Let d be the number of whole digits in the result</li>
+ * <li>Then the result type is a decimal with:
+ * <ul>
+ * <li>d = p1 - s1 + s2</li>
+ * <li>s = max(6, s1 + p2 + 1)</li>
+ * <li>p = d + s</li>
+ * </ul>
+ * </li>
+ * <li>p and s are capped at their maximum values</li>
+ * </ul>
  */
 public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
 
@@ -29,18 +44,21 @@ public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
 
   @Override
   public Type inferReturnType(Call call) {
-    Type x = call.getOperand(0).getType();
-    Type y = call.getOperand(1).getType();
+    Type type1 = call.getOperand(0).getType();
+    Type type2 = call.getOperand(1).getType();
+
+    int p1 = type1.getPrecision();
+    int p2 = type2.getPrecision();
+    int s1 = type1.getScale();
+    int s2 = type2.getScale();
+
+    int d = p1 - s1 + s2;
 
     // Return type scale
-    int xs = x.getScale();
-    int ys = y.getScale();
-    int s = Math.max(xs, ys);
+    int s = Math.max(6, s1 + p2 + 1);
 
     // Return type precision
-    int xp = x.getPrecision();
-    int yp = y.getPrecision();
-    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), xp + ys + Math.max(0, yp - xs));
+    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), d + s);
 
     return new NumberType(p, s);
   }

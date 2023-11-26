@@ -185,19 +185,16 @@ public final class Call implements IExpression {
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
 
     // Compile all operands
+    IExpression[] compiledOperands  = new IExpression[operands.length]; 
     for (int i = 0; i < operands.length; i++) {
-      this.operands[i] = operands[i].compile(context);
+      compiledOperands[i] = operands[i].compile(context);
     }
-
-    if (isConstant())
-      try {
-        return evaluate();
-      } catch (Exception e) {
-        // Ignore error like division by zero "X IN (1,3/0)" and continue
-      }
-
-    IExpression expression = operator.compile(context, this);
-
+    
+    Call newCall = new Call(operator, compiledOperands);
+    newCall.inferReturnType();
+    
+    IExpression expression = operator.compile(context, newCall);
+    
     if (expression.is(Kind.CALL)) {
       Call call = expression.asCall();
 
@@ -207,17 +204,24 @@ public final class Call implements IExpression {
       }
 
       // Inference return type
-      call.inferReturnType();
+      expression = call.inferReturnType();
+    }
+    
+    if (expression.isConstant())   {
+      try {
+        Object value = expression.getValue();
+        Type valueType = expression.getType();
 
-      // If operator is deterministic and all operands are constant try to evaluate
-      if (isConstant())
-        try {
-          return call.evaluate();
-        } catch (Exception e) {
-          // Ignore error like division by zero "X IN (1,3/0)" and continue
+        // Some operator don't known return type like JSON_VALUE.
+        if (TypeName.ANY.equals(valueType.getName())) {
+          return Literal.of(value);
         }
 
-      expression = call;
+          // For CAST operator, it's important to return type
+        return new Literal(value, valueType);
+      } catch (Exception e) {
+        // Ignore error like division by zero "X IN (1,3/0)" and continue
+      }
     }
 
     return expression;
@@ -226,19 +230,6 @@ public final class Call implements IExpression {
   public Call inferReturnType() {
     this.type = this.operator.getReturnTypeInference().inferReturnType(this);
     return this;
-  }
-
-  protected Literal evaluate() {
-
-    Object value = getValue();
-    inferReturnType();
-
-    // Some operator don't known return type like JSON_VALUE.
-    if (TypeName.ANY.equals(type.getName())) {
-      return Literal.of(value);
-    }
-
-    return new Literal(value, type);
   }
 
   @Override
