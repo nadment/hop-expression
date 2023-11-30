@@ -22,7 +22,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import java.math.BigDecimal;
 
 /**
@@ -60,7 +60,7 @@ public class SubtractNumericOperator extends SubtractOperator {
     }
 
     // Optimize data type
-    if (call.getType().is(TypeName.INTEGER) ) {
+    if (call.getType().is(TypeId.INTEGER) ) {
       return new Call(SubtractInteger, call.getOperands());
     }
     

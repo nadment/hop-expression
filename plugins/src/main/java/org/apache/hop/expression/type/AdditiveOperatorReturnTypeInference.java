@@ -56,11 +56,11 @@ public class AdditiveOperatorReturnTypeInference implements IReturnTypeInference
     int s = Math.max(s1, s2);
 
     // Return type precision
-    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), Math.max(p1 - s1, p2 - s2) + s + 1);
+    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), Math.max(p1 - s1, p2 - s2) + s + 1);
 
     // Optimize to INTEGER type
-    if (!(type1.is(TypeName.NUMBER) || type2.is(TypeName.NUMBER))
-        && p <= TypeName.INTEGER.getMaxPrecision() && s == 0) {
+    if (!(type1.is(TypeId.NUMBER) || type2.is(TypeId.NUMBER))
+        && p <= TypeId.INTEGER.getMaxPrecision() && s == 0) {
       return new IntegerType(p);
     }
 

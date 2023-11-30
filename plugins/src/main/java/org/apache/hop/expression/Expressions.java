@@ -25,7 +25,7 @@ import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 
 public class Expressions {
 
@@ -56,7 +56,7 @@ public class Expressions {
       expression = compile(context, expression);
       
       // Unknown are not expected here
-      if (expression.getType().is(TypeName.UNKNOWN)) {
+      if (expression.getType().is(TypeId.UNKNOWN)) {
         throw new ExpressionException(0, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, source);
       }
       
@@ -68,7 +68,7 @@ public class Expressions {
     }
   }
 
-  public static IValueMeta createValueMeta(final String name, final TypeName type) {
+  public static IValueMeta createValueMeta(final String name, final TypeId type) {
 
     if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
@@ -105,7 +105,7 @@ public class Expressions {
     if (type == null) {
       throw new IllegalArgumentException("Type must not be null");
     }
-    switch (type.getName()) {
+    switch (type.getId()) {
       case BOOLEAN:
         return new ValueMetaBoolean(name);
       case INTEGER:

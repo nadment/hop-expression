@@ -34,7 +34,7 @@ public final class BinaryType extends Type {
   protected final int precision;
 
   public BinaryType() {
-    this(TypeName.BINARY.getMaxPrecision(), true);
+    this(TypeId.BINARY.getMaxPrecision(), true);
   }
 
   public BinaryType(int precision) {
@@ -52,8 +52,8 @@ public final class BinaryType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.BINARY;
+  public TypeId getId() {
+    return TypeId.BINARY;
   }
 
   @Override

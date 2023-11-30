@@ -21,7 +21,7 @@ import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.TimeUnit;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -207,7 +207,7 @@ public class ExpressionEditorConfiguration extends SourceViewerConfiguration {
       else
         rule.addWord(word, keyword);
     }
-    for (TypeName type : TypeName.values()) {
+    for (TypeId type : TypeId.values()) {
       rule.addWord(type.name(), extra);
     }
     for (TimeUnit unit : TimeUnit.values()) {

@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * If values need to be converted to match the other operands data type, the value with the lower
  * order is converted to the value with the higher order.
  */
-public enum TypeName {
+public enum TypeId {
 
   /** A unknown type */
   UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, Void.class),
@@ -63,15 +63,7 @@ public enum TypeName {
   BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
 
   /** A interval type for years to months */
-  INTERVAL(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
-
-
-  /** A interval type for years to months */
-  // YEAR_TO_MONTH(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class),
-  /** A interval type for days to seconds */
-  // DAY_TO_SECOND(TypeFamily.INTERVAL, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
-  // Interval.class),
-  ;
+  INTERVAL(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class);
 
   /**
    * Flags indicating precision/scale combinations.
@@ -84,15 +76,15 @@ public enum TypeName {
 
   public static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
 
-  protected static final Set<TypeName> STRING_TYPES = Set.of(STRING);
-  protected static final Set<TypeName> BINARY_TYPES = Set.of(BINARY);
-  protected static final Set<TypeName> BOOLEAN_TYPES = Set.of(BOOLEAN);
-  protected static final Set<TypeName> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
-  protected static final Set<TypeName> TEMPORAL_TYPES = Set.of(DATE);
-  protected static final Set<TypeName> JSON_TYPES = Set.of(JSON);
-  protected static final Set<TypeName> INTERVAL_TYPES = Set.of(INTERVAL);
+  protected static final Set<TypeId> STRING_TYPES = Set.of(STRING);
+  protected static final Set<TypeId> BINARY_TYPES = Set.of(BINARY);
+  protected static final Set<TypeId> BOOLEAN_TYPES = Set.of(BOOLEAN);
+  protected static final Set<TypeId> NUMERIC_TYPES = Set.of(INTEGER, NUMBER);
+  protected static final Set<TypeId> TEMPORAL_TYPES = Set.of(DATE);
+  protected static final Set<TypeId> JSON_TYPES = Set.of(JSON);
+  protected static final Set<TypeId> INTERVAL_TYPES = Set.of(INTERVAL);
 
-  protected static final Set<TypeName> ALL_TYPES =
+  protected static final Set<TypeId> ALL_TYPES =
       Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
 
   /**
@@ -107,7 +99,7 @@ public enum TypeName {
   public static final Set<String> ALL_NAMES =
       Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
-  private TypeName(TypeFamily family, int signature, Class<?> javaClass) {
+  private TypeId(TypeFamily family, int signature, Class<?> javaClass) {
     this.family = family;
     this.signature = signature;
     this.javaClass = javaClass;
@@ -118,7 +110,7 @@ public enum TypeName {
   }
 
   /**
-   * Gets the {@link TypeFamily} containing this {@link TypeName}.
+   * Gets the {@link TypeFamily} containing this {@link TypeId}.
    */
   public TypeFamily getFamily() {
     return family;
@@ -205,13 +197,13 @@ public enum TypeName {
   }
 
   /**
-   * Returns a {@link TypeName} with a given name (ignore case).
+   * Returns a {@link TypeId} with a given name (ignore case).
    *
    * @param name The name of the data name
    * @return data name, or null if not valid
    */
-  public static TypeName of(final String name) {
-    for (TypeName type : TypeName.values()) {
+  public static TypeId of(final String name) {
+    for (TypeId type : TypeId.values()) {
       if (type.name().equalsIgnoreCase(name)) {
         return type;
       }
@@ -220,24 +212,24 @@ public enum TypeName {
   }
 
   /**
-   * Search a data type name for java class.
+   * Search a data type identifier for java class.
    *
-   * @return The {@link TypeName}, 'UNKNOWN' if not found
+   * @return The {@link TypeId}, 'UNKNOWN' if not found
    */
-  public static TypeName findTypeName(final Class<?> clazz) {
+  public static TypeId fromJavaClass(final Class<?> clazz) {
     if (clazz == null)
-      return TypeName.UNKNOWN;
+      return TypeId.UNKNOWN;
 
-    for (TypeName name : TypeName.values()) {
+    for (TypeId id : TypeId.values()) {
 
       // Ignore ANY
-      if (name.equals(TypeName.ANY))
+      if (id.equals(TypeId.ANY))
         continue;
 
-      if (name.getJavaClass().isAssignableFrom(clazz)) {
-        return name;
+      if (id.getJavaClass().isAssignableFrom(clazz)) {
+        return id;
       }
     }
-    return TypeName.UNKNOWN;
+    return TypeId.UNKNOWN;
   }
 }

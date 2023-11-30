@@ -34,7 +34,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
     Type result = null;
     for (IExpression operand : call.getOperands()) {
       Type type = operand.getType();
-      if (result == null || type.getName().ordinal() > result.getName().ordinal()) {
+      if (result == null || type.getId().ordinal() > result.getId().ordinal()) {
         result = type;
       }
     }

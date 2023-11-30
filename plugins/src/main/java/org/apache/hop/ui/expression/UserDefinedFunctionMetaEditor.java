@@ -25,7 +25,7 @@ import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.FunctionArgument;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.PropsUi;
 import org.apache.hop.ui.core.metadata.MetadataEditor;
@@ -136,7 +136,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Name"),
             ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {""}, false),
         new ColumnInfo(BaseMessages.getString(PKG, "UdfDialog.ColumnInfo.Type"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, TypeName.ALL_NAMES.toArray(new String[0]), false)};
+            ColumnInfo.COLUMN_TYPE_CCOMBO, TypeId.ALL_NAMES.toArray(new String[0]), false)};
 
     wArguments = new TableView(new Variables(), parent,
         SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, columns,
@@ -215,7 +215,7 @@ public class UserDefinedFunctionMetaEditor extends MetadataEditor<UserDefinedFun
       TableItem item = wArguments.getNonEmpty(i);
       String name = item.getText(1);
       if ( StringUtils.isNotEmpty(name) ) {
-        TypeName dataType = TypeName.of(item.getText(2));
+        TypeId dataType = TypeId.of(item.getText(2));
         FunctionArgument argument = new FunctionArgument(name, dataType);
         udf.getArguments().add(argument);
       }

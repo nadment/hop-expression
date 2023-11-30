@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -1161,9 +1161,9 @@ public class ExpressionParser {
 
   private IExpression parseLiteralDataType(Token token) throws ExpressionException {
 
-    TypeName name = TypeName.of(token.text());
-    if (name != null) {
-      int precision = name.getMaxPrecision();
+    TypeId id = TypeId.of(token.text());
+    if (id != null) {
+      int precision = id.getMaxPrecision();
       int scale = Type.SCALE_NOT_SPECIFIED;
       boolean precisionFound = false;
       boolean scaleFound = false;
@@ -1187,7 +1187,7 @@ public class ExpressionParser {
         }
       }
 
-      switch (name) {
+      switch (id) {
         case BOOLEAN:
           if (precisionFound)
             break;
@@ -1654,7 +1654,7 @@ public class ExpressionParser {
             return new Token(Id.valueOf(name), start, position, name);
           }
 
-          if (TypeName.of(name) != null) {
+          if (TypeId.of(name) != null) {
             return new Token(Id.LITERAL_DATATYPE, start, position, name);
           }
 

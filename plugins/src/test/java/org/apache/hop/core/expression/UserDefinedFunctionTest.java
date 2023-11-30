@@ -23,7 +23,7 @@ import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.StringType;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.junit.Test;
 import java.time.LocalDate;
 
@@ -35,8 +35,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       meta.setName("UCASE");
       meta.setDescription("UDF test");
       meta.setSource("Case when v0 is null then '*' else Left(Upper(v0),v1) end");
-      meta.getArguments().add(new FunctionArgument("v0", TypeName.STRING));
-      meta.getArguments().add(new FunctionArgument("v1", TypeName.INTEGER));
+      meta.getArguments().add(new FunctionArgument("v0", TypeId.STRING));
+      meta.getArguments().add(new FunctionArgument("v1", TypeId.INTEGER));
     
       assertEquals("UCASE", meta.getName());
       assertEquals("UDF test", meta.getDescription());
@@ -58,7 +58,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
       meta.setName("DATE_FROM_ID");
       meta.setSource("case when v0 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");
-      meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));
+      meta.getArguments().add(new FunctionArgument("v0", TypeId.INTEGER));
       
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
@@ -78,7 +78,7 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunctionMeta meta = new UserDefinedFunctionMeta();
       meta.setName("ERROR_UDF");
       meta.setSource("case when v1 is NULL then null else TO_DATE(TO_CHAR(v0),'YYYYMMDD') end");
-      meta.getArguments().add(new FunctionArgument("v0", TypeName.INTEGER));     
+      meta.getArguments().add(new FunctionArgument("v0", TypeId.INTEGER));     
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       

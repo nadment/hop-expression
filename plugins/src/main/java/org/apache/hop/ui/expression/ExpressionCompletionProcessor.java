@@ -28,7 +28,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.UserDefinedFunction;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
@@ -252,7 +252,7 @@ public class ExpressionCompletionProcessor implements IContentAssistProcessor {
           // If identifier name contains space, is a reserved word or a function name must be
           // quoted
           if (quoted || name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
-              || TypeName.of(name) != null || TimeUnit.of(name) != null
+              || TypeId.of(name) != null || TimeUnit.of(name) != null
               || FunctionRegistry.isFunction(name)) {
             content = '\"' + name + '\"';
           }

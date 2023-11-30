@@ -43,8 +43,8 @@ public final class DateType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.DATE;
+  public TypeId getId() {
+    return TypeId.DATE;
   }
 
   @Override

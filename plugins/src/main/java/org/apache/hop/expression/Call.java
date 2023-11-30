@@ -21,7 +21,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -213,7 +213,7 @@ public final class Call implements IExpression {
         Type valueType = expression.getType();
 
         // Some operator don't known return type like JSON_VALUE.
-        if (TypeName.ANY.equals(valueType.getName())) {
+        if (TypeId.ANY.equals(valueType.getId())) {
           return Literal.of(value);
         }
 

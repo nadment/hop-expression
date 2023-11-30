@@ -36,14 +36,14 @@ public final class NumberType extends Type {
    * Default NUMBER type with max precision.
    */
   public static final NumberType NUMBER =
-      new NumberType(TypeName.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED, true);
+      new NumberType(TypeId.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED, true);
 
   public static NumberType from(final BigDecimal number) {
     return new NumberType(number.precision(), number.scale(), true);
   }
 
   public NumberType() {
-    this(TypeName.NUMBER.getMaxPrecision(), 0, true);
+    this(TypeId.NUMBER.getMaxPrecision(), 0, true);
   }
 
   public NumberType(int precision) {
@@ -76,8 +76,8 @@ public final class NumberType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.NUMBER;
+  public TypeId getId() {
+    return TypeId.NUMBER;
   }
 
   @Override

@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -67,41 +67,41 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.BOOLEAN.isCompatibleWithCoercion(TypeFamily.STRING));
     assertTrue(TypeFamily.NUMERIC.isCompatibleWithCoercion(TypeFamily.STRING));
     
-    assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeName.INTEGER));
-    assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeName.NUMBER));
-    assertTrue(TypeFamily.TEMPORAL.getDataTypeNames().contains(TypeName.DATE));
+    assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeId.INTEGER));
+    assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeId.NUMBER));
+    assertTrue(TypeFamily.TEMPORAL.getDataTypeNames().contains(TypeId.DATE));
   }
     
   @Test
   public void typeNameOf() throws Exception {
-    assertEquals(TypeName.ANY, TypeName.of("Any"));    
-    assertEquals(TypeName.UNKNOWN, TypeName.of("UNKNOWN"));    
-    assertEquals(TypeName.BOOLEAN, TypeName.of("BOOLEAN"));    
-    assertEquals(TypeName.BOOLEAN, TypeName.of("Boolean"));   
-    assertEquals(TypeName.STRING, TypeName.of("STRING"));
-    assertEquals(TypeName.STRING, TypeName.of("String"));
-    assertEquals(TypeName.DATE, TypeName.of("DATE"));
-    assertEquals(TypeName.NUMBER, TypeName.of("NUMBER"));
-    assertEquals(TypeName.BINARY, TypeName.of("BINARY"));
-    assertEquals(TypeName.JSON, TypeName.of("Json"));
-    assertEquals(TypeName.INTEGER, TypeName.of("INTEGER"));
-    assertNull(TypeName.of("NOP"));
+    assertEquals(TypeId.ANY, TypeId.of("Any"));    
+    assertEquals(TypeId.UNKNOWN, TypeId.of("UNKNOWN"));    
+    assertEquals(TypeId.BOOLEAN, TypeId.of("BOOLEAN"));    
+    assertEquals(TypeId.BOOLEAN, TypeId.of("Boolean"));   
+    assertEquals(TypeId.STRING, TypeId.of("STRING"));
+    assertEquals(TypeId.STRING, TypeId.of("String"));
+    assertEquals(TypeId.DATE, TypeId.of("DATE"));
+    assertEquals(TypeId.NUMBER, TypeId.of("NUMBER"));
+    assertEquals(TypeId.BINARY, TypeId.of("BINARY"));
+    assertEquals(TypeId.JSON, TypeId.of("Json"));
+    assertEquals(TypeId.INTEGER, TypeId.of("INTEGER"));
+    assertNull(TypeId.of("NOP"));
   }
   
   @Test
-  public void findTypeName() throws Exception {
-    assertEquals(TypeName.UNKNOWN, TypeName.findTypeName(null)); 
-    assertEquals(TypeName.UNKNOWN, TypeName.findTypeName(Void.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.findTypeName(Float.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.findTypeName(Type.class));
-    assertEquals(TypeName.UNKNOWN, TypeName.findTypeName(TimeUnit.class));
-    assertEquals(TypeName.BOOLEAN, TypeName.findTypeName(Boolean.class));
-    assertEquals(TypeName.STRING, TypeName.findTypeName(String.class));
-    assertEquals(TypeName.DATE, TypeName.findTypeName(ZonedDateTime.class));
-    assertEquals(TypeName.NUMBER, TypeName.findTypeName(BigDecimal.class));
-    assertEquals(TypeName.BINARY, TypeName.findTypeName(byte[].class));
-    assertEquals(TypeName.JSON, TypeName.findTypeName(JsonNode.class));
-    assertEquals(TypeName.INTEGER, TypeName.findTypeName(Long.class));
+  public void findTypeId() throws Exception {
+    assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(null)); 
+    assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Void.class));
+    assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Float.class));
+    assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Type.class));
+    assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(TimeUnit.class));
+    assertEquals(TypeId.BOOLEAN, TypeId.fromJavaClass(Boolean.class));
+    assertEquals(TypeId.STRING, TypeId.fromJavaClass(String.class));
+    assertEquals(TypeId.DATE, TypeId.fromJavaClass(ZonedDateTime.class));
+    assertEquals(TypeId.NUMBER, TypeId.fromJavaClass(BigDecimal.class));
+    assertEquals(TypeId.BINARY, TypeId.fromJavaClass(byte[].class));
+    assertEquals(TypeId.JSON, TypeId.fromJavaClass(JsonNode.class));
+    assertEquals(TypeId.INTEGER, TypeId.fromJavaClass(Long.class));
   }
 
   @Test
@@ -162,14 +162,14 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void javaClass() throws Exception {
-    assertEquals(byte[].class, TypeName.BINARY.getJavaClass());
-    assertEquals(Boolean.class, TypeName.BOOLEAN.getJavaClass());
-    assertEquals(Long.class, TypeName.INTEGER.getJavaClass());
-    assertEquals(BigDecimal.class, TypeName.NUMBER.getJavaClass());
-    assertEquals(String.class, TypeName.STRING.getJavaClass());
-    assertEquals(ZonedDateTime.class, TypeName.DATE.getJavaClass());
-    assertEquals(JsonNode.class, TypeName.JSON.getJavaClass());
-    assertEquals(Void.class, TypeName.UNKNOWN.getJavaClass());
+    assertEquals(byte[].class, TypeId.BINARY.getJavaClass());
+    assertEquals(Boolean.class, TypeId.BOOLEAN.getJavaClass());
+    assertEquals(Long.class, TypeId.INTEGER.getJavaClass());
+    assertEquals(BigDecimal.class, TypeId.NUMBER.getJavaClass());
+    assertEquals(String.class, TypeId.STRING.getJavaClass());
+    assertEquals(ZonedDateTime.class, TypeId.DATE.getJavaClass());
+    assertEquals(JsonNode.class, TypeId.JSON.getJavaClass());
+    assertEquals(Void.class, TypeId.UNKNOWN.getJavaClass());
   }
 
   @Test

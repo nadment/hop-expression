@@ -41,7 +41,7 @@ public final class StringType extends Type {
   protected final int precision;
 
   public StringType() {
-    this(TypeName.STRING.getMaxPrecision(), true);
+    this(TypeId.STRING.getMaxPrecision(), true);
   }
 
   public StringType(int precision) {
@@ -58,8 +58,8 @@ public final class StringType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.STRING;
+  public TypeId getId() {
+    return TypeId.STRING;
   }
 
   @Override

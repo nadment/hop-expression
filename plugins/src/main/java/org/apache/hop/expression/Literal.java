@@ -221,7 +221,7 @@ public final class Literal implements IExpression {
     if (value == null) {
       writer.append("NULL");
     } else
-      switch (type.getName()) {
+      switch (type.getId()) {
         case STRING:
           writer.append('\'');
           String str = (String) value;

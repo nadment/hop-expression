@@ -34,8 +34,8 @@ public final class UnknownType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.UNKNOWN;
+  public TypeId getId() {
+    return TypeId.UNKNOWN;
   }
 
   @Override

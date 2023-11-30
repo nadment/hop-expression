@@ -27,7 +27,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import java.math.BigDecimal;
 
 /**
@@ -52,7 +52,7 @@ public class AbsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeName.INTEGER)) {
+    if (type.is(TypeId.INTEGER)) {
       return new Call(AbsIntegerFunction, call.getOperands());
     }
 

@@ -32,7 +32,7 @@ public class NumericReturnTypeInference implements IReturnTypeInference {
 
     for (IExpression operand : call.getOperands()) {
       Type type = operand.getType();
-      if (type.getName().ordinal() < result.getName().ordinal()) {
+      if (type.getId().ordinal() < result.getId().ordinal()) {
         result = type;
       }
     }

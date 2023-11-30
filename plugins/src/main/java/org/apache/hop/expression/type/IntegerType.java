@@ -38,7 +38,7 @@ public final class IntegerType extends Type {
   protected final int precision;
 
   public IntegerType() {
-    this(TypeName.INTEGER.getMaxPrecision(), true);
+    this(TypeId.INTEGER.getMaxPrecision(), true);
   }
 
   public IntegerType(int precision) {
@@ -56,8 +56,8 @@ public final class IntegerType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.INTEGER;
+  public TypeId getId() {
+    return TypeId.INTEGER;
   }
 
   @Override
@@ -163,8 +163,8 @@ public final class IntegerType extends Type {
 
   public static final Long convertBinaryToInteger(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ExpressionError.CONVERSION_ERROR, TypeName.BINARY, bytes,
-          TypeName.INTEGER);
+      throw new ConversionException(ExpressionError.CONVERSION_ERROR, TypeId.BINARY, bytes,
+          TypeId.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

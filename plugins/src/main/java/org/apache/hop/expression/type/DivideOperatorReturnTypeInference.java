@@ -58,7 +58,7 @@ public class DivideOperatorReturnTypeInference implements IReturnTypeInference {
     int s = Math.max(6, s1 + p2 + 1);
 
     // Return type precision
-    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), d + s);
+    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), d + s);
 
     return new NumberType(p, s);
   }

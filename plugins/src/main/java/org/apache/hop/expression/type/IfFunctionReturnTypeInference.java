@@ -36,7 +36,7 @@ public class IfFunctionReturnTypeInference implements IReturnTypeInference {
       return transform.transformType(type1);
     }
     Type type2 = call.getOperand(2).getType();
-    if (type1.getName().ordinal() < type2.getName().ordinal()) {
+    if (type1.getId().ordinal() < type2.getId().ordinal()) {
       return transform.transformType(type2);
     }
 

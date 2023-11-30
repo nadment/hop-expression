@@ -52,7 +52,7 @@ import java.util.List;
     categoryDescription = "i18n:org.apache.hop.pipeline.transform:BaseTransform.Category.Utility")
 public class CloneRowMeta extends BaseTransformMeta<CloneRow, CloneRowData> {
 
-  private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator!!
+  private static final Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator!!
 
   /** nr of clone rows */
   @HopMetadataProperty(key = "nrclones",

@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -302,7 +302,7 @@ public class Identifier implements IExpression {
   public void unparse(StringWriter writer) {
     // If identifier name contains space or is a reserved word or a function name
     if (name.indexOf(' ') >= 0 || ExpressionParser.isReservedWord(name)
-        || FunctionRegistry.isFunction(name) || TypeName.of(name) != null
+        || FunctionRegistry.isFunction(name) || TypeId.of(name) != null
         || TimeUnit.of(name) != null) {
       writer.append('\"');
       writer.append(name);

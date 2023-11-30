@@ -39,8 +39,8 @@ public final class BooleanType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.BOOLEAN;
+  public TypeId getId() {
+    return TypeId.BOOLEAN;
   }
 
   /**

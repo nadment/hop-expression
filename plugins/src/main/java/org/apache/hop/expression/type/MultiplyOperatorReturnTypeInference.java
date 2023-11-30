@@ -53,13 +53,13 @@ public class MultiplyOperatorReturnTypeInference implements IReturnTypeInference
     int s2 = type2.getScale();
 
     // Return type precision
-    int p = Math.min(TypeName.NUMBER.getMaxPrecision(), p1 + p2);
+    int p = Math.min(TypeId.NUMBER.getMaxPrecision(), p1 + p2);
 
     // Return type scale
     int s = s1 + s2;
 
     // Optimize to INTEGER type
-    if (p <= TypeName.INTEGER.getMaxPrecision() && s == 0) {
+    if (p <= TypeId.INTEGER.getMaxPrecision() && s == 0) {
       return new IntegerType(p);
     }
 

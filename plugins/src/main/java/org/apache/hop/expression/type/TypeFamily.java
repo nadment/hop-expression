@@ -69,23 +69,23 @@ public enum TypeFamily {
     }
   }
 
-  /** Returns the collection of {@link TypeName}s included in this family. */
-  public Set<TypeName> getDataTypeNames() {
+  /** Returns the collection of {@link TypeId}s included in this family. */
+  public Set<TypeId> getDataTypeNames() {
     switch (this) {
       case BOOLEAN:
-        return TypeName.BOOLEAN_TYPES;
+        return TypeId.BOOLEAN_TYPES;
       case BINARY:
-        return TypeName.BINARY_TYPES;
+        return TypeId.BINARY_TYPES;
       case NUMERIC:
-        return TypeName.NUMERIC_TYPES;
+        return TypeId.NUMERIC_TYPES;
       case STRING:
-        return TypeName.STRING_TYPES;
+        return TypeId.STRING_TYPES;
       case TEMPORAL:
-        return TypeName.TEMPORAL_TYPES;
+        return TypeId.TEMPORAL_TYPES;
       case JSON:
-        return TypeName.JSON_TYPES;
+        return TypeId.JSON_TYPES;
       case ANY:
-        return TypeName.ALL_TYPES;
+        return TypeId.ALL_TYPES;
       default:
         return Set.of();
     }

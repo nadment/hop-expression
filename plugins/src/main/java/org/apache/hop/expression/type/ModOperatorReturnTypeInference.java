@@ -58,7 +58,7 @@ public class ModOperatorReturnTypeInference implements IReturnTypeInference {
     // Return type precision
     int p = Math.min(p1 - s1, p2 - s2) + s;
 
-    p = Math.min(TypeName.NUMBER.getMaxPrecision(), p);
+    p = Math.min(TypeId.NUMBER.getMaxPrecision(), p);
 
     return new NumberType(p, s);
   }

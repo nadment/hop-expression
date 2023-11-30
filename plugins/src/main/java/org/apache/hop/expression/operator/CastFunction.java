@@ -27,7 +27,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeName;
+import org.apache.hop.expression.type.TypeId;
 import java.io.StringWriter;
 
 /**
@@ -73,9 +73,9 @@ public class CastFunction extends Function {
     Type source = call.getOperand(0).getType();
     Type target = call.getOperand(1).getValue(Type.class);
 
-    // If same type name
-    TypeName name = target.getName();
-    if (source.is(name)) {
+    // If same type identifier
+    TypeId id = target.getId();
+    if (source.is(id)) {
       if (source.getPrecision() == target.getPrecision()
           && source.getScale() == target.getScale()) {
         return call.getOperand(0);

@@ -36,10 +36,10 @@ public abstract class Type {
     this.nullable = nullable;
 
     // Generates a string representation of this type.
-    TypeName name = getName();
+    TypeId id = getId();
     StringBuilder builder = new StringBuilder();
-    builder.append(name.toString());
-    if (precision > 0 && (precision != name.getMaxPrecision() || scale > 0)) {
+    builder.append(id.toString());
+    if (precision > 0 && (precision != id.getMaxPrecision() || scale > 0)) {
       builder.append('(');
       builder.append(precision);
       if (scale > 0) {
@@ -51,17 +51,17 @@ public abstract class Type {
     this.signature = builder.toString();
 
     // Check precision and scale range
-    if (precision > name.getMaxPrecision()) {
+    if (precision > id.getMaxPrecision()) {
       throw new IllegalArgumentException(ExpressionError.PRECISION_OUT_OF_RANGE.message(signature));
     }
   }
 
   /**
-   * Gets the {@link TypeName} of this type.
+   * Gets the {@link TypeId} of this type.
    *
    * @return name, never null
    */
-  public abstract TypeName getName();
+  public abstract TypeId getId();
 
   /**
    * Gets the {@link TypeFamily} of this type.
@@ -69,23 +69,23 @@ public abstract class Type {
    * @return family, never null
    */
   public TypeFamily getFamily() {
-    return getName().getFamily();
+    return getId().getFamily();
   }
 
-  public boolean is(final TypeName typeName) {
-    return getName() == typeName;
+  public boolean is(final TypeId id) {
+    return getId() == id;
   }
 
   public boolean isFamily(final TypeFamily family) {
-    return getName().isFamily(family);
+    return getId().isFamily(family);
   }
 
   public boolean isFamily(final Type type) {
-    return getName().isFamily(type.getFamily());
+    return getId().isFamily(type.getFamily());
   }
 
   public boolean isCompatibleWithCoercion(final Type type) {
-    return getName().isCompatibleWithCoercion(type.getFamily());
+    return getId().isCompatibleWithCoercion(type.getFamily());
   }
 
   /**
@@ -151,7 +151,7 @@ public abstract class Type {
    */
   public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
     throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        TypeName.findTypeName(clazz));
+        TypeId.fromJavaClass(clazz));
   }
 
   /**

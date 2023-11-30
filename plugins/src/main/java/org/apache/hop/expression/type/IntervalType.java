@@ -35,8 +35,8 @@ public final class IntervalType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.INTERVAL;
+  public TypeId getId() {
+    return TypeId.INTERVAL;
   }
 
   @Override

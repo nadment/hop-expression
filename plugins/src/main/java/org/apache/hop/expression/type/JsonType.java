@@ -41,8 +41,8 @@ public final class JsonType extends Type {
   }
 
   @Override
-  public TypeName getName() {
-    return TypeName.JSON;
+  public TypeId getId() {
+    return TypeId.JSON;
   }
 
   /**

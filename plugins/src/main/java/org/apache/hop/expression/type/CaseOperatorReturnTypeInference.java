@@ -31,14 +31,14 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
     Type result = null;
     for (IExpression operand : call.getOperand(2).asTuple()) {
       Type type = operand.getType();
-      if (result == null || type.getName().ordinal() > result.getName().ordinal()) {
+      if (result == null || type.getId().ordinal() > result.getId().ordinal()) {
         result = type;
       }
     }
 
     // Else data type
     Type elseType = call.getOperand(3).getType();
-    if (result == null || elseType.getName().ordinal() > result.getName().ordinal()) {
+    if (result == null || elseType.getId().ordinal() > result.getId().ordinal()) {
       result = elseType;
     }
 
