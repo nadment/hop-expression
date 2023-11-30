@@ -85,7 +85,7 @@ public interface IExpression {
    * @return The result of evaluating the expression.
    */
   public default Object getValue() {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
   /**
@@ -96,7 +96,7 @@ public interface IExpression {
    * @return The result of evaluating the expression in desired type
    */
   public default <T extends Object> T getValue(Class<T> clazz) {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
 
@@ -130,7 +130,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */
   public default Call asCall() {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
   /**
@@ -139,7 +139,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */
   public default Literal asLiteral() {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
   /**
@@ -148,7 +148,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */
   public default Identifier asIdentifier() {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
 
@@ -158,7 +158,7 @@ public interface IExpression {
    * @return this instance cast to a class
    */
   public default Tuple asTuple() {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message(this));
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
   /**

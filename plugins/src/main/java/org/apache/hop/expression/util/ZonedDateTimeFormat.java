@@ -16,7 +16,7 @@ package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.i18n.BaseMessages;
 import java.text.DecimalFormatSymbols;
 import java.time.DateTimeException;
@@ -1614,7 +1614,7 @@ import java.util.Locale;
       }
 
       throw new IllegalArgumentException(
-          ExpressionError.INVALID_DATE_FORMAT.message(pattern, index));
+          ErrorCode.INVALID_DATE_FORMAT.message(pattern, index));
     }
 
     if (!exactMode) {
@@ -1633,7 +1633,7 @@ import java.util.Locale;
 
     if (!parser.isAllCharParsed()) {
       throw new DateTimeParseException(
-          ExpressionError.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, parser.index);
+          ErrorCode.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, parser.index);
     }
 
     // Build the date

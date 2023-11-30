@@ -57,14 +57,14 @@ public class Expressions {
       
       // Unknown are not expected here
       if (expression.getType().is(TypeId.UNKNOWN)) {
-        throw new ExpressionException(0, ExpressionError.SYNTAX_ERROR_NEAR_KEYWORD, source);
+        throw new ExpressionException(0, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, source);
       }
       
       return expression;
     } catch (ExpressionException e) {
       throw e;
     } catch (IllegalArgumentException e) {
-      throw new ExpressionException(parser.getPosition(), ExpressionError.SYNTAX_ERROR, e.getMessage());
+      throw new ExpressionException(parser.getPosition(), ErrorCode.SYNTAX_ERROR, e.getMessage());
     }
   }
 

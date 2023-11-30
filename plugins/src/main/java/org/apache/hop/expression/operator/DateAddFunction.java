@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -73,7 +73,7 @@ public class DateAddFunction extends Function {
       case NANOSECOND:
         return new Call(AddNanosecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       default:
-        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
+        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
     }
   }
 }

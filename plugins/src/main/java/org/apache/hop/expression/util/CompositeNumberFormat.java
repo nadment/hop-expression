@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ParseNumberException;
 import java.math.BigDecimal;
 
@@ -44,7 +44,7 @@ public class CompositeNumberFormat extends NumberFormat {
       }
     }
 
-    throw new ParseNumberException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT, text, pattern, 0);
+    throw new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, pattern, 0);
   }
 
   @Override

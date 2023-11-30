@@ -107,7 +107,7 @@ public class Identifier implements IExpression {
   public Object getValue() {
     Object[] row = context.getRow();
     if (row == null) {
-      throw new ExpressionException(position, ExpressionError.CONTEXT_ERROR);
+      throw new ExpressionException(position, ErrorCode.CONTEXT_ERROR);
     }
 
     try {
@@ -141,14 +141,14 @@ public class Identifier implements IExpression {
     } catch (Exception e) {
       // Ignore
     }
-    throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal]);
+    throw new ExpressionException(position, ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal]);
   }
 
   @Override
   public <T> T getValue(Class<T> clazz) {
     Object[] row = context.getRow();
     if (row == null) {
-      throw new ExpressionException(position, ExpressionError.CONTEXT_ERROR);
+      throw new ExpressionException(position, ErrorCode.CONTEXT_ERROR);
     }
 
     try {
@@ -227,7 +227,7 @@ public class Identifier implements IExpression {
     } catch (Exception e) {
       // Ignore
     }
-    throw new ExpressionException(position, ExpressionError.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal], clazz);
+    throw new ExpressionException(position, ErrorCode.CONVERSION_ERROR, valueMeta.getTypeDesc().toUpperCase(), row[ordinal], clazz);
   }
   
   /**
@@ -258,7 +258,7 @@ public class Identifier implements IExpression {
       IRowMeta rowMeta = this.context.getRowMeta();
       this.ordinal  = rowMeta.indexOfValue(name);
       if (ordinal < 0) {
-        throw new ExpressionException(position, ExpressionError.UNRESOLVED_IDENTIFIER, name);
+        throw new ExpressionException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
       }
       this.valueMeta = rowMeta.getValueMeta(ordinal);
       this.type = createDataType(valueMeta);
@@ -266,7 +266,7 @@ public class Identifier implements IExpression {
       return this;       
     }
     
-    throw new ExpressionException(position, ExpressionError.CONTEXT_ERROR);
+    throw new ExpressionException(position, ErrorCode.CONTEXT_ERROR);
   }
 
   protected Type createDataType(IValueMeta meta) {
@@ -288,7 +288,7 @@ public class Identifier implements IExpression {
       case IValueMeta.TYPE_BINARY:
         return new BinaryType(meta.getLength());
       default:
-        throw new ExpressionException(position, ExpressionError.UNSUPPORTED_VALUEMETA, getName(),
+        throw new ExpressionException(position, ErrorCode.UNSUPPORTED_VALUEMETA, getName(),
             meta.getTypeDesc());
     }
   }

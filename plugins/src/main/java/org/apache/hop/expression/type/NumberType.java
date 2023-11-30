@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.exception.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
@@ -156,7 +156,7 @@ public final class NumberType extends Type {
       return convertBinaryToNumber((byte[]) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 
@@ -195,7 +195,7 @@ public final class NumberType extends Type {
     if (value instanceof String) {
       return convertStringToNumber((String) value);
     }
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         NumberType.NUMBER);
   }
 
@@ -204,14 +204,14 @@ public final class NumberType extends Type {
     try {
       return FORMAT.parse(str);
     } catch (ParseNumberException e) {
-      throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, str, StringType.STRING,
+      throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, str, StringType.STRING,
           NumberType.NUMBER);
     }
   }
 
   public static BigDecimal convertBinaryToNumber(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ExpressionError.CONVERSION_ERROR, bytes, BinaryType.BINARY,
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, bytes, BinaryType.BINARY,
           NumberType.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {

@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -284,7 +284,7 @@ public abstract class DateTimeFormat extends BaseFormat {
     try {
       return ZoneId.of(zone);
     } catch (Exception e) {
-      throw new IllegalArgumentException(ExpressionError.INVALID_TIMEZONE.message(zone));
+      throw new IllegalArgumentException(ErrorCode.INVALID_TIMEZONE.message(zone));
     }
   }
 }

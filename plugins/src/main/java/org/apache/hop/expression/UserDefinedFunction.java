@@ -54,7 +54,7 @@ public class UserDefinedFunction extends Function {
       // Compile
       return Expressions.compile(context, expression);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.UDF_COMPILATION_ERROR, getName());
+      throw new ExpressionException(ErrorCode.UDF_COMPILATION_ERROR, getName());
     }
   }
 

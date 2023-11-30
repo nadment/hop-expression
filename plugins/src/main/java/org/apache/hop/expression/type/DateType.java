@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.ZonedDateTime;
@@ -86,7 +86,7 @@ public final class DateType extends Type {
       return DateTimeFormat.of(pattern).parse((String) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 
@@ -105,7 +105,7 @@ public final class DateType extends Type {
       return (ZonedDateTime) value;
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         DateType.DATE);
   }
 }

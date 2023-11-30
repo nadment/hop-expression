@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -85,7 +85,7 @@ public class LPadFunction extends Function {
       if (length < 0) {
         length = 0;
       } else if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT
+        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT
             .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 
@@ -142,7 +142,7 @@ public class LPadFunction extends Function {
       if (length < 0) {
         return new byte[0];
       } else if (length > PAD_LIMIT) {
-        throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT
+        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT
             .message("Paddind length exceeds maximum limit: " + PAD_LIMIT));
       }
 

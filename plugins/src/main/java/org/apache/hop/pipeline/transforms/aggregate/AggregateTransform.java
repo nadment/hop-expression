@@ -24,7 +24,7 @@ import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.ValueDataUtil;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionProcessor;
@@ -65,7 +65,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return Date.from(((ZonedDateTime) value).toInstant());
     }
     throw new IllegalArgumentException(
-        ExpressionError.UNSUPPORTED_COERCION.message(value, Type.valueOf(value), DateType.DATE));
+        ErrorCode.UNSUPPORTED_COERCION.message(value, Type.valueOf(value), DateType.DATE));
   }
 
 
@@ -274,7 +274,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         aggregators[i].process(data.aggregates[i].getOperands());
       }
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, e.getMessage());
+      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, e.getMessage());
     }
   }
 
@@ -311,7 +311,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
         result[i] = value;
       }
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, e.getMessage());
+      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, e.getMessage());
     }
     return result;
   }

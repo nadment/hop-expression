@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 
@@ -59,7 +59,7 @@ public final class BooleanType extends Type {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         BooleanType.BOOLEAN);
   }
 
@@ -114,7 +114,7 @@ public final class BooleanType extends Type {
       return convertStringToBoolean((String) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 
@@ -158,6 +158,6 @@ public final class BooleanType extends Type {
         break;
     }
 
-    throw new ConversionException(ExpressionError.INVALID_BOOLEAN, str);
+    throw new ConversionException(ErrorCode.INVALID_BOOLEAN, str);
   }
 }

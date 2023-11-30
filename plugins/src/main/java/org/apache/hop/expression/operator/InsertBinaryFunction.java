@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.IExpression;
 
 /**
@@ -48,11 +48,11 @@ public class InsertBinaryFunction extends InsertFunction {
 
     // Valid values are between 1 and one more than the length of the binary (inclusive).
     if (pos <= 0 || pos > value.length + 1)
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(2, pos));
+      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(2, pos));
 
     // Valid values range from 0 to the number of byte between pos and the end of the binary.
     if (len < 0 || len > value.length - pos + 1)
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(3, len));
+      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(3, len));
 
     int position = pos.intValue() - 1;
     int start = Math.min(position, value.length);

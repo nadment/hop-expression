@@ -19,7 +19,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.FunctionRegistry;
@@ -162,7 +162,7 @@ public class ExtractFunction extends Function {
         case TIMEZONE_MINUTE:
           return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
         default:
-          throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
+          throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
       }
     }
   }
@@ -207,7 +207,7 @@ public class ExtractFunction extends Function {
         case NANOSECOND:
           return interval.getSign() * interval.getNanoseconds();
         default:
-          throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
+          throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
       }
     }
   }

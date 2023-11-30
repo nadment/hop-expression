@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -56,6 +56,6 @@ public class TryToBinaryFunction extends ToBinaryFunction {
       return null;
     }
 
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
   }
 }

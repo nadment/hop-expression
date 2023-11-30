@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.exception;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 
 public class ConversionException extends RuntimeException {
 
@@ -27,11 +27,11 @@ public class ConversionException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ConversionException(ExpressionError error) {
+  public ConversionException(ErrorCode error) {
     super(error.message());
   }
 
-  public ConversionException(ExpressionError error, Object... values) {
+  public ConversionException(ErrorCode error, Object... values) {
     super(error.message(values));
   }
 }

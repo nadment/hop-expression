@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -109,7 +109,7 @@ public class RegexpInstrFunction extends Function {
 
       return 0L;
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, regexp);
+      throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, regexp);
     }
   }
 

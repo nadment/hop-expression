@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import java.nio.charset.StandardCharsets;
 
@@ -78,7 +78,7 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         BinaryType.BINARY);
   }
 
@@ -123,7 +123,7 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 

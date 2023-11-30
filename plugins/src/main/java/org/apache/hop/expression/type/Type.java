@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
@@ -52,7 +52,7 @@ public abstract class Type {
 
     // Check precision and scale range
     if (precision > id.getMaxPrecision()) {
-      throw new IllegalArgumentException(ExpressionError.PRECISION_OUT_OF_RANGE.message(signature));
+      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature));
     }
   }
 
@@ -150,7 +150,7 @@ public abstract class Type {
    * @throws ConversionException if the casting fail
    */
   public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         TypeId.fromJavaClass(clazz));
   }
 

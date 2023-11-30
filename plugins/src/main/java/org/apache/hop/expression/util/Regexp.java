@@ -15,7 +15,7 @@
 
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ExpressionException;
 import java.util.regex.Pattern;
 
@@ -34,7 +34,7 @@ public class Regexp {
     if (escapeStr != null) {
 
       if (escapeStr.length() != 1) {
-        throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, escapeStr);
+        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, escapeStr);
       }
 
       escapeChar = escapeStr.charAt(0);
@@ -57,7 +57,7 @@ public class Regexp {
 
       if (c == escapeChar) {
         if (i == (pattern.length() - 1)) {
-          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
         }
         char nextChar = pattern.charAt(i + 1);
         if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
@@ -67,7 +67,7 @@ public class Regexp {
           javaPattern.append(nextChar);
           i++;
         } else {
-          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
         }
       } else if (c == '_') {
         javaPattern.append('.');
@@ -103,7 +103,7 @@ public class Regexp {
             flags |= Pattern.MULTILINE;
             break;
           default:
-            throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(str));
+            throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(str));
         }
       }
     }
@@ -118,7 +118,7 @@ public class Regexp {
       char c = pattern.charAt(i);
       if (c == escapeChar) {
         if (i == (pattern.length() - 1)) {
-          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
         }
         char nextChar = pattern.charAt(i + 1);
         if ((nextChar == '_') || (nextChar == '%') || (nextChar == escapeChar)) {
@@ -128,7 +128,7 @@ public class Regexp {
           javaPattern.append(nextChar);
           i++;
         } else {
-          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
         }
       } else if (c == '_') {
         javaPattern.append('.');
@@ -136,13 +136,13 @@ public class Regexp {
         javaPattern.append("(?s:.*)");
       } else if (c == '[') {
         if (i == (len - 1)) {
-          throw new ExpressionException(ExpressionError.INVALID_REGEXP_ESCAPE, pattern, i);
+          throw new ExpressionException(ErrorCode.INVALID_REGEXP_ESCAPE, pattern, i);
         }
         char nextChar = pattern.charAt(i + 1);
         if (nextChar == ':') {
           int end = pattern.indexOf(']', i + 1);
           if (end < 0) {
-            throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern, i);
+            throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern, i);
           }
 
           String cls = pattern.substring(i + 2, end - 1).toLowerCase();

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -73,7 +73,7 @@ public class LastDayFunction extends Function {
           adjuster = TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY);
           break;
         default:
-          throw new IllegalArgumentException(ExpressionError.ILLEGAL_ARGUMENT.message(unit));
+          throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
       }
     }
 

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operators;
@@ -62,7 +62,7 @@ public class NegateNumericOperator extends NegateOperator {
     if (v0 instanceof Long) {
       Long value = (Long) v0;
       if (value == Long.MIN_VALUE) {
-        throw new ArithmeticException(ExpressionError.ARITHMETIC_OVERFLOW.message(value));
+        throw new ArithmeticException(ErrorCode.ARITHMETIC_OVERFLOW.message(value));
       }
       return Long.valueOf(-value);
     }

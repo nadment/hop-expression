@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.exception;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 
 public class ExpressionException extends RuntimeException {
 
@@ -43,7 +43,7 @@ public class ExpressionException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ExpressionException(int position, ExpressionError error) {
+  public ExpressionException(int position, ErrorCode error) {
     super(error.message());
     this.position = position;
   }
@@ -53,15 +53,15 @@ public class ExpressionException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ExpressionException(ExpressionError error) {
+  public ExpressionException(ErrorCode error) {
     this(0, error);
   }
 
-  public ExpressionException(ExpressionError error, Object... values) {
+  public ExpressionException(ErrorCode error, Object... values) {
     this(0, error, values);
   }
   
-  public ExpressionException(int position, ExpressionError error, Object... values) {
+  public ExpressionException(int position, ErrorCode error, Object... values) {
     super(error.message(values));
     this.position = position;
   }

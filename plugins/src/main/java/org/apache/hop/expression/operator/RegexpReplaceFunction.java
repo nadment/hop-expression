@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -127,7 +127,7 @@ public class RegexpReplaceFunction extends Function {
         return buffer.toString();
       }
     } catch (PatternSyntaxException e) {
-      throw new ExpressionException(ExpressionError.INVALID_REGEXP_PATTERN, pattern);
+      throw new ExpressionException(ErrorCode.INVALID_REGEXP_PATTERN, pattern);
       // } catch (Exception e) {
       /// throw new ExpressionException(ExpressionError.REGEXP_REPLACE_ERROR, replacement);
     }

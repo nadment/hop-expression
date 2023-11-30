@@ -15,7 +15,7 @@
 package org.apache.hop.expression.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ParseNumberException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -980,11 +980,11 @@ final class SimpleNumberFormat extends NumberFormat {
   }
 
   protected final NumberFormatException createInvalidFormat(final String pattern) {
-    return new NumberFormatException(ExpressionError.INVALID_NUMBER_FORMAT.message(pattern));
+    return new NumberFormatException(ErrorCode.INVALID_NUMBER_FORMAT.message(pattern));
   }
 
   protected final ParseNumberException createUnparsableNumber(final String text, int index) {
-    return new ParseNumberException(ExpressionError.UNPARSABLE_NUMBER_WITH_FORMAT, text, format,
+    return new ParseNumberException(ErrorCode.UNPARSABLE_NUMBER_WITH_FORMAT, text, format,
         index);
   }
 }

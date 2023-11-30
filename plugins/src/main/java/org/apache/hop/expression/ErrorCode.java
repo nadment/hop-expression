@@ -19,7 +19,7 @@ import org.apache.hop.i18n.BaseMessages;
 /**
  * Enumeration of the error which can be used in expression exception.
  */
-public enum ExpressionError {
+public enum ErrorCode {
   /** Internal error {0} */
   INTERNAL_ERROR("Expression.InternalError"),
   /** Expression source is null */  
@@ -144,16 +144,16 @@ public enum ExpressionError {
 
   private final String message;
 
-  ExpressionError(final String message) {
+  ErrorCode(final String message) {
     this.message = message;
   }
 
   @Override
   public String toString() {
-    return BaseMessages.getString(ExpressionError.class, message);
+    return BaseMessages.getString(ErrorCode.class, message);
   }
 
   public String message(Object... objects) {
-    return BaseMessages.getString(ExpressionError.class, message, objects);
+    return BaseMessages.getString(ErrorCode.class, message, objects);
   }
 }

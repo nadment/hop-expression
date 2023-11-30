@@ -128,7 +128,7 @@ public final class Call implements IExpression {
     try {
       return operator.eval(operands);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator, e.getMessage());
+      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
     }
   }
 
@@ -138,7 +138,7 @@ public final class Call implements IExpression {
       Object value = operator.eval(operands);
       return type.convert(value, clazz);
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.OPERATOR_ERROR, operator, e.getMessage());
+      throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
     }
   }
 
@@ -159,17 +159,17 @@ public final class Call implements IExpression {
     IOperandCountRange operandCountRange = operator.getOperandCountRange();
     if (!operandCountRange.isValid(this.getOperandCount())) {
       if (getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(position, ExpressionError.NOT_ENOUGH_ARGUMENT, operator);
+        throw new ExpressionException(position, ErrorCode.NOT_ENOUGH_ARGUMENT, operator);
       }
       if (getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(position, ExpressionError.TOO_MANY_ARGUMENT, operator);
+        throw new ExpressionException(position, ErrorCode.TOO_MANY_ARGUMENT, operator);
       }
     }
 
     // Check operand types expected
     IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
     if (!operandTypeChecker.checkOperandTypes(this)) {
-      throw new ExpressionException(position, ExpressionError.ILLEGAL_ARGUMENT_TYPE, operator);
+      throw new ExpressionException(position, ErrorCode.ILLEGAL_ARGUMENT_TYPE, operator);
     }
 
     // Inference type

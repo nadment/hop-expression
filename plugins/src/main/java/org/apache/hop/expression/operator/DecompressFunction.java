@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -58,7 +58,7 @@ public class DecompressFunction extends Function {
       }
       return output.toByteArray();
     } catch (IOException e) {
-      throw new ExpressionException(ExpressionError.DECOMPRESSION_ERROR);
+      throw new ExpressionException(ErrorCode.DECOMPRESSION_ERROR);
     }
   }
 }

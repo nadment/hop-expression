@@ -19,7 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -70,7 +70,7 @@ public class ToBinaryFunction extends Function {
       return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
     }
 
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
   }
 
   @Override
@@ -91,6 +91,6 @@ public class ToBinaryFunction extends Function {
       return Base64.getDecoder().decode(value);
     }
 
-    throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, format);
+    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
   }
 }

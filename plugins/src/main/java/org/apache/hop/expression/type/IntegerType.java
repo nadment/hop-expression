@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 
@@ -93,7 +93,7 @@ public final class IntegerType extends Type {
     // return ((boolean) value) ? 1L : 0L;
     // }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         IntegerType.INTEGER);
   }
 
@@ -148,7 +148,7 @@ public final class IntegerType extends Type {
       return convertBinaryToInteger((byte[]) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 
@@ -157,13 +157,13 @@ public final class IntegerType extends Type {
       Double number = Double.parseDouble(str);
       return number.longValue();
     } catch (Exception e) {
-      throw new ConversionException(ExpressionError.INVALID_INTEGER, str);
+      throw new ConversionException(ErrorCode.INVALID_INTEGER, str);
     }
   }
 
   public static final Long convertBinaryToInteger(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ExpressionError.CONVERSION_ERROR, TypeId.BINARY, bytes,
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.BINARY, bytes,
           TypeId.INTEGER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {

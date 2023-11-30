@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.exception;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 
 public class ParseNumberException extends RuntimeException {
 
@@ -27,7 +27,7 @@ public class ParseNumberException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ParseNumberException(ExpressionError error, Object... values) {
+  public ParseNumberException(ErrorCode error, Object... values) {
     super(error.message(values));
   }
 }

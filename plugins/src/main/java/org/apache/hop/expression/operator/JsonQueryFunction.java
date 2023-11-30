@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -60,14 +60,14 @@ public class JsonQueryFunction extends Function {
 
     String path = operands[1].getValue(String.class);
     if (path == null)
-      throw new ExpressionException(ExpressionError.JSON_PATH_IS_NULL);
+      throw new ExpressionException(ErrorCode.JSON_PATH_IS_NULL);
 
     try {
       JsonPath jsonPath = JsonPath.compile(path);
       JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
       return result;
     } catch (Exception e) {
-      throw new ExpressionException(ExpressionError.INVALID_JSON_PATH, path);
+      throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
   }
 }

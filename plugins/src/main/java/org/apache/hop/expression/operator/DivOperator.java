@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
@@ -73,7 +73,7 @@ public class DivOperator extends Operator {
 
     // Prevent a division by zero ..
     if (divisor.signum() == 0)
-      throw new ArithmeticException(ExpressionError.DIVISION_BY_ZERO.message());
+      throw new ArithmeticException(ErrorCode.DIVISION_BY_ZERO.message());
 
     return value.divide(divisor, MATH_CONTEXT);
   }

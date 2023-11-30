@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.exception.ConversionException;
 
@@ -67,7 +67,7 @@ public final class IntervalType extends Type {
       return Interval.valueOf((String) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 
@@ -82,7 +82,7 @@ public final class IntervalType extends Type {
       return null;
     Interval value = Interval.valueOf(str);
     if (value == null)
-      throw new ConversionException(ExpressionError.INVALID_INTERVAL, str);
+      throw new ConversionException(ErrorCode.INVALID_INTERVAL, str);
     return value;
   }
 }

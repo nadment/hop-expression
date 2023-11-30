@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -130,7 +130,7 @@ public final class StringType extends Type {
         return result;
       }
 
-      throw new ConversionException(ExpressionError.CONVERSION_ERROR, BooleanType.BOOLEAN, value,
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, BooleanType.BOOLEAN, value,
           this);
     } else if (value instanceof Number) {
       if (pattern == null) {
@@ -141,7 +141,7 @@ public final class StringType extends Type {
       if (checkPrecision(result)) {
         return result;
       }
-      throw new ConversionException(ExpressionError.CONVERSION_ERROR, NumberType.NUMBER, value,
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, NumberType.NUMBER, value,
           this);
     }
     if (value instanceof ZonedDateTime) {
@@ -152,7 +152,7 @@ public final class StringType extends Type {
       if (checkPrecision(result)) {
         return result;
       }
-      throw new ConversionException(ExpressionError.CONVERSION_ERROR, DateType.DATE, value, this);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, DateType.DATE, value, this);
     }
 
     if (value instanceof byte[]) {
@@ -219,7 +219,7 @@ public final class StringType extends Type {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
     } catch (Exception e) {
-      throw new ConversionException(ExpressionError.INVALID_JSON, json);
+      throw new ConversionException(ErrorCode.INVALID_JSON, json);
     }
   }
 }

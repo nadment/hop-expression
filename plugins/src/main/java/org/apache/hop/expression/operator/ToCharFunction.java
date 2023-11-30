@@ -19,7 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -97,7 +97,7 @@ public class ToCharFunction extends Function {
       }
 
       if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF8"))) {
-        throw new ExpressionException(ExpressionError.INVALID_BINARY_FORMAT, pattern);
+        throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
       }
 
       return new Call(ToCharBinaryFunction, call.getOperand(0), Literal.of(pattern));
@@ -164,7 +164,7 @@ public class ToCharFunction extends Function {
         return new String(bytes, StandardCharsets.UTF_8);
       }
 
-      throw new ExpressionException(ExpressionError.ILLEGAL_ARGUMENT, pattern);
+      throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, pattern);
     }
   }
 }

@@ -254,7 +254,7 @@ public abstract class Operator implements Comparable<Operator> {
    * @return
    */
   public Object eval(final IExpression[] operands) {
-    throw new UnsupportedOperationException(ExpressionError.INTERNAL_ERROR.message());
+    throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message());
   }
 
   public IExpression compile(final IExpressionContext context, final Call call)

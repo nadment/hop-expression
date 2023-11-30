@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -102,7 +102,7 @@ public class JsonObjectFunction extends Function {
       }
       // TODO: Support Json Date
       else {
-        throw new ExpressionException(ExpressionError.UNSUPPORTED_JSON_TYPE);
+        throw new ExpressionException(ErrorCode.UNSUPPORTED_JSON_TYPE);
       }
     }
 

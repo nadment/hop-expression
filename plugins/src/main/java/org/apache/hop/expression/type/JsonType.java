@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.exception.ConversionException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -62,7 +62,7 @@ public final class JsonType extends Type {
       return JsonType.convertStringToJson((String) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
         JsonType.JSON);
   }
 
@@ -111,7 +111,7 @@ public final class JsonType extends Type {
       return convertStringToJson((String) value);
     }
 
-    throw new ConversionException(ExpressionError.UNSUPPORTED_CONVERSION, value,
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         Type.valueOf(value), this);
   }
 
@@ -129,7 +129,7 @@ public final class JsonType extends Type {
           JsonMapper.builder().enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES).build();
       return objectMapper.readTree(str);
     } catch (Exception e) {
-      throw new ConversionException(ExpressionError.INVALID_JSON, str);
+      throw new ConversionException(ErrorCode.INVALID_JSON, str);
     }
   }
 }

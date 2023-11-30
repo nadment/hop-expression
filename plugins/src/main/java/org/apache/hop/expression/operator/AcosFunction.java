@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Category;
-import org.apache.hop.expression.ExpressionError;
+import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -46,7 +46,7 @@ public class AcosFunction extends Function {
 
     double value = number.doubleValue();
     if (value < -1.0 || value > 1.0) {
-      throw new IllegalArgumentException(ExpressionError.ARGUMENT_OUT_OF_RANGE.message(1, value));
+      throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
     }
     // FIXME: Use BigDecimalMath when bug are fixed
     // https://github.com/eobermuhlner/big-math/issues/66
