@@ -22,6 +22,7 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -41,10 +42,15 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {
-    super("EQUAL_NULL", ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY, Category.COMPARISON,
+    super("EQUAL_NULL", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY, Category.COMPARISON,
         "/docs/equal_null.html");
   }
 
+  @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
@@ -54,10 +60,21 @@ public class EqualNullFunction extends Function {
   }
 
   @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {    
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Normalize symmetrical operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return new Call(this, right, left);
+    }
+        
+    // Normalize symmetrical operator by ordering identifiers by name
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+      return new Call(this, right, left).inferReturnType();
+    }
+    
     // Simplify same expressions.
     if (left.equals(right)) {
       return Literal.TRUE;

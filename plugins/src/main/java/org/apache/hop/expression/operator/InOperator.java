@@ -51,7 +51,7 @@ import java.util.List;
 public class InOperator extends Operator {
 
   public InOperator() {
-    super("IN", 120, true, ReturnTypes.BOOLEAN, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
         Category.COMPARISON, "/docs/in.html");
   }
 
@@ -86,8 +86,8 @@ public class InOperator extends Operator {
         continue;
       }
 
-      // Simplify B in (A,B,C) to B=B
-      if (reference.equals(expression)) {
+      // Simplify B in (A,B,C) to B=B (only if reference is not nullable)
+      if (reference.equals(expression) && !reference.getType().isNullable()) {
         return new Call(Operators.EQUAL, reference, reference);
       }
 

@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class IsNullOperator extends Operator {
 
   public IsNullOperator() {
-    super("IS NULL", 140, true, ReturnTypes.BOOLEAN, OperandTypes.ANY, Category.COMPARISON,
+    super("IS NULL", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, Category.COMPARISON,
         "/docs/is-null.html");
   }
 

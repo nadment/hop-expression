@@ -36,7 +36,7 @@ import org.apache.hop.expression.type.StringType;
 public class CurrentTimeZoneFunction extends Function {
 
   public CurrentTimeZoneFunction() {
-    super("CURRENT_TIMEZONE", ReturnTypes.STRING, OperandTypes.NILADIC, Category.DATE,
+    super("CURRENT_TIMEZONE", ReturnTypes.STRING_NOT_NULL, OperandTypes.NILADIC, Category.DATE,
         "/docs/current_timezone.html");
   }
 

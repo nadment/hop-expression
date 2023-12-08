@@ -261,7 +261,7 @@ public abstract class Operator implements Comparable<Operator> {
       throws ExpressionException {
     return call;
   }
-
+  
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
   @Override

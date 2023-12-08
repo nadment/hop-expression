@@ -36,7 +36,7 @@ public class Base64DecodeFunction extends Function {
   private static final Decoder DECODER = Base64.getDecoder();
 
   public Base64DecodeFunction() {
-    super("BASE64_DECODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("BASE64_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base64_decode.html");
   }
 

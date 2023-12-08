@@ -22,28 +22,28 @@ import org.apache.hop.expression.exception.ConversionException;
 import java.nio.charset.StandardCharsets;
 
 public final class BinaryType extends Type {
+  
   /**
    * Default BINARY type with maximum precision.
    */
-  public static final BinaryType BINARY = new BinaryType();
+  public static final BinaryType BINARY = new BinaryType(TypeId.BINARY.getMaxPrecision(), true);
 
   public static BinaryType from(final byte[] value) {
-    return new BinaryType(value.length, value == null);
+    return new BinaryType(value.length, false);
   }
 
-  protected final int precision;
-
-  public BinaryType() {
-    this(TypeId.BINARY.getMaxPrecision(), true);
+  public static BinaryType of(int precision) {
+    return of(precision, true);
+  }
+  
+  public static BinaryType of(int precision, boolean nullable) {
+    if ( precision==PRECISION_NOT_SPECIFIED && nullable==true)
+      return BINARY;  
+    return new BinaryType(precision, nullable);
   }
 
-  public BinaryType(int precision) {
-    this(precision, true);
-  }
-
-  public BinaryType(int precision, boolean nullable) {
+  private BinaryType(int precision, boolean nullable) {
     super(precision, SCALE_NOT_SPECIFIED, nullable);
-    this.precision = precision;
   }
 
   @Override
@@ -54,11 +54,6 @@ public final class BinaryType extends Type {
   @Override
   public TypeId getId() {
     return TypeId.BINARY;
-  }
-
-  @Override
-  public int getPrecision() {
-    return precision;
   }
 
   /**

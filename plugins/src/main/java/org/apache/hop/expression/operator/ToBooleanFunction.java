@@ -36,7 +36,7 @@ public class ToBooleanFunction extends Function {
   }
 
   protected ToBooleanFunction(String id) {
-    super(id, ReturnTypes.BOOLEAN, OperandTypes.STRING.or(OperandTypes.NUMERIC),
+    super(id, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING.or(OperandTypes.NUMERIC),
         Category.CONVERSION, "/docs/to_boolean.html");
   }
 

@@ -35,7 +35,7 @@ public class Base32DecodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
 
   public Base32DecodeFunction() {
-    super("BASE32_DECODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("BASE32_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base32_decode.html");
   }
 

@@ -37,7 +37,7 @@ public class LengthFunction extends Function {
   public static final LengthFunction LengthBinary = new LengthBinary();
 
   public LengthFunction() {
-    super("LENGTH", ReturnTypes.INTEGER, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("LENGTH", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/length.html");
   }
 

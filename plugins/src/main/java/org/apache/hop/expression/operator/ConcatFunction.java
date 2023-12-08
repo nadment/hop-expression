@@ -43,7 +43,7 @@ public class ConcatFunction extends Function {
 
   // Function
   public ConcatFunction() {
-    super("CONCAT", ReturnTypes.FIRST_KNOWN,
+    super("CONCAT", ReturnTypes.CONCAT_FUNCTION,
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
         Category.STRING, "/docs/concat.html");
   }

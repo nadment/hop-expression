@@ -28,18 +28,23 @@ public abstract class Type {
 
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
-
-  protected boolean nullable;
-  private String signature;
+  
+  protected final int precision;
+  protected final int scale;
+  protected final boolean nullable;
+  private final String signature;
 
   protected Type(int precision, int scale, boolean nullable) {
+    this.precision = precision;
+    this.scale = scale;
     this.nullable = nullable;
 
     // Generates a string representation of this type.
     TypeId id = getId();
     StringBuilder builder = new StringBuilder();
-    builder.append(id.toString());
-    if (precision > 0 && (precision != id.getMaxPrecision() || scale > 0)) {
+    builder.append(id.name());
+    //if (precision > 0 && (precision != id.getMaxPrecision() || scale !=id.getDefaultScale())) {
+    if (precision != id.getMaxPrecision() || ( scale>0 && scale!=id.getDefaultScale() ) ) {
       builder.append('(');
       builder.append(precision);
       if (scale > 0) {
@@ -51,11 +56,14 @@ public abstract class Type {
     this.signature = builder.toString();
 
     // Check precision and scale range
-    if (precision > id.getMaxPrecision()) {
+    if (id.supportsPrecision() && ( precision < id.getMinPrecision() ||  precision > id.getMaxPrecision()) ) {
       throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature));
     }
+    if (scale>precision ) {
+      throw new IllegalArgumentException(ErrorCode.SCALE_OUT_OF_RANGE.message(signature));
+    }
   }
-
+  
   /**
    * Gets the {@link TypeId} of this type.
    *
@@ -115,8 +123,8 @@ public abstract class Type {
    *         1 for BOOLEAN;
    *         -1 if precision is not valid for this type
    */
-  public int getPrecision() {
-    return PRECISION_NOT_SPECIFIED;
+  public final int getPrecision() {
+    return precision;
   }
 
   /**
@@ -125,8 +133,8 @@ public abstract class Type {
    *
    * @return number of digits of scale
    */
-  public int getScale() {
-    return SCALE_NOT_SPECIFIED;
+  public final int getScale() {
+    return scale;
   }
 
   @Override
@@ -173,12 +181,12 @@ public abstract class Type {
    * @throws ConversionException if the casting fail
    */
   public abstract Object cast(final Object value, final String pattern) throws ConversionException;
-
+  
   @Override
   public String toString() {
     return signature;
   }
-
+  
   /**
    * Return a default {@link Type} from a value.
    * 
@@ -221,5 +229,28 @@ public abstract class Type {
 
     return UnknownType.UNKNOWN;
   }
+  
+  
+  /** Return the default {@link Type} that belongs to this {@link TypeId}. */
+//  public Type getDefaultType(TypeId id) {
+//    switch (id) {
+//      case BOOLEAN:
+//        return BooleanType.BOOLEAN;
+//      case BINARY:
+//        return BinaryType.BINARY;
+//      case STRING:
+//        return StringType.STRING;
+//      case TEMPORAL:
+//        return DateType.DATE;
+//      case INTERVAL:
+//        return IntervalType.INTERVAL;
+//      case NUMERIC:
+//        return NumberType.NUMBER;
+//      case JSON:
+//        return JsonType.JSON;
+//      default:
+//        return null;
+//    }
+//  }
 }
 

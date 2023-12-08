@@ -160,8 +160,7 @@ public class ExpressionParser {
     // Unexpected end of expression
     if (hasNext()) {
       Token token = next();
-      throw new ExpressionException(token.start(), ErrorCode.UNEXPECTED_CHARACTER,
-          token.text());
+      throw new ExpressionException(token.start(), ErrorCode.UNEXPECTED_CHARACTER, token.text());
     }
 
     return expression;
@@ -244,8 +243,7 @@ public class ExpressionParser {
                 (not) ? Operators.IS_NOT_DISTINCT_FROM : Operators.IS_DISTINCT_FROM, expression,
                 parseLogicalNot());
           }
-          throw new ExpressionException(start, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-              Id.DISTINCT);
+          throw new ExpressionException(start, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.DISTINCT);
         default:
           throw new ExpressionException(start, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.IS);
       }
@@ -428,8 +426,7 @@ public class ExpressionParser {
       if (isThenNext(Id.TIME) && isThenNext(Id.ZONE)) {
         return new Call(getPosition(), Operators.AT_TIME_ZONE, expression, this.parseTerm());
       }
-      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-          Id.AT);
+      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.AT);
     }
     return expression;
   }
@@ -610,7 +607,8 @@ public class ExpressionParser {
    */
   private IExpression parseLiteralDate(Token token) throws ExpressionException {
 
-     // return new Call(token.start(), Operators.CAST, Literal.of(token.text()), Literal.of(DateType.DATE), Literal.of("FXYYYY-MM-DD"));
+    // return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
+    // Literal.of(DateType.DATE), Literal.of("FXYYYY-MM-DD"));
 
     // Literal date use exact mode
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
@@ -724,8 +722,7 @@ public class ExpressionParser {
       try {
         list.add(parseAdditive());
       } catch (ExpressionException e) {
-        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-            Id.IN);
+        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.IN);
       }
 
       if (isThenNext(Id.COMMA)) {
@@ -775,8 +772,7 @@ public class ExpressionParser {
       whenList.add(expression);
 
       if (isNotThenNext(Id.THEN)) {
-        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-            Id.CASE);
+        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CASE);
       }
       thenList.add(this.parseLogicalOr());
     }
@@ -786,8 +782,7 @@ public class ExpressionParser {
     }
 
     if (isNotThenNext(Id.END)) {
-      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-          Id.CASE);
+      throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CASE);
     }
 
     return new Call(start, Operators.CASE, valueExpression, new Tuple(whenList),
@@ -813,8 +808,7 @@ public class ExpressionParser {
       if (token.is(Id.LITERAL_STRING))
         operands.add(this.parseLiteralString(token));
       else
-        throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
-            Id.CAST);
+        throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CAST);
     }
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
@@ -886,11 +880,11 @@ public class ExpressionParser {
       function = LastValueFunction.LAST_VALUE_IGNORE_NULLS;
     } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
       function = LastValueFunction.LAST_VALUE_RESPECT_NULLS;
-    } 
-    
+    }
+
     return new Call(function, operand);
   }
-  
+
   /**
    * Parse <code>NTH_VALUE(expression, offset) [ IGNORE NULLS | RESPECT NULLS ]</code>
    */
@@ -899,24 +893,24 @@ public class ExpressionParser {
 
     List<IExpression> operands = new ArrayList<>();
     operands.add(this.parseLogicalOr());
-    
+
     if (isNotThenNext(Id.COMMA)) {
       throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION,
           function.getName());
     }
     operands.add(this.parseLogicalOr());
-    
+
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionException(token.end(), ErrorCode.MISSING_LEFT_PARENTHESIS);
     }
-    
+
     // NULL treatment clause
     if (isThenNext(Id.IGNORE, Id.NULLS)) {
       function = NthValueFunction.NTH_VALUE_IGNORE_NULLS;
     } else if (isThenNext(Id.RESPECT, Id.NULLS)) {
       function = NthValueFunction.NTH_VALUE_RESPECT_NULLS;
-    } 
-    
+    }
+
     return new Call(function, operands);
   }
 
@@ -1038,8 +1032,7 @@ public class ExpressionParser {
 
     // Function is never null
     if (function == null) {
-      throw new ExpressionException(token.start(), ErrorCode.FUNCTION_DOES_NOT_EXIST,
-          token.text());
+      throw new ExpressionException(token.start(), ErrorCode.FUNCTION_DOES_NOT_EXIST, token.text());
     }
 
     if (isNotThenNext(Id.LPARENTHESIS)) {
@@ -1070,8 +1063,6 @@ public class ExpressionParser {
     }
 
     List<IExpression> operands = new ArrayList<>();
-
-
 
     // No param function
     if (isThenNext(Id.RPARENTHESIS)) {
@@ -1160,10 +1151,14 @@ public class ExpressionParser {
   }
 
   private IExpression parseLiteralDataType(Token token) throws ExpressionException {
+    return Literal.of(parseDataType(token));
+  }
 
-    TypeId id = TypeId.of(token.text());
-    if (id != null) {
-      int precision = id.getMaxPrecision();
+  private Type parseDataType(Token token) throws ExpressionException {
+
+    TypeId typeId = TypeId.of(token.text());
+    if (typeId != null) {
+      int precision = Type.PRECISION_NOT_SPECIFIED;
       int scale = Type.SCALE_NOT_SPECIFIED;
       boolean precisionFound = false;
       boolean scaleFound = false;
@@ -1171,59 +1166,49 @@ public class ExpressionParser {
       if (isThenNext(Id.LPARENTHESIS)) {
 
         // Precision
-        token = this.next();
-        precision = Integer.parseInt(token.text());
+        precision = Integer.parseInt(this.next().text());
         precisionFound = true;
 
         // Scale
         if (isThenNext(Id.COMMA)) {
-          token = this.next();
-          scale = Integer.parseInt(token.text());
+          scale = Integer.parseInt(this.next().text());
           scaleFound = true;
         }
 
         if (isNotThenNext(Id.RPARENTHESIS)) {
           throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
         }
+
+        if (!typeId.supportsPrecision() && precisionFound)
+          throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE,
+              token.text());
+        if (!typeId.supportsScale() && scaleFound)
+          throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE,
+              token.text());
       }
 
-      switch (id) {
+      switch (typeId) {
         case BOOLEAN:
-          if (precisionFound)
-            break;
-          return Literal.of(BooleanType.BOOLEAN);
+          return BooleanType.BOOLEAN;
         case INTEGER:
-          if (scaleFound)
-            break;
-          return Literal.of(new IntegerType(precision));
-        case NUMBER:
-          return Literal.of(new NumberType(precision, scale));
+          return IntegerType.of(precision);
+        case NUMBER:         
+            return NumberType.of(precision, scale);
         case STRING:
-          if (scaleFound)
-            break;
-          return Literal.of(new StringType(precision));
+          return StringType.of(precision);
         case BINARY:
-          if (scaleFound)
-            break;
-          return Literal.of(new BinaryType(precision));
+          return BinaryType.of(precision);
         case DATE:
-          if (precisionFound)
-            break;
-          return Literal.of(DateType.DATE);
+          return DateType.DATE;
         case JSON:
-          if (precisionFound)
-            break;
-          return Literal.of(JsonType.JSON);
+          return JsonType.JSON;
         case INTERVAL:
-          if (precisionFound)
-            break;
-          return Literal.of(IntervalType.INTERVAL);
+          return IntervalType.INTERVAL;
         default:
       }
     }
 
-    throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE,
-        token.text());
+    throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE, token.text());
   }
 
   /** Parses an expression string to return the individual tokens. */

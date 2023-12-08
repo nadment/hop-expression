@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 public class PercentileFunction extends AggregateFunction {
 
   public PercentileFunction() {
-    super("PERCENTILE", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, "/docs/percentile.html");
+    super("PERCENTILE", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, "/docs/percentile.html");
   }
 
   @Override

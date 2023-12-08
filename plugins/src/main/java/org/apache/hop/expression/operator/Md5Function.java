@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Md5Function extends Function {
 
   public Md5Function() {
-    super("MD5", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("MD5", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.CRYPTOGRAPHIC, "/docs/md5.html");
   }
 

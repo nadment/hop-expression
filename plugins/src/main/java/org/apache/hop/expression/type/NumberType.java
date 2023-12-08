@@ -25,54 +25,64 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
+/**
+ * Number type with an optional precision and scale:
+ */
 public final class NumberType extends Type {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
-  protected final int precision;
-  protected final int scale;
-
   /**
-   * Default NUMBER type with max precision.
+   * Default NUMBER(38,9) type with max precision and default scale.
    */
   public static final NumberType NUMBER =
-      new NumberType(TypeId.NUMBER.getMaxPrecision(), SCALE_NOT_SPECIFIED, true);
+      new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), true);
 
   public static NumberType from(final BigDecimal number) {
-    return new NumberType(number.precision(), number.scale(), true);
+
+    int precision = number.precision();
+    int scale = number.scale();
+    if (precision <= scale)
+      precision += scale;
+    return new NumberType(precision, scale, false);
   }
 
-  public NumberType() {
-    this(TypeId.NUMBER.getMaxPrecision(), 0, true);
+  public static NumberType of(int precision) {
+    return of(precision, 0, true);
   }
 
-  public NumberType(int precision) {
-    this(precision, 0, true);
+  public static NumberType of(int precision, int scale) {
+    return of(precision, scale, true);
   }
 
-  public NumberType(int precision, int scale) {
-    this(precision, scale, true);
+  /**
+   * Create a number data type
+   * 
+   * @param precision Total number of digits allowed.
+   * @param scale Number of digits allowed to the right of the decimal point.
+   * @param nullable
+   * @return
+   */
+  public static NumberType of(int precision, int scale, boolean nullable) {
+    if (precision == PRECISION_NOT_SPECIFIED)
+      precision = TypeId.NUMBER.getMaxPrecision();
+    if (scale == SCALE_NOT_SPECIFIED)
+      scale = 0;
+
+    if (precision == TypeId.NUMBER.getMaxPrecision() && scale == TypeId.NUMBER.getDefaultScale()
+        && nullable == true)
+      return NUMBER;
+
+    return new NumberType(precision, scale, nullable);
   }
 
-  public NumberType(int precision, int scale, boolean nullable) {
+  private NumberType(int precision, int scale, boolean nullable) {
     super(precision, scale, nullable);
-    this.precision = precision;
-    this.scale = scale;
   }
 
   @Override
   public NumberType withNullability(boolean nullable) {
     return new NumberType(precision, scale, nullable);
-  }
-
-  @Override
-  public int getPrecision() {
-    return precision;
-  }
-
-  @Override
-  public int getScale() {
-    return scale;
   }
 
   @Override
@@ -156,8 +166,8 @@ public final class NumberType extends Type {
       return convertBinaryToNumber((byte[]) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, Type.valueOf(value),
+        this);
   }
 
   /**

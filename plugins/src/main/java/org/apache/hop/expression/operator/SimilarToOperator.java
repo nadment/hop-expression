@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 public class SimilarToOperator extends Operator {
 
   public SimilarToOperator() {
-    super("SIMILAR TO", 10, true, ReturnTypes.BOOLEAN, OperandTypes.STRING_STRING,
+    super("SIMILAR TO", 10, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING_STRING,
         Category.COMPARISON, "/docs/similar-to.html");
   }
 

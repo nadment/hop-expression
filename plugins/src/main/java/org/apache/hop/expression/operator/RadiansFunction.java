@@ -33,7 +33,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class RadiansFunction extends Function {
 
   public RadiansFunction() {
-    super("RADIANS", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("RADIANS", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/radians.html");
   }
 

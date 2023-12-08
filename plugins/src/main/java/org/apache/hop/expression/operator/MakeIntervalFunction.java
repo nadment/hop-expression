@@ -32,7 +32,7 @@ import java.math.BigDecimal;
 public class MakeIntervalFunction extends Function {
 
   public MakeIntervalFunction() {
-    super("MAKE_INTERVAL", ReturnTypes.INTERVAL,
+    super("MAKE_INTERVAL", ReturnTypes.INTERVAL_NULLABLE,
         OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, Category.DATE,
         "/docs/make_interval.html");
   }

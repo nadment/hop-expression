@@ -23,19 +23,22 @@ import java.math.BigDecimal;
 
 public final class BooleanType extends Type {
 
-  public static final BooleanType BOOLEAN = new BooleanType();
-
-  public BooleanType() {
-    this(true);
-  }
-
-  public BooleanType(boolean nullable) {
-    super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+  /**
+   * Default BOOLEAN type.
+   */
+  public static final BooleanType BOOLEAN = new BooleanType(true);
+  /**
+   * Default BOOLEAN NOT NULL type.
+   */
+  public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
+  
+  private BooleanType(boolean nullable) {
+    super(1, 0, nullable);
   }
 
   @Override
-  public BooleanType withNullability(final boolean nullable) {
-    return new BooleanType(nullable);
+  public BooleanType withNullability(final boolean nullable) {   
+    return (nullable) ? BOOLEAN:BOOLEAN_NOT_NULL;
   }
 
   @Override

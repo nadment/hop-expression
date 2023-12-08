@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class AsinhFunction extends Function {
 
   public AsinhFunction() {
-    super("ASINH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("ASINH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/asinh.html");
   }
 

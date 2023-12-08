@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitSetFunction extends Function {
 
   public BitSetFunction() {
-    super("BIT_SET", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+    super("BIT_SET", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
         "/docs/bit_set.html");
   }
 

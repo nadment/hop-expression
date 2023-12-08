@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SpaceFunction extends Function {
 
   public SpaceFunction() {
-    super("SPACE", ReturnTypes.STRING, OperandTypes.NUMERIC, Category.STRING, "/docs/space.html");
+    super("SPACE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC, Category.STRING, "/docs/space.html");
   }
 
   @Override

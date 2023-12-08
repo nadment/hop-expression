@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 public class UrlEncodeFunction extends Function {
 
   public UrlEncodeFunction() {
-    super("URL_ENCODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("URL_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/url_encode.html");
   }
 

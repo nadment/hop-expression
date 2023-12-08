@@ -35,7 +35,7 @@ import java.math.RoundingMode;
 public class RoundFunctionFunction extends Function {
 
   public RoundFunctionFunction() {
-    super("ROUND", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("ROUND", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/round.html");
   }
 

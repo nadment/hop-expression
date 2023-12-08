@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class AcoshFunction extends Function {
 
   public AcoshFunction() {
-    super("ACOSH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("ACOSH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/acosh.html");
   }
 

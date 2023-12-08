@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class AtanhFunction extends Function {
 
   public AtanhFunction() {
-    super("ATANH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("ATANH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/atanh.html");
   }
 

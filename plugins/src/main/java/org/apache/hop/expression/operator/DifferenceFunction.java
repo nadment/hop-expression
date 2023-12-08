@@ -33,7 +33,7 @@ public class DifferenceFunction extends Function {
   private static final int SOUNDEX_LENGTH = 4;
 
   public DifferenceFunction() {
-    super("DIFFERENCE", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+    super("DIFFERENCE", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, Category.STRING,
         "/docs/difference.html");
   }
 

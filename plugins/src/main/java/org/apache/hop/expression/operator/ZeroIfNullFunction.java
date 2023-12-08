@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ZeroIfNullFunction extends Function {
 
   public ZeroIfNullFunction() {
-    super("ZEROIFNULL", ReturnTypes.ARG0, OperandTypes.NUMERIC, Category.CONDITIONAL,
+    super("ZEROIFNULL", ReturnTypes.ARG0_NOT_NULL, OperandTypes.NUMERIC, Category.CONDITIONAL,
         "/docs/zeroifnull.html");
   }
 

@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentUserFunction extends Function {
 
   public CurrentUserFunction() {
-    super("CURRENT_USER", ReturnTypes.STRING, OperandTypes.NILADIC, Category.SPECIAL,
+    super("CURRENT_USER", ReturnTypes.STRING_NULLABLE, OperandTypes.NILADIC, Category.SPECIAL,
         "/docs/current_user.html");
   }
 

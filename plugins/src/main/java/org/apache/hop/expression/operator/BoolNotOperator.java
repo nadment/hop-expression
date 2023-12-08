@@ -42,7 +42,7 @@ import java.io.StringWriter;
 public class BoolNotOperator extends Operator {
 
   public BoolNotOperator() {
-    super("BOOLNOT", "NOT", 150, false, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, Category.LOGICAL,
+    super("BOOLNOT", "NOT", 150, false, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN, Category.LOGICAL,
         "/docs/boolnot.html");
   }
 

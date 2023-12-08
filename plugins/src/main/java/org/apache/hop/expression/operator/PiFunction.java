@@ -40,7 +40,7 @@ public class PiFunction extends Function {
       new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER);
 
   public PiFunction() {
-    super("PI", ReturnTypes.NUMBER, OperandTypes.NILADIC, Category.MATHEMATICAL, "/docs/pi.html");
+    super("PI", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.NILADIC, Category.MATHEMATICAL, "/docs/pi.html");
   }
 
   @Override

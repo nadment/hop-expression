@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class IsFalseOperator extends Operator {
 
   public IsFalseOperator() {
-    super("IS FALSE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, Category.COMPARISON,
+    super("IS FALSE", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.BOOLEAN, Category.COMPARISON,
         "/docs/is-false.html");
   }
 

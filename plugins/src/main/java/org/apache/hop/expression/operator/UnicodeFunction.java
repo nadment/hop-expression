@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class UnicodeFunction extends Function {
 
   public UnicodeFunction() {
-    super("UNICODE", ReturnTypes.INTEGER, OperandTypes.STRING, Category.STRING,
+    super("UNICODE", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/unicode.html");
   }
 

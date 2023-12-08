@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CoshFunction extends Function {
 
   public CoshFunction() {
-    super("COSH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("COSH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/cosh.html");
   }
 

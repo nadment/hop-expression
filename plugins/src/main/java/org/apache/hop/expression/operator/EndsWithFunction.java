@@ -41,7 +41,7 @@ public class EndsWithFunction extends Function {
   public static final EndsWithFunction EndsWithBinary = new EndsWithBinary();
 
   public EndsWithFunction() {
-    super("ENDSWITH", ReturnTypes.BOOLEAN,
+    super("ENDSWITH", ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), Category.COMPARISON,
         "/docs/endswith.html");
   }

@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class Atan2Function extends Function {
 
   public Atan2Function() {
-    super("ATAN2", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
+    super("ATAN2", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
         "/docs/atan2.html");
   }
 

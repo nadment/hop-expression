@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentTimestampFunction extends Function {
 
   public CurrentTimestampFunction() {
-    super("CURRENT_TIMESTAMP", ReturnTypes.DATE, OperandTypes.NILADIC, Category.DATE,
+    super("CURRENT_TIMESTAMP", ReturnTypes.DATE_NOT_NULL, OperandTypes.NILADIC, Category.DATE,
         "/docs/current_timestamp.html");
   }
 

@@ -16,8 +16,8 @@
  */
 package org.apache.hop.expression.type;
 
+import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.Call;
-import java.util.Objects;
 
 /**
  * Strategy to infer the type of an operator call from the type of the operands
@@ -30,8 +30,8 @@ public class ReturnTypeTransformCascade implements IReturnTypeInference {
   private final ITypeTransform[] transforms;
 
   ReturnTypeTransformCascade(IReturnTypeInference rule, ITypeTransform... transforms) {
-    this.rule = Objects.requireNonNull(rule, "rule");
-    this.transforms = Objects.requireNonNull(transforms, "transforms");
+    this.rule = requireNonNull(rule, "rule");
+    this.transforms = requireNonNull(transforms, "transforms");
   }
 
   @Override

@@ -33,12 +33,12 @@ import java.io.StringWriter;
 public class BitXorFunction extends Function {
 
   public BitXorFunction() {
-    super("BIT_XOR", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+    super("BIT_XOR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
         "/docs/bit_xor.html");
   }
 
   public BitXorFunction(String name) {
-    super("BIT_XOR", name, 80, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+    super("BIT_XOR", name, 80, true, ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
         Category.BITWISE, "/docs/bit_xor.html");
   }
 

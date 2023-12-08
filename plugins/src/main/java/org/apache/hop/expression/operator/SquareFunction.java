@@ -32,7 +32,7 @@ public class SquareFunction extends Function {
   public static final SquareFunction INSTANCE = new SquareFunction();
 
   public SquareFunction() {
-    super("SQUARE", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("SQUARE", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/square.html");
   }
 

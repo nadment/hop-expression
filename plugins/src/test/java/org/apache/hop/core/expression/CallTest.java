@@ -20,12 +20,12 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.FunctionRegistry;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
 public class CallTest extends ExpressionTest {
  
   @Test
-  public void test() throws Exception {
+  public void testCall() throws Exception {
     Call call1 = new Call(3, Operators.ADD, Literal.of(3), Literal.of(5));
     Call call2 = new Call(Operators.ADD, List.of(Literal.of(3), Literal.of(5)));
     
@@ -56,7 +56,9 @@ public class CallTest extends ExpressionTest {
     assertEquals(Operators.ADD, call1.getOperator());
     assertEquals(2, call1.getOperandCount());
     assertEquals(3, call1.getPosition());
-    assertEquals(5, call1.getCost());
+    assertEquals(7, call1.getCost());
+    assertEquals(14, call4.getCost());
+    assertEquals(11, call6.getCost());
     // Data type is unknown before validation
     assertEquals(UnknownType.UNKNOWN, call1.getType());
     assertEquals(UnknownType.UNKNOWN, call3.getType());
@@ -80,12 +82,12 @@ public class CallTest extends ExpressionTest {
     evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
     
     // Coercion to string
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE");
+    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(StringType.STRING);
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
-    evalEquals("Abs(FIELD_INTEGER::BOOLEAN)", "1");
-    evalEquals("Abs(FIELD_NUMBER::BOOLEAN)", "1");
+    evalEquals("Lower(FIELD_INTEGER::BOOLEAN)", "true");
+    evalEquals("Lower(FIELD_NUMBER::BOOLEAN)", "true");
     evalEquals("Upper(FIELD_NUMBER::BOOLEAN)", "TRUE");
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
     evalEquals("Upper(FIELD_INTEGER::INTEGER)", "40");
@@ -94,14 +96,24 @@ public class CallTest extends ExpressionTest {
     evalEquals("Abs(FIELD_STRING_INTEGER)", 25L);    
     evalEquals("Abs(FIELD_STRING_NUMBER)", 12.56D);
   }
-
   
-  // Order identifier by name
   @Test
   public void orderIdentifierByName() throws Exception {
-    IExpressionContext context = createExpressionContext();
-    Call call = new Call(Operators.ADD, new Identifier("FIELD_STRING_NUMBER"), new Identifier("FIELD_STRING_INTEGER"));
-    assertEquals("FIELD_STRING_INTEGER+FIELD_STRING_NUMBER", call.compile(context).toString());
+
+    // Order identifiers by name with symmetrical operator
+    optimize("FIELD_STRING_NUMBER+FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER+FIELD_STRING_NUMBER");
+    optimize("FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
+    optimize("FIELD_BOOLEAN_TRUE AND FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE AND FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE OR FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE = FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE=FIELD_BOOLEAN_TRUE");
+    optimize("EQUAL_NULL(FIELD_BOOLEAN_TRUE,FIELD_BOOLEAN_FALSE)", "EQUAL_NULL(FIELD_BOOLEAN_FALSE,FIELD_BOOLEAN_TRUE)");
   }
-    
+
+  @Test
+  public void orderOperandByCost() throws Exception {
+
+    // Order operands by cost with symmetrical operator
+    optimize("FIELD_STRING_NUMBER+3", "3+FIELD_STRING_NUMBER");
+    optimize("FIELD_STRING_NUMBER*3", "3*FIELD_STRING_NUMBER");
+  }
 }

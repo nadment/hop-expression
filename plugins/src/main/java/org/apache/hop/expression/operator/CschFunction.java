@@ -34,7 +34,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CschFunction extends Function {
 
   public CschFunction() {
-    super("CSCH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("CSCH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/csch.html");
   }
 

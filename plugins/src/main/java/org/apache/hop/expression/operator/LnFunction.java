@@ -33,7 +33,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class LnFunction extends Function {
 
   public LnFunction() {
-    super("LN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/ln.html");
+    super("LN", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/ln.html");
   }
 
   @Override

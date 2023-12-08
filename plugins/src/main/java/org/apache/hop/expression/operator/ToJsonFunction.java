@@ -35,7 +35,7 @@ public class ToJsonFunction extends Function {
   }
 
   protected ToJsonFunction(String id) {
-    super(id, ReturnTypes.JSON, OperandTypes.STRING, Category.CONVERSION, "/docs/to_json.html");
+    super(id, ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, Category.CONVERSION, "/docs/to_json.html");
   }
 
   @Override

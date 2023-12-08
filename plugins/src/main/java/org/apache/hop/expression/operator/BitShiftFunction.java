@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitShiftFunction extends Function {
 
   public BitShiftFunction() {
-    super("BIT_SHIFT", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+    super("BIT_SHIFT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
         "/docs/bit_shift.html");
   }
 

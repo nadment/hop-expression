@@ -42,7 +42,7 @@ public class StartsWithFunction extends Function {
   public static final StartsWithFunction StartsWithBinary = new StartsWithBinary();
 
   public StartsWithFunction() {
-    super("STARTSWITH", ReturnTypes.BOOLEAN,
+    super("STARTSWITH", ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), Category.COMPARISON,
         "/docs/startswith.html");
   }

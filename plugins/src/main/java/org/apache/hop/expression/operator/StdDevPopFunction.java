@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class StdDevPopFunction extends AggregateFunction {
 
   public StdDevPopFunction() {
-    super("STDDEV_POP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/stddev_pop.html");
+    super("STDDEV_POP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/stddev_pop.html");
   }
 
   @Override

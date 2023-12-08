@@ -39,12 +39,13 @@ public class Expressions {
 
     do {
       original = expression;
-      expression = expression.compile(context);
+      expression = expression.compile(context);      
+      // System.out.println(original.toString() + " >>> " +  expression.toString());
     } while (!expression.equals(original));
 
     return expression;
   }
-
+  
   public static IExpression build(final IExpressionContext context, String source)
       throws ExpressionException {
     
@@ -52,9 +53,13 @@ public class Expressions {
 
     try {
       IExpression expression = parser.parse();
+
+      // Validate expression
       expression.validate(context);
+
+      // Compile expression recursively
       expression = compile(context, expression);
-      
+
       // Unknown are not expected here
       if (expression.getType().is(TypeId.UNKNOWN)) {
         throw new ExpressionException(0, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, source);

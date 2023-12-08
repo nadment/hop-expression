@@ -38,7 +38,6 @@ import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
@@ -62,18 +61,20 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
     assertTrue(TypeFamily.STRING.isFamily(TypeFamily.STRING));
     assertTrue(TypeFamily.TEMPORAL.isFamily(TypeFamily.TEMPORAL));
+    assertTrue(TypeFamily.INTERVAL.isFamily(TypeFamily.INTERVAL));
+    assertTrue(TypeFamily.BINARY.isFamily(TypeFamily.BINARY));
     
     assertFalse(TypeFamily.NUMERIC.isCompatibleWithCoercion(null));
     assertTrue(TypeFamily.BOOLEAN.isCompatibleWithCoercion(TypeFamily.STRING));
     assertTrue(TypeFamily.NUMERIC.isCompatibleWithCoercion(TypeFamily.STRING));
     
-    assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeId.INTEGER));
-    assertTrue(TypeFamily.NUMERIC.getDataTypeNames().contains(TypeId.NUMBER));
-    assertTrue(TypeFamily.TEMPORAL.getDataTypeNames().contains(TypeId.DATE));
+    assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.INTEGER));
+    assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.NUMBER));
+    assertTrue(TypeFamily.TEMPORAL.getTypeIds().contains(TypeId.DATE));
   }
     
   @Test
-  public void typeNameOf() throws Exception {
+  public void typeIdOf() throws Exception {
     assertEquals(TypeId.ANY, TypeId.of("Any"));    
     assertEquals(TypeId.UNKNOWN, TypeId.of("UNKNOWN"));    
     assertEquals(TypeId.BOOLEAN, TypeId.of("BOOLEAN"));    
@@ -110,17 +111,16 @@ public class TypeTest extends ExpressionTest {
     assertEquals(UnknownType.UNKNOWN, Type.valueOf(new Random()));    
     assertEquals(BooleanType.BOOLEAN, Type.valueOf(true));
     assertEquals(UnknownType.UNKNOWN, Type.valueOf(TimeUnit.CENTURY));
-    assertEquals(new StringType(4), Type.valueOf("test"));
-    assertEquals(new BinaryType(1, false), Type.valueOf(new byte[] {0xF}));
-    assertEquals(new IntegerType(3), Type.valueOf(123));
-    assertEquals(new IntegerType(3), Type.valueOf(123L));
-    assertEquals(new NumberType(6,3), Type.valueOf(123.456D));
-    assertEquals(new NumberType(18,0), Type.valueOf(new BigDecimal("123456789123456789")));
-    assertEquals(new NumberType(9,3), Type.valueOf(BigDecimal.valueOf(123456789,3)));
+    assertEquals(StringType.of(4).withNullability(false), Type.valueOf("test"));
+    assertEquals(BinaryType.of(1).withNullability(false), Type.valueOf(new byte[] {0xF}));
+    assertEquals(IntegerType.of(3).withNullability(false), Type.valueOf(123));
+    assertEquals(IntegerType.of(3).withNullability(false), Type.valueOf(123L));
+    assertEquals(NumberType.of(6,3).withNullability(false), Type.valueOf(123.456D));
+    assertEquals(NumberType.of(18).withNullability(false), Type.valueOf(new BigDecimal("123456789123456789")));
+    assertEquals(NumberType.of(9,3).withNullability(false), Type.valueOf(BigDecimal.valueOf(123456789,3)));
     assertEquals(DateType.DATE, Type.valueOf(ZonedDateTime.now()));
     assertEquals(IntervalType.INTERVAL, Type.valueOf(Interval.of(5)));
     assertEquals(JsonType.JSON, Type.valueOf(JsonType.convertStringToJson("{\"name\":\"Smith\"}")));
-
   }
 
   @Test
@@ -178,23 +178,23 @@ public class TypeTest extends ExpressionTest {
     assertEquals("DATE", String.valueOf(DateType.DATE));
     assertEquals("JSON", String.valueOf(JsonType.JSON));
     assertEquals("INTEGER", String.valueOf(IntegerType.INTEGER));  
-    assertEquals("INTEGER", String.valueOf(new IntegerType()));
-    assertEquals("INTEGER(6)", String.valueOf(new IntegerType(6)));
+    assertEquals("INTEGER", String.valueOf(IntegerType.of(-1)));
+    assertEquals("INTEGER(6)", String.valueOf(IntegerType.of(6)));
     assertEquals("NUMBER", String.valueOf(NumberType.NUMBER));
-    assertEquals("NUMBER(10)", String.valueOf(new NumberType(10)));
-    assertEquals("NUMBER(10)", String.valueOf(new NumberType(10,0)));
-    assertEquals("NUMBER(10,2)", String.valueOf(new NumberType(10,2)));
+    assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10)));
+    assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10,0)));
+    assertEquals("NUMBER(10,2)", String.valueOf(NumberType.of(10,2)));
     assertEquals("STRING", String.valueOf(StringType.STRING));
-    assertEquals("STRING", String.valueOf(new StringType()));
-    assertEquals("STRING(10)", String.valueOf(new StringType(10)));
+    assertEquals("STRING", String.valueOf(StringType.of(-1)));
+    assertEquals("STRING(10)", String.valueOf(StringType.of(10)));
     assertEquals("BINARY", String.valueOf(BinaryType.BINARY));
-    assertEquals("BINARY", String.valueOf(new BinaryType()));
-    assertEquals("BINARY(10)", String.valueOf(new BinaryType(10)));
+    assertEquals("BINARY", String.valueOf(BinaryType.of(-1)));
+    assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
   }
   
   @Test
   public void exceptionPrecisionOutOfRange() throws Exception {
-    assertThrows(IllegalArgumentException.class, () ->  new IntegerType(100));
+    assertThrows(IllegalArgumentException.class, () ->  IntegerType.of(100));
   }
     
   @Test
@@ -295,6 +295,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(date, type.cast(date));
     assertEquals(date, type.cast("2022-12-28"));
     assertEquals(date, type.cast("2022-12-28", "YYYY-MM-DD"));
+    assertThrows(ConversionException.class, () -> type.cast(true));
   }
   
 
@@ -302,6 +303,7 @@ public class TypeTest extends ExpressionTest {
   public void convertToDate() throws Exception {
     DateType type = DateType.DATE;
     assertNull(type.convert(null, ZonedDateTime.class));
+    assertThrows(ConversionException.class, () -> type.convert(123, ZonedDateTime.class));
   }
   
   @Test
@@ -475,7 +477,7 @@ public class TypeTest extends ExpressionTest {
     evalTrue("1::NUMBER = 1::INTEGER");
             
     // String to Number
-    evalTrue("'1.25' = 1.25::NUMBER");
+    evalTrue("'1.25' = 1.25::NUMBER(10,4)");
     evalEquals("2.0*'1.23'", 2.46D);
     evalEquals("2+'2'", 4L);
     evalEquals("'2'+2", 4L);
@@ -484,8 +486,8 @@ public class TypeTest extends ExpressionTest {
     evalEquals(" '8' || 1 + 1", 82L);
     
     // Integer to Number
-    evalEquals("'-2e-3'::Number * 2", new BigDecimal("-4e-3", MathContext.DECIMAL32));    
-    evalEquals("'-4e-4'::Number * 0.5", new BigDecimal("-0.00020", MathContext.DECIMAL32));
+    evalEquals("'-2e-3'::Number * 2", new BigDecimal("-4e-3"));    
+    evalEquals("'-4e-4'::Number * 0.5", new BigDecimal("-0.00020"));
   }
 
   @Test
@@ -509,7 +511,7 @@ public class TypeTest extends ExpressionTest {
     evalTrue("'FALSE'::Boolean=false");
     
     // String to BigNumber
-    evalEquals("' -1e-3 '::Number", new BigDecimal("-1e-3", MathContext.DECIMAL32));    
+    evalEquals("' -1e-3 '::Number", new BigDecimal("-1e-3"));    
   }
 }
 

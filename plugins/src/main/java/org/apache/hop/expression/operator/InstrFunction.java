@@ -33,7 +33,7 @@ public class InstrFunction extends Function {
 
   public InstrFunction() {
     super(
-        "INSTR", ReturnTypes.INTEGER, OperandTypes.STRING_STRING
+        "INSTR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING
             .or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC),
         Category.STRING, "/docs/instr.html");
   }

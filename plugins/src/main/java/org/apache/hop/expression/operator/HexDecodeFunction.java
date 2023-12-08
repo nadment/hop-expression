@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Hex;
 public class HexDecodeFunction extends Function {
 
   public HexDecodeFunction() {
-    super("HEX_DECODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("HEX_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/hex_decode.html");
   }
 

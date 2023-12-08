@@ -35,46 +35,37 @@ import com.fasterxml.jackson.databind.JsonNode;
 public enum TypeId {
 
   /** A unknown type */
-  UNKNOWN(TypeFamily.NONE, PrecScale.NO_NO, Void.class),
+  UNKNOWN(TypeFamily.NONE, false, false, -1, -1, -1, -1, Void.class),
 
-  SYMBOL(TypeFamily.SYMBOL, PrecScale.NO_NO, Void.class),
-
-  ANY(TypeFamily.ANY, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES, Object.class),
+  ANY(TypeFamily.ANY, false, false, -1, -1, -1, -1, Object.class),
 
   /** Unlimited length text */
-  STRING(TypeFamily.STRING, PrecScale.NO_NO | PrecScale.YES_NO, String.class),
+  STRING(TypeFamily.STRING, true, false, 16_777_216, 0, 0, 0, String.class),
 
   /** Boolean (true or false) */
-  BOOLEAN(TypeFamily.BOOLEAN, PrecScale.NO_NO, Boolean.class),
+  BOOLEAN(TypeFamily.BOOLEAN, false, false, 1, 0, 0, 0, Boolean.class),
 
   /** Signed integer (64-bit) */
-  INTEGER(TypeFamily.NUMERIC, PrecScale.NO_NO, Long.class),
+  INTEGER(TypeFamily.NUMERIC, true, false, 19, 0, 0, 0, Long.class),
 
   /** Unlimited precision number */
-  NUMBER(TypeFamily.NUMERIC, PrecScale.NO_NO | PrecScale.YES_NO | PrecScale.YES_YES,
-      BigDecimal.class),
+  NUMBER(TypeFamily.NUMERIC, true, true, 38, 1, 37, 0, BigDecimal.class),
 
-  /** Date-time value with nanosecond precision and time zone */
-  DATE(TypeFamily.TEMPORAL, PrecScale.NO_NO, ZonedDateTime.class),
+  /** Date-time value with nanosecond precision and time zone 
+   * TODO: add precision for nanoseconds
+   * */
+  DATE(TypeFamily.TEMPORAL, false, false, -1, -1, -1, -1, ZonedDateTime.class),
 
-  JSON(TypeFamily.JSON, PrecScale.NO_NO, JsonNode.class),
+  JSON(TypeFamily.JSON, false, false, -1, -1, -1, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(TypeFamily.BINARY, PrecScale.NO_NO | PrecScale.YES_NO, byte[].class),
+  BINARY(TypeFamily.BINARY, true, false, 16_777_216, 0, 0, 0, byte[].class),
 
-  /** A interval type for years to months */
-  INTERVAL(TypeFamily.INTERVAL, PrecScale.NO_NO, Interval.class);
-
-  /**
-   * Flags indicating precision/scale combinations.
-   */
-  private interface PrecScale {
-    int NO_NO = 1;
-    int YES_NO = 2;
-    int YES_YES = 4;
-  }
-
-  public static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
+  /** A interval type for years to months 
+   * TODO: add precision for nanoseconds
+   */  
+  INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class);
+  
 
   protected static final Set<TypeId> STRING_TYPES = Set.of(STRING);
   protected static final Set<TypeId> BINARY_TYPES = Set.of(BINARY);
@@ -84,14 +75,48 @@ public enum TypeId {
   protected static final Set<TypeId> JSON_TYPES = Set.of(JSON);
   protected static final Set<TypeId> INTERVAL_TYPES = Set.of(INTERVAL);
 
-  protected static final Set<TypeId> ALL_TYPES =
-      Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
+  protected static final Set<TypeId> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
+  
+  /**
+   * If the precision parameter is supported.
+   */
+  private boolean supportsPrecision;
 
   /**
-   * Indicating allowable precision/scale combinations.
+   * If the scale parameter is supported.
    */
-  private final int signature;
+  private boolean supportsScale;
 
+  /**
+   * The minimum supported precision.
+   */
+  private int minPrecision;
+
+  /**
+   * The maximum supported precision.
+   */
+  private int maxPrecision;
+
+  /**
+   * The lowest possible scale.
+   */
+  private int minScale;
+
+  /**
+   * The highest possible scale.
+   */
+  private int maxScale;
+
+  /**
+   * The default precision.
+   */
+  private long defaultPrecision;
+
+  /**
+   * The default scale.
+   */
+  public int defaultScale;
+  
   private final TypeFamily family;
 
   private final Class<?> javaClass;
@@ -99,9 +124,14 @@ public enum TypeId {
   public static final Set<String> ALL_NAMES =
       Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
 
-  private TypeId(TypeFamily family, int signature, Class<?> javaClass) {
+  private TypeId(TypeFamily family, boolean supportsPrecision, boolean supportsScale, int maxPrecision, int minPrecision, int maxScale, int minScale, Class<?> javaClass) {
     this.family = family;
-    this.signature = signature;
+    this.supportsPrecision = supportsPrecision;
+    this.supportsScale = supportsScale; 
+    this.maxPrecision = maxPrecision;
+    this.minPrecision = minPrecision;
+    this.maxScale = maxScale;
+    this.minScale = minScale;
     this.javaClass = javaClass;
   }
 
@@ -129,29 +159,15 @@ public enum TypeId {
   public boolean isCompatibleWithCoercion(TypeFamily family) {
     return this.family.isCompatibleWithCoercion(family);
   }
-
-  public boolean allowsNoPrecNoScale() {
-    return (signature & PrecScale.NO_NO) != 0;
+ 
+  public boolean supportsPrecision() {
+    return this.supportsPrecision;
   }
-
-  public boolean allowsPrecNoScale() {
-    return (signature & PrecScale.YES_NO) != 0;
+  
+  public boolean supportsScale() {
+    return this.supportsScale;
   }
-
-  public boolean allowsPrec() {
-    return allowsPrecScale(true, true) || allowsPrecScale(true, false);
-  }
-
-  public boolean allowsScale() {
-    return allowsPrecScale(true, true);
-  }
-
-  public boolean allowsPrecScale(boolean precision, boolean scale) {
-    int mask =
-        precision ? (scale ? PrecScale.YES_YES : PrecScale.YES_NO) : (scale ? 0 : PrecScale.NO_NO);
-    return (signature & mask) != 0;
-  }
-
+  
   /**
    * Returns the minimum precision (or length) allowed for this type, or -1 if
    * precision/length are not applicable for this type.
@@ -159,18 +175,7 @@ public enum TypeId {
    * @return Minimum allowed precision
    */
   public int getMinPrecision() {
-    switch (this) {
-      case STRING:
-      case BINARY:
-      case DATE:
-      case INTEGER:
-      case NUMBER:
-        return 1;
-      case INTERVAL:
-        return 6;
-      default:
-        return -1;
-    }
+    return minPrecision;
   }
 
   /**
@@ -180,22 +185,28 @@ public enum TypeId {
    * @return Maximum allowed precision
    */
   public int getMaxPrecision() {
-    switch (this) {
-      case STRING:
-      case BINARY:
-        return 16_777_216;
-      case INTEGER:
-        return 19;
+    return maxPrecision;
+  }
+
+  public int getMaxScale() {
+    return maxScale;
+  }
+
+  public int getMinScale() {
+    return minScale;
+  }
+  
+  public int getDefaultScale() {
+    switch (this) {      
       case NUMBER:
-        return 38;
-      case DATE:
-      case INTERVAL:
         return 9;
+      case BOOLEAN:
+        return 0;
       default:
         return -1;
     }
   }
-
+  
   /**
    * Returns a {@link TypeId} with a given name (ignore case).
    *
@@ -218,18 +229,18 @@ public enum TypeId {
    */
   public static TypeId fromJavaClass(final Class<?> clazz) {
     if (clazz == null)
-      return TypeId.UNKNOWN;
+      return UNKNOWN;
 
-    for (TypeId id : TypeId.values()) {
+    for (TypeId id : values()) {
 
       // Ignore ANY
-      if (id.equals(TypeId.ANY))
+      if (id.equals(ANY))
         continue;
 
       if (id.getJavaClass().isAssignableFrom(clazz)) {
         return id;
       }
     }
-    return TypeId.UNKNOWN;
+    return UNKNOWN;
   }
 }

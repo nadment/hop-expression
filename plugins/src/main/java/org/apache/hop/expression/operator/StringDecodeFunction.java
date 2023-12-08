@@ -33,7 +33,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class StringDecodeFunction extends Function {
 
   public StringDecodeFunction() {
-    super("STRING_DECODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("STRING_DECODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/string_decode.html");
   }
 

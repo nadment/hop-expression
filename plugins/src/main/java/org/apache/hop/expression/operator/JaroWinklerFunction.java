@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class JaroWinklerFunction extends Function {
 
   public JaroWinklerFunction() {
-    super("JAROWINKLER", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+    super("JAROWINKLER", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, Category.STRING,
         "/docs/jarowinkler.html");
   }
 

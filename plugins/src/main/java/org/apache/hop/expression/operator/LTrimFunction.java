@@ -37,7 +37,7 @@ public class LTrimFunction extends Function {
   public static final LTrimFunction INSTANCE = new LTrimFunction();
 
   public LTrimFunction() {
-    super("LTRIM", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
+    super("LTRIM", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
         Category.STRING, "/docs/ltrim.html");
   }
 

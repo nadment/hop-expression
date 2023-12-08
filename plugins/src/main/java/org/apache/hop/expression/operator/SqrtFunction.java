@@ -35,7 +35,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class SqrtFunction extends Function {
 
   public SqrtFunction() {
-    super("SQRT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("SQRT", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/sqrt.html");
   }
 

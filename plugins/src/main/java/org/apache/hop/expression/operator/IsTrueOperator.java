@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class IsTrueOperator extends Operator {
 
   public IsTrueOperator() {
-    super("IS TRUE", 140, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN, Category.COMPARISON,
+    super("IS TRUE", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.BOOLEAN, Category.COMPARISON,
         "/docs/is-true.html");
   }
 

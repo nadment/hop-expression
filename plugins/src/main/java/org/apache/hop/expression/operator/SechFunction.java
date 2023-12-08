@@ -33,7 +33,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class SechFunction extends Function {
 
   public SechFunction() {
-    super("SECH", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("SECH", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/sech.html");
   }
 

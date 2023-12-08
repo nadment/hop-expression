@@ -31,7 +31,7 @@ import java.time.ZonedDateTime;
 public class YearFunction extends Function {
 
   public YearFunction() {
-    super("YEAR", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/year.html");
+    super("YEAR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE, "/docs/year.html");
   }
 
   @Override

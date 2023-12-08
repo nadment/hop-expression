@@ -20,6 +20,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
@@ -36,7 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 /**
  * Logical conjunction <code>AND</code> operator.
@@ -49,7 +50,7 @@ import java.util.Queue;
 public class BoolAndOperator extends Operator {
 
   public BoolAndOperator() {
-    super("BOOLAND", "AND", 160, true, ReturnTypes.BOOLEAN, OperandTypes.BOOLEAN_BOOLEAN,
+    super("BOOLAND", "AND", 160, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN_BOOLEAN,
         Category.LOGICAL, "/docs/booland.html");
   }
 
@@ -58,58 +59,41 @@ public class BoolAndOperator extends Operator {
    */
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    boolean left = true;
-    boolean right = true;
-
-    // Simplify trivial FALSE
-    if (call.getOperand(0).isConstant()) {
-      Boolean value = call.getOperand(0).getValue(Boolean.class);
-      if (value == Boolean.FALSE) {
-        left = false;
-      }
-    }
-    if (call.getOperand(1).isConstant()) {
-      Boolean value = call.getOperand(1).getValue(Boolean.class);
-      if (value == Boolean.FALSE) {
-        right = false;
-      }
-    }
-
-    // FALSE as soon as any operand is FALSE
-    // FALSE AND x → FALSE
-    // x AND FALSE → FALSE
-    if (!left || !right) {
-      return Literal.FALSE;
-    }
 
     // Remove duplicate predicate
     // x AND x → x
     // x AND y AND x → x AND y
-    Queue<IExpression> conditions = this.getChainedOperands(call, false);
-
+    PriorityQueue<IExpression> conditions = new PriorityQueue<>(new ExpressionComparator());
+    conditions.addAll(this.getChainedOperands(call, false));
 
     // final Map<IExpression, Range<?>> ranges = new HashMap<>();
-    final List<IExpression> nullTerms = new ArrayList<>();
-    final List<IExpression> notNullTerms = new ArrayList<>();
+    final List<IExpression> isNullTerms = new ArrayList<>();
+    final List<IExpression> isNotNullTerms = new ArrayList<>();
     final List<IExpression> strongTerms = new ArrayList<>();
     final MultiValuedMap<IExpression, Pair<Call, Literal>> equalsLiterals =
         new ArrayListValuedHashMap<>();
 
     for (IExpression condition : conditions) {
+      
+      // FALSE as soon as any predicate is FALSE
+      if ( condition==Literal.FALSE ) {
+        return Literal.FALSE;
+      }
+      
       if (condition.is(Kind.CALL)) {
-        call = condition.asCall();
-        if (call.is(Operators.IS_NULL)) {
-          nullTerms.add(call.getOperand(0));
+        Call predicate = condition.asCall();
+        if (predicate.is(Operators.IS_NULL)) {
+          isNullTerms.add(predicate.getOperand(0));
         }
-        if (call.is(Operators.IS_NOT_NULL)) {
-          notNullTerms.add(call.getOperand(0));
+        if (predicate.is(Operators.IS_NOT_NULL)) {
+          isNotNullTerms.add(predicate.getOperand(0));
         }
-        if (call.is(Operators.EQUAL)) {
-          if (call.getOperand(0).is(Kind.LITERAL)) {
-            equalsLiterals.put(call.getOperand(1), Pair.of(call, call.getOperand(0).asLiteral()));
+        if (predicate.is(Operators.EQUAL)) {
+          if (predicate.getOperand(0).is(Kind.LITERAL)) {
+            equalsLiterals.put(predicate.getOperand(1), Pair.of(predicate, predicate.getOperand(0).asLiteral()));
           }
-          if (call.getOperand(1).is(Kind.LITERAL)) {
-            equalsLiterals.put(call.getOperand(0), Pair.of(call, call.getOperand(1).asLiteral()));
+          if (predicate.getOperand(1).is(Kind.LITERAL)) {
+            equalsLiterals.put(predicate.getOperand(0), Pair.of(predicate, predicate.getOperand(1).asLiteral()));
           }
         }
 
@@ -127,14 +111,14 @@ public class BoolAndOperator extends Operator {
         // }
         // }
 
-        if (Operators.is(call, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
+        if (Operators.is(predicate, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
             Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN,
             Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
-          if (call.getOperand(0).is(Kind.IDENTIFIER)) {
-            strongTerms.add(call.getOperand(0));
+          if (predicate.getOperand(0).is(Kind.IDENTIFIER)) {
+            strongTerms.add(predicate.getOperand(0));
           }
-          if (call.getOperand(1).is(Kind.IDENTIFIER)) {
-            strongTerms.add(call.getOperand(1));
+          if (predicate.getOperand(1).is(Kind.IDENTIFIER)) {
+            strongTerms.add(predicate.getOperand(1));
           }
         }
       }
@@ -154,12 +138,12 @@ public class BoolAndOperator extends Operator {
     }
 
     // Simplify IS NULL(x) AND x<5 → not satisfiable
-    if (!Collections.disjoint(nullTerms, strongTerms)) {
+    if (!Collections.disjoint(isNullTerms, strongTerms)) {
       return Literal.FALSE;
     }
 
     // Remove not necessary IS NOT NULL expressions IS NOT NULL(x) AND x<5 → x<5
-    for (IExpression operand : notNullTerms) {
+    for (IExpression operand : isNotNullTerms) {
       if (strongTerms.contains(operand)) {
         Iterator<IExpression> iterator = conditions.iterator();
         List<IExpression> unnecessary = new ArrayList<>();
@@ -175,11 +159,12 @@ public class BoolAndOperator extends Operator {
     }
 
     // Rebuild conjunctions if more than 1 condition
+    if (conditions.size() == 1) {
+      return conditions.peek();
+    }
     IExpression expression = conditions.poll();
     while (!conditions.isEmpty()) {
-      call = new Call(Operators.BOOLAND, conditions.poll(), expression);
-      call.inferReturnType();
-      expression = call;
+      expression = new Call(Operators.BOOLAND, expression, conditions.poll()).inferReturnType();
     }
 
     return expression;

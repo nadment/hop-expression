@@ -39,7 +39,7 @@ public class InitCapFunction extends Function {
   public static final InitCapFunction INSTANCE = new InitCapFunction();
 
   public InitCapFunction() {
-    super("INITCAP", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("INITCAP", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/initcap.html");
   }
 

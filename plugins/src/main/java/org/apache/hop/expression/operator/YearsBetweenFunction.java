@@ -32,7 +32,7 @@ import java.time.temporal.ChronoUnit;
 public class YearsBetweenFunction extends Function {
 
   public YearsBetweenFunction() {
-    super("YEARS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
+    super("YEARS_BETWEEN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
         "/docs/years_between.html");
   }
 

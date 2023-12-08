@@ -40,7 +40,7 @@ public class ModFunction extends Function {
   }
 
   public ModFunction(String name) {
-    super("MOD", name, 50, true, ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC,
+    super("MOD", name, 50, true, ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
         Category.MATHEMATICAL, "/docs/mod.html");
   }
 

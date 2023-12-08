@@ -32,7 +32,7 @@ import java.time.temporal.ChronoUnit;
 public class MinutesBetweenFunction extends Function {
 
   public MinutesBetweenFunction() {
-    super("MINUTES_BETWEEN", ReturnTypes.INTEGER, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
+    super("MINUTES_BETWEEN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
         "/docs/minutes_between.html");
   }
 

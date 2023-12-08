@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
@@ -35,7 +36,7 @@ import java.io.StringWriter;
 public class NotEqualOperator extends Operator {
 
   public NotEqualOperator(final String name) {
-    super("NOT_EQUAL", name, 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("NOT_EQUAL", name, 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
         Category.COMPARISON, "/docs/not_equal.html");
   }
 
@@ -60,10 +61,20 @@ public class NotEqualOperator extends Operator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Normalize symmetrical operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return new Call(this, right, left);
+    }
+    
+    // Normalize symmetrical operator by ordering identifiers by name
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+      return new Call(this, right, left).inferReturnType();
+    }
+    
     // Simplify TRUE<>x → X IS NOT TRUE
     if (left.equals(Literal.TRUE)) {
       return new Call(Operators.IS_NOT_TRUE, right);

@@ -56,7 +56,7 @@ public class AggregateFunctionTest extends ExpressionTest {
   
   @Test
   public void Max() throws Exception {
-    returnType("MAX(FIELD_STRING)", new StringType(1000));
+    returnType("MAX(FIELD_STRING)", StringType.of(1000));
     returnType("MAX(FIELD_INTEGER)", IntegerType.INTEGER);
     returnType("MAX(FIELD_NUMBER)", NumberType.NUMBER);
     returnType("MAX(FIELD_DATE)", DateType.DATE);
@@ -64,7 +64,7 @@ public class AggregateFunctionTest extends ExpressionTest {
 
   @Test
   public void Min() throws Exception {
-    returnType("MIN(FIELD_STRING)", new StringType(1000));
+    returnType("MIN(FIELD_STRING)", StringType.of(1000));
     returnType("MIN(FIELD_INTEGER)", IntegerType.INTEGER);
     returnType("MIN(FIELD_NUMBER)", NumberType.NUMBER);
     returnType("MIN(FIELD_DATE)", DateType.DATE);

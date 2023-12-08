@@ -45,7 +45,7 @@ public class JsonQueryFunction extends Function {
 
 
   public JsonQueryFunction() {
-    super("JSON_QUERY", ReturnTypes.JSON, OperandTypes.JSON.or(OperandTypes.JSON_STRING),
+    super("JSON_QUERY", ReturnTypes.JSON_NULLABLE, OperandTypes.JSON.or(OperandTypes.JSON_STRING),
         "i18n::Operator.Category.Json", "/docs/json_query.html");
   }
 

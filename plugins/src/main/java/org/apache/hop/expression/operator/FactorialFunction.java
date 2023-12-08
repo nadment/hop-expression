@@ -33,7 +33,7 @@ import java.math.BigInteger;
 public class FactorialFunction extends Function {
 
   public FactorialFunction() {
-    super("FACTORIAL", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("FACTORIAL", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/factorial.html");
   }
 

@@ -36,7 +36,7 @@ import java.io.StringWriter;
 public class GreaterThanOrEqualOperator extends Operator {
 
   public GreaterThanOrEqualOperator() {
-    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
         Category.COMPARISON, "/docs/greater_than_or_equal.html");
   }
 
@@ -76,9 +76,9 @@ public class GreaterThanOrEqualOperator extends Operator {
       return new Literal(null, call.getType());
     }
 
-    // Simplify x>=x → NULL OR x IS NOT NULL
-    if (left.equals(right)) {
-      return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
+    // Simplify if not nullable x>=x → TRUE
+    if (left.equals(right) && !left.getType().isNullable()) {
+      return Literal.TRUE;
     }
 
     // Simplify TRUE>=x → x IS NOT NULL

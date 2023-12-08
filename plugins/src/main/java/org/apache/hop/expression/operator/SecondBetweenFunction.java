@@ -32,7 +32,7 @@ import java.time.temporal.ChronoUnit;
 public class SecondBetweenFunction extends Function {
 
   public SecondBetweenFunction() {
-    super("SECONDS_BETWEEN", ReturnTypes.INTEGER, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
+    super("SECONDS_BETWEEN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL_TEMPORAL, Category.DATE,
         "/docs/seconds_between.html");
   }
 

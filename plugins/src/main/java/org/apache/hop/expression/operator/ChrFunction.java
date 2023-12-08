@@ -34,7 +34,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ChrFunction extends Function {
 
   public ChrFunction() {
-    super("CHR", ReturnTypes.STRING, OperandTypes.NUMERIC, Category.STRING, "/docs/chr.html");
+    super("CHR", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC, Category.STRING, "/docs/chr.html");
   }
 
   @Override

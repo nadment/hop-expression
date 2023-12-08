@@ -39,7 +39,7 @@ public class ConcatWsFunction extends Function {
   public static final ConcatWsFunction ConcatWsBinaryFunction = new ConcatWsBinary();
 
   public ConcatWsFunction() {
-    super("CONCAT_WS", ReturnTypes.FIRST_KNOWN,
+    super("CONCAT_WS", ReturnTypes.CONCATWS_FUNCTION,
         OperandTypes.STRING_STRING_VARIADIC.or(OperandTypes.BINARY_BINARY_VARIADIC),
         Category.STRING, "/docs/concat_ws.html");
   }

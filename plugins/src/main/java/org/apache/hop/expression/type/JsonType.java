@@ -31,6 +31,11 @@ public final class JsonType extends Type {
    */
   public static final JsonType JSON = new JsonType(true);
 
+  /**
+   * Default JSON NOT NULL type.
+   */
+  public static final JsonType JSON_NOT_NULL = new JsonType(false);
+  
   private JsonType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }

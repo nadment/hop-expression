@@ -35,7 +35,7 @@ import java.math.BigDecimal;
 public class NullIfZeroFunction extends Function {
 
   public NullIfZeroFunction() {
-    super("NULLIFZERO", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.CONDITIONAL,
+    super("NULLIFZERO", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.CONDITIONAL,
         "/docs/nullifzero.html");
   }
 

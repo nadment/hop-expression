@@ -32,7 +32,7 @@ import java.time.ZoneId;
 public class MakeDateFunction extends Function {
 
   public MakeDateFunction() {
-    super("MAKE_DATE", ReturnTypes.DATE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+    super("MAKE_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, Category.DATE,
         "/docs/make_date.html");
   }
 

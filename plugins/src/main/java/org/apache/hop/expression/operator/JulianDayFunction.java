@@ -32,7 +32,7 @@ import java.time.temporal.JulianFields;
 public class JulianDayFunction extends Function {
 
   public JulianDayFunction() {
-    super("JULIAN_DAY", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE,
+    super("JULIAN_DAY", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE,
         "/docs/julian_day.html");
   }
 

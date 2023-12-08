@@ -35,7 +35,7 @@ public final class Call implements IExpression {
 
   // The return data type
   protected Type type = UnknownType.UNKNOWN;
-  
+
   // The position of this expression in the source before compilation else 0.
   protected final int position;
 
@@ -69,7 +69,7 @@ public final class Call implements IExpression {
 
   @Override
   public int getCost() {
-    int cost = 3;
+    int cost = operands.length + 3;
     for (IExpression operand : operands) {
       cost += operand.getCost();
     }
@@ -185,29 +185,24 @@ public final class Call implements IExpression {
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
 
     // Compile all operands
-    IExpression[] compiledOperands  = new IExpression[operands.length]; 
-    for (int i = 0; i < operands.length; i++) {
-      compiledOperands[i] = operands[i].compile(context);
+    IExpression[] compiledOperands = new IExpression[this.getOperandCount()];
+    for (int i = 0; i < this.getOperandCount(); i++) {
+      compiledOperands[i] = this.getOperand(i).compile(context);
     }
-    
-    Call newCall = new Call(operator, compiledOperands);
-    newCall.inferReturnType();
-    
-    IExpression expression = operator.compile(context, newCall);
-    
+
+    // Create a new call with compiled operands and infer return type
+    Call call = new Call(this.getOperator(), compiledOperands).inferReturnType();
+
+    // Compile with operator
+    IExpression expression = call.getOperator().compile(context, call);
+
     if (expression.is(Kind.CALL)) {
-      Call call = expression.asCall();
-
-      // If operator is symmetrical reorganize operands
-      if (call.getOperator().isSymmetrical()) {
-        call = call.reorganizeSymmetrical();
-      }
-
-      // Inference return type
-      expression = call.inferReturnType();
+      // Infer return type
+      expression = expression.asCall().inferReturnType();
     }
-    
-    if (expression.isConstant())   {
+
+    // Evaluate if constant
+    if (expression.isConstant()) {
       try {
         Object value = expression.getValue();
         Type valueType = expression.getType();
@@ -215,9 +210,12 @@ public final class Call implements IExpression {
         // Some operator don't known return type like JSON_VALUE.
         if (TypeId.ANY.equals(valueType.getId())) {
           return Literal.of(value);
+        } else {
+          // TODO: Remove this cast when operands are coerced to the least restrictive data type 
+          // value = valueType.cast(value);
         }
 
-          // For CAST operator, it's important to return type
+        // For CAST operator, it's important to return type
         return new Literal(value, valueType);
       } catch (Exception e) {
         // Ignore error like division by zero "X IN (1,3/0)" and continue
@@ -264,7 +262,9 @@ public final class Call implements IExpression {
 
   @Override
   public void unparse(StringWriter writer) {
+    //writer.append('(');
     operator.unparse(writer, operands);
+    //writer.append(')');
   }
 
   @Override
@@ -272,50 +272,6 @@ public final class Call implements IExpression {
     StringWriter writer = new StringWriter();
     unparse(writer);
     return writer.toString();
-  }
-
-
-  /**
-   * Reorganize symmetrical operator
-   * 
-   * <ul>
-   * <li>Move low cost operand to the left</li>
-   * <li>Go up an operand if low cost</li>
-   * <li>Order identifier by name (only useful for test)</li>
-   * </ul>
-   */
-  protected Call reorganizeSymmetrical() {
-    IExpression left = this.getOperand(0);
-    IExpression right = this.getOperand(1);
-
-    // Normalize, move low cost operand to the left
-    if (left.getCost() > right.getCost()) {
-      return new Call(operator, right, left);
-    }
-
-    // Normalize, order identifier by name
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
-        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-      return new Call(operator, right, left);
-    }
-
-    if (right.is(operator)) {
-      IExpression subLeft = right.asCall().getOperand(0);
-      IExpression subRight = right.asCall().getOperand(1);
-
-      // Go up left operand if low cost
-      if (subLeft.getCost() < left.getCost()) {
-        return new Call(operator, subLeft, new Call(operator, left, subRight));
-      }
-
-      // Order identifier by name
-      if (left.is(Kind.IDENTIFIER) && subLeft.is(Kind.IDENTIFIER)
-          && left.asIdentifier().getName().compareTo(subLeft.asIdentifier().getName()) > 0) {
-        return new Call(operator, subLeft, new Call(operator, left, subRight));
-      }
-    }
-
-    return this;
   }
 
   @Override

@@ -41,7 +41,7 @@ public class CountFunction extends AggregateFunction {
   }
 
   public CountFunction(Count count) {
-    super("COUNT", ReturnTypes.INTEGER, OperandTypes.OPTIONAL_ANY, "/docs/count.html");
+    super("COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.OPTIONAL_ANY, "/docs/count.html");
     this.count = count;
   }
 

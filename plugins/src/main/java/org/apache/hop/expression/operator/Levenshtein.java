@@ -32,7 +32,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class Levenshtein extends Function {
 
   public Levenshtein() {
-    super("LEVENSHTEIN", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+    super("LEVENSHTEIN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, Category.STRING,
         "/docs/levenshtein.html");
   }
 

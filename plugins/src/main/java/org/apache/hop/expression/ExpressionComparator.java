@@ -12,25 +12,29 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.apache.hop.expression.operator;
+package org.apache.hop.expression;
 
-import org.apache.hop.expression.AggregateFunction;
-import org.apache.hop.expression.FunctionPlugin;
-import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.IExpressionProcessor;
-import org.apache.hop.expression.type.OperandTypes;
-import org.apache.hop.expression.type.ReturnTypes;
+import java.util.Comparator;
 
-@FunctionPlugin
-public class SumFunction extends AggregateFunction {
+public class ExpressionComparator implements Comparator<IExpression> {
 
-  public SumFunction() {
-    super("SUM", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/sum.html");
+  public ExpressionComparator() {
+    // Constructor
   }
 
   @Override
-  public IExpressionProcessor createProcessor(IExpressionContext context, IExpression[] operands) {
-    return new SumProcessor();
+  public int compare(IExpression e1, IExpression e2) {
+    
+    // Order by cost
+    if ( e1.getCost() < e2.getCost() ) return -1;  
+    if ( e1.getCost() > e2.getCost() ) return 1;
+    
+    // Order identifier by name (useful for test)
+    if ( e1.is(Kind.IDENTIFIER) && e2.is(Kind.IDENTIFIER) ) {
+      return e1.asIdentifier().getName().compareTo(e2.asIdentifier().getName());
+    }
+    
+    return 0;
   }
 }
+

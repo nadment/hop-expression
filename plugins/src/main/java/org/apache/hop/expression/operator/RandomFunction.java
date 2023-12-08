@@ -39,7 +39,7 @@ import java.util.Random;
 public class RandomFunction extends Function {
 
   public RandomFunction() {
-    super("RANDOM", ReturnTypes.NUMBER, OperandTypes.OPTIONAL_NUMERIC, Category.MATHEMATICAL,
+    super("RANDOM", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.OPTIONAL_NUMERIC, Category.MATHEMATICAL,
         "/docs/random.html");
   }
 

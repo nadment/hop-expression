@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class ExpFunction extends Function {
 
   public ExpFunction() {
-    super("EXP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/exp.html");
+    super("EXP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL, "/docs/exp.html");
   }
 
   @Override

@@ -39,7 +39,7 @@ public class UnaccentFunction extends Function {
       Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
   public UnaccentFunction() {
-    super("UNACCENT", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("UNACCENT", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/unaccent.html");
   }
 

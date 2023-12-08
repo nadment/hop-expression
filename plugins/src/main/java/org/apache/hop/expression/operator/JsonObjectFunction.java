@@ -78,7 +78,7 @@ public class JsonObjectFunction extends Function {
 
 
   public JsonObjectFunction() {
-    super("JSON_OBJECT", ReturnTypes.JSON, OTC, Category.JSON, "/docs/json_object.html");
+    super("JSON_OBJECT", ReturnTypes.JSON_NULLABLE, OTC, Category.JSON, "/docs/json_object.html");
   }
 
   @Override

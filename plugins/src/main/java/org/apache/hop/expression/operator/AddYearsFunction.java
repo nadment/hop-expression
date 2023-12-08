@@ -36,7 +36,7 @@ public class AddYearsFunction extends Function {
   public static final Function INSTANCE = new AddYearsFunction();
 
   public AddYearsFunction() {
-    super("ADD_YEARS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
+    super("ADD_YEARS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_years.html");
   }
 

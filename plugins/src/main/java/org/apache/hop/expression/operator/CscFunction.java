@@ -33,7 +33,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CscFunction extends Function {
 
   public CscFunction() {
-    super("CSC", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/csc.html");
+    super("CSC", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/csc.html");
   }
 
   @Override

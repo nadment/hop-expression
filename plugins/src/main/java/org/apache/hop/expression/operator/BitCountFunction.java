@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitCountFunction extends Function {
 
   public BitCountFunction() {
-    super("BIT_COUNT", ReturnTypes.INTEGER, OperandTypes.NUMERIC, Category.BITWISE,
+    super("BIT_COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC, Category.BITWISE,
         "/docs/bit_count.html");
   }
 

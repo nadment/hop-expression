@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
-    super("CONVERT_TIMEZONE", ReturnTypes.DATE,
+    super("CONVERT_TIMEZONE", ReturnTypes.DATE_NULLABLE,
         OperandTypes.STRING_STRING_TEMPORAL.or(OperandTypes.STRING_DATE), Category.DATE,
         "/docs/convert_timezone.html");
   }

@@ -38,7 +38,7 @@ import org.apache.hop.expression.type.TypeFamily;
 public class IsNumberFunction extends Function {
 
   public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN, OperandTypes.ANY, Category.COMPARISON,
+    super("IS_NUMBER", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, Category.COMPARISON,
         "/docs/is_number.html");
   }
 

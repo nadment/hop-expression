@@ -20,6 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
@@ -37,7 +38,7 @@ import java.io.StringWriter;
 public class EqualOperator extends Operator {
 
   public EqualOperator() {
-    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY, Category.COMPARISON,
+    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY, Category.COMPARISON,
         "/docs/equal.html");
   }
 
@@ -67,9 +68,20 @@ public class EqualOperator extends Operator {
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
-    // Simplify x=x → NULL OR x IS NOT NULL
-    if (left.equals(right)) {
-      return new Call(Operators.BOOLOR, Literal.NULL, new Call(Operators.IS_NOT_NULL, left));
+    // Normalize symmetrical operator by moving the low-cost operand to the left
+    if (left.getCost() > right.getCost()) {
+      return new Call(this, right, left);
+    }
+    
+    // Normalize symmetrical operator by ordering identifiers by name
+    if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
+        && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
+      return new Call(this, right, left).inferReturnType();
+    }
+    
+    // Simplify if not nullable x=x → TRUE
+    if (left.equals(right) && !left.getType().isNullable() ) {
+      return Literal.TRUE;
     }
 
     // Simplify x=NULL → NULL
@@ -86,11 +98,6 @@ public class EqualOperator extends Operator {
     if (left.equals(Literal.FALSE)) {
       return new Call(Operators.IS_FALSE, right);
     }
-    /*
-     * if (right.equals(Literal.FALSE)) {
-     * return new Call(Operators.IS_FALSE, left);
-     * }
-     */
 
     // Simplify 3=X+1 → 3-1=X
     if (left.isConstant() && right.is(Operators.ADD_NUMERIC)

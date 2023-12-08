@@ -28,29 +28,31 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class StringType extends Type {
-
   /**
    * Default STRING type with maximum precision.
    */
-  public static final StringType STRING = new StringType();
+  public static final StringType STRING = new StringType(TypeId.STRING.getMaxPrecision(), true);
 
   public static StringType from(final String value) {
-    return new StringType(value.length());
+    return new StringType(value.length(), false);
   }
 
-  protected final int precision;
-
-  public StringType() {
-    this(TypeId.STRING.getMaxPrecision(), true);
+  public static StringType of(int precision) {
+    return of(precision, true);
+  }
+  
+  public static StringType of(int precision, boolean nullable) {
+    if ( precision==PRECISION_NOT_SPECIFIED )
+      precision = TypeId.STRING.getMaxPrecision();
+    
+    if ( precision==TypeId.STRING.getMaxPrecision() && nullable==true)
+      return STRING;  
+    
+    return new StringType(precision, nullable);
   }
 
-  public StringType(int precision) {
-    this(precision, true);
-  }
-
-  public StringType(int precision, boolean nullable) {
+  private StringType(int precision, boolean nullable) {
     super(precision, SCALE_NOT_SPECIFIED, nullable);
-    this.precision = precision;
   }
 
   public StringType withNullability(final boolean nullable) {
@@ -60,11 +62,6 @@ public final class StringType extends Type {
   @Override
   public TypeId getId() {
     return TypeId.STRING;
-  }
-
-  @Override
-  public int getPrecision() {
-    return precision;
   }
 
   @Override

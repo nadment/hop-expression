@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class SinFunction extends Function {
 
   public SinFunction() {
-    super("SIN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/sin.html");
+    super("SIN", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/sin.html");
   }
 
   @Override

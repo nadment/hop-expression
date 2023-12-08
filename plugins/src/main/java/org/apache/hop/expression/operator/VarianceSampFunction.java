@@ -29,7 +29,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class VarianceSampFunction extends AggregateFunction {
 
   public VarianceSampFunction() {
-    super("VARIANCE_SAMP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/variance_samp.html");
+    super("VARIANCE_SAMP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/variance_samp.html");
   }
 
   @Override

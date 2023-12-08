@@ -34,7 +34,7 @@ public class Base32EncodeFunction extends Function {
   private static final Base32 BASE32 = new Base32();
 
   public Base32EncodeFunction() {
-    super("BASE32_ENCODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("BASE32_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base32_encode.html");
   }
 

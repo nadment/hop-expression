@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToIntervalFunction extends Function {
 
   public ToIntervalFunction() {
-    super("TO_INTERVAL", ReturnTypes.INTERVAL, OperandTypes.STRING, Category.CONVERSION,
+    super("TO_INTERVAL", ReturnTypes.INTERVAL_NULLABLE, OperandTypes.STRING, Category.CONVERSION,
         "/docs/to_interval.html");
   }
 

@@ -47,10 +47,10 @@ public final class Literal implements IExpression {
    * NULL literal is a boolean data type with null value
    */
   public static final Literal NULL = new Literal(null, BooleanType.BOOLEAN);
-  public static final Literal TRUE = new Literal(Boolean.TRUE, new BooleanType(false));
-  public static final Literal FALSE = new Literal(Boolean.FALSE, new BooleanType(false));
-  public static final Literal ZERO = new Literal(0L, new IntegerType(1, false));
-  public static final Literal ONE = new Literal(1L, new IntegerType(1, false));
+  public static final Literal TRUE = new Literal(Boolean.TRUE, BooleanType.BOOLEAN_NOT_NULL);
+  public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN_NOT_NULL);
+  public static final Literal ZERO = new Literal(0L, IntegerType.of(1).withNullability(false));
+  public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
 
   public static Literal of(final Object value) {
     if (value == null)
@@ -115,15 +115,15 @@ public final class Literal implements IExpression {
     }
 
     if (value instanceof ZonedDateTime) {
-      return new Literal(value, DateType.DATE);
+      return new Literal(value, DateType.DATE_NOT_NULL);
     }
 
     if (value instanceof JsonNode) {
-      return new Literal(value, JsonType.JSON);
+      return new Literal(value, JsonType.JSON_NOT_NULL);
     }
 
     if (value instanceof Interval) {
-      return new Literal(value, IntervalType.INTERVAL);
+      return new Literal(value, IntervalType.INTERVAL_NOT_NULL);
     }
 
     // Special internal case TimeUnit, DataType, Random

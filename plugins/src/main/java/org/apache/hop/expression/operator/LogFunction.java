@@ -33,7 +33,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class LogFunction extends Function {
 
   public LogFunction() {
-    super("LOG", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
+    super("LOG", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
         "/docs/log.html");
   }
 

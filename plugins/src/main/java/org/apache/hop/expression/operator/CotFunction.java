@@ -33,7 +33,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class CotFunction extends Function {
 
   public CotFunction() {
-    super("COT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/cot.html");
+    super("COT", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/cot.html");
   }
 
   @Override

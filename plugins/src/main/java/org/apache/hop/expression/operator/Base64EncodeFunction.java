@@ -35,7 +35,7 @@ public class Base64EncodeFunction extends Function {
   private static final Encoder ENCODER = Base64.getEncoder();
 
   public Base64EncodeFunction() {
-    super("BASE64_ENCODE", ReturnTypes.STRING, OperandTypes.STRING.or(OperandTypes.BINARY),
+    super("BASE64_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
         Category.STRING, "/docs/base64_encode.html");
   }
 

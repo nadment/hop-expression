@@ -17,13 +17,17 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.NumberType;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 import java.math.BigDecimal;
+import java.util.PriorityQueue;
 
 /**
  * Arithmetic addition operator.
@@ -41,6 +45,16 @@ public class AddNumericOperator extends AddOperator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+   
+    // Rebuild chained operator 
+    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+    operands.addAll(this.getChainedOperands(call, true));
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {
+      operand = new Call(this, operand, operands.poll()).inferReturnType();
+    }
+    call = operand.asCall();
+    
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
@@ -52,15 +66,16 @@ public class AddNumericOperator extends AddOperator {
     // Simplify arithmetic A+(-B) → A-B
     if (right.is(Operators.NEGATIVE)) {
       return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
+    }  
+    
+    // Cast type to number
+    if ( !left.getType().isFamily(TypeFamily.NUMERIC) ) {
+      left = new Call(Operators.CAST, left, Literal.of(NumberType.NUMBER));
     }
-
-    // Pull up literal (1+A)+2 → 3+A
-    if (left.isConstant() && right.is(AddNumericOperator.INSTANCE)
-        && right.asCall().getOperand(0).isConstant()) {
-      Call expression = new Call(AddNumericOperator.INSTANCE, left, right.asCall().getOperand(0));
-      return new Call(AddNumericOperator.INSTANCE, expression, right.asCall().getOperand(1));
+    if ( !right.getType().isFamily(TypeFamily.NUMERIC) ) {
+      right = new Call(Operators.CAST, right, Literal.of(NumberType.NUMBER));
     }
-
+    
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER) ) {
       return new Call(AddInteger, call.getOperands());

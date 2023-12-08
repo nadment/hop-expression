@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CountIfFunction extends AggregateFunction {
 
   public CountIfFunction() {
-    super("COUNTIF", ReturnTypes.INTEGER, OperandTypes.BOOLEAN, "/docs/countif.html");
+    super("COUNTIF", ReturnTypes.INTEGER_NULLABLE, OperandTypes.BOOLEAN, "/docs/countif.html");
   }
 
   @Override

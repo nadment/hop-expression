@@ -43,8 +43,8 @@ public class TupleTest extends ExpressionTest {
     Tuple tuple8 = new Tuple(Literal.of("A"), new Identifier("B"));
     
     assertEquals(Kind.TUPLE, tuple1.getKind());
-    assertEquals(new IntegerType(1).withNullability(false), tuple1.getType());
-    assertEquals(new IntegerType(1).withNullability(false), tuple4.getType());
+    assertEquals(IntegerType.of(1).withNullability(false), tuple1.getType());
+    assertEquals(IntegerType.of(1).withNullability(false), tuple4.getType());
     assertEquals(UnknownType.UNKNOWN, tuple3.getType());
     assertEquals(BooleanType.BOOLEAN.withNullability(false), tuple5.getType());
     assertTrue(tuple0.isEmpty());

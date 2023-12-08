@@ -30,14 +30,14 @@ import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 
 /**
- * Comparison IS DISTINCT FROM operator.
+ * Comparison <code>IS DISTINCT FROM</code> operator.
  * <br>
  * <strong>Syntax:</strong> <code>x IS DISTINCT FROM y</code>
  */
 public class IsDistinctFromOperator extends Operator {
 
   public IsDistinctFromOperator() {
-    super("IS DISTINCT FROM", 10, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("IS DISTINCT FROM", 10, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY,
         Category.COMPARISON, "/docs/is-distinct-from.html");
   }
 

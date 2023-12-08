@@ -38,7 +38,7 @@ public class ContainsFunction extends Function {
   public static final ContainsFunction ContainsBinary = new ContainsBinary();
 
   public ContainsFunction() {
-    super("CONTAINS", ReturnTypes.BOOLEAN,
+    super("CONTAINS", ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.BINARY_BINARY), Category.COMPARISON,
         "/docs/contains.html");
   }

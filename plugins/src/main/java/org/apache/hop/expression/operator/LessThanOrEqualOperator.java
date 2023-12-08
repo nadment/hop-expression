@@ -34,7 +34,7 @@ import java.io.StringWriter;
 public class LessThanOrEqualOperator extends Operator {
 
   public LessThanOrEqualOperator() {
-    super("LESS_THAN_OR_EQUAL", "<=", 130, true, ReturnTypes.BOOLEAN, OperandTypes.ANY_ANY,
+    super("LESS_THAN_OR_EQUAL", "<=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
         Category.COMPARISON, "/docs/less_than_or_equal.html");
   }
 
@@ -68,6 +68,10 @@ public class LessThanOrEqualOperator extends Operator {
       return new Call(Operators.GREATER_THAN_OR_EQUAL, right, left);
     }
 
+    // Simplify if not nullable x<=x → TRUE
+    if (left.equals(right) && !left.getType().isNullable() ) {
+      return Literal.TRUE;
+    }    
     // Simplify x<=NULL → NULL
     if (left.isNull() || right.isNull()) {
       return Literal.NULL;

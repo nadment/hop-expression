@@ -38,7 +38,7 @@ public class UpperFunction extends Function {
   public static final UpperFunction INSTANCE = new UpperFunction();
 
   public UpperFunction() {
-    super("UPPER", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING, "/docs/upper.html");
+    super("UPPER", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING, "/docs/upper.html");
   }
 
   @Override

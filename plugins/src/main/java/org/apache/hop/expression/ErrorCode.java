@@ -74,6 +74,8 @@ public enum ErrorCode {
   ARGUMENT_OUT_OF_RANGE("Expression.ArgumentOutOfRange"),
   /** Precision out of range ''{0}'' */
   PRECISION_OUT_OF_RANGE("Expression.PrecisionOutOfRange"),
+  /** Scale out of range ''{0}'' */
+  SCALE_OUT_OF_RANGE("Expression.ScaleOutOfRange"),
   //
   VARIABLE_VALUE_ERROR("Expression.InvalidVariable"),
   /** Invalid Boolean ''{0}'' */

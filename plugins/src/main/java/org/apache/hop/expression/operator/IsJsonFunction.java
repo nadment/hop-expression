@@ -37,7 +37,7 @@ import org.apache.hop.expression.type.TypeFamily;
 public class IsJsonFunction extends Function {
 
   public IsJsonFunction() {
-    super("IS_JSON", ReturnTypes.BOOLEAN, OperandTypes.ANY, Category.COMPARISON,
+    super("IS_JSON", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, Category.COMPARISON,
         "/docs/is_json.html");
   }
 

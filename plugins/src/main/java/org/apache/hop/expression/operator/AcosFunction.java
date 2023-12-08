@@ -34,7 +34,7 @@ import java.math.BigDecimal;
 public class AcosFunction extends Function {
 
   public AcosFunction() {
-    super("ACOS", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
+    super("ACOS", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY,
         "/docs/acos.html");
   }
 

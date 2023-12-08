@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class TanFunction extends Function {
 
   public TanFunction() {
-    super("TAN", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/tan.html");
+    super("TAN", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.TRIGONOMETRY, "/docs/tan.html");
   }
 
   @Override

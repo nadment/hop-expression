@@ -32,7 +32,7 @@ import java.time.temporal.ChronoField;
 public class WeekFunction extends Function {
 
   public WeekFunction() {
-    super("WEEK", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/week.html");
+    super("WEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE, "/docs/week.html");
   }
 
   @Override

@@ -44,6 +44,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public class LiteralTest extends ExpressionTest {
+
   @Test
   public void testEquals() throws Exception {
     assertEquals(Literal.ZERO, Literal.of(0L));
@@ -84,46 +85,39 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(TimeUnit.HOUR, Literal.of(TimeUnit.HOUR).getValue());
   }
 
-  /**
-   * @throws Exception
-   */
   @Test
   public void Interval() throws Exception {
 
-    optimize("INTERVAL 20 YEAR");
-    optimize("INTERVAL '20' YEAR");
-    optimize("INTERVAL '-20' YEAR");
+    evalEquals("INTERVAL 20 YEAR", Interval.of(20)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate()).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '20' YEAR", Interval.of(20)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate()).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate()).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL 2 QUARTER", Interval.of(0, 6)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL 5 QUARTER", Interval.of(1, 3)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL 15 MONTH", Interval.of(0, 15)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate()).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate()).returnType(IntervalType.INTERVAL);
 
-    evalEquals("INTERVAL 20 YEAR", Interval.of(20));
-    evalEquals("INTERVAL -20 YEAR", Interval.of(20).negate());
-    evalEquals("INTERVAL '20' YEAR", Interval.of(20));
-    evalEquals("INTERVAL '-20' YEAR", Interval.of(20).negate());
-    evalEquals("INTERVAL '20-5' YEAR TO MONTH", Interval.of(20, 5));
-    evalEquals("INTERVAL '-20-5' YEAR TO MONTH", Interval.of(20, 5).negate());
-    evalEquals("INTERVAL 2 QUARTER", Interval.of(0, 6));
-    evalEquals("INTERVAL 5 QUARTER", Interval.of(1, 3));
-    evalEquals("INTERVAL 15 MONTH", Interval.of(0, 15));
-    evalEquals("INTERVAL -15 MONTH", Interval.of(0, 15).negate());
-    evalEquals("INTERVAL '15' MONTH", Interval.of(0, 15));
-    evalEquals("INTERVAL '-15' MONTH", Interval.of(0, 15).negate());
+    evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '365 12' DAY TO HOUR", Interval.of(0, 0, 365, 12)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", Interval.of(0, 0, 365, 12, 30)).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", Interval.of(0, 0, 365, 12, 30, 58)).returnType(IntervalType.INTERVAL);
 
-    evalEquals("INTERVAL 365 DAY", Interval.of(0, 0, 365));
-    evalEquals("INTERVAL '365' DAY", Interval.of(0, 0, 365));
-    evalEquals("INTERVAL '365 12' DAY TO HOUR", Interval.of(0, 0, 365, 12));
-    evalEquals("INTERVAL '365 12:30' DAY TO MINUTE", Interval.of(0, 0, 365, 12, 30));
-    evalEquals("INTERVAL '365 12:30:58' DAY TO SECOND", Interval.of(0, 0, 365, 12, 30, 58));
-
-    evalEquals("INTERVAL 12 HOUR", Interval.of(0, 0, 0, 12));
+    evalEquals("INTERVAL 12 HOUR", Interval.of(0, 0, 0, 12)).returnType(IntervalType.INTERVAL);
     evalEquals("INTERVAL -12 HOUR", Interval.of(0, 0, 0, 12).negate());
     evalEquals("INTERVAL '12' HOUR", Interval.of(0, 0, 0, 12));
     evalEquals("INTERVAL '-12' HOUR", Interval.of(0, 0, 0, 12).negate());
-    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", Interval.of(0, 0, 0, 12, 30).negate());
-    evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", Interval.of(0, 0, 0, 12, 30, 58));
+    evalEquals("INTERVAL '-12:30' HOUR TO MINUTE", Interval.of(0, 0, 0, 12, 30).negate()).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '12:30:58' HOUR TO SECOND", Interval.of(0, 0, 0, 12, 30, 58)).returnType(IntervalType.INTERVAL);
 
-    evalEquals("INTERVAL '-30' MINUTE", Interval.of(0, 0, 0, 0, 30).negate());
-    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", Interval.of(0, 0, 0, 0, 30, 58).negate());
+    evalEquals("INTERVAL '-30' MINUTE", Interval.of(0, 0, 0, 0, 30).negate()).returnType(IntervalType.INTERVAL);
+    evalEquals("INTERVAL '-30:58' MINUTE TO SECOND", Interval.of(0, 0, 0, 0, 30, 58).negate()).returnType(IntervalType.INTERVAL);
 
-    evalEquals("INTERVAL 58 SECOND", Interval.of(0, 0, 0, 0, 0, 58));
+    evalEquals("INTERVAL 58 SECOND", Interval.of(0, 0, 0, 0, 0, 58)).returnType(IntervalType.INTERVAL);
     evalEquals("INTERVAL '58' SECOND", Interval.of(0, 0, 0, 0, 0, 58));
     evalEquals("INTERVAL -58 SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
     evalEquals("INTERVAL '-58' SECOND", Interval.of(0, 0, 0, 0, 0, 58).negate());
@@ -146,6 +140,9 @@ public class LiteralTest extends ExpressionTest {
     evalFails("INTERVAL '5' HOUR TO SECOND");
     evalFails("INTERVAL '5' MINUTE TO SECOND");
 
+    optimize("INTERVAL 20 YEAR");
+    optimize("INTERVAL '20' YEAR");
+    optimize("INTERVAL '-20' YEAR");
     optimize("INTERVAL -5 YEARS", "INTERVAL -5 YEAR");
     optimize("INTERVAL '-15' MONTHS", "INTERVAL '-1-3' YEAR TO MONTH");
     optimize("INTERVAL '15' MONTHS", "INTERVAL '+1-3' YEAR TO MONTH");
@@ -185,20 +182,6 @@ public class LiteralTest extends ExpressionTest {
         "INTERVAL '-30 23:30:58.123456789' DAY TO SECOND");
     // optimize("INTERVAL '-4-11 30 23:30:58.123456789' DAY TO SECOND", "INTERVAL '-4-11 30
     // 23:30:58.123456789'");
-
-    returnType("INTERVAL '20' YEAR", IntervalType.INTERVAL);
-    returnType("INTERVAL '15' MONTH", IntervalType.INTERVAL);
-    returnType("INTERVAL '20-5' YEAR TO MONTH", IntervalType.INTERVAL);
-    returnType("INTERVAL '365' DAY", IntervalType.INTERVAL);
-    returnType("INTERVAL '365 12' DAY TO HOUR", IntervalType.INTERVAL);
-    returnType("INTERVAL '365 12:30' DAY TO MINUTE", IntervalType.INTERVAL);
-    returnType("INTERVAL '365 12:30:58' DAY TO SECOND", IntervalType.INTERVAL);
-    returnType("INTERVAL '12' HOUR", IntervalType.INTERVAL);
-    returnType("INTERVAL '12:30' HOUR TO MINUTE", IntervalType.INTERVAL);
-    returnType("INTERVAL '12:30:58' HOUR TO SECOND", IntervalType.INTERVAL);
-    returnType("INTERVAL '30' MINUTE", IntervalType.INTERVAL);
-    returnType("INTERVAL '30:58' MINUTE TO SECOND", IntervalType.INTERVAL);
-    returnType("INTERVAL '58' SECOND", IntervalType.INTERVAL);
   }
 
   @Test
@@ -215,15 +198,13 @@ public class LiteralTest extends ExpressionTest {
     evalTrue("'test'='test'");
 
     // Single quote with two adjacent single quotes
-    evalEquals("'te''st'", "te'st");
+    evalEquals("'te''st'", "te'st").returnType(StringType.of(5));
     evalEquals("'te''''st'", "te''st");
 
     // Empty string
-    evalEquals("''", "");
+    evalEquals("''", "").returnType(StringType.of(0));;
 
     optimize("'Test ''Bla'' string'");
-
-    returnType("FIELD_STRING", new StringType(1000));
   }
 
 
@@ -235,7 +216,7 @@ public class LiteralTest extends ExpressionTest {
         Literal.of(mapper.readTree("{\"name\": \"John\", \"age\": 30}")));
 
     evalEquals("JSON '{\"name\":\"John\",\"age\":5}'",
-        mapper.readTree("{\"name\": \"John\", \"age\": 5}"));
+        mapper.readTree("{\"name\": \"John\", \"age\": 5}")).returnType(JsonType.JSON);
 
     // Ignores the order of attributes
     evalTrue(
@@ -245,8 +226,6 @@ public class LiteralTest extends ExpressionTest {
     evalTrue("JSON '{\"name\":\"John\",\"age\":5}'=JSON '{\"name\":\"John\",\"age\":5.0}'");
 
     optimize("JSON '{\"name\":\"John\",\"age\":5.0}'", "JSON '{\"name\":\"John\",\"age\":5.0}'");
-
-    returnType("JSON '{\"name\":\"John\",\"age\":5}'", JsonType.JSON);
   }
 
   @Test
@@ -260,8 +239,9 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("TRUE", String.valueOf(Literal.TRUE));
     assertEquals("FALSE", String.valueOf(Literal.FALSE));
 
-    evalTrue("True");
-    evalTrue("True");
+    evalTrue("True").returnType( BooleanType.BOOLEAN);
+    evalFalse(" False").returnType( BooleanType.BOOLEAN);
+    
     evalTrue("'On'::Boolean");
     evalTrue("'Yes'::Boolean");
     evalFalse("'Off'::Boolean");
@@ -271,8 +251,6 @@ public class LiteralTest extends ExpressionTest {
     evalFails("'YEP'::Boolean");
 
     optimize("TRUE", "TRUE");
-
-    returnType("TRUE and TRUE", BooleanType.BOOLEAN);
   }
 
   @Test
@@ -300,21 +278,25 @@ public class LiteralTest extends ExpressionTest {
 
     assertEquals("-123456", Literal.of(-123456L).toString());
 
-    // Decimal
+    // Integer decimal
     evalEquals("-9223372036854775808", Long.MIN_VALUE);
     evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
-    evalEquals("1_234", 1234L);
-    evalEquals("1_2_3_4", 1234L);
+    evalEquals("1_234", 1234L).returnType(IntegerType.of(4));
+    evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4));
     evalFails("_123");
     evalFails("123_");
     evalFails("-_123");
     evalFails("+_123");
     evalFails("1__23");
 
-    // Hexadecimal
-    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL);
+    // Integer exponent
+    evalEquals("2.3E2", 230L).returnType(IntegerType.of(3));
+    evalEquals("2.3E+2", 230L).returnType(IntegerType.of(3));
+    evalEquals("2_0.3_1E+2", 2031L).returnType(IntegerType.of(4));
+    
+    // Integer hexadecimal
+    evalEquals("0x1eee_FFFF", 0x1eee_FFFFL).returnType(IntegerType.of(9));
     evalEquals("0x123_4567_890ab_cDEF", 0x1234567890abcDEFL);
-    evalEquals("0x85_5892_1485_2587_2555_2569_1234_890ab", new BigInteger("85589214852587255525691234890ab", 16));
     evalEquals("0xFFFF_EEEE_0000_AAA0", 0xFFFF_EEEE_0000_AAA0L);
     evalEquals("0X1F", 0x1FL);
     evalEquals("0x0F", 0xFL);
@@ -327,11 +309,10 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0xF2__FF");
     evalFails("0xABCDEFg");
 
-    // Octal
-    evalEquals("0o0757", 495L);
+    // Integer octal
+    evalEquals("0o0757", 495L).returnType(IntegerType.of(3));
     evalEquals("0o12345671234567", 718046312823L);
-    evalEquals("0o4575_5712_1475_2577_2555_2561_1231_4567_7110",
-        new BigInteger("457557121475257725552561123145677110", 8));
+
     evalEquals("0O12345", 5349L);
     evalEquals("0O1_2_3_4_5", 5349L);
     evalEquals("0O_12345", 5349L);
@@ -340,8 +321,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("0o72_");
     evalFails("0O12__345");
 
-
-    // Binary
+    // Integer bit
     evalEquals("0b10", 0b10L);
     evalEquals("0b00000010", 0b10L);
     evalEquals("0b011", 0b11L);
@@ -358,9 +338,6 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("123456", "123456");
     optimize("0X1F", "31");
-
-    returnType("FIELD_INTEGER", IntegerType.INTEGER);
-    returnType("0x1485_2587_2555_2569_123_4567_890ab_cDEF", NumberType.NUMBER);
   }
 
   @Test
@@ -374,20 +351,26 @@ public class LiteralTest extends ExpressionTest {
     assertEquals("-123456.789", Literal.of(BigDecimal.valueOf(-123456.789)).toString());
 
     // Number decimal
-    evalEquals("+.1", 0.1D);
-    evalEquals("-.2", -0.2D);
-    evalEquals("-0.2", -0.2D);
-    evalEquals(".000_005", 0.000005D);
-    evalEquals("15167890123456789012345678901234567890",
-        new BigDecimal("15167890123456789012345678901234567890"));
+    evalEquals("+.1", 0.1D).returnType(NumberType.of(2,1));
+    evalEquals("-.2", -0.2D).returnType(NumberType.of(2,1));
+    evalEquals("0.2", 0.2D).returnType(NumberType.of(2,1));
+    evalEquals("-0.2", -0.2D).returnType(NumberType.of(2,1));    
+    evalEquals("0.02", 0.02D).returnType(NumberType.of(3,2));
+    evalEquals("-0.02", -0.02D).returnType(NumberType.of(3,2));
+    evalEquals(".000_005", 0.000005D).returnType(NumberType.of(7,6));
+    evalEquals("15167890123456789012345678901234567890", new BigDecimal("15167890123456789012345678901234567890")).returnType(NumberType.NUMBER);
+    
+    // Number hexadecimal
+    evalEquals("0x85_5892_1485_2587_2555_2569_1234_890ab", new BigInteger("85589214852587255525691234890ab", 16)).returnType(NumberType.NUMBER);
 
-    // Number exponent
-    evalEquals("2.3E2", 230L);
-    evalEquals("2.3E+2", 230L);
-    evalEquals("2_0.3_1E+2", 2031L);
-    evalEquals("-2.3E-2", -2.3E-2D);
-    evalEquals("-2.3e-2", -2.3E-2D);
-    evalEquals("1_000.5e0_1", 10005D);
+    // Number octal
+    evalEquals("0o4575_5712_1475_2577_2555_2561_1231_4567_7110",
+        new BigInteger("457557121475257725552561123145677110", 8)).returnType(NumberType.of(33));
+    
+    // Number exponent       
+    evalEquals("2.3E-2", 2.3E-2D).returnType(NumberType.of(5,3));
+    evalEquals("-2.3e-2", -2.3E-2D).returnType(NumberType.of(5,3));
+    evalEquals("1_000.5e-0_1", 100.05D).returnType(NumberType.of(5,2));
 
     // Underscore
     evalFails("1__2");
@@ -421,8 +404,8 @@ public class LiteralTest extends ExpressionTest {
     assertEquals(datetime, Literal.of(datetime).getValue());
     assertEquals(Literal.of(datetime), Literal.of(datetime));
 
-    evalEquals("DaTe '2021-02-25'", LocalDate.of(2021, 2, 25));
-    evalEquals("'2021-02-25'::DATE", LocalDate.of(2021, 2, 25));
+    evalEquals("DaTe '2021-02-25'", LocalDate.of(2021, 2, 25)).returnType(DateType.DATE);
+    evalEquals("'2021-02-25'::DATE", LocalDate.of(2021, 2, 25)).returnType(DateType.DATE);
 
     // Fails because literal use exact mode
     evalFails("DATE '2021-Feb-25'");
@@ -438,11 +421,7 @@ public class LiteralTest extends ExpressionTest {
     // Invalid date
     evalFails("Date '2020-20-28'");
 
-
-
     optimize("DATE '2021-02-25'");
-
-    returnType("DATE '2021-02-25'", DateType.DATE);
   }
 
   @Test
@@ -450,7 +429,7 @@ public class LiteralTest extends ExpressionTest {
 
     // ISO Timestamp Formats
     evalEquals("TimeSTAMP '2021-02-25 3'",
-        ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.systemDefault())).returnType(DateType.DATE);
     evalEquals("TimeSTAMP '2021-02-25 03'",
         ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.systemDefault()));
     evalEquals("TIMESTAMP '2021-02-25 23'",
@@ -490,7 +469,7 @@ public class LiteralTest extends ExpressionTest {
 
     // ISO Timestamp Formats with time zone offset
     evalEquals("TIMESTAMP '2021-01-01 5:28+02'",
-        ZonedDateTime.of(2021, 1, 1, 5, 28, 0, 0, ZoneOffset.ofHoursMinutes(2, 0)));
+        ZonedDateTime.of(2021, 1, 1, 5, 28, 0, 0, ZoneOffset.ofHoursMinutes(2, 0))).returnType(DateType.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28+02'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.ofHoursMinutes(2, 0)));
     evalEquals("TIMESTAMP '2021-01-01 15:28-02'",
@@ -516,7 +495,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("TIMESTAMP '2021-01-01 15:28:59 -02:00'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneOffset.ofHoursMinutes(-2, 0)));
     evalEquals("TIMESTAMP '2021-01-01 5:28:59.123456789+0200'",
-        ZonedDateTime.of(2021, 1, 1, 5, 28, 59, 123456789, ZoneOffset.ofHoursMinutes(2, 0)));
+        ZonedDateTime.of(2021, 1, 1, 5, 28, 59, 123456789, ZoneOffset.ofHoursMinutes(2, 0))).returnType(DateType.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28:59.123456789+0200'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 123456789, ZoneOffset.ofHoursMinutes(2, 0)));
     evalEquals("TIMESTAMP '2021-01-01 15:28:59.123456789+02:00'",
@@ -528,11 +507,11 @@ public class LiteralTest extends ExpressionTest {
 
     // With time zone region
     evalEquals("TIMESTAMP '2021-01-01 15:28'",
-        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC")));
+        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC"))).returnType(DateType.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28' AT TIME ZONE 'UTC'",
-        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC")));
+        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC"))).returnType(DateType.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'America/New_York'",
-        ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneId.of("America/New_York")));
+        ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneId.of("America/New_York"))).returnType(DateType.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28:59.123' AT TIME ZONE 'US/Pacific'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 123000000, ZoneId.of("US/Pacific")));
     evalEquals("TIMESTAMP '2021-01-01 15:28:59.123456' AT TIME ZONE 'US/Pacific'",
@@ -560,10 +539,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("TIMESTAMP '2021-01-01 15:28:59.123456789' AT TIME ZONE 'test'");
 
     // TODO: evalFails("TIMESTAMP '21-Feb-25 23:59:59.999999999'");
-
-    returnType("TIMESTAMP '2021-12-01 12:01:01'", DateType.DATE);
-    returnType("TIMESTAMP '2021-12-01 12:01:01 +02:00'", DateType.DATE);
-    returnType("TIMESTAMP '2021-12-01 12:01:01' AT TIME ZONE 'America/New_York'", DateType.DATE);
   }
 }
+
 

@@ -22,32 +22,36 @@ import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 
 public final class IntegerType extends Type {
+  
   /**
    * Default INTEGER type with maximum precision.
    */
-  public static final IntegerType INTEGER = new IntegerType();
+  public static final IntegerType INTEGER = new IntegerType(TypeId.INTEGER.getMaxPrecision(), true);
 
   public static IntegerType from(final Long value) {
-    return new IntegerType(numberOfDigit(value), true);
+    return of(numberOfDigit(value), false);
   }
 
   public static IntegerType from(final Integer value) {
-    return new IntegerType(numberOfDigit(value), true);
+    return of(numberOfDigit(value), false);
   }
 
-  protected final int precision;
-
-  public IntegerType() {
-    this(TypeId.INTEGER.getMaxPrecision(), true);
+  public static IntegerType of(int precision) {
+    return of(precision, true);
+  }
+  
+  public static IntegerType of(int precision, boolean nullable) {
+    if ( precision==PRECISION_NOT_SPECIFIED )
+      precision = TypeId.INTEGER.getMaxPrecision();
+    
+    if ( precision==TypeId.INTEGER.getMaxPrecision() && nullable==true)
+      return INTEGER;
+    
+    return new IntegerType(precision, nullable);
   }
 
-  public IntegerType(int precision) {
-    this(precision, true);
-  }
-
-  public IntegerType(int precision, boolean nullable) {
-    super(precision, SCALE_NOT_SPECIFIED, nullable);
-    this.precision = precision;
+  private IntegerType(int precision, boolean nullable) {
+    super(precision, 0, nullable);
   }
 
   @Override
@@ -58,16 +62,6 @@ public final class IntegerType extends Type {
   @Override
   public TypeId getId() {
     return TypeId.INTEGER;
-  }
-
-  @Override
-  public int getPrecision() {
-    return precision;
-  }
-
-  @Override
-  public int getScale() {
-    return 0;
   }
 
   /**

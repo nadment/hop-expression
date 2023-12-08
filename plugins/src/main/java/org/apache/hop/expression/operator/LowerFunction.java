@@ -38,7 +38,7 @@ public class LowerFunction extends Function {
   public static final LowerFunction INSTANCE = new LowerFunction();
 
   public LowerFunction() {
-    super("LOWER", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING, "/docs/lower.html");
+    super("LOWER", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING, "/docs/lower.html");
   }
 
   @Override

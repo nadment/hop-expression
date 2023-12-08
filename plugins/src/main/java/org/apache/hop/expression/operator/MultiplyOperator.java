@@ -18,17 +18,21 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Category;
+import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.PriorityQueue;
 
 /**
  * Arithmetic multiply operator.
@@ -47,14 +51,29 @@ public class MultiplyOperator extends Operator {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+
+    // Reorder chained symmetric operator 
+    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+    operands.addAll(this.getChainedOperands(call, true));
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {
+      operand = new Call(this, operand, operands.poll()).inferReturnType();
+    }
+    call = operand.asCall();
+    
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);
 
+    // Simplify arithmetic 0*A → 0
+    if (Literal.ZERO.equals(left)) {
+      return Literal.ZERO;
+    }
+    
     // Simplify arithmetic 1*A → A
     if (Literal.ONE.equals(left)) {
       return right;
     }
-
+    
     // Simplify arithmetic (-A)*(-B) → A*B
     if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
       return new Call(Operators.MULTIPLY, left.asCall().getOperand(0),
@@ -66,13 +85,14 @@ public class MultiplyOperator extends Operator {
       return new Call(SquareFunction.INSTANCE, left);
     }
 
-    // Pull up literal 1*(1*A) → (1*1)*A
-    if (left.isConstant() && right.is(Operators.MULTIPLY)
-        && right.asCall().getOperand(0).isConstant()) {
-      IExpression operation = new Call(Operators.MULTIPLY, left, right.asCall().getOperand(0));
-      return new Call(Operators.MULTIPLY, operation, right.asCall().getOperand(1));
+    // Cast type to number
+    if ( !left.getType().isFamily(TypeFamily.NUMERIC) ) {
+      left = new Call(Operators.CAST, left, Literal.of(NumberType.NUMBER));
     }
-
+    if ( !right.getType().isFamily(TypeFamily.NUMERIC) ) {
+      right = new Call(Operators.CAST, right, Literal.of(NumberType.NUMBER));
+    }
+    
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER) ) {
       return new Call(MultiplyInteger, call.getOperands());

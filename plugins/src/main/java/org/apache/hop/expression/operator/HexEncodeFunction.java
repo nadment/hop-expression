@@ -32,7 +32,7 @@ import org.apache.hop.expression.util.Hex;
 public class HexEncodeFunction extends Function {
 
   public HexEncodeFunction() {
-    super("HEX_ENCODE", ReturnTypes.STRING, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
+    super("HEX_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
         Category.STRING, "/docs/hex_encode.html");
   }
 

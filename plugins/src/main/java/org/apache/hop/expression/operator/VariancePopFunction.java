@@ -26,7 +26,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class VariancePopFunction extends AggregateFunction {
 
   public VariancePopFunction() {
-    super("VARIANCE_POP", ReturnTypes.NUMBER, OperandTypes.NUMERIC, "/docs/variance_pop.html");
+    super("VARIANCE_POP", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, "/docs/variance_pop.html");
   }
 
   @Override

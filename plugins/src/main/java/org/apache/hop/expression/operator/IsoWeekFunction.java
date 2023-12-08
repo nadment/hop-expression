@@ -32,7 +32,7 @@ import java.time.temporal.IsoFields;
 public class IsoWeekFunction extends Function {
 
   public IsoWeekFunction() {
-    super("ISOWEEK", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE,
+    super("ISOWEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE,
         "/docs/isoweek.html");
   }
 

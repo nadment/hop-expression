@@ -34,7 +34,7 @@ import java.util.Locale;
 public class DayNameFunction extends Function {
 
   public DayNameFunction() {
-    super("DAYNAME", ReturnTypes.STRING, OperandTypes.TEMPORAL, Category.DATE,
+    super("DAYNAME", ReturnTypes.STRING_NULLABLE, OperandTypes.TEMPORAL, Category.DATE,
         "/docs/dayname.html");
   }
 

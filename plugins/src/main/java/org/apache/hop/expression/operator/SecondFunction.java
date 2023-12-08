@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class SecondFunction extends Function {
 
   public SecondFunction() {
-    super("SECOND", ReturnTypes.INTEGER, OperandTypes.TEMPORAL, Category.DATE, "/docs/second.html");
+    super("SECOND", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE, "/docs/second.html");
   }
 
   @Override

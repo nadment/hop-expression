@@ -34,7 +34,7 @@ import java.math.BigDecimal;
 public class SignFunction extends Function {
 
   public SignFunction() {
-    super("SIGN", ReturnTypes.INTEGER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("SIGN", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/sign.html");
   }
 

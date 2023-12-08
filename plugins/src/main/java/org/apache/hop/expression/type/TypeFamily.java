@@ -49,28 +49,8 @@ public enum TypeFamily {
   //
   SYMBOL;
 
-  /** Return the default {@link Type} that belongs to this family. */
-  public Type getDefaultDataType() {
-    switch (this) {
-      case BOOLEAN:
-        return BooleanType.BOOLEAN;
-      case BINARY:
-        return BinaryType.BINARY;
-      case STRING:
-        return StringType.STRING;
-      case TEMPORAL:
-        return DateType.DATE;
-      case NUMERIC:
-        return NumberType.NUMBER;
-      case JSON:
-        return JsonType.JSON;
-      default:
-        return null;
-    }
-  }
-
   /** Returns the collection of {@link TypeId}s included in this family. */
-  public Set<TypeId> getDataTypeNames() {
+  public Set<TypeId> getTypeIds() {
     switch (this) {
       case BOOLEAN:
         return TypeId.BOOLEAN_TYPES;
@@ -128,8 +108,8 @@ public enum TypeFamily {
       case INTERVAL:
         return family.isFamily(INTERVAL);
       case ANY:
-      case NONE:
         return true;
+      case NONE:
       case SYMBOL:
       default:
         return false;

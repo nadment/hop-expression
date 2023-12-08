@@ -42,7 +42,7 @@ public class RegexpReplaceFunction extends Function {
           TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING).optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", ReturnTypes.STRING, OTC, Category.STRING, "/docs/regexp_replace.html");
+    super("REGEXP_REPLACE", ReturnTypes.STRING_NULLABLE, OTC, Category.STRING, "/docs/regexp_replace.html");
   }
 
   @Override

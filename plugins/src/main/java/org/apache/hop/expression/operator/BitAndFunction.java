@@ -34,12 +34,12 @@ import java.io.StringWriter;
 public class BitAndFunction extends Function {
 
   public BitAndFunction() {
-    super("BIT_AND", ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+    super("BIT_AND", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
         "/docs/bit_and.html");
   }
 
   public BitAndFunction(String name) {
-    super("BIT_AND", name, 70, true, ReturnTypes.INTEGER, OperandTypes.NUMERIC_NUMERIC,
+    super("BIT_AND", name, 70, true, ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
         Category.BITWISE, "/docs/bit_and.html");
   }
 

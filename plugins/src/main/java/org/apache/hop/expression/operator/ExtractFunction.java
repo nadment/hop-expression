@@ -49,7 +49,7 @@ public class ExtractFunction extends Function {
   public static final ExtractInterval ExtractIntervalFunction = new ExtractInterval();
 
   public ExtractFunction() {
-    super("EXTRACT", ReturnTypes.INTEGER,
+    super("EXTRACT", ReturnTypes.INTEGER_NULLABLE,
         OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL), Category.DATE,
         "/docs/extract.html");
   }

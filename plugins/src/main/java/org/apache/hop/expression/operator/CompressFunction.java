@@ -39,7 +39,7 @@ import java.util.zip.GZIPOutputStream;
 public class CompressFunction extends Function {
 
   public CompressFunction() {
-    super("COMPRESS", ReturnTypes.BINARY, OperandTypes.BINARY, Category.STRING,
+    super("COMPRESS", ReturnTypes.BINARY_NULLABLE, OperandTypes.BINARY, Category.STRING,
         "/docs/compress.html");
   }
 

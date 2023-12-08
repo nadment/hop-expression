@@ -277,16 +277,16 @@ public class Identifier implements IExpression {
       case IValueMeta.TYPE_TIMESTAMP:
         return DateType.DATE;
       case IValueMeta.TYPE_STRING:
-        return new StringType(meta.getLength());
+        return StringType.of(meta.getLength());
       case IValueMeta.TYPE_INTEGER:
-        return new IntegerType(meta.getLength());
+        return IntegerType.of(meta.getLength());
       case IValueMeta.TYPE_NUMBER:
       case IValueMeta.TYPE_BIGNUMBER:
-        return new NumberType(meta.getLength(), meta.getPrecision());
+        return NumberType.of(meta.getLength(), meta.getPrecision());
       case ValueMetaJson.TYPE_JSON:
         return JsonType.JSON;
       case IValueMeta.TYPE_BINARY:
-        return new BinaryType(meta.getLength());
+        return BinaryType.of(meta.getLength());
       default:
         throw new ExpressionException(position, ErrorCode.UNSUPPORTED_VALUEMETA, getName(),
             meta.getTypeDesc());

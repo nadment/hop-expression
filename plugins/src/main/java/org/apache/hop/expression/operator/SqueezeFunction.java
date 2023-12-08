@@ -40,7 +40,7 @@ public class SqueezeFunction extends Function {
   public static final SqueezeFunction INSTANCE = new SqueezeFunction();
 
   public SqueezeFunction() {
-    super("SQUEEZE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("SQUEEZE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/squeeze.html");
   }
 

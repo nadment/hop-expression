@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class StringEncodeFunction extends Function {
 
   public StringEncodeFunction() {
-    super("STRING_ENCODE", ReturnTypes.STRING, OperandTypes.STRING, Category.STRING,
+    super("STRING_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
         "/docs/string_encode.html");
   }
 

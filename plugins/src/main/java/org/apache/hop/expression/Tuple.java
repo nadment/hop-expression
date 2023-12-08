@@ -90,7 +90,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public int getCost() {
-    int cost = 1;
+    int cost = 2;
     for (IExpression expression : values) {
       cost += expression.getCost();
     }

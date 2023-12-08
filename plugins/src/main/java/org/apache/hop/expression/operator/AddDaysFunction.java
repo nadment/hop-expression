@@ -36,7 +36,7 @@ public class AddDaysFunction extends Function {
   public static final Function INSTANCE = new AddDaysFunction();
 
   public AddDaysFunction() {
-    super("ADD_DAYS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
+    super("ADD_DAYS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_days.html");
   }
 

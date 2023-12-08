@@ -33,7 +33,7 @@ import java.time.ZoneId;
 public class MakeTimestampFunction extends Function {
 
   public MakeTimestampFunction() {
-    super("MAKE_TIMESTAMP", ReturnTypes.DATE,
+    super("MAKE_TIMESTAMP", ReturnTypes.DATE_NULLABLE,
         OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, Category.DATE,
         "/docs/make_timestamp.html");
   }

@@ -36,7 +36,7 @@ public class AddMonthsFunction extends Function {
   public static final Function INSTANCE = new AddMonthsFunction();
 
   public AddMonthsFunction() {
-    super("ADD_MONTHS", ReturnTypes.DATE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
+    super("ADD_MONTHS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
         "/docs/add_months.html");
   }
 

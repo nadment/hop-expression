@@ -36,7 +36,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class PowerFunction extends Function {
 
   public PowerFunction() {
-    super("POWER", ReturnTypes.NUMBER, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
+    super("POWER", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
         "/docs/power.html");
   }
 

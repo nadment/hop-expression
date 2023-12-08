@@ -36,7 +36,7 @@ public class CbrtFunction extends Function {
   private static final BigDecimal TREE = BigDecimal.valueOf(3);
 
   public CbrtFunction() {
-    super("CBRT", ReturnTypes.NUMBER, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("CBRT", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
         "/docs/cbrt.html");
   }
 

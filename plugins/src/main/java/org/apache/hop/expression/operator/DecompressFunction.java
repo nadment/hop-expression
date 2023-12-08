@@ -37,7 +37,7 @@ import java.util.zip.GZIPInputStream;
 public class DecompressFunction extends Function {
 
   public DecompressFunction() {
-    super("DECOMPRESS", ReturnTypes.BINARY, OperandTypes.BINARY, Category.STRING,
+    super("DECOMPRESS", ReturnTypes.BINARY_NULLABLE, OperandTypes.BINARY, Category.STRING,
         "/docs/decompress.html");
   }
 

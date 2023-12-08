@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public class ILikeOperator extends Operator {
 
   public ILikeOperator() {
-    super("ILIKE", 120, true, ReturnTypes.BOOLEAN,
+    super("ILIKE", 120, true, ReturnTypes.BOOLEAN_NULLABLE,
         OperandTypes.STRING_STRING.or(OperandTypes.STRING_STRING_STRING), Category.COMPARISON,
         "/docs/ilike.html");
   }

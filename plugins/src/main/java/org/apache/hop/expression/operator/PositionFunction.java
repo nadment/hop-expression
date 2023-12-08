@@ -32,7 +32,7 @@ import java.io.StringWriter;
 public class PositionFunction extends Function {
 
   public PositionFunction() {
-    super("POSITION", ReturnTypes.INTEGER, OperandTypes.STRING_STRING, Category.STRING,
+    super("POSITION", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, Category.STRING,
         "/docs/position.html");
   }
 
