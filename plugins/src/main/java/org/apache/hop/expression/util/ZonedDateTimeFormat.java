@@ -17,7 +17,6 @@ package org.apache.hop.expression.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.i18n.BaseMessages;
 import java.text.DecimalFormatSymbols;
 import java.time.DateTimeException;
 import java.time.ZoneId;
@@ -799,8 +798,7 @@ import java.util.Locale;
         month++;
       }
 
-      throw new DateTimeParseException(BaseMessages.getString(PKG, "Expression.InvalidMonthName"),
-          parser.text, index);
+      throw new DateTimeParseException(ErrorCode.INVALID_NAME_OF_MONTH.message(), parser.text, index);
     }
   }
 

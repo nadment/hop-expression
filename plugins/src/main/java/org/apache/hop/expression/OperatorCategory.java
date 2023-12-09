@@ -25,18 +25,18 @@ public final class OperatorCategory {
    */
   private OperatorCategory() {}
 
-  public static final String STRING = "i18n::Operator.Category.String";
-  public static final String JSON = "i18n::Operator.Category.Json";
-  public static final String BITWISE = "i18n::Operator.Category.Bitwise";
-  public static final String COMPARISON = "i18n::Operator.Category.Comparison";
-  public static final String CONDITIONAL = "i18n::Operator.Category.Conditional";
-  public static final String CONVERSION = "i18n::Operator.Category.Conversion";
-  public static final String CRYPTOGRAPHIC = "i18n::Operator.Category.Cryptographic";
-  public static final String DATE = "i18n::Operator.Category.Date";
-  public static final String LOGICAL = "i18n::Operator.Category.Logical";
-  public static final String MATHEMATICAL = "i18n::Operator.Category.Mathematical";
-  public static final String TRIGONOMETRY = "i18n::Operator.Category.Trigonometry";
-  public static final String SPECIAL = "i18n::Operator.Category.Special";
-  public static final String AGGREGATION = "i18n::Operator.Category.Aggregation";
-  public static final String UDF = "i18n::Operator.Category.Udf";
+  public static final String STRING = "i18n::Expression.Operator.Category.String";
+  public static final String JSON = "i18n::Expression.Operator.Category.Json";
+  public static final String BITWISE = "i18n::Expression.Operator.Category.Bitwise";
+  public static final String COMPARISON = "i18n::Expression.Operator.Category.Comparison";
+  public static final String CONDITIONAL = "i18n::Expression.Operator.Category.Conditional";
+  public static final String CONVERSION = "i18n::Expression.Operator.Category.Conversion";
+  public static final String CRYPTOGRAPHIC = "i18n::Expression.Operator.Category.Cryptographic";
+  public static final String DATE = "i18n::Expression.Operator.Category.Date";
+  public static final String LOGICAL = "i18n::Expression.Operator.Category.Logical";
+  public static final String MATHEMATICAL = "i18n::Expression.Operator.Category.Mathematical";
+  public static final String TRIGONOMETRY = "i18n::Expression.Operator.Category.Trigonometry";
+  public static final String SPECIAL = "i18n::Expression.Operator.Category.Special";
+  public static final String AGGREGATION = "i18n::Expression.Operator.Category.Aggregation";
+  public static final String UDF = "i18n::Expression.Operator.Category.Udf";
 }
