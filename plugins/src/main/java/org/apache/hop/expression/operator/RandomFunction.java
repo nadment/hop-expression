@@ -17,18 +17,19 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Random;
 
 
@@ -38,9 +39,34 @@ import java.util.Random;
 @FunctionPlugin(names = "RAND")
 public class RandomFunction extends Function {
 
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof RandomFunction)) {
+      return false;
+    }
+    
+    if ( random==null)
+      return super.equals(obj);   
+    
+    RandomFunction other = (RandomFunction) obj;
+    return super.equals(other) && this.random.equals(other.random);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getName(), random);
+  }
+
+  private final Random random;
+
   public RandomFunction() {
-    super("RANDOM", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.OPTIONAL_NUMERIC, OperatorCategory.MATHEMATICAL,
-        "/docs/random.html");
+    this(null);
+  }
+
+  public RandomFunction(Random random) {
+    super("RANDOM", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.OPTIONAL_NUMERIC,
+        OperatorCategory.MATHEMATICAL, "/docs/random.html");
+    this.random = random;
   }
 
   @Override
@@ -50,37 +76,30 @@ public class RandomFunction extends Function {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    Random random = operands[1].getValue(Random.class);
     return BigDecimal.valueOf(random.nextDouble());
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call) {
+
+    // Already compiled
+    if (random != null) {
+      return call;
+    }
+
+    Random random = new Random();
+
     if (call.getOperandCount() == 0) {
-      return new Call(call.getOperator(), Literal.UNKNOWN, Literal.of(new Random()));
+      return new Call(new RandomFunction(random));
     }
 
-    if (call.getOperandCount() == 1) {
-      try {
-        Long seed = call.getOperand(0).getValue(Long.class);
-        Random random = new Random();
-        random.setSeed(seed);
-        return new Call(call.getOperator(), call.getOperand(0), Literal.of(random));
-      } catch (Exception e) {
-        throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
-      }
+    try {
+      Long seed = call.getOperand(0).getValue(Long.class);
+      random.setSeed(seed);
+    } catch (Exception e) {
+      throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
     }
 
-    return call;
-  }
-
-  @Override
-  public void unparse(StringWriter writer, IExpression[] operands) {
-    writer.append(this.getName());
-    writer.append('(');
-    if (operands.length > 0 && !operands[0].isNull()) {
-      operands[0].unparse(writer);
-    }
-    writer.append(')');
+    return new Call(new RandomFunction(random), call.getOperand(0));
   }
 }
