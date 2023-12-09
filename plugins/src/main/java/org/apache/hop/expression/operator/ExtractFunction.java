@@ -18,7 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -50,7 +50,7 @@ public class ExtractFunction extends Function {
 
   public ExtractFunction() {
     super("EXTRACT", ReturnTypes.INTEGER_NULLABLE,
-        OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL), Category.DATE,
+        OperandTypes.TIMEUNIT_TEMPORAL.or(OperandTypes.TIMEUNIT_INTERVAL), OperatorCategory.DATE,
         "/docs/extract.html");
   }
 

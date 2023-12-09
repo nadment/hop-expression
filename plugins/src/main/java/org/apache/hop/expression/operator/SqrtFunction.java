@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -35,7 +35,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class SqrtFunction extends Function {
 
   public SqrtFunction() {
-    super("SQRT", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("SQRT", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/sqrt.html");
   }
 

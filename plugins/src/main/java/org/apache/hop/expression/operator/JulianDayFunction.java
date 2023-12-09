@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +32,7 @@ import java.time.temporal.JulianFields;
 public class JulianDayFunction extends Function {
 
   public JulianDayFunction() {
-    super("JULIAN_DAY", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE,
+    super("JULIAN_DAY", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
         "/docs/julian_day.html");
   }
 

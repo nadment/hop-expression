@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +32,7 @@ public class SubstringFunction extends Function {
 
   public SubstringFunction() {
     super("SUBSTRING", ReturnTypes.STRING_NULLABLE,
-        OperandTypes.STRING_NUMERIC.or(OperandTypes.STRING_NUMERIC_NUMERIC), Category.STRING,
+        OperandTypes.STRING_NUMERIC.or(OperandTypes.STRING_NUMERIC_NUMERIC), OperatorCategory.STRING,
         "/docs/substring.html");
   }
 

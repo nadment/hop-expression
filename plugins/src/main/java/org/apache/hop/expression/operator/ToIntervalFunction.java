@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToIntervalFunction extends Function {
 
   public ToIntervalFunction() {
-    super("TO_INTERVAL", ReturnTypes.INTERVAL_NULLABLE, OperandTypes.STRING, Category.CONVERSION,
+    super("TO_INTERVAL", ReturnTypes.INTERVAL_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION,
         "/docs/to_interval.html");
   }
 

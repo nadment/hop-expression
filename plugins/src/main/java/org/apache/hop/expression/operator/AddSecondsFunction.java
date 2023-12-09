@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ public class AddSecondsFunction extends Function {
   public static final Function INSTANCE = new AddSecondsFunction();
 
   public AddSecondsFunction() {
-    super("ADD_SECONDS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, Category.DATE,
+    super("ADD_SECONDS", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_NUMERIC, OperatorCategory.DATE,
         "/docs/add_seconds.html");
   }
 

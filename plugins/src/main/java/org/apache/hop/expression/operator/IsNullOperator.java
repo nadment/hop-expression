@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.OperandTypes;
@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class IsNullOperator extends Operator {
 
   public IsNullOperator() {
-    super("IS NULL", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, Category.COMPARISON,
+    super("IS NULL", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
         "/docs/is-null.html");
   }
 

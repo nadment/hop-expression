@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class StringEncodeFunction extends Function {
 
   public StringEncodeFunction() {
-    super("STRING_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
+    super("STRING_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/string_encode.html");
   }
 

@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.OperandTypes;
@@ -29,7 +29,7 @@ import java.io.StringWriter;
 public class IsTrueOperator extends Operator {
 
   public IsTrueOperator() {
-    super("IS TRUE", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.BOOLEAN, Category.COMPARISON,
+    super("IS TRUE", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.BOOLEAN, OperatorCategory.COMPARISON,
         "/docs/is-true.html");
   }
 

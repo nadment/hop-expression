@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -46,7 +46,7 @@ public class LPadFunction extends Function {
   public LPadFunction() {
     super("LPAD", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC
         .or(OperandTypes.STRING_NUMERIC_STRING).or(OperandTypes.BINARY_NUMERIC_BINARY),
-        Category.STRING, "/docs/lpad.html");
+        OperatorCategory.STRING, "/docs/lpad.html");
   }
 
   @Override

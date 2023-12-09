@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class SpaceFunction extends Function {
 
   public SpaceFunction() {
-    super("SPACE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC, Category.STRING, "/docs/space.html");
+    super("SPACE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.STRING, "/docs/space.html");
   }
 
   @Override

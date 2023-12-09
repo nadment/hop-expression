@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -41,7 +41,7 @@ public class ToNumberFunction extends Function {
 
   protected ToNumberFunction(String id) {
     super(id, ReturnTypes.NUMBER_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
-        Category.CONVERSION, "/docs/to_number.html");
+        OperatorCategory.CONVERSION, "/docs/to_number.html");
   }
 
   @Override

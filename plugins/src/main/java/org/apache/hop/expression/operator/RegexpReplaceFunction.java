@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -42,7 +42,7 @@ public class RegexpReplaceFunction extends Function {
           TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.STRING).optional(i -> i >= 2);
 
   public RegexpReplaceFunction() {
-    super("REGEXP_REPLACE", ReturnTypes.STRING_NULLABLE, OTC, Category.STRING, "/docs/regexp_replace.html");
+    super("REGEXP_REPLACE", ReturnTypes.STRING_NULLABLE, OTC, OperatorCategory.STRING, "/docs/regexp_replace.html");
   }
 
   @Override

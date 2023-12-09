@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class TypeOfFunction extends Function {
 
   public TypeOfFunction() {
-    super("TYPEOF", ReturnTypes.STRING_NOT_NULL, OperandTypes.ANY, Category.SPECIAL, "/docs/typeof.html");
+    super("TYPEOF", ReturnTypes.STRING_NOT_NULL, OperandTypes.ANY, OperatorCategory.SPECIAL, "/docs/typeof.html");
   }
 
   @Override

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,7 +37,7 @@ public class Sha256Function extends Function {
 
   public Sha256Function() {
     super("SHA256", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.CRYPTOGRAPHIC, "/docs/sha256.html");
+        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha256.html");
   }
 
   @Override

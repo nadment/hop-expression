@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
@@ -38,7 +38,7 @@ import java.io.StringWriter;
 public class EqualOperator extends Operator {
 
   public EqualOperator() {
-    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY, Category.COMPARISON,
+    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY, OperatorCategory.COMPARISON,
         "/docs/equal.html");
   }
 

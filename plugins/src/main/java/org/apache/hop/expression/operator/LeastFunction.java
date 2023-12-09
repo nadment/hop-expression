@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,7 +34,7 @@ public class LeastFunction extends Function {
 
   public LeastFunction() {
     super("LEAST", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
-        Category.CONDITIONAL, "/docs/least.html");
+        OperatorCategory.CONDITIONAL, "/docs/least.html");
   }
 
   @Override

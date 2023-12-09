@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,7 +33,7 @@ import java.time.temporal.TemporalAdjusters;
 public class PreviousDayFunction extends Function {
 
   public PreviousDayFunction() {
-    super("PREVIOUS_DAY", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_STRING, Category.DATE,
+    super("PREVIOUS_DAY", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_STRING, OperatorCategory.DATE,
         "/docs/previous_day.html");
   }
 

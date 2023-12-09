@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +32,7 @@ import java.time.ZonedDateTime;
 public class DayOfWeekFunction extends Function {
 
   public DayOfWeekFunction() {
-    super("DAYOFWEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE,
+    super("DAYOFWEEK", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE,
         "/docs/dayofweek.html");
   }
 

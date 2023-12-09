@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -40,7 +40,7 @@ public class AddOperator extends Operator {
     super("ADD", "+", 100, true, ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL)
             .or(OperandTypes.INTERVAL_TEMPORAL).or(OperandTypes.TEMPORAL_NUMERIC),
-        Category.MATHEMATICAL, "/docs/add.html");
+        OperatorCategory.MATHEMATICAL, "/docs/add.html");
   }
 
   @Override

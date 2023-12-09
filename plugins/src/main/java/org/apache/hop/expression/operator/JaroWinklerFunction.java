@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.core.util.HopJaroWinklerDistance;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class JaroWinklerFunction extends Function {
 
   public JaroWinklerFunction() {
-    super("JAROWINKLER", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, Category.STRING,
+    super("JAROWINKLER", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING,
         "/docs/jarowinkler.html");
   }
 

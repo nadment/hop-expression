@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,7 +33,7 @@ public class HexEncodeFunction extends Function {
 
   public HexEncodeFunction() {
     super("HEX_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.BINARY),
-        Category.STRING, "/docs/hex_encode.html");
+        OperatorCategory.STRING, "/docs/hex_encode.html");
   }
 
   @Override

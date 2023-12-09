@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ public class Sha224Function extends Function {
 
   public Sha224Function() {
     super("SHA224", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.CRYPTOGRAPHIC, "/docs/sha224.html");
+        OperatorCategory.CRYPTOGRAPHIC, "/docs/sha224.html");
   }
 
   @Override

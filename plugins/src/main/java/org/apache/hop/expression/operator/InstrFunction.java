@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -35,7 +35,7 @@ public class InstrFunction extends Function {
     super(
         "INSTR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING
             .or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_NUMERIC),
-        Category.STRING, "/docs/instr.html");
+        OperatorCategory.STRING, "/docs/instr.html");
   }
 
   @Override

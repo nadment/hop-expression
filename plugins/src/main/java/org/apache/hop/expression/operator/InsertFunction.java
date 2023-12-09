@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -42,7 +42,7 @@ public class InsertFunction extends Function {
   public InsertFunction() {
     super("INSERT", ReturnTypes.ARG0_MAX_PRECISION,
         OperandTypes.STRING_NUMERIC_NUMERIC_STRING.or(OperandTypes.BINARY_NUMERIC_NUMERIC_BINARY),
-        Category.STRING, "/docs/insert.html");
+        OperatorCategory.STRING, "/docs/insert.html");
   }
 
   @Override

@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitShiftFunction extends Function {
 
   public BitShiftFunction() {
-    super("BIT_SHIFT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+    super("BIT_SHIFT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.BITWISE,
         "/docs/bit_shift.html");
   }
 

@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -37,7 +37,7 @@ import java.util.zip.GZIPInputStream;
 public class DecompressFunction extends Function {
 
   public DecompressFunction() {
-    super("DECOMPRESS", ReturnTypes.BINARY_NULLABLE, OperandTypes.BINARY, Category.STRING,
+    super("DECOMPRESS", ReturnTypes.BINARY_NULLABLE, OperandTypes.BINARY, OperatorCategory.STRING,
         "/docs/decompress.html");
   }
 

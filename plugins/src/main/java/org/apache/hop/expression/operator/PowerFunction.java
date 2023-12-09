@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class PowerFunction extends Function {
 
   public PowerFunction() {
-    super("POWER", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
+    super("POWER", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/power.html");
   }
 

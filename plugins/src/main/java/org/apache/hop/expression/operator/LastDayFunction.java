@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -46,7 +46,7 @@ public class LastDayFunction extends Function {
 
   public LastDayFunction() {
     super("LAST_DAY", ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL.or(OperandTypes.TEMPORAL_TIMEUNIT),
-        Category.DATE, "/docs/last_day.html");
+        OperatorCategory.DATE, "/docs/last_day.html");
   }
 
   @Override

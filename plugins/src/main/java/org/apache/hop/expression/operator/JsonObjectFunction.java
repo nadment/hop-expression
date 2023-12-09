@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -78,7 +78,7 @@ public class JsonObjectFunction extends Function {
 
 
   public JsonObjectFunction() {
-    super("JSON_OBJECT", ReturnTypes.JSON_NULLABLE, OTC, Category.JSON, "/docs/json_object.html");
+    super("JSON_OBJECT", ReturnTypes.JSON_NULLABLE, OTC, OperatorCategory.JSON, "/docs/json_object.html");
   }
 
   @Override

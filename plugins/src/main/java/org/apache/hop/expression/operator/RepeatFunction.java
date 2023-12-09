@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -41,7 +41,7 @@ public class RepeatFunction extends Function {
 
   public RepeatFunction() {
     super("REPEAT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
-        Category.STRING, "/docs/repeat.html");
+        OperatorCategory.STRING, "/docs/repeat.html");
   }
 
   @Override

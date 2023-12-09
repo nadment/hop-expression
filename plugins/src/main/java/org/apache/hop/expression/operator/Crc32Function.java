@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +32,7 @@ public class Crc32Function extends Function {
 
   public Crc32Function() {
     super("CRC32", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.CRYPTOGRAPHIC, "/docs/crc32.html");
+        OperatorCategory.CRYPTOGRAPHIC, "/docs/crc32.html");
   }
 
   @Override

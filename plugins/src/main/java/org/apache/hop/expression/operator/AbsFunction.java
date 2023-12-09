@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.commons.math3.util.FastMath;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -39,7 +39,7 @@ public class AbsFunction extends Function {
   public static final AbsFunction AbsNumberFunction = new AbsNumber();
 
   public AbsFunction() {
-    super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC, Category.MATHEMATICAL,
+    super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/abs.html");
   }
 

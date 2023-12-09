@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -42,7 +42,7 @@ import java.time.temporal.ChronoUnit;
 public class DateDiffFunction extends Function {
 
   public DateDiffFunction() {
-    super("DATE_DIFF", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TIMEUNIT_TEMPORAL_TEMPORAL, Category.DATE,
+    super("DATE_DIFF", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TIMEUNIT_TEMPORAL_TEMPORAL, OperatorCategory.DATE,
         "/docs/date_diff.html");
   }
 

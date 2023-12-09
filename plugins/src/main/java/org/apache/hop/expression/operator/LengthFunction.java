@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -38,7 +38,7 @@ public class LengthFunction extends Function {
 
   public LengthFunction() {
     super("LENGTH", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.STRING, "/docs/length.html");
+        OperatorCategory.STRING, "/docs/length.html");
   }
 
   @Override

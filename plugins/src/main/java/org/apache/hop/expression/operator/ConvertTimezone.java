@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -34,7 +34,7 @@ public class ConvertTimezone extends Function {
 
   public ConvertTimezone() {
     super("CONVERT_TIMEZONE", ReturnTypes.DATE_NULLABLE,
-        OperandTypes.STRING_STRING_TEMPORAL.or(OperandTypes.STRING_DATE), Category.DATE,
+        OperandTypes.STRING_STRING_TEMPORAL.or(OperandTypes.STRING_DATE), OperatorCategory.DATE,
         "/docs/convert_timezone.html");
   }
 

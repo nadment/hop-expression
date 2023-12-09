@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
@@ -43,7 +43,7 @@ public class ToBinaryFunction extends Function {
 
   protected ToBinaryFunction(String id) {
     super(id, ReturnTypes.BINARY_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
-        Category.CONVERSION, "/docs/to_binary.html");
+        OperatorCategory.CONVERSION, "/docs/to_binary.html");
   }
 
   @Override

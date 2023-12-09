@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.Comparison;
@@ -42,7 +42,7 @@ public class BetweenOperator extends Operator {
 
   public BetweenOperator(Between between) {
     super("BETWEEN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.SAME_SAME_SAME,
-        Category.COMPARISON, "/docs/between.html");
+        OperatorCategory.COMPARISON, "/docs/between.html");
     this.between = between;
   }
 

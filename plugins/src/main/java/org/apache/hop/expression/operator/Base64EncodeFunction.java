@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ public class Base64EncodeFunction extends Function {
 
   public Base64EncodeFunction() {
     super("BASE64_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.STRING, "/docs/base64_encode.html");
+        OperatorCategory.STRING, "/docs/base64_encode.html");
   }
 
   @Override

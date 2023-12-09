@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -41,7 +41,7 @@ public class ConcatWsFunction extends Function {
   public ConcatWsFunction() {
     super("CONCAT_WS", ReturnTypes.CONCATWS_FUNCTION,
         OperandTypes.STRING_STRING_VARIADIC.or(OperandTypes.BINARY_BINARY_VARIADIC),
-        Category.STRING, "/docs/concat_ws.html");
+        OperatorCategory.STRING, "/docs/concat_ws.html");
   }
 
   @Override

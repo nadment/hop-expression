@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,7 +33,7 @@ import java.time.ZonedDateTime;
 public class SecondFunction extends Function {
 
   public SecondFunction() {
-    super("SECOND", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, Category.DATE, "/docs/second.html");
+    super("SECOND", ReturnTypes.INTEGER_NULLABLE, OperandTypes.TEMPORAL, OperatorCategory.DATE, "/docs/second.html");
   }
 
   @Override

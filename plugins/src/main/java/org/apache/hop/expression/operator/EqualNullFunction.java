@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -42,7 +42,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class EqualNullFunction extends Function {
 
   public EqualNullFunction() {
-    super("EQUAL_NULL", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY, Category.COMPARISON,
+    super("EQUAL_NULL", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY, OperatorCategory.COMPARISON,
         "/docs/equal_null.html");
   }
 

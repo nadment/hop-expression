@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -30,7 +30,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class BitCountFunction extends Function {
 
   public BitCountFunction() {
-    super("BIT_COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC, Category.BITWISE,
+    super("BIT_COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.BITWISE,
         "/docs/bit_count.html");
   }
 

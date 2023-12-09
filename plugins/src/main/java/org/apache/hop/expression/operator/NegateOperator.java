@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -34,7 +34,7 @@ import java.io.StringWriter;
 public class NegateOperator extends Operator {
   public NegateOperator() {
     super("NEGATE", "-", 30, true, ReturnTypes.ARG0, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL),
-        Category.MATHEMATICAL, "/docs/negate.html");
+        OperatorCategory.MATHEMATICAL, "/docs/negate.html");
   }
 
   @Override

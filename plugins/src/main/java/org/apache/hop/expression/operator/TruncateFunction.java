@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ public class TruncateFunction extends Function {
 
   public TruncateFunction() {
     super("TRUNCATE", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC),
-        Category.MATHEMATICAL, "/docs/truncate.html");
+        OperatorCategory.MATHEMATICAL, "/docs/truncate.html");
   }
 
 

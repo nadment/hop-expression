@@ -14,7 +14,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -43,7 +43,7 @@ public class RegexpCountFunction extends Function {
     super(
         "REGEXP_COUNT", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING
             .or(OperandTypes.STRING_STRING_NUMERIC).or(OperandTypes.STRING_STRING_NUMERIC_STRING),
-        Category.STRING, "/docs/regexp_count.html");
+        OperatorCategory.STRING, "/docs/regexp_count.html");
   }
 
   @Override

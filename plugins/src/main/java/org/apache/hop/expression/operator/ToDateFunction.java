@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -42,7 +42,7 @@ public class ToDateFunction extends Function {
 
   protected ToDateFunction(String id) {
     super(id, ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
-        Category.CONVERSION, "/docs/to_date.html");
+        OperatorCategory.CONVERSION, "/docs/to_date.html");
   }
 
   @Override

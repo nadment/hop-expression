@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
@@ -38,7 +38,7 @@ public class IsDistinctFromOperator extends Operator {
 
   public IsDistinctFromOperator() {
     super("IS DISTINCT FROM", 10, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY_ANY,
-        Category.COMPARISON, "/docs/is-distinct-from.html");
+        OperatorCategory.COMPARISON, "/docs/is-distinct-from.html");
   }
 
   @Override

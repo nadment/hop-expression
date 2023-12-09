@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -46,7 +46,7 @@ public class MultiplyOperator extends Operator {
   
   public MultiplyOperator() {
     super("MULTIPLY", "*", 50, true, ReturnTypes.MULTIPLY_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
-        Category.MATHEMATICAL, "/docs/multiply.html");
+        OperatorCategory.MATHEMATICAL, "/docs/multiply.html");
   }
 
   @Override

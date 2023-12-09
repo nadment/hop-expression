@@ -19,7 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -51,7 +51,7 @@ public class BoolAndOperator extends Operator {
 
   public BoolAndOperator() {
     super("BOOLAND", "AND", 160, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN_BOOLEAN,
-        Category.LOGICAL, "/docs/booland.html");
+        OperatorCategory.LOGICAL, "/docs/booland.html");
   }
 
   /**

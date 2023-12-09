@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -35,7 +35,7 @@ public class NormalizeFunction extends Function {
 
   public NormalizeFunction() {
     super("NORMALIZE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_STRING),
-        Category.STRING, "/docs/normalize.html");
+        OperatorCategory.STRING, "/docs/normalize.html");
   }
 
   @Override

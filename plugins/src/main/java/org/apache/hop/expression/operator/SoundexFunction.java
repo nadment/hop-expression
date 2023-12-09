@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.language.Soundex;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,7 +33,7 @@ public class SoundexFunction extends Function {
   private static final Soundex SOUNDEX = new Soundex();
 
   public SoundexFunction() {
-    super("SOUNDEX", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
+    super("SOUNDEX", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/soundex.html");
   }
 

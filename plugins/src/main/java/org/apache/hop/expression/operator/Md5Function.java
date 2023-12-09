@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ public class Md5Function extends Function {
 
   public Md5Function() {
     super("MD5", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.CRYPTOGRAPHIC, "/docs/md5.html");
+        OperatorCategory.CRYPTOGRAPHIC, "/docs/md5.html");
   }
 
   @Override

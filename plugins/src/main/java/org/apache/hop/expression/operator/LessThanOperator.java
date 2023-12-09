@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
@@ -39,7 +39,7 @@ public class LessThanOperator extends Operator {
 
   public LessThanOperator() {
     super("LESS_THAN", "<", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
-        Category.COMPARISON, "/docs/less_than.html");
+        OperatorCategory.COMPARISON, "/docs/less_than.html");
   }
 
   @Override

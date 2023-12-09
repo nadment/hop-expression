@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -40,7 +40,7 @@ import java.math.BigDecimal;
 public class Div0Function extends Function {
 
   public Div0Function() {
-    super("DIV0", ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
+    super("DIV0", ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/div0.html");
   }
 

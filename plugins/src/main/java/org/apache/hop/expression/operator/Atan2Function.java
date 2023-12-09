@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +32,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class Atan2Function extends Function {
 
   public Atan2Function() {
-    super("ATAN2", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.TRIGONOMETRY,
+    super("ATAN2", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.TRIGONOMETRY,
         "/docs/atan2.html");
   }
 

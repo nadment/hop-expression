@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,7 +37,7 @@ import java.util.List;
 public class DecodeFunction extends Function {
 
   public DecodeFunction() {
-    super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, Category.CONDITIONAL,
+    super("DECODE", ReturnTypes.ARG2, OperandTypes.DECODE_FUNCTION, OperatorCategory.CONDITIONAL,
         "/docs/decode.html");
   }
 

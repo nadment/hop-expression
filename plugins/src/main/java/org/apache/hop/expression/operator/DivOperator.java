@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -41,7 +41,7 @@ public class DivOperator extends Operator {
 
   public DivOperator() {
     super("DIV", "/", 50, true, ReturnTypes.DIVIDE_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
-        Category.MATHEMATICAL, "/docs/div.html");
+        OperatorCategory.MATHEMATICAL, "/docs/div.html");
   }
 
   @Override

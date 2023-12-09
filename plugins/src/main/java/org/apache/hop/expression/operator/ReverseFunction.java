@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,7 +37,7 @@ public class ReverseFunction extends Function {
   public static final ReverseFunction ReverseBinary = new ReverseBinary();
 
   public ReverseFunction() {
-    super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY), Category.STRING,
+    super("REVERSE", ReturnTypes.ARG0, OperandTypes.STRING.or(OperandTypes.BINARY), OperatorCategory.STRING,
         "/docs/reverse.html");
   }
 

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.OperandTypes;
@@ -36,7 +36,7 @@ public class SimilarToOperator extends Operator {
 
   public SimilarToOperator() {
     super("SIMILAR TO", 10, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING_STRING,
-        Category.COMPARISON, "/docs/similar-to.html");
+        OperatorCategory.COMPARISON, "/docs/similar-to.html");
   }
 
   @Override

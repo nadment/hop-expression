@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,7 +33,7 @@ public class MakeIntervalFunction extends Function {
 
   public MakeIntervalFunction() {
     super("MAKE_INTERVAL", ReturnTypes.INTERVAL_NULLABLE,
-        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+        OperandTypes.NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC_NUMERIC, OperatorCategory.DATE,
         "/docs/make_interval.html");
   }
 

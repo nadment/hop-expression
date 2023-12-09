@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -33,13 +33,13 @@ import java.io.StringWriter;
 public class BitXorFunction extends Function {
 
   public BitXorFunction() {
-    super("BIT_XOR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, Category.BITWISE,
+    super("BIT_XOR", ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.BITWISE,
         "/docs/bit_xor.html");
   }
 
   public BitXorFunction(String name) {
     super("BIT_XOR", name, 80, true, ReturnTypes.INTEGER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
-        Category.BITWISE, "/docs/bit_xor.html");
+        OperatorCategory.BITWISE, "/docs/bit_xor.html");
   }
 
   @Override

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -40,7 +40,7 @@ public class SqueezeFunction extends Function {
   public static final SqueezeFunction INSTANCE = new SqueezeFunction();
 
   public SqueezeFunction() {
-    super("SQUEEZE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
+    super("SQUEEZE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/squeeze.html");
   }
 

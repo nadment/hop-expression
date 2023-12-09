@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -37,7 +37,7 @@ public class ToBooleanFunction extends Function {
 
   protected ToBooleanFunction(String id) {
     super(id, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING.or(OperandTypes.NUMERIC),
-        Category.CONVERSION, "/docs/to_boolean.html");
+        OperatorCategory.CONVERSION, "/docs/to_boolean.html");
   }
 
   @Override

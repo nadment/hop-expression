@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ import org.apache.hop.expression.type.StringType;
 public class CurrentTimeZoneFunction extends Function {
 
   public CurrentTimeZoneFunction() {
-    super("CURRENT_TIMEZONE", ReturnTypes.STRING_NOT_NULL, OperandTypes.NILADIC, Category.DATE,
+    super("CURRENT_TIMEZONE", ReturnTypes.STRING_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.DATE,
         "/docs/current_timezone.html");
   }
 

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -36,7 +36,7 @@ public class IfFunction extends Function {
 
   public IfFunction() {
     super("IF", ReturnTypes.IF_FUNCTION,
-        OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME), Category.CONDITIONAL,
+        OperandTypes.BOOLEAN_ANY.or(OperandTypes.BOOLEAN_SAME_SAME), OperatorCategory.CONDITIONAL,
         "/docs/if.html");
   }
 

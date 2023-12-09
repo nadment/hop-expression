@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -35,13 +35,13 @@ import java.math.BigDecimal;
 public class ModFunction extends Function {
 
   public ModFunction() {
-    super("MOD", ReturnTypes.MOD_OPERATOR, OperandTypes.NUMERIC_NUMERIC, Category.MATHEMATICAL,
+    super("MOD", ReturnTypes.MOD_OPERATOR, OperandTypes.NUMERIC_NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/mod.html");
   }
 
   public ModFunction(String name) {
     super("MOD", name, 50, true, ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC_NUMERIC,
-        Category.MATHEMATICAL, "/docs/mod.html");
+        OperatorCategory.MATHEMATICAL, "/docs/mod.html");
   }
 
   @Override

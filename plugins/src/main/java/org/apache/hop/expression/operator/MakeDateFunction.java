@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -32,7 +32,7 @@ import java.time.ZoneId;
 public class MakeDateFunction extends Function {
 
   public MakeDateFunction() {
-    super("MAKE_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, Category.DATE,
+    super("MAKE_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.NUMERIC_NUMERIC_NUMERIC, OperatorCategory.DATE,
         "/docs/make_date.html");
   }
 

@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -45,14 +45,14 @@ public class ConcatFunction extends Function {
   public ConcatFunction() {
     super("CONCAT", ReturnTypes.CONCAT_FUNCTION,
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
-        Category.STRING, "/docs/concat.html");
+        OperatorCategory.STRING, "/docs/concat.html");
   }
 
   // Operator
   public ConcatFunction(String name) {
     super("CONCAT", name, 110, true, ReturnTypes.FIRST_KNOWN,
         OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
-        Category.STRING, "/docs/concat.html");
+        OperatorCategory.STRING, "/docs/concat.html");
   }
 
   @Override

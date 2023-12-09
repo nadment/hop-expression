@@ -18,7 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -45,7 +45,7 @@ public class CastFunction extends Function {
   }
 
   public CastFunction(String id) {
-    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR, Category.CONVERSION,
+    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR, OperatorCategory.CONVERSION,
         "/docs/cast.html");
   }
 

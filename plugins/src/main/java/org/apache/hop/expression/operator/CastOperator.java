@@ -18,7 +18,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -38,7 +38,7 @@ public class CastOperator extends Operator {
 
   public CastOperator() {
     super("CAST", "::", 40, true, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR,
-        Category.CONVERSION, "/docs/cast.html");
+        OperatorCategory.CONVERSION, "/docs/cast.html");
   }
 
   @Override

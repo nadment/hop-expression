@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -39,7 +39,7 @@ public class InitCapFunction extends Function {
   public static final InitCapFunction INSTANCE = new InitCapFunction();
 
   public InitCapFunction() {
-    super("INITCAP", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, Category.STRING,
+    super("INITCAP", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING, OperatorCategory.STRING,
         "/docs/initcap.html");
   }
 

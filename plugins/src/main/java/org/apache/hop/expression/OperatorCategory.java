@@ -19,11 +19,11 @@ package org.apache.hop.expression;
 /**
  * A collection of operator categories.
  */
-public final class Category {
+public final class OperatorCategory {
   /**
    * Private constructor since this is a utility class.
    */
-  private Category() {}
+  private OperatorCategory() {}
 
   public static final String STRING = "i18n::Operator.Category.String";
   public static final String JSON = "i18n::Operator.Category.Json";

@@ -18,7 +18,7 @@ package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,7 +35,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class CurrentUserFunction extends Function {
 
   public CurrentUserFunction() {
-    super("CURRENT_USER", ReturnTypes.STRING_NULLABLE, OperandTypes.NILADIC, Category.SPECIAL,
+    super("CURRENT_USER", ReturnTypes.STRING_NULLABLE, OperandTypes.NILADIC, OperatorCategory.SPECIAL,
         "/docs/current_user.html");
   }
 

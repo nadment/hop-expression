@@ -17,7 +17,7 @@
 
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.OperandTypes;
@@ -35,7 +35,7 @@ public class AtTimeZoneOperator extends Operator {
 
   public AtTimeZoneOperator() {
     super("TIMEZONE", "AT TIME ZONE", 10, true, ReturnTypes.DATE_NULLABLE, OperandTypes.TEMPORAL_STRING,
-        Category.CONVERSION, "/docs/attimezone.html");
+        OperatorCategory.CONVERSION, "/docs/attimezone.html");
   }
 
   @Override

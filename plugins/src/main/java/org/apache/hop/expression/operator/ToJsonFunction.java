@@ -16,7 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,7 +35,7 @@ public class ToJsonFunction extends Function {
   }
 
   protected ToJsonFunction(String id) {
-    super(id, ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, Category.CONVERSION, "/docs/to_json.html");
+    super(id, ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION, "/docs/to_json.html");
   }
 
   @Override

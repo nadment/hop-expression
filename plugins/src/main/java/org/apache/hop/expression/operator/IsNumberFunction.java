@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -38,7 +38,7 @@ import org.apache.hop.expression.type.TypeFamily;
 public class IsNumberFunction extends Function {
 
   public IsNumberFunction() {
-    super("IS_NUMBER", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, Category.COMPARISON,
+    super("IS_NUMBER", ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
         "/docs/is_number.html");
   }
 

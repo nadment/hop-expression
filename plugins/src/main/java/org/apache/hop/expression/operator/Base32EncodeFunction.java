@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.codec.binary.Base32;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
@@ -35,7 +35,7 @@ public class Base32EncodeFunction extends Function {
 
   public Base32EncodeFunction() {
     super("BASE32_ENCODE", ReturnTypes.STRING_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
-        Category.STRING, "/docs/base32_encode.html");
+        OperatorCategory.STRING, "/docs/base32_encode.html");
   }
 
   @Override

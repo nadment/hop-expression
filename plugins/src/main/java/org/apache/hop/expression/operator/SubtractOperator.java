@@ -17,7 +17,7 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.Category;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -39,7 +39,7 @@ public class SubtractOperator extends Operator {
     super("SUBTRACT", "-", 100, true, ReturnTypes.ADDITIVE_OPERATOR,
         OperandTypes.NUMERIC_NUMERIC.or(OperandTypes.TEMPORAL_INTERVAL)
             .or(OperandTypes.TEMPORAL_NUMERIC).or(OperandTypes.INTERVAL_INTERVAL),
-        Category.MATHEMATICAL, "/docs/subtract.html");
+        OperatorCategory.MATHEMATICAL, "/docs/subtract.html");
   }
 
   @Override
