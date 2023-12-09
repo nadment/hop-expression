@@ -40,7 +40,6 @@ public class Expressions {
     do {
       original = expression;
       expression = expression.compile(context);      
-      // System.out.println(original.toString() + " >>> " +  expression.toString());
     } while (!expression.equals(original));
 
     return expression;

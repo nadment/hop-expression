@@ -88,7 +88,6 @@ public class ExpressionTest {
   }
 
   public static class Evaluator {
-    // private final IExpressionContext context;
     private final IExpression expression;
     private final String source;
 
@@ -240,24 +239,6 @@ public class ExpressionTest {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
     return evaluator.eval(Object.class);
   }
-
-
-//  protected <T> T eval(IExpressionContext context, String source, final Class<T> clazz)
-//      throws Exception {
-//
-//    // Create default context
-//    if (context == null) {
-//      context = createExpressionContext(true);
-//    }
-//
-//    try {
-//      IExpression expression = Expressions.build(context, source);
-//      return expression.getValue(clazz);
-//    } catch (Exception ex) {
-//      System.err.println(ANSI_WHITE + source + "  " + ANSI_RED + ex.getMessage() + ANSI_RESET);
-//      throw ex;
-//    }
-//  }
 
   protected Evaluator evalNull(String source) throws Exception {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);

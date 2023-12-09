@@ -262,9 +262,7 @@ public final class Call implements IExpression {
 
   @Override
   public void unparse(StringWriter writer) {
-    //writer.append('(');
     operator.unparse(writer, operands);
-    //writer.append(')');
   }
 
   @Override

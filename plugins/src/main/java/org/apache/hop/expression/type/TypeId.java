@@ -108,11 +108,6 @@ public enum TypeId {
   private int maxScale;
 
   /**
-   * The default precision.
-   */
-  private long defaultPrecision;
-
-  /**
    * The default scale.
    */
   public int defaultScale;

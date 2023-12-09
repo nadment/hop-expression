@@ -53,18 +53,18 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Try_Cast() throws Exception {
 
     // String to Boolean
-    evalTrue("TRY_CAST('Yes' as Boolean)");
+    evalTrue("TRY_CAST('Yes' as Boolean)").returnType(BooleanType.BOOLEAN);
     evalFalse("TRY_CAST('False' as Boolean)");
     evalNull("TRY_CAST('Fake' as Boolean)");
 
     // Number to Boolean
-    evalTrue("TRY_CAST(1 as Boolean)");
+    evalTrue("TRY_CAST(1 as Boolean)").returnType(BooleanType.BOOLEAN);
     evalTrue("TRY_CAST(-12.1 as Boolean)");
     evalNull("TRY_CAST('test' as Boolean)");
 
     // Date to String
-    evalEquals("TRY_CAST(DATE '2019-02-25' AS STRING FORMAT 'DD/MM/YYYY')", "25/02/2019");
-    evalNull("TRY_CAST('2019-99-25' AS DATE)");
+    evalEquals("TRY_CAST(DATE '2019-02-25' AS STRING FORMAT 'DD/MM/YYYY')", "25/02/2019").returnType(StringType.STRING);
+    evalNull("TRY_CAST('2019-99-25' AS DATE)").returnType(DateType.DATE);
     evalNull("TRY_CAST('2019-99-25' AS DATE FORMAT 'YYYY-MM-DD')");
     evalNull("TRY_CAST(NULL_STRING AS DATE)");
 
@@ -84,10 +84,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     optimize("TRY_CAST(FIELD_STRING AS BINARY)");
     optimize("TRY_CAST(FIELD_INTEGER AS NUMBER)");
     optimize("TRY_CAST(FIELD_STRING AS DATE FORMAT 'YYYY-MM-DD')");
-
-    returnType("TRY_CAST('TRUE' as BOOLEAN)", BooleanType.BOOLEAN);
-    returnType("TRY_CAST('String' as STRING)", StringType.STRING);
-    returnType("TRY_CAST('2020-07-01' as DATE)", DateType.DATE);
   }
 
   @Test
@@ -113,17 +109,16 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Try_To_Boolean() throws Exception {
-    evalTrue("TRY_TO_BOOLEAN('True')");
+    evalTrue("TRY_TO_BOOLEAN('True')").returnType(BooleanType.BOOLEAN);
     evalFalse("TRY_TO_BOOLEAN('falSE')");
-    evalNull("TRY_TO_BOOLEAN('test')");
+    evalNull("TRY_TO_BOOLEAN('test')").returnType(BooleanType.BOOLEAN);
     evalNull("TRY_TO_BOOLEAN(NULL_STRING)");
     evalFails("TRY_TO_BOOLEAN()");
-    returnType("TRY_TO_BOOLEAN('True')", BooleanType.BOOLEAN);
   }
 
   @Test
   public void Try_To_Number() throws Exception {
-    evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D);
+    evalEquals("TRY_TO_NUMBER('5467.12', '999999.99')", 5467.12D).returnType(NumberType.NUMBER);
 
     // Return NULL if parsing failed
     evalNull("TRY_TO_NUMBER('54Z67z12', '999999D99')");
@@ -155,7 +150,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Try_To_Json() throws Exception {
 
     evalEquals("Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\",\"age\":29}"));
+        JsonType.convertStringToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(JsonType.JSON);
     evalEquals("Try_To_Json('true')", JsonType.convertStringToJson("true"));
     evalEquals("Try_To_Json('null')", JsonType.convertStringToJson("null"));
 
@@ -165,8 +160,6 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalFails("Try_To_Json()");
     evalFails("Try_To_Json(BOOLEAN_FIELD)");
-
-    returnType("Try_To_Json('{\"name\":\"Smith\", \"age\":29}')", JsonType.JSON);
   }
 
 
@@ -202,14 +195,17 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void If() throws Exception {
-    evalEquals("If(True,'True','False')", "True").returnType(StringType.STRING);
-    evalEquals("If(False,'True','False')", "False");
-    evalEquals("If(true,'Test')", "Test");
-
+    evalEquals("If(FIELD_BOOLEAN_TRUE,'True','False')", "True").returnType(StringType.STRING);
+    evalEquals("If(FIELD_BOOLEAN_FALSE,'True','False')", "False");
+    evalEquals("If(FIELD_BOOLEAN_TRUE,1,2)",1L).returnType(IntegerType.INTEGER);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,2,2.3)",2L).returnType(NumberType.NUMBER);
+    evalEquals("If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", LocalDate.of(2023, 1, 1)).returnType(DateType.DATE);
+    
     // If condition is NULL then return false value
     evalEquals("If(NULL_BOOLEAN,'A','B')", "B").returnType(StringType.STRING);
 
-    // Missing false value return NULL
+    // Syntax with only 2 operands 
+    evalEquals("If(true,'Test')", "Test");
     evalNull("If(false,'Test')");
     evalNull("If(false,1)");
     evalNull("If(false,Date '2023-01-01')");
@@ -237,12 +233,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     // No simplify
     optimize("IF(FIELD_INTEGER=FIELD_NUMBER,NULL,FIELD_BOOLEAN_TRUE)",
         "IF(FIELD_INTEGER=FIELD_NUMBER,NULL,FIELD_BOOLEAN_TRUE)");
-
-
-    returnType("If(FIELD_BOOLEAN_TRUE,'A','B')", StringType.STRING);
-    returnType("If(FIELD_BOOLEAN_TRUE,1,2)", IntegerType.INTEGER);
-    returnType("If(FIELD_BOOLEAN_TRUE,2,2.3)", NumberType.NUMBER);
-    returnType("If(FIELD_BOOLEAN_TRUE,Date '2023-01-01',Date '2023-02-01')", DateType.DATE);
   }
 
   @Test
@@ -720,7 +710,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("LPad('test',7,'ABC')", "ABCtest");
     evalEquals("LPad('test',8,'ABC')", "ABCAtest");
 
-    evalEquals("LPad(BINARY '1A2B3C',2,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B});
+    evalEquals("LPad(BINARY '1A2B3C',2,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B}).returnType(BinaryType.BINARY);
     evalEquals("LPad(BINARY '1A2B3C',3,BINARY '4D5E6F')", new byte[] {0x1A, 0x2B, 0x3C});
     evalEquals("LPad(BINARY '1A2B3C',4,BINARY '4D5E6F')", new byte[] {0x4D, 0x1A, 0x2B, 0x3C});
     evalEquals("LPad(BINARY '1A2B3C',5,BINARY '4D5E6F')",
@@ -737,18 +727,15 @@ public class ScalarFunctionTest extends ExpressionTest {
     // If length is a negative number, the result of the function is an empty string or binary.
     evalEquals("LPad('test',-8)", "");
 
-    evalNull("LPad(NULL_STRING,2)");
+    evalNull("LPad(NULL_STRING,2)").returnType(StringType.STRING);
     evalNull("LPad(NULL_STRING,-8)");
-    evalNull("LPad(NULL_BINARY,2)");
+    evalNull("LPad(NULL_BINARY,2)").returnType(BinaryType.BINARY);
     evalNull("LPad(NULL_BINARY,-8)");
 
     evalFails("LPad('test')");
 
     // Test PAD_LIMIT
     evalFails("LPad('test',10000)");
-
-    returnType("LPad(FIELD_STRING,7,'*')", StringType.STRING);
-    returnType("LPad(FIELD_BINARY,7,BINARY '02')", BinaryType.BINARY);
   }
 
   @Test
@@ -786,7 +773,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Date_Diff() throws Exception {
-    evalEquals("Date_Diff(MILLENNIUM, DATE '1001-01-01',DATE '3150-01-01')", 2L);
+    evalEquals("Date_Diff(MILLENNIUM, DATE '1001-01-01',DATE '3150-01-01')", 2L).returnType(IntegerType.INTEGER);
     evalEquals("Date_Diff(CENTURY, DATE '1001-01-01',DATE '2000-01-01')", 9L);
     evalEquals("Date_Diff(DECADE, DATE '1001-01-01',DATE '2000-01-01')", 99L);
     evalEquals("Date_Diff(YEAR, TIMESTAMP '2001-01-01 12:00:00',DATE '2000-01-01')", -1L);
@@ -811,13 +798,11 @@ public class ScalarFunctionTest extends ExpressionTest {
         "Date_Diff(NANOSECOND, TIMESTAMP '2019-01-01 15:00:00.000000000',TIMESTAMP '2019-01-01 15:00:00.123456789')",
         123456789L);
 
-    evalNull("Date_Diff(YEAR, NULL_DATE, DATE '2007-11-09')");
+    evalNull("Date_Diff(YEAR, NULL_DATE, DATE '2007-11-09')").returnType(IntegerType.INTEGER);
     evalNull("Date_Diff(YEAR, DATE '2007-11-09',NULL_DATE)");
     evalNull("Date_Diff(YEAR, NULL_DATE, NULL_DATE)");
 
     evalFails("Date_Diff(YEAR, DATE '2007-11-09')");
-
-    returnType("Date_Diff(DAY, DATE '2021-11-09',DATE '2020-12-28')", IntegerType.INTEGER);
   }
 
   @Test
@@ -1194,7 +1179,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Split_part() throws Exception {
-    evalEquals("Split_Part('127.1.2.3','.',1)", "127");
+    evalEquals("Split_Part('127.1.2.3','.',1)", "127").returnType(StringType.STRING);
     evalEquals("Split_Part('127.1.2.3','.',2)", "1");
     evalEquals("Split_Part('127.1.2.3','.',4)", "3");
     evalEquals("Split_Part('127.1.2.3','.',-1)", "3");
@@ -1213,8 +1198,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Split_Part('127.1.2.3','.',NULL_INTEGER)");
 
     evalFails("Split_Part('127.1.2.3','.')");
-
-    returnType("Split_Part('127.1.2.3','.',1)", StringType.STRING);
   }
 
   @Test
@@ -3286,8 +3269,6 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("SHA224('Test')", "c696f08d2858549cfe0929bb7b098cfa9b64d51bec94aa68471688e4").returnType(StringType.STRING);
     evalNull("SHA224(NULL_STRING)").returnType(StringType.STRING);
     evalFails("SHA224()");
-
-    returnType("SHA224('Apache Hop')", StringType.STRING);
   }
 
   @Test

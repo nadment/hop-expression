@@ -45,12 +45,10 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       
-      evalEquals("UCASE('abcd',3)", "ABC");
-      evalEquals("UCASE(NULL_STRING,2)", "*");
+      evalEquals("UCASE('abcd',3)", "ABC").returnType(StringType.STRING);
+      evalEquals("UCASE(NULL_STRING,2)", "*").returnType(StringType.STRING);
       evalFails("UCASE()");
       evalFails("UCASE(1,2,3)");
-      
-      returnType("UCASE('abcd',3)", StringType.STRING);
   }
 
   @Test
@@ -63,14 +61,12 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       
-      evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5));
-      evalNull("DATE_FROM_ID(null)");
+      evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(DateType.DATE);
+      evalNull("DATE_FROM_ID(null)").returnType(DateType.DATE);
       evalFails("DATE_FROM_ID()");
       evalFails("DATE_FROM_ID(1,2,3)");
       
       assertThrows(ExpressionException.class, () -> optimize("DATE_FROM_ID()"));
-      
-      returnType("DATE_FROM_ID(20230105)", DateType.DATE);
   }
   
   @Test

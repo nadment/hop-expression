@@ -15,9 +15,12 @@
 package org.apache.hop.core.expression;
 
 import org.apache.hop.expression.Interval;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.IntervalType;
+import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.junit.Test;
@@ -81,14 +84,13 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("NULL_BOOLEAN = false");  
     
     
-    evalNull("NULL_BOOLEAN = NULL_BOOLEAN");
-    evalNull("NULL_STRING = NULL_STRING");
-    evalNull("NULL_INTEGER = NULL_INTEGER");
-    evalNull("NULL_INTEGER = 1");
-    evalNull("FIELD_INTEGER=NULL");
+    evalNull("NULL_BOOLEAN = NULL_BOOLEAN").returnType(BooleanType.BOOLEAN);
+    evalNull("NULL_STRING = NULL_STRING").returnType(BooleanType.BOOLEAN);
+    evalNull("NULL_INTEGER = NULL_INTEGER").returnType(BooleanType.BOOLEAN);
+    evalNull("NULL_INTEGER = 1").returnType(BooleanType.BOOLEAN);
+    evalNull("FIELD_INTEGER=NULL").returnType(BooleanType.BOOLEAN);
     
-    evalFails("FIELD_INTEGER=");
-    
+    evalFails("FIELD_INTEGER=");    
     evalFails(" = FIELD_INTEGER ");
     
     optimizeNull("NULL = NULL");
@@ -559,18 +561,42 @@ public class OperatorTest extends ExpressionTest {
   }
   
   @Test
-  public void Add() throws Exception {
+  public void AddNumeric() throws Exception {
     // Addition of numeric
-    evalEquals("10+(-0.5)", 9.5);
+    evalEquals("10+(-0.5)", 9.5).returnType(NumberType.of(4,1));
     evalEquals("BINARY 'F'::INTEGER+1", 16L);
     evalEquals("0b00011::INTEGER+0", 3L);
     evalEquals("-24.7+0.5+24.7+0.5E-2", 0.505);
-    evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669);
+    evalEquals("FIELD_INTEGER+FIELD_NUMBER+FIELD_BIGNUMBER", 123491.669).returnType(NumberType.NUMBER);
     evalEquals("FIELD_BIGNUMBER+FIELD_NUMBER+FIELD_INTEGER", 123491.669);
-    evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1);
-
+    evalEquals("FIELD_BIGNUMBER+1", 123456.789 + 1).returnType(NumberType.NUMBER);
+    evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4L).returnType(NumberType.of(38,10));
+    evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4L).returnType(NumberType.of(15,2));
+    
     // Addition of boolean coerced to numeric
     evalEquals("FIELD_BOOLEAN_TRUE+FIELD_BOOLEAN_FALSE", 1L);
+    
+    
+    evalNull("5+NULL_INTEGER+5");
+    evalNull("+NULL_INTEGER+5");
+    evalFails("5+");
+
+    optimize("10+FIELD_INTEGER");
+    optimize("3+1+1+1+1+1+1+1+1+1+1+1", "14");
+    optimize("3+1+2", "6");
+    optimize("3+1*2", "5");
+    optimize("(3+1)*2", "8");
+    optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
+    optimize("4+FIELD_INTEGER+1", "5+FIELD_INTEGER");
+    optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
+    optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
+    optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
+    optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
+    optimize("FIELD_DATE+INTERVAL 0 YEAR", "FIELD_DATE");    
+  }
+
+  @Test
+  public void AddTemporal() throws Exception {
     
     // Addition of interval to a temporal 
     evalEquals("DATE '2019-02-25'+INTERVAL 2 YEAR", LocalDateTime.of(2021, 2, 25, 0, 0, 0));
@@ -605,29 +631,7 @@ public class OperatorTest extends ExpressionTest {
     
     // Only integer, round number
     evalEquals("DATE '2019-02-25'+1.8", LocalDateTime.of(2019, 2, 26, 0, 0, 0));
-    evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));   
-        
-    evalNull("5+NULL_INTEGER+5");
-    evalNull("+NULL_INTEGER+5");
-    evalFails("5+");
-
-    optimize("10+FIELD_INTEGER");
-    optimize("3+1+1+1+1+1+1+1+1+1+1+1", "14");
-    optimize("3+1+2", "6");
-    optimize("3+1*2", "5");
-    optimize("(3+1)*2", "8");
-    optimize("FIELD_INTEGER+0", "FIELD_INTEGER");
-    optimize("4+FIELD_INTEGER+1", "5+FIELD_INTEGER");
-    optimize("0+FIELD_INTEGER", "FIELD_INTEGER");
-    optimize("1+FIELD_INTEGER+3+FIELD_INTEGER+5*2", "14+FIELD_INTEGER+FIELD_INTEGER");
-    optimize("FIELD_INTEGER+3+1", "4+FIELD_INTEGER");
-    optimize("FIELD_INTEGER+(-FIELD_NUMBER)", "FIELD_INTEGER-FIELD_NUMBER");
-    optimize("FIELD_DATE+INTERVAL 0 YEAR", "FIELD_DATE");    
-    
-    returnType("FIELD_NUMBER+FIELD_INTEGER", NumberType.of(38,9));
-    returnType("1::NUMBER(4,1)+3::NUMBER(2,2)", NumberType.of(6,2));
-    returnType("1::NUMBER(38,10)+3::NUMBER(38,5)", NumberType.of(38,10));
-    returnType("1::NUMBER(14,2)+3::NUMBER(14,2)", NumberType.of(15,2));
+    evalEquals("DATE '2019-02-25'+5/(60*24)", LocalDateTime.of(2019, 2, 25, 0, 0, 0));       
   }
 
   @Test
@@ -681,8 +685,9 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
+  
   public void Between() throws Exception {
-    evalTrue("3 between 1 and 5");
+    evalTrue("3 between 1 and 5").returnType(BooleanType.BOOLEAN);
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
     evalFalse("5 between asymmetric 5 and 3");
@@ -786,22 +791,23 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void CastToInteger() throws Exception {
     // Integer
-    evalEquals("CAST(0 as Integer)", 0L);
+    evalEquals("CAST(0 as Integer)", 0L).returnType(IntegerType.INTEGER);
     evalEquals("CAST(123 as Integer)", 123L);
     evalEquals("CAST(-123 as Integer)", -123L);
     
     // Number
-    evalEquals("CAST(1.25 as Integer)", 1L);
+    evalEquals("CAST(1.25 as Integer)", 1L).returnType(IntegerType.INTEGER);
     evalEquals("CAST(-1.25 as Integer)", -1L);
+    
     // Oracle truncate to 1 and Snowflake round it to 2
     evalEquals("CAST(1.75 as Integer)", 1L);
     
     // Boolean
-    evalEquals("CAST(TRUE as Integer)", 1L);
+    evalEquals("CAST(TRUE as Integer)", 1L).returnType(IntegerType.INTEGER);
     evalEquals("CAST(FALSE as Integer)", 0L);
     
     // String
-    evalEquals("CAST('1234' as Integer)", 1234L);
+    evalEquals("CAST('1234' as Integer)", 1234L).returnType(IntegerType.INTEGER);
     evalEquals("'1234'::Integer+5", 1239L);
     evalEquals("CAST('1234.567' as Integer)", 1234L);
     
@@ -809,49 +815,44 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST(BINARY '123' as Integer)", 291L);
     
     // Null
-    evalNull("CAST(NULL_NUMBER as Integer)");
-    evalNull("CAST(NULL_INTEGER as Integer)");
+    evalNull("CAST(NULL_NUMBER as Integer)").returnType(IntegerType.INTEGER);
+    evalNull("CAST(NULL_INTEGER as Integer)").returnType(IntegerType.INTEGER);
     
     // Accept DataType quoted like a String
-    evalEquals("Cast(123 as 'INTEGER')", 123L);
+    evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(IntegerType.INTEGER);
     
     // Unsupported conversion
     evalFails("CAST(DATE '2019-02-25' AS INTEGER)");
     
     optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
-  
-    // Return type
-    returnType("CAST('3' as INTEGER)", IntegerType.INTEGER);
-    returnType("CAST('123' as INTEGER(1))", IntegerType.of(1));
-    returnType("CAST(FIELD_NUMBER as INTEGER)", IntegerType.INTEGER);
   }
 
   @Test
   public void CastToNumber() throws Exception {
     
     // Boolean
-    evalEquals("CAST(TRUE as Number)", 1L);
+    evalEquals("CAST(TRUE as Number)", 1L).returnType(NumberType.NUMBER);
     evalEquals("CAST(FALSE as Number)", 0L);
     
     // Integer
-    evalEquals("CAST(0 as Number)", 0L);
+    evalEquals("CAST(0 as Number)", 0L).returnType(NumberType.NUMBER);
     evalEquals("CAST(123 as Number)", 123L);
     evalEquals("CAST(-123 as Number)", -123L);
     
     // Number
-    evalEquals("CAST(1234.456 as Number(38,9))", 1234.456D);
+    evalEquals("CAST(1234.456 as Number(38,9))", 1234.456D).returnType(NumberType.of(38,9));
     evalEquals("CAST(1234.456 as Number(10,1))", 1234.4D);    
     evalEquals("1.23456::Number", 1L);
-    evalEquals("1.23456::Number(10)", 1L);
-    evalEquals("1.23456::Number(10,0)", 1L);
-    evalEquals("1.23456::Number(10,2)", 1.23);
-    evalEquals("1.23456::Number(10,6)", new BigDecimal("1.234560"));
-    evalEquals("1.23456::Number(38,9)", 1.23456);
+    evalEquals("1.23456::Number(10)", 1L).returnType(NumberType.of(10));
+    evalEquals("1.23456::Number(10,0)", 1L).returnType(NumberType.of(10));
+    evalEquals("1.23456::Number(10,2)", 1.23).returnType(NumberType.of(10,2));
+    evalEquals("1.23456::Number(10,6)", new BigDecimal("1.234560")).returnType(NumberType.of(10,6));
+    evalEquals("1.23456::Number(38,9)", 1.23456).returnType(NumberType.of(38,9));
     evalEquals("CAST(12345678901234567890123456789012345678 as Number(38,0))",
-        new BigDecimal("12345678901234567890123456789012345678"));
+        new BigDecimal("12345678901234567890123456789012345678")).returnType(NumberType.of(38));
     
     // String
-    evalEquals("CAST('0' as Number)", 0L);
+    evalEquals("CAST('0' as Number)", 0L).returnType(NumberType.NUMBER);
     evalEquals("CAST('1' As Number)", 1L);
     evalEquals("CAST('-1e-37' as Number)", -1e-37d);
     evalEquals("CAST(' -1e-37 ' as Number)", -1e-37d);
@@ -862,9 +863,9 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('  -1e-37  ' as Number)", -1e-37d);
     
     // Null
-    evalNull("CAST(NULL_INTEGER as Number)");
-    evalNull("CAST(NULL_NUMBER as Number)");
-    evalNull("CAST(NULL_BIGNUMBER as Number)");
+    evalNull("CAST(NULL_INTEGER as Number)").returnType(NumberType.NUMBER);
+    evalNull("CAST(NULL_NUMBER as Number)").returnType(NumberType.NUMBER);
+    evalNull("CAST(NULL_BIGNUMBER as Number(12,2))").returnType(NumberType.of(12,2));
     
     // Unsupported conversion
     evalFails("CAST(DATE '2019-02-25' AS NUMBER)");
@@ -874,11 +875,6 @@ public class OperatorTest extends ExpressionTest {
     
     // Chained cast
     optimize("CAST(CAST(CAST(123456 AS INTEGER) AS NUMBER) AS NUMBER)", "123456");
-
-    // Return type
-    returnType("CAST(FIELD_STRING as NUMBER(5))", NumberType.of(5));
-    returnType("CAST(FIELD_NUMBER as NUMBER(5,0))", NumberType.of(5,0));
-    returnType("CAST('3.123' as NUMBER(10,2))", NumberType.of(10, 2));
   }
 
   @Test
@@ -935,13 +931,13 @@ public class OperatorTest extends ExpressionTest {
   public void CastToDate() throws Exception {
     // String
     evalEquals("CAST('2020-march' as DATE FORMAT 'YYYY-MONTH')", LocalDate.of(2020, 3, 1)).returnType(DateType.DATE);
-    evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2020, 1, 19, 11,23,44));
+    evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')", LocalDateTime.of(2020, 1, 19, 11,23,44)).returnType(DateType.DATE);
     
     // Null
     evalNull("CAST(NULL as Date)").returnType(DateType.DATE);
-    evalNull("CAST(NULL_DATE as Date)");
+    evalNull("CAST(NULL_DATE as Date)").returnType(DateType.DATE);
     
-    // Erreur parsing format
+    // Error parsing format
     evalFails("CAST('2023-01-01' AS DATE FORMAT 'YYYY-MM')");
     evalFails("CAST('2023-01' AS DATE FORMAT 'YYYY-MM-DD')");
     
@@ -958,11 +954,11 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void CastToBinary() throws Exception {    
     // String
-    evalEquals("CAST('AB' as BINARY)", "AB".getBytes());
+    evalEquals("CAST('AB' as BINARY)", "AB".getBytes()).returnType(BinaryType.BINARY);
     
     // Null
-    evalNull("CAST(NULL_STRING as Binary)");
-    evalNull("CAST(NULL_BINARY as Binary)");
+    evalNull("CAST(NULL_STRING as Binary)").returnType(BinaryType.BINARY);
+    evalNull("CAST(NULL_BINARY as Binary)").returnType(BinaryType.BINARY);
     
     optimize("CAST(FIELD_STRING AS BINARY)", "CAST(FIELD_STRING AS BINARY)");
   }
@@ -973,7 +969,7 @@ public class OperatorTest extends ExpressionTest {
     //evalEquals("CAST('A' as JSON)", "A".getBytes());
     
     // Null
-    evalNull("CAST(NULL as Json)");
+    evalNull("CAST(NULL as Json)").returnType(JsonType.JSON);
     evalNull("CAST(NULL_JSON as Json)");
     
     optimize("CAST(FIELD_JSON AS JSON)", "FIELD_JSON");
@@ -984,7 +980,7 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void CastToInterval() throws Exception {
     // String
-    evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5));
+    evalEquals("CAST('5 years' as INTERVAL)", Interval.of(5)).returnType(IntervalType.INTERVAL);
     
     // Null
     evalNull("CAST(NULL as INTERVAL)");
@@ -998,7 +994,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L);
 
     // Accept DataType quoted like a String
-    evalEquals("Cast(123 as 'INTEGER')", 123L);
+    evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(IntegerType.INTEGER);
     evalEquals("Cast('2022-01-01' as 'DATE')", LocalDate.of(2022, 1, 1));
     
     // Error syntax
@@ -1110,12 +1106,14 @@ public class OperatorTest extends ExpressionTest {
   
   @Test
   public void Multiplication() throws Exception {
-    evalEquals("2.55*10", 25.50D);
+    evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5,2));
     evalEquals("4*10", 40D);
     evalEquals("-4*-1", 4D);
     evalEquals("2*-2", -4D);
     evalEquals("100 * .5", 50D);    
     evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224);
+    evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15L).returnType(NumberType.of(7,3));
+    evalEquals("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(9,2)", -15L).returnType(NumberType.of(38,3));
     
     // Check no overflow Long.MAX_VALUE * 2
     evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"));
@@ -1134,19 +1132,19 @@ public class OperatorTest extends ExpressionTest {
     optimize("4*FIELD_INTEGER*0.5", "2*FIELD_INTEGER");
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
     optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
-
-    returnType("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", NumberType.of(7,3));
-    returnType("FIELD_NUMBER::NUMBER(38,1)*3::NUMBER(9,2)", NumberType.of(38,3));
   }
 
   @Test
   public void Div() throws Exception {
+    evalEquals("FIELD_INTEGER/4", 10D).returnType(NumberType.of(25,6));
     evalEquals("10/4", 2.5D);
     evalEquals("40/-10", -4L);
     evalEquals("-40/-10", 4L);
     evalEquals("5/2", 2.5D);
     evalEquals("10.1/2.1",  new BigDecimal("4.8095238095238095238095238095238"));
-    evalEquals("0.1/0.0000000000001", 1000000000000L);
+    evalEquals("0.1/0.0000000000001", 1000000000000L).returnType(NumberType.of(30,16));
+    evalEquals("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", -1L).returnType(NumberType.of(11,6));
+    
     evalNull("NULL_INTEGER/1");
     evalNull("NULL_INTEGER/0");
     evalNull("1/NULL_INTEGER");
@@ -1157,9 +1155,6 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER/1", "FIELD_INTEGER");    
     optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
     optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
-    
-    returnType("FIELD_INTEGER/4", NumberType.of(25,6));
-    returnType("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", NumberType.of(11,6));
   }
 
   @Test
@@ -1167,6 +1162,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("Div0(10,4)", 2.5D);
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);    
     evalEquals("Div0(FIELD_INTEGER,0)", 0L);
+    evalEquals("Div0(FIELD_INTEGER,2)", 20L).returnType(NumberType.of(25,6));
     evalNull("Div0(NULL_INTEGER,1)");
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
@@ -1174,8 +1170,6 @@ public class OperatorTest extends ExpressionTest {
         
     optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
-    
-    returnType("Div0(FIELD_INTEGER,2)", NumberType.of(25,6));
   }
   
   @Test
@@ -1556,10 +1550,10 @@ public class OperatorTest extends ExpressionTest {
     // Search case to simple case: CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
     // optimize("CASE WHEN FIELD_INTEGER=1 THEN 2 END", "CASE 1 WHEN FIELD_INTEGER THEN 2");
 
-    returnType("CASE WHEN FIELD_INTEGER IS NULL THEN '-' WHEN FIELD_INTEGER<0 THEN '' ELSE FIELD_STRING END", StringType.STRING);
-    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", IntegerType.INTEGER);
-    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", NumberType.NUMBER);
-    returnType("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE TO_NUMBER(TO_CHAR(FIELD_INTEGER,'YYYYMMDD')) END", NumberType.NUMBER);    
+    evalEquals("CASE WHEN FIELD_INTEGER IS NULL THEN '-' WHEN FIELD_INTEGER<0 THEN '' ELSE FIELD_STRING END", "TEST").returnType(StringType.STRING);    
+    evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END",0L).returnType(IntegerType.INTEGER);    
+    evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", 0L).returnType(NumberType.NUMBER);
+    evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN Date '2023-01-01' ELSE FIELD_DATE END", LocalDate.of(2023, 1, 1)).returnType(DateType.DATE);
   }
 
   @Test
