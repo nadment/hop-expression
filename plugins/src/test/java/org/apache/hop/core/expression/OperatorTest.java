@@ -576,9 +576,10 @@ public class OperatorTest extends ExpressionTest {
     // Addition of boolean coerced to numeric
     evalEquals("FIELD_BOOLEAN_TRUE+FIELD_BOOLEAN_FALSE", 1L);
     
-    
     evalNull("5+NULL_INTEGER+5");
     evalNull("+NULL_INTEGER+5");
+    evalNull("NULL_INTEGER+NULL_NUMBER");
+    
     evalFails("5+");
 
     optimize("10+FIELD_INTEGER");

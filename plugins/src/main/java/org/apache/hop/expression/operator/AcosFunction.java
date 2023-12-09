@@ -48,9 +48,7 @@ public class AcosFunction extends Function {
     if (value < -1.0 || value > 1.0) {
       throw new IllegalArgumentException(ErrorCode.ARGUMENT_OUT_OF_RANGE.message(1, value));
     }
-    // FIXME: Use BigDecimalMath when bug are fixed
-    // https://github.com/eobermuhlner/big-math/issues/66
-    // return BigDecimalMath.acosh(number, this.MATH_CONTEXT);
+    // FIXME: Use BigDecimalMath when bug are fixed https://github.com/eobermuhlner/big-math/issues/66
     return BigDecimal.valueOf(FastMath.acos(value));
   }
 }

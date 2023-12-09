@@ -266,5 +266,11 @@ public class IntervalTest extends ExpressionTest {
     assertFalse(IntervalQualifier.SECOND.hasMinutes());
     assertTrue(IntervalQualifier.SECOND.hasSeconds());
   }
+  
+  @Test
+  public void intervalAbs() throws Exception {
+    assertEquals(Interval.of(4, 6), Interval.valueOf(" 4 years 6 months").negate().abs());  
+  }
+  
 }
 

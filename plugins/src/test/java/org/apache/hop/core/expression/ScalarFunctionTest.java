@@ -1264,6 +1264,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("Abs(NULL_NUMBER)");
     evalNull("Abs(NULL_BIGNUMBER)");
 
+    // Interval
+    evalEquals("Abs(INTERVAL 5 YEARS)", Interval.of(5)).returnType(IntervalType.INTERVAL);
+    evalEquals("Abs(INTERVAL -5 YEARS)", Interval.of(5)).returnType(IntervalType.INTERVAL);
+    evalNull("Abs(NULL_STRINg::INTERVAL)").returnType(IntervalType.INTERVAL);    
+    
     evalFails("Abs()");
     evalFails("Abs(");
     evalFails("Abs(FIELD_STRING)");

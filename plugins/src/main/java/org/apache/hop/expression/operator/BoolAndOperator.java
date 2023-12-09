@@ -174,11 +174,11 @@ public class BoolAndOperator extends Operator {
   public Object eval(final IExpression[] operands) {
     Boolean left = operands[0].getValue(Boolean.class);
     if (left == Boolean.FALSE) {
-      return left;
+      return Boolean.FALSE;
     }
     Boolean right = operands[1].getValue(Boolean.class);
     if (right == Boolean.FALSE) {
-      return right;
+      return Boolean.FALSE;
     }
 
     if (left == null || right == null) {

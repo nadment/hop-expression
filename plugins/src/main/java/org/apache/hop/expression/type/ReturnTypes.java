@@ -171,10 +171,10 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ABS_FUNCTION = call -> {
     Type type = call.getOperand(0).getType();
 
-    if (type.is(TypeId.INTEGER))
+    if (type.is(TypeId.INTEGER) || type.is(TypeId.INTERVAL))
       return type;
 
-    // By default Number for coercion
+    // By default coerce to Number
     return NumberType.NUMBER;
   };
 

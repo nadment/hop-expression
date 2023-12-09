@@ -579,6 +579,13 @@ public class Interval implements Serializable, Comparable<Interval> {
   }
 
   /**
+   * Abs the interval
+   */
+  public final Interval abs() {
+    return new Interval(months, seconds, nanos, false);
+  }
+  
+  /**
    * Get the absolute years part of the interval.
    */
   public final long getYears() {
