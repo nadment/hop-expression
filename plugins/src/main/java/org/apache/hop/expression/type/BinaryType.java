@@ -37,7 +37,7 @@ public final class BinaryType extends Type {
   }
   
   public static BinaryType of(int precision, boolean nullable) {
-    if ( precision==PRECISION_NOT_SPECIFIED && nullable==true)
+    if ( precision==PRECISION_NOT_SPECIFIED && nullable)
       return BINARY;  
     return new BinaryType(precision, nullable);
   }

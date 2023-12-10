@@ -22,16 +22,13 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Random;
-
 
 /**
  * Return a random number between 0 (inclusive) and 1 (exclusive).
@@ -44,10 +41,10 @@ public class RandomFunction extends Function {
     if (!(obj instanceof RandomFunction)) {
       return false;
     }
-    
-    if ( random==null)
-      return super.equals(obj);   
-    
+
+    if (random == null)
+      return super.equals(obj);
+
     RandomFunction other = (RandomFunction) obj;
     return super.equals(other) && this.random.equals(other.random);
   }
@@ -87,19 +84,17 @@ public class RandomFunction extends Function {
       return call;
     }
 
-    Random random = new Random();
+    RandomFunction function = new RandomFunction(new Random());
 
-    if (call.getOperandCount() == 0) {
-      return new Call(new RandomFunction(random));
+    if (call.getOperandCount() == 1) {
+      try {
+        Long seed = call.getOperand(0).getValue(Long.class);
+        function.random.setSeed(seed);
+      } catch (Exception e) {
+        throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
+      }
     }
 
-    try {
-      Long seed = call.getOperand(0).getValue(Long.class);
-      random.setSeed(seed);
-    } catch (Exception e) {
-      throw new ExpressionException(ErrorCode.INVALID_NUMBER, call.getOperand(0));
-    }
-
-    return new Call(new RandomFunction(random), call.getOperand(0));
+    return new Call(function, call.getOperands());
   }
 }

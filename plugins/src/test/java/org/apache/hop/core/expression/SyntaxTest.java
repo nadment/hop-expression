@@ -107,6 +107,16 @@ public class SyntaxTest extends ExpressionTest {
   }
 
   @Test
+  public void symmetrical() throws Exception {
+    assertTrue(Operators.ADD_NUMERIC.isSymmetrical());
+    assertTrue(Operators.BOOLAND.isSymmetrical());
+    assertTrue(Operators.BOOLOR.isSymmetrical());
+    assertTrue(Operators.EQUAL.isSymmetrical());
+    assertTrue(Operators.NOT_EQUAL.isSymmetrical());
+    assertFalse(Operators.DIVIDE.isSymmetrical());
+  }
+  
+  @Test
   public void as() throws Exception {
     assertTrue(optimize("ABS(FIELD_INTEGER)").asCall() instanceof Call);
     assertTrue(optimize("FIELD_INTEGER").asIdentifier() instanceof Identifier);
@@ -217,6 +227,4 @@ public class SyntaxTest extends ExpressionTest {
     
     assertThrows(ExpressionException.class, () -> eval("0xABCDEFg"));
   }
-
-
 }

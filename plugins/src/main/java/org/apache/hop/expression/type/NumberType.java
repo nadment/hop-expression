@@ -70,7 +70,7 @@ public final class NumberType extends Type {
       scale = 0;
 
     if (precision == TypeId.NUMBER.getMaxPrecision() && scale == TypeId.NUMBER.getDefaultScale()
-        && nullable == true)
+        && nullable)
       return NUMBER;
 
     return new NumberType(precision, scale, nullable);

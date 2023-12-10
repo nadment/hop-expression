@@ -106,11 +106,6 @@ public enum TypeId {
    * The highest possible scale.
    */
   private int maxScale;
-
-  /**
-   * The default scale.
-   */
-  public int defaultScale;
   
   private final TypeFamily family;
 

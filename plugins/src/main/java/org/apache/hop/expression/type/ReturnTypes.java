@@ -251,18 +251,11 @@ public final class ReturnTypes {
     Call child = call.getOperand(0).asCall();
     return child.inferReturnType().getType();
   };
-  public static final IReturnTypeInference ADDITIVE_OPERATOR = call -> {
-    return deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());
-  };
-  public static final IReturnTypeInference MULTIPLY_OPERATOR = call -> {
-    return deriveMultiplyType(call.getOperand(0).getType(), call.getOperand(1).getType());
-  };
-  public static final IReturnTypeInference DIVIDE_OPERATOR = call -> {
-    return deriveDivideType(call.getOperand(0).getType(), call.getOperand(1).getType());
-  };
-  public static final IReturnTypeInference MOD_OPERATOR = call -> {
-    return deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
-  };
+  public static final IReturnTypeInference ADDITIVE_OPERATOR = call -> deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());  
+  public static final IReturnTypeInference MULTIPLY_OPERATOR = call -> deriveMultiplyType(call.getOperand(0).getType(), call.getOperand(1).getType());
+  public static final IReturnTypeInference DIVIDE_OPERATOR = call -> deriveDivideType(call.getOperand(0).getType(), call.getOperand(1).getType());
+  public static final IReturnTypeInference MOD_OPERATOR = call -> deriveModType(call.getOperand(0).getType(), call.getOperand(1).getType());
+
   public static final IReturnTypeInference CASE_OPERATOR = new CaseOperatorReturnTypeInference();
 
   /**
