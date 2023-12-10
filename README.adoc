@@ -88,9 +88,9 @@ Use @FunctionPlugin annotation to create custom function in your plugin.
 public class Levenshtein extends Function {
 
   public Levenshtein() {
-    super("LEVENSHTEIN", true, ReturnTypes.INTEGER, OperandTypes.STRING_STRING, OperatorCategory.STRING, "/docs/levenshtein.html");
+    super("LEVENSHTEIN", true, ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING_STRING, OperatorCategory.STRING, "/docs/levenshtein.html");
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) throws Exception {
     String str1 = operands[0].getValue(String.class);
