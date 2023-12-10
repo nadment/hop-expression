@@ -473,8 +473,8 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("TRUE IS NULL");
     optimizeFalse("1 IS NULL");
     optimizeTrue("1 IS NOT NULL");
-    optimizeFalse("'a' IS NULL");
-    optimizeTrue("'a' IS NOT NULL");
+    optimizeFalse("Random() IS NULL");
+    optimizeTrue("Random() IS NOT NULL");
     
     // If operator return type is not nullable 
     optimizeTrue("UUID() IS NOT NULL");

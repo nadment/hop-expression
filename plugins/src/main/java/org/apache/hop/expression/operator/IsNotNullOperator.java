@@ -47,7 +47,7 @@ public class IsNotNullOperator extends Operator {
       return new Call(call.getOperator(), operand.asCall().getOperands());
     }
 
-    // If operand is not nullable 
+    // If the operand is not nullable, always true
     if (!operand.getType().isNullable()) {
       return Literal.TRUE;
     }

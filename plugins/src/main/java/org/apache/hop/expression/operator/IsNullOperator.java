@@ -16,9 +16,13 @@
  */
 package org.apache.hop.expression.operator;
 
-import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -33,6 +37,18 @@ public class IsNullOperator extends Operator {
         "/docs/is-null.html");
   }
 
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    IExpression operand = call.getOperand(0);
+
+    // If the operand is not nullable, always false
+    if (!operand.getType().isNullable()) {
+      return Literal.FALSE;
+    }
+    
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Object value = operands[0].getValue();
