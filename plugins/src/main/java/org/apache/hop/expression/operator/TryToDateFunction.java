@@ -16,8 +16,16 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionContext;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.DateTimeException;
 
@@ -25,19 +33,53 @@ import java.time.DateTimeException;
  * Converts a string expression to a date value.
  */
 @FunctionPlugin
-public class TryToDateFunction extends ToDateFunction {
+public class TryToDateFunction extends Function {
 
+
+  private final DateTimeFormat format;
+  
   public TryToDateFunction() {
-    super("TRY_TO_DATE");
+    this(null);
   }
+  
+  protected TryToDateFunction(DateTimeFormat format) {
+    super("TRY_TO_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperatorCategory.CONVERSION, "/docs/to_date.html");
+    
+    this.format = format;
+  }
+  
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
 
+    // Already compiled
+    if (format != null) {
+      return call;
+    }
+    
+    String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
+
+    // With specified format
+    if (call.getOperandCount() == 2) {
+      pattern = call.getOperand(1).getValue(String.class);
+    }
+
+    int twoDigitYearStart = Integer
+        .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
+
+    // Compile format to check it
+    DateTimeFormat fmt = DateTimeFormat.of(pattern);
+    fmt.setTwoDigitYearStart(twoDigitYearStart);
+
+    return new Call(new TryToDateFunction(fmt), call.getOperands());
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
-
-    DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
     try {
       return format.parse(value);
     } catch (DateTimeException e) {

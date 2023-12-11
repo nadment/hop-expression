@@ -31,11 +31,7 @@ import org.apache.hop.expression.type.ReturnTypes;
 public class ToJsonFunction extends Function {
 
   public ToJsonFunction() {
-    this("TO_JSON");
-  }
-
-  protected ToJsonFunction(String id) {
-    super(id, ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION, "/docs/to_json.html");
+    super("TO_JSON", ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION, "/docs/to_json.html");
   }
 
   @Override

@@ -17,14 +17,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,24 +36,54 @@ import java.util.Base64;
  */
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
-  public ToBinaryFunction() {
-    this("TO_BINARY");
+  
+  private static final ToBinaryFunction ToBinaryHexFunction = new ToBinaryHexFunction();
+  private static final ToBinaryFunction ToBinaryUtf8Function = new ToBinaryUtf8Function();
+  private static final ToBinaryFunction ToBinaryBase64Function = new ToBinaryBase64Function();
+  
+  private static final class ToBinaryHexFunction extends ToBinaryFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final String value = operands[0].getValue(String.class);
+      if (value == null) {
+        return null;
+      }
+      return Hex.decode(value);      
+    }
   }
-
-  protected ToBinaryFunction(String id) {
-    super(id, ReturnTypes.BINARY_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+  
+  private static final class ToBinaryUtf8Function extends ToBinaryFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final String value = operands[0].getValue(String.class);
+      if (value == null) {
+        return null;
+      }
+      return value.getBytes(StandardCharsets.UTF_8);  
+    }
+  }
+  
+  private static final class ToBinaryBase64Function extends ToBinaryFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      final String value = operands[0].getValue(String.class);
+      if (value == null) {
+        return null;
+      }
+      return Base64.getDecoder().decode(value); 
+    }
+  }
+  
+  public ToBinaryFunction() {
+    super("TO_BINARY", ReturnTypes.BINARY_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
         OperatorCategory.CONVERSION, "/docs/to_binary.html");
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-    String format = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT);
-
     // Default format
-    if (format == null) {
-      format = "HEX";
-    }
+    String format = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT, "HEX");
 
     // With specified format
     if (call.getOperandCount() == 2) {
@@ -63,34 +92,17 @@ public class ToBinaryFunction extends Function {
 
     // Normalize pattern
     format = format.toUpperCase();
-    if (format.equals("UTF-8"))
-      format = "UTF8";
-
-    if (format.equals("HEX") || format.equals("BASE64") || format.equals("UTF8")) {
-      return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
-    }
-
-    throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
-  }
-
-  @Override
-  public Object eval(final IExpression[] operands) {
-    final String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
-
-    final String format = operands[1].getValue(String.class);
 
     if (format.equals("HEX")) {
-      return Hex.decode(value);
-    }
-    if (format.equals("UTF8")) {
-      return value.getBytes(StandardCharsets.UTF_8);
+      return new Call(ToBinaryHexFunction, call.getOperands());
     }
     if (format.equals("BASE64")) {
-      return Base64.getDecoder().decode(value);
+      return new Call(ToBinaryBase64Function, call.getOperands());
     }
-
+    if (format.equals("UTF8") || format.equals("UTF-8")) {
+      return new Call(ToBinaryUtf8Function, call.getOperands());
+    }
+    
     throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
   }
 }

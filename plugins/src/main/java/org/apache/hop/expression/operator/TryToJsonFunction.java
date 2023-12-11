@@ -16,29 +16,30 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Converts a string expression to a JSON value.
  */
 @FunctionPlugin
-public class TryToJsonFunction extends ToJsonFunction {
+public class TryToJsonFunction extends Function {
 
   public TryToJsonFunction() {
-    super("TRY_TO_JSON");
+    super("TRY_TO_JSON", ReturnTypes.JSON_NULLABLE, OperandTypes.STRING, OperatorCategory.CONVERSION, "/docs/to_json.html");
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
-
     try {
-      return JsonType.JSON.cast(value, null);
+      return JsonType.convertStringToJson(value);
     } catch (ConversionException e) {
       return null;
     }

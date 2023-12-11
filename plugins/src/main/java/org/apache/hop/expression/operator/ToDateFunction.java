@@ -17,17 +17,15 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
-import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.util.DateTimeFormat;
 
 /**
@@ -36,38 +34,43 @@ import org.apache.hop.expression.util.DateTimeFormat;
 @FunctionPlugin
 public class ToDateFunction extends Function {
 
+  private final DateTimeFormat format;
+  
   public ToDateFunction() {
-    this("TO_DATE");
+    this(null);
   }
-
-  protected ToDateFunction(String id) {
-    super(id, ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+  
+  protected ToDateFunction(DateTimeFormat format) {
+    super("TO_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
         OperatorCategory.CONVERSION, "/docs/to_date.html");
+    
+    this.format = format;
   }
 
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
+
+    // Already compiled
+    if (format != null) {
+      return call;
+    }
+    
     String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
 
     // With specified format
     if (call.getOperandCount() == 2) {
-      Object value = call.getOperand(1).getValue();
-      if (value instanceof DateTimeFormat) {
-        // Already compiled
-        return call;
-      }
-      pattern = StringType.coerce(value);
+      pattern = call.getOperand(1).getValue(String.class);
     }
 
     int twoDigitYearStart = Integer
         .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
     // Compile format to check it
-    DateTimeFormat format = DateTimeFormat.of(pattern);
-    format.setTwoDigitYearStart(twoDigitYearStart);
+    DateTimeFormat fmt = DateTimeFormat.of(pattern);
+    fmt.setTwoDigitYearStart(twoDigitYearStart);
 
-    return new Call(call.getOperator(), call.getOperand(0), Literal.of(format));
+    return new Call(new ToDateFunction(fmt), call.getOperands());
   }
 
   @Override
@@ -75,9 +78,6 @@ public class ToDateFunction extends Function {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
-
-    DateTimeFormat format = operands[1].getValue(DateTimeFormat.class);
-
     return format.parse(value);
   }
 }

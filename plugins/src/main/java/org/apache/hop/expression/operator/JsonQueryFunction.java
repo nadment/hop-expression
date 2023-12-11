@@ -20,6 +20,7 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -46,7 +47,7 @@ public class JsonQueryFunction extends Function {
 
   public JsonQueryFunction() {
     super("JSON_QUERY", ReturnTypes.JSON_NULLABLE, OperandTypes.JSON.or(OperandTypes.JSON_STRING),
-        "i18n::Operator.Category.Json", "/docs/json_query.html");
+        OperatorCategory.JSON, "/docs/json_query.html");
   }
 
   @Override

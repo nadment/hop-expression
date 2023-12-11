@@ -16,19 +16,26 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.type.BooleanType;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 
 /**
  * Converts a string or numeric expression to a boolean value.
  */
 @FunctionPlugin
-public class TryToBooleanFunction extends ToBooleanFunction {
-
+public class TryToBooleanFunction extends Function {
+  
+  public static final TryToBooleanFunction INSTANCE = new TryToBooleanFunction();
+  
   public TryToBooleanFunction() {
-    super("TRY_TO_BOOLEAN");
+    super("TRY_TO_BOOLEAN", ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING.or(OperandTypes.NUMERIC),
+        OperatorCategory.CONVERSION, "/docs/to_boolean.html");
   }
 
   @Override

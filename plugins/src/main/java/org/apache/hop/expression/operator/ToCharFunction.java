@@ -43,11 +43,11 @@ import java.util.Base64;
  */
 @FunctionPlugin
 public class ToCharFunction extends Function {
-
-  private static final ToCharFunction ToCharDateFunction = new ToCharDate();
-  private static final ToCharFunction ToCharBinaryFunction = new ToCharBinary();
-  private static final ToCharFunction ToCharNumberFunction = new ToCharNumber();
-
+  
+  private static final ToCharFunction ToCharBinaryHexFunction = new ToCharBinaryHex();
+  private static final ToCharFunction ToCharBinaryBase64Function = new ToCharBinaryBase64();
+  private static final ToCharFunction ToCharBinaryUtf8Function = new ToCharBinaryUtf8();
+  
   public ToCharFunction() {
     super("TO_CHAR", ReturnTypes.STRING_NULLABLE,
         OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_TEXT).or(OperandTypes.TEMPORAL)
@@ -73,98 +73,123 @@ public class ToCharFunction extends Function {
       if (pattern == null) {
         pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
       }
-
-      return new Call(ToCharDateFunction, call.getOperand(0), Literal.of(pattern));
+      
+      // Compile format to check it
+      DateTimeFormat format = DateTimeFormat.of(pattern);
+      return new Call(new ToCharDateFunction(format), call.getOperands());
     }
 
     if (type.isFamily(TypeFamily.NUMERIC)) {
       if (pattern == null) {
         pattern = "TM";
       }
-
-      return new Call(ToCharNumberFunction, call.getOperand(0), Literal.of(pattern));
+      
+      // Compile format to check it
+      NumberFormat format = NumberFormat.of(pattern);
+      return new Call(new ToCharNumberFunction(format), call.getOperand(0), Literal.of(pattern));
     }
 
     if (type.isFamily(TypeFamily.BINARY)) {
       if (pattern == null) {
-        pattern = "HEX";
+        pattern = context.getVariable(ExpressionContext.EXPRESSION_BINARY_FORMAT, "HEX");
       }
 
       // Normalize pattern
       pattern = pattern.toUpperCase();
-      if (pattern.equals("UTF-8")) {
-        pattern = "UTF8";
-      }
 
-      if (!(pattern.equals("HEX") || pattern.equals("BASE64") || pattern.equals("UTF8"))) {
-        throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
+      if (pattern.equals("HEX")) {
+        return new Call(ToCharBinaryHexFunction, call.getOperands());
       }
-
-      return new Call(ToCharBinaryFunction, call.getOperand(0), Literal.of(pattern));
+      if (pattern.equals("BASE64")) {
+        return new Call(ToCharBinaryBase64Function, call.getOperands());
+      }
+      if (pattern.equals("UTF8") || pattern.equals("UTF-8")) {
+        return new Call(ToCharBinaryUtf8Function, call.getOperands());
+      }
+      
+      throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
     }
 
     return call;
   }
 
-
   /**
    * Converts a date expression to a string value.
    */
-  private static final class ToCharDate extends ToCharFunction {
+  private static final class ToCharDateFunction extends ToCharFunction {
+
+    private final DateTimeFormat formatter;
+    
+    public ToCharDateFunction(DateTimeFormat formatter) {
+      super();
+      this.formatter = formatter;
+    }
+    
     @Override
     public Object eval(final IExpression[] operands) {
       ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
       if (value == null) {
         return null;
       }
-
-      String pattern = operands[1].getValue(String.class);
-
-      return DateTimeFormat.of(pattern).format(value);
+      return formatter.format(value);
     }
   }
 
   /**
    * Converts a numeric expression to a string value.
    */
-  private static final class ToCharNumber extends ToCharFunction {
+  private static final class ToCharNumberFunction extends ToCharFunction {
 
+    private final NumberFormat formatter;
+    
+    public ToCharNumberFunction(NumberFormat formatter) {
+      super();
+      this.formatter = formatter;
+    }
+    
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
       if (value == null) {
         return null;
       }
-
-      String pattern = operands[1].getValue(String.class);
-
-      return NumberFormat.of(pattern).format(value);
+      return formatter.format(value);
     }
   }
 
   /**
    * Converts a binary expression to a string value.
    */
-  private static final class ToCharBinary extends ToCharFunction {
+  private static final class ToCharBinaryHex extends ToCharFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
       if (bytes == null) {
         return null;
       }
+      return Hex.encodeToString(bytes);
+    }
+  }
 
-      String pattern = operands[1].getValue(String.class);
-      if (pattern.equals("BASE64")) {
-        return Base64.getEncoder().encodeToString(bytes);
+  private static final class ToCharBinaryUtf8 extends ToCharFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] bytes = operands[0].getValue(byte[].class);
+      if (bytes == null) {
+        return null;
       }
-      if (pattern.equals("HEX")) {
-        return Hex.encodeToString(bytes);
+      return new String(bytes, StandardCharsets.UTF_8);
+    }
+  }
+  
+  private static final class ToCharBinaryBase64 extends ToCharFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      byte[] bytes = operands[0].getValue(byte[].class);
+      if (bytes == null) {
+        return null;
       }
-      if (pattern.equals("UTF8")) {
-        return new String(bytes, StandardCharsets.UTF_8);
-      }
-
-      throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, pattern);
+      return Base64.getEncoder().encodeToString(bytes);
     }
   }
 }

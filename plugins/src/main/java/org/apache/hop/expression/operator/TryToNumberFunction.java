@@ -17,29 +17,64 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.exception.ParseNumberException;
+import org.apache.hop.expression.type.OperandTypes;
+import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.NumberFormat;
 
 /**
- * Converts a string expression to a number value.
+ * Converts a string expression to a number value with optional format.
  */
 @FunctionPlugin
-public class TryToNumberFunction extends ToNumberFunction {
-
+public class TryToNumberFunction extends Function {
+  
+  private final NumberFormat format;
+  
   public TryToNumberFunction() {
-    super("TRY_TO_NUMBER");
+    this(null);
   }
 
+  protected TryToNumberFunction(NumberFormat format) {
+    super("TRY_TO_NUMBER", ReturnTypes.NUMBER_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
+        OperatorCategory.CONVERSION, "/docs/to_number.html");
+    
+    this.format = format;
+  }
+  
+  @Override
+  public IExpression compile(final IExpressionContext context, final Call call)
+      throws ExpressionException {
+
+    // Already compiled
+    if (format != null) {
+      return call;
+    }
+    
+    String pattern = "TM";
+    // With specified format
+    if (call.getOperandCount() == 2) {
+      pattern = call.getOperand(1).getValue(String.class);
+    }
+
+    // Compile format to check it
+    NumberFormat fmt = NumberFormat.of(pattern);
+
+    return new Call(new TryToNumberFunction(fmt), call.getOperands());
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
     if (value == null)
       return null;
-
-    NumberFormat format = operands[1].getValue(NumberFormat.class);
-    
+  
     try {
       return format.parse(value);
     } catch (ParseNumberException e) {

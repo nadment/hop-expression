@@ -36,26 +36,8 @@ import java.util.Random;
 @FunctionPlugin(names = "RAND")
 public class RandomFunction extends Function {
 
-  @Override
-  public boolean equals(Object obj) {
-    if (!(obj instanceof RandomFunction)) {
-      return false;
-    }
-
-    if (random == null)
-      return super.equals(obj);
-
-    RandomFunction other = (RandomFunction) obj;
-    return super.equals(other) && this.random.equals(other.random);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId(), getName(), random);
-  }
-
   private final Random random;
-
+  
   public RandomFunction() {
     this(null);
   }
@@ -96,5 +78,23 @@ public class RandomFunction extends Function {
     }
 
     return new Call(function, call.getOperands());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof RandomFunction)) {
+      return false;
+    }
+
+    if (random == null)
+      return super.equals(obj);
+
+    RandomFunction other = (RandomFunction) obj;
+    return super.equals(other) && this.random.equals(other.random);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getId(), getName(), random);
   }
 }
