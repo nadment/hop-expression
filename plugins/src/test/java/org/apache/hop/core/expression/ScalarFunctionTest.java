@@ -1613,7 +1613,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Numeric
     evalEquals("Greatest(5,2,9,4)", 9L).returnType(IntegerType.INTEGER);
-    // TODO: evalEquals("Greatest(-5,2.1,9,4)", 9L).returnType(NumberType.NUMBER);
+    evalEquals("Greatest(-5,2.1,9,4)", 9L).returnType(NumberType.NUMBER);
     evalEquals("Greatest(123,FIELD_INTEGER,789)", 789L).returnType(IntegerType.INTEGER); 
     evalEquals("Greatest(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", 123456L).returnType(NumberType.NUMBER);
     

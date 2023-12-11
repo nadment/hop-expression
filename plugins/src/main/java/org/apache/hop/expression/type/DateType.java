@@ -92,7 +92,7 @@ public final class DateType extends Type {
   }
 
   /**
-   * Coerce value to data type TIMESTAMP.
+   * Coerce value to data type {@link DateType}.
    * 
    * @param value the value to coerce
    * @return ZonedDateTime

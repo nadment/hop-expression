@@ -160,7 +160,7 @@ public final class StringType extends Type {
   }
 
 
-  protected boolean checkPrecision(String result) {
+  protected boolean checkPrecision(final String result) {
     if (result == null)
       return true;
 

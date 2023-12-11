@@ -1613,11 +1613,10 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CASE NULL_INTEGER WHEN 1 THEN 2 ELSE 0 END", 0L);
     evalEquals("CASE NULL_NUMBER WHEN 0/0 THEN 0/0 ELSE 1 END", 1L);
     evalEquals("CASE NULL_INTEGER WHEN 0 / 0 THEN 0 / 0 ELSE 1 END", 1L);
-
-    // TODO: Enabled tests
-    // evalEquals("CASE 1 WHEN 2 THEN 0 / 0 ELSE 3 END", 3L);
-    // evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2L);
-    // evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2L);
+ 
+    evalEquals("CASE 1 WHEN 2 THEN 0 / 0 ELSE 3 END", 3L);
+    evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2L);
+    evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2L);
 
     // Comma-separated form for multi value
     evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
