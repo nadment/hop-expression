@@ -19,13 +19,13 @@ package org.apache.hop.expression.operator;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -68,13 +68,16 @@ public class BoolOrOperator extends Operator {
       }
     }
 
-    // Get all chained predicates sorted  
+    // Get all chained predicates sorted
     // Remove duplicate predicates
     // x OR x → x
     // x OR y OR x → x OR y
     PriorityQueue<IExpression> conditions = new PriorityQueue<>(new ExpressionComparator());
     conditions.addAll(this.getChainedOperands(call, false));
-    
+
+    final List<IExpression> isNullTerms = new ArrayList<>();
+    final List<IExpression> isNotNullTerms = new ArrayList<>();
+    final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> lessThanTerms = new HashMap<>();
@@ -83,22 +86,31 @@ public class BoolOrOperator extends Operator {
         new ArrayListValuedHashMap<>();
 
     for (IExpression condition : conditions) {
-      
+
       // TRUE as soon as any predicate is TRUE
-      if ( condition==Literal.TRUE ) {
+      if (condition == Literal.TRUE) {
         return Literal.TRUE;
       }
-      
+
       if (condition.is(Kind.CALL)) {
         Call predicate = condition.asCall();
+
+        if (predicate.is(Operators.IS_NULL)) {
+          isNullTerms.add(predicate.getOperand(0));
+        }
+        if (predicate.is(Operators.IS_NOT_NULL)) {
+          isNotNullTerms.add(predicate.getOperand(0));
+        }
         if (predicate.is(Operators.EQUAL)) {
           equalTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
 
           if (predicate.getOperand(0).is(Kind.LITERAL)) {
-            equalsLiterals.put(predicate.getOperand(1), Pair.of(predicate, predicate.getOperand(0).asLiteral()));
+            equalsLiterals.put(predicate.getOperand(1),
+                Pair.of(predicate, predicate.getOperand(0).asLiteral()));
           }
           if (predicate.getOperand(1).is(Kind.LITERAL)) {
-            equalsLiterals.put(predicate.getOperand(0), Pair.of(predicate, predicate.getOperand(1).asLiteral()));
+            equalsLiterals.put(predicate.getOperand(0),
+                Pair.of(predicate, predicate.getOperand(1).asLiteral()));
           }
         }
         if (predicate.is(Operators.IN) && predicate.getOperand(1).isConstant()) {
@@ -113,7 +125,14 @@ public class BoolOrOperator extends Operator {
           lessThanTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
         }
         if (predicate.is(Operators.GREATER_THAN)) {
-          greaterThanTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
+          greaterThanTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)),
+              predicate);
+        }
+        if (Operators.is(predicate, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
+            Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN,
+            Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
+          strongTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
+          strongTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
         }
       }
     }
@@ -170,7 +189,12 @@ public class BoolOrOperator extends Operator {
       }
     }
 
-    // X <> A OR X <> B → X IS NOT NULL or NULL
+    // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
+    for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {
+      if ( isNotNullTerms.contains(pair.getLeft()) || isNotNullTerms.contains(pair.getRight()) )  {
+        conditions.remove(strongTerms.get(pair));
+      }
+    }
 
     // Rebuild disjunctions if more than 1 condition
     if (conditions.size() == 1) {
@@ -180,7 +204,7 @@ public class BoolOrOperator extends Operator {
     while (!conditions.isEmpty()) {
       expression = new Call(Operators.BOOLOR, expression, conditions.poll()).inferReturnType();
     }
-    
+
     return expression;
   }
 

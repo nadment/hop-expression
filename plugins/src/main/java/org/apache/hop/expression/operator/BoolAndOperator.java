@@ -82,6 +82,7 @@ public class BoolAndOperator extends Operator {
       
       if (condition.is(Kind.CALL)) {
         Call predicate = condition.asCall();
+        
         if (predicate.is(Operators.IS_NULL)) {
           isNullTerms.add(predicate.getOperand(0));
         }
@@ -96,21 +97,6 @@ public class BoolAndOperator extends Operator {
             equalsLiterals.put(predicate.getOperand(0), Pair.of(predicate, predicate.getOperand(1).asLiteral()));
           }
         }
-
-        // if (call.is(Operators.LESS_THAN) && call.getOperand(0).isConstant() ) {
-        //
-        // this.processRange();
-        //
-        // Object value = call.getOperand(0).getValue();
-        // if ( value instanceof Comparable ) {
-        // Comparable<?> c = (Comparable<?>) value;
-        // Range<?> range = ranges.get(call);
-        //
-        // if ( range==null) {
-        // ranges.put(call, Range.lessThan(c));
-        // }
-        // }
-
         if (Operators.is(predicate, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
             Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN,
             Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
@@ -142,7 +128,7 @@ public class BoolAndOperator extends Operator {
       return Literal.FALSE;
     }
 
-    // Remove not necessary IS NOT NULL expressions IS NOT NULL(x) AND x<5 → x<5
+    // Simplify IS NOT NULL(x) AND x<5 → x<5
     for (IExpression operand : isNotNullTerms) {
       if (strongTerms.contains(operand)) {
         Iterator<IExpression> iterator = conditions.iterator();
