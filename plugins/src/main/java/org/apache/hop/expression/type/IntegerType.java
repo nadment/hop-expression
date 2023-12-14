@@ -46,7 +46,7 @@ public final class IntegerType extends Type {
     
     if ( precision==TypeId.INTEGER.getMaxPrecision() && nullable==true)
       return INTEGER;
-    
+
     return new IntegerType(precision, nullable);
   }
 

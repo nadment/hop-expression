@@ -40,8 +40,8 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
@@ -403,7 +403,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-    evalNull("TRY_TO_NUMBER('54Z67z12', '999999D99')");
+    optimize("FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

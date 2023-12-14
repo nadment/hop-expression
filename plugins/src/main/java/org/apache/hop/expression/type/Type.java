@@ -43,7 +43,6 @@ public abstract class Type {
     TypeId id = getId();
     StringBuilder builder = new StringBuilder();
     builder.append(id.name());
-    //if (precision > 0 && (precision != id.getMaxPrecision() || scale !=id.getDefaultScale())) {
     if (precision != id.getMaxPrecision() || ( scale>0 && scale!=id.getDefaultScale() ) ) {
       builder.append('(');
       builder.append(precision);
@@ -55,12 +54,16 @@ public abstract class Type {
     }
     this.signature = builder.toString();
 
-    // Check precision and scale range
+    // Check precision range
     if (id.supportsPrecision() && ( precision < id.getMinPrecision() ||  precision > id.getMaxPrecision()) ) {
-      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature));
+      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature,id.getMinPrecision(),id.getMaxPrecision()));
+    }
+    // Check scale range
+    if (id.supportsScale() && ( scale < id.getMinScale() ||  scale > id.getMaxScale()) ) {
+      throw new IllegalArgumentException(ErrorCode.SCALE_OUT_OF_RANGE.message(signature,id.getMinScale(),id.getMaxScale()));
     }
     if (scale>precision ) {
-      throw new IllegalArgumentException(ErrorCode.SCALE_OUT_OF_RANGE.message(signature));
+      throw new IllegalArgumentException(ErrorCode.SCALE_GREATER_THAN_PRECISION.message(signature));
     }
   }
   
@@ -229,28 +232,5 @@ public abstract class Type {
 
     return UnknownType.UNKNOWN;
   }
-  
-  
-  /** Return the default {@link Type} that belongs to this {@link TypeId}. */
-//  public Type getDefaultType(TypeId id) {
-//    switch (id) {
-//      case BOOLEAN:
-//        return BooleanType.BOOLEAN;
-//      case BINARY:
-//        return BinaryType.BINARY;
-//      case STRING:
-//        return StringType.STRING;
-//      case TEMPORAL:
-//        return DateType.DATE;
-//      case INTERVAL:
-//        return IntervalType.INTERVAL;
-//      case NUMERIC:
-//        return NumberType.NUMBER;
-//      case JSON:
-//        return JsonType.JSON;
-//      default:
-//        return null;
-//    }
-//  }
 }
 

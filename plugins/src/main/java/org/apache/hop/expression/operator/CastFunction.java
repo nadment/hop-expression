@@ -23,11 +23,12 @@ import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 
 /**
@@ -69,32 +70,16 @@ public class CastFunction extends Function {
   public IExpression compile(final IExpressionContext context, Call call)
       throws ExpressionException {
 
+    // Cast null value
+    if (call.getOperand(0).isNull()) {
+      return new Literal(null, call.getOperand(1).getValue(Type.class));
+    }
+
     // Remove lossless cast
-    Type source = call.getOperand(0).getType();
-    Type target = call.getOperand(1).getValue(Type.class);
-
-    // If same type identifier
-    TypeId id = target.getId();
-    if (source.is(id)) {
-      if (source.getPrecision() == target.getPrecision()
-          && source.getScale() == target.getScale()) {
-        return call.getOperand(0);
-      }
-
-      // // If source precision and scale are specified and less or equal than target
-      // if ( name.allowsScale() && source.getPrecision()!=Type.PRECISION_NOT_SPECIFIED &&
-      // source.getPrecision()<=target.getPrecision() && source.getScale()!=Type.SCALE_NOT_SPECIFIED
-      // && source.getScale()<=target.getScale() ) {
-      // return call.getOperand(0);
-      // }
-      // // If source precision is specified and less or equal than target
-      // else if ( name.allowsPrecNoScale() && source.getPrecision()!=Type.PRECISION_NOT_SPECIFIED
-      // && source.getPrecision()<=target.getPrecision()) {
-      // return call.getOperand(0);
-      // }
-      // else if ( name.allowsNoPrecNoScale() ) {
-      // return call.getOperand(0);
-      // }
+    Type fromType = call.getOperand(0).getType();
+    Type toType = call.getOperand(1).getValue(Type.class);
+    if (Types.isLosslessCast(fromType, toType)) {
+      return call.getOperand(0);
     }
 
     return call;

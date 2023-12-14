@@ -24,6 +24,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
@@ -201,8 +202,8 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("'te''st'", "te'st").returnType(StringType.of(5));
     evalEquals("'te''''st'", "te''st");
 
-    // Empty string
-    evalEquals("''", "").returnType(StringType.of(0));;
+    // Minimum precision for empty string is 1 
+    evalEquals("''", "").returnType(StringType.of(1));;
 
     optimize("'Test ''Bla'' string'");
   }
@@ -256,11 +257,13 @@ public class LiteralTest extends ExpressionTest {
   @Test
   public void Binary() throws Exception {
 
-    evalEquals("BINARY ''", new byte[] {});
     evalEquals("BINARY '1F'", new byte[] {0x1F});
     evalEquals("BINARY '1234567812345678'",
         new byte[] {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78});
 
+    // Minimum precision for empty binary is 1 
+    evalEquals("BINARY ''", new byte[] {}).returnType(BinaryType.of(1));
+    
     evalFails("BINARY '0Z'");
 
 

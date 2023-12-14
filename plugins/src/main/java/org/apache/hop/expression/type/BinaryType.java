@@ -29,7 +29,10 @@ public final class BinaryType extends Type {
   public static final BinaryType BINARY = new BinaryType(TypeId.BINARY.getMaxPrecision(), true);
 
   public static BinaryType from(final byte[] value) {
-    return new BinaryType(value.length, false);
+    int precision = value.length;
+    // Empty binary array should return 1
+    if ( precision<1 ) precision = 1;
+    return new BinaryType(precision, false);
   }
 
   public static BinaryType of(int precision) {

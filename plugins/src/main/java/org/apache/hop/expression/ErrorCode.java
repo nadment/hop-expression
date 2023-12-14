@@ -72,10 +72,12 @@ public enum ErrorCode {
   ARITHMETIC_OVERFLOW,
   /** Argument {0} is out of range with value ''{1}'' */
   ARGUMENT_OUT_OF_RANGE,
-  /** Precision out of range ''{0}'' */
+  /** Precision of {0} must be within the range {1} to {2} */
   PRECISION_OUT_OF_RANGE,
-  /** Scale out of range ''{0}'' */
+  /** The scale of {0} must be within the range {1} to {2} */
   SCALE_OUT_OF_RANGE,
+  /** The scale of {0} must be less than or equal to the precision */
+  SCALE_GREATER_THAN_PRECISION,  
   /** Invalid Boolean ''{0}'' */
   INVALID_BOOLEAN,
   /** Date ''{0}'' is not recognized */

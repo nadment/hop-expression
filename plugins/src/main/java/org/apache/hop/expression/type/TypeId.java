@@ -40,13 +40,13 @@ public enum TypeId {
   ANY(TypeFamily.ANY, false, false, -1, -1, -1, -1, Object.class),
 
   /** Unlimited length text */
-  STRING(TypeFamily.STRING, true, false, 16_777_216, 0, 0, 0, String.class),
+  STRING(TypeFamily.STRING, true, false, 16_777_216, 1, 0, 0, String.class),
 
   /** Boolean (true or false) */
   BOOLEAN(TypeFamily.BOOLEAN, false, false, 1, 0, 0, 0, Boolean.class),
 
   /** Signed integer (64-bit) */
-  INTEGER(TypeFamily.NUMERIC, true, false, 19, 0, 0, 0, Long.class),
+  INTEGER(TypeFamily.NUMERIC, true, false, 19, 1, 0, 0, Long.class),
 
   /** Unlimited precision number */
   NUMBER(TypeFamily.NUMERIC, true, true, 38, 1, 37, 0, BigDecimal.class),
@@ -59,7 +59,7 @@ public enum TypeId {
   JSON(TypeFamily.JSON, false, false, -1, -1, -1, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
-  BINARY(TypeFamily.BINARY, true, false, 16_777_216, 0, 0, 0, byte[].class),
+  BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
 
   /** A interval type for years to months 
    * TODO: add precision for nanoseconds

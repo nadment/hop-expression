@@ -193,6 +193,24 @@ public class TypeTest extends ExpressionTest {
   }
   
   @Test
+  public void checkPrecisionScale() throws Exception {
+    // Check maximum precision
+    assertThrows(IllegalArgumentException.class, () -> IntegerType.of(TypeId.INTEGER.getMaxPrecision()+1));
+    assertThrows(IllegalArgumentException.class, () -> NumberType.of(TypeId.NUMBER.getMaxPrecision()+1));
+    assertThrows(IllegalArgumentException.class, () -> StringType.of(TypeId.STRING.getMaxPrecision()+1));
+    assertThrows(IllegalArgumentException.class, () -> BinaryType.of(TypeId.BINARY.getMaxPrecision()+1));
+    
+    // Check minimum precision
+    assertThrows(IllegalArgumentException.class, () -> IntegerType.of(0));
+    assertThrows(IllegalArgumentException.class, () -> NumberType.of(0));
+    assertThrows(IllegalArgumentException.class, () -> StringType.of(0));
+    assertThrows(IllegalArgumentException.class, () -> BinaryType.of(0));
+    
+    // Check scale > precision
+    assertThrows(IllegalArgumentException.class, () -> NumberType.of(10,20));
+  }
+  
+  @Test
   public void exceptionPrecisionOutOfRange() throws Exception {
     assertThrows(IllegalArgumentException.class, () ->  IntegerType.of(100));
   }

@@ -33,9 +33,6 @@ public final class StringType extends Type {
    */
   public static final StringType STRING = new StringType(TypeId.STRING.getMaxPrecision(), true);
 
-  public static StringType from(final String value) {
-    return new StringType(value.length(), false);
-  }
 
   public static StringType of(int precision) {
     return of(precision, true);
@@ -50,7 +47,14 @@ public final class StringType extends Type {
     
     return new StringType(precision, nullable);
   }
-
+  
+  public static StringType from(final String value) {
+    int precision = value.length();
+    // Empty string should return 1
+    if ( precision<1 ) precision = 1;
+    return StringType.of(precision).withNullability(false);
+  }
+  
   private StringType(int precision, boolean nullable) {
     super(precision, SCALE_NOT_SPECIFIED, nullable);
   }

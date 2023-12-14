@@ -2946,7 +2946,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Concat('a',NULL_STRING)", "a").returnType(StringType.STRING);
     evalEquals("4 || 2", "42").returnType(StringType.of(2));
     evalEquals("4 || '2'", "42").returnType(StringType.of(2));   
-    evalEquals("concat(cast('a' as string(2)), cast('b' as string(3)),cast('c' as string(2)))","abc").returnType(StringType.of(7));
+    evalEquals("concat(cast('a' as string(2)), cast('b' as string(3)),cast('c' as string(2)))","abc").returnType(StringType.of(3));
     evalNull("NULL_STRING||NULL_STRING").returnType(StringType.STRING);
            
     // Binary
