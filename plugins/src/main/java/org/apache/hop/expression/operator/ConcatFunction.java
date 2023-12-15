@@ -44,7 +44,7 @@ public class ConcatFunction extends Function {
   // Function
   public ConcatFunction() {
     super("CONCAT", ReturnTypes.CONCAT_FUNCTION,
-        OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
+        OperandTypes.STRING_VARIADIC.or(OperandTypes.BINARY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }
 

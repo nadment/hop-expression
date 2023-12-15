@@ -59,5 +59,4 @@ public class OperandCountRange implements IOperandCountRange {
   public int getMax() {
     return max;
   }
-
 }

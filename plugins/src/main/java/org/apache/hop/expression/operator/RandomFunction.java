@@ -43,7 +43,7 @@ public class RandomFunction extends Function {
   }
 
   public RandomFunction(Random random) {
-    super("RANDOM", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.OPTIONAL_NUMERIC,
+    super("RANDOM", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.NILADIC.or(OperandTypes.NUMERIC),
         OperatorCategory.MATHEMATICAL, "/docs/random.html");
     this.random = random;
   }

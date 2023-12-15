@@ -26,21 +26,26 @@ import java.util.List;
 public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
   public enum Composition {
-    AND, OR
+    AND, OR, SEQUENCE, REPEAT
   }
 
   protected final Composition composition;
   protected final List<? extends IOperandTypeChecker> rules;
+  protected final IOperandCountRange range;
 
-  CompositeOperandTypeChecker(Composition composition, List<? extends IOperandTypeChecker> rules) {
+  CompositeOperandTypeChecker(Composition composition, List<? extends IOperandTypeChecker> rules, IOperandCountRange range) {
     super();
     this.composition = composition;
     this.rules = rules;
+    this.range = range;
   }
 
   @Override
   public boolean checkOperandTypes(Call call) {
     switch (composition) {
+      case REPEAT:      
+        return true;
+      
       case AND:
         for (IOperandTypeChecker rule : rules) {
           if (!rule.checkOperandTypes(call)) {
@@ -56,6 +61,18 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
           }
         }
         return false;
+
+      case SEQUENCE:
+        int index = 0;
+        for (IOperandTypeChecker rule : rules) {
+          ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
+
+          if (index < call.getOperandCount()
+              && !checker.checkSingleOperandType(call.getOperand(index++))) {
+            return false;
+          }
+        }
+        return true;
     }
 
     return true;
@@ -63,65 +80,79 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
   @Override
   public IOperandCountRange getOperandCountRange() {
-    final List<IOperandCountRange> ranges = new AbstractList<IOperandCountRange>() {
-      @Override
-      public IOperandCountRange get(int index) {
-        return rules.get(index).getOperandCountRange();
-      }
 
-      @Override
-      public int size() {
-        return rules.size();
-      }
-    };
+    switch (composition) {
+      case REPEAT:
+        return range;
+      case SEQUENCE:
+        return OperandCountRange.of(rules.size());
+      case AND:
+      case OR:
+      default:
+        final List<IOperandCountRange> ranges = new AbstractList<IOperandCountRange>() {
+          @Override
+          public IOperandCountRange get(int index) {
+            return rules.get(index).getOperandCountRange();
+          }
 
-    final int min = min(ranges);
-    final int max = max(ranges);
+          @Override
+          public int size() {
+            return rules.size();
+          }
+        };
 
-    IOperandCountRange composite = new IOperandCountRange() {
-      @Override
-      public boolean isValid(int count) {
-        switch (composition) {
-          case AND:
-            for (IOperandCountRange range : ranges) {
-              if (!range.isValid(count)) {
-                return false;
-              }
-            }
-            return true;
-          case OR:
-          default:
-            for (IOperandCountRange range : ranges) {
-              if (range.isValid(count)) {
+        final int min = min(ranges);
+        final int max = max(ranges);
+
+        IOperandCountRange composite = new IOperandCountRange() {
+          @Override
+          public boolean isValid(int count) {
+            switch (composition) {
+              case AND:
+                for (IOperandCountRange range : ranges) {
+                  if (!range.isValid(count)) {
+                    return false;
+                  }
+                }
                 return true;
-              }
+              case OR:
+              default:
+                for (IOperandCountRange range : ranges) {
+                  if (range.isValid(count)) {
+                    return true;
+                  }
+                }
+                return false;
             }
-            return false;
+          }
+
+          @Override
+          public int getMin() {
+            return min;
+          }
+
+          @Override
+          public int getMax() {
+            return max;
+          }
+        };
+
+
+        if (max >= 0) {
+          for (int i = min; i <= max; i++) {
+            if (!composite.isValid(i)) {
+              // Composite is not a simple range. Can't simplify,
+              // so return the composite.
+              return composite;
+            }
+          }
         }
-      }
-
-      @Override
-      public int getMin() {
-        return min;
-      }
-
-      @Override
-      public int getMax() {
-        return max;
-      }
-    };
-
-
-    if (max >= 0) {
-      for (int i = min; i <= max; i++) {
-        if (!composite.isValid(i)) {
-          // Composite is not a simple range. Can't simplify,
-          // so return the composite.
-          return composite;
-        }
-      }
+        return min == max ? OperandCountRange.of(min) : OperandCountRange.between(min, max);
     }
-    return min == max ? OperandCountRange.of(min) : OperandCountRange.between(min, max);
+  }
+
+  public List<? extends IOperandTypeChecker> getRules() {
+    return rules;
   }
 
   private static int min(List<IOperandCountRange> ranges) {
@@ -144,15 +175,5 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
       }
     }
     return max;
-  }
-
-  @Override
-  public boolean isOptional(int i) {
-    for (IOperandTypeChecker rule : rules) {
-      if (rule.isOptional(i)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

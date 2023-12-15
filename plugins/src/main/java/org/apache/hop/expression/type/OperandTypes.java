@@ -38,42 +38,38 @@ public final class OperandTypes {
   }
 
   /**
-   * Creates a checker that passes if all operand is a member of a
-   * corresponding family.
-   */
-  public static FamilyOperandTypeChecker family(TypeFamily family, IOperandCountRange range) {
-    return new FamilyOperandTypeChecker(family, range);
-  }
-
-  /**
    * Creates a checker that passes if any one of the rules passes.
    */
   public static IOperandTypeChecker or(IOperandTypeChecker... rules) {
-    return new CompositeOperandTypeChecker(Composition.OR, List.of(rules));
+    return new CompositeOperandTypeChecker(Composition.OR, List.of(rules), null);
   }
 
   /**
    * Creates a checker that passes if all of the rules pass.
    */
   public static IOperandTypeChecker and(IOperandTypeChecker... rules) {
-    return new CompositeOperandTypeChecker(Composition.AND, List.of(rules));
+    return new CompositeOperandTypeChecker(Composition.AND, List.of(rules), null);
   }
 
   /**
    * Creates an operand checker from a sequence of single-operand checkers.
    */
-  public static SequenceOperandTypeChecker sequence(IOperandTypeChecker... rules) {
-    return new SequenceOperandTypeChecker(List.of(rules));
+  public static IOperandTypeChecker sequence(IOperandTypeChecker... rules) {
+    return new CompositeOperandTypeChecker(Composition.SEQUENCE, List.of(rules), null);
+  }
+
+  /**
+   * Creates a checker that passes if all of the rules pass for each operand,
+   * using a given operand count strategy.
+   */
+  public static IOperandTypeChecker repeat(IOperandCountRange range,
+      ISingleOperandTypeChecker... rules) {
+    return new CompositeOperandTypeChecker(Composition.REPEAT, List.of(rules), range);
   }
 
   public static ISingleOperandTypeChecker literal(Class<?> javaClass) {
     return new LiteralOperandTypeChecker(javaClass);
   }
-
-  /**
-   * Operand type-checking strategy that check nothing.
-   */
-  public static final IOperandTypeChecker NO_CHECK = new NoneOperandTypeChecker();
 
   /**
    * Operand type-checking strategy type must be a data type.
@@ -90,23 +86,21 @@ public final class OperandTypes {
    */
   public static final IOperandTypeChecker TEXT = literal(String.class);
 
-  /**
-   * Operand type-checking strategy for an operator which takes no operands.
-   */
-  public static final IOperandTypeChecker NILADIC = family();
 
-  public static final IOperandTypeChecker ANY = family(TypeFamily.ANY);
+  public static final ISingleOperandTypeChecker ANY = family(TypeFamily.ANY);
   public static final IOperandTypeChecker ANY_BOOLEAN = family(TypeFamily.ANY, TypeFamily.BOOLEAN);
   public static final IOperandTypeChecker ANY_NUMERIC = family(TypeFamily.ANY, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker ANY_ANY = family(TypeFamily.ANY, TypeFamily.ANY);
   public static final IOperandTypeChecker ANY_ANY_ANY =
       family(TypeFamily.ANY, TypeFamily.ANY, TypeFamily.ANY);
-  public static final IOperandTypeChecker OPTIONAL_ANY =
-      family(TypeFamily.ANY).optional(i -> i == 0);
   public static final IOperandTypeChecker ANY_STRING = family(TypeFamily.ANY, TypeFamily.STRING);
   public static final IOperandTypeChecker ANY_SAME_SAME =
       ANY_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
+  /**
+   * Operand type-checking strategy for an operator which takes no operands.
+   */
+  public static final IOperandTypeChecker NILADIC = family();
 
   /**
    * Operand type-checking strategy where two operands must both be in the
@@ -138,10 +132,10 @@ public final class OperandTypes {
       new SameOperandTypeChecker(OperandCountRange.from(3));
 
   public static final IOperandTypeChecker BOOLEAN = family(TypeFamily.BOOLEAN);
-  public static final IOperandTypeChecker BOOLEAN_VARIADIC =
-      family(TypeFamily.BOOLEAN, OperandCountRange.from(1));
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
       family(TypeFamily.BOOLEAN, TypeFamily.BOOLEAN);
+  public static final IOperandTypeChecker BOOLEAN_VARIADIC = repeat(OperandCountRange.between(1, -1), family(TypeFamily.BOOLEAN));
+  
   public static final IOperandTypeChecker BOOLEAN_ANY = family(TypeFamily.BOOLEAN, TypeFamily.ANY);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =
       family(TypeFamily.BOOLEAN, TypeFamily.ANY, TypeFamily.ANY);
@@ -149,12 +143,10 @@ public final class OperandTypes {
       BOOLEAN_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
   public static final IOperandTypeChecker BINARY = family(TypeFamily.BINARY);
-  public static final IOperandTypeChecker BINARY_VARIADIC =
-      family(TypeFamily.BINARY, OperandCountRange.between(1, -1));
-  public static final IOperandTypeChecker BINARY_BINARY_VARIADIC =
-      family(TypeFamily.BINARY, OperandCountRange.between(2, -1));
-  public static final IOperandTypeChecker BINARY_BINARY =
-      family(TypeFamily.BINARY, TypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY_VARIADIC = repeat(OperandCountRange.between(1, -1), family(TypeFamily.BINARY));
+  public static final IOperandTypeChecker BINARY_BINARY = family(TypeFamily.BINARY, TypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY_BINARY_VARIADIC = repeat(OperandCountRange.between(2, -1), family(TypeFamily.BINARY));
+
   public static final IOperandTypeChecker BINARY_NUMERIC =
       family(TypeFamily.BINARY, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker BINARY_NUMERIC_BINARY =
@@ -162,10 +154,9 @@ public final class OperandTypes {
   public static final IOperandTypeChecker BINARY_NUMERIC_NUMERIC_BINARY =
       family(TypeFamily.BINARY, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.BINARY);
 
-  public static final IOperandTypeChecker BINARY_TEXT =
-      sequence(OperandTypes.BINARY, OperandTypes.TEXT);
+  public static final IOperandTypeChecker BINARY_TEXT = sequence(BINARY, TEXT);
 
-  public static final IOperandTypeChecker NUMERIC = family(TypeFamily.NUMERIC);
+  public static final ISingleOperandTypeChecker NUMERIC = family(TypeFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC =
       family(TypeFamily.NUMERIC, TypeFamily.NUMERIC);
   public static final IOperandTypeChecker NUMERIC_NUMERIC_NUMERIC =
@@ -174,11 +165,7 @@ public final class OperandTypes {
       family(TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC, TypeFamily.NUMERIC,
           TypeFamily.NUMERIC, TypeFamily.NUMERIC);
 
-
-  public static final IOperandTypeChecker NUMERIC_TEXT =
-      sequence(OperandTypes.NUMERIC, OperandTypes.TEXT);
-  public static final IOperandTypeChecker OPTIONAL_NUMERIC =
-      family(TypeFamily.NUMERIC).optional(i -> i == 0);
+  public static final IOperandTypeChecker NUMERIC_TEXT = sequence(NUMERIC, TEXT);
 
   public static final IOperandTypeChecker TEMPORAL = family(TypeFamily.TEMPORAL);
   public static final IOperandTypeChecker TEMPORAL_TEMPORAL =
@@ -202,12 +189,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker TIMEUNIT_NUMERIC_TEMPORAL =
       sequence(TIMEUNIT, NUMERIC, TEMPORAL);
   public static final IOperandTypeChecker TIMEUNIT_INTERVAL = sequence(TIMEUNIT, INTERVAL);
-
-  public static final IOperandTypeChecker STRING = family(TypeFamily.STRING);
-  public static final IOperandTypeChecker STRING_VARIADIC =
-      family(TypeFamily.STRING, OperandCountRange.from(1));
-  public static final IOperandTypeChecker STRING_STRING_VARIADIC =
-      family(TypeFamily.STRING, OperandCountRange.from(2));
+  public static final ISingleOperandTypeChecker STRING = family(TypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING =
       family(TypeFamily.STRING, TypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING_STRING =
@@ -239,18 +221,19 @@ public final class OperandTypes {
       family(TypeFamily.STRING, TypeFamily.TEMPORAL);
   public static final IOperandTypeChecker STRING_STRING_TEMPORAL =
       family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.TEMPORAL);
+  public static final IOperandTypeChecker STRING_VARIADIC = repeat(OperandCountRange.between(1, -1), family(TypeFamily.STRING));
+  public static final IOperandTypeChecker STRING_STRING_VARIADIC =
+      repeat(OperandCountRange.between(2, -1), family(TypeFamily.STRING));
 
   public static final IOperandTypeChecker TEMPORAL_TIMEUNIT = sequence(TEMPORAL, TIMEUNIT);
   public static final IOperandTypeChecker TEMPORAL_TEXT = sequence(TEMPORAL, TEXT);
   public static final IOperandTypeChecker STRING_TEXT = sequence(STRING, TEXT);
 
-
-
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
 
   public static final IOperandTypeChecker CASE_OPERATOR = new CaseOperatorOperandTypeChecker();
-  public static final IOperandTypeChecker CAST_OPERATOR = OperandTypes
-      .sequence(OperandTypes.ANY, OperandTypes.DATATYPE, OperandTypes.TEXT).optional(i -> i == 2);
+  public static final IOperandTypeChecker CAST_OPERATOR =
+      sequence(ANY, DATATYPE, TEXT).or(sequence(ANY, DATATYPE));
   public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
 }

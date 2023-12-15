@@ -34,14 +34,13 @@ public interface IOperandTypeChecker {
   /** Returns the range of operand counts allowed in a call. */
   IOperandCountRange getOperandCountRange();
 
-
   /**
    * Returns whether the {@code i}th operand is optional.
    */
   default boolean isOptional(int i) {
     return false;
   }
-
+  
   /** Composes this with another checker using AND. */
   default IOperandTypeChecker and(IOperandTypeChecker checker) {
     return OperandTypes.and(this, checker);

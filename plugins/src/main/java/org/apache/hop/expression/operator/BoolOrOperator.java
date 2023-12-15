@@ -51,7 +51,7 @@ import java.util.PriorityQueue;
 public class BoolOrOperator extends Operator {
 
   public BoolOrOperator() {
-    super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN_VARIADIC,
+    super("BOOLOR", "OR", 180, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BOOLEAN_BOOLEAN,
         OperatorCategory.LOGICAL, "/docs/boolor.html");
   }
 

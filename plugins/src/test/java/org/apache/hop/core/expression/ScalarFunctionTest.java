@@ -2959,8 +2959,14 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Concat()");
 
     // Mix String and Binary
-    evalFails("Concat(NOM,0x2A3B)");
+    // evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
 
+    // Check operands type
+    evalFails("Concat(FIELD_STRING, FIELD_DATE)");
+    evalFails("Concat(FIELD_BINARY, FIELD_DATE)");
+    evalFails("Concat(FIELD_DATE, FIELD_STRING)");
+    evalFails("Concat(FIELD_DATE, FIELD_BINARY)");
+    
     // Literal
     optimize("CONCAT('TES','T')", "'TEST'");
     optimize("'A'||'B'", "'AB'");

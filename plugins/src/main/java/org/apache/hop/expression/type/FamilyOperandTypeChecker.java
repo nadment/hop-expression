@@ -26,27 +26,12 @@ import java.util.function.Predicate;
  */
 public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOperandTypeChecker {
 
-  private final IOperandCountRange range;
   private final List<TypeFamily> families;
   private final Predicate<Integer> optional;
-
-  FamilyOperandTypeChecker(TypeFamily family, IOperandCountRange range) {
-    super();
-    this.families = List.of(family);
-    this.optional = i -> false;
-    this.range = range;
-  }
 
   FamilyOperandTypeChecker(List<TypeFamily> families, Predicate<Integer> optional) {
     this.families = families;
     this.optional = optional;
-
-    final int max = families.size();
-    int min = max;
-    while (min > 0 && optional.test(min - 1)) {
-      --min;
-    }
-    this.range = OperandCountRange.between(min, max);
   }
 
   /**
@@ -58,6 +43,9 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
 
   @Override
   public boolean checkOperandTypes(final Call call) {
+    
+    IOperandCountRange range = this.getOperandCountRange();
+    
     // Variadic
     if (families.size() != range.getMax()) {
       for (IExpression operand : call.getOperands()) {
@@ -83,10 +71,14 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
 
   @Override
   public IOperandCountRange getOperandCountRange() {
-    return range;
+    final int max = families.size();
+    int min = max;
+    while (min > 0 && optional.test(min - 1)) {
+      --min;
+    }
+    return OperandCountRange.between(min, max);
   }
 
-  @Override
   public boolean isOptional(int i) {
     return optional.test(i);
   }
