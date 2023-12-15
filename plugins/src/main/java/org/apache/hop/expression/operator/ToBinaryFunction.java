@@ -36,11 +36,11 @@ import java.util.Base64;
  */
 @FunctionPlugin
 public class ToBinaryFunction extends Function {
-  
+
   private static final ToBinaryFunction ToBinaryHexFunction = new ToBinaryHexFunction();
   private static final ToBinaryFunction ToBinaryUtf8Function = new ToBinaryUtf8Function();
   private static final ToBinaryFunction ToBinaryBase64Function = new ToBinaryBase64Function();
-  
+
   private static final class ToBinaryHexFunction extends ToBinaryFunction {
     @Override
     public Object eval(final IExpression[] operands) {
@@ -48,10 +48,10 @@ public class ToBinaryFunction extends Function {
       if (value == null) {
         return null;
       }
-      return Hex.decode(value);      
+      return Hex.decode(value);
     }
   }
-  
+
   private static final class ToBinaryUtf8Function extends ToBinaryFunction {
     @Override
     public Object eval(final IExpression[] operands) {
@@ -59,10 +59,10 @@ public class ToBinaryFunction extends Function {
       if (value == null) {
         return null;
       }
-      return value.getBytes(StandardCharsets.UTF_8);  
+      return value.getBytes(StandardCharsets.UTF_8);
     }
   }
-  
+
   private static final class ToBinaryBase64Function extends ToBinaryFunction {
     @Override
     public Object eval(final IExpression[] operands) {
@@ -70,13 +70,14 @@ public class ToBinaryFunction extends Function {
       if (value == null) {
         return null;
       }
-      return Base64.getDecoder().decode(value); 
+      return Base64.getDecoder().decode(value);
     }
   }
-  
+
   public ToBinaryFunction() {
-    super("TO_BINARY", ReturnTypes.BINARY_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
-        OperatorCategory.CONVERSION, "/docs/to_binary.html");
+    super("TO_BINARY", ReturnTypes.BINARY_NULLABLE,
+        OperandTypes.STRING.or(OperandTypes.STRING_TEXT), OperatorCategory.CONVERSION,
+        "/docs/to_binary.html");
   }
 
   @Override
@@ -90,19 +91,20 @@ public class ToBinaryFunction extends Function {
       format = call.getOperand(1).getValue(String.class);
     }
 
-    // Normalize pattern
-    format = format.toUpperCase();
+    if (format != null) {
+      // Normalize pattern
+      format = format.toUpperCase();
 
-    if (format.equals("HEX")) {
-      return new Call(ToBinaryHexFunction, call.getOperands());
+      if (format.equals("HEX")) {
+        return new Call(ToBinaryHexFunction, call.getOperands());
+      }
+      if (format.equals("BASE64")) {
+        return new Call(ToBinaryBase64Function, call.getOperands());
+      }
+      if (format.equals("UTF8") || format.equals("UTF-8")) {
+        return new Call(ToBinaryUtf8Function, call.getOperands());
+      }
     }
-    if (format.equals("BASE64")) {
-      return new Call(ToBinaryBase64Function, call.getOperands());
-    }
-    if (format.equals("UTF8") || format.equals("UTF-8")) {
-      return new Call(ToBinaryUtf8Function, call.getOperands());
-    }
-    
     throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
   }
 }

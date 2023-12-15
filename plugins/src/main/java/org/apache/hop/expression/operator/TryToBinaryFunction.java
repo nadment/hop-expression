@@ -105,17 +105,19 @@ public class TryToBinaryFunction extends Function {
       format = call.getOperand(1).getValue(String.class);
     }
 
-    // Normalize pattern
-    format = format.toUpperCase();
+    if (format != null) {
+      // Normalize pattern
+      format = format.toUpperCase();
 
-    if (format.equals("HEX")) {
-      return new Call(TryToBinaryHexFunction, call.getOperands());
-    }
-    if (format.equals("BASE64")) {
-      return new Call(TryToBinaryBase64Function, call.getOperands());
-    }
-    if (format.equals("UTF8") || format.equals("UTF-8")) {
-      return new Call(TryToBinaryUtf8Function, call.getOperands());
+      if (format.equals("HEX")) {
+        return new Call(TryToBinaryHexFunction, call.getOperands());
+      }
+      if (format.equals("BASE64")) {
+        return new Call(TryToBinaryBase64Function, call.getOperands());
+      }
+      if (format.equals("UTF8") || format.equals("UTF-8")) {
+        return new Call(TryToBinaryUtf8Function, call.getOperands());
+      }
     }
 
     throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, format);
