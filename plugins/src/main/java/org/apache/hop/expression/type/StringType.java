@@ -42,7 +42,7 @@ public final class StringType extends Type {
     if ( precision==PRECISION_NOT_SPECIFIED )
       precision = TypeId.STRING.getMaxPrecision();
     
-    if ( precision==TypeId.STRING.getMaxPrecision() && nullable==true)
+    if ( precision==TypeId.STRING.getMaxPrecision() && nullable)
       return STRING;  
     
     return new StringType(precision, nullable);
@@ -66,6 +66,11 @@ public final class StringType extends Type {
   @Override
   public TypeId getId() {
     return TypeId.STRING;
+  }
+
+  @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.ALL;
   }
 
   @Override

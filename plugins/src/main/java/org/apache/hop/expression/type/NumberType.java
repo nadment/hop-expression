@@ -91,6 +91,11 @@ public final class NumberType extends Type {
   }
 
   @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.ALL;
+  }
+
+  @Override
   public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
 
     if (value == null) {

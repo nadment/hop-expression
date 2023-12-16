@@ -39,9 +39,27 @@ public abstract class Type {
     this.scale = scale;
     this.nullable = nullable;
 
-    // Generates a string representation of this type.
-    TypeId id = getId();
+    // Generates a string representation of this type.    
     StringBuilder builder = new StringBuilder();
+    this.generateTypeString(builder);
+    this.signature =  builder.toString();
+    
+    // Check precision and scale
+    TypeId id = getId();
+    if (id.supportsPrecision() && ( precision < id.getMinPrecision() ||  precision > id.getMaxPrecision()) ) {
+      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature,id.getMinPrecision(),id.getMaxPrecision()));
+    }
+    if (id.supportsScale() && ( scale < id.getMinScale() ||  scale > id.getMaxScale()) ) {
+      throw new IllegalArgumentException(ErrorCode.SCALE_OUT_OF_RANGE.message(signature,id.getMinScale(),id.getMaxScale()));
+    }
+    if (scale>precision ) {
+      throw new IllegalArgumentException(ErrorCode.SCALE_GREATER_THAN_PRECISION.message(signature));
+    }
+  }
+  
+  
+  protected void generateTypeString(final StringBuilder builder) {
+    TypeId id = getId();
     builder.append(id.name());
     if (precision != id.getMaxPrecision() || ( scale>0 && scale!=id.getDefaultScale() ) ) {
       builder.append('(');
@@ -51,21 +69,8 @@ public abstract class Type {
         builder.append(scale);
       }
       builder.append(')');
-    }
-    this.signature = builder.toString();
-
-    // Check precision range
-    if (id.supportsPrecision() && ( precision < id.getMinPrecision() ||  precision > id.getMaxPrecision()) ) {
-      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature,id.getMinPrecision(),id.getMaxPrecision()));
-    }
-    // Check scale range
-    if (id.supportsScale() && ( scale < id.getMinScale() ||  scale > id.getMaxScale()) ) {
-      throw new IllegalArgumentException(ErrorCode.SCALE_OUT_OF_RANGE.message(signature,id.getMinScale(),id.getMaxScale()));
-    }
-    if (scale>precision ) {
-      throw new IllegalArgumentException(ErrorCode.SCALE_GREATER_THAN_PRECISION.message(signature));
-    }
-  }
+    }    
+  } 
   
   /**
    * Gets the {@link TypeId} of this type.
@@ -91,14 +96,17 @@ public abstract class Type {
     return getId().isFamily(family);
   }
 
-  public boolean isFamily(final Type type) {
-    return getId().isFamily(type.getFamily());
-  }
-
   public boolean isCompatibleWithCoercion(final Type type) {
     return getId().isCompatibleWithCoercion(type.getFamily());
   }
 
+  /**
+   * Gets the {@link TypeComparability} of this type used by comparison operators.
+   *
+   * @return comparability, never null
+   */  
+  public abstract TypeComparability getComparability();
+  
   /**
    * Queries whether this type allows null values.
    *

@@ -45,7 +45,12 @@ public final class BooleanType extends Type {
   public TypeId getId() {
     return TypeId.BOOLEAN;
   }
-
+  
+  @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.ALL;
+  }
+  
   /**
    * Coerce value to data type BOOLEAN
    * 

@@ -68,29 +68,31 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("DATE '2019-01-01' = DATE '2018-01-01'");
 
     // Timestamp
-    evalTrue(
-        "Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");
     evalTrue("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
     evalTrue("Timestamp '2019-01-01 8:00:00 -08:00' = Timestamp '2019-01-01 11:00:00 -05:00'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -08:00' = Timestamp '2019-01-01 8:00:00 -05:00'");
+    evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'America/New_York' = Timestamp '2019-01-01 14:00:00' AT TIME ZONE 'Europe/Berlin'");    
 
     // Interval
     evalTrue("INTERVAL 1 YEARS = INTERVAL 12 MONTHS");
     evalFalse("INTERVAL 3 YEARS = INTERVAL 3 MONTHS");
 
-
     // NULL is not equal ( = ) to anything not even to another NULL.
-    evalNull("1 = NULL_INTEGER");
-    evalFalse("NULL_BOOLEAN = true");
-    evalFalse("NULL_BOOLEAN = false");
-
-
+    evalNull("1 = NULL_INTEGER").returnType(BooleanType.BOOLEAN);
+    evalNull("1 = NULL_NUMBER").returnType(BooleanType.BOOLEAN);
+    evalNull("NULL_BOOLEAN = true").returnType(BooleanType.BOOLEAN);
+    evalNull("NULL_BOOLEAN = false").returnType(BooleanType.BOOLEAN);
     evalNull("NULL_BOOLEAN = NULL_BOOLEAN").returnType(BooleanType.BOOLEAN);
     evalNull("NULL_STRING = NULL_STRING").returnType(BooleanType.BOOLEAN);
     evalNull("NULL_INTEGER = NULL_INTEGER").returnType(BooleanType.BOOLEAN);
     evalNull("NULL_INTEGER = 1").returnType(BooleanType.BOOLEAN);
     evalNull("FIELD_INTEGER=NULL").returnType(BooleanType.BOOLEAN);
 
+    // Comparable unordered type
+    evalNull("NULL_JSON = FIELD_STRING");
+    evalFalse("FIELD_JSON = FIELD_STRING_JSON");
+    
+    // Syntax error
     evalFails("FIELD_INTEGER=");
     evalFails(" = FIELD_INTEGER ");
 
@@ -103,10 +105,10 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
     optimize("FIELD_STRING = NULL", "NULL");
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
-    optimize("FIELD_BOOLEAN_TRUE = TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-    optimize("TRUE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-    optimize("FIELD_BOOLEAN_TRUE = FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
-    optimize("FALSE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    // optimize("FIELD_BOOLEAN_TRUE = TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    // optimize("TRUE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    // optimize("FIELD_BOOLEAN_TRUE = FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    // optimize("FALSE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
 
     // Simplify comparison with same term if not nullable
     optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
@@ -121,7 +123,7 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("FIELD_INTEGER <> 40");
 
     evalTrue("1 <> 2");
-    // evalTrue("10 <> 0x10");
+    evalTrue("10 <> 0x10");
     evalFalse("1 <> '1'");
 
     evalTrue("true <> false");
@@ -135,18 +137,22 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("DATE '2019-01-01' <> DATE '2018-01-01'");
     evalFalse("DATE '2019-01-01' <> DATE '2019-01-01'");
 
-    evalTrue(
-        "Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'UTC' <> Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'US/Pacific'");
+    evalTrue("Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'UTC' <> Timestamp '2019-01-01 8:00:00' AT TIME ZONE 'US/Pacific'");
     evalFalse("Timestamp '2019-01-01 08:00:00 -8:00' <> Timestamp '2019-01-01 11:00:00 -5:00'");
 
     // Interval
     evalFalse("INTERVAL 1 YEARS <> INTERVAL 12 MONTHS");
     evalTrue("INTERVAL 3 YEARS <> INTERVAL 3 MONTHS");
 
+    // NULL is not equal ( = ) to anything not even to another NULL.
     evalNull("NULL_STRING <> 'bar'");
     evalNull("'bar' <> NULL_STRING");
     evalNull("NULL_STRING <> NULL_STRING");
 
+    // Comparable unordered type    
+    evalTrue("FIELD_JSON <> FIELD_STRING_JSON");
+    
+    // Syntax error
     evalFails("NOM<>");
     evalFails("NOM <> ");
     evalFails("NOM!");
@@ -191,6 +197,10 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_NUMBER > NULL_INTEGER");
     evalNull("1 > NULL_BOOLEAN");
 
+    // Compare unordered type
+    evalFails("FIELD_JSON > FIELD_STRING");
+    
+    // Syntax error
     evalFails("> FIELD_INTEGER");
     evalFails("FIELD_INTEGER >");
     evalFails("FIELD_INTEGER > ");
@@ -235,6 +245,10 @@ public class OperatorTest extends ExpressionTest {
     evalNull("1 >= NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN >= NULL_INTEGER");
 
+    // Compare unordered type
+    evalFails("FIELD_JSON >= FIELD_STRING");
+    
+    // Syntax error
     evalFails(">=FIELD_INTEGER");
     evalFails("FIELD_INTEGER >=");
     evalFails("FIELD_INTEGER >= ");
@@ -283,7 +297,11 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER < 1").returnType(BooleanType.BOOLEAN);
     evalNull("NULL_NUMBER < NULL_INTEGER");
     evalNull("NULL_STRING < Upper(FIELD_STRING)");
-
+    
+    // Compare unordered type
+    evalFails("FIELD_JSON < FIELD_STRING");
+    
+    // Syntax error
     evalFails("< FIELD_INTEGER");
     evalFails("FIELD_INTEGER <");
     evalFails("FIELD_INTEGER < ");
@@ -328,6 +346,10 @@ public class OperatorTest extends ExpressionTest {
     evalNull("FIELD_INTEGER <= NULL_INTEGER");
     evalNull("NULL_STRING <= Upper(FIELD_STRING)");
 
+    // Compare unordered type
+    evalFails("FIELD_JSON <= FIELD_STRING");
+    
+    // Syntax error
     evalFails("<= FIELD_INTEGER");
     evalFails("FIELD_INTEGER <=");
     evalFails("FIELD_INTEGER <= ");

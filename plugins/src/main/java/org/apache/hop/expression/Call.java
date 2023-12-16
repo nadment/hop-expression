@@ -172,7 +172,7 @@ public final class Call implements IExpression {
       throw new ExpressionException(position, ErrorCode.ILLEGAL_ARGUMENT_TYPE, operator);
     }
 
-    // Inference type
+    // Return type Inference
     this.type = operator.getReturnTypeInference().inferReturnType(this);
   }
 

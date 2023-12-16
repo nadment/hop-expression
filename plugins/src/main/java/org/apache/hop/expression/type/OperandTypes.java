@@ -131,6 +131,25 @@ public final class OperandTypes {
   public static final IOperandTypeChecker AT_LEAST_TREE_SAME_VARIADIC =
       new SameOperandTypeChecker(OperandCountRange.from(3));
 
+  /**
+   * Operand type-checking strategy where operand type must allow ordered
+   * comparisons. Used when instance comparisons are made on single operand
+   * functions.
+   */
+  public static final IOperandTypeChecker COMPARABLE_ORDERED = new ComparableOperandTypeChecker(1, TypeComparability.ALL);
+  
+  /**
+   * Operand type-checking strategy where operand types must allow ordered
+   * comparisons.
+   */
+  public static final IOperandTypeChecker COMPARABLE_ORDERED_COMPARABLE_ORDERED =  new ComparableOperandTypeChecker(2, TypeComparability.ALL);
+
+  /**
+   * Operand type-checking strategy where operand types must allow unordered
+   * comparisons.
+   */
+  public static final IOperandTypeChecker COMPARABLE_UNORDERED_COMPARABLE_UNORDERED = new ComparableOperandTypeChecker(2, TypeComparability.UNORDERED);
+  
   public static final IOperandTypeChecker BOOLEAN = family(TypeFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
       family(TypeFamily.BOOLEAN, TypeFamily.BOOLEAN);

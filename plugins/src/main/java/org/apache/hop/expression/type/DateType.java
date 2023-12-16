@@ -49,6 +49,11 @@ public final class DateType extends Type {
   }
 
   @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.ALL;
+  }
+  
+  @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
     if (value == null) {
       return null;

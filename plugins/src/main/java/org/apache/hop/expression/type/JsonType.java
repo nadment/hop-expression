@@ -50,6 +50,11 @@ public final class JsonType extends Type {
     return TypeId.JSON;
   }
 
+  @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.UNORDERED;
+  }
+
   /**
    * Coerce value to data type JSON
    * 

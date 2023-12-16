@@ -30,6 +30,34 @@ public class Comparison {
   private Comparison() {}
 
 
+  public static final boolean equals(final Object left, final Object right) {
+
+    if (left == null || right == null)
+      return false;
+
+    // The lower order data type is converted
+    if (left instanceof byte[] || right instanceof byte[]) {
+      return equalsTo(BinaryType.coerce(left), BinaryType.coerce(right));
+    }
+    if (left instanceof JsonNode || right instanceof JsonNode) {
+      return equalsTo(JsonType.coerce(left), JsonType.coerce(right));
+    }
+    if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
+      return compareTo(DateType.coerce(left), DateType.coerce(right))==0;
+    }
+    if (left instanceof BigDecimal || right instanceof BigDecimal) {
+      return NumberType.coerce(left).compareTo(NumberType.coerce(right))==0;
+    }
+    if (left instanceof Long || right instanceof Long) {
+      return IntegerType.coerce(left).compareTo(IntegerType.coerce(right))==0;
+    }
+    if (left instanceof Boolean || right instanceof Boolean) {
+      return BooleanType.coerce(left).equals(BooleanType.coerce(right));
+    }
+
+    return StringType.coerce(left).compareTo(StringType.coerce(right))==0;
+  }
+
   /**
    * Compare this value against another value. If values need to be converted to match the other
    * operands data type, the value with the lower order is converted to the value with the higher
@@ -51,9 +79,6 @@ public class Comparison {
     if (left instanceof byte[] || right instanceof byte[]) {
       return compareTo(BinaryType.coerce(left), BinaryType.coerce(right));
     }
-    if (left instanceof JsonNode || right instanceof JsonNode) {
-      return compareTo(JsonType.coerce(left), JsonType.coerce(right));
-    }
     if (left instanceof ZonedDateTime || right instanceof ZonedDateTime) {
       return compareTo(DateType.coerce(left), DateType.coerce(right));
     }
@@ -70,9 +95,9 @@ public class Comparison {
     return StringType.coerce(left).compareTo(StringType.coerce(right));
   }
 
-  protected static int compareTo(final JsonNode left, final JsonNode right) {
+  protected static boolean equalsTo(final JsonNode left, final JsonNode right) {
     // Ignores the order of attributes
-    return left.equals(JSON_COMPARATOR, right) ? 0 : 1;
+    return left.equals(JSON_COMPARATOR, right);
   }
 
   protected static int compareTo(final ZonedDateTime left, final ZonedDateTime right) {
@@ -86,6 +111,20 @@ public class Comparison {
 
   protected static int compareTo(final String left, final String right) {
     return left.compareTo(right);
+  }
+
+  protected static boolean equalsTo(final byte[] left, final byte[] right) {
+
+    if (left.length != right.length)
+      return false;
+
+    for (int i = 0; i < left.length; i++) {
+      int compare = left[i] - right[i];
+      if (compare != 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   protected static int compareTo(final byte[] left, final byte[] right) {

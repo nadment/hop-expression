@@ -43,7 +43,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     }
 
     for (IExpression whenOperand : whenTuple) {
-      if (!whenOperand.getType().isFamily(valueType)) {
+      if (!whenOperand.getType().isFamily(valueType.getFamily())) {
         return false;
       }
     }
@@ -62,12 +62,12 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     }
 
     for (IExpression thenOperand : thenTuple) {
-      if (!(thenOperand.getType().isFamily(thenType) || thenOperand.isNull())) {
+      if (!(thenOperand.getType().isFamily(thenType.getFamily()) || thenOperand.isNull())) {
         return false;
       }
     }
 
-    return elseExpression.isNull() || elseExpression.getType().isFamily(thenType);
+    return elseExpression.isNull() || elseExpression.getType().isFamily(thenType.getFamily());
   }
 
   @Override

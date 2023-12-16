@@ -58,6 +58,11 @@ public final class BinaryType extends Type {
   public TypeId getId() {
     return TypeId.BINARY;
   }
+  
+  @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.ALL;
+  }
 
   /**
    * Coerce value to data type BINARY

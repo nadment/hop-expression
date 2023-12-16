@@ -36,7 +36,7 @@ import java.io.StringWriter;
 public class NotEqualOperator extends Operator {
 
   public NotEqualOperator(final String name) {
-    super("NOT_EQUAL", name, 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
+    super("NOT_EQUAL", name, 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED,
         OperatorCategory.COMPARISON, "/docs/not_equal.html");
   }
 
@@ -54,9 +54,8 @@ public class NotEqualOperator extends Operator {
     Object right = operands[1].getValue();
     if (right == null) {
       return null;
-    }
-
-    return Comparison.compare(left, right) != 0;
+    } 
+    return !Comparison.equals(left, right);
   }
 
   @Override

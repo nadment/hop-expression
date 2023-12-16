@@ -44,7 +44,7 @@ public final class IntegerType extends Type {
     if ( precision==PRECISION_NOT_SPECIFIED )
       precision = TypeId.INTEGER.getMaxPrecision();
     
-    if ( precision==TypeId.INTEGER.getMaxPrecision() && nullable==true)
+    if ( precision==TypeId.INTEGER.getMaxPrecision() && nullable)
       return INTEGER;
 
     return new IntegerType(precision, nullable);
@@ -62,6 +62,11 @@ public final class IntegerType extends Type {
   @Override
   public TypeId getId() {
     return TypeId.INTEGER;
+  }
+  
+  @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.ALL;
   }
 
   /**

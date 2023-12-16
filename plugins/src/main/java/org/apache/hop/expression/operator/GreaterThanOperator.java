@@ -36,7 +36,7 @@ import java.io.StringWriter;
 public class GreaterThanOperator extends Operator {
 
   public GreaterThanOperator() {
-    super("GREATER_THAN", ">", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
+    super("GREATER_THAN", ">", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
         OperatorCategory.COMPARISON, "/docs/greater_than.html");
   }
 

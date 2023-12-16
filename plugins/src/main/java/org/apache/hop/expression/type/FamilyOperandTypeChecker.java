@@ -79,6 +79,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     return OperandCountRange.between(min, max);
   }
 
+  @Override
   public boolean isOptional(int i) {
     return optional.test(i);
   }

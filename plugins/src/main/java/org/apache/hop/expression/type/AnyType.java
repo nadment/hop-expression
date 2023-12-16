@@ -42,6 +42,11 @@ public final class AnyType extends Type {
   }
 
   @Override
+  public TypeComparability getComparability() {
+    return TypeComparability.NONE;
+  } 
+  
+  @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
 
     if (value == null) {

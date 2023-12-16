@@ -34,11 +34,13 @@ import java.io.StringWriter;
  * Comparison equals operator.
  * <br>
  * <strong>Syntax:</strong> <code>x = y</code>
+ * <p>
+ * NULL is not equal ( = ) to anything—not even to another NULL.
  */
 public class EqualOperator extends Operator {
 
   public EqualOperator() {
-    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY, OperatorCategory.COMPARISON,
+    super("EQUAL", "=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_UNORDERED_COMPARABLE_UNORDERED, OperatorCategory.COMPARISON,
         "/docs/equal.html");
   }
 
@@ -49,8 +51,6 @@ public class EqualOperator extends Operator {
 
   @Override
   public Object eval(final IExpression[] operands) {
-    // Treats NULLs as unknown values
-    // NULL is not equal ( = ) to anything—not even to another NULL.
     Object left = operands[0].getValue();
     if (left == null) {
       return null;
@@ -59,7 +59,9 @@ public class EqualOperator extends Operator {
     if (right == null) {
       return null;
     }
-    return Comparison.compare(left, right) == 0;
+
+    //return Comparison.compare(left, right)==0;
+    return Comparison.equals(left, right);
   }
 
   @Override
@@ -90,14 +92,14 @@ public class EqualOperator extends Operator {
     }
 
     // Simplify TRUE=x → x IS TRUE
-    if (left.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, right);
-    }
+    //if (left.equals(Literal.TRUE)) {
+   //   return new Call(Operators.IS_TRUE, right);
+   // }
 
     // Simplify FALSE=x → x IS FALSE
-    if (left.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, right);
-    }
+    //if (left.equals(Literal.FALSE)) {
+    //  return new Call(Operators.IS_FALSE, right);
+    //}
 
     // Simplify 3=X+1 → 3-1=X
     if (left.isConstant() && right.is(Operators.ADD_NUMERIC)

@@ -34,7 +34,7 @@ import java.io.StringWriter;
 public class LessThanOrEqualOperator extends Operator {
 
   public LessThanOrEqualOperator() {
-    super("LESS_THAN_OR_EQUAL", "<=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.ANY_ANY,
+    super("LESS_THAN_OR_EQUAL", "<=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
         OperatorCategory.COMPARISON, "/docs/less_than_or_equal.html");
   }
 
