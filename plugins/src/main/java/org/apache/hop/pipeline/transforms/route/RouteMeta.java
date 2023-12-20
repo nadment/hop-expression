@@ -73,18 +73,13 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
     routes = new ArrayList<>();
   }
 
-  public RouteMeta(RouteMeta m) {
+  public RouteMeta(RouteMeta meta) {
     this();
-    this.defaultTargetTransformName = m.defaultTargetTransformName;
+    this.defaultTargetTransformName = meta.defaultTargetTransformName;
     for (Route route : this.routes) {
-      this.routes.add(new Route(route));
+      meta.routes.add(new Route(route));
     }
   }
-
-  // @Override
-  // public RouteMeta clone() {
-  // return new RouteMeta(this);
-  // }
 
   @Override
   public void getFields(IRowMeta rowMeta, String origin, IRowMeta[] info,
