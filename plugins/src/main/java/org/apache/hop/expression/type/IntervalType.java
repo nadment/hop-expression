@@ -24,12 +24,8 @@ import org.apache.hop.expression.exception.ConversionException;
 public final class IntervalType extends Type {
 
   private static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
-  
-  public static final IntervalType INTERVAL = new IntervalType(true);
 
-  public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
-  
-  private IntervalType(boolean nullable) {
+  IntervalType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }
 
@@ -77,7 +73,7 @@ public final class IntervalType extends Type {
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+        TypeId.fromValue(value), this);
   }
 
   /**

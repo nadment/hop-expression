@@ -16,14 +16,11 @@ package org.apache.hop.expression;
 
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.IntervalType;
-import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
@@ -46,9 +43,9 @@ public final class Literal implements IExpression {
   /**
    * NULL literal is a boolean data type with null value
    */
-  public static final Literal NULL = new Literal(null, BooleanType.BOOLEAN);
-  public static final Literal TRUE = new Literal(Boolean.TRUE, BooleanType.BOOLEAN_NOT_NULL);
-  public static final Literal FALSE = new Literal(Boolean.FALSE, BooleanType.BOOLEAN_NOT_NULL);
+  public static final Literal NULL = new Literal(null, Types.BOOLEAN);
+  public static final Literal TRUE = new Literal(Boolean.TRUE, Types.BOOLEAN_NOT_NULL);
+  public static final Literal FALSE = new Literal(Boolean.FALSE, Types.BOOLEAN_NOT_NULL);
   public static final Literal ZERO = new Literal(0L, IntegerType.of(1).withNullability(false));
   public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
 
@@ -115,15 +112,15 @@ public final class Literal implements IExpression {
     }
 
     if (value instanceof ZonedDateTime) {
-      return new Literal(value, DateType.DATE_NOT_NULL);
+      return new Literal(value, Types.DATE_NOT_NULL);
     }
 
     if (value instanceof JsonNode) {
-      return new Literal(value, JsonType.JSON_NOT_NULL);
+      return new Literal(value, Types.JSON_NOT_NULL);
     }
 
     if (value instanceof Interval) {
-      return new Literal(value, IntervalType.INTERVAL_NOT_NULL);
+      return new Literal(value, Types.INTERVAL_NOT_NULL);
     }
 
     // Special internal case TimeUnit, DataType, Random

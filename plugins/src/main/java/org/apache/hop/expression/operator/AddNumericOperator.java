@@ -23,9 +23,9 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import java.math.BigDecimal;
 import java.util.PriorityQueue;
 
@@ -70,10 +70,10 @@ public class AddNumericOperator extends AddOperator {
     
     // Cast type to number
     if ( !left.getType().isFamily(TypeFamily.NUMERIC) ) {
-      left = new Call(Operators.CAST, left, Literal.of(NumberType.NUMBER));
+      left = new Call(Operators.CAST, left, Literal.of(Types.NUMBER));
     }
     if ( !right.getType().isFamily(TypeFamily.NUMERIC) ) {
-      right = new Call(Operators.CAST, right, Literal.of(NumberType.NUMBER));
+      right = new Call(Operators.CAST, right, Literal.of(Types.NUMBER));
     }
     
     // Optimize data type

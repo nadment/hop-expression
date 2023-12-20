@@ -18,12 +18,13 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -72,14 +73,31 @@ public class CastFunction extends Function {
 
     // Cast null value
     if (call.getOperand(0).isNull()) {
-      return new Literal(null, call.getOperand(1).getValue(Type.class));
+      //return new Literal(null, call.getOperand(1).getValue(Type.class));
+      return new Literal(null, call.getType());
     }
+    
+    // When cast without format
+    if (call.getOperandCount() == 2) {
 
-    // Remove lossless cast
-    Type fromType = call.getOperand(0).getType();
-    Type toType = call.getOperand(1).getValue(Type.class);
-    if (Types.isLosslessCast(fromType, toType)) {
-      return call.getOperand(0);
+      // Cast constant value
+      if (call.getOperand(0).isConstant()) {
+        return new Literal(call.getValue(), call.getType());
+      }
+
+      // Remove unnecessary chained cast CAST(CAST(x as type(10)) as type(5)) → CAST(x as type(5))
+      if (call.getOperand(0).is(Operators.CAST)) {
+        Type toType = call.getType();
+        Type fromType = call.getOperand(0).getType();
+        if (Types.isLosslessCast(toType, fromType)) {
+          return new Call(call.getOperator(), call.getOperand(0).asCall().getOperand(0), Literal.of(toType));
+        }
+      }      
+
+      // Remove loss-less cast
+      else if (Types.isLosslessCast(call.getOperand(0).getType(), call.getType())) {
+        return call.getOperand(0);
+      }
     }
 
     return call;

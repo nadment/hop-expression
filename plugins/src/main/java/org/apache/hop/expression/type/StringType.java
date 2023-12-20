@@ -28,11 +28,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class StringType extends Type {
-  /**
-   * Default STRING type with maximum precision.
-   */
-  public static final StringType STRING = new StringType(TypeId.STRING.getMaxPrecision(), true);
-
 
   public static StringType of(int precision) {
     return of(precision, true);
@@ -43,7 +38,7 @@ public final class StringType extends Type {
       precision = TypeId.STRING.getMaxPrecision();
     
     if ( precision==TypeId.STRING.getMaxPrecision() && nullable)
-      return STRING;  
+      return Types.STRING;  
     
     return new StringType(precision, nullable);
   }
@@ -55,7 +50,7 @@ public final class StringType extends Type {
     return StringType.of(precision).withNullability(false);
   }
   
-  private StringType(int precision, boolean nullable) {
+  /* Package */ StringType(int precision, boolean nullable) {
     super(precision, SCALE_NOT_SPECIFIED, nullable);
   }
 
@@ -106,7 +101,7 @@ public final class StringType extends Type {
   }
 
   /**
-   * Convert a value to the specified type {@link StringType} with a pattern.
+   * Convert a value to the specified type {@link StringType} with optional pattern and adjust to precision.
    *
    * @param value the value to convert
    * @param pattern the optional pattern to use for conversion to string when value is date or
@@ -120,52 +115,38 @@ public final class StringType extends Type {
       return null;
     }
 
+    String result = null;
+    
     if (value instanceof String) {
-      String str = (String) value;
-
-      // adjust length
-      if (this.precision < str.length()) {
-        str = str.substring(0, this.precision);
-      }
-
-      return str;
+      result = (String) value;
     }
-    if (value instanceof Boolean) {
-      String result = convertBooleanToString((boolean) value);
-      if (checkPrecision(result)) {
-        return result;
-      }
-
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, BooleanType.BOOLEAN, value,
-          this);
+    else if (value instanceof Boolean) {
+      result = convertBooleanToString((boolean) value);
     } else if (value instanceof Number) {
       if (pattern == null) {
         pattern = "TM";
       }
       BigDecimal number = NumberType.coerce(value);
-      String result = NumberFormat.of(pattern).format(number);
-      if (checkPrecision(result)) {
-        return result;
-      }
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, NumberType.NUMBER, value,
-          this);
+      result = NumberFormat.of(pattern).format(number);
     }
-    if (value instanceof ZonedDateTime) {
+    else if (value instanceof ZonedDateTime) {
       if (pattern == null)
         pattern = "YYYY-MM-DD";
-      String result = DateTimeFormat.of(pattern).format((ZonedDateTime) value);
-
-      if (checkPrecision(result)) {
-        return result;
-      }
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, DateType.DATE, value, this);
+      result = DateTimeFormat.of(pattern).format((ZonedDateTime) value);
     }
-
-    if (value instanceof byte[]) {
-      return new String((byte[]) value, StandardCharsets.UTF_8);
+    else if (value instanceof byte[]) {
+      result =  new String((byte[]) value, StandardCharsets.UTF_8);
     }
-
-    return String.valueOf(value);
+    
+    if (result==null ) {
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, this);
+    }
+    // adjust length
+    if (precision < result.length()) {
+      result = result.substring(0, precision);
+    }
+    
+    return result;
   }
 
 

@@ -19,6 +19,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.util.Documentations;
 import java.io.StringWriter;
 import java.math.MathContext;
@@ -255,6 +256,53 @@ public abstract class Operator implements Comparable<Operator> {
    */
   public Object eval(final IExpression[] operands) {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message());
+  }
+
+  /**
+   * Check the number of operands expected
+   * @param call
+   */
+  public void checkOperandCount(final Call call) {
+    IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
+    if (!operandCountRange.isValid(call.getOperandCount())) {
+      if (call.getOperandCount() < operandCountRange.getMin()) {
+        throw new ExpressionException(call.getPosition(), ErrorCode.NOT_ENOUGH_ARGUMENT, this);
+      }
+      if (call.getOperandCount() > operandCountRange.getMax()) {
+        throw new ExpressionException(call.getPosition(), ErrorCode.TOO_MANY_ARGUMENT, this);
+      }
+    }
+  }
+  
+  /**
+   * Check operand types expected
+   * 
+   * @param call The call to check
+   * @param throwOnFailure whether to throw an exception if check fails(otherwise returns false in that case)
+   * 
+   * @return whether check succeeded
+   */
+  public boolean checkOperandTypes(final Call call, boolean throwOnFailure) {
+
+    if (operandTypeChecker.checkOperandTypes(call)) {
+      return true;
+    }
+
+    if (throwOnFailure) { 
+      throw new ExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Infers the return type of an invocation of this operator; only called
+   * after the number and types of operands have already been validated.
+   * 
+   * @return inferred return type
+   */
+  public Type inferReturnType(Call call) {
+    return returnTypeInference.inferReturnType(call);
   }
 
   public IExpression compile(final IExpressionContext context, final Call call)

@@ -26,17 +26,8 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 public final class JsonType extends Type {
 
-  /**
-   * Default JSON type.
-   */
-  public static final JsonType JSON = new JsonType(true);
-
-  /**
-   * Default JSON NOT NULL type.
-   */
-  public static final JsonType JSON_NOT_NULL = new JsonType(false);
   
-  private JsonType(boolean nullable) {
+  JsonType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }
 
@@ -72,8 +63,8 @@ public final class JsonType extends Type {
       return JsonType.convertStringToJson((String) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        JsonType.JSON);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+        TypeId.JSON);
   }
 
 
@@ -122,7 +113,7 @@ public final class JsonType extends Type {
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+        TypeId.fromValue(value), this);
   }
 
   /**

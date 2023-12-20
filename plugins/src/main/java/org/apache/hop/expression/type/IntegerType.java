@@ -22,11 +22,6 @@ import org.apache.hop.expression.exception.ConversionException;
 import java.math.BigDecimal;
 
 public final class IntegerType extends Type {
-  
-  /**
-   * Default INTEGER type with maximum precision.
-   */
-  public static final IntegerType INTEGER = new IntegerType(TypeId.INTEGER.getMaxPrecision(), true);
 
   public static IntegerType from(final Long value) {
     return of(numberOfDigit(value), false);
@@ -45,12 +40,12 @@ public final class IntegerType extends Type {
       precision = TypeId.INTEGER.getMaxPrecision();
     
     if ( precision==TypeId.INTEGER.getMaxPrecision() && nullable)
-      return INTEGER;
+      return Types.INTEGER;
 
     return new IntegerType(precision, nullable);
   }
 
-  private IntegerType(int precision, boolean nullable) {
+  IntegerType(int precision, boolean nullable) {
     super(precision, 0, nullable);
   }
 
@@ -92,8 +87,8 @@ public final class IntegerType extends Type {
     // return ((boolean) value) ? 1L : 0L;
     // }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        IntegerType.INTEGER);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+        TypeId.INTEGER);
   }
 
   @Override
@@ -148,7 +143,7 @@ public final class IntegerType extends Type {
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+        TypeId.fromValue(value), this);
   }
 
   public static final Long convertStringToInteger(final String str) throws ConversionException {

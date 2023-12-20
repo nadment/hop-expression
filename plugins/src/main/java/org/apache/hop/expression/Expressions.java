@@ -39,7 +39,7 @@ public class Expressions {
 
     do {
       original = expression;
-      expression = expression.compile(context);      
+      expression = expression.compile(context);
     } while (!expression.equals(original));
 
     return expression;
@@ -51,9 +51,10 @@ public class Expressions {
     ExpressionParser parser = new ExpressionParser(context.resolve(source));
 
     try {
+      // Syntax analysis
       IExpression expression = parser.parse();
 
-      // Validate expression
+      // Semantic analysis
       expression.validate(context);
 
       // Compile expression recursively

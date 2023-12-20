@@ -21,9 +21,9 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ConversionException;
-import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Converts a string or numeric expression to a boolean value.
@@ -45,7 +45,7 @@ public class TryToBooleanFunction extends Function {
       return null;
 
     try {
-      return BooleanType.BOOLEAN.cast(value, null);
+      return Types.BOOLEAN.cast(value, null);
     } catch (ConversionException e) {
       return null;
     }

@@ -17,10 +17,10 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;

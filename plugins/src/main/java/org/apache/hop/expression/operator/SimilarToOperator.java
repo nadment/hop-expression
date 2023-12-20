@@ -17,9 +17,9 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;

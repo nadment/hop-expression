@@ -23,7 +23,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Enumeration of the data type which can be used to construct an expression.
+ * Enumeration of the data type identifier which can be used to construct an expression.
  *
  * <p>
  * The order of enum declaration is important to be usable with <code>compareTo</code> method.
@@ -56,6 +56,7 @@ public enum TypeId {
    * */
   DATE(TypeFamily.TEMPORAL, false, false, -1, -1, -1, -1, ZonedDateTime.class),
 
+  /** A Json type */
   JSON(TypeFamily.JSON, false, false, -1, -1, -1, -1, JsonNode.class),
 
   /** A binary type can be images, sounds, videos, and other types of binary data */
@@ -75,7 +76,7 @@ public enum TypeId {
   protected static final Set<TypeId> JSON_TYPES = Set.of(JSON);
   protected static final Set<TypeId> INTERVAL_TYPES = Set.of(INTERVAL);
 
-  protected static final Set<TypeId> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, BINARY, JSON);
+  protected static final Set<TypeId> ALL_TYPES = Set.of(STRING, BOOLEAN, INTEGER, NUMBER, DATE, INTERVAL, BINARY, JSON);
   
   /**
    * If the precision parameter is supported.
@@ -112,7 +113,7 @@ public enum TypeId {
   private final Class<?> javaClass;
 
   public static final Set<String> ALL_NAMES =
-      Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String");
+      Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval");
 
   private TypeId(TypeFamily family, boolean supportsPrecision, boolean supportsScale, int maxPrecision, int minPrecision, int maxScale, int minScale, Class<?> javaClass) {
     this.family = family;
@@ -213,9 +214,9 @@ public enum TypeId {
   }
 
   /**
-   * Search a data type identifier for java class.
+   * Search a data type identifier from a java class.
    *
-   * @return The {@link TypeId}, 'UNKNOWN' if not found
+   * @return The {@link TypeId} or 'UNKNOWN' if not found
    */
   public static TypeId fromJavaClass(final Class<?> clazz) {
     if (clazz == null)
@@ -232,5 +233,24 @@ public enum TypeId {
       }
     }
     return UNKNOWN;
+  }
+  
+  /**
+   * Search a data type identifier from a value.
+   * 
+   * @return The type id or 'UNKNOWN' if not found
+   */
+  public static TypeId fromValue(final Object value) {
+    if (value == null)
+      return UNKNOWN;
+
+    if (value instanceof Integer) {
+      return INTEGER;
+    }
+    if (value instanceof Double) {
+      return NUMBER;
+    }
+    
+    return fromJavaClass(value.getClass());
   }
 }

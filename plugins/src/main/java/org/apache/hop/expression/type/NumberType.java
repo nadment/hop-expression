@@ -32,11 +32,7 @@ public final class NumberType extends Type {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
-  /**
-   * Default NUMBER(38,9) type with max precision and default scale.
-   */
-  public static final NumberType NUMBER =
-      new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), true);
+
 
   public static NumberType from(final BigDecimal number) {
 
@@ -71,12 +67,12 @@ public final class NumberType extends Type {
 
     if (precision == TypeId.NUMBER.getMaxPrecision() && scale == TypeId.NUMBER.getDefaultScale()
         && nullable)
-      return NUMBER;
+      return Types.NUMBER;
 
     return new NumberType(precision, scale, nullable);
   }
 
-  private NumberType(int precision, int scale, boolean nullable) {
+  NumberType(int precision, int scale, boolean nullable) {
     super(precision, scale, nullable);
   }
 
@@ -171,7 +167,7 @@ public final class NumberType extends Type {
       return convertBinaryToNumber((byte[]) value);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value),
         this);
   }
 
@@ -210,8 +206,8 @@ public final class NumberType extends Type {
     if (value instanceof String) {
       return convertStringToNumber((String) value);
     }
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        NumberType.NUMBER);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+        TypeId.NUMBER);
   }
 
   public static final BigDecimal convertStringToNumber(final String str)
@@ -219,15 +215,15 @@ public final class NumberType extends Type {
     try {
       return FORMAT.parse(str);
     } catch (ParseNumberException e) {
-      throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, str, StringType.STRING,
-          NumberType.NUMBER);
+      throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, str, TypeId.STRING,
+          TypeId.NUMBER);
     }
   }
 
   public static BigDecimal convertBinaryToNumber(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
-      throw new ConversionException(ErrorCode.CONVERSION_ERROR, bytes, BinaryType.BINARY,
-          NumberType.NUMBER);
+      throw new ConversionException(ErrorCode.CONVERSION_ERROR, bytes, TypeId.BINARY,
+          TypeId.NUMBER);
     long result = 0;
     for (int i = 0; i < bytes.length; i++) {
       result <<= Byte.SIZE;

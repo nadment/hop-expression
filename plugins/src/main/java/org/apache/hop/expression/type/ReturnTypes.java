@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 
 /**
@@ -53,72 +52,72 @@ public final class ReturnTypes {
   }
 
 
-  public static final IReturnTypeInference ANY = explicit(AnyType.ANY);
+  public static final IReturnTypeInference ANY = explicit(Types.ANY);
 
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN.
    */
-  public static final IReturnTypeInference BOOLEAN_NULLABLE = explicit(BooleanType.BOOLEAN);
+  public static final IReturnTypeInference BOOLEAN_NULLABLE = explicit(Types.BOOLEAN);
 
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN NOT NULL.
    */
-  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(BooleanType.BOOLEAN.withNullability(false));
+  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN.withNullability(false));
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY.
    */
-  public static final IReturnTypeInference BINARY_NULLABLE = explicit(BinaryType.BINARY);
+  public static final IReturnTypeInference BINARY_NULLABLE = explicit(Types.BINARY);
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY NOT NULL.
    */
-  public static final IReturnTypeInference BINARY_NOT_NULL = explicit(BinaryType.BINARY.withNullability(false));
+  public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY.withNullability(false));
   
   /**
    * Type-inference strategy whereby the result type of a call is STRING.
    */
-  public static final IReturnTypeInference STRING_NULLABLE = explicit(StringType.STRING);
+  public static final IReturnTypeInference STRING_NULLABLE = explicit(Types.STRING);
 
   /**
    * Type-inference strategy whereby the result type of a call is STRING NOT NULL.
    */
-  public static final IReturnTypeInference STRING_NOT_NULL = explicit(StringType.STRING.withNullability(false));
+  public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING.withNullability(false));
 
   /**
    * Type-inference strategy whereby the result type of a call is INTEGER.
    */
-  public static final IReturnTypeInference INTEGER_NULLABLE = explicit(IntegerType.INTEGER);
+  public static final IReturnTypeInference INTEGER_NULLABLE = explicit(Types.INTEGER);
 
   /**
    * Type-inference strategy whereby the result type of a call is NUMBER.
    */
-  public static final IReturnTypeInference NUMBER_NULLABLE = explicit(NumberType.NUMBER);
+  public static final IReturnTypeInference NUMBER_NULLABLE = explicit(Types.NUMBER);
 
   /**
    * Type-inference strategy whereby the result type of a call is NUMBER NOT NULL.
    */
-  public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(NumberType.NUMBER.withNullability(false));
+  public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER.withNullability(false));
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference DATE_NULLABLE = explicit(DateType.DATE);
+  public static final IReturnTypeInference DATE_NULLABLE = explicit(Types.DATE);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE NOT NULL.
    */
-  public static final IReturnTypeInference DATE_NOT_NULL = explicit(DateType.DATE.withNullability(false));
+  public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE.withNullability(false));
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
    */
-  public static final IReturnTypeInference JSON_NULLABLE = explicit(JsonType.JSON);
+  public static final IReturnTypeInference JSON_NULLABLE = explicit(Types.JSON);
 
   /**
    * Type-inference strategy whereby the result type of a call is INTERVAL.
    */
-  public static final IReturnTypeInference INTERVAL_NULLABLE = explicit(IntervalType.INTERVAL);
+  public static final IReturnTypeInference INTERVAL_NULLABLE = explicit(Types.INTERVAL);
 
   /**
    * Type-inference strategy whereby the result type of a call is the type of the operand #0.
@@ -162,7 +161,7 @@ public final class ReturnTypes {
       return NumberType.of(type.getPrecision(), 0, type.isNullable());
     }
 
-    return IntegerType.INTEGER;
+    return Types.INTEGER;
   };
 
   /**
@@ -175,7 +174,7 @@ public final class ReturnTypes {
       return type;
 
     // By default coerce to Number
-    return NumberType.NUMBER;
+    return Types.NUMBER;
   };
 
   /**
@@ -247,10 +246,6 @@ public final class ReturnTypes {
     return StringType.of(precision);
   };
 
-  public static final IReturnTypeInference TRY_OPERATOR = call -> {
-    Call child = call.getOperand(0).asCall();
-    return child.inferReturnType().getType();
-  };
   public static final IReturnTypeInference ADDITIVE_OPERATOR = call -> deriveAdditiveType(call.getOperand(0).getType(), call.getOperand(1).getType());  
   public static final IReturnTypeInference MULTIPLY_OPERATOR = call -> deriveMultiplyType(call.getOperand(0).getType(), call.getOperand(1).getType());
   public static final IReturnTypeInference DIVIDE_OPERATOR = call -> deriveDivideType(call.getOperand(0).getType(), call.getOperand(1).getType());

@@ -23,8 +23,8 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public class TupleTest extends ExpressionTest {
     assertEquals(IntegerType.of(1).withNullability(false), tuple1.getType());
     assertEquals(IntegerType.of(1).withNullability(false), tuple4.getType());
     assertEquals(UnknownType.UNKNOWN, tuple3.getType());
-    assertEquals(BooleanType.BOOLEAN.withNullability(false), tuple5.getType());
+    assertEquals(Types.BOOLEAN_NOT_NULL, tuple5.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
     assertTrue(tuple1.isConstant());

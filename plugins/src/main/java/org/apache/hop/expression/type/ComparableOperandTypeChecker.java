@@ -29,12 +29,16 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
   @Override
   public boolean checkOperandTypes(final Call call) {    
     IOperandCountRange range = getOperandCountRange();
-    for (int i = 0; i < range.getMax(); i++) {
+    int max = range.getMax();
+    if ( max<0 ) max = call.getOperandCount();
+    
+    for (int i = 0; i < max; i++) {
      Type type = call.getOperand(i).getType();
       if (type.getComparability().ordinal() < requiredComparability.ordinal()) {
         return false;
       }
     }    
+   
     return true;
   }
 }

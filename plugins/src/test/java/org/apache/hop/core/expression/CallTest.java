@@ -25,7 +25,7 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
-import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.util.List;
@@ -82,7 +82,7 @@ public class CallTest extends ExpressionTest {
     evalTrue("Cast(FIELD_NUMBER::NUMBER as BOOLEAN)");
     
     // Coercion to string
-    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(StringType.STRING);
+    evalEquals("Upper(FIELD_BOOLEAN_TRUE::BOOLEAN)", "TRUE").returnType(Types.STRING);
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::STRING)", "TRUE");
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::INTEGER)", "1");
     evalEquals("Upper(FIELD_BOOLEAN_TRUE::NUMBER)", "1");
@@ -113,7 +113,7 @@ public class CallTest extends ExpressionTest {
   public void orderOperandByCost() throws Exception {
 
     // Order operands by cost with symmetrical operator
-    optimize("FIELD_STRING_NUMBER+3", "3+FIELD_STRING_NUMBER");
-    optimize("FIELD_STRING_NUMBER*3", "3*FIELD_STRING_NUMBER");
+    optimize("1+FIELD_STRING_NUMBER+3", "4+FIELD_STRING_NUMBER");
+    optimize("2*FIELD_STRING_NUMBER*3", "6*FIELD_STRING_NUMBER");
   }
 }

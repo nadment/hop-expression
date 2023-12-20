@@ -21,14 +21,12 @@ import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -272,10 +270,10 @@ public class Identifier implements IExpression {
   protected Type createDataType(IValueMeta meta) {
     switch (meta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
-        return BooleanType.BOOLEAN;
+        return Types.BOOLEAN;
       case IValueMeta.TYPE_DATE:
       case IValueMeta.TYPE_TIMESTAMP:
-        return DateType.DATE;
+        return Types.DATE;
       case IValueMeta.TYPE_STRING:
         return StringType.of(meta.getLength());
       case IValueMeta.TYPE_INTEGER:
@@ -284,7 +282,7 @@ public class Identifier implements IExpression {
       case IValueMeta.TYPE_BIGNUMBER:
         return NumberType.of(meta.getLength(), meta.getPrecision());
       case ValueMetaJson.TYPE_JSON:
-        return JsonType.JSON;
+        return Types.JSON;
       case IValueMeta.TYPE_BINARY:
         return BinaryType.of(meta.getLength());
       default:

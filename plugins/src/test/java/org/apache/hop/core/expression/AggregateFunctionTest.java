@@ -15,16 +15,15 @@
 
 package org.apache.hop.core.expression;
 
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
+import org.apache.hop.expression.type.Types;
 import org.junit.Test;
 
 public class AggregateFunctionTest extends ExpressionTest { 
   @Test
   public void Avg() throws Exception {
-    returnType("AVG(FIELD_NUMBER)", NumberType.NUMBER);
+    returnType("AVG(FIELD_NUMBER)", Types.NUMBER);
   }
 
   @Test
@@ -33,7 +32,7 @@ public class AggregateFunctionTest extends ExpressionTest {
     evalFails("Count(DISTINCT )");
     evalFails("Count(1,2)");
 
-    returnType("Count(*)", IntegerType.INTEGER);
+    returnType("Count(*)", Types.INTEGER);
 
     optimize("COUNT(FIELD_INTEGER)");
     optimize("COUNT(*)");
@@ -45,39 +44,39 @@ public class AggregateFunctionTest extends ExpressionTest {
     evalFails("CountIf()");
     evalFails("CountIf(FIELD_DATE)");
     evalFails("CountIf(1,2)");
-    returnType("CountIf(FIELD_INTEGER>=10)", IntegerType.INTEGER);
+    returnType("CountIf(FIELD_INTEGER>=10)", Types.INTEGER);
     optimize("COUNTIF(FIELD_INTEGER>=10)","COUNTIF(10<=FIELD_INTEGER)");
   }
 
   @Test
   public void Sum() throws Exception {
-    returnType("SUM(FIELD_INTEGER)", NumberType.NUMBER);
+    returnType("SUM(FIELD_INTEGER)", Types.NUMBER);
   }
   
   @Test
   public void Max() throws Exception {
     returnType("MAX(FIELD_STRING)", StringType.of(1000));
-    returnType("MAX(FIELD_INTEGER)", IntegerType.INTEGER);
-    returnType("MAX(FIELD_NUMBER)", NumberType.NUMBER);
-    returnType("MAX(FIELD_DATE)", DateType.DATE);
+    returnType("MAX(FIELD_INTEGER)", IntegerType.of(12));
+    returnType("MAX(FIELD_NUMBER)", Types.NUMBER);
+    returnType("MAX(FIELD_DATE)", Types.DATE);
   }
 
   @Test
   public void Min() throws Exception {
     returnType("MIN(FIELD_STRING)", StringType.of(1000));
-    returnType("MIN(FIELD_INTEGER)", IntegerType.INTEGER);
-    returnType("MIN(FIELD_NUMBER)", NumberType.NUMBER);
-    returnType("MIN(FIELD_DATE)", DateType.DATE);
+    returnType("MIN(FIELD_INTEGER)", IntegerType.of(12));
+    returnType("MIN(FIELD_NUMBER)", Types.NUMBER);
+    returnType("MIN(FIELD_DATE)", Types.DATE);
   }
   
   @Test
   public void Median() throws Exception {
-    returnType("MEDIAN(FIELD_INTEGER)", NumberType.NUMBER);
+    returnType("MEDIAN(FIELD_INTEGER)", Types.NUMBER);
   }
 
   @Test
   public void AnyValue() throws Exception {
-    returnType("Any_Value(FIELD_DATE)", DateType.DATE);
+    returnType("Any_Value(FIELD_DATE)", Types.DATE);
   }
   
   @Test
@@ -88,7 +87,7 @@ public class AggregateFunctionTest extends ExpressionTest {
     optimize("FIRST_VALUE(FIELD_DATE) RESPECT NULLS", "FIRST_VALUE(FIELD_DATE)");
     optimize("FIRST_VALUE(FIELD_DATE) IGNORE NULLS");
     
-    returnType("FIRST_VALUE(FIELD_DATE)", DateType.DATE);
+    returnType("FIRST_VALUE(FIELD_DATE)", Types.DATE);
   }
   
   @Test
@@ -99,7 +98,7 @@ public class AggregateFunctionTest extends ExpressionTest {
     optimize("LAST_VALUE(FIELD_DATE) RESPECT NULLS", "LAST_VALUE(FIELD_DATE)");
     optimize("LAST_VALUE(FIELD_DATE) IGNORE NULLS");
     
-    returnType("LAST_VALUE(FIELD_DATE)", DateType.DATE);
+    returnType("LAST_VALUE(FIELD_DATE)", Types.DATE);
   }
 
   @Test
@@ -111,35 +110,35 @@ public class AggregateFunctionTest extends ExpressionTest {
     optimize("NTH_VALUE(FIELD_DATE,2) RESPECT NULLS", "NTH_VALUE(FIELD_DATE,2)");
     optimize("NTH_VALUE(FIELD_DATE,2) IGNORE NULLS");
     
-    returnType("NTH_VALUE(FIELD_DATE,3)", DateType.DATE);
+    returnType("NTH_VALUE(FIELD_DATE,3)", Types.DATE);
   }
   
   @Test
   public void ListAgg() throws Exception {
-    returnType("ListAGG(FIELD_STRING,',')", StringType.STRING);
+    returnType("ListAGG(FIELD_STRING,',')", Types.STRING);
   }  
   
   @Test
   public void Percentile() throws Exception {
-    returnType("Percentile(FIELD_INTEGER,0.75)", NumberType.NUMBER);
+    returnType("Percentile(FIELD_INTEGER,0.75)", Types.NUMBER);
   }
 
   @Test
   public void VarPop() throws Exception {
-    returnType("Variance_Pop(FIELD_INTEGER)", NumberType.NUMBER);
+    returnType("Variance_Pop(FIELD_INTEGER)", Types.NUMBER);
   }
   
   public void VarSamp() throws Exception {
-    returnType("Variance_Samp(FIELD_INTEGER)", NumberType.NUMBER);
+    returnType("Variance_Samp(FIELD_INTEGER)", Types.NUMBER);
   }
 
   @Test
   public void StdDevPop() throws Exception {
-    returnType("StdDev_Pop(FIELD_INTEGER)", NumberType.NUMBER);
+    returnType("StdDev_Pop(FIELD_INTEGER)", Types.NUMBER);
   }
   
   @Test
   public void StdDevSamp() throws Exception {
-    returnType("StdDev_Samp(FIELD_INTEGER)", NumberType.NUMBER);
+    returnType("StdDev_Samp(FIELD_INTEGER)", Types.NUMBER);
   }
 }

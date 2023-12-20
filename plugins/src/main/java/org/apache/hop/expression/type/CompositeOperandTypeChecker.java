@@ -44,8 +44,14 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
   public boolean checkOperandTypes(Call call) {
     switch (composition) {
       case REPEAT:      
+        for (IOperandTypeChecker rule : rules) {
+          ISingleOperandTypeChecker checker = (ISingleOperandTypeChecker) rule;
+
+          if (!checker.checkSingleOperandType(call.getOperand(0))) {
+            return false;
+          }
+        }
         return true;
-      
       case AND:
         for (IOperandTypeChecker rule : rules) {
           if (!rule.checkOperandTypes(call)) {

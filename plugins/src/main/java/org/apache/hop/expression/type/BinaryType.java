@@ -23,11 +23,6 @@ import java.nio.charset.StandardCharsets;
 
 public final class BinaryType extends Type {
   
-  /**
-   * Default BINARY type with maximum precision.
-   */
-  public static final BinaryType BINARY = new BinaryType(TypeId.BINARY.getMaxPrecision(), true);
-
   public static BinaryType from(final byte[] value) {
     int precision = value.length;
     // Empty binary array should return 1
@@ -41,11 +36,11 @@ public final class BinaryType extends Type {
   
   public static BinaryType of(int precision, boolean nullable) {
     if ( precision==PRECISION_NOT_SPECIFIED && nullable)
-      return BINARY;  
+      return Types.BINARY;  
     return new BinaryType(precision, nullable);
   }
 
-  private BinaryType(int precision, boolean nullable) {
+  BinaryType(int precision, boolean nullable) {
     super(precision, SCALE_NOT_SPECIFIED, nullable);
   }
 
@@ -81,8 +76,8 @@ public final class BinaryType extends Type {
       return ((String) value).getBytes(StandardCharsets.UTF_8);
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        BinaryType.BINARY);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+        TypeId.BINARY);
   }
 
   @Override
@@ -127,7 +122,7 @@ public final class BinaryType extends Type {
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+        TypeId.fromValue(value), this);
   }
 
   public static byte[] convertIntegerToBinary(Long number) throws ConversionException {

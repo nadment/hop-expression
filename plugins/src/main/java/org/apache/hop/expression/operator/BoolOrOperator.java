@@ -72,11 +72,12 @@ public class BoolOrOperator extends Operator {
     // Remove duplicate predicates
     // x OR x → x
     // x OR y OR x → x OR y
-    PriorityQueue<IExpression> conditions = new PriorityQueue<>(new ExpressionComparator());
-    conditions.addAll(this.getChainedOperands(call, false));
+    PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
+    predicates.addAll(this.getChainedOperands(call, false));
 
     final List<IExpression> isNullTerms = new ArrayList<>();
     final List<IExpression> isNotNullTerms = new ArrayList<>();
+    final List<IExpression> identifiers = new ArrayList<>();
     final Map<Pair<IExpression, IExpression>, Call> strongTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> equalTerms = new HashMap<>();
     final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
@@ -85,54 +86,57 @@ public class BoolOrOperator extends Operator {
     final MultiValuedMap<IExpression, Pair<Call, Literal>> equalsLiterals =
         new ArrayListValuedHashMap<>();
 
-    for (IExpression condition : conditions) {
+    for (IExpression predicate : predicates) {
 
       // TRUE as soon as any predicate is TRUE
-      if (condition == Literal.TRUE) {
+      if (predicate == Literal.TRUE) {
         return Literal.TRUE;
       }
 
-      if (condition.is(Kind.CALL)) {
-        Call predicate = condition.asCall();
+      if (predicate.is(Kind.IDENTIFIER)) {
+        identifiers.add(predicate);
+      }
+      else if (predicate.is(Kind.CALL)) {
+        Call term = predicate.asCall();
 
-        if (predicate.is(Operators.IS_NULL)) {
-          isNullTerms.add(predicate.getOperand(0));
+        if (term.is(Operators.IS_NULL)) {
+          isNullTerms.add(term.getOperand(0));
         }
-        if (predicate.is(Operators.IS_NOT_NULL)) {
-          isNotNullTerms.add(predicate.getOperand(0));
+        if (term.is(Operators.IS_NOT_NULL)) {
+          isNotNullTerms.add(term.getOperand(0));
         }
-        if (predicate.is(Operators.EQUAL)) {
-          equalTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
+        if (term.is(Operators.EQUAL)) {
+          equalTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
 
-          if (predicate.getOperand(0).is(Kind.LITERAL)) {
-            equalsLiterals.put(predicate.getOperand(1),
-                Pair.of(predicate, predicate.getOperand(0).asLiteral()));
+          if (term.getOperand(0).is(Kind.LITERAL)) {
+            equalsLiterals.put(term.getOperand(1),
+                Pair.of(term, term.getOperand(0).asLiteral()));
           }
-          if (predicate.getOperand(1).is(Kind.LITERAL)) {
-            equalsLiterals.put(predicate.getOperand(0),
-                Pair.of(predicate, predicate.getOperand(1).asLiteral()));
-          }
-        }
-        if (predicate.is(Operators.IN) && predicate.getOperand(1).isConstant()) {
-          for (IExpression operand : predicate.getOperand(1).asTuple()) {
-            equalsLiterals.put(predicate.getOperand(0), Pair.of(predicate, operand.asLiteral()));
+          if (term.getOperand(1).is(Kind.LITERAL)) {
+            equalsLiterals.put(term.getOperand(0),
+                Pair.of(term, term.getOperand(1).asLiteral()));
           }
         }
-        if (predicate.is(Operators.NOT_EQUAL)) {
-          notEqualTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
+        if (term.is(Operators.IN) && term.getOperand(1).isConstant()) {
+          for (IExpression operand : term.getOperand(1).asTuple()) {
+            equalsLiterals.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
+          }
         }
-        if (predicate.is(Operators.LESS_THAN)) {
-          lessThanTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
+        if (term.is(Operators.NOT_EQUAL)) {
+          notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
-        if (predicate.is(Operators.GREATER_THAN)) {
-          greaterThanTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)),
-              predicate);
+        if (term.is(Operators.LESS_THAN)) {
+          lessThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
-        if (Operators.is(predicate, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
+        if (term.is(Operators.GREATER_THAN)) {
+          greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)),
+              term);
+        }
+        if (Operators.is(term, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
             Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN,
             Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
-          strongTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
-          strongTerms.put(Pair.of(predicate.getOperand(0), predicate.getOperand(1)), predicate);
+          strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
+          strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
       }
     }
@@ -142,21 +146,21 @@ public class BoolOrOperator extends Operator {
 
       // x<a OR x!=a → x!=a
       if (notEqualTerms.containsKey(pair)) {
-        conditions.remove(lessThanTerms.get(pair));
+        predicates.remove(lessThanTerms.get(pair));
       }
 
       // x<a OR x=a → x<=a
       if (equalTerms.containsKey(pair)) {
-        conditions.remove(equalTerms.get(pair));
-        conditions.remove(lessThanTerms.get(pair));
-        conditions.add(new Call(Operators.LESS_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
+        predicates.remove(equalTerms.get(pair));
+        predicates.remove(lessThanTerms.get(pair));
+        predicates.add(new Call(Operators.LESS_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
       }
 
       // x<a OR x>a → x!=a
       if (greaterThanTerms.containsKey(pair)) {
-        conditions.remove(lessThanTerms.get(pair));
-        conditions.remove(greaterThanTerms.get(pair));
-        conditions.add(new Call(Operators.NOT_EQUAL, pair.getLeft(), pair.getRight()));
+        predicates.remove(lessThanTerms.get(pair));
+        predicates.remove(greaterThanTerms.get(pair));
+        predicates.add(new Call(Operators.NOT_EQUAL, pair.getLeft(), pair.getRight()));
       }
     }
 
@@ -164,14 +168,14 @@ public class BoolOrOperator extends Operator {
 
       // x>a OR x!=a → x!=a
       if (notEqualTerms.containsKey(pair)) {
-        conditions.remove(greaterThanTerms.get(pair));
+        predicates.remove(greaterThanTerms.get(pair));
       }
 
       // x>a OR x=a → x>=a
       if (equalTerms.containsKey(pair)) {
-        conditions.remove(equalTerms.get(pair));
-        conditions.remove(greaterThanTerms.get(pair));
-        conditions.add(new Call(Operators.GREATER_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
+        predicates.remove(equalTerms.get(pair));
+        predicates.remove(greaterThanTerms.get(pair));
+        predicates.add(new Call(Operators.GREATER_THAN_OR_EQUAL, pair.getLeft(), pair.getRight()));
       }
     }
 
@@ -183,26 +187,32 @@ public class BoolOrOperator extends Operator {
         List<IExpression> values = new ArrayList<>();
         for (Pair<Call, Literal> pair : pairs) {
           values.add(pair.getRight());
-          conditions.remove(pair.getLeft());
+          predicates.remove(pair.getLeft());
         }
-        conditions.add(new Call(Operators.IN, reference, new Tuple(values)).inferReturnType());
+        predicates.add(new Call(Operators.IN, reference, new Tuple(values)).inferReturnType());
       }
     }
 
+    // Simplify x OR NOT x → TRUE (if x is not nullable)
+    // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
+    
+    // Simplify x OR x IS NOT NULL → x IS NOT NULL
+    
+    
     // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
     for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {
       if ( isNotNullTerms.contains(pair.getLeft()) || isNotNullTerms.contains(pair.getRight()) )  {
-        conditions.remove(strongTerms.get(pair));
+        predicates.remove(strongTerms.get(pair));
       }
     }
 
     // Rebuild disjunctions if more than 1 condition
-    if (conditions.size() == 1) {
-      return conditions.peek();
+    if (predicates.size() == 1) {
+      return predicates.peek();
     }
-    IExpression expression = conditions.poll();
-    while (!conditions.isEmpty()) {
-      expression = new Call(Operators.BOOLOR, expression, conditions.poll()).inferReturnType();
+    IExpression expression = predicates.poll();
+    while (!predicates.isEmpty()) {
+      expression = new Call(Operators.BOOLOR, expression, predicates.poll()).inferReturnType();
     }
 
     return expression;

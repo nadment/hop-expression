@@ -20,15 +20,12 @@ import org.apache.hop.expression.operator.FirstValueFunction;
 import org.apache.hop.expression.operator.LastValueFunction;
 import org.apache.hop.expression.operator.NthValueFunction;
 import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.BooleanType;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.IntervalType;
-import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.Characters;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
@@ -409,7 +406,7 @@ public class ExpressionParser {
   /** Literal Json */
   private IExpression parseLiteralJson(Token token) throws ExpressionException {
     return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
-        Literal.of(JsonType.JSON));
+        Literal.of(Types.JSON));
   }
 
   /**
@@ -608,7 +605,7 @@ public class ExpressionParser {
   private IExpression parseLiteralDate(Token token) throws ExpressionException {
 
     // return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
-    // Literal.of(DateType.DATE), Literal.of("FXYYYY-MM-DD"));
+    // Literal.of(Types.DATE), Literal.of("FXYYYY-MM-DD"));
 
     // Literal date use exact mode
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
@@ -1189,7 +1186,7 @@ public class ExpressionParser {
 
       switch (typeId) {
         case BOOLEAN:
-          return BooleanType.BOOLEAN;
+          return Types.BOOLEAN;
         case INTEGER:
           return IntegerType.of(precision);
         case NUMBER:         
@@ -1199,11 +1196,11 @@ public class ExpressionParser {
         case BINARY:
           return BinaryType.of(precision);
         case DATE:
-          return DateType.DATE;
+          return Types.DATE;
         case JSON:
-          return JsonType.JSON;
+          return Types.JSON;
         case INTERVAL:
-          return IntervalType.INTERVAL;
+          return Types.INTERVAL;
         default:
       }
     }

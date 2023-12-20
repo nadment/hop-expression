@@ -17,17 +17,17 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
@@ -37,7 +37,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class PiFunction extends Function {
 
   public static final Literal PI =
-      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), NumberType.NUMBER);
+      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), Types.NUMBER);
 
   public PiFunction() {
     super("PI", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.MATHEMATICAL, "/docs/pi.html");

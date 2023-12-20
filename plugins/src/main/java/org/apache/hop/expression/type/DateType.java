@@ -23,18 +23,8 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import java.time.ZonedDateTime;
 
 public final class DateType extends Type {
-
-  /**
-   * Default DATE type with default parameters.
-   */
-  public static final DateType DATE = new DateType(true);
-
-  /**
-   * Default DATE NOT NULL type with default parameters.
-   */
-  public static final DateType DATE_NOT_NULL = new DateType(false);
   
-  private DateType(boolean nullable) {
+  DateType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }
 
@@ -93,7 +83,7 @@ public final class DateType extends Type {
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+        TypeId.fromValue(value), this);
   }
 
   /**
@@ -111,7 +101,7 @@ public final class DateType extends Type {
       return (ZonedDateTime) value;
     }
 
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        DateType.DATE);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+        TypeId.DATE);
   }
 }

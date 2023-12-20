@@ -23,18 +23,17 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.exception.ConversionException;
-import org.apache.hop.expression.type.AnyType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.math.BigDecimal;
@@ -90,7 +89,7 @@ public class TypeTest extends ExpressionTest {
   }
   
   @Test
-  public void findTypeId() throws Exception {
+  public void typeIdFromJavaClass() throws Exception {
     assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(null)); 
     assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Void.class));
     assertEquals(TypeId.UNKNOWN, TypeId.fromJavaClass(Float.class));
@@ -106,21 +105,21 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  public void valueOf() throws Exception {
-    assertEquals(UnknownType.UNKNOWN, Type.valueOf(null));
-    assertEquals(UnknownType.UNKNOWN, Type.valueOf(new Random()));    
-    assertEquals(BooleanType.BOOLEAN, Type.valueOf(true));
-    assertEquals(UnknownType.UNKNOWN, Type.valueOf(TimeUnit.CENTURY));
-    assertEquals(StringType.of(4).withNullability(false), Type.valueOf("test"));
-    assertEquals(BinaryType.of(1).withNullability(false), Type.valueOf(new byte[] {0xF}));
-    assertEquals(IntegerType.of(3).withNullability(false), Type.valueOf(123));
-    assertEquals(IntegerType.of(3).withNullability(false), Type.valueOf(123L));
-    assertEquals(NumberType.of(6,3).withNullability(false), Type.valueOf(123.456D));
-    assertEquals(NumberType.of(18).withNullability(false), Type.valueOf(new BigDecimal("123456789123456789")));
-    assertEquals(NumberType.of(9,3).withNullability(false), Type.valueOf(BigDecimal.valueOf(123456789,3)));
-    assertEquals(DateType.DATE, Type.valueOf(ZonedDateTime.now()));
-    assertEquals(IntervalType.INTERVAL, Type.valueOf(Interval.of(5)));
-    assertEquals(JsonType.JSON, Type.valueOf(JsonType.convertStringToJson("{\"name\":\"Smith\"}")));
+  public void typeIdFromValue() throws Exception {
+    assertEquals(TypeId.UNKNOWN, TypeId.fromValue(null));
+    assertEquals(TypeId.UNKNOWN, TypeId.fromValue(new Random()));    
+    assertEquals(TypeId.BOOLEAN, TypeId.fromValue(true));
+    assertEquals(TypeId.UNKNOWN, TypeId.fromValue(TimeUnit.CENTURY));
+    assertEquals(TypeId.STRING, TypeId.fromValue("test"));
+    assertEquals(TypeId.BINARY, TypeId.fromValue(new byte[] {0xF}));
+    assertEquals(TypeId.INTEGER, TypeId.fromValue(123));
+    assertEquals(TypeId.INTEGER, TypeId.fromValue(123L));
+    assertEquals(TypeId.NUMBER, TypeId.fromValue(123.456D));
+    assertEquals(TypeId.NUMBER, TypeId.fromValue(new BigDecimal("123456789123456789")));
+    assertEquals(TypeId.NUMBER, TypeId.fromValue(BigDecimal.valueOf(123456789,3)));
+    assertEquals(TypeId.DATE, TypeId.fromValue(ZonedDateTime.now()));
+    assertEquals(TypeId.INTERVAL, TypeId.fromValue(Interval.of(5)));
+    assertEquals(TypeId.JSON, TypeId.fromValue(JsonType.convertStringToJson("{\"name\":\"Smith\"}")));
   }
 
   @Test
@@ -130,34 +129,34 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.BOOLEAN));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.TEMPORAL));
     
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.BINARY));
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.BOOLEAN));
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.NUMERIC));
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.TEMPORAL));
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.STRING));
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.JSON));
-    assertTrue(AnyType.ANY.isFamily(TypeFamily.ANY));
+    assertTrue(Types.ANY.isFamily(TypeFamily.BINARY));
+    assertTrue(Types.ANY.isFamily(TypeFamily.BOOLEAN));
+    assertTrue(Types.ANY.isFamily(TypeFamily.NUMERIC));
+    assertTrue(Types.ANY.isFamily(TypeFamily.TEMPORAL));
+    assertTrue(Types.ANY.isFamily(TypeFamily.STRING));
+    assertTrue(Types.ANY.isFamily(TypeFamily.JSON));
+    assertTrue(Types.ANY.isFamily(TypeFamily.ANY));
     
-    assertTrue(BinaryType.BINARY.isFamily(TypeFamily.ANY));
-    assertTrue(BinaryType.BINARY.isFamily(TypeFamily.BINARY));
-    assertFalse(BinaryType.BINARY.isFamily(TypeFamily.NUMERIC));    
-    assertTrue(BinaryType.BINARY.isFamily(TypeFamily.ANY));
-    assertFalse(BinaryType.BINARY.isFamily(TypeFamily.NONE));
-    assertTrue(BinaryType.BINARY.isFamily(TypeFamily.BINARY));
+    assertTrue(Types.BINARY.isFamily(TypeFamily.ANY));
+    assertTrue(Types.BINARY.isFamily(TypeFamily.BINARY));
+    assertFalse(Types.BINARY.isFamily(TypeFamily.NUMERIC));    
+    assertTrue(Types.BINARY.isFamily(TypeFamily.ANY));
+    assertFalse(Types.BINARY.isFamily(TypeFamily.NONE));
+    assertTrue(Types.BINARY.isFamily(TypeFamily.BINARY));
         
-    assertTrue(BooleanType.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
-    assertTrue(DateType.DATE.isFamily(TypeFamily.TEMPORAL));
-    assertTrue(IntegerType.INTEGER.isFamily(TypeFamily.NUMERIC));
-    assertTrue(NumberType.NUMBER.isFamily(TypeFamily.NUMERIC));
-    assertTrue(StringType.STRING.isFamily(TypeFamily.STRING));
+    assertTrue(Types.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
+    assertTrue(Types.DATE.isFamily(TypeFamily.TEMPORAL));
+    assertTrue(Types.INTEGER.isFamily(TypeFamily.NUMERIC));
+    assertTrue(Types.NUMBER.isFamily(TypeFamily.NUMERIC));
+    assertTrue(Types.STRING.isFamily(TypeFamily.STRING));
         
-    assertEquals(TypeFamily.BINARY, BinaryType.BINARY.getFamily());
-    assertEquals(TypeFamily.BOOLEAN, BooleanType.BOOLEAN.getFamily());
-    assertEquals(TypeFamily.TEMPORAL, DateType.DATE.getFamily());
-    assertEquals(TypeFamily.JSON, JsonType.JSON.getFamily());
-    assertEquals(TypeFamily.NUMERIC, IntegerType.INTEGER.getFamily());
-    assertEquals(TypeFamily.NUMERIC, NumberType.NUMBER.getFamily());
-    assertEquals(TypeFamily.STRING, StringType.STRING.getFamily());
+    assertEquals(TypeFamily.BINARY, Types.BINARY.getFamily());
+    assertEquals(TypeFamily.BOOLEAN, Types.BOOLEAN.getFamily());
+    assertEquals(TypeFamily.TEMPORAL, Types.DATE.getFamily());
+    assertEquals(TypeFamily.JSON, Types.JSON.getFamily());
+    assertEquals(TypeFamily.NUMERIC, Types.INTEGER.getFamily());
+    assertEquals(TypeFamily.NUMERIC, Types.NUMBER.getFamily());
+    assertEquals(TypeFamily.STRING, Types.STRING.getFamily());
   }
 
   @Test
@@ -174,20 +173,20 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void signature() throws Exception {
-    assertEquals("BOOLEAN", String.valueOf(BooleanType.BOOLEAN));
-    assertEquals("DATE", String.valueOf(DateType.DATE));
-    assertEquals("JSON", String.valueOf(JsonType.JSON));
-    assertEquals("INTEGER", String.valueOf(IntegerType.INTEGER));  
+    assertEquals("BOOLEAN", String.valueOf(Types.BOOLEAN));
+    assertEquals("DATE", String.valueOf(Types.DATE));
+    assertEquals("JSON", String.valueOf(Types.JSON));
+    assertEquals("INTEGER", String.valueOf(Types.INTEGER));  
     assertEquals("INTEGER", String.valueOf(IntegerType.of(-1)));
     assertEquals("INTEGER(6)", String.valueOf(IntegerType.of(6)));
-    assertEquals("NUMBER", String.valueOf(NumberType.NUMBER));
+    assertEquals("NUMBER", String.valueOf(Types.NUMBER));
     assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10)));
     assertEquals("NUMBER(10)", String.valueOf(NumberType.of(10,0)));
     assertEquals("NUMBER(10,2)", String.valueOf(NumberType.of(10,2)));
-    assertEquals("STRING", String.valueOf(StringType.STRING));
+    assertEquals("STRING", String.valueOf(Types.STRING));
     assertEquals("STRING", String.valueOf(StringType.of(-1)));
     assertEquals("STRING(10)", String.valueOf(StringType.of(10)));
-    assertEquals("BINARY", String.valueOf(BinaryType.BINARY));
+    assertEquals("BINARY", String.valueOf(Types.BINARY));
     assertEquals("BINARY", String.valueOf(BinaryType.of(-1)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
   }
@@ -229,7 +228,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void castToBoolean() throws Exception {
-    BooleanType type = BooleanType.BOOLEAN;
+    BooleanType type = Types.BOOLEAN;
     assertNull(type.cast(null));
     assertEquals(Boolean.TRUE, type.cast(3L));
     assertEquals(Boolean.TRUE, type.cast(1L));
@@ -261,7 +260,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void convertToBoolean() throws Exception {
-    BooleanType type = BooleanType.BOOLEAN;
+    BooleanType type = Types.BOOLEAN;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, String.class));
@@ -284,7 +283,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void castToBinary() throws Exception {
-    BinaryType type = BinaryType.BINARY;
+    BinaryType type = Types.BINARY;
     assertNull(type.cast(null));
     //assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
     assertThrows(ConversionException.class, () ->  type.cast(true));
@@ -306,7 +305,7 @@ public class TypeTest extends ExpressionTest {
   
   @Test
   public void castToDate() throws Exception {
-    DateType type = DateType.DATE;
+    DateType type = Types.DATE;
     ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
     
     assertNull(type.cast(null));
@@ -319,7 +318,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void convertToDate() throws Exception {
-    DateType type = DateType.DATE;
+    DateType type = Types.DATE;
     assertNull(type.convert(null, ZonedDateTime.class));
     assertThrows(ConversionException.class, () -> type.convert(123, ZonedDateTime.class));
   }
@@ -338,7 +337,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void castToString() throws Exception {
-    StringType type = StringType.STRING;
+    StringType type = Types.STRING;
     assertNull(type.cast(null));
     assertEquals("TRUE", type.cast(true));
     assertEquals("FALSE", type.cast(false));
@@ -353,7 +352,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void convertToString() throws Exception {
-    StringType type = StringType.STRING;
+    StringType type = Types.STRING;
     assertNull(type.convert(null, Boolean.class));
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, String.class));
@@ -384,7 +383,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void castToInteger() throws Exception {
-    IntegerType type = IntegerType.INTEGER;
+    IntegerType type = Types.INTEGER;
     assertNull(type.cast(null));
     assertEquals(Long.valueOf(1L), type.cast(true));
     assertEquals(Long.valueOf(0L), type.cast(false));
@@ -400,7 +399,7 @@ public class TypeTest extends ExpressionTest {
   
   @Test
   public void convertToInteger() throws Exception {
-    IntegerType type = IntegerType.INTEGER;
+    IntegerType type = Types.INTEGER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
     assertNull(type.convert(null, String.class));
@@ -439,7 +438,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void castToNumber() throws Exception {
-    NumberType type = NumberType.NUMBER;
+    NumberType type = Types.NUMBER;
     assertNull(type.cast(null));
     assertEquals(BigDecimal.ZERO, type.cast(false));
     assertEquals(BigDecimal.ZERO, type.cast(0L));
@@ -465,7 +464,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void convertToNumber() throws Exception {
-    NumberType type = NumberType.NUMBER;
+    NumberType type = Types.NUMBER;
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, BigDecimal.class));
     assertNull(type.convert(null, String.class));
@@ -504,8 +503,8 @@ public class TypeTest extends ExpressionTest {
     evalEquals(" '8' || 1 + 1", 82L);
     
     // Integer to Number
-    evalEquals("'-2e-3'::Number * 2", new BigDecimal("-4e-3"));    
-    evalEquals("'-4e-4'::Number * 0.5", new BigDecimal("-0.00020"));
+    evalEquals("'-2e-3' * 2", new BigDecimal("-4e-3"));    
+    evalEquals("'-4e-4'::Number(12,4) * 0.5", new BigDecimal("-0.00020"));
   }
 
   @Test
@@ -529,7 +528,6 @@ public class TypeTest extends ExpressionTest {
     evalTrue("'FALSE'::Boolean=false");
     
     // String to BigNumber
-    evalEquals("' -1e-3 '::Number", new BigDecimal("-1e-3"));    
+    evalEquals("' -1e-3 '::Number(10,3)", new BigDecimal("-1e-3"));   
   }
 }
-

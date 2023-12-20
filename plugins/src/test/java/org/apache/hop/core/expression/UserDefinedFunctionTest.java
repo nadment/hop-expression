@@ -22,8 +22,8 @@ import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.DateType;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.junit.Test;
 import java.time.LocalDate;
 
@@ -45,8 +45,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       
-      evalEquals("UCASE('abcd',3)", "ABC").returnType(StringType.STRING);
-      evalEquals("UCASE(NULL_STRING,2)", "*").returnType(StringType.STRING);
+      evalEquals("UCASE('abcd',3)", "ABC").returnType(Types.STRING);
+      evalEquals("UCASE(NULL_STRING,2)", "*").returnType(Types.STRING);
       evalFails("UCASE()");
       evalFails("UCASE(1,2,3)");
   }
@@ -61,8 +61,8 @@ public class UserDefinedFunctionTest extends ExpressionTest {
       UserDefinedFunction udf = new UserDefinedFunction(meta);      
       FunctionRegistry.register(udf.getName(), udf);
       
-      evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(DateType.DATE);
-      evalNull("DATE_FROM_ID(null)").returnType(DateType.DATE);
+      evalEquals("DATE_FROM_ID(20230105)", LocalDate.of(2023, 1, 5)).returnType(Types.DATE);
+      evalNull("DATE_FROM_ID(null)").returnType(Types.DATE);
       evalFails("DATE_FROM_ID()");
       evalFails("DATE_FROM_ID(1,2,3)");
       

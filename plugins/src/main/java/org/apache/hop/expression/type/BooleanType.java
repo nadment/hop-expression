@@ -23,22 +23,13 @@ import java.math.BigDecimal;
 
 public final class BooleanType extends Type {
 
-  /**
-   * Default BOOLEAN type.
-   */
-  public static final BooleanType BOOLEAN = new BooleanType(true);
-  /**
-   * Default BOOLEAN NOT NULL type.
-   */
-  public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
-  
-  private BooleanType(boolean nullable) {
+  BooleanType(boolean nullable) {
     super(1, 0, nullable);
   }
 
   @Override
   public BooleanType withNullability(final boolean nullable) {   
-    return (nullable) ? BOOLEAN:BOOLEAN_NOT_NULL;
+    return (nullable) ? Types.BOOLEAN:Types.BOOLEAN_NOT_NULL;
   }
 
   @Override
@@ -67,8 +58,8 @@ public final class BooleanType extends Type {
     if (value instanceof Number) {
       return ((Number) value).intValue() != 0;
     }
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
-        BooleanType.BOOLEAN);
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
+        TypeId.BOOLEAN);
   }
 
   @Override
@@ -123,7 +114,7 @@ public final class BooleanType extends Type {
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        Type.valueOf(value), this);
+        TypeId.fromValue(value), this);
   }
 
   public static final Boolean convertStringToBoolean(final String str) throws ConversionException {

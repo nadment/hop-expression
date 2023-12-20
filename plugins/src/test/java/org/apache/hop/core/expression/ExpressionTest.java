@@ -18,6 +18,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -41,7 +42,9 @@ import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -105,6 +108,7 @@ public class ExpressionTest {
     }
 
     public void returnType(Type expectedType) {
+      //assertTrue(expectedType.equalsIgnoreNullability(expression.getType()));
       assertEquals(expectedType.withNullability(true), expression.getType().withNullability(true));
     }
   }
@@ -120,7 +124,7 @@ public class ExpressionTest {
     IRowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta(new ValueMetaString("FIELD_STRING", 1000, -1));
     rowMeta.addValueMeta(new ValueMetaDate("BIRTHDATE2"));
-    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER", 19, -1));
+    rowMeta.addValueMeta(new ValueMetaInteger("FIELD_INTEGER", 12, -1));
     rowMeta.addValueMeta(new ValueMetaNumber("FIELD_NUMBER"));
     rowMeta.addValueMeta(new ValueMetaBigNumber("FIELD_BIGNUMBER"));
     rowMeta.addValueMeta(new ValueMetaDate("FIELD_DATE"));
@@ -402,8 +406,11 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
     Locale.setDefault(new Locale("fr", "BE"));
-   // evalFalse("FIELD_JSON = FIELD_STRING");
-  // evalTrue("BINARY 'FF22C' = BINARY 'ff22c'");
+    //optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
+    
+    //optimize("CAST(CAST(FIELD_INTEGER AS INTEGER(10)) AS INTEGER(5))", "CAST(FIELD_INTEGER AS INTEGER(5))");
+    optimize("CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))", "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))");
+    
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

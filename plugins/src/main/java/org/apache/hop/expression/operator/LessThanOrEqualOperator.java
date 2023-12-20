@@ -17,17 +17,18 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
+import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 
 /** Comparison less than or equal operator '<code>&lt;=</code>'. */
@@ -105,6 +106,8 @@ public class LessThanOrEqualOperator extends Operator {
           right.asCall().getOperand(1));
     }
 
+    Types.comparisonCoercion(call);
+    
     return call;
   }
 

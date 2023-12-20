@@ -25,9 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public final class AnyType extends Type {
 
-  public static final AnyType ANY = new AnyType(true);
-
-  private AnyType(boolean nullable) {
+  AnyType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
   }
 

@@ -27,8 +27,8 @@ package org.apache.hop.expression.type;
 public enum TypeComparability {
   /** "No comparisons allowed */
   NONE,
-  /** Only equals/not-equals allowed */
+  /** Only equals/not-equals allowed (if the type supports <code>equalTo</code>)*/
   UNORDERED,
-  /** All comparisons allowed */
+  /** All comparisons allowed (if the type supports <code>compareTo</code>)*/
   ALL
 }

@@ -35,7 +35,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
 
     // Searched case operator
     if (call.getOperand(0).isNull()) {
-      valueType = BooleanType.BOOLEAN;
+      valueType = Types.BOOLEAN;
     }
     // Simple case operator
     else {

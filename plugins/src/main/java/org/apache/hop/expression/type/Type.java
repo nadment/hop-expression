@@ -17,12 +17,8 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.exception.ConversionException;
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.Objects;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public abstract class Type {
 
@@ -148,6 +144,15 @@ public abstract class Type {
     return scale;
   }
 
+  /**
+   * Indicates whether that type are equal with each other by ignoring the nullability.
+   */
+  public boolean equalsIgnoreNullability(final Type type) {
+    if ( type==null )
+      return false;
+    return this.signature.equals(type.signature);  
+  }
+
   @Override
   public boolean equals(Object obj) {
     return this == obj
@@ -169,7 +174,7 @@ public abstract class Type {
    * @throws ConversionException if the casting fail
    */
   public <T> T convert(final Object value, Class<T> clazz) throws ConversionException {
-    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, Type.valueOf(value),
+    throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.fromJavaClass(clazz));
   }
 
@@ -196,49 +201,6 @@ public abstract class Type {
   @Override
   public String toString() {
     return signature;
-  }
-  
-  /**
-   * Return a default {@link Type} from a value.
-   * 
-   * @return The type or 'UNKNOWN' if not found
-   */
-  public static Type valueOf(final Object value) {
-    if (value == null) {
-      return UnknownType.UNKNOWN;
-    }
-    if (value instanceof Boolean) {
-      return BooleanType.BOOLEAN;
-    }
-    if (value instanceof String) {
-      return StringType.from((String) value);
-    }
-    if (value instanceof BigDecimal) {
-      return NumberType.from((BigDecimal) value);
-    }
-    if (value instanceof Double) {
-      return NumberType.from(BigDecimal.valueOf((Double) value));
-    }
-    if (value instanceof Long) {
-      return IntegerType.from((Long) value);
-    }
-    if (value instanceof Integer) {
-      return IntegerType.from((Integer) value);
-    }
-    if (value instanceof byte[]) {
-      return BinaryType.from((byte[]) value);
-    }
-    if (value instanceof ZonedDateTime) {
-      return DateType.DATE;
-    }
-    if (value instanceof JsonNode) {
-      return JsonType.JSON;
-    }
-    if (value instanceof Interval) {
-      return IntervalType.INTERVAL;
-    }
-
-    return UnknownType.UNKNOWN;
   }
 }
 

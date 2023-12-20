@@ -18,8 +18,6 @@ package org.apache.hop.expression;
 
 import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.IOperandCountRange;
-import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.UnknownType;
@@ -117,6 +115,20 @@ public final class Call implements IExpression {
   }
 
   /**
+   * Changes the value of an operand.
+   *
+   * @param i Operand index
+   * @param operand Operand value
+   */
+  public void setOperand(int index, IExpression operand) {
+    if ( index < 0 || index >= operands.length ) {
+          return;
+    }
+    
+    operands[index] = operand;
+  }
+      
+  /**
    * Returns a count of operands of this expression.
    */
   public int getOperandCount() {
@@ -150,30 +162,19 @@ public final class Call implements IExpression {
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
 
-    // Validate all operands
+    // Validates the operands of a call
     for (IExpression operand : operands) {
       operand.validate(context);
     }
 
     // Check the number of operands expected
-    IOperandCountRange operandCountRange = operator.getOperandCountRange();
-    if (!operandCountRange.isValid(this.getOperandCount())) {
-      if (getOperandCount() < operandCountRange.getMin()) {
-        throw new ExpressionException(position, ErrorCode.NOT_ENOUGH_ARGUMENT, operator);
-      }
-      if (getOperandCount() > operandCountRange.getMax()) {
-        throw new ExpressionException(position, ErrorCode.TOO_MANY_ARGUMENT, operator);
-      }
-    }
+    operator.checkOperandCount(this);
 
     // Check operand types expected
-    IOperandTypeChecker operandTypeChecker = operator.getOperandTypeChecker();
-    if (!operandTypeChecker.checkOperandTypes(this)) {
-      throw new ExpressionException(position, ErrorCode.ILLEGAL_ARGUMENT_TYPE, operator);
-    }
+    operator.checkOperandTypes(this, true);
 
     // Return type Inference
-    this.type = operator.getReturnTypeInference().inferReturnType(this);
+    type = operator.inferReturnType(this);
   }
 
   /**
@@ -184,17 +185,20 @@ public final class Call implements IExpression {
    */
   public IExpression compile(final IExpressionContext context) throws ExpressionException {
 
-    // Compile all operands
-    IExpression[] compiledOperands = new IExpression[this.getOperandCount()];
-    for (int i = 0; i < this.getOperandCount(); i++) {
-      compiledOperands[i] = this.getOperand(i).compile(context);
+    // Compile the operands of a call
+    IExpression[] compiledOperands = new IExpression[getOperandCount()];
+    for (int i = 0; i < getOperandCount(); i++) {
+      compiledOperands[i] = operands[i].compile(context);
     }
 
     // Create a new call with compiled operands and infer return type
-    Call call = new Call(this.getOperator(), compiledOperands).inferReturnType();
+    Call call = new Call(operator, compiledOperands);
 
+    // Infer return type
+    call.inferReturnType();
+    
     // Compile with operator
-    IExpression expression = call.getOperator().compile(context, call);
+    IExpression expression = operator.compile(context, call);
 
     if (expression.is(Kind.CALL)) {
       // Infer return type
@@ -210,12 +214,13 @@ public final class Call implements IExpression {
         // Some operator don't known return type like JSON_VALUE.
         if (TypeId.ANY.equals(valueType.getId())) {
           return Literal.of(value);
-        } else {
-          // TODO: Remove this cast when operands are coerced to the least restrictive data type 
-          // value = valueType.cast(value);
         }
 
         // For CAST operator, it's important to return type
+        if ( expression.is(Operators.CAST)) {
+          value = valueType.cast(value);
+        
+        }
         return new Literal(value, valueType);
       } catch (Exception e) {
         // Ignore error like division by zero "X IN (1,3/0)" and continue
@@ -226,7 +231,7 @@ public final class Call implements IExpression {
   }
 
   public Call inferReturnType() {
-    this.type = this.operator.getReturnTypeInference().inferReturnType(this);
+    this.type = this.operator.inferReturnType(this);
     return this;
   }
 

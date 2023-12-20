@@ -132,6 +132,12 @@ public final class OperandTypes {
       new SameOperandTypeChecker(OperandCountRange.from(3));
 
   /**
+   * Operand type-checking strategy where any number of operands must allow ordered
+   * comparisons.
+   */
+  public static final IOperandTypeChecker COMPARABLE_ORDERED_VARIADIC = new ComparableOperandTypeChecker(-1, TypeComparability.ALL);
+
+  /**
    * Operand type-checking strategy where operand type must allow ordered
    * comparisons. Used when instance comparisons are made on single operand
    * functions.

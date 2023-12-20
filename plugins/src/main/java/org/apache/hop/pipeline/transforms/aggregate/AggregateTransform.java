@@ -32,8 +32,8 @@ import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.DateType;
-import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
 import org.apache.hop.pipeline.PipelineMeta;
@@ -65,7 +65,7 @@ public class AggregateTransform extends BaseTransform<AggregateMeta, AggregateDa
       return Date.from(((ZonedDateTime) value).toInstant());
     }
     throw new IllegalArgumentException(
-        ErrorCode.UNSUPPORTED_COERCION.message(value, Type.valueOf(value), DateType.DATE));
+        ErrorCode.UNSUPPORTED_COERCION.message(value, TypeId.fromValue(value), Types.DATE));
   }
 
 
