@@ -1157,14 +1157,12 @@ public class ExpressionParser {
     if (typeId != null) {
       int precision = Type.PRECISION_NOT_SPECIFIED;
       int scale = Type.SCALE_NOT_SPECIFIED;
-      boolean precisionFound = false;
-      boolean scaleFound = false;
 
       if (isThenNext(Id.LPARENTHESIS)) {
-
+        boolean scaleFound = false;
+        
         // Precision
         precision = Integer.parseInt(this.next().text());
-        precisionFound = true;
 
         // Scale
         if (isThenNext(Id.COMMA)) {
@@ -1176,7 +1174,7 @@ public class ExpressionParser {
           throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
         }
 
-        if (!typeId.supportsPrecision() && precisionFound)
+        if (!typeId.supportsPrecision())
           throw new ExpressionException(token.start(), ErrorCode.SYNTAX_ERROR_DATATYPE,
               token.text());
         if (!typeId.supportsScale() && scaleFound)

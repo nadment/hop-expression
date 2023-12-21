@@ -154,19 +154,22 @@ public class FunctionRegistry {
           metadataProvider.getSerializer(UserDefinedFunctionMeta.class);
 
       for (String name : serializer.listObjectNames()) {
-        try {
-          if (log.isDebug()) {
-            log.logBasic("Register user defined function: " + name);
-          }
-          UserDefinedFunctionMeta udfMeta = serializer.load(name);
-          FunctionRegistry.register(name, new UserDefinedFunction(udfMeta));
-        } catch (Exception e) {
-          log.logError("Error registring User-defined function " + name, e);
-        }
+        registerUserDefinedFunction(serializer, name);
       }
-
     } catch (HopException e) {
       log.logError("Error registring User-defined functions", e);
+    }
+  }
+  
+  protected static void registerUserDefinedFunction(IHopMetadataSerializer<UserDefinedFunctionMeta> serializer, String name) {
+    try {
+      if (log.isDebug()) {
+        log.logBasic("Register user defined function: " + name);
+      }
+      UserDefinedFunctionMeta udfMeta = serializer.load(name);
+      register(name, new UserDefinedFunction(udfMeta));
+    } catch (Exception e) {
+      log.logError("Error registring User-defined function " + name, e);
     }
   }
 }
