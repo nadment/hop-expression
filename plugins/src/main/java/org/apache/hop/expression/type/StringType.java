@@ -122,11 +122,17 @@ public final class StringType extends Type {
     }
     else if (value instanceof Boolean) {
       result = convertBooleanToString((boolean) value);
-    } else if (value instanceof Number) {
+    } else if (value instanceof Number) {      
       if (pattern == null) {
         pattern = "TM";
       }
-      BigDecimal number = NumberType.coerce(value);
+      BigDecimal number;
+      if (value instanceof Long) {        
+        number = BigDecimal.valueOf((Long) value);
+      }
+      else {
+        number = (BigDecimal) value;
+      }
       result = NumberFormat.of(pattern).format(number);
     }
     else if (value instanceof ZonedDateTime) {

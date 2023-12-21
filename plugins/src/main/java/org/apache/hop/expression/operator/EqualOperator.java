@@ -28,6 +28,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 
 /**
@@ -59,8 +60,6 @@ public class EqualOperator extends Operator {
     if (right == null) {
       return null;
     }
-
-    //return Comparison.compare(left, right)==0;
     return Comparison.equals(left, right);
   }
 
@@ -109,6 +108,9 @@ public class EqualOperator extends Operator {
           right.asCall().getOperand(1));
     }
 
+    
+    Types.comparisonCoercion(call);
+    
     return call;
   }
 

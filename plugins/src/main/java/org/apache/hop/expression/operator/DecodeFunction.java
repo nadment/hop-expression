@@ -79,7 +79,8 @@ public class DecodeFunction extends Function {
     int index = -1;
     for (int i = 1, len = operands.length - 1; i < len; i += 2) {
       Object search = operands[i].getValue();
-      if (Comparison.compare(value, search) == 0) {
+      // DECODE use compare to handle NULL value
+      if (Comparison.compare(value, search)==0) {
         index = i + 1;
         break;
       }

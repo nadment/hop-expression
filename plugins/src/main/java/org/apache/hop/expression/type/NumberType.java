@@ -32,8 +32,6 @@ public final class NumberType extends Type {
 
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
-
-
   public static NumberType from(final BigDecimal number) {
 
     int precision = number.precision();
@@ -151,14 +149,14 @@ public final class NumberType extends Type {
         return BigDecimal.ONE;
       return BigDecimal.valueOf(v);
     }
-    if (value instanceof Double) {
-      double v = (double) value;
-      if (v == 0D)
-        return BigDecimal.ZERO;
-      if (v == 1D)
-        return BigDecimal.ONE;
-      return BigDecimal.valueOf(v);
-    }
+//    if (value instanceof Double) {
+//      double v = (double) value;
+//      if (v == 0D)
+//        return BigDecimal.ZERO;
+//      if (v == 1D)
+//        return BigDecimal.ONE;
+//      return BigDecimal.valueOf(v);
+//    }
     if (value instanceof String) {
       return convertStringToNumber((String) value);
 
@@ -192,14 +190,6 @@ public final class NumberType extends Type {
       if (v == 0L)
         return BigDecimal.ZERO;
       if (v == 1L)
-        return BigDecimal.ONE;
-      return BigDecimal.valueOf(v);
-    }
-    if (value instanceof Double) {
-      double v = (double) value;
-      if (v == 0D)
-        return BigDecimal.ZERO;
-      if (v == 1D)
         return BigDecimal.ONE;
       return BigDecimal.valueOf(v);
     }

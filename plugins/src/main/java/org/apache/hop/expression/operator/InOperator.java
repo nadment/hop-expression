@@ -27,6 +27,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -104,8 +105,9 @@ public class InOperator extends Operator {
 
     // Sort list on cost
     list.sort(Comparator.comparing(IExpression::getCost));
-
-    return new Call(this, call.getOperand(0), new Tuple(list));
+    call = new Call(this, call.getOperand(0), new Tuple(list));
+    Types.comparisonCoercion(call);
+    return call;
   }
 
   @Override
@@ -118,7 +120,7 @@ public class InOperator extends Operator {
     Tuple tuple = (Tuple) operands[1];
     for (IExpression expression : tuple) {
       Object value = expression.getValue();
-      if (Comparison.compare(left, value) == 0) {
+      if (Comparison.equals(left, value)) {
         return Boolean.TRUE;
       }
     }

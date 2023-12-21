@@ -46,7 +46,7 @@ public class IsNotDistinctFromOperator extends Operator {
     Object v0 = operands[0].getValue();
     Object v1 = operands[1].getValue();
 
-    return Comparison.compare(v0, v1) == 0;
+    return Comparison.equals(v0, v1);
   }
 
   @Override

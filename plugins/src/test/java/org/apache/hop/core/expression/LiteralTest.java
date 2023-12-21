@@ -345,12 +345,12 @@ public class LiteralTest extends ExpressionTest {
 
   @Test
   public void Number() throws Exception {
-    assertEquals(Literal.ZERO, Literal.of(0D));
+    assertEquals(Literal.ZERO, Literal.of(0L));
     assertEquals(Literal.ZERO, Literal.of(BigDecimal.ZERO));
-    assertEquals(Literal.ONE, Literal.of(1D));
+    assertEquals(Literal.ONE, Literal.of(1L));
     assertEquals(Literal.ONE, Literal.of(BigDecimal.ONE));
-    assertEquals(BigDecimal.valueOf(2.2), Literal.of(2.2D).getValue());
-    assertEquals("-123456.789", Literal.of(-123456.789D).toString());
+    assertEquals(BigDecimal.valueOf(2.2), Literal.of(new BigDecimal("2.2")).getValue());
+    assertEquals("123456.789", Literal.of(BigDecimal.valueOf(123456.789)).toString());
     assertEquals("-123456.789", Literal.of(BigDecimal.valueOf(-123456.789)).toString());
 
     // Number decimal

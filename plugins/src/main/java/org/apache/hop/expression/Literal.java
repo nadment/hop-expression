@@ -72,17 +72,16 @@ public final class Literal implements IExpression {
       return new Literal(number, NumberType.from(number));
     }
 
-    if (value instanceof Double) {
-      Double d = (Double) value;
-      if (d == 0D)
-        return ZERO;
-      if (d == 1D)
-        return ONE;
-      
-      BigDecimal number = BigDecimal.valueOf(d);
-      
-      return new Literal(number, NumberType.from(number));
-    }
+//    if (value instanceof Double) {
+//      Double d = (Double) value;
+//      if (d == 0D)
+//        return ZERO;
+//      if (d == 1D)
+//        return ONE;
+//      
+//      BigDecimal number = BigDecimal.valueOf(d);      
+//      return new Literal(number, NumberType.from(number));
+//    }
 
     if (value instanceof Long) {
       Long number = (Long) value;

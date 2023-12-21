@@ -1616,10 +1616,8 @@ public class OperatorTest extends ExpressionTest {
         "IFNULL(FIELD_STRING,'TEST')");
 
     // "CASE WHEN x = y THEN NULL ELSE x END" to "NULLIF(x, y)"
-    optimize("CASE WHEN FIELD_INTEGER=FIELD_NUMBER THEN NULL ELSE FIELD_INTEGER END",
-        "NULLIF(FIELD_INTEGER,FIELD_NUMBER)");
-    optimize("CASE WHEN FIELD_INTEGER=FIELD_NUMBER THEN NULL ELSE FIELD_NUMBER END",
-        "NULLIF(FIELD_NUMBER,FIELD_INTEGER)");
+    optimize("CASE WHEN FIELD_INTEGER=10 THEN NULL ELSE FIELD_INTEGER END","NULLIF(FIELD_INTEGER,10)");
+    optimize("CASE WHEN 0.5=FIELD_NUMBER THEN NULL ELSE FIELD_NUMBER END","NULLIF(FIELD_NUMBER,0.5)");
 
     // "CASE WHEN x IS NOT NULL THEN y ELSE z END" to "NVL2(x, y, z)"
     optimize("CASE WHEN FIELD_INTEGER IS NOT NULL THEN FIELD_STRING ELSE 'TEST' END",
@@ -1653,13 +1651,16 @@ public class OperatorTest extends ExpressionTest {
     evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end")
         .returnType(Types.INTEGER);
 
-    // If the operand is null, the else clause applies.
+    // If the operand is null, the else clause applies
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L);
     evalEquals("CASE NULL_INTEGER WHEN 1 THEN 2 ELSE 0 END", 0L);
-    evalEquals("CASE NULL_NUMBER WHEN 0/0 THEN 0/0 ELSE 1 END", 1L);
-    evalEquals("CASE NULL_INTEGER WHEN 0 / 0 THEN 0 / 0 ELSE 1 END", 1L);
- 
-    //evalEquals("CASE 1 WHEN 2 THEN 0 / 0 ELSE 3 END", 3L);
+    
+    // Ignore division by zero in THEN term, should not evaluate 
+    evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0/0 ELSE 1 END", 1L);
+    evalEquals("CASE NULL_INTEGER WHEN 0 THEN 0 / 0 ELSE 1 END", 1L);
+    evalEquals("CASE 1 WHEN 2 THEN 0 / 0 ELSE 3 END", 3L);
+    
+    // Ignore division by zero in ELSE term,
     evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2L);
     evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2L);
 

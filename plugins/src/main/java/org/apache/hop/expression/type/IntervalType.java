@@ -23,8 +23,6 @@ import org.apache.hop.expression.exception.ConversionException;
 
 public final class IntervalType extends Type {
 
-  private static final int MAX_INTERVAL_FRACTIONAL_SECOND_PRECISION = 9;
-
   IntervalType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }

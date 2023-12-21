@@ -46,7 +46,7 @@ public class IsDistinctFromOperator extends Operator {
     Object left = operands[0].getValue();
     Object right = operands[1].getValue();
 
-    return Comparison.compare(left, right) != 0;
+    return ! Comparison.equals(left, right);
   }
 
   @Override

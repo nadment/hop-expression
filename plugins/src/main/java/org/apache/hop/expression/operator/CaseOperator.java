@@ -72,13 +72,13 @@ public class CaseOperator extends Operator {
           if (whenOperand.is(Kind.TUPLE)) {
             for (IExpression expression : whenOperand.asTuple()) {
               Object value = expression.getValue();
-              if (Comparison.compare(condition, value) == 0) {
+              if (Comparison.equals(condition, value)) {
                 return thenTuple.get(index).getValue();
               }
             }
           } else {
             Object value = whenOperand.getValue();
-            if (Comparison.compare(condition, value) == 0) {
+            if (Comparison.equals(condition, value)) {
               return thenTuple.get(index).getValue();
             }
           }

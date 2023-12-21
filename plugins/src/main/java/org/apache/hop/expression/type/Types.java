@@ -176,6 +176,31 @@ public class Types {
   }
 
   /**
+   * Coerces operands in tuple expressions.
+   */
+//  public static boolean comparisonCoercion(Tuple tuple, Type commonType) {
+//    for (int index = 0; index < tuple.size(); index++) {
+//      commonType = commonTypeForBinaryComparison(commonType, tuple.get(index).getType());
+//    }
+//    return coerceOperandsType(tuple, commonType);
+//  }
+
+  /**
+   * Coerce all the operands to a common {@code Type}.
+   *
+   * @param call the call
+   * @param commonType common type to coerce to
+   */
+//  protected static boolean coerceOperandsType(Tuple tuple, Type type) {
+//    boolean coerced = false;
+//    for (int index = 0; index < call.getOperandCount(); index++) {
+//      coerced = coerceOperandType(call, index, type) || coerced;
+//    }
+//    return coerced;
+//  }
+  
+  
+  /**
    * Returns whether the conversion from {@code source} to {@code target} type
    * is a 'loss-less' cast, that is, a cast from which
    * the original value of the field can be certainly recovered.

@@ -55,8 +55,9 @@ public class EqualNullFunction extends Function {
   public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
     Object v1 = operands[1].getValue();
-
-    return Comparison.compare(v0, v1) == 0;
+    if ( v0==null && v1==null) 
+      return Boolean.TRUE;
+    return Comparison.equals(v0, v1);
   }
 
   @Override
