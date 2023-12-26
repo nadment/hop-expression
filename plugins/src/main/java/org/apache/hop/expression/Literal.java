@@ -122,7 +122,7 @@ public final class Literal implements IExpression {
       return new Literal(value, Types.INTERVAL_NOT_NULL);
     }
 
-    // Special internal case TimeUnit, DataType, Random
+    // Special internal case TimeUnit, DataType
     return new Literal(value, UnknownType.UNKNOWN);
   }
 

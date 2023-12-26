@@ -36,7 +36,7 @@ import java.util.function.Predicate;
  * Operators have the precedence levels. An operator on higher levels is evaluated before an
  * operator on a lower level
  */
-public abstract class Operator implements Comparable<Operator> {
+public abstract class Operator {
 
   /**
    *  A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN}.
@@ -305,26 +305,21 @@ public abstract class Operator implements Comparable<Operator> {
     return returnTypeInference.inferReturnType(call);
   }
 
+  /**
+   * Derives the type of a call to this operator.
+   */
+  public Call deriveType(Call call) {
+    call.inferReturnType();
+    
+    return call;
+  }
+  
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     return call;
   }
   
   public abstract void unparse(StringWriter writer, IExpression[] operands);
-
-  @Override
-  public int compareTo(Operator o) {
-    // Compare with id
-    int compare = id.compareTo(o.id);
-    if (compare != 0)
-      return compare;
-
-    // Primary operator first and alias last
-    if (id.equals(this.name))
-      return 99;
-
-    return name.compareTo(o.name);
-  }
 
   public String getDocumentation() {
     return this.documentation;

@@ -27,6 +27,7 @@ import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Literal;
+import org.apache.hop.expression.OperatorComparator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.operator.ConcatFunction;
@@ -107,14 +108,18 @@ public class ParserTest extends ExpressionTest {
     evalTrue(" \n\tTrue");
     evalTrue(" \nTrue\n\r");
   }
-   
+
+  @Test
+  public void OperatorComparator() throws Exception {
+    // Primary operator first and alias last
+    OperatorComparator comparator = new OperatorComparator();
+    assertTrue(comparator.compare(Operators.CONCAT, new ConcatFunction())>0);
+  }
+  
   @Test
   public void Operator() throws Exception {
     assertEquals("Mathematical", Operators.MULTIPLY.getCategory());
-    assertEquals(Operators.CONCAT, new ConcatFunction("||"));
-    
-    // Primary operator first and alias last
-    assertTrue(Operators.CONCAT.compareTo(new ConcatFunction())>0);
+    assertEquals(Operators.CONCAT, new ConcatFunction("||"));        
     assertEquals(51, Operators.MULTIPLY.getLeftPrecedence());
     assertEquals(50, Operators.MULTIPLY.getRightPrecedence());   
     assertEquals("CONCAT", Operators.CONCAT.toString());
@@ -126,7 +131,6 @@ public class ParserTest extends ExpressionTest {
     assertNotEquals(Operators.CONCAT, null);
     //assertNotNull(Operators.CONCAT.getDocumentation());
     assertNotNull(Operators.CONCAT.getDocumentationUrl());
-    //assertEquals(FunctionRegistry.getFunctionNames().size(), Operators.getOperators().size());    
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
   }

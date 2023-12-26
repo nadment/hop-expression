@@ -167,7 +167,7 @@ public class Operators {
           IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
 
   public static Set<Operator> getOperators() {
-    Set<Operator> set = new TreeSet<>();
+    Set<Operator> set = new TreeSet<>(new OperatorComparator());
     set.addAll(SET_OPERATORS);
     set.addAll(FunctionRegistry.getFunctions());
     return set;

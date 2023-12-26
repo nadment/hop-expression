@@ -127,7 +127,7 @@ public final class Call implements IExpression {
     
     operands[index] = operand;
   }
-      
+
   /**
    * Returns a count of operands of this expression.
    */
@@ -153,9 +153,9 @@ public final class Call implements IExpression {
       throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
     }
   }
-
+  
   /**
-   * Validate a call.
+   * Validates the operands of the call, inferring the return type.
    * 
    * @param context The context against which the expression will be validated.
    */
@@ -173,7 +173,7 @@ public final class Call implements IExpression {
     // Check operand types expected
     operator.checkOperandTypes(this, true);
 
-    // Return type Inference
+    // Inferring the return type
     type = operator.inferReturnType(this);
   }
 
