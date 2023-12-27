@@ -29,7 +29,7 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
   public Type inferReturnType(final Call call) {
 
     if (call.getOperandCount() == 0)
-      return UnknownType.UNKNOWN;
+      return Types.UNKNOWN;
 
     Type result = null;
     for (IExpression operand : call.getOperands()) {

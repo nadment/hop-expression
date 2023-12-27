@@ -45,7 +45,7 @@ public class TupleTest extends ExpressionTest {
     assertEquals(Kind.TUPLE, tuple1.getKind());
     assertEquals(IntegerType.of(1).withNullability(false), tuple1.getType());
     assertEquals(IntegerType.of(1).withNullability(false), tuple4.getType());
-    assertEquals(UnknownType.UNKNOWN, tuple3.getType());
+    assertEquals(Types.UNKNOWN, tuple3.getType());
     assertEquals(Types.BOOLEAN_NOT_NULL, tuple5.getType());
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());

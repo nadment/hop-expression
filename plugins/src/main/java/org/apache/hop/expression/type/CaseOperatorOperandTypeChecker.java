@@ -49,7 +49,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     }
 
 
-    Type thenType = UnknownType.UNKNOWN;
+    Type thenType = Types.UNKNOWN;
     for (IExpression thenOperand : thenTuple) {
       // First non null
       if (!thenOperand.isNull()) {

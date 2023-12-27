@@ -478,7 +478,7 @@ public class TypeTest extends ExpressionTest {
   
   @Test
   public void castToUnknown() throws Exception {
-    UnknownType type = UnknownType.UNKNOWN;
+    UnknownType type = Types.UNKNOWN;
     assertThrows(ConversionException.class, () -> type.cast(null));
     assertThrows(ConversionException.class, () -> type.cast(true));
     assertThrows(ConversionException.class, () -> type.cast("Test","MM"));

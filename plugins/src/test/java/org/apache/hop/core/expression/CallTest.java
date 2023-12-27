@@ -60,8 +60,8 @@ public class CallTest extends ExpressionTest {
     assertEquals(14, call4.getCost());
     assertEquals(11, call6.getCost());
     // Data type is unknown before validation
-    assertEquals(UnknownType.UNKNOWN, call1.getType());
-    assertEquals(UnknownType.UNKNOWN, call3.getType());
+    assertEquals(Types.UNKNOWN, call1.getType());
+    assertEquals(Types.UNKNOWN, call3.getType());
     assertNotEquals(call1, null);   
     assertEquals("3+5", call1.toString());
 

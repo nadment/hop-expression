@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ import java.util.Objects;
 public final class Call implements IExpression {
 
   // The return data type
-  protected Type type = UnknownType.UNKNOWN;
+  protected Type type = Types.UNKNOWN;
 
   // The position of this expression in the source before compilation else 0.
   protected final int position;

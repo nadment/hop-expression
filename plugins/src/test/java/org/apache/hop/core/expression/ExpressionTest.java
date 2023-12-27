@@ -374,7 +374,7 @@ public class ExpressionTest {
     IExpression expression = Expressions.build(context, source);
 
     String color = ANSI_YELLOW;
-    if (expression.getType() == UnknownType.UNKNOWN) {
+    if (expression.getType() == Types.UNKNOWN) {
       color = ANSI_RED;
     }
     System.out.println(source + ANSI_PURPLE + " cost=" + expression.getCost() + "  " + color

@@ -27,7 +27,6 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -61,7 +60,7 @@ public class Identifier implements IExpression {
   
   public Identifier(int position, final String name) {
     this.name = requireNonNull(name, "name");
-    this.type = UnknownType.UNKNOWN;
+    this.type = Types.UNKNOWN;
     this.position = position;
     this.context = null;
     this.valueMeta = null;

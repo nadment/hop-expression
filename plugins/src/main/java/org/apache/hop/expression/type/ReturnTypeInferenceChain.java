@@ -29,10 +29,10 @@ public class ReturnTypeInferenceChain implements IReturnTypeInference {
   public Type inferReturnType(Call call) {
     for (IReturnTypeInference rule : rules) {
       Type type = rule.inferReturnType(call);
-      if (type != UnknownType.UNKNOWN) {
+      if (type != Types.UNKNOWN) {
         return type;
       }
     }
-    return UnknownType.UNKNOWN;
+    return Types.UNKNOWN;
   }
 }

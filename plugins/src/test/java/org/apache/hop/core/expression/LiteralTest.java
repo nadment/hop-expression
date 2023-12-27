@@ -58,13 +58,13 @@ public class LiteralTest extends ExpressionTest {
   public void Unknown() throws Exception {
     assertEquals(Kind.LITERAL, Literal.UNKNOWN.getKind());
     assertEquals(Literal.UNKNOWN, Literal.of(null));
-    assertEquals(Objects.hash(null, UnknownType.UNKNOWN), Literal.UNKNOWN.hashCode());
+    assertEquals(Objects.hash(null, Types.UNKNOWN), Literal.UNKNOWN.hashCode());
     assertFalse(Literal.UNKNOWN.is((Kind) null));
     assertFalse(Literal.UNKNOWN.is((Operator) null));
     assertTrue(Literal.UNKNOWN.isConstant());
     assertNotEquals(Literal.UNKNOWN, null);
     assertNotEquals(Literal.UNKNOWN, Literal.ZERO);
-    assertEquals(Literal.UNKNOWN.getType(), UnknownType.UNKNOWN);
+    assertEquals(Literal.UNKNOWN.getType(), Types.UNKNOWN);
     assertNull(Literal.UNKNOWN.getValue());
   }
 

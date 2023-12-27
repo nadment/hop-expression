@@ -26,6 +26,9 @@ public class Types {
     // Utility class
   }
 
+
+  public static final UnknownType UNKNOWN = new UnknownType(true);
+  
   public static final AnyType ANY = new AnyType(true);
 
   /**
@@ -108,7 +111,7 @@ public class Types {
       return false;
     }
 
-    IExpression desired = new Call(Operators.CAST, operand, Literal.of(type)).inferReturnType();
+    IExpression desired = new Call(Operators.CAST, operand, Literal.of(type));
     call.setOperand(index, desired);
 
     return true;

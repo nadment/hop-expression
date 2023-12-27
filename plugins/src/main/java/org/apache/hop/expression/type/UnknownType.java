@@ -22,9 +22,7 @@ import org.apache.hop.expression.exception.ConversionException;
 
 public final class UnknownType extends Type {
 
-  public static final UnknownType UNKNOWN = new UnknownType(true);
-
-  private UnknownType(boolean nullable) {
+  UnknownType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
   }
 

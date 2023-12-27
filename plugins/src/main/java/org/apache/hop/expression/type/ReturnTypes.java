@@ -260,7 +260,7 @@ public final class ReturnTypes {
     try {
       return call.getOperand(1).getValue(Type.class);
     } catch (Exception e) {
-      return UnknownType.UNKNOWN;
+      return Types.UNKNOWN;
     }
   };
 
@@ -269,7 +269,7 @@ public final class ReturnTypes {
    */
   public static final IReturnTypeInference IF_FUNCTION = call -> {
     if (call.getOperandCount() < 2)
-      return UnknownType.UNKNOWN;
+      return Types.UNKNOWN;
 
     ITypeTransform transform = TypeTransforms.TO_MAX_PRECISION;
 

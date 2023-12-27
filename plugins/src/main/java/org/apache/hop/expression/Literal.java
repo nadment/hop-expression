@@ -39,7 +39,7 @@ public final class Literal implements IExpression {
   /**
    * UNKNOWN literal is null value without known data type
    */
-  public static final Literal UNKNOWN = new Literal(null, UnknownType.UNKNOWN);
+  public static final Literal UNKNOWN = new Literal(null, Types.UNKNOWN);
   /**
    * NULL literal is a boolean data type with null value
    */
@@ -123,7 +123,7 @@ public final class Literal implements IExpression {
     }
 
     // Special internal case TimeUnit, DataType
-    return new Literal(value, UnknownType.UNKNOWN);
+    return new Literal(value, Types.UNKNOWN);
   }
 
   /**
