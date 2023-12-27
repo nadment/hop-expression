@@ -62,7 +62,7 @@ public final class ReturnTypes {
   /**
    * Type-inference strategy whereby the result type of a call is BOOLEAN NOT NULL.
    */
-  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN.withNullability(false));
+  public static final IReturnTypeInference BOOLEAN_NOT_NULL = explicit(Types.BOOLEAN_NOT_NULL);
 
   /**
    * Type-inference strategy whereby the result type of a call is BINARY.
@@ -72,7 +72,7 @@ public final class ReturnTypes {
   /**
    * Type-inference strategy whereby the result type of a call is BINARY NOT NULL.
    */
-  public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY.withNullability(false));
+  public static final IReturnTypeInference BINARY_NOT_NULL = explicit(Types.BINARY_NOT_NULL);
   
   /**
    * Type-inference strategy whereby the result type of a call is STRING.
@@ -82,7 +82,7 @@ public final class ReturnTypes {
   /**
    * Type-inference strategy whereby the result type of a call is STRING NOT NULL.
    */
-  public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING.withNullability(false));
+  public static final IReturnTypeInference STRING_NOT_NULL = explicit(Types.STRING_NOT_NULL);
 
   /**
    * Type-inference strategy whereby the result type of a call is INTEGER.
@@ -97,7 +97,7 @@ public final class ReturnTypes {
   /**
    * Type-inference strategy whereby the result type of a call is NUMBER NOT NULL.
    */
-  public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER.withNullability(false));
+  public static final IReturnTypeInference NUMBER_NOT_NULL = explicit(Types.NUMBER_NOT_NULL);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.
@@ -107,7 +107,7 @@ public final class ReturnTypes {
   /**
    * Type-inference strategy whereby the result type of a call is DATE NOT NULL.
    */
-  public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE.withNullability(false));
+  public static final IReturnTypeInference DATE_NOT_NULL = explicit(Types.DATE_NOT_NULL);
 
   /**
    * Type-inference strategy whereby the result type of a call is DATE.

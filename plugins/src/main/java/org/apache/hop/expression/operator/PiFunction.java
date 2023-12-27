@@ -37,7 +37,7 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public class PiFunction extends Function {
 
   public static final Literal PI =
-      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), Types.NUMBER);
+      new Literal(BigDecimalMath.pi(Operator.MATH_CONTEXT), Types.NUMBER_NOT_NULL);
 
   public PiFunction() {
     super("PI", ReturnTypes.NUMBER_NOT_NULL, OperandTypes.NILADIC, OperatorCategory.MATHEMATICAL, "/docs/pi.html");

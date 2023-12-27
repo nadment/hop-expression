@@ -37,27 +37,52 @@ public class Types {
   public static final BinaryType BINARY = new BinaryType(TypeId.BINARY.getMaxPrecision(), true);
 
   /**
+   * Default BINARY NOT NULLtype with maximum precision.
+   */
+  public static final BinaryType BINARY_NOT_NULL = new BinaryType(TypeId.BINARY.getMaxPrecision(), false);
+  
+  /**
    * Default BOOLEAN type.
    */
   public static final BooleanType BOOLEAN = new BooleanType(true);
+
   /**
    * Default BOOLEAN NOT NULL type.
    */
   public static final BooleanType BOOLEAN_NOT_NULL = new BooleanType(false);
+
   /**
    * Default STRING type with maximum precision.
    */
   public static final StringType STRING = new StringType(TypeId.STRING.getMaxPrecision(), true);
+
+  /**
+   * Default STRING NOT NULL type with maximum precision.
+   */
+  public static final StringType STRING_NOT_NULL = new StringType(TypeId.STRING.getMaxPrecision(), false);  
+
   /**
    * Default INTEGER type with maximum precision.
    */
   public static final IntegerType INTEGER = new IntegerType(TypeId.INTEGER.getMaxPrecision(), true);
+
+  /**
+   * Default INTEGER NOT NULL type with maximum precision.
+   */
+  public static final IntegerType INTEGER_NOT_NULL = new IntegerType(TypeId.INTEGER.getMaxPrecision(), false);
+  
   /**
    * Default NUMBER(38,9) type with max precision and default scale.
    */
   public static final NumberType NUMBER =
       new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), true);
 
+  /**
+   * Default NUMBER(38,9) NOT NULL type with max precision and default scale.
+   */
+  public static final NumberType NUMBER_NOT_NULL =
+      new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), false);
+  
   /**
    * Default DATE type with default parameters.
    */

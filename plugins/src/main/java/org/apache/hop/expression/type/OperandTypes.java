@@ -156,10 +156,10 @@ public final class OperandTypes {
    */
   public static final IOperandTypeChecker COMPARABLE_UNORDERED_COMPARABLE_UNORDERED = new ComparableOperandTypeChecker(2, TypeComparability.UNORDERED);
   
-  public static final IOperandTypeChecker BOOLEAN = family(TypeFamily.BOOLEAN);
+  public static final ISingleOperandTypeChecker BOOLEAN = family(TypeFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =
       family(TypeFamily.BOOLEAN, TypeFamily.BOOLEAN);
-  public static final IOperandTypeChecker BOOLEAN_VARIADIC = repeat(OperandCountRange.between(1, -1), family(TypeFamily.BOOLEAN));
+  public static final IOperandTypeChecker BOOLEAN_VARIADIC = repeat(OperandCountRange.between(1, -1), BOOLEAN);
   
   public static final IOperandTypeChecker BOOLEAN_ANY = family(TypeFamily.BOOLEAN, TypeFamily.ANY);
   public static final IOperandTypeChecker BOOLEAN_ANY_ANY =
@@ -167,10 +167,10 @@ public final class OperandTypes {
   public static final IOperandTypeChecker BOOLEAN_SAME_SAME =
       BOOLEAN_ANY_ANY.and(new SameOperandTypeChecker(OperandCountRange.of(3), 1));
 
-  public static final IOperandTypeChecker BINARY = family(TypeFamily.BINARY);
-  public static final IOperandTypeChecker BINARY_VARIADIC = repeat(OperandCountRange.between(1, -1), family(TypeFamily.BINARY));
+  public static final ISingleOperandTypeChecker BINARY = family(TypeFamily.BINARY);
+  public static final IOperandTypeChecker BINARY_VARIADIC = repeat(OperandCountRange.between(1, -1), BINARY);
   public static final IOperandTypeChecker BINARY_BINARY = family(TypeFamily.BINARY, TypeFamily.BINARY);
-  public static final IOperandTypeChecker BINARY_BINARY_VARIADIC = repeat(OperandCountRange.between(2, -1), family(TypeFamily.BINARY));
+  public static final IOperandTypeChecker BINARY_BINARY_VARIADIC = repeat(OperandCountRange.between(2, -1), BINARY);
 
   public static final IOperandTypeChecker BINARY_NUMERIC =
       family(TypeFamily.BINARY, TypeFamily.NUMERIC);
@@ -202,7 +202,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker TEMPORAL_INTERVAL =
       family(TypeFamily.TEMPORAL, TypeFamily.INTERVAL);
 
-  public static final IOperandTypeChecker INTERVAL = family(TypeFamily.INTERVAL);
+  public static final ISingleOperandTypeChecker INTERVAL = family(TypeFamily.INTERVAL);
   public static final IOperandTypeChecker INTERVAL_INTERVAL =
       family(TypeFamily.INTERVAL, TypeFamily.INTERVAL);
   public static final IOperandTypeChecker INTERVAL_TEMPORAL =
@@ -214,6 +214,7 @@ public final class OperandTypes {
   public static final IOperandTypeChecker TIMEUNIT_NUMERIC_TEMPORAL =
       sequence(TIMEUNIT, NUMERIC, TEMPORAL);
   public static final IOperandTypeChecker TIMEUNIT_INTERVAL = sequence(TIMEUNIT, INTERVAL);
+  
   public static final ISingleOperandTypeChecker STRING = family(TypeFamily.STRING);
   public static final IOperandTypeChecker STRING_STRING =
       family(TypeFamily.STRING, TypeFamily.STRING);
@@ -246,9 +247,8 @@ public final class OperandTypes {
       family(TypeFamily.STRING, TypeFamily.TEMPORAL);
   public static final IOperandTypeChecker STRING_STRING_TEMPORAL =
       family(TypeFamily.STRING, TypeFamily.STRING, TypeFamily.TEMPORAL);
-  public static final IOperandTypeChecker STRING_VARIADIC = repeat(OperandCountRange.between(1, -1), family(TypeFamily.STRING));
-  public static final IOperandTypeChecker STRING_STRING_VARIADIC =
-      repeat(OperandCountRange.between(2, -1), family(TypeFamily.STRING));
+  public static final IOperandTypeChecker STRING_VARIADIC = repeat(OperandCountRange.between(1, -1), STRING);
+  public static final IOperandTypeChecker STRING_STRING_VARIADIC = repeat(OperandCountRange.between(2, -1), STRING);
 
   public static final IOperandTypeChecker TEMPORAL_TIMEUNIT = sequence(TEMPORAL, TIMEUNIT);
   public static final IOperandTypeChecker TEMPORAL_TEXT = sequence(TEMPORAL, TEXT);
