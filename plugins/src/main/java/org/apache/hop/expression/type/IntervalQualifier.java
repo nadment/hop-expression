@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.hop.expression;
+package org.apache.hop.expression.type;
+
+import org.apache.hop.expression.TimeUnit;
 
 public enum IntervalQualifier {
   YEAR, YEAR_TO_MONTH, QUARTER, MONTH, WEEK, DAY, DAY_TO_HOUR, DAY_TO_MINUTE, DAY_TO_SECOND, HOUR, HOUR_TO_MINUTE, HOUR_TO_SECOND, MINUTE, MINUTE_TO_SECOND, SECOND;

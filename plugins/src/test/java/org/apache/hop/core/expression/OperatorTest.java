@@ -14,9 +14,9 @@
  */
 package org.apache.hop.core.expression;
 
-import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;

@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.type;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hop.expression.TimeUnit;
 import org.apache.hop.expression.util.Characters;
 import java.io.Serializable;
 import java.time.ZonedDateTime;

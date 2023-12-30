@@ -16,7 +16,6 @@
  */
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.Interval;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;

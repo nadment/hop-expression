@@ -20,9 +20,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.apache.hop.expression.Interval;
-import org.apache.hop.expression.IntervalQualifier;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.type.Interval;
+import org.apache.hop.expression.type.IntervalQualifier;
 import org.junit.Test;
 
 
