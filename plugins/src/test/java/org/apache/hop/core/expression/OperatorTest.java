@@ -1181,8 +1181,8 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("100 * .5", 50D);
     evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224);
     evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15L).returnType(NumberType.of(7, 3));
-    // TODO: LOOP: evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204L).returnType(NumberType.of(38, 8));
-
+    evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204L).returnType(NumberType.of(38, 8));
+        
     // Check no overflow Long.MAX_VALUE * 2
     evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"));
     // Check no underflow Long.MIN_VALUE * 2
@@ -1234,8 +1234,11 @@ public class OperatorTest extends ExpressionTest {
     evalNull("Div0(NULL_INTEGER,1)");
     evalNull("Div0(NULL_INTEGER,0)");
     evalNull("Div0(1,NULL_INTEGER)");
+    
+    evalFails("Div0()");
     evalFails("Div0(40)");
-
+    evalFails("Div0(40,1,2)");
+    
     optimize("DIV0(FIELD_INTEGER,1)", "FIELD_INTEGER");
     optimize("DIV0(-FIELD_NUMBER,-FIELD_INTEGER)", "DIV0(FIELD_NUMBER,FIELD_INTEGER)");
   }
@@ -1288,9 +1291,10 @@ public class OperatorTest extends ExpressionTest {
   public void BitXor() throws Exception {
     evalEquals("BIT_XOR(2,2)", 0L).returnType(Types.INTEGER);
     evalEquals("2 ^ 1", 3L).returnType(Types.INTEGER);
-    evalEquals("100 ^ 2", 102L);
-    evalNull("100 ^ NULL_INTEGER");
+    evalEquals("100 ^ 2", 102L).returnType(Types.INTEGER);
+    evalNull("100 ^ NULL_INTEGER").returnType(Types.INTEGER);
     evalNull("NULL_INTEGER ^ 100").returnType(Types.INTEGER);
+    
     evalFails("100^");
     evalFails("100 ^ ");
 
@@ -1301,12 +1305,15 @@ public class OperatorTest extends ExpressionTest {
   public void BoolNot() throws Exception {
     evalTrue("FIELD_BOOLEAN_TRUE is not false").returnType(Types.BOOLEAN);
     evalTrue("NULL_BOOLEAN is null").returnType(Types.BOOLEAN);
-    evalTrue("NOT (NULL_BOOLEAN is not null)");
+    evalTrue("NOT (NULL_BOOLEAN is not null)").returnType(Types.BOOLEAN);
     evalFalse("NOT 1").returnType(Types.BOOLEAN);
     evalTrue("NOT 0").returnType(Types.BOOLEAN);
-
-    evalTrue("NOT NOT True");
+    evalFalse("NOT FIELD_INTEGER").returnType(Types.BOOLEAN);
+    evalTrue("NOT FIELD_STRING_BOOLEAN_FALSE").returnType(Types.BOOLEAN);
+    evalFalse("NOT FIELD_STRING_BOOLEAN_TRUE").returnType(Types.BOOLEAN);
+    evalTrue("NOT NOT True").returnType(Types.BOOLEAN);
     evalNull("NOT NULL_BOOLEAN").returnType(Types.BOOLEAN);
+
     evalFails("FIELD_BOOLEAN_TRUE is ");
     evalFails("NOT");
 
@@ -1456,13 +1463,12 @@ public class OperatorTest extends ExpressionTest {
         "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
 
     // Simplify IS NULL
-    optimizeFalse("FIELD_BOOLEAN_TRUE IS NULL AND FIELD_BOOLEAN_TRUE>5");
-    optimizeFalse("FIELD_BOOLEAN_TRUE IS NULL AND FIELD_BOOLEAN_TRUE=5");
-    optimizeFalse("FIELD_BOOLEAN_TRUE IS NULL AND FIELD_BOOLEAN_TRUE<>5");
+    optimizeFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER>5");
+    optimizeFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER=5");
+    optimizeFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER<>5");
 
     // Simplify IS NOT NULL
-    optimize("FIELD_BOOLEAN_TRUE>5 AND FIELD_BOOLEAN_TRUE IS NOT NULL AND FIELD_BOOLEAN_TRUE>5",
-        "5<CAST(FIELD_BOOLEAN_TRUE AS INTEGER(1))");
+    optimize("FIELD_INTEGER>5 AND FIELD_INTEGER IS NOT NULL AND FIELD_INTEGER>5","5<FIELD_INTEGER");
 
     // Not satisfiable equality constant
     optimizeFalse("FIELD_INTEGER=1 AND FIELD_BOOLEAN_TRUE AND FIELD_INTEGER=2");

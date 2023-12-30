@@ -43,10 +43,13 @@ public class LeastFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    
-    Types.comparisonCoercion(call);
-    
     return call;
+  }
+  
+  @Override
+  public Call castType(Call call) {
+    Types.comparisonCoercion(call);    
+    return super.castType(call);
   }
   
   @Override

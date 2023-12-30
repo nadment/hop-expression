@@ -22,11 +22,13 @@ import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;
 import java.util.List;
 
 public class UserDefinedFunction extends Function {
-  private UserDefinedFunctionMeta meta;
+
+  private final UserDefinedFunctionMeta meta;
 
   public UserDefinedFunction(UserDefinedFunctionMeta meta) {
     super(meta.getName(), ReturnTypes.ANY, new UserDefinedFunctionOperandTypeChecker(meta),
@@ -48,11 +50,12 @@ public class UserDefinedFunction extends Function {
       expression.validate(ctx);
 
       // Replace function arguments with real operands
-      expression = expression.accept(ctx, new UserDefinedFunctionResolver(call.getOperands()));
+      expression = expression.accept(new UserDefinedFunctionResolver(call.getOperands()));
       expression.validate(context);
 
       // Compile
-      return Expressions.compile(context, expression);
+      ExpressionCompiler compiler = new ExpressionCompiler(context);
+      return compiler.compile(expression);
     } catch (Exception e) {
       throw new ExpressionException(ErrorCode.UDF_COMPILATION_ERROR, getName());
     }
@@ -71,7 +74,7 @@ public class UserDefinedFunction extends Function {
     // Convert arguments to row meta
     IRowMeta rowMeta = new RowMeta();
     for (FunctionArgument argument : arguments) {
-      IValueMeta vm = Expressions.createValueMeta(argument.getName(), argument.getType());
+      IValueMeta vm = Types.createValueMeta(argument.getName(), argument.getType());
       rowMeta.addValueMeta(vm);
     }
 

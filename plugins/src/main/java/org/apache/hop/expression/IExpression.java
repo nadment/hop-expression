@@ -99,7 +99,6 @@ public interface IExpression {
     throw new UnsupportedOperationException(ErrorCode.INTERNAL_ERROR.message(this));
   }
 
-
   /**
    * Validate the expression
    * 
@@ -109,20 +108,10 @@ public interface IExpression {
   public void validate(IExpressionContext context) throws ExpressionException;
 
   /**
-   * Compile and optimize the expression
-   * 
-   * @param context The context against which the expression will be compiled.
-   * @return
-   * @throws ExpressionException if an error occurs.
-   */
-
-  public IExpression compile(IExpressionContext context) throws ExpressionException;
-
-  /**
    * Accepts a visitor and dispatching to the right overloaded {@link IEpressionVisitor#apply}
    * method.
    */
-  public abstract <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor);
+  public abstract <E> E accept(IExpressionVisitor<E> visitor);
 
   /**
    * Casts and returns this expression as a {@link Call} if it is of kind {@code CALL}

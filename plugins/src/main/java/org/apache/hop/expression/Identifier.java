@@ -229,7 +229,7 @@ public class Identifier implements IExpression {
   
   /**
    * Validate a identifier in the context.
-   * 
+   * A identifier is valid only if the context is IRowExpressionContext.
    * <ul>
    * <li>Resolve index in IRowMeta</li>
    * <li>Determine data type of a value in row.</li>
@@ -237,35 +237,21 @@ public class Identifier implements IExpression {
    */
   @Override
   public void validate(final IExpressionContext context) throws ExpressionException {
-    compile(context);
-  }
-
-  /**
-   * Compile a identifier.
-   * 
-   * <ul>
-   * <li>Resolve index in IRowMeta</li>
-   * <li>Determine data type of a value in row.</li>
-   * </ul>
-   */
-  @Override
-  public IExpression compile(final IExpressionContext ctx) throws ExpressionException {   
-    if (ctx instanceof IRowExpressionContext) {
-      this.context = (IRowExpressionContext) ctx;
+    if (context instanceof IRowExpressionContext) {
+      this.context = (IRowExpressionContext) context;
       IRowMeta rowMeta = this.context.getRowMeta();
       this.ordinal  = rowMeta.indexOfValue(name);
-      if (ordinal < 0) {
-        throw new ExpressionException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
+      if (ordinal >= 0) {
+        this.valueMeta = rowMeta.getValueMeta(ordinal);
+        this.type = createDataType(valueMeta);
       }
-      this.valueMeta = rowMeta.getValueMeta(ordinal);
-      this.type = createDataType(valueMeta);
-      
-      return this;       
     }
-    
-    throw new ExpressionException(position, ErrorCode.CONTEXT_ERROR);
-  }
 
+    if (valueMeta == null) {
+      throw new ExpressionException(position, ErrorCode.UNRESOLVED_IDENTIFIER, name);
+    }
+  }
+  
   protected Type createDataType(IValueMeta meta) {
     switch (meta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
@@ -291,8 +277,8 @@ public class Identifier implements IExpression {
   }
   
   @Override
-  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);
+  public <E> E accept(IExpressionVisitor<E> visitor) {
+    return visitor.apply(this);
   }
 
   @Override

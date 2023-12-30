@@ -27,15 +27,16 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
     this.operands = operands;
   }
 
-  public IExpression apply(final IExpressionContext context, final Identifier identifier) {
+  @Override
+  public IExpression apply(final Identifier identifier) {
     return operands[identifier.getIndex()];
   }
 
   @Override
-  public IExpression apply(final IExpressionContext context, final Call call) {
+  public IExpression apply(final Call call) {
     List<IExpression> expressions = new ArrayList<>(call.getOperandCount());
     for (IExpression expression : call.getOperands()) {
-      expression = expression.accept(context, this);
+      expression = expression.accept(this);
       expressions.add(expression);
     }
     
@@ -46,17 +47,17 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
   }
 
   @Override
-  public IExpression apply(final IExpressionContext context, final Tuple tuple) {
+  public IExpression apply(final Tuple tuple) {
     List<IExpression> expressions = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
-      expression = expression.accept(context, this);
+      expression = expression.accept(this);
       expressions.add(expression);
     }
     return new Tuple(expressions);
   }
 
   @Override
-  public IExpression apply(final IExpressionContext context, final Literal literal) {
+  public IExpression apply(final Literal literal) {
     return literal;
   }
 }

@@ -17,9 +17,12 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.exception.ExpressionException;
 
 public interface IExpressionContext extends IVariables {
 
+  public IExpression createExpression(String source) throws ExpressionException; 
+  
   /**
    * Gets the value of an attribute.
    *
@@ -32,7 +35,7 @@ public interface IExpressionContext extends IVariables {
   public Object getAttribute(String name);
 
   /**
-   * Sets the value of an attribute.
+   * Gets the value of an attribute.
    *
    * @param name The name of the attribute to set
    * @param value The value of the attribute
@@ -63,8 +66,8 @@ public interface IExpressionContext extends IVariables {
   /**
    * Substitute the string using the current variable variables.
    *
-   * @param aString The string to substitute.
+   * @param string The string to substitute.
    * @return The substituted string.
    */
-  String resolve(String aString);
+  String resolve(String string);
 }

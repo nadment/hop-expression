@@ -19,7 +19,6 @@ package org.apache.hop.pipeline.transforms.where;
 import org.apache.hop.core.Const;
 import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.util.Utils;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.Pipeline;
@@ -69,7 +68,7 @@ public class Where extends BaseTransform<WhereMeta, WhereData> {
         data.context = new RowExpressionContext(this, getInputRowMeta());
 
         // Compile expression
-        data.condition = Expressions.build(data.context, meta.getCondition());
+        data.condition = data.context.createExpression(meta.getCondition());
 
         // Cache the position of the RowSet for the output.
         List<IStream> streams = meta.getTransformIOMeta().getTargetStreams();

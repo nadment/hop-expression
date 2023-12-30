@@ -25,7 +25,6 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.row.RowDataUtil;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -57,7 +56,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
     ExpressionContext context = new ExpressionContext(this);
     IExpression expression;
     try {
-      expression = Expressions.build(context, value.substring(1));
+      expression = context.createExpression(value.substring(1));
     } catch (ExpressionException e) {
       throw new HopException(
           BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", source), e);
@@ -105,7 +104,7 @@ public class CloneRow extends BaseTransform<CloneRowMeta, CloneRowData> {
 
       String nrclonesString = resolve(meta.getNrClones());
       try {
-        data.numberOfClones = Expressions.build(data.context, nrclonesString);
+        data.numberOfClones = data.context.createExpression(nrclonesString);
       } catch (ExpressionException e) {
         throw new HopException(
             BaseMessages.getString(PKG, "Unable to compile expression ''{0}''", meta.getNrClones()),

@@ -24,7 +24,6 @@ import org.apache.hop.core.variables.VariableRegistry;
 import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
@@ -510,8 +509,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
       else {
         context = new RowExpressionContext(variables, rowMeta);
       }
-     
-      Expressions.build(context, expression);
+      
+      context.createExpression(expression);
     } catch (ExpressionException e) {
       Annotation annotation = new Annotation(ANNOTATION_ERROR_TYPE, false, e.getMessage());
       annotationModel.addAnnotation(annotation, new Position(e.getPosition(), 0));

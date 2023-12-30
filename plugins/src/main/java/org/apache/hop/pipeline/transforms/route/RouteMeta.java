@@ -26,7 +26,6 @@ import org.apache.hop.core.exception.HopTransformException;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -118,7 +117,7 @@ public class RouteMeta extends BaseTransformMeta<RouteTransform, RouteData> {
         remarks.add(cr);
       } else
         try {
-          Expressions.build(context, route.getCondition());
+          context.createExpression(route.getCondition());
         } catch (Exception e) {
           remarks.add(new CheckResult(ICheckResult.TYPE_RESULT_ERROR,
               BaseMessages.getString(PKG, "RouteMeta.CheckResult.ConditionExpressionError",

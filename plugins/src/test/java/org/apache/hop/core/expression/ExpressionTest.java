@@ -18,7 +18,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaBigNumber;
@@ -33,8 +32,6 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.row.value.ValueMetaTimestamp;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -42,10 +39,8 @@ import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -94,7 +89,7 @@ public class ExpressionTest {
     private final String source;
 
     public Evaluator(IExpressionContext context, String source) {
-      this.expression = Expressions.build(context, source);
+      this.expression = context.createExpression(source);
       this.source = source;
     }
 
@@ -113,11 +108,11 @@ public class ExpressionTest {
     }
   }
 
-  protected ExpressionContext createExpressionContext() throws Exception {
+  protected IExpressionContext createExpressionContext() throws Exception {
     return this.createExpressionContext(true);
   }
 
-  protected ExpressionContext createExpressionContext(boolean withData) throws Exception {
+  protected IExpressionContext createExpressionContext(boolean withData) throws Exception {
     IVariables variables = new Variables();
     variables.setVariable("TEST", "12345");
 
@@ -233,8 +228,8 @@ public class ExpressionTest {
   }
 
   protected void returnType(String source, Type expected) throws Exception {
-    ExpressionContext context = createExpressionContext(false);
-    IExpression expression = Expressions.build(context, source);
+    IExpressionContext context = createExpressionContext(false);
+    IExpression expression = context.createExpression(source);
     assertEquals(expected.withNullability(true), expression.getType().withNullability(true));
   }
 
@@ -289,21 +284,21 @@ public class ExpressionTest {
     return evalEquals(createExpressionContext(true), source, expected);
   }
 
-  protected Evaluator evalEquals(ExpressionContext context, String source, Long expected)
+  protected Evaluator evalEquals(IExpressionContext context, String source, Long expected)
       throws Exception {
     Evaluator evaluator = new Evaluator(context, source);
     assertEquals(expected, evaluator.eval(Long.class));
     return evaluator;
   }
 
-  protected Evaluator evalEquals(ExpressionContext context, String source, Interval expected)
+  protected Evaluator evalEquals(IExpressionContext context, String source, Interval expected)
       throws Exception {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
     assertEquals(expected, evaluator.eval(Interval.class));
     return evaluator;
   }
 
-  protected Evaluator evalEquals(ExpressionContext context, String source, Double expected)
+  protected Evaluator evalEquals(IExpressionContext context, String source, Double expected)
       throws Exception {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
     BigDecimal result = evaluator.eval(BigDecimal.class);
@@ -331,7 +326,7 @@ public class ExpressionTest {
     return evalEquals(createExpressionContext(true), source, expected);
   }
 
-  protected Evaluator evalEquals(ExpressionContext context, String source, Temporal expected)
+  protected Evaluator evalEquals(IExpressionContext context, String source, Temporal expected)
       throws Exception {
 
     Evaluator evaluator = new Evaluator(context, source);
@@ -371,7 +366,7 @@ public class ExpressionTest {
   protected IExpression optimize(String source) throws Exception {
 
     IExpressionContext context = createExpressionContext(false);
-    IExpression expression = Expressions.build(context, source);
+    IExpression expression = context.createExpression(source);
 
     String color = ANSI_YELLOW;
     if (expression.getType() == Types.UNKNOWN) {

@@ -25,7 +25,6 @@ import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
@@ -149,7 +148,7 @@ public class ExpressionMeta extends BaseTransformMeta<ExpressionTransform, Expre
             "ExpressionMeta.CheckResult.ExpressionEmpty", field.getName()), transformMeta));
       } else
         try {
-          Expressions.build(context, field.getExpression());
+          context.createExpression(field.getExpression());
         } catch (Exception e) {
           remarks.add(new CheckResult(
               ICheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG,

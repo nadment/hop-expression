@@ -25,7 +25,6 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 
 public class TupleTest extends ExpressionTest {

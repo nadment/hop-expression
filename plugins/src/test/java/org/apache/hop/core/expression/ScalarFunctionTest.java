@@ -19,14 +19,12 @@ import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.Attribute;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Interval;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.type.BinaryType;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.IntegerType;
-import org.apache.hop.expression.type.IntervalType;
 import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.Test;
@@ -351,7 +349,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Current_Date() throws Exception {
-    ExpressionContext context = createExpressionContext();
+    IExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_DATE.get(context);
     evalEquals(context, "Today()", today).returnType(Types.DATE);
     evalEquals(context, "Current_Date()", today);
@@ -361,7 +359,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Current_Timestamp() throws Exception {
-    ExpressionContext context = createExpressionContext();
+    IExpressionContext context = createExpressionContext();
     ZonedDateTime today = Attribute.CURRENT_TIMESTAMP.get(context);
     evalEquals(context, "Now()", today).returnType(Types.DATE);
     evalEquals(context, "Current_Timestamp()", today);
@@ -2438,7 +2436,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Date('01/02/50','DD/MM/YY')", LocalDate.of(2050, 2, 1));
     evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1));
 
-    ExpressionContext context = createExpressionContext();
+    IExpressionContext context = createExpressionContext();
     context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     evalEquals(context, "To_Date('01/02/69','DD/MM/YY')", LocalDate.of(2069, 2, 1));
     context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");

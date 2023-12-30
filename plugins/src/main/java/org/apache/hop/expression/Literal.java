@@ -21,7 +21,6 @@ import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.type.UnknownType;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -343,13 +342,8 @@ public final class Literal implements IExpression {
   }
 
   @Override
-  public IExpression compile(final IExpressionContext context) throws ExpressionException {
-    return this;
-  }
-
-  @Override
-  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);
+  public <E> E accept(IExpressionVisitor<E> visitor) {
+    return visitor.apply(this);
   }
 
   @Override

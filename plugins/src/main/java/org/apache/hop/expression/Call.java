@@ -19,9 +19,7 @@ package org.apache.hop.expression;
 import static java.util.Objects.requireNonNull;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
-import org.apache.hop.expression.type.UnknownType;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collection;
@@ -122,10 +120,10 @@ public final class Call implements IExpression {
    * @param operand Operand value
    */
   public void setOperand(int index, IExpression operand) {
-    if ( index < 0 || index >= operands.length ) {
-          return;
+    if (index < 0 || index >= operands.length) {
+      return;
     }
-    
+
     operands[index] = operand;
   }
 
@@ -154,7 +152,7 @@ public final class Call implements IExpression {
       throw new ExpressionException(ErrorCode.OPERATOR_ERROR, operator, e.getMessage());
     }
   }
-  
+
   /**
    * Validates the operands of the call, inferring the return type.
    * 
@@ -177,68 +175,15 @@ public final class Call implements IExpression {
     // Inferring the return type
     type = operator.inferReturnType(this);
   }
-
-  /**
-   * Compile and optimize the call in the context
-   * 
-   * @param context The context against which the expression will be compiled.
-   * @return the compiled expression
-   */
-  public IExpression compile(final IExpressionContext context) throws ExpressionException {
-
-    // Compile the operands of a call
-    IExpression[] compiledOperands = new IExpression[getOperandCount()];
-    for (int i = 0; i < getOperandCount(); i++) {
-      compiledOperands[i] = operands[i].compile(context);
-    }
-
-    // Create a new call with compiled operands and infer return type
-    Call call = new Call(operator, compiledOperands);
-
-    // Infer return type
-    call.inferReturnType();
-    
-    // Compile with operator
-    IExpression expression = operator.compile(context, call);
-
-    if (expression.is(Kind.CALL)) {
-      // Infer return type
-      expression = expression.asCall().inferReturnType();
-    }
-
-    // Evaluate if constant
-    if (expression.isConstant()) {
-      try {
-        Object value = expression.getValue();
-        Type valueType = expression.getType();
-
-        // Some operator don't known return type like JSON_VALUE.
-        if (TypeId.ANY.equals(valueType.getId())) {
-          return Literal.of(value);
-        }
-
-        // For CAST operator, it's important to return type
-        if ( expression.is(Operators.CAST)) {
-          value = valueType.cast(value);
-        
-        }
-        return new Literal(value, valueType);
-      } catch (Exception e) {
-        // Ignore error like division by zero "X IN (1,3/0)" and continue
-      }
-    }
-
-    return expression;
-  }
-
+  
   public Call inferReturnType() {
     this.type = this.operator.inferReturnType(this);
     return this;
   }
 
   @Override
-  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);
+  public <E> E accept(IExpressionVisitor<E> visitor) {
+    return visitor.apply(this);
   }
 
   @Override

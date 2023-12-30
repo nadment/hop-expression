@@ -20,9 +20,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -40,15 +38,12 @@ public class GreatestFunction extends Function {
     super("GREATEST", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.COMPARABLE_ORDERED_VARIADIC,
         OperatorCategory.CONDITIONAL, "/docs/greatest.html");
   }
-
-  @Override
-  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-    
-    Types.comparisonCoercion(call);
-    
-    return call;
-  }
   
+  @Override
+  public Call castType(Call call) {
+    Types.comparisonCoercion(call);    
+    return super.castType(call);
+  }
   
   @Override
   public Object eval(final IExpression[] operands) {

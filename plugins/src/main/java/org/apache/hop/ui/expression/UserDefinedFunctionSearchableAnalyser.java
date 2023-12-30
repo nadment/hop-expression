@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.hop.expression;
+package org.apache.hop.ui.expression;
 
 import org.apache.hop.core.search.BaseMetadataSearchableAnalyser;
 import org.apache.hop.core.search.ISearchQuery;
@@ -23,6 +23,7 @@ import org.apache.hop.core.search.ISearchResult;
 import org.apache.hop.core.search.ISearchable;
 import org.apache.hop.core.search.ISearchableAnalyser;
 import org.apache.hop.core.search.SearchableAnalyserPlugin;
+import org.apache.hop.expression.UserDefinedFunctionMeta;
 import java.util.ArrayList;
 import java.util.List;
 

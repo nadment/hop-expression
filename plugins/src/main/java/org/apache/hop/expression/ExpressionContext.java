@@ -17,6 +17,8 @@ package org.apache.hop.expression;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.core.variables.Variables;
+import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.type.TypeId;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -93,21 +95,38 @@ public class ExpressionContext extends Variables implements IExpressionContext {
   public Object getAttribute(String id) {
     return attributes.get(id);
   }
+  
+  public IExpression createExpression(String source)
+      throws ExpressionException {
+    
+    ExpressionParser parser = new ExpressionParser(resolve(source));
 
-//  @Override
-//  public synchronized String resolve(String string) {
-//    if (string == null || string.length() == 0) {
-//      return string;
-//    }
-//
-//    Map<String, String> map = Collections.synchronizedMap(getProperties());
-//    synchronized (map) {
-//      string = StringUtil.substituteWindows(string, map);
-//      string = StringUtil.substituteUnix(string, map);
-//      Bug with some JsonPath array
-//      // string = substituteHex(aString);
-//      return string;
-//    }
-//  }
+    try {
+      // Syntax analysis
+      IExpression expression = parser.parse();
+
+      // Semantic analysis
+      expression.validate(this);
+
+      // Compile expression
+      ExpressionCompiler compiler = new ExpressionCompiler(this);
+      expression = compiler.compile(expression);
+
+      
+//      ExpressionCoercion coercer = new ExpressionCoercion();
+//      expression = coercer.coerce(this, expression);
+      
+      // Unknown are not expected here
+      if (expression.getType().is(TypeId.UNKNOWN)) {
+        throw new ExpressionException(0, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, source);
+      }
+      
+      return expression;
+    } catch (ExpressionException e) {
+      throw e;
+    } catch (IllegalArgumentException e) {
+      throw new ExpressionException(parser.getPosition(), ErrorCode.SYNTAX_ERROR, e.getMessage());
+    }
+  }
 }
 

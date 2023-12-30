@@ -308,12 +308,20 @@ public abstract class Operator {
   /**
    * Derives the type of a call to this operator.
    */
-  public Call deriveType(Call call) {
+  public Call castType(Call call) {
     call.inferReturnType();
     
     return call;
   }
   
+  /**
+   * Compile and optimize the call
+   * 
+   * @param context The context against which the call will be compiled.
+   * @param call The call to compile
+   * @return compiled The compiled expression
+   * @throws ExpressionException if an error occurs.
+   */
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
     return call;

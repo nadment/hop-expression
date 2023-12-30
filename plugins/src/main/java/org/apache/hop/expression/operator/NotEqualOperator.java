@@ -97,12 +97,16 @@ public class NotEqualOperator extends Operator {
           new Call(Operators.SUBTRACT_NUMERIC, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
-
-    Types.comparisonCoercion(call);
     
     return call;
   }
-
+  
+  @Override
+  public Call castType(Call call) {
+    Types.comparisonCoercion(call);    
+    return super.castType(call);
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

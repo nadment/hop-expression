@@ -18,10 +18,8 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
@@ -114,8 +112,8 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   }
 
   @Override
-  public <E> E accept(IExpressionContext context, IExpressionVisitor<E> visitor) {
-    return visitor.apply(context, this);
+  public <E> E accept(IExpressionVisitor<E> visitor) {
+    return visitor.apply(this);
   }
 
   @Override
@@ -157,16 +155,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     for (IExpression expression : this) {
       expression.validate(context);
     }
-  }
-
-  @Override
-  public IExpression compile(final IExpressionContext context) throws ExpressionException {
-    // Compile all elements
-    List<IExpression> elements = new ArrayList<>(size());
-    for (IExpression expression : this) {
-      elements.add(expression.compile(context));
-    }
-    return new Tuple(elements);
   }
 
   public Stream<IExpression> stream() {

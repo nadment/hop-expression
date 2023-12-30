@@ -19,7 +19,6 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopValueException;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.value.ValueMetaJson;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.exception.ExpressionException;
@@ -91,7 +90,7 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
 
         // Compile expression
         try {
-          data.expressions[index] = Expressions.build(data.context, source);
+          data.expressions[index] = data.context.createExpression(source);
         } catch (Exception e) {
           String message =
               BaseMessages.getString(PKG, "ExpressionTransform.Exception.CompileExpression",

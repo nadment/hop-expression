@@ -28,7 +28,6 @@ import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variables;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
@@ -114,7 +113,7 @@ public class ExpressionBenchmark {
 
   protected Object eval(String source) throws Exception {
     context = createExpressionContext();
-    IExpression expression = Expressions.build(context, source);
+    IExpression expression = context.createExpression(source);
     return expression.getValue();
   }
 

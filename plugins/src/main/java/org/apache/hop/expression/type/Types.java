@@ -15,6 +15,15 @@
 
 package org.apache.hop.expression.type;
 
+import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.value.ValueMetaBigNumber;
+import org.apache.hop.core.row.value.ValueMetaBinary;
+import org.apache.hop.core.row.value.ValueMetaBoolean;
+import org.apache.hop.core.row.value.ValueMetaDate;
+import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaJson;
+import org.apache.hop.core.row.value.ValueMetaNone;
+import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Literal;
@@ -340,4 +349,61 @@ public class Types {
   // return null;
   // }
   // }
+  
+
+  public static IValueMeta createValueMeta(final String name, final TypeId type) {
+
+    if (name == null) {
+      throw new IllegalArgumentException("Name must not be null");
+    }
+    if (type == null) {
+      throw new IllegalArgumentException("TypeName must not be null");
+    }
+
+    switch (type) {
+      case BOOLEAN:
+        return new ValueMetaBoolean(name);
+      case INTEGER:
+        return new ValueMetaInteger(name, 9, 0);
+      case NUMBER:
+        return new ValueMetaBigNumber(name, -1, -1);
+      case STRING:
+        return new ValueMetaString(name, -1, -1);
+      case DATE:
+        return new ValueMetaDate(name, -1, -1);
+      case BINARY:
+        return new ValueMetaBinary(name, -1, -1);
+      case JSON:
+        return new ValueMetaJson(name);
+      case UNKNOWN:
+      default:
+        return new ValueMetaNone(name);
+    }
+  }
+
+  public static IValueMeta createValueMeta(final String name, final Type type) {
+    if (name == null) {
+      throw new IllegalArgumentException("Name must not be null");
+    }
+    if (type == null) {
+      throw new IllegalArgumentException("Type must not be null");
+    }
+    switch (type.getId()) {
+      case BOOLEAN:
+        return new ValueMetaBoolean(name);
+      case INTEGER:
+        return new ValueMetaInteger(name);
+      case NUMBER:
+        return new ValueMetaBigNumber(name, type.getPrecision(), type.getScale());
+      case STRING:
+        return new ValueMetaString(name, type.getPrecision(), type.getScale());
+      case DATE:
+        return new ValueMetaDate(name);
+      case JSON:
+        return new ValueMetaJson(name);
+      case UNKNOWN:
+      default:
+        return new ValueMetaNone(name);
+    }
+  }
 }

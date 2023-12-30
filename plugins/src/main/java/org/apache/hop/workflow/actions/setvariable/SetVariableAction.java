@@ -24,8 +24,8 @@ import org.apache.hop.core.exception.HopException;
 import org.apache.hop.core.exception.HopWorkflowException;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.expression.ExpressionContext;
-import org.apache.hop.expression.Expressions;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.metadata.api.HopMetadataProperty;
 import org.apache.hop.metadata.api.IHopMetadataProvider;
@@ -100,8 +100,8 @@ public class SetVariableAction extends ActionBase implements Cloneable, IAction 
         String name = definition.getName();
 
         try {
-          ExpressionContext context = new ExpressionContext(this);
-          IExpression expression = Expressions.build(context, definition.getExpression());
+          IExpressionContext context = new ExpressionContext(this);
+          IExpression expression = context.createExpression(definition.getExpression());
           String value = expression.getValue(String.class);
 
 

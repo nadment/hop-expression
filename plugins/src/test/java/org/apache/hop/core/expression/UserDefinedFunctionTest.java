@@ -21,7 +21,6 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.UserDefinedFunction;
 import org.apache.hop.expression.UserDefinedFunctionMeta;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.DateType;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import org.junit.Test;
