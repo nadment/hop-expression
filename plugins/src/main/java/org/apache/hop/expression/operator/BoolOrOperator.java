@@ -189,7 +189,7 @@ public class BoolOrOperator extends Operator {
           values.add(pair.getRight());
           predicates.remove(pair.getLeft());
         }
-        predicates.add(new Call(Operators.IN, reference, new Tuple(values)).inferReturnType());
+        predicates.add(new Call(Operators.IN, reference, new Tuple(values)));
       }
     }
 
@@ -212,7 +212,9 @@ public class BoolOrOperator extends Operator {
     }
     IExpression expression = predicates.poll();
     while (!predicates.isEmpty()) {
-      expression = new Call(Operators.BOOLOR, expression, predicates.poll()).inferReturnType();
+      call = new Call(Operators.BOOLOR, expression, predicates.poll());
+      call.inferReturnType();
+      expression = call;
     }
 
     return expression;

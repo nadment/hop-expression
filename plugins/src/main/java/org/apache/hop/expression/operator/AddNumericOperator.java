@@ -51,9 +51,10 @@ public class AddNumericOperator extends AddOperator {
     operands.addAll(this.getChainedOperands(call, true));
     IExpression operand = operands.poll();
     while (!operands.isEmpty()) {
-      operand = new Call(this, operand, operands.poll()).inferReturnType();
+      call = new Call(this, operand, operands.poll());
+      call.inferReturnType();
+      operand = call;
     }
-    call = operand.asCall();
     
     IExpression left = call.getOperand(0);
     IExpression right = call.getOperand(1);

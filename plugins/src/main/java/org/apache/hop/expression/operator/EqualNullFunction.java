@@ -73,7 +73,7 @@ public class EqualNullFunction extends Function {
     // Normalize symmetrical operator by ordering identifiers by name
     if (left.is(Kind.IDENTIFIER) && right.is(Kind.IDENTIFIER)
         && left.asIdentifier().getName().compareTo(right.asIdentifier().getName()) > 0) {
-      return new Call(this, right, left).inferReturnType();
+      return new Call(this, right, left);
     }
     
     // Simplify same expressions.
