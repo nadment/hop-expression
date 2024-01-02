@@ -80,12 +80,22 @@ public class EqualNullFunction extends Function {
     if (left.equals(right)) {
       return Literal.TRUE;
     }
+
     // Simplify if one of the operands is NULL, then it can be simplified to the IS NULL predicate.
     if (left.isNull()) {
       return new Call(Operators.IS_NULL, right);
     }
     if (right.isNull()) {
       return new Call(Operators.IS_NULL, left);
+    }
+
+    // Simplify EQUAL_NULL(TRUE,x) → x IS TRUE
+    if (left.equals(Literal.TRUE)) {
+      return new Call(Operators.IS_TRUE, right);
+    }
+    // Simplify EQUAL_NULL(FALSE,x) → x IS FALSE
+    if (left.equals(Literal.FALSE)) {
+      return new Call(Operators.IS_FALSE, right);
     }
 
     return call;
