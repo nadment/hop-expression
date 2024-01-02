@@ -185,7 +185,7 @@ public final class Call implements IExpression {
 
   @Override
   public <E> E accept(IExpressionVisitor<E> visitor) {
-    return visitor.apply(this);
+    return visitor.visitCall(this);
   }
 
   @Override

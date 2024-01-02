@@ -28,12 +28,12 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
   }
 
   @Override
-  public IExpression apply(final Identifier identifier) {
+  public IExpression visitIdentifier(final Identifier identifier) {
     return operands[identifier.getIndex()];
   }
 
   @Override
-  public IExpression apply(final Call call) {
+  public IExpression visitCall(final Call call) {
     List<IExpression> expressions = new ArrayList<>(call.getOperandCount());
     for (IExpression expression : call.getOperands()) {
       expression = expression.accept(this);
@@ -47,7 +47,7 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
   }
 
   @Override
-  public IExpression apply(final Tuple tuple) {
+  public IExpression visitTuple(final Tuple tuple) {
     List<IExpression> expressions = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
       expression = expression.accept(this);
@@ -57,7 +57,7 @@ public class UserDefinedFunctionResolver implements IExpressionVisitor<IExpressi
   }
 
   @Override
-  public IExpression apply(final Literal literal) {
+  public IExpression visitLiteral(final Literal literal) {
     return literal;
   }
 }

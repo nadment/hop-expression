@@ -278,7 +278,7 @@ public class Identifier implements IExpression {
   
   @Override
   public <E> E accept(IExpressionVisitor<E> visitor) {
-    return visitor.apply(this);
+    return visitor.visitIdentifier(this);
   }
 
   @Override

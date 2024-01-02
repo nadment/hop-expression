@@ -42,12 +42,12 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression apply(final Identifier identifier) {
+  public IExpression visitIdentifier(final Identifier identifier) {
     return identifier;
   }
 
   @Override
-  public IExpression apply(Call call) {
+  public IExpression visitCall(Call call) {
 
     // Compile the operands of a call
     List<IExpression> expressions = new ArrayList<>(call.getOperandCount());
@@ -93,7 +93,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression apply(final Tuple tuple) {
+  public IExpression visitTuple(final Tuple tuple) {
     List<IExpression> expressions = new ArrayList<>(tuple.size());
     for (IExpression expression : tuple) {
       expression = expression.accept(this);
@@ -103,7 +103,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   }
 
   @Override
-  public IExpression apply(final Literal literal) {
+  public IExpression visitLiteral(final Literal literal) {
     return literal;
   }
 }

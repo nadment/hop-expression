@@ -113,7 +113,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public <E> E accept(IExpressionVisitor<E> visitor) {
-    return visitor.apply(this);
+    return visitor.visitTuple(this);
   }
 
   @Override
