@@ -149,14 +149,6 @@ public final class NumberType extends Type {
         return BigDecimal.ONE;
       return BigDecimal.valueOf(v);
     }
-//    if (value instanceof Double) {
-//      double v = (double) value;
-//      if (v == 0D)
-//        return BigDecimal.ZERO;
-//      if (v == 1D)
-//        return BigDecimal.ONE;
-//      return BigDecimal.valueOf(v);
-//    }
     if (value instanceof String) {
       return convertStringToNumber((String) value);
 
@@ -170,7 +162,7 @@ public final class NumberType extends Type {
   }
 
   /**
-   * Coerce value to data type BIGNUMBER
+   * Coerce value to data type {@link NumberType}
    * 
    * @param value the value to coerce
    * @return BigDecimal
@@ -182,16 +174,8 @@ public final class NumberType extends Type {
     if (value instanceof BigDecimal) {
       return (BigDecimal) value;
     }
-    // if (value instanceof Boolean) {
-    // return ((boolean) value) ? BigDecimal.ONE : BigDecimal.ZERO;
-    // }
     if (value instanceof Long) {
-      long v = (long) value;
-      if (v == 0L)
-        return BigDecimal.ZERO;
-      if (v == 1L)
-        return BigDecimal.ONE;
-      return BigDecimal.valueOf(v);
+      return BigDecimal.valueOf((long) value);
     }
     if (value instanceof String) {
       return convertStringToNumber((String) value);

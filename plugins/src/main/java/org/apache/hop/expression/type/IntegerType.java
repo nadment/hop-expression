@@ -83,9 +83,6 @@ public final class IntegerType extends Type {
     if (value instanceof String) {
       return IntegerType.convertStringToInteger((String) value);
     }
-    // if (value instanceof Boolean) {
-    // return ((boolean) value) ? 1L : 0L;
-    // }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.INTEGER);
@@ -124,7 +121,6 @@ public final class IntegerType extends Type {
     if (value == null) {
       return null;
     }
-
     if (value instanceof Long) {
       return (Long) value;
     }

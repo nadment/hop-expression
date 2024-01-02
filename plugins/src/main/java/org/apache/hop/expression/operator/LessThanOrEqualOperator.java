@@ -28,8 +28,10 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
+import jersey.repackaged.org.objectweb.asm.Type;
 
 /** Comparison less than or equal operator '<code>&lt;=</code>'. */
 public class LessThanOrEqualOperator extends Operator {
@@ -77,26 +79,19 @@ public class LessThanOrEqualOperator extends Operator {
     if (left.isNull() || right.isNull()) {
       return Literal.NULL;
     }
-    // Simplify x<=x → NVL2(x ,TRUE,NULL)
+    // Simplify x<=x → NVL2(x,TRUE,NULL)
     if (left.equals(right)) {
       return new Call(Operators.NVL2, left, Literal.TRUE, Literal.NULL);
     }
-    // Simplify TRUE<=x → x IS TRUE
-    if (left.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, right);
-    }
-    // Simplify x<=TRUE → x IS NOT NULL
-    if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_NOT_NULL, left);
-    }    
-    // Simplify FALSE<=x → x IS NOT NULL
-    if (left.equals(Literal.FALSE)) {
+
+    // Simplify only if x is data type boolean FALSE<=x → x IS NOT NULL
+    if (left.equals(Literal.FALSE) && right.getType().is(TypeId.BOOLEAN)) {
       return new Call(Operators.IS_NOT_NULL, right);
     }
-    // Simplify x<=FALSE → x IS FALSE
-    if (right.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, left);
-    }
+    // Simplify only if x is data type boolean x<=TRUE → x IS NOT NULL
+    if (right.equals(Literal.TRUE) && left.getType().is(TypeId.BOOLEAN) ) {
+      return new Call(Operators.IS_NOT_NULL, left);
+    }    
 
     // Simplify 3<=X+1 → 3-1<=X
     if (left.isConstant() && right.is(Operators.ADD_NUMERIC)
@@ -108,7 +103,6 @@ public class LessThanOrEqualOperator extends Operator {
 
     return call;
   }
-
   
   @Override
   public Call castType(Call call) {

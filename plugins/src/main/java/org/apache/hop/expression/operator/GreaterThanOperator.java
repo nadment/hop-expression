@@ -91,7 +91,6 @@ public class GreaterThanOperator extends Operator {
     
     return call;
   }
-
   
   @Override
   public Call castType(Call call) {

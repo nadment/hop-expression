@@ -61,7 +61,6 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
     // Compile with operator
     IExpression expression = operator.compile(context, call);
-
     
     if (expression.is(Kind.CALL)) {
       call = expression.asCall();

@@ -28,6 +28,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 
@@ -75,13 +76,13 @@ public class NotEqualOperator extends Operator {
       return new Call(this, right, left);
     }
     
-    // Simplify TRUE<>x → X IS NOT TRUE
-    if (left.equals(Literal.TRUE)) {
+    // Simplify only if x is data type boolean TRUE<>x → X IS NOT TRUE
+    if (left.equals(Literal.TRUE) && right.getType().is(TypeId.BOOLEAN)) {
       return new Call(Operators.IS_NOT_TRUE, right);
     }
 
-    // Simplify FALSE<>x → X IS NOT FALSE
-    if (left.equals(Literal.FALSE)) {
+    // Simplify only if x is data type boolean FALSE<>x → X IS NOT FALSE
+    if (left.equals(Literal.FALSE) && right.getType().is(TypeId.BOOLEAN)) {
       return new Call(Operators.IS_NOT_FALSE, right);
     }
 

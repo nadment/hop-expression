@@ -35,7 +35,6 @@ public class Types {
     // Utility class
   }
 
-
   public static final UnknownType UNKNOWN = new UnknownType(true);
   
   public static final AnyType ANY = new AnyType(true);
@@ -145,13 +144,11 @@ public class Types {
       return false;
     }
 
-    IExpression desired = new Call(Operators.CAST, operand, Literal.of(type));
-    call.setOperand(index, desired);
-
+    Call cast = new Call(Operators.CAST, operand, Literal.of(type));   
+    call.setOperand(index, cast);
+    
     return true;
   }
-
-
 
   /**
    * Determines common type for a comparison operator whose operands are STRING
@@ -165,12 +162,28 @@ public class Types {
     if (isDate(type1) && isString(type2)) {
       return type1;
     }
-
     // STRING compare DATE -> DATE
     if (isString(type1) && isDate(type2)) {
       return type2;
     }
 
+    // STRING compare numeric -> NUMBER
+    if (isString(type1) && isNumeric(type2)) {
+      return NUMBER;
+    }
+    // Numeric compare STRING -> NUMBER
+    if (isNumeric(type1) && isString(type2)) {
+      return NUMBER;
+    }
+    // BOOLEAN compare numeric -> NUMBER
+    if (isString(type1) && isNumeric(type2)) {
+      return NUMBER;
+    }
+    // Numeric compare BOOLEAN -> NUMBER
+    if (isNumeric(type1) && isString(type2)) {
+      return NUMBER;
+    }
+    
     return type1.getId().ordinal() > type2.getId().ordinal() ? type1 : type2;
   }
 
@@ -195,7 +208,7 @@ public class Types {
   /**
    * Coerces operand of arithmetic expressions to Numeric type.
    */
-  public boolean aithmeticCoercion(Call call) {
+  public static boolean arithmeticCoercion(Call call) {
     return true;
   }
 
@@ -305,6 +318,12 @@ public class Types {
     return type.is(TypeId.BOOLEAN);
   }
 
+  public static boolean isNumeric(final Type type) {
+    if (type == null)
+      return false;
+    return type.isFamily(TypeFamily.NUMERIC);
+  }
+  
   public static boolean isInteger(final Type type) {
     if (type == null)
       return false;

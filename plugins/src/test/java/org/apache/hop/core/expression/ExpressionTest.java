@@ -396,15 +396,12 @@ public class ExpressionTest {
 
   @Test
   public void test() throws Exception {
+    Locale.setDefault(new Locale("fr", "BE"));
     // ExpressionContext context = createExpressionContext();
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    Locale.setDefault(new Locale("fr", "BE"));
-    //optimize("CAST(FIELD_INTEGER AS INTEGER)", "FIELD_INTEGER");
-    
-    //optimize("CAST(CAST(FIELD_INTEGER AS INTEGER(10)) AS INTEGER(5))", "CAST(FIELD_INTEGER AS INTEGER(5))");
-    optimize("CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))", "CAST(CAST(FIELD_INTEGER AS INTEGER(5)) AS INTEGER(10))");
+  //  evalFalse("Date '2023-10-01' > '2023-01-'");
     
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();

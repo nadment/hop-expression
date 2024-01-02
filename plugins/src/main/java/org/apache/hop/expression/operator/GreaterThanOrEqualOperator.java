@@ -28,6 +28,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 
@@ -37,8 +38,9 @@ import java.io.StringWriter;
 public class GreaterThanOrEqualOperator extends Operator {
 
   public GreaterThanOrEqualOperator() {
-    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
-        OperatorCategory.COMPARISON, "/docs/greater_than_or_equal.html");
+    super("GREATER_THAN_OR_EQUAL", ">=", 130, true, ReturnTypes.BOOLEAN_NULLABLE,
+        OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED, OperatorCategory.COMPARISON,
+        "/docs/greater_than_or_equal.html");
   }
 
   @Override
@@ -82,20 +84,13 @@ public class GreaterThanOrEqualOperator extends Operator {
       return Literal.TRUE;
     }
 
-    // Simplify TRUE>=x → x IS NOT NULL
-    if (left.equals(Literal.TRUE)) {
+    // Simplify only if x is data type boolean TRUE>=x → x IS NOT NULL
+    if (left.equals(Literal.TRUE) && right.getType().is(TypeId.BOOLEAN)) {
       return new Call(Operators.IS_NOT_NULL, right);
-    }    
-    // Simplify x>=TRUE → x IS TRUE
-    if (right.equals(Literal.TRUE)) {
-      return new Call(Operators.IS_TRUE, left);
     }
-    // Simplify FALSE>=x → x IS FALSE
-    if (left.equals(Literal.FALSE)) {
-      return new Call(Operators.IS_FALSE, right);
-    }
-    // Simplify x>=FALSE → x IS NOT NULL    
-    if (right.equals(Literal.FALSE)) {
+
+    // Simplify only if x is data type boolean x>=FALSE → x IS NOT NULL
+    if (right.equals(Literal.FALSE) && left.getType().is(TypeId.BOOLEAN)) {
       return new Call(Operators.IS_NOT_NULL, left);
     }
 
@@ -110,13 +105,12 @@ public class GreaterThanOrEqualOperator extends Operator {
     return call;
   }
 
-  
   @Override
   public Call castType(Call call) {
-    Types.comparisonCoercion(call);    
+    Types.comparisonCoercion(call);
     return super.castType(call);
   }
-  
+
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

@@ -85,6 +85,23 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER = 1").returnType(Types.BOOLEAN);
     evalNull("FIELD_INTEGER=NULL").returnType(Types.BOOLEAN);
 
+    // Compare numeric with implicit coercion from BOOLEAN
+    evalTrue("TRUE=1");
+    evalTrue("1=TRUE");
+    evalFalse("TRUE=1.1");
+    evalFalse("TRUE=0");
+    
+    // Compare numeric with implicit coercion from STRING
+    evalTrue("2 = '2'");
+    evalTrue("'2'=2");
+    evalFalse("2 = '2.1'");
+    evalFalse("'2.1' = 2");
+    
+    // Compare date with implicit coercion from STRING
+    evalFalse("Date '2023-12-01' = '2023-10-31'");
+    evalTrue("Date '2023-12-01' = '2023-12-01'");
+    evalFalse("Date '2023-10-01' = '2023-10-31'");
+    
     // Comparable unordered type
     evalNull("NULL_JSON = FIELD_STRING");
     evalFalse("FIELD_JSON = FIELD_STRING_JSON");
@@ -102,10 +119,10 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
     optimize("FIELD_STRING = NULL", "NULL");
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
-    // optimize("FIELD_BOOLEAN_TRUE = TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-    // optimize("TRUE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-    // optimize("FIELD_BOOLEAN_TRUE = FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
-    // optimize("FALSE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
+//    optimize("FIELD_BOOLEAN_TRUE = TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+//    optimize("TRUE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+//    optimize("FIELD_BOOLEAN_TRUE = FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
+//    optimize("FALSE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
 
     // Simplify comparison with same term if not nullable
     optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
@@ -146,15 +163,34 @@ public class OperatorTest extends ExpressionTest {
     evalNull("'bar' <> NULL_STRING");
     evalNull("NULL_STRING <> NULL_STRING");
 
+    // Compare numeric with implicit coercion from BOOLEAN
+    evalFalse("TRUE<>1");
+    evalFalse("1<>TRUE");
+    evalTrue("TRUE<>1.1");
+    evalTrue("TRUE<>0");
+    evalFalse("TRUE<>1");
+    
+    // Compare numeric with implicit coercion from STRING
+    evalTrue("2 = '2'");
+    evalTrue("'2'=2");
+    evalFalse("2 = '2.1'");
+    evalFalse("'2.1' = 2");
+    
+    // Compare date with implicit coercion from STRING
+    evalTrue("Date '2023-12-01' <> '2023-10-31'");
+    evalFalse("Date '2023-12-01' <> '2023-12-01'");
+    evalTrue("Date '2023-10-01' <> '2023-10-31'");
+    
     // Comparable unordered type    
     evalTrue("FIELD_JSON <> FIELD_STRING_JSON");
     
     // Syntax error
-    evalFails("NOM<>");
-    evalFails("NOM <> ");
-    evalFails("NOM!");
-    evalFails("NOM ! ");
-
+    evalFails("FIELD_INTEGER<>");
+    evalFails("FIELD_INTEGER <> ");
+    evalFails("FIELD_INTEGER!");
+    evalFails("FIELD_INTEGER ! ");
+    evalFails("<>FIELD_INTEGER");
+    
     optimize("FIELD_BOOLEAN_TRUE<>TRUE", "FIELD_BOOLEAN_TRUE IS NOT TRUE");
     optimize("TRUE<>FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT TRUE");
     optimize("FIELD_BOOLEAN_TRUE<>FALSE", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
@@ -182,6 +218,7 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("'bar' > 'foo'");
     evalFalse("'foo' > 'foo'");
     evalTrue("'foo' > 'bar'");
+    evalTrue("'foo2' > 'foo12'");
 
     evalTrue("DATE '2019-02-01' > DATE '2019-01-01'");
     evalFalse("DATE '2019-01-01' > DATE '2019-01-01'");
@@ -195,6 +232,23 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_NUMBER > NULL_INTEGER");
     evalNull("1 > NULL_BOOLEAN");
 
+    // Compare numeric with implicit coercion from BOOLEAN
+    evalFalse("TRUE>1");
+    evalFalse("1>TRUE");
+    evalFalse("TRUE>1.1");
+    evalTrue("TRUE>0.5");
+    
+    // Compare numeric with implicit coercion from STRING
+    evalTrue("2 > '1'");
+    evalTrue("2.1 > '2'");
+    evalFalse("1 > '2'");
+    evalFalse("2 > '2.1'");
+    evalFalse("2.1 > '2.1'");
+    
+    // Compare date with implicit coercion from STRING
+    evalTrue("Date '2023-12-01' > '2023-10-31'");
+    evalFalse("Date '2023-10-01' > '2023-10-31'");
+    
     // Compare unordered type
     evalFails("FIELD_JSON > FIELD_STRING");
     
@@ -243,6 +297,24 @@ public class OperatorTest extends ExpressionTest {
     evalNull("1 >= NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN >= NULL_INTEGER");
 
+    // Compare numeric with implicit coercion from BOOLEAN
+    evalTrue("TRUE>=1");
+    evalTrue("1>=TRUE");
+    evalFalse("TRUE>=1.1");
+    evalTrue("TRUE>=0.5");
+    
+    // Compare numeric with implicit coercion from STRING
+    evalTrue("2 >= '1'");
+    evalFalse("2 >= '2.1'");
+    evalTrue("2 >= '2'");
+    evalFalse("1 >= '2'");
+    evalTrue("1 >= '1'");
+
+    // Compare DATE with implicit coercion from STRING
+    evalTrue("Date '2023-12-01' >= '2023-10-31'");
+    evalTrue("Date '2023-12-01' >= '2023-12-01'");
+    evalFalse("Date '2023-10-01' >= '2023-10-31'");
+    
     // Compare unordered type
     evalFails("FIELD_JSON >= FIELD_STRING");
     
@@ -254,10 +326,10 @@ public class OperatorTest extends ExpressionTest {
 
     optimize("FIELD_INTEGER>=80", "80<=FIELD_INTEGER");
     optimizeTrue("25>=12");
-    optimize("FIELD_BOOLEAN_TRUE >= TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
+    optimize("FIELD_BOOLEAN_TRUE >= TRUE", "TRUE<=FIELD_BOOLEAN_TRUE");
     optimize("TRUE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FIELD_BOOLEAN_TRUE >= FALSE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
-    optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FALSE>=FIELD_BOOLEAN_TRUE");
     optimize("FIELD_STRING >= NULL", "NULL");
     optimize("NULL >= NULL_BOOLEAN", "NULL");
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
@@ -295,6 +367,24 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER < 1").returnType(Types.BOOLEAN);
     evalNull("NULL_NUMBER < NULL_INTEGER");
     evalNull("NULL_STRING < Upper(FIELD_STRING)");
+    
+    // Compare numeric with implicit coercion from BOOLEAN
+    evalFalse("TRUE<1");
+    evalFalse("1<TRUE");
+    evalTrue("TRUE<1.1");
+    evalFalse("TRUE<0.5");
+    
+    // Compare numeric with implicit coercion from STRING
+    evalFalse("2 < '1'");
+    evalFalse("2.1 < '2'");
+    evalTrue("1 < '2'");
+    evalTrue("2 < '2.1'");
+    evalFalse("2.1 < '2.1'");
+    
+    // Compare date with implicit coercion from STRING
+    evalFalse("Date '2023-12-01' < '2023-10-31'");
+    evalFalse("Date '2023-12-01' < '2023-12-01'");
+    evalTrue("Date '2023-10-01' < '2023-10-31'");
     
     // Compare unordered type
     evalFails("FIELD_JSON < FIELD_STRING");
@@ -344,6 +434,24 @@ public class OperatorTest extends ExpressionTest {
     evalNull("FIELD_INTEGER <= NULL_INTEGER");
     evalNull("NULL_STRING <= Upper(FIELD_STRING)");
 
+    // Compare numeric with implicit coercion from BOOLEAN
+    evalTrue("TRUE<=1");
+    evalTrue("1<=TRUE");
+    evalTrue("TRUE<=1.1");
+    evalFalse("TRUE<=0.5");
+    
+    // Compare numeric with implicit coercion from STRING
+    evalFalse("2 <= '1'");
+    evalFalse("2.1 <= '2'");
+    evalTrue("1 <= '2'");
+    evalTrue("2 <= '2.1'");
+    evalTrue("2.1 <= '2.1'");
+    
+    // Compare date with implicit coercion from STRING
+    evalFalse("Date '2023-12-01' <= '2023-10-31'");
+    evalTrue("Date '2023-12-01' <= '2023-12-01'");
+    evalTrue("Date '2023-10-01' <= '2023-10-31'");
+    
     // Compare unordered type
     evalFails("FIELD_JSON <= FIELD_STRING");
     
@@ -356,9 +464,10 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER<=5", "5>=FIELD_INTEGER");
     optimizeFalse("25<=12");
     optimize("FIELD_BOOLEAN_TRUE <= TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
-    optimize("TRUE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-    optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
+    optimize("TRUE <= FIELD_BOOLEAN_TRUE", "TRUE<=FIELD_BOOLEAN_TRUE");
+    optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FALSE>=FIELD_BOOLEAN_TRUE");
     optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
+    optimize("FALSE <= FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE IS NOT NULL");
     optimize("FIELD_STRING <= NULL", "NULL");
     optimize("3<=FIELD_INTEGER+1", "2<=FIELD_INTEGER");
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
