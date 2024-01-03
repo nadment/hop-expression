@@ -123,7 +123,7 @@ public class Types {
    * @param call the call
    * @param commonType common type to coerce to
    */
-  protected static boolean coerceOperandsType(Call call, Type type) {
+  protected static boolean coerceOperandsType(final Call call, final Type type) {
     boolean coerced = false;
     for (int index = 0; index < call.getOperandCount(); index++) {
       coerced = coerceOperandType(call, index, type) || coerced;
@@ -133,9 +133,8 @@ public class Types {
 
   /**
    * Coerce the operand at the specified index to target {@code Type}.
-   * we do this base on the fact that validate happens before type coercion.
    */
-  protected static boolean coerceOperandType(Call call, int index, Type type) {
+  protected static boolean coerceOperandType(Call call, int index, final Type type) {
 
     IExpression operand = call.getOperand(index);
 
@@ -156,7 +155,7 @@ public class Types {
    * Determines common type for a comparison operator whose operands are STRING
    * type and the other (non STRING) type.
    */
-  public static Type commonTypeForBinaryComparison(Type type1, Type type2) {
+  public static Type commonTypeForBinaryComparison(final Type type1, final Type type2) {
 
     if (type1==null || type2==null ) return null;
     

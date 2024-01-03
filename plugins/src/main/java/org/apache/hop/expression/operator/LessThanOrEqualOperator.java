@@ -31,7 +31,6 @@ import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
-import jersey.repackaged.org.objectweb.asm.Type;
 
 /** Comparison less than or equal operator '<code>&lt;=</code>'. */
 public class LessThanOrEqualOperator extends Operator {

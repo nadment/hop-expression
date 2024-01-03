@@ -61,13 +61,6 @@ public class BoolOrOperator extends Operator {
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Simplify A OR A IS NOT NULL → A IS NOT NULL
-    if (call.getOperand(1).is(Operators.IS_NOT_NULL)) {
-      if (call.getOperand(0).equals(call.getOperand(1).asCall().getOperand(0))) {
-        return call.getOperand(1);
-      }
-    }
-
     // Get all chained predicates sorted
     // Remove duplicate predicates
     // x OR x → x
@@ -132,9 +125,7 @@ public class BoolOrOperator extends Operator {
           greaterThanTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)),
               term);
         }
-        if (Operators.is(term, Operators.EQUAL, Operators.NOT_EQUAL, Operators.LESS_THAN,
-            Operators.LESS_THAN_OR_EQUAL, Operators.LESS_THAN_OR_GREATER_THAN,
-            Operators.GREATER_THAN, Operators.GREATER_THAN_OR_EQUAL)) {
+        if (Operators.isStrong(term)) {          
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
           strongTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
         }
@@ -197,7 +188,11 @@ public class BoolOrOperator extends Operator {
     // Simplify x OR NOT x → x IS NOT NULL OR NULL (if x is nullable)
     
     // Simplify x OR x IS NOT NULL → x IS NOT NULL
-    
+    for (IExpression identifier : identifiers) {
+      if ( isNotNullTerms.contains(identifier)  )  {
+        predicates.remove(identifier);
+      }
+    }    
     
     // Simplify IS NOT NULL(x) OR x<5 → IS NOT NULL(x)
     for (Pair<IExpression, IExpression> pair : strongTerms.keySet()) {

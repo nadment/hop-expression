@@ -159,7 +159,7 @@ public class Operators {
   public static final AggregateFunction LISTAGG_ALL = new ListAggFunction(ListAgg.ALL);
   public static final AggregateFunction LISTAGG_DISTINCT = new ListAggFunction(ListAgg.DISTINCT);
 
-  /** Set of scalar operators. */
+  /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> SET_OPERATORS =
       Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL,
           GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
@@ -182,5 +182,11 @@ public class Operators {
     return false;
   }
 
-  private Operators() {}
+  public static boolean isStrong(IExpression expression) {
+    return is(expression, EQUAL, NOT_EQUAL, LESS_THAN, LESS_THAN_OR_EQUAL, LESS_THAN_OR_GREATER_THAN, GREATER_THAN, GREATER_THAN_OR_EQUAL);
+  }
+  
+  private Operators() {
+    // Utility class    
+  }
 }
