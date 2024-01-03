@@ -73,7 +73,6 @@ public class CastFunction extends Function {
 
     // Cast null value
     if (call.getOperand(0).isNull()) {
-      //return new Literal(null, call.getOperand(1).getValue(Type.class));
       return new Literal(null, call.getType());
     }
     

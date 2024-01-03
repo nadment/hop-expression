@@ -223,6 +223,11 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("INTERVAL 3 DAYS > INTERVAL 3 MONTHS");
     evalTrue("INTERVAL 3 YEARS > INTERVAL 3 MONTHS");
 
+    evalFalse("BINARY '4100' > BINARY '4100'");
+    evalFalse("BINARY '4100' > BINARY '42'").returnType(Types.BOOLEAN);
+    evalTrue("BINARY '410000' > BINARY '4100'");
+    evalFalse("BINARY '4100' > BINARY '410000'");
+    
     evalNull("NULL_BOOLEAN > 0");
     evalNull("NULL_INTEGER > 0");
     evalNull("NULL_NUMBER > NULL_INTEGER");
@@ -289,6 +294,11 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("INTERVAL 3 DAYS >= INTERVAL 3 MONTHS");
     evalTrue("INTERVAL 3 YEARS >= INTERVAL 3 MONTHS");
 
+    evalTrue("BINARY '4100' >= BINARY '4100'");
+    evalFalse("BINARY '4100' >= BINARY '42'").returnType(Types.BOOLEAN);
+    evalTrue("BINARY '410000' >= BINARY '4100'");
+    evalFalse("BINARY '4100' >= BINARY '410000'");
+    
     evalNull("NULL_BOOLEAN >= 0");
     evalNull("1 >= NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN >= NULL_INTEGER");
@@ -338,13 +348,13 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   public void LessThan() throws Exception {
-    evalTrue("5 < 9");
+    evalTrue("5 < 9").returnType(Types.BOOLEAN);
     evalTrue("9.358 < 9.4");
     evalTrue("10-9 < (4+2)");
     evalTrue("FIELD_INTEGER < 100");
     evalFalse("5 < 5");
 
-    evalFalse("true < false");
+    evalFalse("true < false").returnType(Types.BOOLEAN);
     evalTrue("false < true");
     evalFalse("false < false");
     evalFalse("true < true");
@@ -353,6 +363,11 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("'foo' < 'foo'");
     evalFalse("'foo' < 'bar'");
 
+    evalTrue("BINARY '4100' < BINARY '42'").returnType(Types.BOOLEAN);
+    evalTrue("BINARY '4100' < BINARY '410000'");
+    evalFalse("BINARY '4100' < BINARY '4100'");
+    evalFalse("BINARY '410000' < BINARY '4100'");
+    
     evalTrue("DATE '2019-01-01' < DATE '2019-02-01'");
     evalFalse("DATE '2019-01-01' < DATE '2019-01-01'");
     evalFalse("DATE '2019-01-01' < DATE '2018-01-01'");
@@ -426,6 +441,11 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("INTERVAL 3 DAYS <= INTERVAL 3 MONTHS");
     evalFalse("INTERVAL 3 YEARS <= INTERVAL 3 MONTHS");
 
+    evalTrue("BINARY '4100' <= BINARY '4100'");
+    evalTrue("BINARY '4100' <= BINARY '42'").returnType(Types.BOOLEAN);
+    evalTrue("BINARY '4100' <= BINARY '410000'");
+    evalFalse("BINARY '410000' <= BINARY '4100'");
+    
     evalNull("NULL_INTEGER <= FIELD_INTEGER");
     evalNull("FIELD_INTEGER <= NULL_INTEGER");
     evalNull("NULL_STRING <= Upper(FIELD_STRING)");

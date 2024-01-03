@@ -16,29 +16,48 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
+import org.apache.hop.expression.IExpression;
 
 public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
 
   private final TypeComparability requiredComparability;
-  
-  public ComparableOperandTypeChecker(int nOperands, TypeComparability requiredComparability) {    
-    super(OperandCountRange.between(1, nOperands));
+
+  public ComparableOperandTypeChecker(IOperandCountRange range,
+      TypeComparability requiredComparability) {
+    super(range);
     this.requiredComparability = requiredComparability;
   }
 
   @Override
-  public boolean checkOperandTypes(final Call call) {    
+  public boolean checkOperandTypes(final Call call) {
     IOperandCountRange range = getOperandCountRange();
     int max = range.getMax();
-    if ( max<0 ) max = call.getOperandCount();
-    
+    if (max == -1) {
+      max = call.getOperandCount();
+    }
+
+    TypeFamily firstFamily = null;
     for (int i = 0; i < max; i++) {
-     Type type = call.getOperand(i).getType();
+      IExpression operand = call.getOperand(i);
+
+      Type type = operand.getType();
       if (type.getComparability().ordinal() < requiredComparability.ordinal()) {
         return false;
       }
-    }    
-   
+
+      // Ignore null
+      if (operand.isNull())
+        continue;
+      if (firstFamily != null) {
+        if (!type.getFamily().isCompatibleWithCoercion(firstFamily)) {
+          return false;
+        }
+      } else {
+        firstFamily = type.getFamily();
+      }
+
+    }
+
     return true;
   }
 }

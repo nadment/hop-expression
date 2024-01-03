@@ -127,20 +127,20 @@ public class Comparison {
     return true;
   }
 
-  protected static int compareTo(final byte[] left, final byte[] right) {
-    int length = left.length < right.length ? left.length : right.length;
-
-    int compare = left.length - right.length;
-    if (compare == 0) {
-      for (int i = 0; i < length; i++) {
-        compare = left[i] - right[i];
-        if (compare != 0) {
-          compare = compare < 0 ? -1 : 1;
-          break;
-        }
-      }
+  public static int compareTo(final byte[] left, final byte[] right) {
+    if (left == right) {
+        return 0;
     }
-
-    return compare;
+    int len1 = left.length;
+    int len2 = right.length;
+    int len = len1 < len2 ? len1 : len2;
+    for (int i = 0; i < len; i++) {
+        int a = (left[i] & 0xff);
+        int b = (right[i] & 0xff);
+        if (a != b) {
+            return a - b;
+        }
+    }
+    return len1-len2;
   }
 }

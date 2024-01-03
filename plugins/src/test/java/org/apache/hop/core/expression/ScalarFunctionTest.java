@@ -165,6 +165,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Coalesce() throws Exception {
     // Coalesce string
     evalEquals("Coalesce(NULL_STRING,'TEST','BIDON')", "TEST").returnType(Types.STRING);
+    //evalEquals("Coalesce('TEST','BIDON')", "TEST").returnType(StringType.of(5));
 
     // Coalesce numeric
     evalEquals("Coalesce(1,2,3)", 1L).returnType( IntegerType.of(1));
@@ -1613,7 +1614,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Greatest(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", 123456L).returnType(Types.NUMBER);
 
     // Numeric with String coercion
-    evalEquals("Greatest('123',FIELD_INTEGER,789)", 789L).returnType(Types.NUMBER);    
+    evalEquals("Greatest(123,FIELD_INTEGER,'789')", 789L).returnType(Types.NUMBER);    
     
     // String
     evalEquals("Greatest('B','A','C')", "C").returnType(Types.STRING);

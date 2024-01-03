@@ -135,31 +135,31 @@ public final class OperandTypes {
    * Operand type-checking strategy where any number of operands must allow ordered
    * comparisons.
    */
-  public static final IOperandTypeChecker COMPARABLE_ORDERED_VARIADIC = new ComparableOperandTypeChecker(-1, TypeComparability.ALL);
+  public static final IOperandTypeChecker COMPARABLE_ORDERED_VARIADIC = new ComparableOperandTypeChecker(OperandCountRange.between(1, -1), TypeComparability.ALL);
 
   /**
    * Operand type-checking strategy where operand type must allow ordered
    * comparisons. Used when instance comparisons are made on single operand
    * functions.
    */
-  public static final IOperandTypeChecker COMPARABLE_ORDERED = new ComparableOperandTypeChecker(1, TypeComparability.ALL);
+  public static final IOperandTypeChecker COMPARABLE_ORDERED = new ComparableOperandTypeChecker(OperandCountRange.of(1), TypeComparability.ALL);
   
   /**
    * Operand type-checking strategy where operand types must allow ordered
    * comparisons.
    */
-  public static final IOperandTypeChecker COMPARABLE_ORDERED_COMPARABLE_ORDERED =  new ComparableOperandTypeChecker(2, TypeComparability.ALL);
+  public static final IOperandTypeChecker COMPARABLE_ORDERED_COMPARABLE_ORDERED =  new ComparableOperandTypeChecker(OperandCountRange.of(2), TypeComparability.ALL);
 
   /**
    * Operand type-checking strategy for BETWWEEN operator where operand types must allow ordered comparisons.
    */
-  public static final IOperandTypeChecker BETWEEN =  new ComparableOperandTypeChecker(3, TypeComparability.ALL);
+  public static final IOperandTypeChecker BETWEEN =  new ComparableOperandTypeChecker(OperandCountRange.of(3), TypeComparability.ALL);
   
   /**
    * Operand type-checking strategy where operand types must allow unordered
    * comparisons.
    */
-  public static final IOperandTypeChecker COMPARABLE_UNORDERED_COMPARABLE_UNORDERED = new ComparableOperandTypeChecker(2, TypeComparability.UNORDERED);
+  public static final IOperandTypeChecker COMPARABLE_UNORDERED_COMPARABLE_UNORDERED = new ComparableOperandTypeChecker(OperandCountRange.of(2), TypeComparability.UNORDERED);
   
   public static final ISingleOperandTypeChecker BOOLEAN = family(TypeFamily.BOOLEAN);
   public static final IOperandTypeChecker BOOLEAN_BOOLEAN =

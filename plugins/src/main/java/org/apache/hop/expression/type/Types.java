@@ -28,6 +28,7 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
+import java.util.List;
 
 public class Types {
 
@@ -36,7 +37,7 @@ public class Types {
   }
 
   public static final UnknownType UNKNOWN = new UnknownType(true);
-  
+
   public static final AnyType ANY = new AnyType(true);
 
   /**
@@ -47,8 +48,9 @@ public class Types {
   /**
    * Default BINARY NOT NULLtype with maximum precision.
    */
-  public static final BinaryType BINARY_NOT_NULL = new BinaryType(TypeId.BINARY.getMaxPrecision(), false);
-  
+  public static final BinaryType BINARY_NOT_NULL =
+      new BinaryType(TypeId.BINARY.getMaxPrecision(), false);
+
   /**
    * Default BOOLEAN type.
    */
@@ -67,7 +69,8 @@ public class Types {
   /**
    * Default STRING NOT NULL type with maximum precision.
    */
-  public static final StringType STRING_NOT_NULL = new StringType(TypeId.STRING.getMaxPrecision(), false);  
+  public static final StringType STRING_NOT_NULL =
+      new StringType(TypeId.STRING.getMaxPrecision(), false);
 
   /**
    * Default INTEGER type with maximum precision.
@@ -77,8 +80,9 @@ public class Types {
   /**
    * Default INTEGER NOT NULL type with maximum precision.
    */
-  public static final IntegerType INTEGER_NOT_NULL = new IntegerType(TypeId.INTEGER.getMaxPrecision(), false);
-  
+  public static final IntegerType INTEGER_NOT_NULL =
+      new IntegerType(TypeId.INTEGER.getMaxPrecision(), false);
+
   /**
    * Default NUMBER(38,9) type with max precision and default scale.
    */
@@ -90,7 +94,7 @@ public class Types {
    */
   public static final NumberType NUMBER_NOT_NULL =
       new NumberType(TypeId.NUMBER.getMaxPrecision(), TypeId.NUMBER.getDefaultScale(), false);
-  
+
   /**
    * Default DATE type with default parameters.
    */
@@ -101,11 +105,15 @@ public class Types {
    */
   public static final DateType DATE_NOT_NULL = new DateType(false);
 
-
+  /**
+   * Default INTERVAL type with default parameters.
+   */
   public static final IntervalType INTERVAL = new IntervalType(true);
 
+  /**
+   * Default INTERVAL NOT NULL type with default parameters.
+   */
   public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
-
 
   /**
    * Default JSON type.
@@ -116,6 +124,41 @@ public class Types {
    * Default JSON NOT NULL type.
    */
   public static final JsonType JSON_NOT_NULL = new JsonType(false);
+
+  /**
+   * Returns the most general of a set of types
+   */
+  public static Type getLeastRestrictive(List<Type> types) {
+
+    if (types.size() == 0)
+      return Types.UNKNOWN;
+
+    Type result = null;
+    for (Type type : types) {
+      if (result == null || type.getId().ordinal() > result.getId().ordinal()
+          || (result.isFamily(type.getFamily()) && type.getPrecision() > result.getPrecision())) {
+        result = type;
+      } else if (result.isFamily(type.getFamily())) {
+        if (type.getPrecision() > result.getPrecision()
+            || (type.getPrecision() == result.getPrecision()
+                && type.getScale() > result.getScale())) {
+          result = type;
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Find the tightest common type of two types that might be used in binary expression.
+   */
+  // public static Type getTightestCommonType(Type type1, Type type2) {
+  // if (type1 == null || type2 == null) {
+  // return null;
+  // }
+  //
+  //
+  // }
 
   /**
    * Coerce all the operands to a common {@code Type}.
@@ -143,22 +186,22 @@ public class Types {
       return false;
     }
 
-    Call cast = new Call(Operators.CAST, operand, Literal.of(type));   
+    Call cast = new Call(Operators.CAST, operand, Literal.of(type));
     cast.inferReturnType();
-    
+
     call.setOperand(index, cast);
-    
+
     return true;
   }
 
   /**
-   * Determines common type for a comparison operator whose operands are STRING
-   * type and the other (non STRING) type.
+   * Determines common type for a comparison operator.
    */
   public static Type commonTypeForBinaryComparison(final Type type1, final Type type2) {
 
-    if (type1==null || type2==null ) return null;
-    
+    if (type1 == null || type2 == null)
+      return null;
+
     // DATE compare STRING -> DATE
     if (isDate(type1) && isString(type2)) {
       return type1;
@@ -184,19 +227,20 @@ public class Types {
     if (isNumeric(type1) && isString(type2)) {
       return NUMBER;
     }
-    
+
     return type1.getId().ordinal() > type2.getId().ordinal() ? type1 : type2;
   }
 
   /**
-   * Coerces CASE WHEN statement branches to one common type.
+   * TODO: Coerces CASE WHEN statement branches to one common type.
    *
    * <p>
    * Rules: Find common type for all the then operands and else operands,
    * then try to coerce the then/else operands to the type if needed.
    */
-  // boolean caseWhenCoercion(SqlCallBinding binding);
-
+  public static  boolean caseWhenCoercion(Call call) {
+     return true;
+   }
 
   /**
    * Returns whether a IExpression should be cast to a target type.
@@ -210,17 +254,18 @@ public class Types {
    * Coerces operand of arithmetic expressions to Numeric type.
    */
   public static boolean arithmeticCoercion(Call call) {
-    
+
     Type left = call.getOperand(0).getType();
     Type right = call.getOperand(1).getType();
-    
-    if ( left.getId()==right.getId() )
+
+    if (left.getId() == right.getId())
       return false;
-    
+
+    // STRING <operator> numeric -> NUMBER
     if (isString(left) && isNumeric(right)) {
       return coerceOperandsType(call, NUMBER);
     }
-    // Numeric compare STRING -> NUMBER
+    // Numeric <operator> STRING -> NUMBER
     if (isNumeric(left) && isString(right)) {
       return coerceOperandsType(call, NUMBER);
     }
@@ -244,12 +289,12 @@ public class Types {
   /**
    * Coerces operands in tuple expressions.
    */
-//  public static boolean comparisonCoercion(Tuple tuple, Type commonType) {
-//    for (int index = 0; index < tuple.size(); index++) {
-//      commonType = commonTypeForBinaryComparison(commonType, tuple.get(index).getType());
-//    }
-//    return coerceOperandsType(tuple, commonType);
-//  }
+  // public static boolean comparisonCoercion(Tuple tuple, Type commonType) {
+  // for (int index = 0; index < tuple.size(); index++) {
+  // commonType = commonTypeForBinaryComparison(commonType, tuple.get(index).getType());
+  // }
+  // return coerceOperandsType(tuple, commonType);
+  // }
 
   /**
    * Coerce all the operands to a common {@code Type}.
@@ -257,15 +302,15 @@ public class Types {
    * @param call the call
    * @param commonType common type to coerce to
    */
-//  protected static boolean coerceOperandsType(Tuple tuple, Type type) {
-//    boolean coerced = false;
-//    for (int index = 0; index < call.getOperandCount(); index++) {
-//      coerced = coerceOperandType(call, index, type) || coerced;
-//    }
-//    return coerced;
-//  }
-  
-  
+  // protected static boolean coerceOperandsType(Tuple tuple, Type type) {
+  // boolean coerced = false;
+  // for (int index = 0; index < call.getOperandCount(); index++) {
+  // coerced = coerceOperandType(call, index, type) || coerced;
+  // }
+  // return coerced;
+  // }
+
+
   /**
    * Returns whether the conversion from {@code source} to {@code target} type
    * is a 'loss-less' cast, that is, a cast from which
@@ -320,7 +365,7 @@ public class Types {
 
 
   /** Returns whether a type is atomic (date, numeric, string or BOOLEAN). */
-  public static boolean isAtomic(Type type) {
+  public static boolean isAtomic(final Type type) {
     if (type == null)
       return false;
     TypeId id = type.getId();
@@ -339,7 +384,7 @@ public class Types {
       return false;
     return type.isFamily(TypeFamily.NUMERIC);
   }
-  
+
   public static boolean isInteger(final Type type) {
     if (type == null)
       return false;
@@ -384,7 +429,7 @@ public class Types {
   // return null;
   // }
   // }
-  
+
 
   public static IValueMeta createValueMeta(final String name, final TypeId type) {
 
