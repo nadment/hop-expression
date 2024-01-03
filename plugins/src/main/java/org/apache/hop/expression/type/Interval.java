@@ -1011,7 +1011,7 @@ public class Interval implements Serializable, Comparable<Interval> {
         index++;
       }
 
-      boolean noMatch = true;;
+      boolean noMatch = true;
       for (TimeUnit unit : UNITS) {
         if (text.regionMatches(true, index, unit.name(), 0, unit.name().length())) {
           switch (unit) {

@@ -151,6 +151,11 @@ public final class OperandTypes {
   public static final IOperandTypeChecker COMPARABLE_ORDERED_COMPARABLE_ORDERED =  new ComparableOperandTypeChecker(2, TypeComparability.ALL);
 
   /**
+   * Operand type-checking strategy for BETWWEEN operator where operand types must allow ordered comparisons.
+   */
+  public static final IOperandTypeChecker BETWEEN =  new ComparableOperandTypeChecker(3, TypeComparability.ALL);
+  
+  /**
    * Operand type-checking strategy where operand types must allow unordered
    * comparisons.
    */

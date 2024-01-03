@@ -23,7 +23,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.math.BigDecimal;
@@ -69,14 +68,6 @@ public class AddNumericOperator extends AddOperator {
       return new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0));
     }  
     
-    // Cast type to number
-    if ( !left.getType().isFamily(TypeFamily.NUMERIC) ) {
-      left = new Call(Operators.CAST, left, Literal.of(Types.NUMBER));
-    }
-    if ( !right.getType().isFamily(TypeFamily.NUMERIC) ) {
-      right = new Call(Operators.CAST, right, Literal.of(Types.NUMBER));
-    }
-    
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER) ) {
       return new Call(AddInteger, call.getOperands());
@@ -90,6 +81,12 @@ public class AddNumericOperator extends AddOperator {
     return true;
   }
   
+  @Override
+  public Call castType(Call call) {
+    Types.arithmeticCoercion(call);    
+    return super.castType(call);
+  }
+    
   private static final class AddIntegerOperator extends AddNumericOperator {
     @Override
     public Object eval(final IExpression[] operands) {

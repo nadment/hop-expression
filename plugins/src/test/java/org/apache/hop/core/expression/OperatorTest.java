@@ -119,10 +119,6 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
     optimize("FIELD_STRING = NULL", "NULL");
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
-//    optimize("FIELD_BOOLEAN_TRUE = TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-//    optimize("TRUE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS TRUE");
-//    optimize("FIELD_BOOLEAN_TRUE = FALSE", "FIELD_BOOLEAN_TRUE IS FALSE");
-//    optimize("FALSE = FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS FALSE");
 
     // Simplify comparison with same term if not nullable
     optimize("FIELD_STRING=FIELD_STRING", "FIELD_STRING=FIELD_STRING");
@@ -710,6 +706,13 @@ public class OperatorTest extends ExpressionTest {
     // Addition of boolean coerced to numeric
     evalEquals("FIELD_BOOLEAN_TRUE+FIELD_BOOLEAN_FALSE", 1L);
 
+    // Implicit coercion from STRING
+    evalEquals("'1'+2", 3L).returnType(Types.NUMBER);
+    evalEquals("1+'2'", 3L).returnType(Types.NUMBER);
+    evalEquals("1.3+'2.5'", 3.8);
+    evalEquals("1+'-2.5'", -1.5);
+    
+    // Addition of NULL is always null
     evalNull("5+NULL_INTEGER+5");
     evalNull("+NULL_INTEGER+5");
     evalNull("NULL_INTEGER+NULL_NUMBER");
@@ -828,18 +831,34 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("3 between 1 and 5").returnType(Types.BOOLEAN);
     evalTrue("3 between 3 and 5");
     evalTrue("5 between 3 and 5");
+    evalFalse("1 between 3 and 5");
     evalFalse("5 between asymmetric 5 and 3");
     evalTrue("FIELD_INTEGER between symmetric 30 and 50");
     evalTrue("FIELD_INTEGER between symmetric 50 and 30");
     evalTrue("FIELD_INTEGER between -3+27 and 50");
-    evalTrue("'the' between 'that' and 'then'");
-    evalFalse("1 between 3 and 5");
     evalTrue("FIELD_INTEGER between 39.999 and 40.0001");
+
+    // Not between
+    evalTrue("FIELD_INTEGER not between 10 and 20");
+    evalTrue("FIELD_INTEGER not between 10.5 and 20");
     evalTrue("FIELD_INTEGER not between 10 and 20");
     evalTrue("FIELD_INTEGER not between 10 and 20 and 'Test' is not null");
+    
+    // Integer with string coercion
+    evalTrue("FIELD_INTEGER not between '10' and 20");
+    evalTrue("FIELD_INTEGER not between 10.5 and '20'");
 
+    // Date
     evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and DATE '2019-12-31'");
 
+    // Date with String coercion
+    evalTrue("DATE '2019-02-28' between '2019-01-01' and DATE '2019-12-31'");
+    evalTrue("DATE '2019-02-28' between DATE '2019-01-01' and '2019-12-31'");
+    
+    // String
+    evalTrue("'the' between 'that' and 'then'");
+    
+    
     evalNull("NULL_INTEGER between -10 and 20").returnType(Types.BOOLEAN);
     evalNull("NULL_INTEGER between symmetric -10 and 20");
     evalNull("1 between NULL_INTEGER and 20");
@@ -847,6 +866,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("1 between -10 and NULL_INTEGER");
     evalNull("1 between symmetric -10 and NULL_INTEGER");
 
+    evalFails("'the' between 1 and 2");
     evalFails("FIELD_INTEGER between 10 and");
     evalFails("FIELD_INTEGER between and 10");
     evalFails("FIELD_INTEGER between and ");
@@ -856,7 +876,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER BETWEEN 4 OR 6");
 
     optimize("FIELD_INTEGER BETWEEN 10 AND 20");
-    optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20");
+    optimize("FIELD_NUMBER BETWEEN SYMMETRIC 20 AND 50", "FIELD_NUMBER BETWEEN 20 AND 50");
+    optimize("FIELD_NUMBER BETWEEN SYMMETRIC 50 AND 20", "FIELD_NUMBER BETWEEN 20 AND 50");
     optimize("FIELD_STRING BETWEEN 'AZE' AND 'KLM'");
     optimize("FIELD_INTEGER between 3 and (5+1)", "FIELD_INTEGER BETWEEN 3 AND 6");
     optimizeFalse("2 between 3 and (5+1)");

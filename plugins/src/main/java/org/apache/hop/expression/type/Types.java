@@ -145,6 +145,8 @@ public class Types {
     }
 
     Call cast = new Call(Operators.CAST, operand, Literal.of(type));   
+    cast.inferReturnType();
+    
     call.setOperand(index, cast);
     
     return true;
@@ -209,6 +211,21 @@ public class Types {
    * Coerces operand of arithmetic expressions to Numeric type.
    */
   public static boolean arithmeticCoercion(Call call) {
+    
+    Type left = call.getOperand(0).getType();
+    Type right = call.getOperand(1).getType();
+    
+    if ( left.getId()==right.getId() )
+      return false;
+    
+    if (isString(left) && isNumeric(right)) {
+      return coerceOperandsType(call, NUMBER);
+    }
+    // Numeric compare STRING -> NUMBER
+    if (isNumeric(left) && isString(right)) {
+      return coerceOperandsType(call, NUMBER);
+    }
+
     return true;
   }
 

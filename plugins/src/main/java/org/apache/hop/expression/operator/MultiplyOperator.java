@@ -27,7 +27,6 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
@@ -86,14 +85,6 @@ public class MultiplyOperator extends Operator {
     if (left.equals(right)) {
       return new Call(SquareFunction.INSTANCE, left);
     }
-
-    // Cast type to number
-    if ( !left.getType().isFamily(TypeFamily.NUMERIC) ) {
-      left = new Call(Operators.CAST, left, Literal.of(Types.NUMBER));
-    }
-    if ( !right.getType().isFamily(TypeFamily.NUMERIC) ) {
-      right = new Call(Operators.CAST, right, Literal.of(Types.NUMBER));
-    }
     
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER) ) {
@@ -108,6 +99,12 @@ public class MultiplyOperator extends Operator {
     return true;
   }
 
+  @Override
+  public Call castType(Call call) {
+    Types.arithmeticCoercion(call);    
+    return super.castType(call);
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

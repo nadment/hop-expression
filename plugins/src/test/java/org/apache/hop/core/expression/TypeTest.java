@@ -492,16 +492,20 @@ public class TypeTest extends ExpressionTest {
     evalTrue("0::NUMBER = 0::NUMBER");
     evalTrue("1::NUMBER = 1::INTEGER");
             
-    // String to Number
+    // Coerce String to Number
     evalTrue("'1.25' = 1.25::NUMBER(10,4)");
     evalEquals("2.0*'1.23'", 2.46D);
+    evalEquals("2*'1.23'", 2.46D);
     evalEquals("2+'2'", 4L);
     evalEquals("'2'+2", 4L);
+    
+    // Coerce Integer to String
     evalEquals("2 + 2 || 2", "42");
-    evalEquals(" 4 + 4 || '2' ", "82");    
+    evalEquals(" 4 + 4 || '2' ", "82");
+    
     evalEquals(" '8' || 1 + 1", 82L);
     
-    // Integer to Number
+    // Coerce Integer to Number
     evalEquals("'-2e-3' * 2", new BigDecimal("-4e-3"));    
     evalEquals("'-4e-4'::Number(12,4) * 0.5", new BigDecimal("-0.00020"));
   }

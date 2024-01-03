@@ -1611,6 +1611,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Greatest(-5,2.1,9,4)", 9L).returnType(Types.NUMBER);
     evalEquals("Greatest(123,FIELD_INTEGER,789)", 789L).returnType(Types.INTEGER); 
     evalEquals("Greatest(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", 123456L).returnType(Types.NUMBER);
+
+    // Numeric with String coercion
+    evalEquals("Greatest('123',FIELD_INTEGER,789)", 789L).returnType(Types.NUMBER);    
     
     // String
     evalEquals("Greatest('B','A','C')", "C").returnType(Types.STRING);
@@ -1621,6 +1624,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     
     // Date
     evalEquals("Greatest(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')", LocalDate.of(2021, 12, 6)).returnType(Types.DATE);
+    
+    // Date with String coercion
+    evalEquals("Greatest(DATE '2020-01-01','2021-12-06',DATE '1990-12-08')", LocalDate.of(2021, 12, 6)).returnType(Types.DATE);
     
     // 1 argument only
     evalEquals("Greatest(5)", 5L);
@@ -1633,6 +1639,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Data type mixed
     evalFails("Greatest(123,'str',123)");
+    evalFails("Greatest(123,DATE '2021-12-06',123)");
     
     evalFails("Greatest(NULL_JSON, FIELD_JSON)");
   }
@@ -1651,6 +1658,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Least(FIELD_INTEGER,FIELD_NUMBER,789)", -5L).returnType(Types.NUMBER); 
     evalEquals("Least(FIELD_INTEGER,FIELD_BIGNUMBER,FIELD_NUMBER)", -5L).returnType(Types.NUMBER);
     
+    // Numeric with String coercion
+    evalEquals("Least('123',FIELD_INTEGER,789)", 40L).returnType(Types.NUMBER);
+    
     // String
     evalEquals("Least('B','A','C')", "A").returnType(Types.STRING);
     evalEquals("Least(FIELD_STRING,'st','bf')", "TEST").returnType(Types.STRING);
@@ -1660,6 +1670,9 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Date
     evalEquals("Least(DATE '2020-01-01',DATE '2021-12-06',DATE '1990-12-08')", LocalDate.of(1990, 12, 8)).returnType(Types.DATE);
+    
+    // Date with String coercion
+    evalEquals("Least(DATE '2020-01-01','2021-12-06',DATE '1990-12-08')", LocalDate.of(1990, 12, 8)).returnType(Types.DATE);
 
     // 1 argument only
     evalEquals("Least(5)", 5L);
@@ -1670,8 +1683,9 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Null only if all values are null
     evalNull("Least(NULL_INTEGER, NULL_NUMBER)");
 
-    // Type mixed
+    // Date type mixed
     evalFails("Least(123,'str',123)");
+    evalFails("Least(123,DATE '2021-12-06',123)");
     
     evalFails("Least(NULL_JSON, FIELD_JSON)");
   }
@@ -2927,9 +2941,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalTrue("Equal_Null(DATE '2019-01-01',DATE '2019-01-01')");
     evalFalse("Equal_Null(DATE '2019-01-01',DATE '2018-01-01')").returnType(Types.BOOLEAN);
 
+    // Same operands always true
     optimizeTrue("EQUAL_NULL(NULL_STRING, NULL_STRING)");
     optimizeTrue("EQUAL_NULL(FIELD_STRING, FIELD_STRING)");
     optimizeTrue("EQUAL_NULL(FIELD_INTEGER, FIELD_INTEGER)");
+    optimizeTrue("EQUAL_NULL(FIELD_DATE, FIELD_DATE)");
+    
     optimize("EQUAL_NULL(FIELD_INTEGER,NULL)", "FIELD_INTEGER IS NULL");
     optimize("EQUAL_NULL(NULL,FIELD_INTEGER)", "FIELD_INTEGER IS NULL");
     optimize("EQUAL_NULL(TRUE,FIELD_BOOLEAN_TRUE)", "FIELD_BOOLEAN_TRUE IS TRUE");

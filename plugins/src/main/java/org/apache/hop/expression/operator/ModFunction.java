@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -23,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -60,6 +62,13 @@ public class ModFunction extends Function {
     return value.remainder(divisor);
   }
 
+
+  @Override
+  public Call castType(Call call) {
+    Types.arithmeticCoercion(call);    
+    return super.castType(call);
+  }
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

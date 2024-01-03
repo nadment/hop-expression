@@ -112,7 +112,7 @@ public class CallTest extends ExpressionTest {
   public void orderOperandByCost() throws Exception {
 
     // Order operands by cost with symmetrical operator
-    optimize("1+FIELD_STRING_NUMBER+3", "4+FIELD_STRING_NUMBER");
-    optimize("2*FIELD_STRING_NUMBER*3", "6*FIELD_STRING_NUMBER");
+    optimize("1+FIELD_NUMBER+3", "4+FIELD_NUMBER");
+    optimize("2*FIELD_STRING_NUMBER*3", "6*CAST(FIELD_STRING_NUMBER AS NUMBER)");
   }
 }

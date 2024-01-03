@@ -27,6 +27,7 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
@@ -62,6 +63,12 @@ public class DivOperator extends Operator {
     return call;
   }
 
+  @Override
+  public Call castType(Call call) {
+    Types.arithmeticCoercion(call);    
+    return super.castType(call);
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     BigDecimal value = operands[0].getValue(BigDecimal.class);

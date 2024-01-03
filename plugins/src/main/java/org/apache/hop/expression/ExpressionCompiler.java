@@ -71,20 +71,20 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     // Evaluate if constant
     if (expression.isConstant()) {
       try {
-        Object value = expression.getValue();
-        Type valueType = expression.getType();
+        Object constantValue = expression.getValue();
+        Type constantType = expression.getType();
 
         // Some operator don't known return type like JSON_VALUE.
-        if (TypeId.ANY.equals(valueType.getId())) {
-          return Literal.of(value);
+        if (TypeId.ANY.equals(constantType.getId())) {
+          return Literal.of(constantValue);
         }
 
         // For CAST operator, it's important to return type
         if (expression.is(Operators.CAST)) {
-          value = valueType.cast(value);
+          constantValue = constantType.cast(constantValue);
 
         }
-        return new Literal(value, valueType);
+        return new Literal(constantValue, constantType);
       } catch (Exception e) {
         // Ignore error like division by zero "X IN (1,3/0)" and continue
       }

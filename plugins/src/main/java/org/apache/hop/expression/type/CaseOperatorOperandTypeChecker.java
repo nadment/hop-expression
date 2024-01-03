@@ -31,7 +31,7 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
     Tuple thenTuple = call.getOperand(2).asTuple();
     IExpression elseExpression = call.getOperand(3);
 
-    Type valueType = call.getOperand(0).getType();
+    Type valueType;
 
     // Searched case operator
     if (call.getOperand(0).isNull()) {
