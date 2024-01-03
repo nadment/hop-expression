@@ -30,14 +30,14 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
   }
 
   protected final Composition composition;
-  protected final List<? extends IOperandTypeChecker> rules;
-  protected final IOperandCountRange range;
+  protected final List<IOperandTypeChecker> rules;
+  protected final IOperandCountRange repeatRange;
 
-  CompositeOperandTypeChecker(Composition composition, List<? extends IOperandTypeChecker> rules, IOperandCountRange range) {
+  CompositeOperandTypeChecker(Composition composition, List<IOperandTypeChecker> rules, IOperandCountRange repeatRange) {
     super();
     this.composition = composition;
     this.rules = rules;
-    this.range = range;
+    this.repeatRange = repeatRange;
   }
 
   @Override
@@ -89,7 +89,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
 
     switch (composition) {
       case REPEAT:
-        return range;
+        return repeatRange;
       case SEQUENCE:
         return OperandCountRange.of(rules.size());
       case AND:
@@ -157,7 +157,7 @@ public class CompositeOperandTypeChecker implements IOperandTypeChecker {
     }
   }
 
-  public List<? extends IOperandTypeChecker> getRules() {
+  public List<IOperandTypeChecker> getRules() {
     return rules;
   }
 
