@@ -47,11 +47,10 @@ public class LeastFunction extends Function {
   }
   
   @Override
-  public Call castType(Call call) {
-    Types.comparisonCoercion(call);    
-    return super.castType(call);
+  public boolean coerceType(Call call) {
+    return Types.coercionComparisonOperator(call);    
   }
-  
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object result = null;

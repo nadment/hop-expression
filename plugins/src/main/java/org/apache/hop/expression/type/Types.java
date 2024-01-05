@@ -28,6 +28,8 @@ import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.Tuple;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Types {
@@ -171,6 +173,10 @@ public class Types {
     for (int index = 0; index < call.getOperandCount(); index++) {
       coerced = coerceOperandType(call, index, type) || coerced;
     }
+
+    // Inferring the return type
+    call.inferReturnType();
+
     return coerced;
   }
 
@@ -197,7 +203,7 @@ public class Types {
   /**
    * Determines common type for a comparison operator.
    */
-  public static Type commonTypeForBinaryComparison(final Type type1, final Type type2) {
+  public static Type getCommonTypeForComparison(final Type type1, final Type type2) {
 
     if (type1 == null || type2 == null)
       return null;
@@ -210,7 +216,6 @@ public class Types {
     if (isString(type1) && isDate(type2)) {
       return type2;
     }
-
     // STRING compare numeric -> NUMBER
     if (isString(type1) && isNumeric(type2)) {
       return NUMBER;
@@ -220,15 +225,15 @@ public class Types {
       return NUMBER;
     }
     // BOOLEAN compare numeric -> NUMBER
-    if (isString(type1) && isNumeric(type2)) {
-      return NUMBER;
+    if (isBoolean(type1) && isNumeric(type2)) {
+      return isInteger(type2) ? IntegerType.of(1) : NumberType.of(1);
     }
     // Numeric compare BOOLEAN -> NUMBER
-    if (isNumeric(type1) && isString(type2)) {
-      return NUMBER;
+    if (isNumeric(type1) && isBoolean(type2)) {
+      return isInteger(type1) ? IntegerType.of(1) : NumberType.of(1);
     }
 
-    return type1.getId().ordinal() > type2.getId().ordinal() ? type1 : type2;
+    return getLeastRestrictive(List.of(type1, type2));
   }
 
   /**
@@ -238,9 +243,9 @@ public class Types {
    * Rules: Find common type for all the then operands and else operands,
    * then try to coerce the then/else operands to the type if needed.
    */
-  public static  boolean caseWhenCoercion(Call call) {
-     return true;
-   }
+  public static boolean coercionCaseOperator(Call call) {
+    return true;
+  }
 
   /**
    * Returns whether a IExpression should be cast to a target type.
@@ -249,11 +254,10 @@ public class Types {
     return expression.getType().getId().ordinal() < toType.getId().ordinal();
   }
 
-
   /**
    * Coerces operand of arithmetic expressions to Numeric type.
    */
-  public static boolean arithmeticCoercion(Call call) {
+  public static boolean coercionArithmeticOperator(Call call) {
 
     Type left = call.getOperand(0).getType();
     Type right = call.getOperand(1).getType();
@@ -270,46 +274,58 @@ public class Types {
       return coerceOperandsType(call, NUMBER);
     }
 
-    return true;
+    return false;
   }
 
   /**
    * Coerces operands in comparison expressions.
    */
-  public static boolean comparisonCoercion(Call call) {
+  public static boolean coercionComparisonOperator(Call call) {
 
-    Type commonType = call.getOperand(0).getType();
+    Type type = call.getOperand(0).getType();
     for (int index = 1; index < call.getOperandCount(); index++) {
-      commonType = commonTypeForBinaryComparison(commonType, call.getOperand(index).getType());
+      type = getCommonTypeForComparison(type, call.getOperand(index).getType());
     }
 
-    return coerceOperandsType(call, commonType);
+    return coerceOperandsType(call, type);
   }
 
-  /**
-   * Coerces operands in tuple expressions.
-   */
-  // public static boolean comparisonCoercion(Tuple tuple, Type commonType) {
-  // for (int index = 0; index < tuple.size(); index++) {
-  // commonType = commonTypeForBinaryComparison(commonType, tuple.get(index).getType());
-  // }
-  // return coerceOperandsType(tuple, commonType);
-  // }
 
   /**
-   * Coerce all the operands to a common {@code Type}.
-   *
-   * @param call the call
-   * @param commonType common type to coerce to
+   * Coerces operands in comparison expressions.
    */
-  // protected static boolean coerceOperandsType(Tuple tuple, Type type) {
-  // boolean coerced = false;
-  // for (int index = 0; index < call.getOperandCount(); index++) {
-  // coerced = coerceOperandType(call, index, type) || coerced;
-  // }
-  // return coerced;
-  // }
+  public static boolean coercionInOperator(Call call) {
+    Type type = call.getOperand(0).getType();
 
+    // Determine common type
+    Tuple tuple = call.getOperand(1).asTuple();
+    for (IExpression operand : tuple) {
+      type = getCommonTypeForComparison(type, operand.getType());
+    }
+
+    // Coerce term
+    boolean coercedTerm = coerceOperandType(call, 0, type);
+
+    // Coerce tuple values
+    boolean coercedValues = false;
+    List<IExpression> list = new ArrayList<>();
+    for (IExpression operand : tuple) {
+      if (needToCast(operand, type)) {
+        Call cast = new Call(Operators.CAST, operand, Literal.of(type));
+        cast.inferReturnType();
+        operand = cast;
+        coercedValues = true;
+      }
+      list.add(operand);
+    }
+
+    if (coercedValues) {
+      call.setOperand(1, new Tuple(list));
+      call.inferReturnType();
+    }
+
+    return coercedTerm || coercedValues;
+  }
 
   /**
    * Returns whether the conversion from {@code source} to {@code target} type

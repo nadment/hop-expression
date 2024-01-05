@@ -100,7 +100,9 @@ public class ExpressionContext extends Variables implements IExpressionContext {
       throws ExpressionException {
     
     ExpressionParser parser = new ExpressionParser(resolve(source));
-
+    
+    System.out.print(source);
+    
     try {
       // Syntax analysis
       IExpression expression = parser.parse();
@@ -111,11 +113,7 @@ public class ExpressionContext extends Variables implements IExpressionContext {
       // Compile expression
       ExpressionCompiler compiler = new ExpressionCompiler(this);
       expression = compiler.compile(expression);
-
-      
-//      ExpressionCoercion coercer = new ExpressionCoercion();
-//      expression = coercer.coerce(this, expression);
-      
+     
       // Unknown are not expected here
       if (expression.getType().is(TypeId.UNKNOWN)) {
         throw new ExpressionException(0, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, source);

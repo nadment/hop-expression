@@ -106,9 +106,8 @@ public class GreaterThanOrEqualOperator extends Operator {
   }
 
   @Override
-  public Call castType(Call call) {
-    Types.comparisonCoercion(call);
-    return super.castType(call);
+  public boolean coerceType(Call call) {
+    return Types.coercionComparisonOperator(call);    
   }
 
   @Override

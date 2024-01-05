@@ -20,7 +20,9 @@ import org.apache.hop.expression.IExpression;
 
 public class DecodeFunctionOperandTypeChecker implements IOperandTypeChecker {
 
-  public DecodeFunctionOperandTypeChecker() {}
+  public DecodeFunctionOperandTypeChecker() {
+    super();
+  }
 
   @Override
   public boolean checkOperandTypes(Call call) {

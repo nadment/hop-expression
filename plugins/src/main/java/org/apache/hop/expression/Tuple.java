@@ -76,13 +76,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public Type getType() {
-    // Returns the first known data type of values.
-    for (IExpression expression : values) {
-      Type type = expression.getType();
-      if (type != Types.UNKNOWN)
-        return type;
-    }
-
     return Types.UNKNOWN;
   }
 
@@ -107,10 +100,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     return values.length;
   }
 
-  public IExpression[] toArray() {
-    return values;
-  }
-
   @Override
   public <E> E accept(IExpressionVisitor<E> visitor) {
     return visitor.visitTuple(this);
@@ -119,8 +108,8 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   @Override
   public boolean equals(Object other) {
     if (other instanceof Tuple) {
-      Tuple o = (Tuple) other;
-      return Arrays.equals(values, o.values);
+      Tuple tuple = (Tuple) other;
+      return Arrays.equals(values, tuple.values);
     }
     return false;
   }
@@ -178,8 +167,6 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
         return false;
       }
     }
-
     return true;
   }
-
 }

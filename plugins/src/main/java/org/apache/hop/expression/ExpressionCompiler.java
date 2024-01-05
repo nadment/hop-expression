@@ -25,18 +25,17 @@ import java.util.List;
 public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
   private final IExpressionContext context;
-  
+  private boolean changed;
+
   public ExpressionCompiler(IExpressionContext context) {
     this.context = context;
   }
 
-  public IExpression compile(IExpression expression)
-      throws ExpressionException {
-    IExpression original;
+  public IExpression compile(IExpression expression) throws ExpressionException {
     do {
-      original = expression;
-      expression = expression.accept(this);
-    } while (!expression.equals(original));
+      changed = false;
+      expression = expression.accept(this);      
+    } while (changed);
 
     return expression;
   }
@@ -59,34 +58,45 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
     call = new Call(operator, expressions);
     call.inferReturnType();
 
+    IExpression original = call;
+    
     // Compile with operator
     IExpression expression = operator.compile(context, call);
     
     if (expression.is(Kind.CALL)) {
       call = expression.asCall();
+
+      // Coerce operands data type
+      changed |= call.getOperator().coerceType(call);
+
       // Inferring return type
-      expression = call.getOperator().castType(call);
-    }
+      call.inferReturnType();
 
-    // Evaluate if constant
-    if (expression.isConstant()) {
-      try {
-        Object constantValue = expression.getValue();
-        Type constantType = expression.getType();
+      // If something changed
+      if (!expression.equals(original)) changed = true;
+      
+      // Evaluate if constant
+      if (expression.isConstant()) {
+        try {
+          Object constantValue = expression.getValue();
+          Type constantType = expression.getType();
 
-        // Some operator don't known return type like JSON_VALUE.
-        if (TypeId.ANY.equals(constantType.getId())) {
-          return Literal.of(constantValue);
+          // Some operator don't known return type like JSON_VALUE.
+          if (TypeId.ANY.equals(constantType.getId())) {
+            return Literal.of(constantValue);
+          }
+
+          // For CAST operator, it's important to return type
+          if (expression.is(Operators.CAST)) {
+            constantValue = constantType.cast(constantValue);
+          }
+          
+          changed = true;
+          
+          return new Literal(constantValue, constantType);
+        } catch (Exception e) {
+          // Ignore error like division by zero "X IN (1,3/0)" and continue
         }
-
-        // For CAST operator, it's important to return type
-        if (expression.is(Operators.CAST)) {
-          constantValue = constantType.cast(constantValue);
-
-        }
-        return new Literal(constantValue, constantType);
-      } catch (Exception e) {
-        // Ignore error like division by zero "X IN (1,3/0)" and continue
       }
     }
     return expression;

@@ -180,7 +180,9 @@ public class BoolOrOperator extends Operator {
           values.add(pair.getRight());
           predicates.remove(pair.getLeft());
         }
-        predicates.add(new Call(Operators.IN, reference, new Tuple(values)));
+        Call predicate = new Call(Operators.IN, reference, new Tuple(values));
+        predicate.inferReturnType();
+        predicates.add(predicate);
       }
     }
 

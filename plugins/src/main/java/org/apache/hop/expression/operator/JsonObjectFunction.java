@@ -49,7 +49,9 @@ public class JsonObjectFunction extends Function {
 
   public static class JsonObjectFunctionOperandTypeChecker implements IOperandTypeChecker {
 
-    public JsonObjectFunctionOperandTypeChecker() {}
+    public JsonObjectFunctionOperandTypeChecker() {
+      super();
+    }
 
     @Override
     public boolean checkOperandTypes(Call call) {

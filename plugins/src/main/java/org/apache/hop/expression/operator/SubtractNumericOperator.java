@@ -23,6 +23,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import java.math.BigDecimal;
 
 /**
@@ -65,6 +66,11 @@ public class SubtractNumericOperator extends SubtractOperator {
     }
     
     return new Call(SubtractNumber, call.getOperands());
+  }
+  
+  @Override
+  public boolean coerceType(Call call) {
+    return Types.coercionArithmeticOperator(call);    
   }
   
   private static final class SubtractIntegerOperator extends SubtractNumericOperator {

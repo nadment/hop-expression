@@ -69,7 +69,7 @@ public class AddNumericOperator extends AddOperator {
     }  
     
     // Optimize data type
-    if (call.getType().is(TypeId.INTEGER) ) {
+    if (call.inferReturnType().is(TypeId.INTEGER) ) {
       return new Call(AddInteger, call.getOperands());
     }
     
@@ -82,9 +82,8 @@ public class AddNumericOperator extends AddOperator {
   }
   
   @Override
-  public Call castType(Call call) {
-    Types.arithmeticCoercion(call);    
-    return super.castType(call);
+  public boolean coerceType(Call call) {
+    return Types.coercionArithmeticOperator(call);    
   }
     
   private static final class AddIntegerOperator extends AddNumericOperator {

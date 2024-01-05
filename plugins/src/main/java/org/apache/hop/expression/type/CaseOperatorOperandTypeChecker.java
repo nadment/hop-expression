@@ -17,12 +17,13 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Tuple;
 
 public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
 
   public CaseOperatorOperandTypeChecker() {
-
+    super();
   }
 
   @Override
@@ -42,18 +43,24 @@ public class CaseOperatorOperandTypeChecker implements IOperandTypeChecker {
       valueType = call.getOperand(0).getType();
     }
 
-    for (IExpression whenOperand : whenTuple) {
-      if (!whenOperand.getType().isFamily(valueType.getFamily())) {
+    for (IExpression operand : whenTuple) {
+      if ( operand.is(Kind.TUPLE)) {
+        for (IExpression value : operand.asTuple()) {
+          if (!value.getType().isFamily(valueType.getFamily())) {
+            return false;
+          }   
+        }
+      }      
+      else if (!operand.getType().isFamily(valueType.getFamily())) {
         return false;
       }
     }
 
-
     Type thenType = Types.UNKNOWN;
-    for (IExpression thenOperand : thenTuple) {
+    for (IExpression operand : thenTuple) {
       // First non null
-      if (!thenOperand.isNull()) {
-        thenType = thenOperand.getType();
+      if (!operand.isNull()) {
+        thenType = operand.getType();
       }
     }
 

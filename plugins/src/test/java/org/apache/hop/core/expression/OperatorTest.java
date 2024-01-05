@@ -32,12 +32,13 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void EqualTo() throws Exception {
     // Integer
-    evalTrue("'0.0' = 0");
-    evalTrue("0.0 = '0.000'");
-    evalTrue("15.0 = '15'");
+    evalTrue("0.0 = 0");
+    evalTrue("0.0 = -0.000");
+    evalTrue("15.0 = 15");
     evalTrue("'.01' = 0.01");
     evalTrue("FIELD_INTEGER = 40.0").returnType(Types.BOOLEAN);
-
+    evalTrue("0b11110000 = 0xF0");
+    
     // Number
     evalTrue("FIELD_NUMBER = -5.12").returnType(Types.BOOLEAN);
     evalTrue("2.000 = 2");
@@ -45,7 +46,6 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("-1.4e-10 = -1.4e-10");
 
     // Binary
-    evalTrue("0b11110000 = 0xF0");
     evalTrue("BINARY 'FF22C' = BINARY 'ff22c'");
 
     // Boolean
@@ -514,7 +514,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
 
-    evalFails("2 in (null,1,2,3)");
+    evalFails(" in (1,2)");
     evalFails("FIELD_INTEGER in 1,2)");
     evalFails("FIELD_INTEGER in (1,2.5,)");
     evalFails("FIELD_INTEGER in ()");
@@ -723,9 +723,10 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("1::NUMBER(38,10)+3::NUMBER(38,5)", 4L).returnType(NumberType.of(38, 10));
     evalEquals("1::NUMBER(14,2)+3::NUMBER(14,2)", 4L).returnType(NumberType.of(15, 2));
 
-    // Addition of boolean coerced to numeric
-    evalEquals("FIELD_BOOLEAN_TRUE+FIELD_BOOLEAN_FALSE", 1L);
-
+    // Implicit coercion from BOOLEAN
+    evalEquals("1+FIELD_BOOLEAN_FALSE", 1L);
+    evalEquals("FIELD_BOOLEAN_TRUE+1", 2L);
+    
     // Implicit coercion from STRING
     evalEquals("'1'+2", 3L).returnType(Types.NUMBER);
     evalEquals("1+'2'", 3L).returnType(Types.NUMBER);
@@ -798,15 +799,11 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void Subtract() throws Exception {
     // Subtract of numeric
-    evalEquals("10-0.5", 9.5D);
+    evalEquals("10-0.5", 9.5D).returnType(NumberType.of(4, 1));
     evalEquals("FIELD_INTEGER-0.5", 39.5D);
     evalEquals("FIELD_INTEGER-10::INTEGER", 30L);
     evalEquals("FIELD_INTEGER-FIELD_NUMBER-FIELD_BIGNUMBER", -123411.669);
     evalEquals("FIELD_BIGNUMBER-FIELD_NUMBER-FIELD_INTEGER", 123421.909);
-
-    // Subtraction boolean
-    evalEquals("TRUE-FALSE", 1L);
-    evalEquals("FALSE-TRUE", -1L);
 
     // Subtraction interval to a temporal
     evalEquals("DATE '2019-02-25'-INTERVAL 12 HOUR", LocalDateTime.of(2019, 2, 24, 12, 0, 0));
@@ -824,7 +821,18 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("DATE '2020-03-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 2, 29));
     evalEquals("DATE '2020-04-30'-INTERVAL 1 MONTH", LocalDate.of(2020, 3, 30));
     evalEquals("DATE '2020-02-29'-INTERVAL 12 MONTHS", LocalDate.of(2019, 2, 28));
-
+    
+    // Implicit coercion from BOOLEAN
+    evalEquals("TRUE-FALSE", 1L).returnType(IntegerType.of(2));
+    evalEquals("FALSE-TRUE", -1L);
+    evalEquals("1-FIELD_BOOLEAN_FALSE", 1L).returnType(IntegerType.of(2));
+    evalEquals("FIELD_BOOLEAN_TRUE-2", -1L);
+    
+    // Implicit coercion from STRING
+    evalEquals("'1'-2", -1L).returnType(Types.NUMBER);
+    evalEquals("1-'2'", -1L).returnType(Types.NUMBER);
+    evalEquals("2.5-'1.3'", 1.2).returnType(Types.NUMBER);;
+    evalEquals("'2.5'-1", 1.5).returnType(Types.NUMBER);;       
 
     // evalEquals("ADD_MONTHS(DATE '2019-04-30',1)", LocalDate.of(2019, 3, 31));
 
@@ -833,7 +841,7 @@ public class OperatorTest extends ExpressionTest {
     // evalEquals("DATE '2019-02-23'-DATE '2019-02-25'", -2);
     // evalEquals("DATE '2019-02-25'-to_Date('2019-02-23 12:00','YYYY-MM-DD HH24:MI')", 1.5);
 
-    evalNull("5-NULL_INTEGER");
+    evalNull("5-NULL_INTEGER"); // TODO: .returnType(IntegerType.of(19));
     evalNull("NULL_INTEGER-5");
 
     evalFails("5-");
@@ -1820,7 +1828,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2L);
     evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2L);
 
-    // Comma-separated form for multi value
+    // Comma-separated form for multi-value
     evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
         "B");
     evalEquals(

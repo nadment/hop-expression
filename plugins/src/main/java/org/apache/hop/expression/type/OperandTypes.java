@@ -266,4 +266,6 @@ public final class OperandTypes {
   public static final IOperandTypeChecker CAST_OPERATOR =
       sequence(ANY, DATATYPE, TEXT).or(sequence(ANY, DATATYPE));
   public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
+  public static final IOperandTypeChecker IN_OPERATOR = new InOperatorOperandTypeChecker();
+  
 }

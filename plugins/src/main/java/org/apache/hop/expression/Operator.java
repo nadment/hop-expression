@@ -307,11 +307,15 @@ public abstract class Operator {
 
   /**
    * Derives the type of a call to this operator.
+   * 
+   * @param call The call to coerce
    */
-  public Call castType(Call call) {
-    call.inferReturnType();
+  public boolean coerceType(Call call) {
     
-    return call;
+    // Inferring the return type
+    inferReturnType(call);
+    
+    return false;
   }
   
   /**

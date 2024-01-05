@@ -64,9 +64,8 @@ public class DivOperator extends Operator {
   }
 
   @Override
-  public Call castType(Call call) {
-    Types.arithmeticCoercion(call);    
-    return super.castType(call);
+  public boolean coerceType(Call call) {
+    return Types.coercionArithmeticOperator(call);    
   }
   
   @Override

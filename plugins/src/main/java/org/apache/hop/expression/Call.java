@@ -179,8 +179,9 @@ public final class Call implements IExpression {
   /**
    * Inferring the return type.
    */
-  public void inferReturnType() {
-    type = operator.inferReturnType(this);
+  public Type inferReturnType() {    
+    type = operator.inferReturnType(this);    
+    return type;
   }
 
   @Override

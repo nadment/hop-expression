@@ -52,7 +52,7 @@ import java.util.List;
 public class InOperator extends Operator {
 
   public InOperator() {
-    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.AT_LEAST_ONE_SAME_VARIADIC,
+    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.IN_OPERATOR,
         OperatorCategory.COMPARISON, "/docs/in.html");
   }
 
@@ -105,11 +105,18 @@ public class InOperator extends Operator {
 
     // Sort list on cost
     list.sort(Comparator.comparing(IExpression::getCost));
-    call = new Call(this, call.getOperand(0), new Tuple(list));
-    Types.comparisonCoercion(call);
+    
+    // Rebuild tuple
+    call =  new Call(this, call.getOperand(0), new Tuple(list));
+    call.inferReturnType();
     return call;
   }
 
+  @Override
+  public boolean coerceType(Call call) {
+    return Types.coercionInOperator(call);    
+  }  
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
