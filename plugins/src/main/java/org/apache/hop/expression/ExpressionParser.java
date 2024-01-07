@@ -782,7 +782,7 @@ public class ExpressionParser {
       throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CASE);
     }
 
-    return new Call(start, Operators.CASE, valueExpression, new Tuple(whenList),
+    return new Call(start, simple ? Operators.CASE_SIMPLE:Operators.CASE_SEARCH, valueExpression, new Tuple(whenList),
         new Tuple(thenList), elseExpression);
   }
 

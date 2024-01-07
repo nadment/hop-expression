@@ -25,8 +25,8 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
-import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -52,10 +52,23 @@ import java.util.List;
 public class InOperator extends Operator {
 
   public InOperator() {
-    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.IN_OPERATOR,
-        OperatorCategory.COMPARISON, "/docs/in.html");
+    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, null, OperatorCategory.COMPARISON, "/docs/in.html");
   }
 
+  @Override
+  public boolean checkOperandTypes(final Call call) {
+    Type type = call.getOperand(0).getType();
+    Tuple tuple = call.getOperand(1).asTuple();
+
+    for (IExpression operand : tuple) {
+      if (!operand.getType().isCompatibleWithCoercion(type)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+  
   /**
    * Simplifies IN expressions list of elements.
    * 1. Remove duplicate expressions in list.

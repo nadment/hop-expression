@@ -22,13 +22,14 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 /**
- * Returns the difference in time unit between two date or timestamp.
+ * Returns the difference in complete time unit between two date or timestamp.
  * 
  * @see DaysBetweenFunction
  * @see WeeksBetweenFunction
@@ -89,7 +90,7 @@ public class DateDiffFunction extends Function {
       case NANOSECOND:
         return startDateTime.until(endDateTime, ChronoUnit.NANOS);
       default:
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
+        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
     }
   }
 }

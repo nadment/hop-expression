@@ -43,7 +43,7 @@ public class BetweenOperator extends Operator {
     SYMMETRIC
   }
 
-  public final Between between;
+  private final Between between;
 
   public BetweenOperator(Between between) {
     super("BETWEEN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.BETWEEN,

@@ -28,6 +28,7 @@ import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
 import org.apache.hop.expression.operator.CaseOperator;
+import org.apache.hop.expression.operator.CaseOperator.When;
 import org.apache.hop.expression.operator.CastFunction;
 import org.apache.hop.expression.operator.CastOperator;
 import org.apache.hop.expression.operator.ConcatFunction;
@@ -87,7 +88,8 @@ public class Operators {
   // -------------------------------------------------------------
   // CONDITIONAL OPERATORS
   // -------------------------------------------------------------
-  public static final Operator CASE = new CaseOperator();
+  public static final Operator CASE_SEARCH = new CaseOperator(When.SEARCH);
+  public static final Operator CASE_SIMPLE = new CaseOperator(When.SIMPLE);
   public static final Operator IF = new IfFunction();
   public static final Operator IFNULL = new IfNullFunction();
   public static final Operator NULLIF = new NullIfFunction();
@@ -163,7 +165,7 @@ public class Operators {
   private static final Set<Operator> SET_OPERATORS =
       Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL,
           GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
-          LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE, CONCAT, IN,
+          LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE_SEARCH, CONCAT, IN,
           IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
 
   public static Set<Operator> getOperators() {

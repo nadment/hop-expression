@@ -47,7 +47,7 @@ public class CastFunction extends Function {
   }
 
   public CastFunction(String id) {
-    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST_OPERATOR, OperatorCategory.CONVERSION,
+    super(id, ReturnTypes.CAST_OPERATOR, OperandTypes.CAST, OperatorCategory.CONVERSION,
         "/docs/cast.html");
   }
 

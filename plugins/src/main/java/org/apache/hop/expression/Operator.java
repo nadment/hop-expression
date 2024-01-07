@@ -95,7 +95,7 @@ public abstract class Operator {
     this.leftPrecedence = leftPrecedence(precedence, isLeftAssociative);
     this.rightPrecedence = rightPrecedence(precedence, isLeftAssociative);
     this.returnTypeInference = Objects.requireNonNull(returnTypeInference, "return type inference");
-    this.operandTypeChecker = Objects.requireNonNull(operandTypeChecker, "operand type checker");
+    this.operandTypeChecker = operandTypeChecker;
     this.category = TranslateUtil.translate(category, IExpression.class);
     this.documentationUrl = documentationUrl;
     this.documentation = Documentations.loadDocumention(id, documentationUrl);
@@ -259,10 +259,14 @@ public abstract class Operator {
   }
 
   /**
-   * Check the number of operands expected
-   * @param call
+   * Check the number of operands expected.
+   * 
+   * @param call The call to check
    */
   public void checkOperandCount(final Call call) {
+    if ( operandTypeChecker==null ) 
+      return;
+    
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
@@ -272,6 +276,20 @@ public abstract class Operator {
         throw new ExpressionException(call.getPosition(), ErrorCode.TOO_MANY_ARGUMENT, this);
       }
     }
+  }
+
+  /**
+   * Check operand types expected
+   * 
+   * @param call The call to check
+   * 
+   * @return whether check succeeded
+   */
+  public boolean checkOperandTypes(final Call call) {
+    if ( operandTypeChecker!=null ) {
+      return operandTypeChecker.checkOperandTypes(call);
+    }
+    return true;
   }
   
   /**
@@ -284,10 +302,11 @@ public abstract class Operator {
    */
   public boolean checkOperandTypes(final Call call, boolean throwOnFailure) {
 
-    if (operandTypeChecker.checkOperandTypes(call)) {
+    boolean success  = checkOperandTypes(call);
+    if (success) {
       return true;
     }
-
+    
     if (throwOnFailure) { 
       throw new ExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
     }

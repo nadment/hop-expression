@@ -28,47 +28,48 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
-import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeFamily;
+import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An operator describing the <code>CASE</code> operator.
  */
 public class CaseOperator extends Operator {
+  public enum When {
+    /** Simple switch case */
+    SIMPLE,
+    /** Search case */
+    SEARCH
+  }
 
-  public CaseOperator() {
-    super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, OperandTypes.CASE_OPERATOR,
+  private final When when;
+
+  public CaseOperator(When when) {
+    super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, null,
         OperatorCategory.CONDITIONAL, "/docs/case.html");
+    this.when = when;
   }
 
   @Override
   public Object eval(final IExpression[] operands) {
     int index = 0;
-    IExpression valueExpression = operands[0];
     Tuple whenTuple = (Tuple) operands[1];
     Tuple thenTuple = (Tuple) operands[2];
     IExpression elseExpression = operands[3];
 
-    // Search case
-    if (valueExpression == Literal.UNKNOWN) {
-      for (IExpression whenOperand : whenTuple) {
-        Boolean predicat = whenOperand.getValue(Boolean.class);
-        if (predicat != null && predicat) {
-          return thenTuple.get(index).getValue();
-        }
-        index++;
-      }
-    }
-    // Simple case
-    else {
+    if (when == When.SIMPLE) {
+      IExpression valueExpression = operands[0];
       Object condition = valueExpression.getValue();
       if (condition != null) {
         for (IExpression whenOperand : whenTuple) {
 
-          // Multi values
+          // Multi-values
           if (whenOperand.is(Kind.TUPLE)) {
             for (IExpression expression : whenOperand.asTuple()) {
               Object value = expression.getValue();
@@ -85,6 +86,14 @@ public class CaseOperator extends Operator {
           index++;
         }
       }
+    } else {
+      for (IExpression whenOperand : whenTuple) {
+        Boolean predicat = whenOperand.getValue(Boolean.class);
+        if (predicat != null && predicat) {
+          return thenTuple.get(index).getValue();
+        }
+        index++;
+      }
     }
 
     return elseExpression.getValue();
@@ -96,15 +105,21 @@ public class CaseOperator extends Operator {
     Tuple whenTerm = call.getOperand(1).asTuple();
     Tuple thenTerm = call.getOperand(2).asTuple();
     IExpression elseTerm = call.getOperand(3);
+    if (when == When.SIMPLE) {
+      if (whenTerm.size() == 1) {
 
-    // Search CASE
-    if (call.getOperand(0) == Literal.UNKNOWN) {
-
+        // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
+        return new Call(Operators.IF,
+            new Call(Operators.EQUAL, call.getOperand(0), whenTerm.get(0)), thenTerm.get(0),
+            elseTerm);
+      }
+    } else {
       // Flatten search case
       //
       // When a searched CASE expression nests another CASE expression in its ELSE clause, that can
       // be flattened into the top level CASE expression.
-      if (elseTerm.is(Operators.CASE) && elseTerm.asCall().getOperand(0) == Literal.UNKNOWN) {
+      if (elseTerm.is(Operators.CASE_SEARCH)
+          && elseTerm.asCall().getOperand(0) == Literal.UNKNOWN) {
         List<IExpression> whenOperands = new ArrayList<>();
         whenTerm.forEach(whenOperands::add);
         elseTerm.asCall().getOperand(1).asTuple().forEach(whenOperands::add);
@@ -113,7 +128,7 @@ public class CaseOperator extends Operator {
         thenTerm.forEach(thenOperands::add);
         elseTerm.asCall().getOperand(2).asTuple().forEach(thenOperands::add);
 
-        return new Call(Operators.CASE, Literal.UNKNOWN, new Tuple(whenOperands),
+        return new Call(Operators.CASE_SEARCH, Literal.UNKNOWN, new Tuple(whenOperands),
             new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
       }
 
@@ -161,29 +176,32 @@ public class CaseOperator extends Operator {
         // }
       }
     }
-    // Simple case
-    else {
-      if (whenTerm.size() == 1) {
-        IExpression searchTerm = call.getOperand(0);
-
-        // CASE value WHEN x THEN y ELSE z END → IF(value=x,y,z)
-        return new Call(Operators.IF, new Call(Operators.EQUAL, searchTerm, whenTerm.get(0)),
-            thenTerm.get(0), elseTerm);
-      }
-    }
-
     return call;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof CaseOperator) {
+      CaseOperator other = (CaseOperator) obj;
+      return when.equals(other.when);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), this.when);
+  }
+
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     writer.append("CASE");
 
     // Simple case
-    IExpression valueExpression = operands[0];
-    if (valueExpression != Literal.UNKNOWN) {
+    if (when == When.SIMPLE) {
       writer.append(' ');
-      valueExpression.unparse(writer);
+      operands[0].unparse(writer);
     }
 
     int index = 0;
@@ -203,5 +221,52 @@ public class CaseOperator extends Operator {
       elseExpression.unparse(writer);
     }
     writer.append(" END");
+  }
+
+  @Override
+  public boolean checkOperandTypes(Call call) {
+
+    Tuple whenTuple = call.getOperand(1).asTuple();
+    Tuple thenTuple = call.getOperand(2).asTuple();
+    IExpression elseExpression = call.getOperand(3);
+
+    Type valueType = Types.BOOLEAN;
+
+    // Simple case operator
+    if (when == When.SIMPLE) {
+      valueType = call.getOperand(0).getType();
+    }
+
+    for (IExpression operand : whenTuple) {
+      if (operand.is(Kind.TUPLE)) {
+        for (IExpression value : operand.asTuple()) {
+          if (!value.getType().isFamily(valueType.getFamily())) {
+            return false;
+          }
+        }
+      } else if (!operand.getType().isFamily(valueType.getFamily())) {
+        return false;
+      }
+    }
+
+    Type thenType = Types.UNKNOWN;
+    for (IExpression operand : thenTuple) {
+      // First non null
+      if (!operand.isNull()) {
+        thenType = operand.getType();
+      }
+    }
+
+    if (thenType.isFamily(TypeFamily.NONE)) {
+      thenType = elseExpression.getType();
+    }
+
+    for (IExpression thenOperand : thenTuple) {
+      if (!(thenOperand.getType().isFamily(thenType.getFamily()) || thenOperand.isNull())) {
+        return false;
+      }
+    }
+
+    return elseExpression.isNull() || elseExpression.getType().isFamily(thenType.getFamily());
   }
 }

@@ -73,7 +73,7 @@ public class DateAddFunction extends Function {
       case NANOSECOND:
         return new Call(AddNanosecondsFunction.INSTANCE, call.getOperand(2), call.getOperand(1));
       default:
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
+        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
     }
   }
 }

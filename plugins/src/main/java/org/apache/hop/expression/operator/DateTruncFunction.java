@@ -22,6 +22,7 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.DayOfWeek;
@@ -86,7 +87,7 @@ public class DateTruncFunction extends Function {
       case NANOSECOND:
         return datetime.truncatedTo(ChronoUnit.NANOS);
       default:
-        throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
+        throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
     }
   }
 }

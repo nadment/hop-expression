@@ -145,15 +145,10 @@ public final class OperandTypes {
   public static final IOperandTypeChecker COMPARABLE_ORDERED = new ComparableOperandTypeChecker(OperandCountRange.of(1), TypeComparability.ALL);
   
   /**
-   * Operand type-checking strategy where operand types must allow ordered
-   * comparisons.
+   * Operand type-checking strategy where operand types must allow ordered comparisons.
    */
   public static final IOperandTypeChecker COMPARABLE_ORDERED_COMPARABLE_ORDERED =  new ComparableOperandTypeChecker(OperandCountRange.of(2), TypeComparability.ALL);
 
-  /**
-   * Operand type-checking strategy for BETWWEEN operator where operand types must allow ordered comparisons.
-   */
-  public static final IOperandTypeChecker BETWEEN =  new ComparableOperandTypeChecker(OperandCountRange.of(3), TypeComparability.ALL);
   
   /**
    * Operand type-checking strategy where operand types must allow unordered
@@ -262,10 +257,15 @@ public final class OperandTypes {
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
 
-  public static final IOperandTypeChecker CASE_OPERATOR = new CaseOperatorOperandTypeChecker();
-  public static final IOperandTypeChecker CAST_OPERATOR =
-      sequence(ANY, DATATYPE, TEXT).or(sequence(ANY, DATATYPE));
-  public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
-  public static final IOperandTypeChecker IN_OPERATOR = new InOperatorOperandTypeChecker();
+  /**
+   * Operand type-checking strategy for BETWWEEN operator where operand types must allow ordered comparisons.
+   */
+  public static final IOperandTypeChecker BETWEEN =  new ComparableOperandTypeChecker(OperandCountRange.of(3), TypeComparability.ALL);
+
+  /**
+   * Operand type-checking strategy for CAST operator.
+   */
+  public static final IOperandTypeChecker CAST = sequence(ANY, DATATYPE, TEXT).or(sequence(ANY, DATATYPE));
   
+  public static final IOperandTypeChecker DECODE_FUNCTION = new DecodeFunctionOperandTypeChecker();
 }

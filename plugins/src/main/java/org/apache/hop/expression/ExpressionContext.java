@@ -101,8 +101,6 @@ public class ExpressionContext extends Variables implements IExpressionContext {
     
     ExpressionParser parser = new ExpressionParser(resolve(source));
     
-    System.out.print(source);
-    
     try {
       // Syntax analysis
       IExpression expression = parser.parse();
