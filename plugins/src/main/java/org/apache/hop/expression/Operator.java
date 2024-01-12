@@ -325,7 +325,7 @@ public abstract class Operator {
   }
 
   /**
-   * Derives the type of a call to this operator.
+   * Derives the operands type of a call for this operator.
    * 
    * @param call The call to coerce
    */

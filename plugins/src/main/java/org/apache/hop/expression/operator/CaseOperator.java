@@ -17,6 +17,8 @@
 
 package org.apache.hop.expression.operator;
 
+import static org.apache.hop.expression.type.Types.coerceOperandType;
+import static org.apache.hop.expression.type.Types.getLeastRestrictive;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -30,7 +32,6 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
-import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -51,8 +52,8 @@ public class CaseOperator extends Operator {
   private final When when;
 
   public CaseOperator(When when) {
-    super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, null,
-        OperatorCategory.CONDITIONAL, "/docs/case.html");
+    super("CASE", 120, true, ReturnTypes.CASE_OPERATOR, null, OperatorCategory.CONDITIONAL,
+        "/docs/case.html");
     this.when = when;
   }
 
@@ -210,15 +211,15 @@ public class CaseOperator extends Operator {
     for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
       whenOperand.unparse(writer);
-      IExpression thenOperand = thenTuple.get(index++);
       writer.append(" THEN ");
+      IExpression thenOperand = thenTuple.get(index++);
       thenOperand.unparse(writer);
     }
 
-    IExpression elseExpression = operands[3];
-    if (elseExpression != Literal.NULL) {
+    IExpression elseOperand = operands[3];
+    if (!elseOperand.isNull()) {
       writer.append(" ELSE ");
-      elseExpression.unparse(writer);
+      elseOperand.unparse(writer);
     }
     writer.append(" END");
   }
@@ -228,45 +229,69 @@ public class CaseOperator extends Operator {
 
     Tuple whenTuple = call.getOperand(1).asTuple();
     Tuple thenTuple = call.getOperand(2).asTuple();
-    IExpression elseExpression = call.getOperand(3);
+    IExpression elseOperand = call.getOperand(3);
 
+    // Search case should be a predicate
     Type valueType = Types.BOOLEAN;
 
-    // Simple case operator
+    // Simple case
     if (when == When.SIMPLE) {
       valueType = call.getOperand(0).getType();
     }
 
+    // Check WHEN operands
     for (IExpression operand : whenTuple) {
       if (operand.is(Kind.TUPLE)) {
+        // Mutli-values simple form
         for (IExpression value : operand.asTuple()) {
-          if (!value.getType().isFamily(valueType.getFamily())) {
+          if (!valueType.isCompatibleWithCoercion(value.getType())) {
             return false;
           }
         }
-      } else if (!operand.getType().isFamily(valueType.getFamily())) {
+      } else if (!valueType.isCompatibleWithCoercion(operand.getType())) {
         return false;
       }
     }
 
-    Type thenType = Types.UNKNOWN;
-    for (IExpression operand : thenTuple) {
-      // First non null
-      if (!operand.isNull()) {
-        thenType = operand.getType();
-      }
-    }
+    // Determine common return type
+    Type type = getLeastRestrictive(getLeastRestrictive(thenTuple), elseOperand.getType());
+    
 
-    if (thenType.isFamily(TypeFamily.NONE)) {
-      thenType = elseExpression.getType();
-    }
-
+    // Check then operands
     for (IExpression thenOperand : thenTuple) {
-      if (!(thenOperand.getType().isFamily(thenType.getFamily()) || thenOperand.isNull())) {
+      if (!(type.isCompatibleWithCoercion(thenOperand.getType()) || thenOperand.isNull())) {
         return false;
       }
     }
 
-    return elseExpression.isNull() || elseExpression.getType().isFamily(thenType.getFamily());
+    // Check else operand
+    return elseOperand.isNull() || type.isCompatibleWithCoercion(elseOperand.getType());
+  }
+
+  /**
+   * Find common type for all the then operands and else operands, then try to coerce the then/else
+   * operands to the type if needed.
+   */
+  @Override
+  public boolean coerceType(Call call) {
+    boolean coerced = false;
+    
+    // Simple case operator
+    if (when == When.SIMPLE) {
+            
+      Type type = getLeastRestrictive(call.getOperand(1).asTuple());
+      type = getLeastRestrictive(type, call.getOperand(0).getType());
+      
+      // Coerce value operand
+      coerced |= coerceOperandType(call, type, 0);
+      // Coerce WHEN operands
+      coerced |= coerceOperandType(call, type, 1);
+    }
+    
+    // Coerce THEN and ELSE operands
+    coerced |= coerceOperandType(call, call.getType(), 2);
+    coerced |= coerceOperandType(call, call.getType(), 3);
+
+    return coerced;
   }
 }

@@ -26,6 +26,7 @@ import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.Tuple;
@@ -137,18 +138,40 @@ public class Types {
 
     Type result = null;
     for (Type type : types) {
-      if (result == null || type.getId().ordinal() > result.getId().ordinal()
-          || (result.isFamily(type.getFamily()) && type.getPrecision() > result.getPrecision())) {
-        result = type;
-      } else if (result.isFamily(type.getFamily())) {
-        if (type.getPrecision() > result.getPrecision()
-            || (type.getPrecision() == result.getPrecision()
-                && type.getScale() > result.getScale())) {
-          result = type;
-        }
-      }
+      result = getLeastRestrictive(result, type);
     }
     return result;
+  }
+
+  public static Type getLeastRestrictive(Tuple tuple) {
+    Type result = null;
+    for (IExpression operand : tuple) {
+      Type type = operand.getType();
+      if (operand.is(Kind.TUPLE)) {
+        type = Types.getLeastRestrictive(operand.asTuple());
+      }
+      result = Types.getLeastRestrictive(result, type);
+    }
+    return result;
+  }
+
+  public static Type getLeastRestrictive(final Type type1, final Type type2) {
+    if (type1 == null)
+      return type2;
+    if (type2 == null)
+      return type1;
+    if (type1.getId().ordinal() > type2.getId().ordinal()
+        || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
+      return type1;
+    } else if (type1.isFamily(type2.getFamily())) {
+      if (type1.getPrecision() > type2.getPrecision()
+          || (type1.getPrecision() == type2.getPrecision()
+              && type1.getScale() > type2.getScale())) {
+        return type1;
+      }
+    }
+
+    return type2;
   }
 
   /**
@@ -171,7 +194,7 @@ public class Types {
   protected static boolean coerceOperandsType(final Call call, final Type type) {
     boolean coerced = false;
     for (int index = 0; index < call.getOperandCount(); index++) {
-      coerced = coerceOperandType(call, index, type) || coerced;
+      coerced |= coerceOperandType(call, type, index);
     }
 
     // Inferring the return type
@@ -182,22 +205,54 @@ public class Types {
 
   /**
    * Coerce the operand at the specified index to target {@code Type}.
+   * <p>
+   * If the operand is a {@code Tuple}, coercion of all its members
    */
-  protected static boolean coerceOperandType(Call call, int index, final Type type) {
+  public static boolean coerceOperandType(Call call, final Type type, int index) {
 
     IExpression operand = call.getOperand(index);
+
+    // If the operand is a tuple, coercion of all its members
+    if (operand.is(Kind.TUPLE)) {
+      Tuple tuple = coerceTupleOperandType(operand.asTuple(), type);
+      if (!tuple.equals(operand.asTuple())) {
+        call.setOperand(index, tuple);
+        return true;
+      }
+
+      return false;
+    }
+
 
     // Check it early.
     if (!needToCast(operand, type)) {
       return false;
     }
 
-    Call cast = new Call(Operators.CAST, operand, Literal.of(type));
-    cast.inferReturnType();
-
-    call.setOperand(index, cast);
+    call.setOperand(index, cast(operand, type));
 
     return true;
+  }
+
+  public static Tuple coerceTupleOperandType(Tuple tuple, final Type type) {
+    List<IExpression> list = new ArrayList<>();
+    for (IExpression operand : tuple) {
+      if (operand.is(Kind.TUPLE)) {
+        operand = coerceTupleOperandType(operand.asTuple(), type);
+      }
+      else if (needToCast(operand, type)) {
+        operand = cast(operand, type);
+      }
+      list.add(operand);
+    }
+
+    return new Tuple(list);
+  }
+
+  public static Call cast(IExpression expression, Type type) {
+    Call call = new Call(Operators.CAST, expression, Literal.of(type));
+    call.inferReturnType();
+    return call;
   }
 
   /**
@@ -233,24 +288,13 @@ public class Types {
       return isInteger(type1) ? IntegerType.of(1) : NumberType.of(1);
     }
 
-    return getLeastRestrictive(List.of(type1, type2));
-  }
-
-  /**
-   * TODO: Coerces CASE WHEN statement branches to one common type.
-   *
-   * <p>
-   * Rules: Find common type for all the then operands and else operands,
-   * then try to coerce the then/else operands to the type if needed.
-   */
-  public static boolean coercionCaseOperator(Call call) {
-    return true;
+    return getLeastRestrictive(type1, type2);
   }
 
   /**
    * Returns whether a IExpression should be cast to a target type.
    */
-  protected static boolean needToCast(IExpression expression, Type toType) {
+  public static boolean needToCast(IExpression expression, Type toType) {
     return expression.getType().getId().ordinal() < toType.getId().ordinal();
   }
 
@@ -290,42 +334,6 @@ public class Types {
     return coerceOperandsType(call, type);
   }
 
-
-  /**
-   * Coerces operands in comparison expressions.
-   */
-  public static boolean coercionInOperator(Call call) {
-    Type type = call.getOperand(0).getType();
-
-    // Determine common type
-    Tuple tuple = call.getOperand(1).asTuple();
-    for (IExpression operand : tuple) {
-      type = getCommonTypeForComparison(type, operand.getType());
-    }
-
-    // Coerce term
-    boolean coercedTerm = coerceOperandType(call, 0, type);
-
-    // Coerce tuple values
-    boolean coercedValues = false;
-    List<IExpression> list = new ArrayList<>();
-    for (IExpression operand : tuple) {
-      if (needToCast(operand, type)) {
-        Call cast = new Call(Operators.CAST, operand, Literal.of(type));
-        cast.inferReturnType();
-        operand = cast;
-        coercedValues = true;
-      }
-      list.add(operand);
-    }
-
-    if (coercedValues) {
-      call.setOperand(1, new Tuple(list));
-      call.inferReturnType();
-    }
-
-    return coercedTerm || coercedValues;
-  }
 
   /**
    * Returns whether the conversion from {@code source} to {@code target} type

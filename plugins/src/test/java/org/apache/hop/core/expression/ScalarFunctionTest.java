@@ -2992,6 +2992,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Literal
     optimize("CONCAT('TES','T')", "'TEST'");
     optimize("'A'||'B'", "'AB'");
+    optimize("12||'34'", "'1234'");
 
     // Combine and flatten concats (Same syntax but cost reduced)
     optimize("'A'||FIELD_STRING||FIELD_STRING||'C'", "'A'||FIELD_STRING||FIELD_STRING||'C'");

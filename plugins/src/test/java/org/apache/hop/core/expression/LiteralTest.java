@@ -282,6 +282,8 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("922_3372_0368_5477_5807", Long.MAX_VALUE);
     evalEquals("1_234", 1234L).returnType(IntegerType.of(4));
     evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4));
+    evalEquals("-1234", -1234L).returnType(IntegerType.of(4));
+    
     evalFails("_123");
     evalFails("123_");
     evalFails("-_123");

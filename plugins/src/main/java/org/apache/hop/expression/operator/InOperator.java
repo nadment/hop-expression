@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import static org.apache.hop.expression.type.Types.coerceOperandType;
+import static org.apache.hop.expression.type.Types.getCommonTypeForComparison;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
@@ -61,7 +63,7 @@ public class InOperator extends Operator {
     Tuple tuple = call.getOperand(1).asTuple();
 
     for (IExpression operand : tuple) {
-      if (!operand.getType().isCompatibleWithCoercion(type)) {
+      if (!type.isCompatibleWithCoercion(operand.getType())) {
         return false;
       }
     }
@@ -127,7 +129,34 @@ public class InOperator extends Operator {
 
   @Override
   public boolean coerceType(Call call) {
-    return Types.coercionInOperator(call);    
+    Type type = call.getOperand(0).getType();
+
+    // Determine common type
+    Tuple tuple = call.getOperand(1).asTuple();
+    for (IExpression operand : tuple) {
+      type = getCommonTypeForComparison(type, operand.getType());
+    }
+
+    // Coerce term
+    boolean coercedTerm = coerceOperandType(call, type, 0);
+
+    // Coerce tuple values
+    boolean coercedValues = false;
+    List<IExpression> list = new ArrayList<>();
+    for (IExpression operand : tuple) {
+      if (Types.needToCast(operand, type)) {
+        operand = Types.cast(operand, type);
+        coercedValues = true;
+      }
+      list.add(operand);
+    }
+
+    if (coercedValues) {
+      call.setOperand(1, new Tuple(list));
+      call.inferReturnType();
+    }
+
+    return coercedTerm || coercedValues;
   }  
   
   @Override

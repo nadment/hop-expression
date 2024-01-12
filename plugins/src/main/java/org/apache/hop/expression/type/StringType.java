@@ -182,9 +182,6 @@ public final class StringType extends Type {
     if (value instanceof BigDecimal) {
       return convertNumberToString((BigDecimal) value);
     }
-    if (value instanceof byte[]) {
-      return new String((byte[]) value, StandardCharsets.UTF_8);
-    }
 
     return String.valueOf(value);
   }

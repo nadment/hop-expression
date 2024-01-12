@@ -18,8 +18,6 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference {
 
@@ -29,15 +27,10 @@ public class LeastRestrictiveReturnTypeInference implements IReturnTypeInference
 
   @Override
   public Type inferReturnType(final Call call) {
-
-    if (call.getOperandCount() == 0)
-      return Types.UNKNOWN;
-
-    List<Type> types = new ArrayList<>();
+    Type type = Types.UNKNOWN;
     for (IExpression operand : call.getOperands()) {
-      types.add(operand.getType());
-    }
-
-    return Types.getLeastRestrictive(types);
+      type = Types.getLeastRestrictive(type, operand.getType());
+    }    
+    return type;
   }
 }

@@ -72,9 +72,6 @@ public final class BinaryType extends Type {
     if (value instanceof byte[]) {
       return (byte[]) value;
     }
-    if (value instanceof String) {
-      return ((String) value).getBytes(StandardCharsets.UTF_8);
-    }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.BINARY);

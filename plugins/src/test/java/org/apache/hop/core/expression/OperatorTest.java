@@ -1732,15 +1732,15 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void SearchCase() throws Exception {
+  public void CaseSearch() throws Exception {
 
-    evalEquals("case when TRUE then 1 else 2 end", 1L).returnType(Types.INTEGER);
-    evalEquals("case when FALSE then 1 else 2 end", 2L).returnType(Types.INTEGER);
+    evalEquals("case when TRUE then 1 else 2 end", 1L).returnType(IntegerType.of(1));
+    evalEquals("case when FALSE then 1 else 2 end", 2L).returnType(IntegerType.of(1));
 
 
     // implicit ELSE NULL case
-    evalNull("case when FIELD_INTEGER=10 then 10 end").returnType(Types.INTEGER);
-    evalEquals("case when FIELD_INTEGER=40 then 10 end", 10L).returnType(Types.INTEGER);
+    evalNull("case when FIELD_INTEGER=10 then 10 end").returnType(IntegerType.of(2));
+    evalEquals("case when FIELD_INTEGER=40 then 10 end", 10L).returnType(IntegerType.of(2));
 
     // explicit ELSE case
     evalEquals("case when FIELD_INTEGER=40 then 10 else 50 end", 10L);
@@ -1792,11 +1792,11 @@ public class OperatorTest extends ExpressionTest {
         "NVL2(FIELD_INTEGER,'TEST',FIELD_STRING)");
 
     // Search case to simple case: CASE WHEN a = b THEN 1 END to CASE a WHEN b THEN 1 END
-    // optimize("CASE WHEN FIELD_INTEGER=1 THEN 2 END", "CASE 1 WHEN FIELD_INTEGER THEN 2");
+    // optimize("CASE WHEN FIELD_INTEGER=1 THEN 2 END", "CASE 1 WHEN FIELD_INTEGER THEN 2 END");
 
     evalEquals(
         "CASE WHEN FIELD_INTEGER IS NULL THEN '-' WHEN FIELD_INTEGER<0 THEN '' ELSE FIELD_STRING END",
-        "TEST").returnType(Types.STRING);
+        "TEST").returnType(StringType.of(1000));
     evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_INTEGER END", 0L)
         .returnType(IntegerType.of(12));
     evalEquals("CASE WHEN NULL_INTEGER IS NULL THEN 0 ELSE FIELD_NUMBER END", 0L)
@@ -1806,18 +1806,20 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
-  public void SimpleCase() throws Exception {
+  public void CaseSimple() throws Exception {
 
     evalEquals("case FIELD_INTEGER when 10 then 10 when 40 then 40 else 50 end", 40L)
-        .returnType(Types.INTEGER);
+        .returnType(IntegerType.of(2));
     evalEquals("case FIELD_INTEGER when 10 then 10 when 20 then 20 else -1 end", -1L)
-        .returnType(Types.INTEGER);
+        .returnType(IntegerType.of(2));
     evalNull("case FIELD_INTEGER when 10 then 10 when 20 then 20 end")
-        .returnType(Types.INTEGER);
+        .returnType(IntegerType.of(2));
 
     // If the operand is null, the else clause applies
-    evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L);
-    evalEquals("CASE NULL_INTEGER WHEN 1 THEN 2 ELSE 0 END", 0L);
+    evalFalse("CASE NULL_INTEGER WHEN 1 THEN TRUE ELSE FALSE END").returnType(Types.BOOLEAN);
+    evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0 ELSE 1 END", 1L).returnType(Types.INTEGER);
+    evalEquals("CASE NULL_NUMBER WHEN 0 THEN 1.023 ELSE 1 END", 1L).returnType(Types.NUMBER);
+    evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B").returnType(Types.STRING);
     
     // Ignore division by zero in THEN term, should not evaluate 
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0/0 ELSE 1 END", 1L);
@@ -1828,20 +1830,25 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CASE 1 WHEN 1 THEN 2 WHEN 1 THEN 0 / 0 END", 2L);
     evalEquals("CASE 1 WHEN 1 THEN 2 ELSE 0 / 0 END", 2L);
 
-    // Comma-separated form for multi-value
+    // Simple case form with multi-value
     evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
-        "B");
+        "B").returnType(StringType.of(1));
     evalEquals(
-        "CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 30, 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
+        "CASE FIELD_INTEGER WHEN 10, 20.23 THEN 'A' WHEN 30, 40, 50, 60, 70 THEN 'B' ELSE 'C' END",
         "B");
     evalEquals("CASE FIELD_INTEGER WHEN 10, 20 THEN 'A' WHEN 30, 40 THEN 'B' ELSE 'C' END", "B");
 
+    // Coerce
+    evalFails("case FIELD_INTEGER when 10 then 1 when 40.1 then 2.123 else 0.5");
+
+    
     // Incompatible return type
-    evalFails("case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error'");
+    evalFails("case FIELD_INTEGER when 10 then 'X' when ' T' then 'Test' else 'Error' end");
 
     // Missing 'END'
     evalFails("case FIELD_INTEGER when 40 then 10 else 50");
-
+    evalFails("case FIELD_INTEGER then 10 else 50");
+    
 
     optimize("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
 

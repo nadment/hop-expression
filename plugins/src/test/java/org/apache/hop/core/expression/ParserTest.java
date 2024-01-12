@@ -180,7 +180,7 @@ public class ParserTest extends ExpressionTest {
     evalTrue(" 3 > 5 IS FALSE");
 
     // BETWEEN, IN, LIKE have higher precedence than comparison
-    //evalFalse("5 between 4>=4 and 6<=6");
+   // evalFalse("5 between 4>=4 and 6<=6");
     
     // The cast operator has higher precedence than the unary minus (negation) operator,
     // so the statement is interpreted as -(0.0::NUMBER::BOOLEAN)

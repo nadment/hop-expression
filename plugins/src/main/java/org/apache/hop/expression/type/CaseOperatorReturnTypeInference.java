@@ -17,8 +17,10 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.IExpression;
 
+/** 
+ * Least restrictive then expression or else expression
+ */
 public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
 
   public CaseOperatorReturnTypeInference() {
@@ -26,22 +28,11 @@ public class CaseOperatorReturnTypeInference implements IReturnTypeInference {
   }
 
   @Override
-  public Type inferReturnType(Call call) {
-    // Least restrictive then expression
-    Type result = null;
-    for (IExpression operand : call.getOperand(2).asTuple()) {
-      Type type = operand.getType();
-      if (result == null || type.getId().ordinal() > result.getId().ordinal()) {
-        result = type;
-      }
-    }
-
-    // Else data type
-    Type elseType = call.getOperand(3).getType();
-    if (result == null || elseType.getId().ordinal() > result.getId().ordinal()) {
-      result = elseType;
-    }
-
-    return TypeTransforms.TO_MAX_PRECISION.transformType(result);
+  public Type inferReturnType(Call call) {  
+    Type type = Types.getLeastRestrictive(call.getOperand(2).asTuple());
+    type = Types.getLeastRestrictive(type, call.getOperand(3).getType());
+    
+    return type;
+    //return TypeTransforms.TO_MAX_PRECISION.transformType(type);
   }
 }

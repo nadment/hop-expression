@@ -34,26 +34,22 @@ public class TupleTest extends ExpressionTest {
     Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.UNKNOWN);    
     Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.UNKNOWN);
     Tuple tuple3 = new Tuple(Literal.UNKNOWN, Literal.UNKNOWN, Literal.UNKNOWN);
-    Tuple tuple4 = new Tuple(Literal.UNKNOWN, Literal.ZERO, Literal.UNKNOWN);    
-    Tuple tuple5 = new Tuple(Literal.TRUE, Literal.FALSE);
-    Tuple tuple6 = new Tuple(Literal.of("A"), Literal.of("B"));
-    Tuple tuple7 = new Tuple(Literal.of("A"), Literal.of("B"));
-    Tuple tuple8 = new Tuple(Literal.of("A"), new Identifier("B"));
+    Tuple tuple4 = new Tuple(Literal.of("A"), new Identifier("B"));
     
-    assertEquals(Kind.TUPLE, tuple1.getKind());
-   // assertEquals(IntegerType.of(1).withNullability(false), tuple1.getType());
-   // assertEquals(IntegerType.of(1).withNullability(false), tuple4.getType());
+    assertEquals(Kind.TUPLE, tuple1.getKind());    
     assertEquals(Types.UNKNOWN, tuple3.getType());
-   // assertEquals(Types.BOOLEAN_NOT_NULL, tuple5.getType());
+
     assertTrue(tuple0.isEmpty());
     assertFalse(tuple1.isEmpty());
     assertTrue(tuple1.isConstant());
-    assertFalse(tuple8.isConstant());
+    assertFalse(tuple4.isConstant());
     assertEquals(tuple1, tuple2);
-    assertEquals(tuple6, tuple7);
+    assertEquals(new Tuple(Literal.TRUE, Literal.FALSE, Literal.UNKNOWN),  new Tuple(Literal.TRUE, Literal.FALSE, Literal.UNKNOWN));
+    assertEquals(new Tuple(Literal.of("A"), Literal.of("B")),  new Tuple(Literal.of("A"), Literal.of("B")));
     assertNotEquals(tuple1, null);
     assertNotEquals(tuple1, tuple3);
-    assertNotEquals(tuple7, tuple8);
+    assertNotEquals(new Tuple(Literal.of("B"), Literal.of("A")),  new Tuple(Literal.of("A"), Literal.of("B")));
+    assertEquals(tuple4.hashCode(), tuple4.hashCode());
     assertEquals(tuple1.hashCode(), tuple2.hashCode());    
     assertEquals("1,0,NULL", tuple1.toString());
     
