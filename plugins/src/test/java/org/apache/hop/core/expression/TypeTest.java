@@ -63,9 +63,9 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.INTERVAL.isFamily(TypeFamily.INTERVAL));
     assertTrue(TypeFamily.BINARY.isFamily(TypeFamily.BINARY));
     
-    assertFalse(TypeFamily.NUMERIC.isCompatibleWithCoercion(null));
-    assertTrue(TypeFamily.BOOLEAN.isCompatibleWithCoercion(TypeFamily.STRING));
-    assertTrue(TypeFamily.NUMERIC.isCompatibleWithCoercion(TypeFamily.STRING));
+    assertFalse(TypeFamily.NUMERIC.isCoercible(null));
+    assertTrue(TypeFamily.BOOLEAN.isCoercible(TypeFamily.STRING));
+    assertTrue(TypeFamily.NUMERIC.isCoercible(TypeFamily.STRING));
     
     assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.INTEGER));
     assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.NUMBER));
@@ -231,10 +231,10 @@ public class TypeTest extends ExpressionTest {
     BooleanType type = Types.BOOLEAN;
     assertNull(type.cast(null));
     assertEquals(Boolean.TRUE, type.cast(3L));
-    assertEquals(Boolean.TRUE, type.cast(1L));
-    assertEquals(Boolean.TRUE, type.cast(1D));
+    assertEquals(Boolean.TRUE, type.cast(1L));    
     assertEquals(Boolean.TRUE, type.cast(true));
     assertEquals(Boolean.TRUE, type.cast(BigDecimal.ONE));
+    assertEquals(Boolean.TRUE, type.cast(new BigDecimal("0.5")));
     assertEquals(Boolean.TRUE, type.cast("1"));
     assertEquals(Boolean.TRUE, type.cast("T"));
     assertEquals(Boolean.TRUE, type.cast("True"));
@@ -242,7 +242,6 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Boolean.TRUE, type.cast("Yes"));
     assertEquals(Boolean.TRUE, type.cast("ON"));
     assertEquals(Boolean.FALSE, type.cast(0L));
-    assertEquals(Boolean.FALSE, type.cast(0D));
     assertEquals(Boolean.FALSE, type.cast(false));
     assertEquals(Boolean.FALSE, type.cast(BigDecimal.ZERO));
     assertEquals(Boolean.FALSE, type.cast("0"));

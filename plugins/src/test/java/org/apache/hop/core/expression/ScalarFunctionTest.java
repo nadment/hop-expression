@@ -1900,6 +1900,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalTrue("To_Boolean(-1)");
     evalTrue("To_Boolean(2.3)");
     evalTrue("To_Boolean(-2.3)");
+    evalTrue("To_Boolean(0.5)");
     evalFalse("To_Boolean('False')");
     evalFalse("To_Boolean('off')");
     evalFalse("To_Boolean('NO')");

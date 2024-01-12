@@ -84,11 +84,10 @@ public enum TypeFamily {
     return false;
   }
 
-
   /**
-   * Returns whether type are in same type family with implicit coercion.
+   * Returns whether this {@link TypeFamily} support implicit coercion to the specified {@link TypeFamily}.
    */
-  public boolean isCompatibleWithCoercion(final TypeFamily family) {
+  public boolean isCoercible(final TypeFamily family) {
     if (family == null)
       return false;
 

@@ -63,7 +63,7 @@ public class InOperator extends Operator {
     Tuple tuple = call.getOperand(1).asTuple();
 
     for (IExpression operand : tuple) {
-      if (!type.isCompatibleWithCoercion(operand.getType())) {
+      if (!type.isCoercible(operand.getType())) {
         return false;
       }
     }

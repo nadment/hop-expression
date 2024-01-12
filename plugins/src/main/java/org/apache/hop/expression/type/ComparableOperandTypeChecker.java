@@ -49,7 +49,7 @@ public class ComparableOperandTypeChecker extends SameOperandTypeChecker {
       if (operand.isNull())
         continue;
       if (firstFamily != null) {
-        if (!type.getFamily().isCompatibleWithCoercion(firstFamily)) {
+        if (!type.getFamily().isCoercible(firstFamily)) {
           return false;
         }
       } else {

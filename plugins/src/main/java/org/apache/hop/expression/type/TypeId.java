@@ -144,10 +144,10 @@ public enum TypeId {
   }
 
   /**
-   * Returns whether type are in same type family.
+   * Returns whether this {@link TypeId} support implicit coercion to the specified {@link TypeFamily}.
    */
-  public boolean isCompatibleWithCoercion(TypeFamily family) {
-    return this.family.isCompatibleWithCoercion(family);
+  public boolean isCoercible(TypeFamily family) {
+    return this.family.isCoercible(family);
   }
  
   public boolean supportsPrecision() {

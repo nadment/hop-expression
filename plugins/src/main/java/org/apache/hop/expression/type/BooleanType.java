@@ -105,9 +105,13 @@ public final class BooleanType extends Type {
     if (value instanceof Boolean) {
       return (Boolean) value;
     }
-    if (value instanceof Number) {
-      Number number = (Number) value;
-      return number.intValue() != 0;
+    if (value instanceof Long) {
+      Long number = (Long) value;
+      return number != 0;
+    }
+    if (value instanceof BigDecimal) {
+      BigDecimal number = (BigDecimal) value;
+      return number.signum() != 0;
     }
     if (value instanceof String) {
       return convertStringToBoolean((String) value);

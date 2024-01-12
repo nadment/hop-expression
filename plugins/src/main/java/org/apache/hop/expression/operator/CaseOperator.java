@@ -244,11 +244,11 @@ public class CaseOperator extends Operator {
       if (operand.is(Kind.TUPLE)) {
         // Mutli-values simple form
         for (IExpression value : operand.asTuple()) {
-          if (!valueType.isCompatibleWithCoercion(value.getType())) {
+          if (!valueType.isCoercible(value.getType())) {
             return false;
           }
         }
-      } else if (!valueType.isCompatibleWithCoercion(operand.getType())) {
+      } else if (!valueType.isCoercible(operand.getType())) {
         return false;
       }
     }
@@ -259,13 +259,13 @@ public class CaseOperator extends Operator {
 
     // Check then operands
     for (IExpression thenOperand : thenTuple) {
-      if (!(type.isCompatibleWithCoercion(thenOperand.getType()) || thenOperand.isNull())) {
+      if (!(type.isCoercible(thenOperand.getType()) || thenOperand.isNull())) {
         return false;
       }
     }
 
     // Check else operand
-    return elseOperand.isNull() || type.isCompatibleWithCoercion(elseOperand.getType());
+    return elseOperand.isNull() || type.isCoercible(elseOperand.getType());
   }
 
   /**
