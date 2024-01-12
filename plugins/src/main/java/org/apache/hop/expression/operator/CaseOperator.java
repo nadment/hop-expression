@@ -273,7 +273,7 @@ public class CaseOperator extends Operator {
    * operands to the type if needed.
    */
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     boolean coerced = false;
     
     // Simple case operator

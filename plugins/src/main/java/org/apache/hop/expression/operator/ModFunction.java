@@ -63,7 +63,7 @@ public class ModFunction extends Function {
   }
 
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     return Types.coercionArithmeticOperator(call);    
   }
   

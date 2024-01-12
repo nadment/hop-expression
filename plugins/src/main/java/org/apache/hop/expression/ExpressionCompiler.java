@@ -67,7 +67,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       call = expression.asCall();
 
       // Coerce operands data type
-      changed |= call.getOperator().coerceType(call);
+      changed |= call.getOperator().coerceOperandsType(call);
 
       // Inferring return type
       call.inferReturnType();

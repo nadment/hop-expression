@@ -47,7 +47,7 @@ public class LeastFunction extends Function {
   }
   
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);    
   }
 

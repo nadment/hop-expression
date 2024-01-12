@@ -104,7 +104,7 @@ public class LessThanOrEqualOperator extends Operator {
   }
   
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     return Types.coercionComparisonOperator(call);    
   }
 

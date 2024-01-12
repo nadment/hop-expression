@@ -82,7 +82,7 @@ public class AddNumericOperator extends AddOperator {
   }
   
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     return Types.coercionArithmeticOperator(call);    
   }
     

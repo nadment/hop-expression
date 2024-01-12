@@ -329,7 +329,7 @@ public abstract class Operator {
    * 
    * @param call The call to coerce
    */
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     
     // Inferring the return type
     inferReturnType(call);

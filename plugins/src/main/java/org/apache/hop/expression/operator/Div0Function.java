@@ -65,7 +65,7 @@ public class Div0Function extends Function {
   }
 
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     return Types.coercionArithmeticOperator(call);    
   }
   

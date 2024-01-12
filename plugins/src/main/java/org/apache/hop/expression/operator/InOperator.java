@@ -128,7 +128,7 @@ public class InOperator extends Operator {
   }
 
   @Override
-  public boolean coerceType(Call call) {
+  public boolean coerceOperandsType(Call call) {
     Type type = call.getOperand(0).getType();
 
     // Determine common type
