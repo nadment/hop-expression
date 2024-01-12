@@ -41,7 +41,7 @@ public final class BinaryType extends Type {
   }
 
   BinaryType(int precision, boolean nullable) {
-    super(precision, SCALE_NOT_SPECIFIED, nullable);
+    super(precision, 0, nullable);
   }
 
   @Override

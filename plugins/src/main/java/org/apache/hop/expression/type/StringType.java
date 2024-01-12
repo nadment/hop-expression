@@ -51,7 +51,7 @@ public final class StringType extends Type {
   }
   
   /* Package */ StringType(int precision, boolean nullable) {
-    super(precision, SCALE_NOT_SPECIFIED, nullable);
+    super(precision, 0, nullable);
   }
 
   public StringType withNullability(final boolean nullable) {

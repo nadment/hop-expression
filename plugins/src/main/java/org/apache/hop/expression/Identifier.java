@@ -252,7 +252,7 @@ public class Identifier implements IExpression {
     }
   }
   
-  protected Type createDataType(IValueMeta meta) {
+  protected Type createDataType(final IValueMeta meta) {
     switch (meta.getType()) {
       case IValueMeta.TYPE_BOOLEAN:
         return Types.BOOLEAN;

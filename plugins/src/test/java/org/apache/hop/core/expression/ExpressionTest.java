@@ -41,6 +41,7 @@ import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -403,9 +404,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-
-    //evalEquals("CASE FIELD_INTEGER WHEN 10, 20.3 THEN 'A' WHEN 40, 50, 60, 70 THEN 'B' ELSE 'C' END","B").returnType(NumberType.of(2,1));
-
+    optimize("FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
    // evalTrue("FIELD_STRING in ('45',123,'36')");
     
     // String jsonPath = "$[0]['gender']";

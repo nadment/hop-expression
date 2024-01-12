@@ -1711,7 +1711,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Length(-5.3)", 4L);
 
     // TODO: Implicit conversion from Date to String ?
-    // evalEquals("Length(Date '2023-01-01')", 8L);
+    //evalEquals("Length(Date '2023-01-01')", 8L);
 
     // Bad data type
     evalFails("Length()");

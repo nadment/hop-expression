@@ -301,7 +301,6 @@ public final class ReturnTypes {
    * </li>
    * <li>p and s are capped at their maximum values</li>
    * </ul>
-   * 
    */
   protected static Type deriveAdditiveType(final Type type1, final Type type2) {
     int p1 = type1.getPrecision();
@@ -350,7 +349,6 @@ public final class ReturnTypes {
    * </li>
    * <li>p and s are capped at their maximum values</li>
    * </ul>
-   * 
    */
   protected static Type deriveMultiplyType(final Type type1, final Type type2) {
     int p1 = type1.getPrecision();
@@ -363,9 +361,6 @@ public final class ReturnTypes {
     
     // Return type scale
     int s = Math.min(TypeId.NUMBER.getMaxScale(), s1+s2);
-    
-    // TODO: Remove when operands are properly casted
-    if ( s<0 ) s=0;
     
     return NumberType.of(p, s);
   }
