@@ -25,7 +25,6 @@ import org.apache.hop.expression.Kind;
  */
 public class LiteralOperandTypeChecker implements ISingleOperandTypeChecker {
   private final Class<?> javaClass;
-  // private final boolean allowNull;
 
   public LiteralOperandTypeChecker(Class<?> javaClass) {
     this.javaClass = javaClass;

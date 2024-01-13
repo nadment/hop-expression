@@ -98,6 +98,8 @@ public class CastFunction extends Function {
         return call.getOperand(0);
       }
     }
+    
+    // TODO: the CAST function and the :: operator should call the appropriate conversion function. 
 
     return call;
   }

@@ -149,6 +149,15 @@ public enum TypeId {
   public boolean isCoercible(TypeFamily family) {
     return this.family.isCoercible(family);
   }
+  
+  /**
+   * Returns whether this {@link TypeId} support implicit coercion to the specified {@link TypeId}.
+   */
+  public boolean isCoercible(final TypeId id) {
+    if (id == null)
+      return false;    
+    return isCoercible(id.family);    
+  }
  
   public boolean supportsPrecision() {
     return this.supportsPrecision;

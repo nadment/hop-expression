@@ -96,7 +96,7 @@ public abstract class Type {
    * Returns whether this {@link Type} support implicit coercion to the specified {@link Type}.
    */
   public boolean isCoercible(final Type type) {
-    return getId().isCoercible(type.getFamily());
+    return getId().isCoercible(type.getId());
   }
 
   /**

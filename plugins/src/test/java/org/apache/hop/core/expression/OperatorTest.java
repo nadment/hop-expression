@@ -533,7 +533,7 @@ public class OperatorTest extends ExpressionTest {
     optimizeTrue("25 in (1,25,66)");
     optimizeTrue("1.15 IN (1.1, 1.2, 1.3, 1.15)");
 
-    optimize("FIELD_INTEGER in (1,2,1,null,null,3,4)", "FIELD_INTEGER IN (1,2,3,4)");
+    optimize("FIELD_INTEGER in (1,2,1,2,3,4.1)", "FIELD_INTEGER IN (1,2,3,4.1)");
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')");
     optimize("NULL in (NULL_NUMBER,2,3,NULL_INTEGER)", "NULL");
 

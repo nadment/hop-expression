@@ -49,7 +49,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     // Variadic
     if (families.size() != range.getMax()) {
       for (IExpression operand : call.getOperands()) {
-        if (!operand.getType().getId().isCoercible(families.get(0))) {
+        if (!operand.getType().getFamily().isCoercible(families.get(0))) {
           return false;
         }
       }
@@ -60,7 +60,7 @@ public class FamilyOperandTypeChecker implements IOperandTypeChecker, ISingleOpe
     else {
       for (int i = 0; i < call.getOperandCount(); i++) {
         if (i == families.size()
-            || !call.getOperand(i).getType().getId().isCoercible(families.get(i))) {
+            || !call.getOperand(i).getType().getFamily().isCoercible(families.get(i))) {
           return false;
         }
       }

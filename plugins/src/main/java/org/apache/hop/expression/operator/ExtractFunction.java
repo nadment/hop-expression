@@ -162,7 +162,7 @@ public class ExtractFunction extends Function {
         case TIMEZONE_MINUTE:
           return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
         default:
-          throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
+          throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
       }
     }
   }
@@ -207,7 +207,7 @@ public class ExtractFunction extends Function {
         case NANOSECOND:
           return interval.getSign() * interval.getNanoseconds();
         default:
-          throw new IllegalArgumentException(ErrorCode.ILLEGAL_ARGUMENT.message(unit));
+          throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
       }
     }
   }

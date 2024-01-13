@@ -2060,6 +2060,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TO_CHAR(NULL_NUMBER)").returnType(Types.STRING);
     evalNull("TO_CHAR(NULL_DATE)").returnType(Types.STRING);
     evalNull("TO_CHAR(NULL_BINARY)").returnType(Types.STRING);
+    evalNull("TO_CHAR(NULL_BOOLEAN)").returnType(Types.STRING);
 
     // Default format
     evalEquals("TO_CHAR(0.45)", "0.45").returnType(Types.STRING);
@@ -2407,6 +2408,10 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("To_Char(TIMESTAMP '2020-12-03 01:02:03.123456','yyyy-mm-dd hh:mi:ss.FF')",
         "2020-12-03 01:02:03.123456");
 
+    // Boolean
+    evalEquals("TO_CHAR(FIELD_BOOLEAN_TRUE)", "TRUE");
+    optimize("TO_CHAR(TRUE)", "'TRUE'");
+    
     // Binary
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','HEX')", "41706163686520486f70");
     evalEquals("TO_CHAR(BINARY '41706163686520486f70','BASE64')", "QXBhY2hlIEhvcA==");

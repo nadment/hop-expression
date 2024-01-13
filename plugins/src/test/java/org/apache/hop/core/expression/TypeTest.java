@@ -66,6 +66,16 @@ public class TypeTest extends ExpressionTest {
     assertFalse(TypeFamily.NUMERIC.isCoercible(null));
     assertTrue(TypeFamily.BOOLEAN.isCoercible(TypeFamily.STRING));
     assertTrue(TypeFamily.NUMERIC.isCoercible(TypeFamily.STRING));
+
+    assertFalse(TypeFamily.NUMERIC.isCastable(null));
+    assertTrue(TypeFamily.BOOLEAN.isCastable(TypeFamily.NUMERIC));
+    assertTrue(TypeFamily.BOOLEAN.isCastable(TypeFamily.STRING));
+    assertFalse(TypeFamily.BOOLEAN.isCastable(TypeFamily.TEMPORAL));
+    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.BOOLEAN));
+    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.STRING));
+    assertFalse(TypeFamily.NUMERIC.isCastable(TypeFamily.JSON));
+    assertTrue(TypeFamily.BINARY.isCastable(TypeFamily.STRING));
+    assertFalse(TypeFamily.BINARY.isCastable(TypeFamily.TEMPORAL));
     
     assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.INTEGER));
     assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.NUMBER));

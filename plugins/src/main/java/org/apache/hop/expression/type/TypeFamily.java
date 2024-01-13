@@ -114,4 +114,33 @@ public enum TypeFamily {
         return false;
     }
   }
+  
+  /**
+   * Returns whether this {@link TypeFamily} support explicit cast to the specified {@link TypeFamily}.
+   */
+  public boolean isCastable(final TypeFamily family) {
+    if (family == null)
+      return false;
+
+    switch (this) {
+      case BOOLEAN:
+        return family.isFamily(BOOLEAN, NUMERIC, BINARY, STRING);
+      case STRING:
+        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
+      case TEMPORAL:
+        return family.isFamily(TEMPORAL, STRING);
+      case NUMERIC:
+        return family.isFamily(NUMERIC, BOOLEAN, BINARY, STRING);
+      case BINARY:
+        return family.isFamily(BINARY, STRING);
+      case JSON:
+        return family.isFamily(JSON, STRING);
+      case INTERVAL:
+        return family.isFamily(INTERVAL);
+      case ANY:
+        return true;
+      default:
+        return false;
+    }
+  }
 }

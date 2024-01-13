@@ -133,7 +133,7 @@ public class Types {
    */
   public static Type getLeastRestrictive(List<Type> types) {
 
-    if (types.size() == 0)
+    if (types.isEmpty())
       return Types.UNKNOWN;
 
     Type result = null;
