@@ -48,20 +48,15 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   @Override
   public IExpression visitCall(Call call) {
 
-    // Compile the operands of a call
-    List<IExpression> expressions = new ArrayList<>(call.getOperandCount());
-    for (IExpression expression : call.getOperands()) {
-      expression = expression.accept(this);
-      expressions.add(expression);
-    }
-    Operator operator = call.getOperator();
-    call = new Call(operator, expressions);
-    call.inferReturnType();
-
     IExpression original = call;
     
+    // Compile the operands of a call
+    for (int i=0; i<call.getOperandCount(); i++) {
+      call.setOperand(i, call.getOperand(i).accept(this));
+    }    
+    
     // Compile with operator
-    IExpression expression = operator.compile(context, call);
+    IExpression expression = call.getOperator().compile(context, call);
     
     if (expression.is(Kind.CALL)) {
       call = expression.asCall();

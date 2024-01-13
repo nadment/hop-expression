@@ -179,8 +179,8 @@ public final class Call implements IExpression {
   /**
    * Inferring the return type.
    */
-  public Type inferReturnType() {    
-    type = operator.inferReturnType(this);    
+  public Type inferReturnType() {
+    type = operator.inferReturnType(this);
     return type;
   }
 
@@ -200,13 +200,17 @@ public final class Call implements IExpression {
   }
 
   @Override
-  public boolean equals(Object other) {
-    if (other instanceof Call) {
-      Call call = (Call) other;
-      return this.type.equals(call.type) && this.operator.equals(call.operator)
-          && Arrays.equals(this.operands, call.operands);
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
-    return false;
+
+    Call call = (Call) o;
+    return this.type.equals(call.type) && this.operator.equals(call.operator)
+        && Arrays.equals(this.operands, call.operands);
   }
 
   @Override

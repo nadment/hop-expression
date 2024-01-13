@@ -22,6 +22,9 @@ import org.apache.hop.expression.type.IReturnTypeInference;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.util.Documentations;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Deque;
@@ -39,7 +42,8 @@ import java.util.function.Predicate;
 public abstract class Operator {
 
   /**
-   *  A {@code MathContext} object with a precision 32 digits, and a rounding mode of {@link RoundingMode#HALF_EVEN}.
+   * A {@code MathContext} object with a precision 32 digits, and a rounding mode of
+   * {@link RoundingMode#HALF_EVEN}.
    */
   public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_EVEN);
 
@@ -202,7 +206,7 @@ public abstract class Operator {
 
   @Override
   public boolean equals(Object obj) {
-    
+
     if (!(obj instanceof Operator)) {
       return false;
     }
@@ -248,7 +252,7 @@ public abstract class Operator {
   public String getDescription() {
     return description;
   }
-  
+
   /**
    * Evaluate the result of operator with operands.
    * 
@@ -264,9 +268,9 @@ public abstract class Operator {
    * @param call The call to check
    */
   public void checkOperandCount(final Call call) {
-    if ( operandTypeChecker==null ) 
+    if (operandTypeChecker == null)
       return;
-    
+
     IOperandCountRange operandCountRange = operandTypeChecker.getOperandCountRange();
     if (!operandCountRange.isValid(call.getOperandCount())) {
       if (call.getOperandCount() < operandCountRange.getMin()) {
@@ -286,34 +290,35 @@ public abstract class Operator {
    * @return whether check succeeded
    */
   public boolean checkOperandTypes(final Call call) {
-    if ( operandTypeChecker!=null ) {
+    if (operandTypeChecker != null) {
       return operandTypeChecker.checkOperandTypes(call);
     }
     return true;
   }
-  
+
   /**
    * Check operand types expected
    * 
    * @param call The call to check
-   * @param throwOnFailure whether to throw an exception if check fails(otherwise returns false in that case)
+   * @param throwOnFailure whether to throw an exception if check fails(otherwise returns false in
+   *        that case)
    * 
    * @return whether check succeeded
    */
   public boolean checkOperandTypes(final Call call, boolean throwOnFailure) {
 
-    boolean success  = checkOperandTypes(call);
+    boolean success = checkOperandTypes(call);
     if (success) {
       return true;
     }
-    
-    if (throwOnFailure) { 
+
+    if (throwOnFailure) {
       throw new ExpressionException(call.getPosition(), ErrorCode.ILLEGAL_ARGUMENT_TYPE, this);
     }
-    
+
     return false;
   }
-  
+
   /**
    * Infers the return type of an invocation of this operator; only called
    * after the number and types of operands have already been validated.
@@ -330,13 +335,13 @@ public abstract class Operator {
    * @param call The call to coerce
    */
   public boolean coerceOperandsType(Call call) {
-    
+
     // Inferring the return type
     inferReturnType(call);
-    
+
     return false;
   }
-  
+
   /**
    * Compile and optimize the call
    * 
@@ -349,7 +354,7 @@ public abstract class Operator {
       throws ExpressionException {
     return call;
   }
-  
+
   public abstract void unparse(StringWriter writer, IExpression[] operands);
 
   public String getDocumentation() {
@@ -393,5 +398,26 @@ public abstract class Operator {
     }
 
     return operands;
+  }
+
+  protected static MethodHandle findMethodHandle(final Class<?> clazz, final String methodName) {
+    try {
+      MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+      MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
+      return lookup.findVirtual(clazz, methodName, methodType);
+    } catch (NoSuchMethodException | IllegalAccessException e) {
+      throw new ExpressionException(0, ErrorCode.INTERNAL_ERROR, clazz);
+    }
+  }
+
+  protected static MethodHandle findStaticMethodHandle(final Class<?> clazz,
+      final String methodName) {
+    try {
+      MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+      MethodType methodType = MethodType.methodType(Object.class, IExpression[].class);
+      return lookup.findStatic(clazz, methodName, methodType);
+    } catch (NoSuchMethodException | IllegalAccessException e) {
+      throw new ExpressionException(0, ErrorCode.INTERNAL_ERROR, clazz);
+    }
   }
 }
