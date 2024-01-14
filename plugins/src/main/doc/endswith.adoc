@@ -16,7 +16,7 @@ under the License.
 ////
 = ENDSWITH
 
-Returns TRUE if the first expression ends with second expression. Both values must be data type string or binary.
+Returns TRUE if the first expression ends with second expression. Both values must be of the same string or binary type.
 
 == Syntax
 ----

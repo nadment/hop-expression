@@ -26,3 +26,9 @@ LENGTH( {string | binary} )
 == Usage
 
 * Returns NULL if expression is NULL. 
+
+== Example
+
+----
+LENGTH('ABC') → 3
+----

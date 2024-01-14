@@ -16,19 +16,22 @@ under the License.
 ////
 = ABS
 
-Returns the absolute (positive) value of the number.
+Returns the absolute (positive) value of the number or interval.
 
 == Syntax
+
 ----
-ABS( numeric )
+ABS( value )
 ----
+
+Returns:: The data type of the returned value is the same as the data type of the input value (`INTEGER`, `NUMBER`  or `INTERVAL`).
 
 == Usage
 
-The returned value is of the same data type as the parameter.
+* Returns NULL if the value is NULL.
 
 == Example
 
 ----
-ABS(-123) return 123
+ABS(-123) → 123
 ----

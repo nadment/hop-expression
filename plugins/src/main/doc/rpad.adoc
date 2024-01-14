@@ -16,16 +16,26 @@ under the License.
 ////
 = RPAD
 
-Right-pads a string with another string, to a certain length.
+Right-pads a string with characters from another string, or right-pads a binary value with bytes from another binary value.
 
 == Syntax
 ----
-RPAD( string, padded_length [, pad_string ] )
+RPAD( value, length [, pad ] )
 ----
+
+Returns:: The data type of the returned value is the same as the data type of the input value (`STRING` or `BINARY`).
 
 == Usage
 
-* If the padded_length is smaller than the original string, the LPAD function will truncate the string to the size of padded_length.
+* Both value and pad must be of the same string or binary type.
+* If the length argument is smaller than the value, the function will truncate the string to the size of length.
+* If the padding argument is omitted, the function will pad spaces for string or 0x00 for binary.
 * Returns NULL if one of the arguments is NULL.
+
+== Example
+
+----
+RPAD('123',5,'*') → '123**'
+----
 
 See also xref:lpad.adoc[LPAD]

@@ -16,16 +16,17 @@ under the License.
 ////
 = EXTRACT, DATE_PART
 
-Extracts the specified time unit from a date or timestamp.
+Extracts the specified time unit from a date, timestamp or interval.
 
 == Syntax
+
 [source,sql]
 ----
-EXTRACT( unit FROM {date | timestamp} )
+EXTRACT( unit FROM {date | timestamp | interval} )
 ----
 [source,sql]
 ----
-DATE_PART( unit, {date | timestamp} )
+DATE_PART( unit, {date | timestamp | interval} )
 ----
 
 Return type:: Integer

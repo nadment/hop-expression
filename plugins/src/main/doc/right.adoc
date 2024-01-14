@@ -19,11 +19,21 @@ under the License.
 Extracts a number of characters from a string or bytes from binary starting from right.
 		
 == Syntax
+
 ----
 RIGHT( value, length )
 ----
+
 == Usage
 
+* If the length argument is larger than the value, the function will return the value.
+* If the length argument is zero or negative, the function returns an empty string or binary.
 * Returns NULL if one of the arguments is NULL.
+
+== Example
+
+----
+RIGHT('ABCDEF',3) → 'DEF'
+----
 
 See also xref:left.adoc[LEFT]

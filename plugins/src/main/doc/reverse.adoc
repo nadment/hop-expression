@@ -16,11 +16,12 @@ under the License.
 ////
 = REVERSE
 
-Reverses the order of characters in a string.
+Reverses the order of characters in a string or bytes in a binary.
 
 == Syntax
+
 ----
-REVERSE( {string | binary} )
+REVERSE( value )
 ----
 
 Returns:: String or binary
@@ -28,3 +29,9 @@ Returns:: String or binary
 == Usage
 
 * Returns NULL if the argument is NULL.
+
+== Example
+
+----
+REVERSE('ABC') → 'CBA'
+----
