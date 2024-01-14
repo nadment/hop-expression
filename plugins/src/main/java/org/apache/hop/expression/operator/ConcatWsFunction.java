@@ -35,8 +35,8 @@ import java.io.IOException;
  */
 @FunctionPlugin
 public class ConcatWsFunction extends Function {
-  public static final ConcatWsFunction ConcatWsStringFunction = new ConcatWsString();
-  public static final ConcatWsFunction ConcatWsBinaryFunction = new ConcatWsBinary();
+  public static final ConcatWsFunction ConcatWsStringFunction = new ConcatWsStringFunction();
+  public static final ConcatWsFunction ConcatWsBinaryFunction = new ConcatWsBinaryFunction();
 
   public ConcatWsFunction() {
     super("CONCAT_WS", ReturnTypes.CONCATWS_FUNCTION,
@@ -58,7 +58,7 @@ public class ConcatWsFunction extends Function {
   /**
    * String concatenation function with separator
    */
-  private static final class ConcatWsString extends ConcatWsFunction {
+  private static final class ConcatWsStringFunction extends ConcatWsFunction {
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -88,7 +88,7 @@ public class ConcatWsFunction extends Function {
   /**
    * Binary concatenation function with separator
    */
-  private static final class ConcatWsBinary extends ConcatWsFunction {
+  private static final class ConcatWsBinaryFunction extends ConcatWsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
 

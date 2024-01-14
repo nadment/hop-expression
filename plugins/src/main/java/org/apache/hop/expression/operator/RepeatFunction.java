@@ -36,8 +36,8 @@ import java.io.IOException;
 @FunctionPlugin
 public class RepeatFunction extends Function {
 
-  public static final RepeatFunction RepeatStringFunction = new RepeatString();
-  public static final RepeatFunction RepeatBinaryFunction = new RepeatBinary();
+  public static final RepeatFunction RepeatStringFunction = new RepeatStringFunction();
+  public static final RepeatFunction RepeatBinaryFunction = new RepeatBinaryFunction();
 
   public RepeatFunction() {
     super("REPEAT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
@@ -55,11 +55,10 @@ public class RepeatFunction extends Function {
     return new Call(RepeatStringFunction, call.getOperands());
   }
 
-
   /**
    * The function repeats a string as many times as specified.
    */
-  private static final class RepeatString extends RepeatFunction {
+  private static final class RepeatStringFunction extends RepeatFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -81,7 +80,7 @@ public class RepeatFunction extends Function {
   /**
    * The function repeats a binary as many times as specified.
    */
-  private static final class RepeatBinary extends RepeatFunction {
+  private static final class RepeatBinaryFunction extends RepeatFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);

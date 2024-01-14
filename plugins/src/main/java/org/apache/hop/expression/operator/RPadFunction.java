@@ -37,8 +37,8 @@ import org.apache.hop.expression.type.TypeFamily;
 @FunctionPlugin
 public class RPadFunction extends Function {
 
-  public static final RPadFunction RPadString = new RPadString();
-  public static final RPadFunction RPadBinary = new RPadBinary();
+  public static final RPadFunction RPadStringFunction = new RPadStringFunction();
+  public static final RPadFunction RPadBinaryFunction = new RPadBinaryFunction();
 
   /** The maximum size to which the padding can expand. */
   protected static final int PAD_LIMIT = 8192;
@@ -55,16 +55,16 @@ public class RPadFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(RPadBinary, call.getOperands());
+      return new Call(RPadBinaryFunction, call.getOperands());
     }
 
-    return new Call(RPadString, call.getOperands());
+    return new Call(RPadStringFunction, call.getOperands());
   }
 
   /**
    * The function right-pads a string with another string, to a certain length.
    */
-  private static final class RPadString extends RPadFunction {
+  private static final class RPadStringFunction extends RPadFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -119,7 +119,7 @@ public class RPadFunction extends Function {
   /**
    * The function right-pads a binary with another binary, to a certain length.
    */
-  private static final class RPadBinary extends RPadFunction {
+  private static final class RPadBinaryFunction extends RPadFunction {
     private static final byte[] DEFAULT = new byte[] {0x00};
 
     @Override

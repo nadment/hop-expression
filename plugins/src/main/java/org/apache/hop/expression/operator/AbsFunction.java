@@ -36,9 +36,9 @@ import java.math.BigDecimal;
  */
 @FunctionPlugin
 public class AbsFunction extends Function {
-  public static final AbsFunction AbsIntegerFunction = new AbsInteger();
-  public static final AbsFunction AbsNumberFunction = new AbsNumber();
-  public static final AbsFunction AbsIntervalFunction = new AbsInterval();
+  public static final AbsFunction AbsIntegerFunction = new AbsIntegerFunction();
+  public static final AbsFunction AbsNumberFunction = new AbsNumberFunction();
+  public static final AbsFunction AbsIntervalFunction = new AbsIntervalFunction();
 
   public AbsFunction() {
     super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL), OperatorCategory.MATHEMATICAL,
@@ -69,7 +69,7 @@ public class AbsFunction extends Function {
   /**
    * Returns the absolute value of the integer value.
    */
-  private static final class AbsInteger extends AbsFunction {
+  private static final class AbsIntegerFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -83,7 +83,7 @@ public class AbsFunction extends Function {
   /**
    * Returns the absolute value of the number value.
    */
-  private static final class AbsNumber extends AbsFunction {
+  private static final class AbsNumberFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
@@ -97,7 +97,7 @@ public class AbsFunction extends Function {
   /**
    * Returns the absolute value of the interval value.
    */
-  private static final class AbsInterval extends AbsFunction {
+  private static final class AbsIntervalFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       Interval value = operands[0].getValue(Interval.class);

@@ -37,8 +37,8 @@ import org.apache.hop.expression.type.TypeFamily;
 @FunctionPlugin
 public class LPadFunction extends Function {
 
-  public static final LPadFunction LPadStringFunction = new LPadString();
-  public static final LPadFunction LPadBinaryFunction = new LPadBinary();
+  public static final LPadFunction LPadStringFunction = new LPadStringFunction();
+  public static final LPadFunction LPadBinaryFunction = new LPadBinaryFunction();
 
   /** The maximum size to which the padding can expand. */
   protected static final int PAD_LIMIT = 8192;
@@ -63,7 +63,7 @@ public class LPadFunction extends Function {
   /**
    * The function left-pads a string with another string, to a certain length.
    */
-  private static final class LPadString extends LPadFunction {
+  private static final class LPadStringFunction extends LPadFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -117,7 +117,7 @@ public class LPadFunction extends Function {
   /**
    * The function left-pads a binary with another binary, to a certain length.
    */
-  private static final class LPadBinary extends LPadFunction {
+  private static final class LPadBinaryFunction extends LPadFunction {
 
     private static final byte[] DEFAULT = new byte[] {0x00};
 

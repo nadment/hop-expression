@@ -36,8 +36,8 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class LeftFunction extends Function {
-  public static final LeftFunction LeftStringFunction = new LeftString();
-  public static final LeftFunction LeftBinaryFunction = new LeftBinary();
+  public static final LeftFunction LeftStringFunction = new LeftStringFunction();
+  public static final LeftFunction LeftBinaryFunction = new LeftBinaryFunction();
 
   public LeftFunction() {
     super("LEFT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
@@ -58,7 +58,7 @@ public class LeftFunction extends Function {
   /**
    * The function extracts a number of characters from a string starting from left.
    */
-  private static final class LeftString extends LeftFunction {
+  private static final class LeftStringFunction extends LeftFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
@@ -83,7 +83,7 @@ public class LeftFunction extends Function {
   /**
    * The function extracts a number of characters from a binary starting from left.
    */
-  private static final class LeftBinary extends LeftFunction {
+  private static final class LeftBinaryFunction extends LeftFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);

@@ -45,8 +45,8 @@ import java.time.temporal.IsoFields;
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
-  public static final ExtractFunction ExtractDateFunction = new ExtractDate();
-  public static final ExtractInterval ExtractIntervalFunction = new ExtractInterval();
+  public static final ExtractDateFunction ExtractDateFunction = new ExtractDateFunction();
+  public static final ExtractIntervalFunction ExtractIntervalFunction = new ExtractIntervalFunction();
 
   public ExtractFunction() {
     super("EXTRACT", ReturnTypes.INTEGER_NULLABLE,
@@ -87,7 +87,7 @@ public class ExtractFunction extends Function {
   /**
    * Extracts the specified date or time part from a date, time, or timestamp.
    */
-  private static final class ExtractDate extends ExtractFunction {
+  private static final class ExtractDateFunction extends ExtractFunction {
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
@@ -170,7 +170,7 @@ public class ExtractFunction extends Function {
   /**
    * Extracts the specified time unit from a interval.
    */
-  private static final class ExtractInterval extends ExtractFunction {
+  private static final class ExtractIntervalFunction extends ExtractFunction {
 
     @Override
     public Object eval(final IExpression[] operands) {
