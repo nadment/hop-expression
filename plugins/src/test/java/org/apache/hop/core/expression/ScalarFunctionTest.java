@@ -109,7 +109,7 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Try_To_Boolean() throws Exception {
     evalTrue("TRY_TO_BOOLEAN('True')").returnType(Types.BOOLEAN);
     evalFalse("TRY_TO_BOOLEAN('falSE')");
-    evalNull("TRY_TO_BOOLEAN('test')").returnType(Types.BOOLEAN);
+    evalNull("TRY_TO_BOOLEAN('Bad')").returnType(Types.BOOLEAN);
     evalNull("TRY_TO_BOOLEAN(NULL_STRING)");
     evalFails("TRY_TO_BOOLEAN()");
   }
@@ -2624,12 +2624,12 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Json_Query() throws Exception {
-    evalEquals("Json_Query('{name:\"Smith\",age:29}')",
+    evalEquals("Json_Query('{name:\"Smith\",age:29}'::JSON)",
         JsonType.convertStringToJson("{name:\"Smith\",age:29}")).returnType(Types.JSON);
     evalEquals(
-        "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}','$.Suspect.Hobbies')",
+        "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}'::JSON,'$.Suspect.Hobbies')",
         JsonType.convertStringToJson("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
-    evalEquals("Json_Query('null','$')", JsonType.convertStringToJson("null"));
+    evalEquals("Json_Query('null'::JSON,'$')", JsonType.convertStringToJson("null"));
 
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 

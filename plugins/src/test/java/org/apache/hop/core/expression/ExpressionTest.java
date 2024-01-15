@@ -57,6 +57,7 @@ import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Locale;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Charsets;
 
 public class ExpressionTest {
   protected static final BigDecimal PI = new BigDecimal("3.1415926535897932384626433832795");
@@ -181,7 +182,7 @@ public class ExpressionTest {
       row[6] = Timestamp.valueOf("2023-02-28 22:11:01");
       row[7] = true;
       row[8] = false;
-      row[9] = "TEST".getBytes();
+      row[9] = "TEST".getBytes(Charsets.UTF_8);
       row[10] = InetAddress.getLocalHost();
       row[11] = JsonType.convertStringToJson(
           "{\"student\": [{\"id\":\"01\",name:\"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
@@ -402,8 +403,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    optimize("FIELD_STRING_NUMBER*FIELD_STRING_INTEGER", "FIELD_STRING_INTEGER*FIELD_STRING_NUMBER");
-   // evalTrue("FIELD_STRING in ('45',123,'36')");
+    evalEquals("LENGTH(FIELD_JSON::STRING)", 105L);
     
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();

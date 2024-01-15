@@ -93,17 +93,17 @@ public enum TypeFamily {
 
     switch (this) {
       case BOOLEAN:
-        return family.isFamily(BOOLEAN, NUMERIC, BINARY, STRING);
+        return family.isFamily(BOOLEAN, NUMERIC, STRING);
       case STRING:
-        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
+        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL);
       case TEMPORAL:
         return family.isFamily(TEMPORAL);
       case NUMERIC:
-        return family.isFamily(NUMERIC, BOOLEAN, BINARY, STRING);
+        return family.isFamily(NUMERIC, BOOLEAN, STRING);
       case BINARY:
-        return family.isFamily(BINARY, STRING);
+        return family.isFamily(BINARY);
       case JSON:
-        return family.isFamily(JSON, STRING);
+        return family.isFamily(JSON);
       case INTERVAL:
         return family.isFamily(INTERVAL);
       case ANY:

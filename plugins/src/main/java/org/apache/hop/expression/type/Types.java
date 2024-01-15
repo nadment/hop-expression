@@ -263,6 +263,9 @@ public class Types {
     if (type1 == null || type2 == null)
       return null;
 
+    if (type2.is(TypeId.UNKNOWN) )
+      return type1;
+    
     // DATE compare STRING -> DATE
     if (isDate(type1) && isString(type2)) {
       return type1;
@@ -327,7 +330,7 @@ public class Types {
   public static boolean coercionComparisonOperator(Call call) {
 
     Type type = call.getOperand(0).getType();
-    for (int index = 1; index < call.getOperandCount(); index++) {
+    for (int index = 1; index < call.getOperandCount(); index++) {      
       type = getCommonTypeForComparison(type, call.getOperand(index).getType());
     }
 

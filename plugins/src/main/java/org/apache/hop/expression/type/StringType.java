@@ -143,7 +143,10 @@ public final class StringType extends Type {
     else if (value instanceof byte[]) {
       result =  new String((byte[]) value, StandardCharsets.UTF_8);
     }
-    
+    else if (value instanceof JsonNode) {
+      return convertJsonToString((JsonNode) value);
+    }
+
     if (result==null ) {
       throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, this);
     }

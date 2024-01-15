@@ -59,9 +59,9 @@ public final class JsonType extends Type {
     if (value instanceof JsonNode) {
       return (JsonNode) value;
     }
-    if (value instanceof String) {
-      return JsonType.convertStringToJson((String) value);
-    }
+//    if (value instanceof String) {
+//      return JsonType.convertStringToJson((String) value);
+//    }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.JSON);

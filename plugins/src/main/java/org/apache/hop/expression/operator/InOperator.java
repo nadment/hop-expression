@@ -21,6 +21,7 @@ import static org.apache.hop.expression.type.Types.getCommonTypeForComparison;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
@@ -53,8 +54,12 @@ import java.util.List;
  */
 public class InOperator extends Operator {
 
-  public InOperator() {
-    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, null, OperatorCategory.COMPARISON, "/docs/in.html");
+  private boolean not = false;
+
+  public InOperator(boolean not) {
+    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, null, OperatorCategory.COMPARISON,
+        "/docs/in.html");
+    this.not = not;
   }
 
   @Override
@@ -70,7 +75,7 @@ public class InOperator extends Operator {
 
     return true;
   }
-  
+
   /**
    * Simplifies IN expressions list of elements.
    * 1. Remove duplicate expressions in list.
@@ -85,7 +90,7 @@ public class InOperator extends Operator {
 
     // NULL if left side expression is always NULL
     if (reference.isNull()) {
-      return reference;
+      return new Literal(null, Types.BOOLEAN);
     }
 
     // Try to evaluate all operands to detect error like division by zero X IN (1,2,3/0)
@@ -98,7 +103,7 @@ public class InOperator extends Operator {
     // Remove null and duplicate element in list
     for (IExpression expression : tuple) {
 
-      if (expression.isNull()) {
+      if ( !not && expression.isNull()) {
         continue;
       }
 
@@ -120,10 +125,11 @@ public class InOperator extends Operator {
 
     // Sort list on cost
     list.sort(Comparator.comparing(IExpression::getCost));
-    
+
     // Rebuild tuple
-    call =  new Call(this, call.getOperand(0), new Tuple(list));
+    call = new Call(this, call.getOperand(0), new Tuple(list));
     call.inferReturnType();
+    
     return call;
   }
 
@@ -157,8 +163,8 @@ public class InOperator extends Operator {
     }
 
     return coercedTerm || coercedValues;
-  }  
-  
+  }
+
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();
@@ -167,20 +173,36 @@ public class InOperator extends Operator {
     }
 
     Tuple tuple = (Tuple) operands[1];
+
+    // c1 NOT IN (c2, c3, NULL) is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)
+    if (not) {
+      Boolean result = Boolean.TRUE;
+      for (IExpression expression : tuple) {
+        Object value = expression.getValue();
+        if (value == null)
+          return null;
+
+        if (Comparison.equals(left, value)) {
+          result = Boolean.FALSE;
+        }
+      }
+      return result;
+    }
+
+    // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
     for (IExpression expression : tuple) {
       Object value = expression.getValue();
       if (Comparison.equals(left, value)) {
         return Boolean.TRUE;
       }
     }
-
     return Boolean.FALSE;
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append(" IN (");
+    writer.append(not ? " NOT IN (" : " IN (");
     operands[1].unparse(writer);
     writer.append(')');
   }

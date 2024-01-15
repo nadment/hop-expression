@@ -108,7 +108,8 @@ public class Operators {
   public static final Operator IS_NOT_DISTINCT_FROM = new IsNotDistinctFromOperator();
   public static final Operator SIMILAR_TO = new SimilarToOperator();
   public static final Operator NOT_SIMILAR_TO = new SimilarToOperator();
-  public static final Operator IN = new InOperator();
+  public static final Operator IN = new InOperator(false);
+  public static final Operator NOT_IN = new InOperator(true);
   public static final Operator LIKE = new LikeOperator();
   public static final Operator ILIKE = new ILikeOperator();
   public static final Operator BETWEEN_ASYMMETRIC = new BetweenOperator(Between.ASYMMETRIC);

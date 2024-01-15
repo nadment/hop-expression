@@ -109,13 +109,13 @@ public class IdentifierTest extends ExpressionTest {
   @Test
   public void coercionValueMetaBinary() throws Exception {
     // From binary value meta
-    evalEquals("Upper(FIELD_BINARY)", "TEST");
+    evalEquals("FIELD_BINARY::STRING", "TEST");
   }
   
   @Test
   public void coercionValueMetaJson() throws Exception {
     evalEquals("Json_Value(FIELD_JSON, '$.student[0].name')", "Tom");
-    evalEquals("LENGTH(FIELD_JSON)", 105L);
+    evalEquals("LENGTH(FIELD_JSON::STRING)", 105L);
     evalFails("FIELD_JSON IS TRUE");    
   }
   

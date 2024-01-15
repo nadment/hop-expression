@@ -103,8 +103,8 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("Date '2023-10-01' = '2023-10-31'");
     
     // Comparable unordered type
-    evalNull("NULL_JSON = FIELD_STRING");
-    evalFalse("FIELD_JSON = FIELD_STRING_JSON");
+    evalNull("NULL_JSON = FIELD_JSON");
+    evalFalse("FIELD_JSON = FIELD_STRING_JSON::JSON");
     
     // Syntax error
     evalFails("FIELD_INTEGER=");
@@ -178,7 +178,7 @@ public class OperatorTest extends ExpressionTest {
     evalTrue("Date '2023-10-01' <> '2023-10-31'");
     
     // Comparable unordered type    
-    evalTrue("FIELD_JSON <> FIELD_STRING_JSON");
+    evalTrue("FIELD_JSON <> FIELD_STRING_JSON::JSON");
     
     // Syntax error
     evalFails("FIELD_INTEGER<>");
@@ -491,12 +491,12 @@ public class OperatorTest extends ExpressionTest {
     // Simplify comparison with same term
     optimize("FIELD_STRING<=FIELD_STRING", "NVL2(FIELD_STRING,TRUE,NULL)");
   }
-
+  
   @Test
   public void In() throws Exception {
     evalTrue("FIELD_STRING in ('?','*','TEST')").returnType(Types.BOOLEAN);
-    evalTrue("FIELD_STRING not in ('?','-','!')");
-    evalTrue("FIELD_INTEGER not in (1,2,3)");
+    evalTrue("FIELD_STRING not in ('?','-','!')").returnType(Types.BOOLEAN);
+    evalTrue("FIELD_INTEGER not in (1,2,3)").returnType(Types.BOOLEAN);
 
     evalTrue("2.5 IN (1,2.5,3)");
     evalTrue("2 in (NULL_INTEGER,1,2,FIELD_INTEGER)");
@@ -509,7 +509,19 @@ public class OperatorTest extends ExpressionTest {
 
 
     evalFalse("2 in (NULL_INTEGER,NULL_NUMBER)");
-    evalFalse("1 not in (NULL_INTEGER,1)");
+    evalNull("1 not in (NULL_INTEGER,2)");
+    evalTrue("1 not in (2,3)");
+    evalFalse("FIELD_INTEGER not in (40,2,3)");
+    
+    // c1 IN (c2, c3, NULL) is syntactically equivalent to (c1=c2 or c1=c3 or c1=NULL)
+    // As a result, when the value of c1 is NULL, the expression c1 IN (c2, c3, NULL) always evaluates to FALSE.
+    evalFalse("FIELD_STRING in ('A','B',NULL_STRING)").returnType(Types.BOOLEAN);
+
+    
+    // c1 NOT IN (c2, c3, NULL) evaluates to NULL 
+    // It is syntactically equivalent to (c1<>c2 AND c1<>c3 AND c1<>NULL)    
+    evalNull("FIELD_STRING not in ('A','B',NULL_STRING)").returnType(Types.BOOLEAN);
+    
     evalNull("NULL_INTEGER in (1,2,3)");
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
     evalNull("NULL_INTEGER in (NULL_NUMBER,2,3,NULL_INTEGER)");
@@ -529,6 +541,7 @@ public class OperatorTest extends ExpressionTest {
     // 0)")).hasErrorCode(DIVISION_BY_ZERO);
 
     optimize("FIELD_INTEGER IN (10,20,30,40)");
+    optimize("FIELD_INTEGER NOT IN (10,20,30,40)");
     optimizeTrue("'foo' IN ('bar', 'baz', 'foo', 'blah')");
     optimizeTrue("25 in (1,25,66)");
     optimizeTrue("1.15 IN (1.1, 1.2, 1.3, 1.15)");
@@ -537,7 +550,7 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')");
     optimize("NULL in (NULL_NUMBER,2,3,NULL_INTEGER)", "NULL");
 
-    // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
+    //optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
 
     // IN predicate with one list element
     optimize("FIELD_INTEGER in (1)", "1=FIELD_INTEGER");

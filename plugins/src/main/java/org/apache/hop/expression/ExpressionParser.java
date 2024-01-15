@@ -284,7 +284,7 @@ public class ExpressionParser {
         expression = new Call(Operators.ILIKE, expression, pattern);
       }
     } else if (isThenNext(Id.IN)) {
-      expression = new Call(Operators.IN, expression, this.parseTuple());
+       return new Call(not ? Operators.NOT_IN:Operators.IN, expression, this.parseTuple());
     } else if (isThenNext(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN_ASYMMETRIC;
       if (isThenNext(Id.ASYMMETRIC)) {

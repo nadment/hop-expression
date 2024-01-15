@@ -28,16 +28,16 @@ import java.util.Objects;
 /**
  * An expression formed by a call to an {@link Operator} with zero or more expressions as operands.
  */
-public final class Call implements IExpression {
-
-  // The return data type
-  protected Type type = Types.UNKNOWN;
+public class Call implements IExpression {
 
   // The position of this expression in the source before compilation else 0.
   protected final int position;
-
+  // The operator of this call
   protected final Operator operator;
+  // The operands of this call
   protected final IExpression[] operands;
+  // The return data type
+  protected Type type = Types.UNKNOWN;
 
   public Call(Operator operator, IExpression... operands) {
     this(0, operator, operands);
