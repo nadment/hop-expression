@@ -27,6 +27,7 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -35,8 +36,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
@@ -67,11 +70,14 @@ public class BoolAndOperator extends Operator {
     PriorityQueue<IExpression> predicates = new PriorityQueue<>(new ExpressionComparator());
     predicates.addAll(this.getChainedOperands(call, false));
 
-    // final Map<IExpression, Range<?>> ranges = new HashMap<>();
-    final List<IExpression> isNullTerms = new ArrayList<>();
-    final List<IExpression> isNotNullTerms = new ArrayList<>();
+
     final List<IExpression> strongTerms = new ArrayList<>();
+    final List<IExpression> isNullTerms = new ArrayList<>();
+    final List<IExpression> isNotNullTerms = new ArrayList<>();    
+    final Map<Pair<IExpression, IExpression>, Call> notEqualTerms = new HashMap<>();
     final MultiValuedMap<IExpression, Pair<Call, Literal>> equalsLiterals =
+        new ArrayListValuedHashMap<>();
+    final MultiValuedMap<IExpression, Pair<Call, Literal>> notEqualsLiterals =
         new ArrayListValuedHashMap<>();
 
     for (IExpression predicate : predicates) {
@@ -96,6 +102,23 @@ public class BoolAndOperator extends Operator {
           }
           if (term.getOperand(1).is(Kind.LITERAL)) {
             equalsLiterals.put(term.getOperand(0), Pair.of(term, term.getOperand(1).asLiteral()));
+          }
+        }
+        if (term.is(Operators.NOT_EQUAL)) {
+          notEqualTerms.put(Pair.of(term.getOperand(0), term.getOperand(1)), term);
+          
+          if (term.getOperand(0).is(Kind.LITERAL)) {
+            notEqualsLiterals.put(term.getOperand(1),
+                Pair.of(term, term.getOperand(0).asLiteral()));
+          }
+          if (term.getOperand(1).is(Kind.LITERAL)) {
+            notEqualsLiterals.put(term.getOperand(0),
+                Pair.of(term, term.getOperand(1).asLiteral()));
+          }
+        }        
+        if (term.is(Operators.NOT_IN) && term.getOperand(1).isConstant()) {
+          for (IExpression operand : term.getOperand(1).asTuple()) {
+            notEqualsLiterals.put(term.getOperand(0), Pair.of(term, operand.asLiteral()));
           }
         }
         if (Operators.isStrong(term)) {
@@ -143,6 +166,22 @@ public class BoolAndOperator extends Operator {
       }
     }
 
+    // Simplify X<>1 AND X<>2 → X NOT IN (1,2)
+    // Simplify X<>1 AND X NOT IN (2,3) → X NOT IN (1,2,3)
+    for (IExpression reference : notEqualsLiterals.keySet()) {
+      Collection<Pair<Call, Literal>> pairs = notEqualsLiterals.get(reference);
+      if (pairs.size() > 1) {
+        List<IExpression> values = new ArrayList<>();
+        for (Pair<Call, Literal> pair : pairs) {
+          values.add(pair.getRight());
+          predicates.remove(pair.getLeft());
+        }
+        Call predicate = new Call(Operators.NOT_IN, reference, new Tuple(values));
+        predicate.inferReturnType();
+        predicates.add(predicate);
+      }
+    }
+    
     // Rebuild conjunctions if more than 1 condition
     if (predicates.size() == 1) {
       return predicates.peek();
