@@ -236,6 +236,19 @@ public abstract class Operator {
   }
 
   /**
+   * Returns the operator that is the logical inverse of this operator.
+   *
+   * <p>
+   * For example, {@code Operators.IS_TRUE} returns {@code Operators.IS_NOT_TRUE}, and vice versa.
+   *
+   * <p>
+   * By default, returns {@code null}, which means there is no inverse operator.
+   */
+  public Operator not() {
+    return null;
+  }
+
+  /**
    * Get the category of this operator.
    * 
    * @return

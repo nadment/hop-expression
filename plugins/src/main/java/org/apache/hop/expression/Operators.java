@@ -106,8 +106,8 @@ public class Operators {
   public static final Operator IS_NOT_FALSE = new IsNotFalseOperator();
   public static final Operator IS_DISTINCT_FROM = new IsDistinctFromOperator();
   public static final Operator IS_NOT_DISTINCT_FROM = new IsNotDistinctFromOperator();
-  public static final Operator SIMILAR_TO = new SimilarToOperator();
-  public static final Operator NOT_SIMILAR_TO = new SimilarToOperator();
+  public static final Operator SIMILAR_TO = new SimilarToOperator(false);
+  public static final Operator NOT_SIMILAR_TO = new SimilarToOperator(true);
   public static final Operator IN = new InOperator(false);
   public static final Operator NOT_IN = new InOperator(true);
   public static final Operator LIKE = new LikeOperator();

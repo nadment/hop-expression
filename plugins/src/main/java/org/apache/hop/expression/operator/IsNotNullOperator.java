@@ -37,6 +37,11 @@ public class IsNotNullOperator extends Operator {
     super("IS NOT NULL", 140, true, ReturnTypes.BOOLEAN_NOT_NULL, OperandTypes.ANY, OperatorCategory.COMPARISON,
         "/docs/is-null.html");
   }
+  
+  @Override
+  public Operator not() {
+    return Operators.IS_NULL;
+  }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

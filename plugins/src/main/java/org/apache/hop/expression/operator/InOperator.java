@@ -44,24 +44,25 @@ import java.util.List;
  * Syntax of the operator:
  *
  * <ul>
- * <li><code>field [NOT] IN list of values</code>
+ * <li><code>field [NOT] IN (list of values)</code>
  * </ul>
- *
- * <p>
- * <b>NOTE</b> If the <code>NOT</code> clause is present the parser will generate a equivalent to
- * <code>
- * NOT (field IN list of values ...)</code>
  */
 public class InOperator extends Operator {
 
-  private boolean not = false;
+  private final boolean not;
 
   public InOperator(boolean not) {
-    super("IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, null, OperatorCategory.COMPARISON,
+    super(not ? "NOT IN":"IN", 120, true, ReturnTypes.BOOLEAN_NULLABLE, null, OperatorCategory.COMPARISON,
         "/docs/in.html");
     this.not = not;
   }
 
+  
+  @Override
+  public Operator not() {
+    return not ? Operators.IN:Operators.NOT_IN;
+  }
+  
   @Override
   public boolean checkOperandTypes(final Call call) {
     Type type = call.getOperand(0).getType();
@@ -198,7 +199,7 @@ public class InOperator extends Operator {
     }
     return Boolean.FALSE;
   }
-
+  
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);

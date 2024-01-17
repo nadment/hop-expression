@@ -42,6 +42,11 @@ public class IsNotDistinctFromOperator extends Operator {
   }
 
   @Override
+  public Operator not() {
+    return Operators.IS_DISTINCT_FROM;
+  }
+  
+  @Override
   public Object eval(final IExpression[] operands) {
     Object v0 = operands[0].getValue();
     Object v1 = operands[1].getValue();

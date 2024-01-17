@@ -20,6 +20,7 @@ import org.apache.hop.core.util.Utils;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.Regexp;
@@ -34,9 +35,17 @@ import java.util.regex.Pattern;
  */
 public class SimilarToOperator extends Operator {
 
-  public SimilarToOperator() {
-    super("SIMILAR TO", 10, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING_STRING,
+  private final boolean not;
+  
+  public SimilarToOperator(boolean not) {
+    super(not ? "NOT SIMILAR TO":"SIMILAR TO", 10, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.STRING_STRING,
         OperatorCategory.COMPARISON, "/docs/similar-to.html");
+    this.not = not;
+  }
+  
+  @Override
+  public Operator not() {
+    return not ? Operators.SIMILAR_TO:Operators.NOT_SIMILAR_TO;
   }
 
   @Override
@@ -57,13 +66,13 @@ public class SimilarToOperator extends Operator {
 
     pattern = Regexp.toSimilarTo(pattern, '\\');
     Matcher matcher = Pattern.compile(pattern, Pattern.UNICODE_CASE).matcher(value);
-    return matcher.matches();
+    return matcher.matches() ^ not;
   }
 
   @Override
   public void unparse(StringWriter writer, IExpression[] operands) {
     operands[0].unparse(writer);
-    writer.append(" SIMILAR TO ");
+    writer.append(not ? " NOT SIMILAR TO ":" SIMILAR TO ");
     operands[1].unparse(writer);
   }
 }

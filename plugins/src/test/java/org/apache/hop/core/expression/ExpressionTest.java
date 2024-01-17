@@ -403,8 +403,7 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    evalEquals("LENGTH(FIELD_JSON::STRING)", 105L);
-    
+    evalTrue("FIELD_STRING not like 'X%'");
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

@@ -40,6 +40,11 @@ public class GreaterThanOperator extends Operator {
     super("GREATER_THAN", ">", 130, true, ReturnTypes.BOOLEAN_NULLABLE, OperandTypes.COMPARABLE_ORDERED_COMPARABLE_ORDERED,
         OperatorCategory.COMPARISON, "/docs/greater_than.html");
   }
+  
+  @Override
+  public Operator not() {
+    return Operators.LESS_THAN_OR_EQUAL;
+  }
 
   @Override
   public Object eval(final IExpression[] operands) {

@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Kind;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.Operators;
@@ -54,70 +55,41 @@ public class BoolNotOperator extends Operator {
 
     IExpression operand = call.getOperand(0);
 
-    // NOT(l=r) → l<>r
-    if (operand.is(Operators.EQUAL)) {
-      return new Call(Operators.NOT_EQUAL, operand.asCall().getOperands());
-    }
-    // NOT(l<>r) → l=r
-    if (operand.is(Operators.NOT_EQUAL)) {
-      return new Call(Operators.EQUAL, operand.asCall().getOperands());
-    }
-    // NOT(l>r) → l<=r
-    if (operand.is(Operators.GREATER_THAN)) {
-      return new Call(Operators.LESS_THAN_OR_EQUAL, operand.asCall().getOperands());
-    }
-    // NOT(l>=r) → l<r
-    if (operand.is(Operators.GREATER_THAN_OR_EQUAL)) {
-      return new Call(Operators.LESS_THAN, operand.asCall().getOperands());
-    }
-    // NOT(l<r) → l>=r
-    if (operand.is(Operators.LESS_THAN)) {
-      return new Call(Operators.GREATER_THAN_OR_EQUAL, operand.asCall().getOperands());
-    }
-    // NOT(l<=r) → l>r
-    if (operand.is(Operators.LESS_THAN_OR_EQUAL)) {
-      return new Call(Operators.GREATER_THAN, operand.asCall().getOperands());
-    }
     // NOT(NOT(x)) → x
     if (operand.is(Operators.BOOLNOT)) {
       return operand.asCall().getOperand(0);
     }
+    
+    // If the operand is a call to a logical operator that can be inverted, then remove NOT
+    // NOT(l=r) → l<>r
+    // NOT(l<>r) → l=r
+    // NOT(l>r) → l<=r
+    // NOT(l>=r) → l<r
+    // NOT(l<r) → l>=r
+    // NOT(l<=r) → l>r
     // NOT(x IS TRUE) => x IS NOT TRUE
-    if (operand.is(Operators.IS_TRUE)) {
-      return new Call(Operators.IS_NOT_TRUE, operand.asCall().getOperands());
-    }
     // NOT(x IS NOT TRUE) => x IS TRUE
-    if (operand.is(Operators.IS_NOT_TRUE)) {
-      return new Call(Operators.IS_TRUE, operand.asCall().getOperands());
-    }
     // NOT(x IS FALSE) → x IS NOT FALSE
-    if (operand.is(Operators.IS_FALSE)) {
-      return new Call(Operators.IS_NOT_FALSE, operand.asCall().getOperands());
-    }
     // NOT(x IS NOT FALSE) → x IS FALSE
-    if (operand.is(Operators.IS_NOT_FALSE)) {
-      return new Call(Operators.IS_FALSE, operand.asCall().getOperands());
-    }
     // NOT(x IS NULL) → x IS NOT NULL
-    if (operand.is(Operators.IS_NULL)) {
-      return new Call(Operators.IS_NOT_NULL, operand.asCall().getOperands());
-    }
     // NOT(x IS NOT NULL) → x IS NULL
-    if (operand.is(Operators.IS_NOT_NULL)) {
-      return new Call(Operators.IS_NULL, operand.asCall().getOperands());
-    }
     // NOT(x IS NOT DISTINCT FROM y) → x IS DISTINCT FROM y
-    if (operand.is(Operators.IS_NOT_DISTINCT_FROM)) {
-      return new Call(Operators.IS_DISTINCT_FROM, operand.asCall().getOperands());
-    }
     // NOT(x IS DISTINCT FROM y) → x IS NOT DISTINCT FROM y
-    if (operand.is(Operators.IS_DISTINCT_FROM)) {
-      return new Call(Operators.IS_NOT_DISTINCT_FROM, operand.asCall().getOperands());
+    // NOT(x IS SIMILAR TO y) → x IS NOT SIMILAR TO  y
+    // NOT(x IS NOT SIMILAR TO y) → x IS SIMILAR TO  y
+    // NOT(x IN (y,z)) → x NOT IN (y,z)
+    // NOT(x NOT IN (y,z)) → x IN (y,z)
+    if (operand.is(Kind.CALL)) {
+      Call callOperand = operand.asCall();
+      Operator operator = callOperand.getOperator().not();
+      if ( operator!=null ) {
+        return new Call(operator, callOperand.getOperands());
+      }
     }
-
+   
     return call;
   }
-
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);

@@ -305,7 +305,7 @@ public class ExpressionParser {
 
     if (isThenNext(Id.SIMILAR)) {
       if (isThenNext(Id.TO)) {
-        expression = new Call(Operators.SIMILAR_TO, expression, parseAdditive());
+        return new Call(not ? Operators.NOT_SIMILAR_TO:Operators.SIMILAR_TO, expression, parseAdditive());
       } else
         throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
             Id.SIMILAR);

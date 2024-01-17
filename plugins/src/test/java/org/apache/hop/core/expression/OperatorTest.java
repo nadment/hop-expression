@@ -722,7 +722,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_STRING IS SIMILAR TO ");
     evalFails("FIELD_STRING IS SIMILAR AND TO ");
 
-    optimize("FIELD_STRING SIMILAR TO 'a{2,4}'");
+    optimize("FIELD_STRING SIMILAR TO 'abc'");
+    optimize("FIELD_STRING NOT SIMILAR TO 'abc'");
   }
 
   @Test
@@ -1525,6 +1526,9 @@ public class OperatorTest extends ExpressionTest {
         "FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM NULL_BOOLEAN");
     optimize("NOT (FIELD_BOOLEAN_TRUE IS NOT DISTINCT FROM NULL_BOOLEAN)",
         "FIELD_BOOLEAN_TRUE IS DISTINCT FROM NULL_BOOLEAN");
+    optimize("NOT (FIELD_STRING NOT SIMILAR TO '.*(b|d).*')","FIELD_STRING SIMILAR TO '.*(b|d).*'");
+    optimize("NOT (FIELD_STRING SIMILAR TO '.*(b|d).*')","FIELD_STRING NOT SIMILAR TO '.*(b|d).*'");
+    
     // optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN_TRUE IS NOT NULL","FIELD_BOOLEAN_TRUE IS NOT
     // NULL");
   }

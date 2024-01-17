@@ -47,6 +47,12 @@ public class NotEqualOperator extends Operator {
     return true;
   }
 
+
+  @Override
+  public Operator not() {
+    return Operators.EQUAL;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Object left = operands[0].getValue();

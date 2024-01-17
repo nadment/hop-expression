@@ -22,6 +22,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
@@ -37,6 +38,11 @@ public class IsNullOperator extends Operator {
         "/docs/is-null.html");
   }
 
+  @Override
+  public Operator not() {
+    return Operators.IS_NOT_NULL;
+  }
+  
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     IExpression operand = call.getOperand(0);

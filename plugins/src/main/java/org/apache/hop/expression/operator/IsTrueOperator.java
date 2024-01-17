@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
@@ -33,6 +34,11 @@ public class IsTrueOperator extends Operator {
         "/docs/is-true.html");
   }
 
+  @Override
+  public Operator not() {
+    return Operators.IS_NOT_TRUE;
+  }  
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);
