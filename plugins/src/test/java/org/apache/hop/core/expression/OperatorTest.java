@@ -119,6 +119,8 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("10151082135029368 = 10151082135029369");
     optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
     optimize("FIELD_STRING = NULL", "NULL");
+    
+    // Simplify arithmetic comparisons
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
 
     // Simplify comparison with same term if not nullable
@@ -194,8 +196,10 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE<>FALSE", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
     optimize("FALSE<>FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT FALSE");
     optimize("10!=FIELD_INTEGER");
-    optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");
     optimize("FIELD_STRING!=FIELD_STRING", "NULL AND FIELD_STRING IS NULL");
+    
+    // Simplify arithmetic comparisons
+    optimize("FIELD_INTEGER+1!=3", "2!=FIELD_INTEGER");
   }
 
   @Test
@@ -265,6 +269,8 @@ public class OperatorTest extends ExpressionTest {
     optimizeTrue("25>12");
     optimize("FIELD_STRING > NULL", "NULL");
     optimize("NULL > FIELD_STRING", "NULL");
+
+    // Simplify arithmetic comparisons
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
     optimize("FIELD_INTEGER+1>3", "2<FIELD_INTEGER");
 
@@ -340,6 +346,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FALSE>=FIELD_BOOLEAN_TRUE");
     optimize("FIELD_STRING >= NULL", "NULL");
     optimize("NULL >= NULL_BOOLEAN", "NULL");
+    
+    // Simplify arithmetic comparisons
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
     optimize("3>=FIELD_INTEGER+1", "2>=FIELD_INTEGER");
 
@@ -412,6 +420,8 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("25<12");
     optimize("FIELD_STRING < NULL", "NULL");
     optimize("NULL < FIELD_STRING", "NULL");
+    
+    // Simplify arithmetic comparisons
     optimize("FIELD_INTEGER+1<3", "2>FIELD_INTEGER");
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
 
@@ -487,6 +497,8 @@ public class OperatorTest extends ExpressionTest {
     optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FALSE <= FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE IS NOT NULL");
     optimize("FIELD_STRING <= NULL", "NULL");
+    
+    // Simplify arithmetic comparisons
     optimize("3<=FIELD_INTEGER+1", "2<=FIELD_INTEGER");
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
 
@@ -1375,13 +1387,26 @@ public class OperatorTest extends ExpressionTest {
     evalNull("FIELD_STRING_INTEGER::INTEGER*NULL_INTEGER");
 
     optimize("FIELD_INTEGER*4", "4*FIELD_INTEGER");
-    optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
     optimize("FIELD_INTEGER*3*2", "6*FIELD_INTEGER");
     optimize("3*(FIELD_INTEGER*1)*1*(2*5)", "30*FIELD_INTEGER");
-    optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
     optimize("4*FIELD_INTEGER*0.5", "2*FIELD_INTEGER");
+    
+    // Simplify arithmetic 0*A → 0
+    optimize("FIELD_INTEGER*0", "0");
+    optimize("0*FIELD_INTEGER", "0");
+    
+    // Simplify arithmetic 1*A → A
+    optimize("FIELD_INTEGER*1", "FIELD_INTEGER");
+    optimize("1.0*FIELD_INTEGER", "FIELD_INTEGER");
+        
+    // Simplify arithmetic (-A)*(-B) → A*B
     optimize("-FIELD_INTEGER*(-FIELD_NUMBER)", "FIELD_INTEGER*FIELD_NUMBER");
+    
+    // Simplify arithmetic A*A → SQUARE(A)
     optimize("FIELD_INTEGER*FIELD_INTEGER", "SQUARE(FIELD_INTEGER)");
+    
+    // Simplify arithmetic 1/A*B → B/A
+    optimize("1/FIELD_INTEGER*4", "4/FIELD_INTEGER");
   }
 
   @Test
@@ -1402,8 +1427,12 @@ public class OperatorTest extends ExpressionTest {
 
     optimize("0/0", "0/0");
     optimize("FIELD_INTEGER/4");
+    
+    // Simplify arithmetic A/1 → A
     optimize("FIELD_INTEGER/1", "FIELD_INTEGER");
     optimize("FIELD_INTEGER/1.0", "FIELD_INTEGER");
+    
+    // Simplify arithmetic (-A)/(-B) → A/B
     optimize("-FIELD_NUMBER/-FIELD_INTEGER", "FIELD_NUMBER/FIELD_INTEGER");
   }
 

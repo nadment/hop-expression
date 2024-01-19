@@ -81,6 +81,11 @@ public class MultiplyOperator extends Operator {
           right.asCall().getOperand(0));
     }
 
+    // Simplify arithmetic A*(1/B) → A/B
+    if (right.is(Operators.DIVIDE) && Literal.ONE.equals(right.asCall().getOperand(0)) ) {
+      return new Call(Operators.DIVIDE, left, right.asCall().getOperand(1));
+    }
+    
     // Simplify arithmetic A*A → SQUARE(A)
     if (left.equals(right)) {
       return new Call(SquareFunction.INSTANCE, left);
