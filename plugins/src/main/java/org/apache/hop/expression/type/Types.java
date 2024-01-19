@@ -458,16 +458,16 @@ public class Types {
   // }
 
 
-  public static IValueMeta createValueMeta(final String name, final TypeId type) {
+  public static IValueMeta createValueMeta(final String name, final TypeId typeId) {
 
     if (name == null) {
       throw new IllegalArgumentException("Name must not be null");
     }
-    if (type == null) {
-      throw new IllegalArgumentException("TypeName must not be null");
+    if (typeId == null) {
+      throw new IllegalArgumentException("TypeId must not be null");
     }
 
-    switch (type) {
+    switch (typeId) {
       case BOOLEAN:
         return new ValueMetaBoolean(name);
       case INTEGER:

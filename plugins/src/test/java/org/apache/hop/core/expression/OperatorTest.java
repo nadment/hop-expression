@@ -1575,6 +1575,10 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE OR FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE");
     optimize("FIELD_INTEGER=2 OR 2=FIELD_INTEGER", "2=FIELD_INTEGER");
 
+
+    // Check if simplify doesn't create infinity loop with same operator if order change 
+    optimize("FIELD_STRING LIKE 'AB%' OR FIELD_STRING LIKE 'BC%' OR FIELD_STRING LIKE '%DE' ", "ENDSWITH(FIELD_STRING,'DE') OR STARTSWITH(FIELD_STRING,'AB') OR STARTSWITH(FIELD_STRING,'BC')");
+
     // Simplify x < a OR x = a → x <= a
     optimize("FIELD_INTEGER<1 OR FIELD_INTEGER=1", "1>=FIELD_INTEGER");
     // Simplify x < a OR x != a → x != a
@@ -1596,9 +1600,9 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_INTEGER<>10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
     optimize("FIELD_INTEGER!=10 OR FIELD_INTEGER IS NOT NULL", "FIELD_INTEGER IS NOT NULL");
     // Simplify X=1 OR X=2 OR X=3 → X IN (1,2,3) order is not important
-    optimize("FIELD_INTEGER=1 OR FIELD_INTEGER=2 OR FIELD_INTEGER=3", "FIELD_INTEGER IN (3,2,1)");
+    optimize("FIELD_INTEGER=1 OR FIELD_INTEGER=2 OR FIELD_INTEGER=3", "FIELD_INTEGER IN (3,1,2)");
     optimize("FIELD_INTEGER=1 OR FIELD_INTEGER in (2,3)", "FIELD_INTEGER IN (1,2,3)");
-    optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (3,4,1,2)");
+    optimize("FIELD_INTEGER IN (1,2) OR FIELD_INTEGER IN (3,4)", "FIELD_INTEGER IN (1,2,3,4)");
     optimize("FIELD_STRING='1' OR NULL_INTEGER in (1,2)",
         "'1'=FIELD_STRING OR NULL_INTEGER IN (1,2)");
   }
@@ -1647,6 +1651,9 @@ public class OperatorTest extends ExpressionTest {
     optimize("(FIELD_INTEGER*2>1) AND FIELD_BOOLEAN_TRUE AND (2*FIELD_INTEGER>1)",
         "FIELD_BOOLEAN_TRUE AND 1<2*FIELD_INTEGER");
 
+    // Check if simplify doesn't create infinity loop with same operator if order change 
+    optimize("FIELD_STRING LIKE 'AB%' AND FIELD_STRING LIKE 'BC%' AND FIELD_STRING LIKE '%DE' ", "ENDSWITH(FIELD_STRING,'DE') AND STARTSWITH(FIELD_STRING,'AB') AND STARTSWITH(FIELD_STRING,'BC')");
+    
     // Simplify IS NULL
     optimizeFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER>5");
     optimizeFalse("FIELD_INTEGER IS NULL AND FIELD_INTEGER=5");
@@ -1657,7 +1664,7 @@ public class OperatorTest extends ExpressionTest {
         "5<FIELD_INTEGER");
 
     // Simplify X<>1 AND X<>2 → X NOT IN (1,2)
-    optimize("FIELD_INTEGER<>1 AND FIELD_INTEGER<>2", "FIELD_INTEGER NOT IN (2,1)");
+    optimize("FIELD_INTEGER<>1 AND FIELD_INTEGER<>2", "FIELD_INTEGER NOT IN (1,2)");
 
     // Simplify X<>1 AND X NOT IN (2,3) → X NOT IN (1,2,3)
     optimize("FIELD_INTEGER<>1 AND FIELD_INTEGER NOT IN (2,3)", "FIELD_INTEGER NOT IN (1,2,3)");
