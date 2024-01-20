@@ -61,9 +61,10 @@ end
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` `LIKE` `ILIKE` `SIMILAR TO`
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` 
 * Concatenate operator `||`
-* Conditional operator `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
+* Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
+* Pattern matching operators `LIKE` `ILIKE` `SIMILAR TO`
 * Cast operator  `::` or `CAST`(<value> `AS` <type> `FORMAT` <format>)
 * Over 200 scalar and aggregate https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[functions] (conditional, mathematical, trigonometry, conversion, bitwise...).
 * User Defined Function (UDF) support has metadata
@@ -109,7 +110,7 @@ public class Levenshtein extends Function {
 
 ### System Requirements
 
-https://hop.apache.org[Apache Hop] 2.2 or above.
+https://hop.apache.org[Apache Hop] 2.7 or above.
 Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
