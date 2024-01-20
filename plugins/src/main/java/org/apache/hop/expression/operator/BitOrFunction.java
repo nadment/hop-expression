@@ -16,13 +16,19 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionComparator;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.io.StringWriter;
+import java.util.PriorityQueue;
 
 /**
  * Bitwise OR operator.
@@ -42,6 +48,32 @@ public class BitOrFunction extends Function {
         OperatorCategory.BITWISE, "/docs/bit_or.html");
   }
 
+  @Override
+  public boolean isSymmetrical() {
+    return true;
+  }
+  
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Reorder chained symmetric operator 
+    PriorityQueue<IExpression> operands = new PriorityQueue<>(new ExpressionComparator());
+    operands.addAll(this.getChainedOperands(call, true));
+    IExpression operand = operands.poll();
+    while (!operands.isEmpty()) {      
+      call = new Call(this, operand, operands.poll());
+      call.inferReturnType();
+      operand = call;
+    }
+    call = operand.asCall();
+    
+    // Simplify 0|A → A
+    if (Literal.ZERO.equals(call.getOperand(0))) {
+      return call.getOperand(1);
+    }
+    
+    return call;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Long left = operands[0].getValue(Long.class);

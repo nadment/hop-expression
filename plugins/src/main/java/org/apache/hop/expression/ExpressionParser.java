@@ -174,7 +174,7 @@ public class ExpressionParser {
   private IExpression parseLogicalOr() throws ExpressionException {
     IExpression expression = this.parseLogicalAnd();
     while (isThenNext(Id.OR)) {
-      expression = new Call(Operators.BOOLOR, expression, parseLogicalAnd());
+      expression = new Call(getPosition(), Operators.BOOLOR, expression, parseLogicalAnd());
     }
 
     return expression;
@@ -191,7 +191,7 @@ public class ExpressionParser {
   private IExpression parseLogicalAnd() throws ExpressionException {
     IExpression expression = this.parseLogicalNot();
     while (isThenNext(Id.AND)) {
-      expression = new Call(Operators.BOOLAND, expression, parseLogicalNot());
+      expression = new Call(getPosition(), Operators.BOOLAND, expression, parseLogicalNot());
     }
 
     return expression;
@@ -205,10 +205,10 @@ public class ExpressionParser {
    */
   private IExpression parseLogicalNot() throws ExpressionException {
     if (isThenNext(Id.NOT)) {
-      return new Call(Operators.BOOLNOT, parseLogicalNot());
+      return new Call(getPosition(), Operators.BOOLNOT, parseLogicalNot());
     }
 
-    return this.parseIs();
+    return this.parseConditional();
   }
 
   /**
@@ -218,7 +218,7 @@ public class ExpressionParser {
    * RelationalExpression IS [NOT] TRUE|FALSE|NULL
    * RelationalExpression IS [NOT] DISTINCT FROM RelationalExpression
    */
-  private IExpression parseIs() throws ExpressionException {
+  private IExpression parseConditional() throws ExpressionException {
     IExpression expression = this.parseComparison();
     if (isThenNext(Id.IS)) {
       boolean not = false;
@@ -231,11 +231,11 @@ public class ExpressionParser {
       Token token = next();
       switch (token.id()) {
         case TRUE:
-          return new Call((not) ? Operators.IS_NOT_TRUE : Operators.IS_TRUE, expression);
+          return new Call(start, (not) ? Operators.IS_NOT_TRUE : Operators.IS_TRUE, expression);
         case FALSE:
-          return new Call((not) ? Operators.IS_NOT_FALSE : Operators.IS_FALSE, expression);
+          return new Call(start, (not) ? Operators.IS_NOT_FALSE : Operators.IS_FALSE, expression);
         case NULL:
-          return new Call((not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
+          return new Call(start, (not) ? Operators.IS_NOT_NULL : Operators.IS_NULL, expression);
         case DISTINCT:
           if (isThenNext(Id.FROM)) {
             return new Call(start,
@@ -254,10 +254,10 @@ public class ExpressionParser {
    * Parse IN, LIKE, BETWEEN, SIMILAR TO expression
    *
    * <p>
-   * AdditiveExpression ( [NOT] | InClause | BetweenClause | LikeClause AdditiveExpression)
+   * BitwiseOrExpression ( [NOT] | InClause | BetweenClause | LikeClause BitwiseOrExpression)
    */
   private IExpression parseRelational() throws ExpressionException {
-    IExpression expression = this.parseAdditive();
+    IExpression expression = this.parseBitwiseOr();
 
     // Special case NOT before operation: <exp> [NOT] LIKE|ILIKE|IN|BETWEEN|SIMILAR <primaryExp>
     boolean not = false;
@@ -266,25 +266,25 @@ public class ExpressionParser {
     }
 
     if (isThenNext(Id.LIKE)) {
-      IExpression pattern = this.parseAdditive();
+      IExpression pattern = this.parseBitwiseOr();
 
       if (isThenNext(Id.ESCAPE)) {
         IExpression escape = this.parseLiteralString(next());
-        expression = new Call(Operators.LIKE, expression, pattern, escape);
+        expression = new Call(getPosition(), Operators.LIKE, expression, pattern, escape);
       } else {
-        expression = new Call(Operators.LIKE, expression, pattern);
+        expression = new Call(getPosition(), Operators.LIKE, expression, pattern);
       }
     } else if (isThenNext(Id.ILIKE)) {
-      IExpression pattern = this.parseAdditive();
+      IExpression pattern = this.parseBitwiseOr();
 
       if (isThenNext(Id.ESCAPE)) {
-        IExpression escape = this.parseAdditive();
-        expression = new Call(Operators.ILIKE, expression, pattern, escape);
+        IExpression escape = this.parseBitwiseOr();
+        expression = new Call(getPosition(), Operators.ILIKE, expression, pattern, escape);
       } else {
-        expression = new Call(Operators.ILIKE, expression, pattern);
+        expression = new Call(getPosition(), Operators.ILIKE, expression, pattern);
       }
     } else if (isThenNext(Id.IN)) {
-       return new Call(not ? Operators.NOT_IN:Operators.IN, expression, this.parseTuple());
+      return new Call(getPosition(), not ? Operators.NOT_IN : Operators.IN, expression, this.parseTuple());
     } else if (isThenNext(Id.BETWEEN)) {
       Operator operator = Operators.BETWEEN_ASYMMETRIC;
       if (isThenNext(Id.ASYMMETRIC)) {
@@ -293,19 +293,20 @@ public class ExpressionParser {
         operator = Operators.BETWEEN_SYMMETRIC;
       }
 
-      IExpression start = this.parseAdditive();
+      IExpression start = this.parseBitwiseOr();
       if (isNotThenNext(Id.AND)) {
         throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
             Id.BETWEEN);
       }
-      IExpression end = this.parseAdditive();
+      IExpression end = this.parseBitwiseOr();
 
-      expression = new Call(operator, expression, start, end);
+      expression = new Call(getPosition(), operator, expression, start, end);
     }
 
     if (isThenNext(Id.SIMILAR)) {
       if (isThenNext(Id.TO)) {
-        return new Call(not ? Operators.NOT_SIMILAR_TO:Operators.SIMILAR_TO, expression, parseAdditive());
+        return new Call(getPosition(), not ? Operators.NOT_SIMILAR_TO : Operators.SIMILAR_TO, expression,
+            parseBitwiseOr());
       } else
         throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD,
             Id.SIMILAR);
@@ -354,12 +355,11 @@ public class ExpressionParser {
     return this.parseUnary();
   }
 
-  /** UnaryExpression ( & UnaryExpression)* */
+  /** ConcatenationExpression ( & ConcatenationExpression)* */
   private IExpression parseBitwiseAnd() throws ExpressionException {
-    IExpression expression = this.parseFactor();
-    int start = this.getPosition();
-    if (isThenNext(Id.BITWISE_AND)) {
-      return new Call(start, Operators.BITAND, expression, this.parseFactor());
+    IExpression expression = this.parseConcatenation();    
+    while (isThenNext(Id.BITWISE_AND)) {
+      expression = new Call(getPosition(), Operators.BITAND, expression, parseConcatenation());
     }
     return expression;
   }
@@ -367,9 +367,8 @@ public class ExpressionParser {
   /** BitwiseXorExpression ( | BitwiseXorExpression)* */
   private IExpression parseBitwiseOr() throws ExpressionException {
     IExpression expression = this.parseBitwiseXor();
-    int start = this.getPosition();
-    if (isThenNext(Id.BITWISE_OR)) {
-      return new Call(start, Operators.BITOR, expression, this.parseBitwiseXor());
+    while (isThenNext(Id.BITWISE_OR)) {
+      expression = new Call(getPosition(), Operators.BITOR, expression, parseBitwiseXor());
     }
     return expression;
   }
@@ -377,10 +376,8 @@ public class ExpressionParser {
   /** BitwiseAndExpression ( ^ BitwiseAndExpression)* */
   private IExpression parseBitwiseXor() throws ExpressionException {
     IExpression expression = this.parseBitwiseAnd();
-
-    int start = this.getPosition();
-    if (isThenNext(Id.BITWISE_XOR)) {
-      return new Call(start, Operators.BITXOR, expression, this.parseBitwiseAnd());
+    while (isThenNext(Id.BITWISE_XOR)) {
+      expression = new Call(getPosition(), Operators.BITXOR, expression, this.parseBitwiseAnd());
     }
     return expression;
   }
@@ -521,23 +518,34 @@ public class ExpressionParser {
   }
 
   /**
-   * BitwiseOrExpression ( (+ | - | ||) BitwiseOrExpression )*
+   * FactorExpression ( (+ | - ) FactorExpression )*
    **/
   private IExpression parseAdditive() throws ExpressionException {
-    IExpression expression = this.parseBitwiseOr();
+    IExpression expression = this.parseFactor();
     while (hasNext()) {
       int start = this.getPosition();
 
       if (isThenNext(Id.PLUS)) {
-        expression = new Call(start, Operators.ADD, expression, this.parseBitwiseOr());
+        expression = new Call(start, Operators.ADD, expression, this.parseFactor());
       } else if (isThenNext(Id.MINUS)) {
-        expression = new Call(start, Operators.SUBTRACT, expression, this.parseBitwiseOr());
+        expression = new Call(start, Operators.SUBTRACT, expression, this.parseFactor());
       } else if (isThenNext(Id.CONCAT)) {
-        expression = new Call(start, Operators.CONCAT, expression, this.parseBitwiseOr());
+        expression = new Call(start, Operators.CONCAT, expression, this.parseFactor());
       } else
         break;
     }
 
+    return expression;
+  }
+
+  /**
+   * AdditiveExpression ( || AdditiveExpression )*
+   **/
+  private IExpression parseConcatenation() throws ExpressionException {
+    IExpression expression = this.parseAdditive();
+    while (isThenNext(Id.CONCAT)) {
+        expression = new Call(getPosition(), Operators.CONCAT, expression, this.parseAdditive());
+    }
     return expression;
   }
 
@@ -717,7 +725,7 @@ public class ExpressionParser {
 
     do {
       try {
-        list.add(parseAdditive());
+        list.add(parseLogicalOr());
       } catch (ExpressionException e) {
         throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.IN);
       }
@@ -782,8 +790,8 @@ public class ExpressionParser {
       throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.CASE);
     }
 
-    return new Call(start, simple ? Operators.CASE_SIMPLE:Operators.CASE_SEARCH, valueExpression, new Tuple(whenList),
-        new Tuple(thenList), elseExpression);
+    return new Call(start, simple ? Operators.CASE_SIMPLE : Operators.CASE_SEARCH, valueExpression,
+        new Tuple(whenList), new Tuple(thenList), elseExpression);
   }
 
   /**
@@ -818,24 +826,24 @@ public class ExpressionParser {
   /**
    * Parse POSITION(expression IN expression)
    */
-  private IExpression parseFunctionPosition(Token token, final Function function)
+  private IExpression parseFunctionPosition(final Token token, final Function function)
       throws ExpressionException {
 
     List<IExpression> operands = new ArrayList<>();
-    operands.add(this.parseAdditive());
+    operands.add(this.parseConcatenation());
 
     if (isNotThenNext(Id.IN)) {
       throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_FUNCTION,
           function.getName());
     }
 
-    operands.add(this.parseAdditive());
+    operands.add(this.parseConcatenation());
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionException(token.end(), ErrorCode.MISSING_LEFT_PARENTHESIS);
     }
 
-    return new Call(function, operands);
+    return new Call(token.start(), function, operands);
   }
 
   /**
@@ -924,7 +932,7 @@ public class ExpressionParser {
           function.getName());
     }
 
-    operands.add(this.parseAdditive());
+    operands.add(this.parseLogicalOr());
 
     if (isNotThenNext(Id.RPARENTHESIS)) {
       throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_PARENTHESIS);
@@ -1160,7 +1168,7 @@ public class ExpressionParser {
 
       if (isThenNext(Id.LPARENTHESIS)) {
         boolean scaleFound = false;
-        
+
         // Precision
         precision = Integer.parseInt(this.next().text());
 
@@ -1187,8 +1195,8 @@ public class ExpressionParser {
           return Types.BOOLEAN;
         case INTEGER:
           return IntegerType.of(precision);
-        case NUMBER:         
-            return NumberType.of(precision, scale);
+        case NUMBER:
+          return NumberType.of(precision, scale);
         case STRING:
           return StringType.of(precision);
         case BINARY:

@@ -1423,6 +1423,7 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER/1");
     evalNull("NULL_INTEGER/0");
     evalNull("1/NULL_INTEGER");
+        
     evalFails("40/0");
 
     optimize("0/0", "0/0");
@@ -1465,7 +1466,7 @@ public class OperatorTest extends ExpressionTest {
     evalFails("~");
     evalFails("~ ");
 
-    // Alias
+    // Alias function
     evalEquals("BIT_NOT(1)", -2L);
 
     optimize("~FIELD_INTEGER");
@@ -1474,20 +1475,22 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   public void BitAnd() throws Exception {
-    evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER);
     evalEquals("3 & 2", 2L);
     evalEquals("100 & 2", 0L);
+    evalEquals("100 & 2 & 1", 0L);
     evalNull("100 & NULL_INTEGER").returnType(Types.INTEGER);
     evalNull("NULL_INTEGER & 100").returnType(Types.INTEGER);
     evalFails("100&");
     evalFails("100 & ");
 
+    // Alias function
+    evalEquals("BIT_AND(3,2)", 2L).returnType(Types.INTEGER);
+    
     optimize("FIELD_INTEGER&4");
   }
 
   @Test
   public void BitOr() throws Exception {
-    evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER);
     evalEquals("100 | 2", 102L);
     evalEquals("3 | 2", 3L);
     evalNull("100 | NULL_INTEGER").returnType(Types.INTEGER);
@@ -1495,7 +1498,13 @@ public class OperatorTest extends ExpressionTest {
     evalFails("3|");
     evalFails("3 | ");
 
-    optimize("FIELD_INTEGER|4");
+    // Alias function
+    evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER);
+    
+    optimize("FIELD_INTEGER|4");    
+    optimize("1|FIELD_INTEGER|4","5|FIELD_INTEGER");
+    optimize("FIELD_INTEGER|0","FIELD_INTEGER");
+    optimize("0|FIELD_INTEGER","FIELD_INTEGER");
   }
 
   @Test

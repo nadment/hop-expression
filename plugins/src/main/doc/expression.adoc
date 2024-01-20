@@ -114,9 +114,6 @@ Literals can be either positive numbers or negative numbers and contain decimals
 The precision of a number is the total count of significant digits in the whole number, that is, the number of digits to both sides of the decimal point. The scale of a number is the count of decimal digits in the fractional part, to the right of the decimal point.
 The maximum supported precision is 38.
 
-In addition, scientific notation can be used.
-Can have embedded underscore `_` characters to improve readability.
-
 ----
 24.7
 +0.5
@@ -127,8 +124,11 @@ Can have embedded underscore `_` characters to improve readability.
 1_000.123e-1_0
 ----
 
-NOTE: The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
-NOTE: Leading, trailing and double underscores will produce an error.
+NOTE:
+* In addition, scientific notation can be used.
+* The decimal point must be represented by a period. A comma is not recognized as a valid decimal point.
+* Can have embedded underscore `_` characters to improve readability (Leading, trailing and double underscores will produce an error).
+* There is no literal representation of NaN or infinity.
 
 === Binary
 
@@ -271,23 +271,23 @@ The operator precedence and associativity, highest to lowest.
 |right|+, -|Positive, Negative
 |right|~|Bitwise NOT
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/multiply.adoc[*], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/divide.adoc[/], %|Multiplication, Division, Modulus
-|left|&|Bitwise AND
-|left|^|Bitwise exclusive OR
-|left|\||Bitwise inclusive OR 
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add.adoc[+], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/subtract.adoc[-]|Addition, Subtraction
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Set membership
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE]|Pattern matching
-|left|=, >, <, >=, <=, <>, != |Comparison operators
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_and.adoc[&]|Bitwise AND
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_xor.adoc[&circ;]|Bitwise exclusive OR
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_or.adoc[\|]|Bitwise inclusive OR 
 |left|
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-null.adoc[IS [NOT\] NULL],
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-true.adoc[IS [NOT\] TRUE],
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-false.adoc[IS [NOT\] FALSE],
-https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-distinct-from.adoc[IS [NOT\] DISTINCT FROM]|Conditional operators
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-null.adoc[IS NULL],
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-true.adoc[IS TRUE],
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-false.adoc[IS FALSE],
+https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-distinct-from.adoc[IS DISTINCT FROM]|Conditional
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/in.adoc[IN]|Membership
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/between.adoc[BETWEEN]|Range containment
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/like.adoc[LIKE], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ilike.adoc[ILIKE],  https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/similarto.adoc[SIMILAR TO]|Pattern matching
+|left|=, >, <, >=, <=, <>, != |Comparison
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[AND]|Conjunction
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Inclusion 
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[AND]|Logical conjunction
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Logical inclusion 
 |===
 
 NOTE: An operator on higher levels is evaluated before an operator on a lower level. You can enclose an expression in parentheses to force precedence or clarify precedence, for example, (5 + 2) * 3.
