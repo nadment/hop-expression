@@ -746,8 +746,8 @@ public class ExpressionParser {
 
   /** Case When Then Else End ) */
   private IExpression parseCase() throws ExpressionException {
-    IExpression valueExpression = Literal.UNKNOWN;
-    IExpression elseExpression = Literal.UNKNOWN;
+    IExpression valueExpression = Literal.NULL;
+    IExpression elseExpression = Literal.NULL;
     List<IExpression> whenList = new ArrayList<>();
     List<IExpression> thenList = new ArrayList<>();
 

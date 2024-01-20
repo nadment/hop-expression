@@ -113,7 +113,7 @@ public class ExpressionContext extends Variables implements IExpressionContext {
       expression = compiler.compile(expression);
      
       // Unknown are not expected here
-      if (expression.getType().is(TypeId.UNKNOWN)) {
+      if (!expression.isNull() && expression.getType().is(TypeId.UNKNOWN)) {
         throw new ExpressionException(0, ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, source);
       }
       

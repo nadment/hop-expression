@@ -219,7 +219,7 @@ public class Call implements IExpression {
   }
 
   @Override
-  public void unparse(StringWriter writer) {
+  public void unparse(final StringWriter writer) {
     operator.unparse(writer, operands);
   }
 

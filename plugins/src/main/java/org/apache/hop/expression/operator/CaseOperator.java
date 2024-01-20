@@ -119,8 +119,7 @@ public class CaseOperator extends Operator {
       //
       // When a searched CASE expression nests another CASE expression in its ELSE clause, that can
       // be flattened into the top level CASE expression.
-      if (elseTerm.is(Operators.CASE_SEARCH)
-          && elseTerm.asCall().getOperand(0) == Literal.UNKNOWN) {
+      if (elseTerm.is(Operators.CASE_SEARCH)) {
         List<IExpression> whenOperands = new ArrayList<>();
         whenTerm.forEach(whenOperands::add);
         elseTerm.asCall().getOperand(1).asTuple().forEach(whenOperands::add);
@@ -129,7 +128,7 @@ public class CaseOperator extends Operator {
         thenTerm.forEach(thenOperands::add);
         elseTerm.asCall().getOperand(2).asTuple().forEach(thenOperands::add);
 
-        return new Call(Operators.CASE_SEARCH, Literal.UNKNOWN, new Tuple(whenOperands),
+        return new Call(Operators.CASE_SEARCH, Literal.NULL, new Tuple(whenOperands),
             new Tuple(thenOperands), elseTerm.asCall().getOperand(3));
       }
 

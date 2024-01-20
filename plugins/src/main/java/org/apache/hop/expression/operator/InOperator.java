@@ -30,6 +30,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -66,8 +67,9 @@ public class InOperator extends Operator {
   @Override
   public boolean checkOperandTypes(final Call call) {
     Type type = call.getOperand(0).getType();
+    if ( type.is(TypeId.UNKNOWN)) return false;
+    
     Tuple tuple = call.getOperand(1).asTuple();
-
     for (IExpression operand : tuple) {
       if (!type.isCoercible(operand.getType())) {
         return false;

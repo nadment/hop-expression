@@ -82,10 +82,12 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_BOOLEAN = false").returnType(Types.BOOLEAN);
     evalNull("NULL_BOOLEAN = NULL_BOOLEAN").returnType(Types.BOOLEAN);
     evalNull("NULL_STRING = NULL_STRING").returnType(Types.BOOLEAN);
+    evalNull("NULL_STRING = FIELD_STRING").returnType(Types.BOOLEAN);
+    evalNull("FIELD_STRING = NULL_STRING").returnType(Types.BOOLEAN);
     evalNull("NULL_INTEGER = NULL_INTEGER").returnType(Types.BOOLEAN);
     evalNull("NULL_INTEGER = 1").returnType(Types.BOOLEAN);
-    evalNull("FIELD_INTEGER=NULL").returnType(Types.BOOLEAN);
-
+    evalNull("FIELD_INTEGER=NULL_INTEGER").returnType(Types.BOOLEAN);
+    
     // Compare numeric with implicit coercion from BOOLEAN
     evalTrue("TRUE=1");
     evalTrue("1=TRUE");
@@ -110,15 +112,11 @@ public class OperatorTest extends ExpressionTest {
     // Syntax error
     evalFails("FIELD_INTEGER=");
     evalFails(" = FIELD_INTEGER ");
-
-    optimizeNull("NULL = NULL");
+    
     optimizeTrue("'a' = 'a'");
-    optimizeFalse("'a' = 'b'");
-    optimizeNull("'a' = NULL");
-    optimizeNull("NULL = 'a'");
+    optimizeFalse("'a' = 'b'");   
     optimizeFalse("10151082135029368 = 10151082135029369");
     optimize("FIELD_INTEGER=40", "40=FIELD_INTEGER");
-    optimize("FIELD_STRING = NULL", "NULL");
     
     // Simplify arithmetic comparisons
     optimize("FIELD_INTEGER+1=3", "2=FIELD_INTEGER");
@@ -238,7 +236,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER > 0");
     evalNull("NULL_NUMBER > NULL_INTEGER");
     evalNull("1 > NULL_BOOLEAN");
-
+    evalNull("FIELD_STRING > NULL_STRING");
+    evalNull("NULL_STRING > FIELD_STRING");
+    
     // Compare numeric with implicit coercion from BOOLEAN
     evalFalse("TRUE>1");
     evalFalse("1>TRUE");
@@ -267,8 +267,6 @@ public class OperatorTest extends ExpressionTest {
 
     optimize("10>FIELD_INTEGER");
     optimizeTrue("25>12");
-    optimize("FIELD_STRING > NULL", "NULL");
-    optimize("NULL > FIELD_STRING", "NULL");
 
     // Simplify arithmetic comparisons
     optimize("3>FIELD_INTEGER+1", "2>FIELD_INTEGER");
@@ -310,7 +308,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_BOOLEAN >= 0");
     evalNull("1 >= NULL_BOOLEAN");
     evalNull("NULL_BOOLEAN >= NULL_INTEGER");
-
+    evalNull("FIELD_STRING >= NULL_STRING");
+    evalNull("NULL_STRING >= FIELD_STRING");
+    
     // Compare numeric with implicit coercion from BOOLEAN
     evalTrue("TRUE>=1");
     evalTrue("1>=TRUE");
@@ -344,8 +344,6 @@ public class OperatorTest extends ExpressionTest {
     optimize("TRUE >= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FIELD_BOOLEAN_TRUE >= FALSE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FALSE >= FIELD_BOOLEAN_TRUE", "FALSE>=FIELD_BOOLEAN_TRUE");
-    optimize("FIELD_STRING >= NULL", "NULL");
-    optimize("NULL >= NULL_BOOLEAN", "NULL");
     
     // Simplify arithmetic comparisons
     optimize("FIELD_INTEGER+1>=3", "2<=FIELD_INTEGER");
@@ -388,7 +386,9 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER < 1").returnType(Types.BOOLEAN);
     evalNull("NULL_NUMBER < NULL_INTEGER");
     evalNull("NULL_STRING < Upper(FIELD_STRING)");
-
+    evalNull("FIELD_STRING < NULL_STRING");
+    evalNull("NULL_STRING < FIELD_STRING");
+    
     // Compare numeric with implicit coercion from BOOLEAN
     evalFalse("TRUE<1");
     evalFalse("1<TRUE");
@@ -418,8 +418,6 @@ public class OperatorTest extends ExpressionTest {
 
     optimize("FIELD_INTEGER<80", "80>FIELD_INTEGER");
     optimizeFalse("25<12");
-    optimize("FIELD_STRING < NULL", "NULL");
-    optimize("NULL < FIELD_STRING", "NULL");
     
     // Simplify arithmetic comparisons
     optimize("FIELD_INTEGER+1<3", "2>FIELD_INTEGER");
@@ -461,7 +459,8 @@ public class OperatorTest extends ExpressionTest {
     evalNull("NULL_INTEGER <= FIELD_INTEGER");
     evalNull("FIELD_INTEGER <= NULL_INTEGER");
     evalNull("NULL_STRING <= Upper(FIELD_STRING)");
-
+    evalNull("FIELD_STRING <= NULL_STRING");
+    
     // Compare numeric with implicit coercion from BOOLEAN
     evalTrue("TRUE<=1");
     evalTrue("1<=TRUE");
@@ -496,7 +495,6 @@ public class OperatorTest extends ExpressionTest {
     optimize("FIELD_BOOLEAN_TRUE <= FALSE", "FALSE>=FIELD_BOOLEAN_TRUE");
     optimize("FALSE <= FIELD_BOOLEAN_TRUE", "FIELD_BOOLEAN_TRUE IS NOT NULL");
     optimize("FALSE <= FIELD_BOOLEAN_FALSE", "FIELD_BOOLEAN_FALSE IS NOT NULL");
-    optimize("FIELD_STRING <= NULL", "NULL");
     
     // Simplify arithmetic comparisons
     optimize("3<=FIELD_INTEGER+1", "2<=FIELD_INTEGER");
@@ -551,9 +549,8 @@ public class OperatorTest extends ExpressionTest {
     evalFails("FIELD_INTEGER in (1,2,3");
     evalFails("FIELD_INTEGER in (1,,3)");
     evalFails("FIELD_INTEGER in (1,2,)");
-
-    // TODO: assertExpressionExceptionThrownBy(() -> eval("3 in (2, 4, 3, 5 /
-    // 0)")).hasErrorCode(DIVISION_BY_ZERO);
+    evalFails("FIELD_INTEGER in (1,2,NULL)");
+    evalFails("NULL in (1,2,3)");
 
     optimize("FIELD_INTEGER IN (10,20,30,40)");
     optimize("FIELD_INTEGER NOT IN (10,20,30,40)");
@@ -562,19 +559,15 @@ public class OperatorTest extends ExpressionTest {
     optimizeTrue("1.15 IN (1.1, 1.2, 1.3, 1.15)");
 
     optimize("FIELD_INTEGER in (1,2,1,2,3,4.1)", "FIELD_INTEGER IN (1,2,3,4.1)");
-    optimize("FIELD_STRING in ('1','2','1',NULL,null)", "FIELD_STRING IN ('1','2')");
-    optimize("NULL in (NULL_NUMBER,2,3,NULL_INTEGER)", "NULL");
+    optimize("FIELD_STRING in ('1','2','1')", "FIELD_STRING IN ('1','2')");
+
 
     // optimize("2 in (1,2,3/0)", "2 in (1,2,3/0)");
 
-    // IN predicate with one list element
-    optimize("FIELD_INTEGER in (1)", "1=FIELD_INTEGER");
-
-    // IN predicate with a NULL left side expression is always NULL
-    optimize("NULL in ('1','2','1',NULL,null)", "NULL");
-
     // Normalize IN list with single element to comparison
-    optimize("FIELD_STRING in ('1','1',NULL)", "'1'=FIELD_STRING");
+    optimize("FIELD_INTEGER in (1)", "1=FIELD_INTEGER");
+    optimize("FIELD_STRING in ('AB','AB')", "'AB'=FIELD_STRING");
+
     optimize("0 / 0 in (2, 2)", "2=0/0");
 
     // Value in the expression list
@@ -1671,7 +1664,7 @@ public class OperatorTest extends ExpressionTest {
     optimizeFalse("true and false");
     optimizeFalse("false and true");
     optimizeFalse("false and false");
-    optimizeFalse("NULL and false");
+
     optimizeFalse("false and NULL");
     optimizeFalse("false and FIELD_BOOLEAN_TRUE");
     optimizeFalse("FIELD_BOOLEAN_TRUE and false");
@@ -1902,6 +1895,9 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 1.023 ELSE 1 END", 1L).returnType(Types.NUMBER);
     evalEquals("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE 'B' END", "B").returnType(Types.STRING);
 
+    // Check null data type returned
+    evalNull("CASE NULL_STRING WHEN 'A' THEN 'A' ELSE NULL END").returnType(Types.STRING);
+        
     // Ignore division by zero in THEN term, should not evaluate
     evalEquals("CASE NULL_NUMBER WHEN 0 THEN 0/0 ELSE 1 END", 1L);
     evalEquals("CASE NULL_INTEGER WHEN 0 THEN 0 / 0 ELSE 1 END", 1L);

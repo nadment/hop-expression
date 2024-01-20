@@ -31,9 +31,9 @@ public class TupleTest extends ExpressionTest {
   @Test
   public void test() throws Exception {
     Tuple tuple0 = new Tuple();
-    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.UNKNOWN);    
-    Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.UNKNOWN);
-    Tuple tuple3 = new Tuple(Literal.UNKNOWN, Literal.UNKNOWN, Literal.UNKNOWN);
+    Tuple tuple1 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);    
+    Tuple tuple2 = new Tuple(Literal.ONE, Literal.ZERO, Literal.NULL);
+    Tuple tuple3 = new Tuple(Literal.NULL, Literal.NULL, Literal.NULL);
     Tuple tuple4 = new Tuple(Literal.of("A"), new Identifier("B"));
     
     assertEquals(Kind.TUPLE, tuple1.getKind());    
@@ -44,7 +44,7 @@ public class TupleTest extends ExpressionTest {
     assertTrue(tuple1.isConstant());
     assertFalse(tuple4.isConstant());
     assertEquals(tuple1, tuple2);
-    assertEquals(new Tuple(Literal.TRUE, Literal.FALSE, Literal.UNKNOWN),  new Tuple(Literal.TRUE, Literal.FALSE, Literal.UNKNOWN));
+    assertEquals(new Tuple(Literal.TRUE, Literal.FALSE, Literal.NULL),  new Tuple(Literal.TRUE, Literal.FALSE, Literal.NULL));
     assertEquals(new Tuple(Literal.of("A"), Literal.of("B")),  new Tuple(Literal.of("A"), Literal.of("B")));
     assertNotEquals(tuple1, null);
     assertNotEquals(tuple1, tuple3);

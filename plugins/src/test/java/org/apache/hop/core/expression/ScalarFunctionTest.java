@@ -325,7 +325,7 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     evalNull("Decode(9,1,'one',2,'two',NULL_INTEGER,'<NULL>')");
     evalNull("Decode(9,1,'one',9,NULL,NULL_INTEGER,'<NULL>')");
-    evalNull("Decode(1,1,NULL,9,'9',NULL_INTEGER,'<NULL>')");
+    evalNull("Decode(1,1,NULL_STRING,9,'9',NULL_INTEGER,'<NULL>')");
 
     evalFails("Decode()");
     evalFails("Decode(1)");

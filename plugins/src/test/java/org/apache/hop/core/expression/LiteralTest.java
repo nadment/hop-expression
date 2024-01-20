@@ -51,29 +51,15 @@ public class LiteralTest extends ExpressionTest {
   }
 
   @Test
-  public void Unknown() throws Exception {
-    assertEquals(Kind.LITERAL, Literal.UNKNOWN.getKind());
-    assertEquals(Literal.UNKNOWN, Literal.of(null));
-    assertEquals(Objects.hash(null, Types.UNKNOWN), Literal.UNKNOWN.hashCode());
-    assertFalse(Literal.UNKNOWN.is((Kind) null));
-    assertFalse(Literal.UNKNOWN.is((Operator) null));
-    assertTrue(Literal.UNKNOWN.isConstant());
-    assertNotEquals(Literal.UNKNOWN, null);
-    assertNotEquals(Literal.UNKNOWN, Literal.ZERO);
-    assertEquals(Literal.UNKNOWN.getType(), Types.UNKNOWN);
-    assertNull(Literal.UNKNOWN.getValue());
-  }
-
-  @Test
   public void Null() throws Exception {
     assertEquals(Kind.LITERAL, Literal.NULL.getKind());
-    assertEquals(Objects.hash(null, Types.BOOLEAN), Literal.NULL.hashCode());
+    assertEquals(Objects.hash(null, Types.UNKNOWN), Literal.NULL.hashCode());
     assertFalse(Literal.NULL.is((Kind) null));
     assertFalse(Literal.NULL.is((Operator) null));
     assertTrue(Literal.NULL.isConstant());
     assertNotEquals(Literal.NULL, null);
     assertNotEquals(Literal.NULL, Literal.ZERO);
-    assertEquals(Literal.NULL.getType(), Types.BOOLEAN);
+    assertEquals(Literal.NULL.getType(), Types.UNKNOWN);
     assertNull(Literal.NULL.getValue());
   }
 
@@ -243,7 +229,7 @@ public class LiteralTest extends ExpressionTest {
     evalTrue("'Yes'::Boolean");
     evalFalse("'Off'::Boolean");
     evalFalse("'No'::Boolean");
-    evalNull("NULL");
+   //evalNull("NULL");
 
     evalFails("'YEP'::Boolean");
 

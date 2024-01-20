@@ -107,8 +107,8 @@ public enum TypeFamily {
       case INTERVAL:
         return family.isFamily(INTERVAL);
       case ANY:
-        return true;
       case NONE:
+        return true;
       case SYMBOL:
       default:
         return false;

@@ -38,16 +38,24 @@ import ch.obermuhlner.math.big.BigDecimalMath;
 public final class Literal implements IExpression {
 
   /**
-   * UNKNOWN literal is null value without known data type
+   * Literal null value without known data type
    */
-  public static final Literal UNKNOWN = new Literal(null, Types.UNKNOWN);
+  public static final Literal NULL = new Literal(null, Types.UNKNOWN);
   /**
-   * NULL literal is a boolean data type with null value
-   */
-  public static final Literal NULL = new Literal(null, Types.BOOLEAN);
+   * Literal true value with boolean data type
+   */  
   public static final Literal TRUE = new Literal(Boolean.TRUE, Types.BOOLEAN_NOT_NULL);
+  /**
+   * Literal false value with boolean data type
+   */  
   public static final Literal FALSE = new Literal(Boolean.FALSE, Types.BOOLEAN_NOT_NULL);
+  /**
+   * Literal 0 value with integer data type
+   */  
   public static final Literal ZERO = new Literal(0L, IntegerType.of(1).withNullability(false));
+  /**
+   * Literal 1 value with integer data type
+   */  
   public static final Literal ONE = new Literal(1L, IntegerType.of(1).withNullability(false));
 
   public static Literal of(final Object value) {

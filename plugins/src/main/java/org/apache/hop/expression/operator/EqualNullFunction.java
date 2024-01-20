@@ -29,6 +29,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Types;
 
 /**
  * Compares whether two expressions are equal.
@@ -99,5 +100,10 @@ public class EqualNullFunction extends Function {
     }
 
     return call;
+  }
+  
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    return Types.coercionComparisonOperator(call);    
   }
 }
