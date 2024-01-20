@@ -107,6 +107,15 @@ public class ExpressionEditorDialog extends Dialog {
     return this.expression;
   }
 
+  /**
+   * Brings the dialog to the front if the dialog is already open.
+   */
+  public void setActive() {
+    if (shell != null && !shell.isDisposed()) {
+      shell.setActive();
+    }
+  }
+  
   public void dispose() {
     WindowProperty winprop = new WindowProperty(shell);
     PropsUi.getInstance().setScreen(winprop);

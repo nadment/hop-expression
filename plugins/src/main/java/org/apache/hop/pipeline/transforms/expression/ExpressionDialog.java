@@ -60,6 +60,8 @@ import java.util.concurrent.CompletableFuture;
 public class ExpressionDialog extends BaseTransformDialog implements ITransformDialog {
   private static final Class<?> PKG = ExpressionMeta.class;
 
+  private static final String DIALOG_KEY = "expressiondialog";
+
   private final ExpressionMeta input;
   private TableView wTableFields;
   private ModifyListener lsMod;
@@ -245,20 +247,28 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     columns[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(SelectionEvent e) {
+        TableItem item = wTableFields.getActiveTableItem();
+        ExpressionEditorDialog dialog = (ExpressionEditorDialog) item.getData(DIALOG_KEY);
 
-        String expression =
-            wTableFields.getActiveTableItem().getText(wTableFields.getActiveTableColumn());
+        // Expression editor already open, bring dialog to front
+        if (dialog != null) {
+          dialog.setActive();
+          return;
+        }
+
+        CompletableFuture<IRowMeta> rowMeta =
+            getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
 
         if (!shell.isDisposed()) {
+          dialog = new ExpressionEditorDialog(shell);
+          item.setData(DIALOG_KEY, dialog);
 
-          CompletableFuture<IRowMeta> rowMeta =
-              getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
-
-          ExpressionEditorDialog dialog = new ExpressionEditorDialog(shell);
+          String expression = item.getText(wTableFields.getActiveTableColumn());
           expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMeta);
+          item.setData(DIALOG_KEY, null);
+
           if (expression != null) {
-            wTableFields.getActiveTableItem().setText(wTableFields.getActiveTableColumn(),
-                expression);
+            item.setText(wTableFields.getActiveTableColumn(), expression);
           }
         }
       }
