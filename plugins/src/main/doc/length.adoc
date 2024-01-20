@@ -14,13 +14,16 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= LENGTH
+= LENGTH, LEN
 
 Returns the number of characters of the specified string or the length of binary in bytes.
 
 == Syntax
 ----
 LENGTH( {string | binary} )
+----
+----
+LEN( {string | binary} )
 ----
 
 == Usage

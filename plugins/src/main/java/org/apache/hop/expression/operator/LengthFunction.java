@@ -31,7 +31,7 @@ import org.apache.hop.expression.type.TypeFamily;
 /**
  * The function returns the number of characters of the specified string or binary.
  */
-@FunctionPlugin
+@FunctionPlugin(names ="LEN")
 public class LengthFunction extends Function {
   public static final LengthFunction LengthString = new LengthStringFunction();
   public static final LengthFunction LengthBinary = new LengthBinaryFunction();

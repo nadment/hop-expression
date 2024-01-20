@@ -1695,13 +1695,15 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Length() throws Exception {
     // String
     evalEquals("Length('TEST')", 4L).returnType(Types.INTEGER);
+    evalEquals("Len('TEST')", 4L).returnType(Types.INTEGER);
     evalNull("Length(NULL_STRING)").returnType(Types.INTEGER);
 
     // Binary
     evalEquals("Length(BINARY 'F0FA')", 2L).returnType(Types.INTEGER);
+    evalEquals("Len(BINARY 'F0FA')", 2L).returnType(Types.INTEGER);
     evalEquals("Length(BINARY '0F0FA')", 3L).returnType(Types.INTEGER);
     evalNull("Length(NULL_BINARY)");
-
+    
     // Implicit conversion from Boolean to String
     evalEquals("Length(true)", 4L);
     evalEquals("Length(FALSE)", 5L);
