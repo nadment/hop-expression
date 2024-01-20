@@ -1809,12 +1809,11 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("case when TRUE then 1 else 2 end", 1L).returnType(IntegerType.of(1));
     evalEquals("case when FALSE then 1 else 2 end", 2L).returnType(IntegerType.of(1));
 
-
-    // implicit ELSE NULL case
+    // Implicit ELSE NULL case
     evalNull("case when FIELD_INTEGER=10 then 10 end").returnType(IntegerType.of(2));
     evalEquals("case when FIELD_INTEGER=40 then 10 end", 10L).returnType(IntegerType.of(2));
 
-    // explicit ELSE case
+    // Explicit ELSE case
     evalEquals("case when FIELD_INTEGER=40 then 10 else 50 end", 10L);
     evalEquals("case when FIELD_INTEGER>80 then 'A' else 'B' end", "B");
     evalNull("case when FIELD_INTEGER>80 then 'A' end");
@@ -1827,13 +1826,16 @@ public class OperatorTest extends ExpressionTest {
         "case when FIELD_INTEGER IS NULL then null when FIELD_INTEGER=20+20 then 2*5 else 50 end",
         10L);
 
-    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end");
+    evalNull("case when NULL_INTEGER is NULL then NULL else 1 end").returnType(IntegerType.of(1));
 
     // Missing 'END'
     evalFails("case when FIELD_INTEGER=40 then 10 else 50");
 
     // Incompatible return type
     evalFails("case when FIELD_INTEGER=40 then 10 else 'Error'");
+
+    // Unknown return type
+    evalFails("case when false then NULL end");
 
     // Literal
     optimizeFalse("(CASE WHEN FALSE THEN 1 ELSE 2 END) IS NULL");

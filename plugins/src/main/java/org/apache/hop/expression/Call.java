@@ -35,7 +35,7 @@ public class Call implements IExpression {
   // The operator of this call
   protected final Operator operator;
   // The operands of this call
-  protected final IExpression[] operands;
+  protected IExpression[] operands;
   // The return data type
   protected Type type = Types.UNKNOWN;
 

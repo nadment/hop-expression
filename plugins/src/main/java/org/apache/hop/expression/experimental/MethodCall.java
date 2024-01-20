@@ -32,18 +32,12 @@ import java.util.Objects;
  */
 public class MethodCall extends Call {
 
-  // The return data type
-  protected final Type type;
-  //protected final Operator operator;
   protected final MethodHandle method;
-  //protected final IExpression[] operands;
 
   public MethodCall(Operator operator, MethodHandle method, Type type, IExpression... operands) {
     super(operator, operands);
-    //this.operator = requireNonNull(operator, "operator");
     this.method = requireNonNull(method, "method");
     this.type = requireNonNull(type, "type");
-    //this.operands = requireNonNull(operands, "operands");
   }
 
   /**

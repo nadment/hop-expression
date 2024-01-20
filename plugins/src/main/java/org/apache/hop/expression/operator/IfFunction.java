@@ -16,6 +16,8 @@
  */
 package org.apache.hop.expression.operator;
 
+import static org.apache.hop.expression.type.Types.coerceOperandType;
+import static org.apache.hop.expression.type.Types.getCommonTypeForComparison;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -27,6 +29,7 @@ import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.Type;
 
 /**
  * Single-level if-then-else expression. Similar to CASE, but only allows a single condition.
@@ -85,6 +88,19 @@ public class IfFunction extends Function {
     return call;
   }
 
+  @Override
+  public boolean coerceOperandsType(Call call) {
+    // Determine common type
+    Type type = call.getOperand(1).getType();
+    if ( call.getOperandCount()==3 ) {
+      type = getCommonTypeForComparison(type, call.getOperand(2).getType());
+    }
+    boolean coerced = coerceOperandType(call, type, 1);
+    coerced |= coerceOperandType(call, type, 2);
+    
+    return coerced;
+  }
+  
   @Override
   public Object eval(final IExpression[] operands) {
     Boolean value = operands[0].getValue(Boolean.class);

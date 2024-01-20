@@ -32,6 +32,7 @@ import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Comparison;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeId;
 import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -253,18 +254,19 @@ public class CaseOperator extends Operator {
     }
 
     // Determine common return type
-    Type type = getLeastRestrictive(getLeastRestrictive(thenTuple), elseOperand.getType());
-    
+    Type returnType = getLeastRestrictive(getLeastRestrictive(thenTuple), elseOperand.getType());    
+    if ( returnType.is(TypeId.UNKNOWN)) 
+      return false;
 
     // Check then operands
     for (IExpression thenOperand : thenTuple) {
-      if (!(type.isCoercible(thenOperand.getType()) || thenOperand.isNull())) {
+      if (!(returnType.isCoercible(thenOperand.getType()) || thenOperand.isNull())) {
         return false;
       }
     }
 
     // Check else operand
-    return elseOperand.isNull() || type.isCoercible(elseOperand.getType());
+    return elseOperand.isNull() || returnType.isCoercible(elseOperand.getType());
   }
 
   /**
