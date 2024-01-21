@@ -273,15 +273,15 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
         CompletableFuture<IRowMeta> rowMetaFutur =
             getAsyncRowMeta(getVariables(), pipelineMeta, transformName, rowMeta);
+        
+        dialog = new ExpressionEditorDialog(shell);
+        tableItem.setData(DIALOG_KEY, dialog);
+
+        String expression = tableItem.getText(wTableFields.getActiveTableColumn());
+        expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFutur);
 
         if (!shell.isDisposed()) {
-          dialog = new ExpressionEditorDialog(shell);
-          tableItem.setData(DIALOG_KEY, dialog);
-
-          String expression = tableItem.getText(wTableFields.getActiveTableColumn());
-          expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFutur);
           tableItem.setData(DIALOG_KEY, null);
-
           if (expression != null) {
             tableItem.setText(wTableFields.getActiveTableColumn(), expression);
           }
