@@ -21,9 +21,12 @@ import org.apache.hop.core.plugins.IPlugin;
 import org.apache.hop.core.plugins.PluginRegistry;
 import org.apache.hop.core.plugins.TransformPluginType;
 import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.row.value.ValueMetaFactory;
 import org.apache.hop.core.util.Utils;
 import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.ITransformDialog;
@@ -247,8 +250,8 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
     columns[1].setTextVarButtonSelectionListener(new SelectionAdapter() {
       @Override
       public void widgetSelected(SelectionEvent e) {
-        TableItem item = wTableFields.getActiveTableItem();
-        ExpressionEditorDialog dialog = (ExpressionEditorDialog) item.getData(DIALOG_KEY);
+        TableItem tableItem = wTableFields.getActiveTableItem();
+        ExpressionEditorDialog dialog = (ExpressionEditorDialog) tableItem.getData(DIALOG_KEY);
 
         // Expression editor already open, bring dialog to front
         if (dialog != null) {
@@ -256,19 +259,31 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
           return;
         }
 
-        CompletableFuture<IRowMeta> rowMeta =
-            getAsyncRowMeta(getVariables(), pipelineMeta, transformName);
+        final IRowMeta rowMeta = new RowMeta();
+        for (TableItem item : wTableFields.getNonEmptyItems()) {
+          // All expressions previously defined
+          if (item.equals(wTableFields.getActiveTableItem()))
+            break;
+          TypeId typeId = TypeId.of(item.getText(3));
+          if (typeId != null) {
+            String name = item.getText(1);
+            rowMeta.addValueMeta(Types.createValueMeta(name, typeId));
+          }
+        }
+
+        CompletableFuture<IRowMeta> rowMetaFutur =
+            getAsyncRowMeta(getVariables(), pipelineMeta, transformName, rowMeta);
 
         if (!shell.isDisposed()) {
           dialog = new ExpressionEditorDialog(shell);
-          item.setData(DIALOG_KEY, dialog);
+          tableItem.setData(DIALOG_KEY, dialog);
 
-          String expression = item.getText(wTableFields.getActiveTableColumn());
-          expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMeta);
-          item.setData(DIALOG_KEY, null);
+          String expression = tableItem.getText(wTableFields.getActiveTableColumn());
+          expression = dialog.open(expression, getVariables(), ExpressionMode.ROW, rowMetaFutur);
+          tableItem.setData(DIALOG_KEY, null);
 
           if (expression != null) {
-            item.setText(wTableFields.getActiveTableColumn(), expression);
+            tableItem.setText(wTableFields.getActiveTableColumn(), expression);
           }
         }
       }
@@ -285,17 +300,17 @@ public class ExpressionDialog extends BaseTransformDialog implements ITransformD
 
   // Search the fields in the background
   protected CompletableFuture<IRowMeta> getAsyncRowMeta(IVariables variables,
-      PipelineMeta pipelineMeta, String transformName) {
+      PipelineMeta pipelineMeta, String transformName, IRowMeta rowMeta) {
     return CompletableFuture.supplyAsync(() -> {
       try {
         TransformMeta transformMeta = pipelineMeta.findTransform(transformName);
         if (transformMeta != null) {
-          return pipelineMeta.getPrevTransformFields(variables, transformMeta);
+          rowMeta.addRowMeta(pipelineMeta.getPrevTransformFields(variables, transformMeta));
         }
       } catch (HopException e) {
         // Ignore
       }
-      return null;
+      return rowMeta;
     });
   }
 
