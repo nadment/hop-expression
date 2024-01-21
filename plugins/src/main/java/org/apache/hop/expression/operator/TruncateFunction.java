@@ -30,6 +30,8 @@ import java.math.RoundingMode;
 
 /**
  * Round down numeric expressions or truncates.
+ * 
+ * @see {@link CeilingOperator}, {@link FloorOperator}, {@link RoundOperator}
  */
 @FunctionPlugin(names = "TRUNC")
 public class TruncateFunction extends Function {
@@ -59,14 +61,20 @@ public class TruncateFunction extends Function {
 
     int scale = 0;
     if (operands.length == 2) {
-      Long pattern = operands[1].getValue(Long.class);
-      if (pattern == null)
+      Long l = operands[1].getValue(Long.class);
+      if (l == null)
         return null;
-      scale = pattern.intValue();
+      scale = l.intValue();
     }
 
-    if (scale > value.scale())
+    if (scale > value.scale()) {
       scale = value.scale();
+    }
+    
+    if (scale==0) {
+      return value.setScale(0, RoundingMode.DOWN);
+    }
+    
     return value.movePointRight(scale).setScale(0, RoundingMode.DOWN).movePointLeft(scale);
   }
 }

@@ -14,15 +14,13 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= LENGTH, LEN
+= LEN[GTH]
 
 Returns the number of characters of the specified string or the length of binary in bytes.
 
 == Syntax
 ----
 LENGTH( {string | binary} )
-----
-----
 LEN( {string | binary} )
 ----
 
@@ -33,5 +31,5 @@ LEN( {string | binary} )
 == Example
 
 ----
-LENGTH('ABC') → 3
+LENGTH('ABC') = 3
 ----

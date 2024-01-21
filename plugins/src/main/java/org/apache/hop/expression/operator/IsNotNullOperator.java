@@ -30,6 +30,8 @@ import java.io.StringWriter;
 
 /**
  * An operator describing the <code>IS NOT NULL</code> operator.
+ * 
+ * @see {@link IstNullOperator}
  */
 public class IsNotNullOperator extends Operator {
 

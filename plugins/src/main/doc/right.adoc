@@ -33,7 +33,7 @@ RIGHT( value, length )
 == Example
 
 ----
-RIGHT('ABCDEF',3) → 'DEF'
+RIGHT('ABCDEF',3) = 'DEF'
 ----
 
 See also xref:left.adoc[LEFT]

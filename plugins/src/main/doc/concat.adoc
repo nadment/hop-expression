@@ -38,5 +38,5 @@ string1 || string2 [ || ... ]
 == Example
 
 ----
-CONCAT('AB','CD','12') → 'ABCD12'
+CONCAT('AB','CD','12') = 'ABCD12'
 ----

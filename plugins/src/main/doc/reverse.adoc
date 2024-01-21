@@ -33,5 +33,5 @@ Returns:: String or binary
 == Example
 
 ----
-REVERSE('ABC') → 'CBA'
+REVERSE('ABC') = 'CBA'
 ----

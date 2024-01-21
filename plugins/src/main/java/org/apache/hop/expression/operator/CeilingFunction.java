@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
@@ -30,12 +31,14 @@ import java.math.RoundingMode;
 
 /**
  * Returns the values rounded to the nearest equal or larger integer.
+ * 
+ * @see {@link FloorOperator}, {@link RoundOperator}, {@link TruncateOperator}
  */
 @FunctionPlugin(names = "CEIL")
 public class CeilingFunction extends Function {
 
   public CeilingFunction() {
-    super("CEILING", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("CEILING", ReturnTypes.CEIL_FLOOR_FUNCTION, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/ceiling.html");
   }
 
@@ -56,7 +59,11 @@ public class CeilingFunction extends Function {
     if (call.getOperand(0).is(call.getOperator())) {
       return call.getOperand(0);
     }
-
+    // CEIL(FLOOR(x)) → FLOOR(x)
+    if (call.getOperand(0).is(FunctionRegistry.getFunction("FLOOR"))) {
+      return call.getOperand(0);
+    }
+   
     return call;
   }
 }

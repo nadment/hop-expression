@@ -19,6 +19,7 @@ package org.apache.hop.expression.operator;
 import org.apache.hop.expression.Call;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
+import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
@@ -30,12 +31,14 @@ import java.math.RoundingMode;
 
 /**
  * Returns the values rounded to the nearest equal or smaller integer.
+ * 
+ * @see {@link CeilingOperator}, {@link RoundOperator}, {@link TruncateOperator} 
  */
 @FunctionPlugin
 public class FloorFunction extends Function {
 
   public FloorFunction() {
-    super("FLOOR", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+    super("FLOOR", ReturnTypes.CEIL_FLOOR_FUNCTION, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
         "/docs/floor.html");
   }
 
@@ -54,6 +57,10 @@ public class FloorFunction extends Function {
     // Idempotent function repetition
     // FLOOR(FLOOR(x)) → FLOOR(x)
     if (call.getOperand(0).is(call.getOperator())) {
+      return call.getOperand(0);
+    }
+    // FLOOR(CEIL(x)) → CEIL(x)
+    if (call.getOperand(0).is(FunctionRegistry.getFunction("CEIL"))) {
       return call.getOperand(0);
     }
 

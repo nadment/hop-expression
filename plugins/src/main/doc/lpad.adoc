@@ -36,7 +36,7 @@ Returns:: The data type of the returned value is the same as the data type of th
 == Example
 
 ----
-LPAD('123',5,'*') → '**123'
+LPAD('123',5,'*') = '**123'
 ----
 
 See also xref:rpad.adoc[RPAD]

@@ -33,5 +33,5 @@ Returns:: The data type of the returned value is the same as the data type of th
 == Example
 
 ----
-ABS(-123) → 123
+ABS(-123) = 123
 ----

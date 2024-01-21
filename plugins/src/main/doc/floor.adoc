@@ -23,4 +23,13 @@ Returns the values rounded to the nearest equal or smaller integer.
 FLOOR( numeric )
 ----
 
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Example
+----
+FLOOR( 28.05 ) = 28
+----
+
 See also xref:ceil.adoc[CEIL], xref:round.adoc[ROUND]

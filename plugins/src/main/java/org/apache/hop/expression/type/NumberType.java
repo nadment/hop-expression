@@ -33,11 +33,12 @@ public final class NumberType extends Type {
   private static final NumberFormat FORMAT = NumberFormat.of("TM");
 
   public static NumberType from(final BigDecimal number) {
-
     int precision = number.precision();
     int scale = number.scale();
-    if (precision <= scale)
-      precision += scale;
+
+    if (precision == scale) precision = scale+1;
+    else if (precision < scale) precision += scale;
+    
     return new NumberType(precision, scale, false);
   }
 

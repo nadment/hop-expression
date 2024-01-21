@@ -25,6 +25,7 @@ import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
+import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.Test;
@@ -2731,10 +2732,10 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Truncate() throws Exception {
-    evalEquals("Truncate(-975.975)", -975L);
+    evalEquals("Truncate(-975.975)", -975L); // TODO: .returnType(NumberType.of(3));
     evalEquals("Truncate(-975.975,-1)", -970L);
     evalEquals("Truncate(-975.975, 0)", -975L);
-    evalEquals("Truncate(-975.975, 2)", -975.97D);
+    evalEquals("Truncate(-975.975, 2)", -975.97D); //.returnType(NumberType.of(3,2));
     evalEquals("Truncate(-975.975, 3)", -975.975D);
     evalEquals("Truncate(-975.975, 50)", -975.975D);
     evalEquals("Truncate(123.456, -2)", 100L);
@@ -3162,11 +3163,12 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Ceil() throws Exception {
-    evalEquals("Ceil(1)", 1L).returnType(Types.NUMBER);
-    evalEquals("Ceil(125.9)", 126L);
-    evalEquals("Ceil(0.4873)", 1L);
-    evalEquals("Ceil(-0.65)", 0L);
-    evalEquals("Ceil(-42.8)", -42L);
+    evalEquals("Ceil(1)", 1L).returnType(NumberType.of(1));
+    evalEquals("Ceil(125.9)", 126L).returnType(NumberType.of(3));
+    evalEquals("Ceil(0.4873)", 1L).returnType(NumberType.of(1));
+    evalEquals("Ceil(-0.1)", 0L).returnType(NumberType.of(1));
+    evalEquals("Ceil(-0.65)", 0L).returnType(NumberType.of(1));
+    evalEquals("Ceil(-42.8)", -42L).returnType(NumberType.of(2));
     evalEquals("Ceil(FIELD_INTEGER)", 40L);
     evalEquals("Ceil(FIELD_NUMBER)", -5L);
     evalEquals("Ceil(FIELD_BIGNUMBER)", new BigDecimal("123457"));
@@ -3184,14 +3186,17 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Function repetition
     optimize("CEIL(CEILING(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
+    optimize("CEIL(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
   }
 
   @Test
   public void Floor() throws Exception {
-    evalEquals("Floor(1)", 1L).returnType(Types.NUMBER);
-    evalEquals("Floor(125.9)", 125L);
-    evalEquals("Floor(0.4873)", 0L);
-    evalEquals("Floor(-0.65)", -1L);
+    evalEquals("Floor(1)", 1L).returnType(NumberType.of(1));
+    evalEquals("Floor(125.9)", 125L).returnType(NumberType.of(3));
+    evalEquals("Floor(0.4873)", 0L).returnType(NumberType.of(1));
+    evalEquals("Floor(-0.1)", -1L).returnType(NumberType.of(1));
+    evalEquals("Floor(-0.65)", -1L).returnType(NumberType.of(1));    
+    evalEquals("Floor(-42.8)", -43L).returnType(NumberType.of(2));
     evalEquals("Floor(FIELD_INTEGER)", 40L);
     evalEquals("Floor(FIELD_NUMBER)", -6L);
     evalEquals("Floor(FIELD_BIGNUMBER)", new BigDecimal("123456"));
@@ -3206,11 +3211,16 @@ public class ScalarFunctionTest extends ExpressionTest {
 
     // Function repetition
     optimize("FLOOR(FLOOR(FIELD_NUMBER))", "FLOOR(FIELD_NUMBER)");
+    optimize("FLOOR(CEIL(FIELD_NUMBER))", "CEILING(FIELD_NUMBER)");
   }
 
   @Test
   public void Round() throws Exception {
     evalEquals("Round(1)", 1L).returnType(Types.NUMBER);
+    evalEquals("Round(2.5)", 3L).returnType(Types.NUMBER);
+    evalEquals("Round(-2.5)", -3L).returnType(Types.NUMBER);
+    evalEquals("Round(12.123456,2)", 12.12).returnType(Types.NUMBER);
+    evalEquals("Round(12.123456,-1)", 10L).returnType(Types.NUMBER);
     evalEquals("Round(125.49)", 125L);
     evalEquals("Round(125.99)", 126L);
     evalEquals("Round(0.4873)", 0L);

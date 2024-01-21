@@ -14,7 +14,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CEILING, CEIL
+= CEIL[ING]
 
 Returns the value rounded to the nearest equal or larger integer.
 
@@ -23,5 +23,15 @@ Returns the value rounded to the nearest equal or larger integer.
 CEILING( numeric )
 CEIL( numeric )
 ----
+
+== Usage
+
+* Returns NULL if the argument is NULL.
+
+== Example
+----
+CEILING( 28.05 ) = 29
+----
+
 
 See also xref:floor.adoc[FLOOR], xref:round.adoc[ROUND]

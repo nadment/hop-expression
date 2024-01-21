@@ -270,6 +270,7 @@ public class LiteralTest extends ExpressionTest {
     evalEquals("1_2_3_4", 1234L).returnType(IntegerType.of(4));
     evalEquals("-1234", -1234L).returnType(IntegerType.of(4));
     
+    // Bad syntax
     evalFails("_123");
     evalFails("123_");
     evalFails("-_123");
@@ -376,6 +377,7 @@ public class LiteralTest extends ExpressionTest {
     evalFails("-2.3E2_");
     evalFails("-2.3E1__2");
 
+    // Bad syntax
     evalFails("-1.");
     evalFails("..1");
     evalFails(".0.1");

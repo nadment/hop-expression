@@ -29,13 +29,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Returns the values rounded to the nearest integer.
+ * Returns the values rounded to the nearest integer or decimal.
+ * 
+ * @see {@link CeilingOperator}, {@link FloorOperator}, {@link TruncateOperator}
  */
 @FunctionPlugin
-public class RoundFunctionFunction extends Function {
+public class RoundFunction extends Function {
 
-  public RoundFunctionFunction() {
-    super("ROUND", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC, OperatorCategory.MATHEMATICAL,
+  public RoundFunction() {
+    super("ROUND", ReturnTypes.NUMBER_NULLABLE, OperandTypes.NUMERIC.or(OperandTypes.NUMERIC_NUMERIC), OperatorCategory.MATHEMATICAL,
         "/docs/round.html");
   }
 
@@ -44,14 +46,30 @@ public class RoundFunctionFunction extends Function {
     BigDecimal value = operands[0].getValue(BigDecimal.class);
     if (value == null)
       return value;
-    return value.setScale(0, RoundingMode.HALF_UP);
+
+    int scale = 0;
+    if (operands.length == 2) {
+      Long l = operands[1].getValue(Long.class);
+      if (l == null)
+        return null;
+      scale = l.intValue();
+    }
+
+    if (scale > value.scale()) {
+      scale = value.scale();
+    }
+    
+    if (scale==0) {
+      return value.setScale(0, RoundingMode.HALF_UP);
+    }
+    return value.movePointRight(scale).setScale(0, RoundingMode.HALF_UP).movePointLeft(scale);
   }
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
-    // Idempotent function repetition
-    if (call.getOperand(0).is(call.getOperator())) {
+    // Iempotent function repetition
+    if (call.getOperandCount() == 1 && call.getOperand(0).is(call.getOperator())) {
       return call.getOperand(0);
     }
 

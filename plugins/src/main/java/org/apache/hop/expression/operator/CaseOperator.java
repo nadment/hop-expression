@@ -61,8 +61,8 @@ public class CaseOperator extends Operator {
   @Override
   public Object eval(final IExpression[] operands) {
     int index = 0;
-    Tuple whenTuple = (Tuple) operands[1];
-    Tuple thenTuple = (Tuple) operands[2];
+    Tuple whenTuple = operands[1].asTuple();
+    Tuple thenTuple = operands[2].asTuple();
     IExpression elseExpression = operands[3];
 
     if (when == When.SIMPLE) {

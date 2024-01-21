@@ -26,6 +26,8 @@ import java.io.StringWriter;
 
 /**
  * An operator describing the <code>IS NOT FALSE</code> operator.
+ * 
+ * @see {@link IsFalseOperator}
  */
 public class IsNotFalseOperator extends Operator {
 

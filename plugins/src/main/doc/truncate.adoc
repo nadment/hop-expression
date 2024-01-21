@@ -16,15 +16,22 @@ under the License.
 ////
 = TRUNC[ATE]
 
-Returns the values down to the nearest (or equal) integer closer to zero, or to the nearest equal or smaller value with the specified number of places after the decimal point.
+Returns the values to the previous integer or decimal. 
 
 == Syntax
 ----
-TRUNCATE( numeric, scale )
-TRUNC( numeric, scale )
+TRUNCATE( numeric [, scale] )
+TRUNC( numeric [, scale] )
 ----
 
 == Usage
 
 * Truncation is performed towards 0, not towards the smaller number. For example, TRUNCATE(-9.6) results in -9, not -10.
-* If either the input or the scale is NULL, then the result is NULL.
+* Returns NULL if one of the arguments is NULL.
+
+== Example
+----
+TRUNCATE( 28.52) = 28
+TRUNCATE( 28.52, 1 ) = 28.5
+TRUNCATE( 28.52, -1 ) = 20
+----

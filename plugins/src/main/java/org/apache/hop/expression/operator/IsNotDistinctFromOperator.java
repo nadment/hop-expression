@@ -33,6 +33,8 @@ import java.io.StringWriter;
  * Comparison <code>IS NOT DISTINCT FROM</code> operator.
  * <br>
  * <strong>Syntax:</strong> <code>x IS NOT DISTINCT FROM y</code>
+ * 
+ * @see {@link IsDistinctFromOperator}
  */
 public class IsNotDistinctFromOperator extends Operator {
 
