@@ -16,7 +16,7 @@
 	<parent>
 		<artifactId>hop-expression</artifactId>
 		<groupId>org.apache.hop</groupId>
-		<version>0.6.1-SNAPSHOT</version>
+		<version>0.7.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>hop-expression-assemblies</artifactId>
@@ -28,7 +28,7 @@
 	<properties>
 		<license.licenseName>apache_v2</license.licenseName>
 	</properties>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.hop</groupId>
