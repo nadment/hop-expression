@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.exception;
-
-import org.apache.hop.expression.ErrorCode;
+package org.apache.hop.expression;
 
 public class ExpressionException extends RuntimeException {
 

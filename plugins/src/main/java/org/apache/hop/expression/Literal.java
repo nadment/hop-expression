@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;

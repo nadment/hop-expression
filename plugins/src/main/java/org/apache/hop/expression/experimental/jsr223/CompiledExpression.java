@@ -16,8 +16,8 @@
  */
 package org.apache.hop.expression.experimental.jsr223;
 
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.exception.ExpressionException;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;

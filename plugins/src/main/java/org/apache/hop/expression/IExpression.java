@@ -17,7 +17,6 @@
 package org.apache.hop.expression;
 
 
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.Type;
 import java.io.StringWriter;
 

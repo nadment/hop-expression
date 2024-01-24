@@ -17,9 +17,9 @@
 
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
-import org.apache.hop.expression.exception.ConversionException;
 import org.apache.hop.expression.type.Type;
 import java.time.DateTimeException;
 

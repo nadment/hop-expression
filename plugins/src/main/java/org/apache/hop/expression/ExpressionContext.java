@@ -17,7 +17,6 @@ package org.apache.hop.expression;
 import org.apache.hop.core.variables.IVariables;
 import org.apache.hop.core.variables.Variable;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.TypeId;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

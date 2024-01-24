@@ -16,7 +16,7 @@
 package org.apache.hop.expression.util;
 
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.exception.ExpressionException;
+import org.apache.hop.expression.ExpressionException;
 import java.util.regex.Pattern;
 
 public class Regexp {

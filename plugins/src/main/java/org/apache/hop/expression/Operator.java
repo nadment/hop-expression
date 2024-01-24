@@ -15,7 +15,6 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.util.TranslateUtil;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.IOperandCountRange;
 import org.apache.hop.expression.type.IOperandTypeChecker;
 import org.apache.hop.expression.type.IReturnTypeInference;

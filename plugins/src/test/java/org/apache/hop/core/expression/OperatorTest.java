@@ -1174,6 +1174,9 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')",
         LocalDateTime.of(2020, 1, 19, 11, 23, 44)).returnType(Types.DATE);
 
+    // Integer to Timestamp
+    // evalEquals("CAST(-123456789 AS DATE)", LocalDateTime.of(1966, 2, 2, 5, 26, 51));
+    
     // Null
     evalNull("CAST(NULL as Date)").returnType(Types.DATE);
     evalNull("CAST(NULL_DATE as Date)").returnType(Types.DATE);

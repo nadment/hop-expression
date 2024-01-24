@@ -17,7 +17,6 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.core.variables.IVariables;
-import org.apache.hop.expression.exception.ExpressionException;
 
 public interface IExpressionContext extends IVariables {
 

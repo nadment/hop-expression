@@ -17,9 +17,9 @@
 
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.exception.ConversionException;
-import org.apache.hop.expression.exception.ParseNumberException;
+import org.apache.hop.expression.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
 import java.math.BigInteger;

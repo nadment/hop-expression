@@ -15,7 +15,6 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.Token.Id;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.operator.FirstValueFunction;
 import org.apache.hop.expression.operator.LastValueFunction;
 import org.apache.hop.expression.operator.NthValueFunction;

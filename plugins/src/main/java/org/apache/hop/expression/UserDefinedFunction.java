@@ -20,7 +20,6 @@ import org.apache.hop.core.row.IRowMeta;
 import org.apache.hop.core.row.IValueMeta;
 import org.apache.hop.core.row.RowMeta;
 import org.apache.hop.core.variables.Variables;
-import org.apache.hop.expression.exception.ExpressionException;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UserDefinedFunctionOperandTypeChecker;

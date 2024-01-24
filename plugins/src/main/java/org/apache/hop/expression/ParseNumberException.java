@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression.exception;
+package org.apache.hop.expression;
 
-import org.apache.hop.expression.ErrorCode;
-
-public class ConversionException extends RuntimeException {
+public class ParseNumberException extends RuntimeException {
 
   private static final long serialVersionUID = 8634955627375465878L;
 
@@ -27,11 +25,7 @@ public class ConversionException extends RuntimeException {
    * 
    * @param error a error message
    */
-  public ConversionException(ErrorCode error) {
-    super(error.message());
-  }
-
-  public ConversionException(ErrorCode error, Object... values) {
+  public ParseNumberException(ErrorCode error, Object... values) {
     super(error.message(values));
   }
 }
