@@ -967,7 +967,6 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("CAST('False' as Boolean)");
     evalTrue("CAST(Upper(FIELD_STRING_BOOLEAN_TRUE) as Boolean)");
 
-
     // Integer
     evalTrue("CAST(1 as Boolean)").returnType(Types.BOOLEAN);
     evalTrue("CAST(-123 as Boolean)");
@@ -1070,12 +1069,12 @@ public class OperatorTest extends ExpressionTest {
 
     // Boolean
     evalEquals("CAST(TRUE as Number)", 1L).returnType(Types.NUMBER);
-    evalEquals("CAST(FALSE as Number)", 0L);
+    evalEquals("CAST(FALSE as Number(1))", 0L).returnType(NumberType.of(1));
 
     // Integer
     evalEquals("CAST(0 as Number)", 0L).returnType(Types.NUMBER);
-    evalEquals("CAST(123 as Number)", 123L);
-    evalEquals("CAST(-123 as Number)", -123L);
+    evalEquals("CAST(123 as Number)", 123L).returnType(Types.NUMBER);
+    evalEquals("CAST(-123 as Number(6,2))", -123L).returnType(NumberType.of(6,2));
 
     // Number
     evalEquals("CAST(1234.456 as Number(38,9))", 1234.456D).returnType(NumberType.of(38, 9));
@@ -1236,7 +1235,7 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void Cast() throws Exception {
 
-    evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L);
+    evalEquals("TO_NUMBER('123','000')::INTEGER+1", 124L).returnType(NumberType.of(20));
 
     // Accept data type quoted like a String
     evalEquals("Cast(' 123' as 'INTEGER')", 123L).returnType(Types.INTEGER);
@@ -1285,7 +1284,6 @@ public class OperatorTest extends ExpressionTest {
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME 'Europe/Paris'");
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE");
     evalFails("TIMESTAMP '2023-05-25 20:48:00' AT ZONE 'Europe/Paris'");
-
 
     optimize("TIMESTAMP '2023-05-25 20:48:00' AT TIME ZONE 'Europe/Paris'");
   }
@@ -1344,34 +1342,42 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   public void Mod() throws Exception {
-    evalEquals("15%4", 3L);
-    evalEquals("Mod(15,4)", 3L);
-    evalEquals("Mod(15.3,4)", 3.3D);
-    evalEquals("Mod(15.3::NUMBER(12,4),4)", 3.3);
+    evalEquals("11%4", 3L).returnType(Types.NUMBER);
+    evalEquals("Mod(11,4)", 3L);
+    evalEquals("Mod(11,-4)", 3L);
+    evalEquals("Mod(-11,4)", -3L);
+    evalEquals("Mod(-11,-4)", -3L);
+       
+    evalEquals("Mod(11.3,4)", 3.3D);    
+    evalEquals("Mod(11.3::NUMBER(12,4),4)", 3.3);
+    
     evalNull("Mod(NULL_INTEGER,2)");
     evalNull("Mod(2,NULL_INTEGER)");
+    
+    // Syntax error
     evalFails("'TEST'%5");
     evalFails("Mod()");
-    evalFails("Mod(9,0)");
     evalFails("Mod(3)");
-
+    // Division by 0
+    evalFails("Mod(9,0)");
+    
     optimize("FIELD_INTEGER%4");
   }
 
   @Test
   public void Multiplication() throws Exception {
     evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2));
-    evalEquals("4*10", 40D);
-    evalEquals("-4*-1", 4D);
-    evalEquals("2*-2", -4D);
-    evalEquals("100 * .5", 50D);
-    evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224);
+    evalEquals("4*10", 40D).returnType(NumberType.of(3));
+    evalEquals("-4*-1", 4D).returnType(NumberType.of(2));
+    evalEquals("2*-2", -4D).returnType(NumberType.of(2));
+    evalEquals("100 * .5", 50D).returnType(NumberType.of(5,1));
+    evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224).returnType(NumberType.of(38,15));
     evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15L).returnType(NumberType.of(7, 3));
     evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204L)
         .returnType(NumberType.of(38, 8));
 
     // Check no overflow Long.MAX_VALUE * 2
-    evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614"));
+    evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614")).returnType(NumberType.of(20));
     // Check no underflow Long.MIN_VALUE * 2
     evalEquals("-9223372036854775808*2", new BigDecimal("-18446744073709551616"));
 
@@ -1405,11 +1411,11 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void Div() throws Exception {
     evalEquals("FIELD_INTEGER/4", 10D).returnType(NumberType.of(18, 6));
-    evalEquals("10/4", 2.5D);
-    evalEquals("40/-10", -4L);
-    evalEquals("-40/-10", 4L);
-    evalEquals("5/2", 2.5D);
-    evalEquals("10.1/2.1", new BigDecimal("4.8095238095238095238095238095238"));
+    evalEquals("10/4", 2.5D).returnType(NumberType.of(8, 6));
+    evalEquals("40/-10", -4L).returnType(NumberType.of(8, 6));
+    evalEquals("-40/-10", 4L).returnType(NumberType.of(8, 6));
+    evalEquals("5/2", 2.5D).returnType(NumberType.of(7, 6));
+    evalEquals("10.1/2.1", new BigDecimal("4.8095238095238095238095238095238")).returnType(NumberType.of(9, 6));
     evalEquals("0.1/0.0000000000001", 1000000000000L).returnType(NumberType.of(30, 16));
     evalEquals("FIELD_NUMBER::NUMBER(4,1)/3::NUMBER(3,2)", -1L).returnType(NumberType.of(11, 6));
 
@@ -1432,7 +1438,7 @@ public class OperatorTest extends ExpressionTest {
 
   @Test
   public void Div0() throws Exception {
-    evalEquals("Div0(10,4)", 2.5D);
+    evalEquals("Div0(10,4)", 2.5D).returnType(NumberType.of(8, 6));
     evalEquals("Div0(FIELD_INTEGER,-100)", -0.4D);
     evalEquals("Div0(FIELD_INTEGER,0)", 0L);
     evalEquals("Div0(FIELD_INTEGER,2)", 20L).returnType(NumberType.of(18, 6));

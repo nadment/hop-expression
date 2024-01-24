@@ -25,6 +25,7 @@ import org.apache.hop.expression.AggregateFunction;
 import org.apache.hop.expression.ExpressionContext;
 import org.apache.hop.expression.ExpressionParser;
 import org.apache.hop.expression.FunctionRegistry;
+import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.Operators;
@@ -35,6 +36,7 @@ import org.apache.hop.i18n.BaseMessages;
 import org.apache.hop.ui.core.ConstUi;
 import org.apache.hop.ui.core.FormDataBuilder;
 import org.apache.hop.ui.core.PropsUi;
+import org.apache.hop.ui.core.dialog.MessageBox;
 import org.apache.hop.ui.core.gui.GuiResource;
 import org.apache.hop.ui.core.gui.GuiToolbarWidgets;
 import org.eclipse.jface.text.Document;
@@ -90,7 +92,8 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
   public static final String ID_TOOLBAR_COPY = "expression-editor-toolbar-10400-copy";
   public static final String ID_TOOLBAR_PASTE = "expression-editor-toolbar-10410-paste";
   public static final String ID_TOOLBAR_CUT = "expression-editor-toolbar-10420-cut";
-
+  public static final String ID_TOOLBAR_OPTIMIZE = "expression-editor-toolbar-10420-simplify";
+  
   private static final String ANNOTATION_ERROR_TYPE = "org.hop.expression.error";
 
   private ExpressionMode mode = ExpressionMode.NONE;
@@ -434,6 +437,23 @@ public class ExpressionEditor extends Composite implements IDocumentListener {
     viewer.doOperation(ITextOperationTarget.SELECT_ALL);
   }
 
+  @GuiToolbarElement(root = ID_TOOLBAR, id = ID_TOOLBAR_OPTIMIZE,
+      image = "evaluate.svg",
+      toolTip = "i18n::ExpressionEditor.ToolBarWidget.Evaluate.ToolTip", separator = true)
+  public void doOptimize() {
+    
+    String source = viewer.getTextWidget().getText();
+    
+    RowExpressionContext context =  new RowExpressionContext(variables, rowMeta);
+    
+    IExpression expression = context.createExpression(source);
+    
+    MessageBox dialog = new MessageBox(getShell());    
+    dialog.setText("Expression simplified");
+    dialog.setMessage(expression.toString());    
+    dialog.open();
+  }
+  
   protected void treeExpandCollapseAll(boolean expanded) {
     // Stop redraw until operation complete
     tree.setRedraw(false);
