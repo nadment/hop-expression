@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hop.expression;
+package org.apache.hop.expression.util;
+
+import org.apache.hop.expression.ErrorCode;
 
 public class ParseNumberException extends RuntimeException {
 

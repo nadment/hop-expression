@@ -184,7 +184,7 @@ public class ExpressionTest {
       row[8] = false;
       row[9] = "TEST".getBytes(Charsets.UTF_8);
       row[10] = InetAddress.getLocalHost();
-      row[11] = JsonType.convertStringToJson(
+      row[11] = JsonType.convertToJson(
           "{\"student\": [{\"id\":\"01\",name:\"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
       // Null values
@@ -403,6 +403,12 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
+    evalEquals("CAST(1284352323 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
+    evalEquals("CAST(1284352323.1 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  100000000));
+    evalEquals("CAST(1284352323.12 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
+    evalEquals("CAST(1284352323.123 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  123000000));            
+    evalEquals("CAST(1284352323.123456789 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+    
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

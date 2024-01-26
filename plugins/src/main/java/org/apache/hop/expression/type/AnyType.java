@@ -57,19 +57,19 @@ public final class AnyType extends Type {
     // JSon function return type ANY
     if (value instanceof String) {
       if (clazz == Boolean.class) {
-        return clazz.cast(BooleanType.convertStringToBoolean((String) value));
+        return clazz.cast(BooleanType.convertToBoolean((String) value));
       }
       if (clazz == Long.class) {
-        return clazz.cast(IntegerType.convertStringToInteger((String) value));
+        return clazz.cast(IntegerType.convertToInteger((String) value));
       }
       if (clazz == BigDecimal.class) {
-        return clazz.cast(NumberType.convertStringToNumber((String) value));
+        return clazz.cast(NumberType.convertToNumber((String) value));
       }
       if (clazz == byte[].class) {
-        return clazz.cast(BinaryType.convertStringToBinary((String) value));
+        return clazz.cast(BinaryType.convertToBinary((String) value));
       }
       if (clazz == JsonNode.class) {
-        return clazz.cast(JsonType.convertStringToJson((String) value));
+        return clazz.cast(JsonType.convertToJson((String) value));
       }
     }
     if (value instanceof BigDecimal) {
@@ -80,7 +80,7 @@ public final class AnyType extends Type {
         return clazz.cast(((BigDecimal) value).longValue());
       }
       if (clazz == String.class) {
-        return clazz.cast(StringType.convertNumberToString((BigDecimal) value));
+        return clazz.cast(StringType.convertToString((BigDecimal) value));
       }
     }
     if (value instanceof Boolean) {

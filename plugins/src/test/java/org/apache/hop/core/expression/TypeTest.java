@@ -42,46 +42,56 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Random;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class TypeTest extends ExpressionTest {
 
   @Test
-  public void typeFamily() throws Exception {
-    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.BINARY));
-    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.BOOLEAN));
-    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.NUMERIC));
-    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.TEMPORAL));
-    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.STRING));
-    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.INTERVAL));
-        
-    assertTrue(TypeFamily.NUMERIC.isFamily(TypeFamily.NUMERIC));
-    assertTrue(TypeFamily.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
-    assertTrue(TypeFamily.STRING.isFamily(TypeFamily.STRING));
-    assertTrue(TypeFamily.TEMPORAL.isFamily(TypeFamily.TEMPORAL));
-    assertTrue(TypeFamily.INTERVAL.isFamily(TypeFamily.INTERVAL));
-    assertTrue(TypeFamily.BINARY.isFamily(TypeFamily.BINARY));
-    
+  public void isCoercible() throws Exception {
     assertFalse(TypeFamily.NUMERIC.isCoercible(null));
     assertTrue(TypeFamily.BOOLEAN.isCoercible(TypeFamily.STRING));
     assertTrue(TypeFamily.NUMERIC.isCoercible(TypeFamily.STRING));
-
-    assertFalse(TypeFamily.NUMERIC.isCastable(null));
-    assertTrue(TypeFamily.BOOLEAN.isCastable(TypeFamily.NUMERIC));
-    assertTrue(TypeFamily.BOOLEAN.isCastable(TypeFamily.STRING));
-    assertFalse(TypeFamily.BOOLEAN.isCastable(TypeFamily.TEMPORAL));
-    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.BOOLEAN));
-    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.STRING));
-    assertFalse(TypeFamily.NUMERIC.isCastable(TypeFamily.JSON));
+  }
+  
+  @Test
+  public void isCastable() throws Exception {
     assertTrue(TypeFamily.BINARY.isCastable(TypeFamily.STRING));
+    assertFalse(TypeFamily.BINARY.isCastable(null));
     assertFalse(TypeFamily.BINARY.isCastable(TypeFamily.TEMPORAL));
     
-    assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.INTEGER));
-    assertTrue(TypeFamily.NUMERIC.getTypeIds().contains(TypeId.NUMBER));
-    assertTrue(TypeFamily.TEMPORAL.getTypeIds().contains(TypeId.DATE));
-  }
+    assertTrue(TypeFamily.BOOLEAN.isCastable(TypeFamily.NUMERIC));
+    assertTrue(TypeFamily.BOOLEAN.isCastable(TypeFamily.STRING));
+    assertFalse(TypeFamily.BOOLEAN.isCastable(null));
+    assertFalse(TypeFamily.BOOLEAN.isCastable(TypeFamily.TEMPORAL));
+        
+    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.BOOLEAN));
+    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.STRING));
+    assertTrue(TypeFamily.NUMERIC.isCastable(TypeFamily.TEMPORAL));    
+    assertFalse(TypeFamily.NUMERIC.isCastable(null));
+    assertFalse(TypeFamily.NUMERIC.isCastable(TypeFamily.JSON));
     
+    assertTrue(TypeFamily.STRING.isCastable(TypeFamily.BOOLEAN));
+    assertTrue(TypeFamily.STRING.isCastable(TypeFamily.NUMERIC));
+    assertTrue(TypeFamily.STRING.isCastable(TypeFamily.TEMPORAL));
+    assertTrue(TypeFamily.STRING.isCastable(TypeFamily.BINARY));
+    assertFalse(TypeFamily.STRING.isCastable(null));
+    
+    assertTrue(TypeFamily.TEMPORAL.isCastable(TypeFamily.STRING));
+    assertTrue(TypeFamily.TEMPORAL.isCastable(TypeFamily.NUMERIC));    
+    assertFalse(TypeFamily.TEMPORAL.isCastable(null));
+    assertFalse(TypeFamily.TEMPORAL.isCastable(TypeFamily.BOOLEAN));
+    
+    assertTrue(TypeFamily.INTERVAL.isCastable(TypeFamily.INTERVAL));
+    assertFalse(TypeFamily.INTERVAL.isCastable(null));
+    assertFalse(TypeFamily.INTERVAL.isCastable(TypeFamily.TEMPORAL));
+    
+    assertTrue(TypeFamily.JSON.isCastable(TypeFamily.STRING));
+    assertFalse(TypeFamily.JSON.isCastable(null));
+    assertFalse(TypeFamily.JSON.isCastable(TypeFamily.TEMPORAL));
+  }
+  
   @Test
   public void typeIdOf() throws Exception {
     assertEquals(TypeId.ANY, TypeId.of("Any"));    
@@ -129,7 +139,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.NUMBER, TypeId.fromValue(BigDecimal.valueOf(123456789,3)));
     assertEquals(TypeId.DATE, TypeId.fromValue(ZonedDateTime.now()));
     assertEquals(TypeId.INTERVAL, TypeId.fromValue(Interval.of(5)));
-    assertEquals(TypeId.JSON, TypeId.fromValue(JsonType.convertStringToJson("{\"name\":\"Smith\"}")));
+    assertEquals(TypeId.JSON, TypeId.fromValue(JsonType.convertToJson("{\"name\":\"Smith\"}")));
   }
 
   @Test
@@ -137,8 +147,19 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.ANY));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.BINARY));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.BOOLEAN));
+    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.NUMERIC));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.TEMPORAL));
-    
+    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.STRING));
+    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.INTERVAL));
+    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.JSON));
+        
+    assertTrue(TypeFamily.NUMERIC.isFamily(TypeFamily.NUMERIC));
+    assertTrue(TypeFamily.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
+    assertTrue(TypeFamily.STRING.isFamily(TypeFamily.STRING));
+    assertTrue(TypeFamily.TEMPORAL.isFamily(TypeFamily.TEMPORAL));
+    assertTrue(TypeFamily.INTERVAL.isFamily(TypeFamily.INTERVAL));
+    assertTrue(TypeFamily.BINARY.isFamily(TypeFamily.BINARY));
+          
     assertTrue(Types.ANY.isFamily(TypeFamily.BINARY));
     assertTrue(Types.ANY.isFamily(TypeFamily.BOOLEAN));
     assertTrue(Types.ANY.isFamily(TypeFamily.NUMERIC));
@@ -167,6 +188,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeFamily.NUMERIC, Types.INTEGER.getFamily());
     assertEquals(TypeFamily.NUMERIC, Types.NUMBER.getFamily());
     assertEquals(TypeFamily.STRING, Types.STRING.getFamily());
+    assertEquals(TypeFamily.INTERVAL, Types.INTERVAL.getFamily());
   }
 
   @Test
@@ -217,23 +239,19 @@ public class TypeTest extends ExpressionTest {
     
     // Check scale > precision
     assertThrows(IllegalArgumentException.class, () -> NumberType.of(10,20));
-  }
-  
-  @Test
-  public void exceptionPrecisionOutOfRange() throws Exception {
-    assertThrows(IllegalArgumentException.class, () ->  IntegerType.of(100));
-  }
+  }  
     
   @Test
   public void coerceToBoolean() throws Exception {
-//    assertNull(BooleanType.coerce(null));
-//    assertTrue(BooleanType.coerce(true));
-//    assertTrue(BooleanType.coerce(3L));
-//    assertTrue(BooleanType.coerce(1D));
-//    assertFalse(BooleanType.coerce(0L));
-//    assertFalse(BooleanType.coerce(false));
-//    assertThrows(ConversionException.class, () -> BooleanType.coerce("True"));
-//    assertThrows(ConversionException.class, () -> BooleanType.coerce(ZonedDateTime.now()));
+    assertNull(BooleanType.coerce(null));
+    assertTrue(BooleanType.coerce(true));
+    assertTrue(BooleanType.coerce(3L));
+    assertTrue(BooleanType.coerce(1D));
+    assertFalse(BooleanType.coerce(0L));
+    assertFalse(BooleanType.coerce(false));
+    
+    assertThrows(ConversionException.class, () -> BooleanType.coerce("True"));
+    assertThrows(ConversionException.class, () -> BooleanType.coerce(ZonedDateTime.now()));
   }
 
   @Test
@@ -260,6 +278,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Boolean.FALSE, type.cast("N"));
     assertEquals(Boolean.FALSE, type.cast("No"));
     assertEquals(Boolean.FALSE, type.cast("Off"));
+    
     assertThrows(ConversionException.class, () -> type.cast("3"));
     assertThrows(ConversionException.class, () -> type.cast("MO"));
     assertThrows(ConversionException.class, () -> type.cast("BAD"));
@@ -268,23 +287,9 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  public void convertToBoolean() throws Exception {
-    BooleanType type = Types.BOOLEAN;
-    assertNull(type.convert(null, Boolean.class));
-    assertNull(type.convert(null, Long.class));
-    assertNull(type.convert(null, String.class));
-
-    assertEquals(Boolean.TRUE, type.convert(true, Boolean.class));
-    assertEquals("TRUE", type.convert(true, String.class));
-    assertEquals(Long.valueOf(1), type.convert(true, Long.class));
-    assertEquals(BigDecimal.ONE, type.convert(true, BigDecimal.class));
-    assertEquals(BigDecimal.ZERO, type.convert(false, BigDecimal.class));
-    assertThrows(ConversionException.class, () -> type.convert(true, ZonedDateTime.class));
-  }
-  
-  @Test
   public void coerceToBinary() throws Exception {
     assertNull(BinaryType.coerce(null));
+    
     assertThrows(ConversionException.class, () -> BinaryType.coerce(true));
     assertThrows(ConversionException.class, () -> BinaryType.coerce(3L));
     assertThrows(ConversionException.class, () -> BinaryType.coerce(3D));
@@ -295,6 +300,7 @@ public class TypeTest extends ExpressionTest {
     BinaryType type = Types.BINARY;
     assertNull(type.cast(null));
     //assertEquals(new byte[] {0xF, 0xC}, type.cast(new byte[] {0xF, 0xC}));
+    
     assertThrows(ConversionException.class, () ->  type.cast(true));
     assertThrows(ConversionException.class, () ->  type.cast(1L));
     assertThrows(ConversionException.class, () ->  type.cast(1D));
@@ -303,10 +309,11 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  public void coerceToDate() throws Exception {
+  public void coerceToDate() throws Exception {    
     ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
    
     assertNull(DateType.coerce(null));
+    assertEquals(date, DateType.coerce(date));
     
     assertThrows(ConversionException.class, () -> DateType.coerce(true));
     assertThrows(ConversionException.class, () -> DateType.coerce("2022"));
@@ -319,19 +326,17 @@ public class TypeTest extends ExpressionTest {
     
     assertNull(type.cast(null));
     assertEquals(date, type.cast(date));
+    assertEquals(date, type.cast(1672185600L));
+    assertEquals(date, type.cast(BigDecimal.valueOf(1672185600L)));    
     assertEquals(date, type.cast("2022-12-28"));
     assertEquals(date, type.cast("2022-12-28", "YYYY-MM-DD"));
+    
+    ZonedDateTime timestamp = ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneId.systemDefault());
+    assertEquals(timestamp, type.cast("2022-12-28 13:32:55.123456789", "YYYY-MM-DD HH24:MI:SS.FF9"));
+    
     assertThrows(ConversionException.class, () -> type.cast(true));
   }
-  
 
-  @Test
-  public void convertToDate() throws Exception {
-    DateType type = Types.DATE;
-    assertNull(type.convert(null, ZonedDateTime.class));
-    assertThrows(ConversionException.class, () -> type.convert(123, ZonedDateTime.class));
-  }
-  
   @Test
   public void coerceToString() throws Exception {
     assertNull(StringType.coerce(null));
@@ -357,21 +362,9 @@ public class TypeTest extends ExpressionTest {
     assertEquals("3.123", type.cast(new BigDecimal("3.123")));
     assertEquals("-3.123", type.cast(new BigDecimal("-3.123")));
     assertEquals("ABCD��", type.cast("ABCD��".getBytes(StandardCharsets.UTF_8)));
+    assertEquals("{\"name\":\"Smith\"}", type.cast(JsonType.convertToJson("{\"name\":\"Smith\"}")));
   }
 
-  @Test
-  public void convertToString() throws Exception {
-    StringType type = Types.STRING;
-    assertNull(type.convert(null, Boolean.class));
-    assertNull(type.convert(null, Long.class));
-    assertNull(type.convert(null, String.class));
-
-    assertEquals(Boolean.TRUE, type.convert("True", Boolean.class));
-    assertEquals("Test", type.convert("Test", String.class));
-    assertEquals(Long.valueOf(123), type.convert("123", Long.class));
-    assertEquals(BigDecimal.ONE, type.convert("1", BigDecimal.class));
-    assertThrows(ConversionException.class, () -> type.convert(true, ZonedDateTime.class));
-  }
   
   @Test
   public void coerceToInteger() throws Exception {
@@ -379,6 +372,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(1L), IntegerType.coerce(1));
     assertEquals(Long.valueOf(1L), IntegerType.coerce(1L));
     assertEquals(Long.valueOf(1L), IntegerType.coerce(1.2D));
+    assertEquals(Long.valueOf(0L), IntegerType.coerce(".2"));
     assertEquals(Long.valueOf(1L), IntegerType.coerce("1.2"));
     assertEquals(Long.valueOf(-1L), IntegerType.coerce("-1.6"));
     assertEquals(Long.valueOf(1L), IntegerType.coerce(BigDecimal.ONE));
@@ -404,23 +398,9 @@ public class TypeTest extends ExpressionTest {
     assertEquals(Long.valueOf(5L), type.cast("5.9"));
     assertEquals(Long.valueOf(-5L), type.cast("-5.2"));
     assertEquals(Long.valueOf(15L), type.cast(new byte[] {0xF}));
+    assertEquals(Long.valueOf(1672185600L), type.cast(LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault())));
   }
-  
-  @Test
-  public void convertToInteger() throws Exception {
-    IntegerType type = Types.INTEGER;
-    assertNull(type.convert(null, Long.class));
-    assertNull(type.convert(null, BigDecimal.class));
-    assertNull(type.convert(null, String.class));
 
-    assertEquals(Boolean.FALSE, type.convert(0L, Boolean.class));
-    assertEquals(Boolean.TRUE, type.convert(1L, Boolean.class));
-    assertEquals("123", type.convert(123L, String.class));
-    assertEquals(Long.valueOf(123), type.convert(123L, Long.class));
-    assertEquals(new BigDecimal("123"), type.convert(123L, BigDecimal.class));
-    assertThrows(ConversionException.class, () -> type.convert(123L, ZonedDateTime.class));
-  }
-  
   @Test
   public void coerceToNumber() throws Exception {
     assertNull(NumberType.coerce(null));
@@ -466,23 +446,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(new BigDecimal("-3.56E2"), type.cast("-3.56E+2"));
     assertEquals(BigDecimal.valueOf(15), type.cast(new byte[] {0xF}));
 
-    assertThrows(ConversionException.class, () -> type.cast(ZonedDateTime.now()));
     assertThrows(ConversionException.class, () -> type.cast("TRUE"));
-  }
-
-  @Test
-  public void convertToNumber() throws Exception {
-    NumberType type = Types.NUMBER;
-    assertNull(type.convert(null, Long.class));
-    assertNull(type.convert(null, BigDecimal.class));
-    assertNull(type.convert(null, String.class));
-
-    assertEquals(Boolean.FALSE, type.convert(BigDecimal.ZERO, Boolean.class));
-    assertEquals(Boolean.TRUE, type.convert(BigDecimal.ONE, Boolean.class));
-    assertEquals("-123.045", type.convert(new BigDecimal("-123.045"), String.class));
-    assertEquals(Long.valueOf(-123), type.convert(new BigDecimal("-123.045"), Long.class));
-    assertEquals(new BigDecimal("-123.045"), type.convert(new BigDecimal("-123.045"), BigDecimal.class));
-    assertThrows(ConversionException.class, () -> type.convert(new BigDecimal("-123.045"), ZonedDateTime.class));
   }
   
   @Test
@@ -541,5 +505,93 @@ public class TypeTest extends ExpressionTest {
     
     // String to BigNumber
     evalEquals("' -1e-3 '::Number(10,3)", new BigDecimal("-1e-3"));   
+  }  
+
+  @Test
+  public void convertToBoolean() throws Exception {
+    BooleanType type = Types.BOOLEAN;
+    assertNull(type.convert(null, Boolean.class));
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.TRUE, type.convert(true, Boolean.class));
+    assertEquals("TRUE", type.convert(true, String.class));
+    assertEquals("FALSE", type.convert(false, String.class));
+    assertEquals(Long.valueOf(0), type.convert(false, Long.class));
+    assertEquals(Long.valueOf(1), type.convert(true, Long.class));
+    assertEquals(BigDecimal.ONE, type.convert(true, BigDecimal.class));
+    assertEquals(BigDecimal.ZERO, type.convert(false, BigDecimal.class));
+    
+    assertThrows(ConversionException.class, () -> type.convert(true, ZonedDateTime.class));
   }
+  
+  @Test
+  public void convertToInteger() throws Exception {
+    IntegerType type = Types.INTEGER;
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, BigDecimal.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.FALSE, type.convert(0L, Boolean.class));
+    assertEquals(Boolean.TRUE, type.convert(1L, Boolean.class));
+    assertEquals(Boolean.TRUE, type.convert(-5L, Boolean.class));
+    assertEquals("123", type.convert(123L, String.class));
+    assertEquals("-123", type.convert(-123L, String.class));
+    assertEquals(Long.valueOf(123), type.convert(123L, Long.class));
+    assertEquals(BigDecimal.valueOf(123), type.convert(123L, BigDecimal.class));
+
+    assertThrows(ConversionException.class, () -> type.convert(1672185600L, ZonedDateTime.class));
+  }
+
+  @Test
+  public void convertToNumber() throws Exception {
+    NumberType type = Types.NUMBER;
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, BigDecimal.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.FALSE, type.convert(BigDecimal.ZERO, Boolean.class));
+    assertEquals(Boolean.TRUE, type.convert(BigDecimal.ONE, Boolean.class));
+    assertEquals("-123.045", type.convert(new BigDecimal("-123.045"), String.class));
+    assertEquals(Long.valueOf(-123), type.convert(new BigDecimal("-123.045"), Long.class));
+    assertEquals(BigDecimal.valueOf(-123.045), type.convert(new BigDecimal("-123.045"), BigDecimal.class));
+
+    assertThrows(ConversionException.class, () -> type.convert(new BigDecimal("-123.045"), ZonedDateTime.class));
+  }
+
+  @Test
+  public void convertToString() throws Exception {
+    StringType type = Types.STRING;
+    assertNull(type.convert(null, Boolean.class));
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, String.class));
+
+    assertEquals(Boolean.TRUE, type.convert("True", Boolean.class));
+    assertEquals(Boolean.FALSE, type.convert("Off", Boolean.class));
+    assertEquals("Test", type.convert("Test", String.class));
+    assertEquals(Long.valueOf(123), type.convert("123", Long.class));
+    assertEquals(Long.valueOf(-123), type.convert("-123", Long.class));
+    assertEquals(BigDecimal.ONE, type.convert("1", BigDecimal.class));
+    
+    assertThrows(DateTimeParseException.class, () -> type.convert("ABC", ZonedDateTime.class));
+  }
+
+  @Test
+  public void convertToDate() throws Exception {
+    DateType type = Types.DATE;
+    
+    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
+    
+    assertNull(type.convert(null, Long.class));
+    assertNull(type.convert(null, String.class));
+    assertNull(type.convert(null, ZonedDateTime.class));
+    
+    assertEquals(date, type.convert(date, ZonedDateTime.class));
+    assertEquals(Long.valueOf(1672185600L), type.convert(date, Long.class));
+    assertEquals(BigDecimal.valueOf(1672185600L), type.convert(date, BigDecimal.class));   
+    assertEquals("2022-12-28", type.convert(date, String.class));
+    
+    assertThrows(ConversionException.class, () -> type.convert(date, Boolean.class));
+  }
+    
 }

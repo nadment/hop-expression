@@ -85,7 +85,7 @@ public final class BinaryType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convertBinaryToString((byte[]) value));
+      return clazz.cast(StringType.convertToString((byte[]) value));
     }
 
     return super.convert(value, clazz);
@@ -122,7 +122,7 @@ public final class BinaryType extends Type {
         TypeId.fromValue(value), this);
   }
 
-  public static byte[] convertIntegerToBinary(Long number) throws ConversionException {
+  public static byte[] convertToBinary(Long number) throws ConversionException {
     byte[] result = new byte[Long.BYTES];
     for (int i = Long.BYTES - 1; i >= 0; i--) {
       result[i] = (byte) (number & 0xFF);
@@ -131,7 +131,7 @@ public final class BinaryType extends Type {
     return result;
   }
 
-  public static byte[] convertStringToBinary(final String str) throws ConversionException {
+  public static byte[] convertToBinary(final String str) throws ConversionException {
     return str.getBytes(StandardCharsets.UTF_8);
   }
 }

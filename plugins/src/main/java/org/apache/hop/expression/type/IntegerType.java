@@ -20,6 +20,7 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 public final class IntegerType extends Type {
 
@@ -81,7 +82,7 @@ public final class IntegerType extends Type {
       return ((Number) value).longValue();
     }
     if (value instanceof String) {
-      return IntegerType.convertStringToInteger((String) value);
+      return IntegerType.convertToInteger((String) value);
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
@@ -132,17 +133,20 @@ public final class IntegerType extends Type {
       return ((boolean) value) ? 1L : 0L;
     }
     if (value instanceof String) {
-      return convertStringToInteger((String) value);
+      return convertToInteger((String) value);
     }
     if (value instanceof byte[]) {
-      return convertBinaryToInteger((byte[]) value);
+      return convertToInteger((byte[]) value);
     }
-
+    if (value instanceof ZonedDateTime) {
+      return convertToInteger((ZonedDateTime) value);
+    }
+    
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         TypeId.fromValue(value), this);
   }
 
-  public static final Long convertStringToInteger(final String str) throws ConversionException {
+  public static final Long convertToInteger(final String str) throws ConversionException {
     try {
       Double number = Double.parseDouble(str);
       return number.longValue();
@@ -151,7 +155,7 @@ public final class IntegerType extends Type {
     }
   }
 
-  public static final Long convertBinaryToInteger(final byte[] bytes) throws ConversionException {
+  public static final Long convertToInteger(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.BINARY, bytes,
           TypeId.INTEGER);
@@ -163,6 +167,10 @@ public final class IntegerType extends Type {
     return result;
   }
 
+  public static final Long convertToInteger(final ZonedDateTime datetime) throws ConversionException {
+    return datetime.toEpochSecond();
+  }
+  
   protected static int numberOfDigit(int number) {
     if (number < 100000) {
       if (number < 100) {

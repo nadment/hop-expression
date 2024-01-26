@@ -149,9 +149,9 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void Try_To_Json() throws Exception {
 
     evalEquals("Try_To_Json('{\"name\":\"Smith\", \"age\":29}')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(Types.JSON);
-    evalEquals("Try_To_Json('true')", JsonType.convertStringToJson("true"));
-    evalEquals("Try_To_Json('null')", JsonType.convertStringToJson("null"));
+        JsonType.convertToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(Types.JSON);
+    evalEquals("Try_To_Json('true')", JsonType.convertToJson("true"));
+    evalEquals("Try_To_Json('null')", JsonType.convertToJson("null"));
 
     evalNull("Try_To_Json(NULL_STRING)");
     evalNull("Try_To_Json('BAD JSON ;')");
@@ -2572,9 +2572,9 @@ public class ScalarFunctionTest extends ExpressionTest {
   public void To_Json() throws Exception {
 
     evalEquals("To_Json('{\"name\":\"Smith\", \"age\":29}')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(Types.JSON);
-    evalEquals("To_Json('true')", JsonType.convertStringToJson("true"));
-    evalEquals("To_Json('null')", JsonType.convertStringToJson("null"));
+        JsonType.convertToJson("{\"name\":\"Smith\",\"age\":29}")).returnType(Types.JSON);
+    evalEquals("To_Json('true')", JsonType.convertToJson("true"));
+    evalEquals("To_Json('null')", JsonType.convertToJson("null"));
 
     evalNull("To_Json(NULL_STRING)").returnType(Types.JSON);
 
@@ -2628,11 +2628,11 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Json_Query() throws Exception {
     evalEquals("Json_Query('{name:\"Smith\",age:29}'::JSON)",
-        JsonType.convertStringToJson("{name:\"Smith\",age:29}")).returnType(Types.JSON);
+        JsonType.convertToJson("{name:\"Smith\",age:29}")).returnType(Types.JSON);
     evalEquals(
         "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}'::JSON,'$.Suspect.Hobbies')",
-        JsonType.convertStringToJson("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
-    evalEquals("Json_Query('null'::JSON,'$')", JsonType.convertStringToJson("null"));
+        JsonType.convertToJson("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
+    evalEquals("Json_Query('null'::JSON,'$')", JsonType.convertToJson("null"));
 
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 
@@ -2643,21 +2643,21 @@ public class ScalarFunctionTest extends ExpressionTest {
   @Test
   public void Json_Object() throws Exception {
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\"}")).returnType(Types.JSON);
+        JsonType.convertToJson("{\"name\":\"Smith\"}")).returnType(Types.JSON);
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'langue' VALUE 'english')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
+        JsonType.convertToJson("{\"name\":\"Smith\",\"langue\":\"english\"}"));
 
     // Support null
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'empty' VALUE null)",
-        JsonType.convertStringToJson("{\"name\":\"Smith\",\"empty\":null}"));
+        JsonType.convertToJson("{\"name\":\"Smith\",\"empty\":null}"));
 
     // Support duplicate key
     evalEquals("Json_Object(KEY 'name' VALUE 'Smith', KEY 'name' VALUE 'John')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\", \"name\":\"John\"}"));
+        JsonType.convertToJson("{\"name\":\"Smith\", \"name\":\"John\"}"));
 
     // Accept missing KEY
     evalEquals("Json_Object('name' VALUE 'Smith')",
-        JsonType.convertStringToJson("{\"name\":\"Smith\"}"));
+        JsonType.convertToJson("{\"name\":\"Smith\"}"));
 
     evalFails("Json_Object(KEY 'name' VALUE )");
     evalFails("Json_Object(KEY VALUE 'Smith')");

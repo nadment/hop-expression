@@ -16,8 +16,6 @@
  */
 package org.apache.hop.expression.type;
 
-import java.util.Set;
-
 /**
  * Represents a family of related types.
  */
@@ -48,28 +46,6 @@ public enum TypeFamily {
   ANY,
   //
   SYMBOL;
-
-  /** Returns the collection of {@link TypeId}s included in this family. */
-  public Set<TypeId> getTypeIds() {
-    switch (this) {
-      case BOOLEAN:
-        return TypeId.BOOLEAN_TYPES;
-      case BINARY:
-        return TypeId.BINARY_TYPES;
-      case NUMERIC:
-        return TypeId.NUMERIC_TYPES;
-      case STRING:
-        return TypeId.STRING_TYPES;
-      case TEMPORAL:
-        return TypeId.TEMPORAL_TYPES;
-      case JSON:
-        return TypeId.JSON_TYPES;
-      case ANY:
-        return TypeId.ALL_TYPES;
-      default:
-        return Set.of();
-    }
-  }
 
   /**
    * Returns whether type are in same type family.
@@ -128,9 +104,9 @@ public enum TypeFamily {
       case STRING:
         return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
       case TEMPORAL:
-        return family.isFamily(TEMPORAL, STRING);
+        return family.isFamily(TEMPORAL, STRING, NUMERIC);
       case NUMERIC:
-        return family.isFamily(NUMERIC, BOOLEAN, BINARY, STRING);
+        return family.isFamily(NUMERIC, BOOLEAN, BINARY, STRING, TEMPORAL);
       case BINARY:
         return family.isFamily(BINARY, STRING);
       case JSON:

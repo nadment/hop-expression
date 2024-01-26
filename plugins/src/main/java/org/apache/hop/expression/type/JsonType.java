@@ -78,7 +78,7 @@ public final class JsonType extends Type {
       return clazz.cast(value);
     }
     if (clazz == String.class) {
-      return clazz.cast(StringType.convertJsonToString((JsonNode) value));
+      return clazz.cast(StringType.convertToString((JsonNode) value));
     }
 
     return super.convert(value, clazz);
@@ -109,7 +109,7 @@ public final class JsonType extends Type {
     }
 
     if (value instanceof String) {
-      return convertStringToJson((String) value);
+      return convertToJson((String) value);
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
@@ -122,7 +122,7 @@ public final class JsonType extends Type {
    * @param str the string to convert
    * @return JsonNode
    */
-  public static JsonNode convertStringToJson(final String str) throws ConversionException {
+  public static JsonNode convertToJson(final String str) throws ConversionException {
     if (str == null)
       return null;
     try {

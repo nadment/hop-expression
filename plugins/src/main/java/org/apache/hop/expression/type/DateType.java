@@ -20,7 +20,11 @@ package org.apache.hop.expression.type;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.util.DateTimeFormat;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
 
 public final class DateType extends Type {
   
@@ -51,7 +55,15 @@ public final class DateType extends Type {
     if (clazz.isInstance(value)) {
       return clazz.cast(value);
     }
-
+    if (clazz == String.class) {
+      return clazz.cast(StringType.convertToString((ZonedDateTime) value));
+    }
+    if (clazz == Long.class) {
+      return clazz.cast(IntegerType.convertToInteger((ZonedDateTime) value));
+    }
+    if (clazz == BigDecimal.class) {
+      return clazz.cast(NumberType.convertToNumber((ZonedDateTime) value));
+    }
     return super.convert(value, clazz);
   }
 
@@ -81,7 +93,14 @@ public final class DateType extends Type {
     if (value instanceof String) {
       return DateTimeFormat.of(pattern).parse((String) value);
     }
-
+    if (value instanceof Long) {      
+      Instant instant = Instant.ofEpochSecond((Long) value);
+      return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+    }    
+    if (value instanceof BigDecimal) { 
+      return convertToDate((BigDecimal) value);      
+    }
+    
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
         TypeId.fromValue(value), this);
   }
@@ -103,5 +122,15 @@ public final class DateType extends Type {
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.DATE);
+  }
+  
+  public static final ZonedDateTime convertToDate(final String value) throws ConversionException {         
+    return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
+  }
+  
+  public static final ZonedDateTime convertToDate(final BigDecimal number) throws ConversionException {              
+    long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
+    Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
+    return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
   }
 }

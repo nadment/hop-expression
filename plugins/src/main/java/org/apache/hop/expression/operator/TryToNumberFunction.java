@@ -24,10 +24,10 @@ import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.OperatorCategory;
-import org.apache.hop.expression.ParseNumberException;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.ParseNumberException;
 
 /**
  * Converts a string expression to a number value with optional format.

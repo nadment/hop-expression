@@ -19,11 +19,12 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
-import org.apache.hop.expression.ParseNumberException;
 import org.apache.hop.expression.util.NumberFormat;
+import org.apache.hop.expression.util.ParseNumberException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.time.ZonedDateTime;
 
 /**
  * Number type with an optional precision and scale:
@@ -151,11 +152,14 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf(v);
     }
     if (value instanceof String) {
-      return convertStringToNumber((String) value);
+      return convertToNumber((String) value);
 
     }
     if (value instanceof byte[]) {
-      return convertBinaryToNumber((byte[]) value);
+      return convertToNumber((byte[]) value);
+    }
+    if (value instanceof ZonedDateTime) {
+      return convertToNumber((ZonedDateTime) value);
     }
 
     throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value),
@@ -179,13 +183,13 @@ public final class NumberType extends Type {
       return BigDecimal.valueOf((long) value);
     }
     if (value instanceof String) {
-      return convertStringToNumber((String) value);
+      return convertToNumber((String) value);
     }
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.NUMBER);
   }
 
-  public static final BigDecimal convertStringToNumber(final String str)
+  public static final BigDecimal convertToNumber(final String str)
       throws ConversionException {
     try {
       return FORMAT.parse(str);
@@ -195,7 +199,7 @@ public final class NumberType extends Type {
     }
   }
 
-  public static BigDecimal convertBinaryToNumber(final byte[] bytes) throws ConversionException {
+  public static final BigDecimal convertToNumber(final byte[] bytes) throws ConversionException {
     if (bytes.length > 8)
       throw new ConversionException(ErrorCode.CONVERSION_ERROR, bytes, TypeId.BINARY,
           TypeId.NUMBER);
@@ -206,4 +210,9 @@ public final class NumberType extends Type {
     }
     return new BigDecimal(result);
   }
+  
+  public static final BigDecimal convertToNumber(final ZonedDateTime datetime) throws ConversionException {
+    int n = datetime.getNano();
+    return new BigDecimal(datetime.toEpochSecond());
+  }  
 }

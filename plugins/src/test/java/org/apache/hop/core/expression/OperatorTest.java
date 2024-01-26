@@ -1002,7 +1002,7 @@ public class OperatorTest extends ExpressionTest {
     // Integer
     evalEquals("CAST(0 as Integer)", 0L).returnType(Types.INTEGER);
     evalEquals("CAST(123 as Integer)", 123L);
-    evalEquals("CAST(-123 as Integer)", -123L);
+    evalEquals("CAST(-123 as Integer(3))", -123L).returnType(IntegerType.of(3));
 
     // Number
     evalEquals("CAST(1.25 as Integer)", 1L).returnType(Types.INTEGER);
@@ -1023,6 +1023,11 @@ public class OperatorTest extends ExpressionTest {
     // Binary
     evalEquals("CAST(BINARY '123' as Integer)", 291L);
 
+    // Date to Unix Epoch
+    evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Integer)", 1L);
+    evalEquals("CAST(DATE '2019-02-25' AS INTEGER)", 1551052800L);
+    evalEquals("CAST(DATE '1800-01-01' AS INTEGER)", -5364662400L);    
+    
     // Null
     evalNull("CAST(NULL_NUMBER as Integer)").returnType(Types.INTEGER);
     evalNull("CAST(NULL_INTEGER as Integer)").returnType(Types.INTEGER);
@@ -1033,7 +1038,6 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("Cast(123 as 'INTEGER')", 123L).returnType(Types.INTEGER);
 
     // Unsupported conversion
-    evalFails("CAST(DATE '2019-02-25' AS INTEGER)");
     evalFails("CAST(FIELD_JSON AS INTEGER)");
 
     // Remove unnecessary cast excepted with format
@@ -1100,13 +1104,17 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('1234.567' as Number(10,5))", 1234.567d);
     evalEquals("CAST('  -1e-37  ' as Number(38,37))", -1e-37d);
 
+    // Date to Unix Epoch
+    evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1L).returnType(Types.NUMBER);
+    evalEquals("CAST(DATE '2019-02-25' AS Number)", 1551052800L).returnType(Types.NUMBER);
+    evalEquals("CAST(DATE '1800-01-01' AS Number)", -5364662400L).returnType(Types.NUMBER);
+    
     // Null
     evalNull("CAST(NULL_INTEGER as Number)").returnType(Types.NUMBER);
     evalNull("CAST(NULL_NUMBER as Number)").returnType(Types.NUMBER);
     evalNull("CAST(NULL_BIGNUMBER as Number(12,2))").returnType(NumberType.of(12, 2));
 
-    // Unsupported conversion
-    evalFails("CAST(DATE '2019-02-25' AS NUMBER)");
+    // Unsupported conversion    
     evalFails("CAST(FIELD_JSON AS NUMBER)");
 
     optimize("CAST(FIELD_INTEGER AS NUMBER)", "CAST(FIELD_INTEGER AS NUMBER)");
@@ -1174,8 +1182,20 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('2020-01-19 11:23:44' as DATE FORMAT 'YYYY-MM-DD HH:MI:SS')",
         LocalDateTime.of(2020, 1, 19, 11, 23, 44)).returnType(Types.DATE);
 
-    // Integer to Timestamp
-    // evalEquals("CAST(-123456789 AS DATE)", LocalDateTime.of(1966, 2, 2, 5, 26, 51));
+    // Integer Unix Epoch
+    evalEquals("CAST(0 AS DATE)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
+    evalEquals("CAST(1551052800 AS DATE)", LocalDate.of(2019, 2, 25));
+    evalEquals("CAST(-5364662400 AS DATE)", LocalDate.of(1800, 1, 1));
+    evalEquals("CAST(1284352323 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
+    
+    // Number Unix Epoch
+    evalEquals("CAST(1551052800.000000000 AS DATE)", LocalDate.of(2019, 2, 25));
+    evalEquals("CAST(-5364662400.000000000 AS DATE)", LocalDate.of(1800, 1, 1));
+    
+    evalEquals("CAST(1284352323.1 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  100000000));
+    evalEquals("CAST(1284352323.12 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
+    evalEquals("CAST(1284352323.123 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  123000000));            
+    evalEquals("CAST(1284352323.123456789 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
     
     // Null
     evalNull("CAST(NULL as Date)").returnType(Types.DATE);

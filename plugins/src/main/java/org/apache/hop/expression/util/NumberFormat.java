@@ -14,7 +14,6 @@
  */
 package org.apache.hop.expression.util;
 
-import org.apache.hop.expression.ParseNumberException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

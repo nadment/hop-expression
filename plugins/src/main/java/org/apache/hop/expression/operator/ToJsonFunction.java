@@ -37,6 +37,6 @@ public class ToJsonFunction extends Function {
   @Override
   public Object eval(final IExpression[] operands) {
     String value = operands[0].getValue(String.class);
-    return JsonType.convertStringToJson(value);
+    return JsonType.convertToJson(value);
   }
 }

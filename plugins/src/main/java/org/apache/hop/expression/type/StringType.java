@@ -77,19 +77,22 @@ public final class StringType extends Type {
       return clazz.cast(value);
     }
     if (clazz == Boolean.class) {
-      return clazz.cast(BooleanType.convertStringToBoolean((String) value));
+      return clazz.cast(BooleanType.convertToBoolean((String) value));
     }
     if (clazz == Long.class) {
-      return clazz.cast(IntegerType.convertStringToInteger((String) value));
+      return clazz.cast(IntegerType.convertToInteger((String) value));
     }
     if (clazz == BigDecimal.class) {
-      return clazz.cast(NumberType.convertStringToNumber((String) value));
+      return clazz.cast(NumberType.convertToNumber((String) value));
     }
     if (clazz == byte[].class) {
-      return clazz.cast(BinaryType.convertStringToBinary((String) value));
+      return clazz.cast(BinaryType.convertToBinary((String) value));
+    }
+    if (clazz == ZonedDateTime.class) {
+      return clazz.cast(DateType.convertToDate((String) value));
     }
     if (clazz == JsonNode.class) {
-      return clazz.cast(JsonType.convertStringToJson((String) value));
+      return clazz.cast(JsonType.convertToJson((String) value));
     }
 
     return super.convert(value, clazz);
@@ -121,7 +124,7 @@ public final class StringType extends Type {
       result = (String) value;
     }
     else if (value instanceof Boolean) {
-      result = convertBooleanToString((boolean) value);
+      result = convertToString((boolean) value);
     } else if (value instanceof Number) {      
       if (pattern == null) {
         pattern = "TM";
@@ -144,7 +147,7 @@ public final class StringType extends Type {
       result =  new String((byte[]) value, StandardCharsets.UTF_8);
     }
     else if (value instanceof JsonNode) {
-      return convertJsonToString((JsonNode) value);
+      return convertToString((JsonNode) value);
     }
 
     if (result==null ) {
@@ -180,34 +183,38 @@ public final class StringType extends Type {
       return (String) value;
     }
     if (value instanceof Boolean) {
-      return convertBooleanToString((boolean) value);
+      return convertToString((boolean) value);
     }
     if (value instanceof BigDecimal) {
-      return convertNumberToString((BigDecimal) value);
+      return convertToString((BigDecimal) value);
     }
 
     return String.valueOf(value);
   }
 
-  public static String convertBooleanToString(final boolean value) {
+  public static String convertToString(final boolean value) {
     return value ? "TRUE" : "FALSE";
   }
 
-  public static String convertNumberToString(final BigDecimal value) throws ConversionException {
+  public static String convertToString(final BigDecimal value) throws ConversionException {
     return NumberFormat.of("TM").format(value);
   }
 
-  public static String convertBinaryToString(final byte[] bytes) {
+  public static String convertToString(final byte[] bytes) {
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
+  public static String convertToString(final ZonedDateTime value) throws ConversionException {
+    return DateTimeFormat.of("YYYY-MM-DD").format(value);
+  }
+  
   /**
    * Convert Json value to String.
    * 
    * @param json the json to convert
    * @return String
    */
-  public static String convertJsonToString(final JsonNode json) throws ConversionException {
+  public static String convertToString(final JsonNode json) throws ConversionException {
     try {
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(json);
