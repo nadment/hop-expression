@@ -33,8 +33,8 @@ public class ExpressionComparator implements Comparator<IExpression> {
     if ( e1.is(Kind.IDENTIFIER) && e2.is(Kind.IDENTIFIER) ) {
       return e1.asIdentifier().getName().compareTo(e2.asIdentifier().getName());
     }
-
-    // If same cost order with textuel representation    
+    
+    // If same cost order with textual representation    
     return e1.toString().compareTo(e2.toString());
   }
 }

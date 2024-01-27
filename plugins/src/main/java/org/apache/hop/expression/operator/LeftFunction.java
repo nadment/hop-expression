@@ -36,8 +36,8 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class LeftFunction extends Function {
-  public static final LeftFunction LeftStringFunction = new LeftStringFunction();
-  public static final LeftFunction LeftBinaryFunction = new LeftBinaryFunction();
+  public static final LeftFunction StringLeftFunction = new StringLeftFunction();
+  public static final LeftFunction BinaryLeftFunction = new BinaryLeftFunction();
 
   public LeftFunction() {
     super("LEFT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
@@ -49,16 +49,16 @@ public class LeftFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(LeftBinaryFunction, call.getOperands());
+      return new Call(BinaryLeftFunction, call.getOperands());
     }
 
-    return new Call(LeftStringFunction, call.getOperands());
+    return new Call(StringLeftFunction, call.getOperands());
   }
 
   /**
    * The function extracts a number of characters from a string starting from left.
    */
-  private static final class LeftStringFunction extends LeftFunction {
+  private static final class StringLeftFunction extends LeftFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
@@ -83,7 +83,7 @@ public class LeftFunction extends Function {
   /**
    * The function extracts a number of characters from a binary starting from left.
    */
-  private static final class LeftBinaryFunction extends LeftFunction {
+  private static final class BinaryLeftFunction extends LeftFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);

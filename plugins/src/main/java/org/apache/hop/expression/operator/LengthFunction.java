@@ -33,8 +33,8 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin(names ="LEN")
 public class LengthFunction extends Function {
-  public static final LengthFunction LengthString = new LengthStringFunction();
-  public static final LengthFunction LengthBinary = new LengthBinaryFunction();
+  public static final LengthFunction StringLengthFunction = new StringLengthFunction();
+  public static final LengthFunction BinaryLengthFunction = new BinaryLengthFunction();
 
   public LengthFunction() {
     super("LENGTH", ReturnTypes.INTEGER_NULLABLE, OperandTypes.STRING.or(OperandTypes.BINARY),
@@ -48,15 +48,15 @@ public class LengthFunction extends Function {
 
     // Binary first
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(LengthBinary, call.getOperands());
+      return new Call(BinaryLengthFunction, call.getOperands());
     }
-    return new Call(LengthString, call.getOperands());
+    return new Call(StringLengthFunction, call.getOperands());
   }
 
   /**
    * The function returns the number of characters of the specified string.
    */
-  private static final class LengthStringFunction extends LengthFunction {
+  private static final class StringLengthFunction extends LengthFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String value = operands[0].getValue(String.class);
@@ -69,7 +69,7 @@ public class LengthFunction extends Function {
   /**
    * The function returns the number of characters of the specified binary.
    */
-  private static final class LengthBinaryFunction extends LengthFunction {
+  private static final class BinaryLengthFunction extends LengthFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] value = operands[0].getValue(byte[].class);

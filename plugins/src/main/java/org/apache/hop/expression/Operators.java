@@ -14,8 +14,6 @@
  */
 package org.apache.hop.expression;
 
-import org.apache.hop.expression.operator.AddIntervalOperator;
-import org.apache.hop.expression.operator.AddNumericOperator;
 import org.apache.hop.expression.operator.AddOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenOperator;
@@ -63,8 +61,6 @@ import org.apache.hop.expression.operator.NotEqualOperator;
 import org.apache.hop.expression.operator.NullIfFunction;
 import org.apache.hop.expression.operator.Nvl2Function;
 import org.apache.hop.expression.operator.SimilarToOperator;
-import org.apache.hop.expression.operator.SubtractIntervalOperator;
-import org.apache.hop.expression.operator.SubtractNumericOperator;
 import org.apache.hop.expression.operator.SubtractOperator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -123,26 +119,18 @@ public class Operators {
   public static final Operator GREATER_THAN_OR_EQUAL = new GreaterThanOrEqualOperator();
 
   // -------------------------------------------------------------
-  // GENERIC ARITHMETIC OPERATORS
+  // ARITHMETIC OPERATORS
   // -------------------------------------------------------------
   public static final Operator ADD = new AddOperator();
   public static final Operator SUBTRACT = new SubtractOperator();
-  
-  // -------------------------------------------------------------
-  // NUMERIC OPERATORS
-  // -------------------------------------------------------------
-  public static final Operator NEGATIVE = new NegateOperator();
+  public static final Operator NEGATE = new NegateOperator();
   public static final Operator MULTIPLY = new MultiplyOperator();
   public static final Operator DIVIDE = new DivOperator();
-  public static final Operator MODULUS = new ModFunction("%");
-  public static final Operator ADD_NUMERIC = new AddNumericOperator();
-  public static final Operator SUBTRACT_NUMERIC = new SubtractNumericOperator();
+  public static final Operator MODULUS = new ModFunction("%");  
 
   // -------------------------------------------------------------
   // DATE OPERATORS
   // -------------------------------------------------------------
-  public static final Operator ADD_INTERVAL = new AddIntervalOperator();
-  public static final Operator SUBTRACT_INTERVAL = new SubtractIntervalOperator();
   public static final Operator AT_TIME_ZONE = new AtTimeZoneOperator();
 
   // -------------------------------------------------------------

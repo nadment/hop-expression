@@ -40,8 +40,8 @@ import java.util.PriorityQueue;
  */
 public class MultiplyOperator extends Operator {
     
-  private static final MultiplyOperator MultiplyInteger = new MultiplyIntegerOperator();
-  private static final MultiplyOperator MultiplyNumber = new MultiplyNumberOperator();
+  private static final MultiplyOperator IntegerMultiplyOperator = new IntegerMultiplyOperator();
+  private static final MultiplyOperator NumberMultiplyOperator = new NumberMultiplyOperator();
   
   public MultiplyOperator() {
     super("MULTIPLY", "*", 50, true, ReturnTypes.MULTIPLY_OPERATOR, OperandTypes.NUMERIC_NUMERIC,
@@ -76,7 +76,7 @@ public class MultiplyOperator extends Operator {
     }
     
     // Simplify arithmetic (-A)*(-B) → A*B
-    if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
+    if (left.is(Operators.NEGATE) && right.is(Operators.NEGATE)) {
       return new Call(Operators.MULTIPLY, left.asCall().getOperand(0),
           right.asCall().getOperand(0));
     }
@@ -93,10 +93,10 @@ public class MultiplyOperator extends Operator {
     
     // Optimize data type
     if (call.getType().is(TypeId.INTEGER) ) {
-      return new Call(MultiplyInteger, call.getOperands());
+      return new Call(IntegerMultiplyOperator, call.getOperands());
     }
     
-    return new Call(MultiplyNumber, call.getOperands());
+    return new Call(NumberMultiplyOperator, call.getOperands());
   }
 
   @Override
@@ -116,7 +116,7 @@ public class MultiplyOperator extends Operator {
     operands[1].unparse(writer);
   }
   
-  private static final class MultiplyIntegerOperator extends MultiplyOperator {
+  private static final class IntegerMultiplyOperator extends MultiplyOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       Long left = operands[0].getValue(Long.class);
@@ -130,7 +130,7 @@ public class MultiplyOperator extends Operator {
     }
   }
 
-  private static final class MultiplyNumberOperator extends MultiplyOperator {
+  private static final class NumberMultiplyOperator extends MultiplyOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal left = operands[0].getValue(BigDecimal.class);

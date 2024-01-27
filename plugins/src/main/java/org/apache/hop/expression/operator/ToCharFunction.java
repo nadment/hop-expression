@@ -45,9 +45,9 @@ import java.util.Base64;
 @FunctionPlugin
 public class ToCharFunction extends Function {
   
-  private static final ToCharFunction BinaryHexToCharFunction = new BinaryHexToCharFunction();
-  private static final ToCharFunction BinaryBase64ToCharFunction = new BinaryBase64ToCharFunction();
-  private static final ToCharFunction BinaryUtf8ToCharFunction = new BinaryUtf8ToCharFunction();
+  private static final ToCharFunction BinaryToCharHexFunction = new BinaryToCharHexFunction();
+  private static final ToCharFunction BinaryToCharBase64Function = new BinaryToCharBase64Function();
+  private static final ToCharFunction BinaryToCharUtf8Function = new BinaryToCharUtf8Function();
   private static final ToCharFunction BooleanToCharFunction = new BooleanToCharFunction();
   
   public ToCharFunction() {
@@ -104,13 +104,13 @@ public class ToCharFunction extends Function {
       pattern = pattern.toUpperCase();
 
       if (pattern.equals("HEX")) {
-        return new Call(BinaryHexToCharFunction, call.getOperands());
+        return new Call(BinaryToCharHexFunction, call.getOperands());
       }
       if (pattern.equals("BASE64")) {
-        return new Call(BinaryBase64ToCharFunction, call.getOperands());
+        return new Call(BinaryToCharBase64Function, call.getOperands());
       }
       if (pattern.equals("UTF8") || pattern.equals("UTF-8")) {
-        return new Call(BinaryUtf8ToCharFunction, call.getOperands());
+        return new Call(BinaryToCharUtf8Function, call.getOperands());
       }
       
       throw new ExpressionException(ErrorCode.INVALID_BINARY_FORMAT, pattern);
@@ -185,7 +185,7 @@ public class ToCharFunction extends Function {
   /**
    * Converts a binary expression to a string value.
    */
-  private static final class BinaryHexToCharFunction extends ToCharFunction {
+  private static final class BinaryToCharHexFunction extends ToCharFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
@@ -196,7 +196,7 @@ public class ToCharFunction extends Function {
     }
   }
 
-  private static final class BinaryUtf8ToCharFunction extends ToCharFunction {
+  private static final class BinaryToCharUtf8Function extends ToCharFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);
@@ -207,7 +207,7 @@ public class ToCharFunction extends Function {
     }
   }
   
-  private static final class BinaryBase64ToCharFunction extends ToCharFunction {
+  private static final class BinaryToCharBase64Function extends ToCharFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);

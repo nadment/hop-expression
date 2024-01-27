@@ -35,8 +35,8 @@ import java.io.IOException;
  */
 @FunctionPlugin
 public class ConcatWsFunction extends Function {
-  public static final ConcatWsFunction ConcatWsStringFunction = new ConcatWsStringFunction();
-  public static final ConcatWsFunction ConcatWsBinaryFunction = new ConcatWsBinaryFunction();
+  public static final ConcatWsFunction StringConcatWsFunction = new StringConcatWsFunction();
+  public static final ConcatWsFunction BinaryConcatWsFunction = new BinaryConcatWsFunction();
 
   public ConcatWsFunction() {
     super("CONCAT_WS", ReturnTypes.CONCATWS_FUNCTION,
@@ -49,16 +49,16 @@ public class ConcatWsFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(ConcatWsBinaryFunction, call.getOperands());
+      return new Call(BinaryConcatWsFunction, call.getOperands());
     }
 
-    return new Call(ConcatWsStringFunction, call.getOperands());
+    return new Call(StringConcatWsFunction, call.getOperands());
   }
 
   /**
    * String concatenation function with separator
    */
-  private static final class ConcatWsStringFunction extends ConcatWsFunction {
+  private static final class StringConcatWsFunction extends ConcatWsFunction {
 
     @Override
     public Object eval(final IExpression[] operands) {
@@ -88,7 +88,7 @@ public class ConcatWsFunction extends Function {
   /**
    * Binary concatenation function with separator
    */
-  private static final class ConcatWsBinaryFunction extends ConcatWsFunction {
+  private static final class BinaryConcatWsFunction extends ConcatWsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
 

@@ -36,8 +36,8 @@ import org.apache.hop.expression.type.TypeFamily;
  */
 @FunctionPlugin
 public class RightFunction extends Function {
-  public static final RightFunction RightStringFunction = new RightString();
-  public static final RightFunction RightBinaryFunction = new RightBinary();
+  public static final RightFunction StringRightFunction = new StringRightFunction();
+  public static final RightFunction BinaryRightFunction = new BinaryRightFunction();
 
   public RightFunction() {
     super("RIGHT", ReturnTypes.ARG0_MAX_PRECISION, OperandTypes.STRING_NUMERIC.or(OperandTypes.BINARY_NUMERIC),
@@ -49,16 +49,16 @@ public class RightFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(RightBinaryFunction, call.getOperands());
+      return new Call(BinaryRightFunction, call.getOperands());
     }
 
-    return new Call(RightStringFunction, call.getOperands());
+    return new Call(StringRightFunction, call.getOperands());
   }
 
   /**
    * The function extracts a number of characters from a string (starting from right)
    */
-  private static final class RightString extends RightFunction {
+  private static final class StringRightFunction extends RightFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       String str = operands[0].getValue(String.class);
@@ -83,7 +83,7 @@ public class RightFunction extends Function {
   /**
    * The function extracts a number of bytes from a binary (starting from right)
    */
-  private static final class RightBinary extends RightFunction {
+  private static final class BinaryRightFunction extends RightFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[] bytes = operands[0].getValue(byte[].class);

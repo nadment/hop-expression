@@ -475,10 +475,6 @@ public class Types {
    * </ul>
    */
   public static Type deriveAdditiveType(final Type type1, final Type type2) {
-    int p1 = type1.getPrecision();
-    int p2 = type2.getPrecision();
-    int s1 = type1.getScale();
-    int s2 = type2.getScale();
 
     if (type1.is(TypeId.DATE) && type2.is(TypeId.INTERVAL)) {
       return type1;
@@ -487,6 +483,15 @@ public class Types {
       return type2;
     }
 
+    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+      return Types.NUMBER;
+    }
+
+    int p1 = type1.getPrecision();
+    int p2 = type2.getPrecision();
+    int s1 = type1.getScale();
+    int s2 = type2.getScale();
+    
     // Return type scale
     int s = Math.max(s1, s2);
     s = Math.min(s, TypeId.NUMBER.getMaxScale());
@@ -523,16 +528,25 @@ public class Types {
    * </ul>
    */
   public static Type deriveMultiplyType(final Type type1, final Type type2) {
+
+    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+      return Types.NUMBER;
+    }
+
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();
     int s2 = type2.getScale();
-
+    
     // Return type precision
     int p = Math.min(TypeId.NUMBER.getMaxPrecision(), p1+p2);
     
     // Return type scale
     int s = Math.min(TypeId.NUMBER.getMaxScale(), s1+s2);
+    
+    if ( s==0 && p<=TypeId.INTEGER.getMaxPrecision()) {
+      return IntegerType.of(p);
+    }
     
     return NumberType.of(p, s);
   }
@@ -556,6 +570,11 @@ public class Types {
    * </ul>
    */
   public static Type deriveDivideType(final Type type1, final Type type2) {
+    
+    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+      return Types.NUMBER;
+    }
+    
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();
@@ -592,6 +611,11 @@ public class Types {
    * 
    */
   public static Type deriveModType(final Type type1, final Type type2) {
+    
+    if ( type1.is(TypeId.STRING) || type2.is(TypeId.STRING) ) {
+      return Types.NUMBER;
+    }
+    
     int p1 = type1.getPrecision();
     int p2 = type2.getPrecision();
     int s1 = type1.getScale();

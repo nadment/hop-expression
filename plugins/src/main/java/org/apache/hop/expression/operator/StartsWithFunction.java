@@ -38,8 +38,8 @@ import org.apache.hop.expression.type.TypeFamily;
 @FunctionPlugin
 public class StartsWithFunction extends Function {
 
-  public static final StartsWithFunction StartsWithStringFunction = new StartsWithStringFunction();
-  public static final StartsWithFunction StartsWithBinaryFunction = new StartsWithBinaryFunction();
+  public static final StartsWithFunction StringStartsWithFunction = new StringStartsWithFunction();
+  public static final StartsWithFunction BinaryStartsWithFunction = new BinaryStartsWithFunction();
 
   public StartsWithFunction() {
     super("STARTSWITH", ReturnTypes.BOOLEAN_NULLABLE,
@@ -52,17 +52,17 @@ public class StartsWithFunction extends Function {
 
     Type type = call.getOperand(0).getType();
     if (type.isFamily(TypeFamily.BINARY)) {
-      return new Call(StartsWithBinaryFunction, call.getOperands());
+      return new Call(BinaryStartsWithFunction, call.getOperands());
     }
 
-    return new Call(StartsWithStringFunction, call.getOperands());
+    return new Call(StringStartsWithFunction, call.getOperands());
   }
 
   /**
    * The function returns TRUE if the first value starts with second value. Both values must be data
    * type string or binary.
    */
-  private static final class StartsWithStringFunction extends StartsWithFunction {
+  private static final class StringStartsWithFunction extends StartsWithFunction {
     @Override
     public Object eval(final IExpression[] operands) {
 
@@ -81,7 +81,7 @@ public class StartsWithFunction extends Function {
    * The function returns TRUE if the first value starts with second value. Both values must be data
    * type binary.
    */
-  private static final class StartsWithBinaryFunction extends StartsWithFunction {
+  private static final class BinaryStartsWithFunction extends StartsWithFunction {
     @Override
     public Object eval(final IExpression[] operands) {
 

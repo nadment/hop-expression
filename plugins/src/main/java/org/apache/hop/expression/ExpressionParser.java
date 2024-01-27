@@ -385,7 +385,7 @@ public class ExpressionParser {
   private IExpression parseUnary() throws ExpressionException {
     int start = this.getPosition();
     if (isThenNext(Id.MINUS)) {
-      return new Call(start, Operators.NEGATIVE, this.parsePrimary());
+      return new Call(start, Operators.NEGATE, this.parsePrimary());
     }
     if (isThenNext(Id.PLUS)) {
       // Ignore

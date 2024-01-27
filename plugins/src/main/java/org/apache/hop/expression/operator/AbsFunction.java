@@ -36,9 +36,9 @@ import java.math.BigDecimal;
  */
 @FunctionPlugin
 public class AbsFunction extends Function {
-  public static final AbsFunction AbsIntegerFunction = new AbsIntegerFunction();
-  public static final AbsFunction AbsNumberFunction = new AbsNumberFunction();
-  public static final AbsFunction AbsIntervalFunction = new AbsIntervalFunction();
+  public static final AbsFunction IntegerAbsFunction = new IntegerAbsFunction();
+  public static final AbsFunction NumberAbsFunction = new NumberAbsFunction();
+  public static final AbsFunction IntervalAbsFunction = new IntervalAbsFunction();
 
   public AbsFunction() {
     super("ABS", ReturnTypes.ABS_FUNCTION, OperandTypes.NUMERIC.or(OperandTypes.INTERVAL), OperatorCategory.MATHEMATICAL,
@@ -55,21 +55,21 @@ public class AbsFunction extends Function {
     Type type = call.getOperand(0).getType();
 
     if (type.is(TypeId.INTERVAL)) {
-      return new Call(AbsIntervalFunction, call.getOperands());
+      return new Call(IntervalAbsFunction, call.getOperands());
     }
     
     if (type.is(TypeId.INTEGER)) {
-      return new Call(AbsIntegerFunction, call.getOperands());
+      return new Call(IntegerAbsFunction, call.getOperands());
     }
 
     // If type Number or String
-    return new Call(AbsNumberFunction, call.getOperands());
+    return new Call(NumberAbsFunction, call.getOperands());
   }
 
   /**
    * Returns the absolute value of the integer value.
    */
-  private static final class AbsIntegerFunction extends AbsFunction {
+  private static final class IntegerAbsFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -83,7 +83,7 @@ public class AbsFunction extends Function {
   /**
    * Returns the absolute value of the number value.
    */
-  private static final class AbsNumberFunction extends AbsFunction {
+  private static final class NumberAbsFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
@@ -97,7 +97,7 @@ public class AbsFunction extends Function {
   /**
    * Returns the absolute value of the interval value.
    */
-  private static final class AbsIntervalFunction extends AbsFunction {
+  private static final class IntervalAbsFunction extends AbsFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       Interval value = operands[0].getValue(Interval.class);

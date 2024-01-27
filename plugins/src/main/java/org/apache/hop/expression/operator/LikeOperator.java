@@ -95,19 +95,19 @@ public class LikeOperator extends Operator {
       // field LIKE '%foo%' → CONTAINS(field,'foo')
       if (contains.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(ContainsFunction.ContainsStringFunction, value, Literal.of(search));
+        return new Call(ContainsFunction.StringContainsFunction, value, Literal.of(search));
       }
 
       // field LIKE 'foo%' → STARTSWITH(field,'foo')
       if (startsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(StartsWithFunction.StartsWithStringFunction, value, Literal.of(search));
+        return new Call(StartsWithFunction.StringStartsWithFunction, value, Literal.of(search));
       }
 
       // field LIKE '%foo' → ENDSWITH(field,'foo')
       if (endsWith.matcher(pattern).find()) {
         String search = pattern.replace("%", "");
-        return new Call(EndsWithFunction.EndsWithStringFunction, value, Literal.of(search));
+        return new Call(EndsWithFunction.StringEndsWithFunction, value, Literal.of(search));
       }
 
       // field LIKE 'Hello' → field='Hello'

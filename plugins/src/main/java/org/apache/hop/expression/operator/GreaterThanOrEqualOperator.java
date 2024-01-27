@@ -100,10 +100,10 @@ public class GreaterThanOrEqualOperator extends Operator {
     }
 
     // Simplify 3>=X+1 → 3-1>= X
-    if (left.isConstant() && right.is(Operators.ADD_NUMERIC)
+    if (left.isConstant() && right.is(Operators.ADD)
         && right.asCall().getOperand(0).isConstant()) {
       return new Call(call.getOperator(),
-          new Call(Operators.SUBTRACT_NUMERIC, left, right.asCall().getOperand(0)),
+          new Call(Operators.SUBTRACT, left, right.asCall().getOperand(0)),
           right.asCall().getOperand(1));
     }
 

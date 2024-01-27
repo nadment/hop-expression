@@ -45,8 +45,8 @@ import java.time.temporal.IsoFields;
  */
 @FunctionPlugin(names = "DATE_PART")
 public class ExtractFunction extends Function {
-  public static final ExtractDateFunction ExtractDateFunction = new ExtractDateFunction();
-  public static final ExtractIntervalFunction ExtractIntervalFunction = new ExtractIntervalFunction();
+  public static final DateExtractFunction DateExtractFunction = new DateExtractFunction();
+  public static final IntervalExtractFunction IntervalExtractFunction = new IntervalExtractFunction();
 
   public ExtractFunction() {
     super("EXTRACT", ReturnTypes.INTEGER_NULLABLE,
@@ -58,9 +58,9 @@ public class ExtractFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = call.getOperand(1).getType();
     if (type.isFamily(TypeFamily.INTERVAL)) {
-      return new Call(ExtractIntervalFunction, call.getOperands());
+      return new Call(IntervalExtractFunction, call.getOperands());
     }
-    return new Call(ExtractDateFunction, call.getOperands());
+    return new Call(DateExtractFunction, call.getOperands());
   }
 
   protected static int millennium(int year) {
@@ -87,7 +87,7 @@ public class ExtractFunction extends Function {
   /**
    * Extracts the specified date or time part from a date, time, or timestamp.
    */
-  private static final class ExtractDateFunction extends ExtractFunction {
+  private static final class DateExtractFunction extends ExtractFunction {
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
@@ -170,7 +170,7 @@ public class ExtractFunction extends Function {
   /**
    * Extracts the specified time unit from a interval.
    */
-  private static final class ExtractIntervalFunction extends ExtractFunction {
+  private static final class IntervalExtractFunction extends ExtractFunction {
 
     @Override
     public Object eval(final IExpression[] operands) {

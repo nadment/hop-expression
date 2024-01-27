@@ -205,10 +205,9 @@ public abstract class Operator {
 
   @Override
   public boolean equals(Object obj) {
-
-    if (!(obj instanceof Operator)) {
+    if ( obj==null ) {
       return false;
-    }
+    }      
     if (!obj.getClass().equals(this.getClass())) {
       return false;
     }

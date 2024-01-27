@@ -33,6 +33,7 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
   public IExpression compile(IExpression expression) throws ExpressionException {
     do {
       changed = false;
+      //System.out.println(expression);
       expression = expression.accept(this);      
     } while (changed);
 
@@ -67,7 +68,9 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       call.inferReturnType();
 
       // If something changed
-      if (!expression.equals(original)) changed = true;
+      if (!expression.equals(original)) {
+          changed = true;
+      }
       
       // Evaluate if constant
       if (expression.isConstant()) {

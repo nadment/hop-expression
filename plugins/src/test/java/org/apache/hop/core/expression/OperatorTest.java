@@ -1081,7 +1081,7 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST(-123 as Number(6,2))", -123L).returnType(NumberType.of(6,2));
 
     // Number
-    evalEquals("CAST(1234.456 as Number(38,9))", 1234.456D).returnType(NumberType.of(38, 9));
+    evalEquals("CAST(1234.456 as Number(20,9))", 1234.456D).returnType(NumberType.of(20, 9));
     evalEquals("CAST(1234.456 as Number(10,1))", 1234.4D);
     evalEquals("1.23456::Number", 1L);
     evalEquals("1.23456::Number(10)", 1L).returnType(NumberType.of(10));
@@ -1190,8 +1190,7 @@ public class OperatorTest extends ExpressionTest {
     
     // Number Unix Epoch
     evalEquals("CAST(1551052800.000000000 AS DATE)", LocalDate.of(2019, 2, 25));
-    evalEquals("CAST(-5364662400.000000000 AS DATE)", LocalDate.of(1800, 1, 1));
-    
+    evalEquals("CAST(-5364662400.000000000 AS DATE)", LocalDate.of(1800, 1, 1));    
     evalEquals("CAST(1284352323.1 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  100000000));
     evalEquals("CAST(1284352323.12 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
     evalEquals("CAST(1284352323.123 AS DATE)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  123000000));            
@@ -1390,15 +1389,19 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void Multiplication() throws Exception {
     evalEquals("2.55*10", 25.50D).returnType(NumberType.of(5, 2));
-    evalEquals("4*10", 40D).returnType(NumberType.of(3));
-    evalEquals("-4*-1", 4D).returnType(NumberType.of(2));
-    evalEquals("2*-2", -4D).returnType(NumberType.of(2));
+    evalEquals("4*10", 40D).returnType(IntegerType.of(3));
+    evalEquals("-4*-1", 4D).returnType(IntegerType.of(2));
+    evalEquals("2*-2", -4D).returnType(IntegerType.of(2));
     evalEquals("100 * .5", 50D).returnType(NumberType.of(5,1));
     evalEquals("1.23456::Number(38,9)*-2.987654", -3.68843812224).returnType(NumberType.of(38,15));
     evalEquals("FIELD_NUMBER::NUMBER(4,1)*3::NUMBER(3,2)", -15L).returnType(NumberType.of(7, 3));
     evalEquals("FIELD_NUMBER::NUMBER(38,5)*FIELD_INTEGER::NUMBER(9,8)", -204L)
         .returnType(NumberType.of(38, 8));
 
+    // Implicit coercion from STRING
+    evalEquals("'2'*2", 4L).returnType(NumberType.of(38,18));
+    evalEquals("2.5*'2'", 5L).returnType(NumberType.of(38,10));
+    
     // Check no overflow Long.MAX_VALUE * 2
     evalEquals("9223372036854775807*2", new BigDecimal("18446744073709551614")).returnType(NumberType.of(20));
     // Check no underflow Long.MIN_VALUE * 2
@@ -1448,6 +1451,10 @@ public class OperatorTest extends ExpressionTest {
         
     evalFails("40/0");
 
+    // Implicit coercion from STRING
+    evalEquals("'8'/2", 4L).returnType(NumberType.of(38,37));
+    evalEquals("5/'2'", 2.5).returnType(NumberType.of(38,37));
+    
     optimize("0/0", "0/0");
     optimize("FIELD_INTEGER/4");
     

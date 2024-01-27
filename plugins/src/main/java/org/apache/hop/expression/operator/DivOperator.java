@@ -56,7 +56,7 @@ public class DivOperator extends Operator {
     }
 
     // Simplify arithmetic (-A)/(-B) → A/B
-    if (left.is(Operators.NEGATIVE) && right.is(Operators.NEGATIVE)) {
+    if (left.is(Operators.NEGATE) && right.is(Operators.NEGATE)) {
       return new Call(Operators.DIVIDE, left.asCall().getOperand(0), right.asCall().getOperand(0));
     }
 

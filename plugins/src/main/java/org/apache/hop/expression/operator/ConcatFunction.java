@@ -38,8 +38,8 @@ import java.util.ArrayList;
  */
 @FunctionPlugin
 public class ConcatFunction extends Function {
-  public static final ConcatFunction ConcatStringFunction = new ConcatStringFunction();
-  public static final ConcatFunction ConcatBinaryFunction = new ConcatBinaryFunction();
+  public static final ConcatFunction StringConcatFunction = new StringConcatFunction();
+  public static final ConcatFunction BinaryConcatFunction = new BinaryConcatFunction();
 
   // Function
   public ConcatFunction() {
@@ -74,9 +74,9 @@ public class ConcatFunction extends Function {
       case 1: // Concat(X) → X
         return operands.get(0);
       default:
-        Operator operator = ConcatStringFunction;
+        Operator operator = StringConcatFunction;
         if (type != null && type.isFamily(TypeFamily.BINARY)) {
-          operator = ConcatBinaryFunction;
+          operator = BinaryConcatFunction;
         }
         return new Call(operator, operands);
     }
@@ -97,7 +97,7 @@ public class ConcatFunction extends Function {
   /**
    * String concatenation
    */
-  private static final class ConcatStringFunction extends ConcatFunction {
+  private static final class StringConcatFunction extends ConcatFunction {
     @Override
     public Object eval(final IExpression[] operands) {
 
@@ -128,7 +128,7 @@ public class ConcatFunction extends Function {
   /**
    * Binary concatenation
    */
-  private static final class ConcatBinaryFunction extends ConcatFunction {
+  private static final class BinaryConcatFunction extends ConcatFunction {
     @Override
     public Object eval(final IExpression[] operands) {
       byte[][] values = new byte[operands.length][];
