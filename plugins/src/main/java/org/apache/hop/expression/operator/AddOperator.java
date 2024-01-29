@@ -160,7 +160,7 @@ public class AddOperator extends Operator {
   /**
    * Adds a specified interval to a date or timestamp
    */
-  public static class IntervalAddOperator extends AddOperator {
+  private static final class IntervalAddOperator extends AddOperator {
 
     @Override
     public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {

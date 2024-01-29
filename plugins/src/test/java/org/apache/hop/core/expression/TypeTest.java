@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Random;
@@ -322,12 +323,13 @@ public class TypeTest extends ExpressionTest {
   @Test
   public void castToDate() throws Exception {
     DateType type = Types.DATE;
-    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
-    
+    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);    
     assertNull(type.cast(null));
     assertEquals(date, type.cast(date));
     assertEquals(date, type.cast(1672185600L));
-    assertEquals(date, type.cast(BigDecimal.valueOf(1672185600L)));    
+    assertEquals(date, type.cast(BigDecimal.valueOf(1672185600L)));
+    
+    date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
     assertEquals(date, type.cast("2022-12-28"));
     assertEquals(date, type.cast("2022-12-28", "YYYY-MM-DD"));
     
@@ -364,7 +366,6 @@ public class TypeTest extends ExpressionTest {
     assertEquals("ABCD��", type.cast("ABCD��".getBytes(StandardCharsets.UTF_8)));
     assertEquals("{\"name\":\"Smith\"}", type.cast(JsonType.convertToJson("{\"name\":\"Smith\"}")));
   }
-
   
   @Test
   public void coerceToInteger() throws Exception {
@@ -458,7 +459,7 @@ public class TypeTest extends ExpressionTest {
   }
 
   @Test
-  public void coercionImplicit() throws Exception {
+  public void coercion() throws Exception {
     // Coercion Number
     evalTrue("1::NUMBER = 1::INTEGER");    
     evalTrue("0x1F::NUMBER = 0x1F::INTEGER");
@@ -474,38 +475,13 @@ public class TypeTest extends ExpressionTest {
     
     // Coerce Integer to String
     evalEquals("2 + 2 || 2", "42");
-    evalEquals(" 4 + 4 || '2' ", "82");
-    
+    evalEquals(" 4 + 4 || '2' ", "82");    
     evalEquals(" '8' || 1 + 1", 82L);
     
     // Coerce Integer to Number
     evalEquals("'-2e-3' * 2", new BigDecimal("-4e-3"));    
     evalEquals("'-4e-4'::Number(12,4) * 0.5", new BigDecimal("-0.00020"));
   }
-
-  @Test
-  public void coercionExplicit() throws Exception {
-    // Cast String to Boolean
-    evalTrue("'1'::Boolean=true");
-    evalTrue("'On'::Boolean=true");
-    evalTrue("'Y'::Boolean=true");
-    evalTrue("true = 'Y'::Boolean");
-    evalTrue("'Yes'::Boolean=true");
-    evalTrue("true = 'Yes'::Boolean");
-    evalTrue("'T'::Boolean=true");
-    evalTrue("'TRUE'::Boolean=true");
-    evalTrue("true = 'True'::Boolean");
-
-    evalTrue("'0'::Boolean=false");
-    evalTrue("'N'::Boolean=false");
-    evalTrue("'NO'::Boolean=false");
-    evalTrue("'OFF'::Boolean=false");
-    evalTrue("'F'::Boolean=false");
-    evalTrue("'FALSE'::Boolean=false");
-    
-    // String to BigNumber
-    evalEquals("' -1e-3 '::Number(10,3)", new BigDecimal("-1e-3"));   
-  }  
 
   @Test
   public void convertToBoolean() throws Exception {

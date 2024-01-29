@@ -937,11 +937,11 @@ public class OperatorTest extends ExpressionTest {
   @Test
   public void CastToBoolean() throws Exception {
 
-    // Boolean
+    // Boolean to Boolean
     evalTrue("CAST(TRUE as Boolean)").returnType(Types.BOOLEAN);
     evalFalse("CAST(FALSE as Boolean)");
 
-    // String
+    // Cast String to Boolean
     evalTrue("'Yes'::Boolean").returnType(Types.BOOLEAN);
     evalTrue("'Yes' :: Boolean");
     evalTrue("CAST('YES' as Boolean)");
@@ -966,15 +966,30 @@ public class OperatorTest extends ExpressionTest {
     evalFalse("CAST('false' as Boolean)");
     evalFalse("CAST('False' as Boolean)");
     evalTrue("CAST(Upper(FIELD_STRING_BOOLEAN_TRUE) as Boolean)");
-
-    // Integer
+    evalTrue("'1'::Boolean");
+    evalTrue("'On'::Boolean");
+    evalTrue("'Y'::Boolean");
+    evalTrue("true = 'Y'::Boolean");
+    evalTrue("'Yes'::Boolean");
+    evalTrue("true = 'Yes'::Boolean");
+    evalTrue("'T'::Boolean");
+    evalTrue("'TRUE'::Boolean");
+    evalTrue("true = 'True'::Boolean");
+    evalFalse("'0'::Boolean");
+    evalFalse("'N'::Boolean");
+    evalFalse("'NO'::Boolean");
+    evalFalse("'OFF'::Boolean");
+    evalFalse("'F'::Boolean");
+    evalFalse("'FALSE'::Boolean");
+    
+    // Cast Integer to Boolean
     evalTrue("CAST(1 as Boolean)").returnType(Types.BOOLEAN);
     evalTrue("CAST(-123 as Boolean)");
     evalTrue("1::Boolean");
     evalFalse("CAST(0 as Boolean)");
     evalFalse("CAST(-0 as Boolean)");
 
-    // Number
+    // Cast Number to Boolean
     evalTrue("CAST(-12.1 as Boolean)").returnType(Types.BOOLEAN);
     evalFalse("CAST(0.000 as Boolean)");
     evalTrue("CAST(12345678901234567890123456789012345678 as Boolean)");
@@ -1098,16 +1113,21 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('1' As Number)", 1L);
     evalEquals("CAST('-1e-37' as Number(38,37))", -1e-37d);
     evalEquals("CAST(' -1e-37 ' as Number(38,37))", -1e-37d);
-    evalEquals("'1'::Number", 1L);
-    evalEquals("'1234'::Number", 1234L);
     evalEquals("CAST('1234' as Number)", 1234L);
     evalEquals("CAST('1234.567' as Number(10,5))", 1234.567d);
     evalEquals("CAST('  -1e-37  ' as Number(38,37))", -1e-37d);
-
+    evalEquals("'1'::Number", 1L);
+    evalEquals("'1234'::Number", 1234L);
+    evalEquals("' -1e-3 '::Number(10,3)", new BigDecimal("-1e-3"));  
+    
     // Date to Unix Epoch
-    evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1L).returnType(Types.NUMBER);
+    evalEquals("CAST(DATE '1970-01-01' as Number)", 0L).returnType(Types.NUMBER);    
     evalEquals("CAST(DATE '2019-02-25' AS Number)", 1551052800L).returnType(Types.NUMBER);
     evalEquals("CAST(DATE '1800-01-01' AS Number)", -5364662400L).returnType(Types.NUMBER);
+
+    // Timestamp to Unix Epoch
+    evalEquals("CAST(TIMESTAMP '1970-01-01 00:00:01' as Number)", 1L).returnType(Types.NUMBER);
+
     
     // Null
     evalNull("CAST(NULL_INTEGER as Number)").returnType(Types.NUMBER);

@@ -23,11 +23,12 @@ import org.apache.hop.expression.util.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 
 public final class DateType extends Type {
-  
+
   DateType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
   }
@@ -46,7 +47,7 @@ public final class DateType extends Type {
   public TypeComparability getComparability() {
     return TypeComparability.ALL;
   }
-  
+
   @Override
   public <T> T convert(Object value, Class<T> clazz) throws ConversionException {
     if (value == null) {
@@ -93,16 +94,15 @@ public final class DateType extends Type {
     if (value instanceof String) {
       return DateTimeFormat.of(pattern).parse((String) value);
     }
-    if (value instanceof Long) {      
-      Instant instant = Instant.ofEpochSecond((Long) value);
-      return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-    }    
-    if (value instanceof BigDecimal) { 
-      return convertToDate((BigDecimal) value);      
+    if (value instanceof Long) {
+      return convertToDate((Long) value);
     }
-    
-    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value,
-        TypeId.fromValue(value), this);
+    if (value instanceof BigDecimal) {
+      return convertToDate((BigDecimal) value);
+    }
+
+    throw new ConversionException(ErrorCode.UNSUPPORTED_CONVERSION, value, TypeId.fromValue(value),
+        this);
   }
 
   /**
@@ -123,14 +123,25 @@ public final class DateType extends Type {
     throw new ConversionException(ErrorCode.UNSUPPORTED_COERCION, value, TypeId.fromValue(value),
         TypeId.DATE);
   }
-  
-  public static final ZonedDateTime convertToDate(final String value) throws ConversionException {         
+
+  public static final ZonedDateTime convertToDate(final String value) throws ConversionException {
     return DateTimeFormat.of("FXYYY-MM-DD").parse(value);
   }
-  
-  public static final ZonedDateTime convertToDate(final BigDecimal number) throws ConversionException {              
+
+  /**
+   * Convert the epoch time value to a timestamp with UTC time zone.
+   * 
+   * @param seconds number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970)
+   * @return
+   */
+  public static final ZonedDateTime convertToDate(final Long seconds) {
+    Instant instant = Instant.ofEpochSecond(seconds);
+    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+  }
+
+  public static final ZonedDateTime convertToDate(final BigDecimal number) {
     long nanos = number.remainder(BigDecimal.ONE).movePointRight(9).abs().longValue();
     Instant instant = Instant.ofEpochSecond(number.longValue(), nanos);
-    return ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+    return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
   }
 }

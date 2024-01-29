@@ -127,6 +127,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     // Failed if format is bad
     evalFails("TRY_TO_NUMBER('5467.12', 'ZZZ')");
     evalFails("TRY_TO_NUMBER()");
+    
+    // Date to Epoch
+    evalEquals("TRY_TO_NUMBER(Date '1970-01-01')", 0L);
+    evalEquals("TRY_TO_NUMBER(Date '2019-02-25')", 1551052800L);
+    evalEquals("TRY_TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')", new BigDecimal("1284352323.123456789"));
+    evalNull("TRY_TO_NUMBER(NULL_DATE)");
   }
 
   @Test
@@ -139,6 +145,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalNull("TRY_TO_DATE('2019-13-13','YYYY-MM-DD')");
     evalNull("TRY_TO_DATE('20x9-13-13','YYYY-MM-DD')");
 
+    // Return NULL if argument is NULL
     evalNull("TRY_TO_DATE(NULL_STRING,'FXDD/MM/YYYY')");
 
     // Failed if format is bad
@@ -2046,6 +2053,15 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("TO_NUMBER('1234-','MI9999|9999MI')", -1234L);
 
     evalNull("TO_NUMBER(NULL_STRING)");
+    
+    // Date to number epoch
+    evalEquals("TO_NUMBER(Date '1970-01-01')", 0L);
+    evalEquals("TO_NUMBER(Date '2019-02-25')", 1551052800L);
+    evalEquals("TO_NUMBER(Date '1800-01-01')", -5364662400L);
+    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123')", new BigDecimal("1284352323.123"));
+    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123000000')", new BigDecimal("1284352323.123"));
+    evalEquals("TO_NUMBER(Timestamp '2010-09-13 04:32:03.123456789')", new BigDecimal("1284352323.123456789"));
+    evalNull("TO_NUMBER(NULL_DATE)");
 
     // You can specify only one decimal separator in a number format model.
     evalFails("TO_NUMBER('123.456','9D999D9')");
@@ -2552,7 +2568,21 @@ public class ScalarFunctionTest extends ExpressionTest {
         LocalDateTime.of(2000, 5, 12, 0, 0, 10, 123000000));
 
     evalEquals("To_Date('15:30:40','hh24:mi:ss')", LocalDateTime.of(1970, 1, 1, 15, 30, 40));
+    
+    // Integer Unix Epoch in seconds
+    evalEquals("TO_DATE(0)", LocalDateTime.of(1970, 1, 1, 0, 0, 0));
+    evalEquals("TO_DATE(1551052800)", LocalDate.of(2019, 2, 25));
+    evalEquals("TO_DATE(-5364662400)", LocalDate.of(1800, 1, 1));
+    evalEquals("TO_DATE(1284352323)", LocalDateTime.of(2010, 9, 13, 4, 32, 3));
 
+    // Number Unix Epoch in seconds with fractional
+    evalEquals("TO_DATE(1551052800.000000000)", LocalDate.of(2019, 2, 25));
+    evalEquals("TO_DATE(-5364662400.000000000)", LocalDate.of(1800, 1, 1));    
+    evalEquals("TO_DATE(1284352323.1)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  100000000));
+    evalEquals("TO_DATE(1284352323.12)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 120000000));
+    evalEquals("TO_DATE(1284352323.123)", LocalDateTime.of(2010, 9, 13, 4, 32, 3,  123000000));            
+    evalEquals("TO_DATE(1284352323.123456789)", LocalDateTime.of(2010, 9, 13, 4, 32, 3, 123456789));
+    
     evalNull("To_Date(NULL_STRING,'FXDD/MM/YYYY')");
   }
 

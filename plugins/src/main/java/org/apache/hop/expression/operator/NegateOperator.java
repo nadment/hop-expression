@@ -80,7 +80,7 @@ public class NegateOperator extends Operator {
     operands[0].unparse(writer);
   }
   
-  private static class IntegerNegateOperator extends NegateOperator {
+  private static final class IntegerNegateOperator extends NegateOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       Long value = operands[0].getValue(Long.class);
@@ -94,7 +94,7 @@ public class NegateOperator extends Operator {
     }
   }
 
-  private static class NumberNegateOperator extends NegateOperator {
+  private static final class NumberNegateOperator extends NegateOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       BigDecimal value = operands[0].getValue(BigDecimal.class);
@@ -104,7 +104,7 @@ public class NegateOperator extends Operator {
     }
   }
   
-  private static class IntervalNegateOperator extends NegateOperator {
+  private static final class IntervalNegateOperator extends NegateOperator {
     @Override
     public Object eval(final IExpression[] operands) {
       Interval interval = operands[0].getValue(Interval.class);

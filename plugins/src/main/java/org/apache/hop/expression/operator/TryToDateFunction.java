@@ -35,29 +35,14 @@ import java.time.DateTimeException;
 @FunctionPlugin
 public class TryToDateFunction extends Function {
 
-
-  private final DateTimeFormat format;
-  
-  public TryToDateFunction() {
-    this(null);
-  }
-  
-  protected TryToDateFunction(DateTimeFormat format) {
+  public  TryToDateFunction() {
     super("TRY_TO_DATE", ReturnTypes.DATE_NULLABLE, OperandTypes.STRING.or(OperandTypes.STRING_TEXT),
         OperatorCategory.CONVERSION, "/docs/to_date.html");
-    
-    this.format = format;
   }
   
   @Override
   public IExpression compile(final IExpressionContext context, final Call call)
       throws ExpressionException {
-
-    // Already compiled
-    if (format != null) {
-      return call;
-    }
-    
     String pattern = context.getVariable(ExpressionContext.EXPRESSION_DATE_FORMAT);
 
     // With specified format
@@ -69,21 +54,30 @@ public class TryToDateFunction extends Function {
         .parseInt(context.getVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970"));
 
     // Compile format to check it
-    DateTimeFormat fmt = DateTimeFormat.of(pattern);
-    fmt.setTwoDigitYearStart(twoDigitYearStart);
+    DateTimeFormat format = DateTimeFormat.of(pattern);
+    format.setTwoDigitYearStart(twoDigitYearStart);
 
-    return new Call(new TryToDateFunction(fmt), call.getOperands());
+    return new Call(new StringTryToDateFunction(format), call.getOperands());
   }
-  
-  @Override
-  public Object eval(final IExpression[] operands) {
-    String value = operands[0].getValue(String.class);
-    if (value == null)
-      return null;
-    try {
-      return format.parse(value);
-    } catch (DateTimeException e) {
-      return null;
+    
+  private static final class StringTryToDateFunction extends TryToDateFunction {
+    private final DateTimeFormat format;
+
+    public StringTryToDateFunction(DateTimeFormat format) {
+      super();
+      this.format = format;
+    }
+
+    @Override
+    public Object eval(final IExpression[] operands) {
+      String value = operands[0].getValue(String.class);
+      if (value == null)
+        return null;
+      try {
+        return format.parse(value);
+      } catch (DateTimeException e) {
+        return null;
+      }
     }
   }
 }

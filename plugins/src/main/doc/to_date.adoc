@@ -16,12 +16,14 @@ under the License.
 ////
 = TO_DATE, TRY_TO_DATE
 
-Converts a string into a date.
+Converts a string into a date or the epoch time value to a timestamp with UTC time zone.
 
 == Syntax
 ----
 TO_DATE( string [, format ] )
 TRY_TO_DATE( string [, format ] )
+TO_DATE( numeric )
+TRY_TO_DATE( numeric )
 ----
 
 Return:: Date
@@ -43,5 +45,15 @@ include::dateformat.adoc[]
 |MON|MONTH  
 |MONTH|MON 
 |===
+
+If used with numeric value, the value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
+
+== Examples
+
+----
+TO_DATE('2019-02-13 15:34:56 +08:00','YYYY-MM-DD HH24:MI:SS TZH:TZM')
+TO_DATE(1284352323.123) result 2010-09-13 04:32:03.123 
+TO_DATE(1284352323.000000123) result 2010-09-13 04:32:03.000000123 
+----
 
 See also xref:make_date.adoc[MAKE_DATE], xref:make_timestamp.adoc[MAKE_TIMESTAMP]

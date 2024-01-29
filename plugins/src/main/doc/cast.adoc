@@ -50,6 +50,10 @@ If the cast is not possible, CAST raises an error and TRY_CAST return a NULL val
 * When converting a boolean to a number, false is 0 and true is 1. 
 * When converting a number to a number of another type, the value is checked for overflow. 
 * When converting a string to binary, it is hex encoded (every byte two characters).
+* When converting a integer to date, value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
+* When converting a number to date, value is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
+* When converting a date to integer, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970).
+* When converting a date to number, result is the number of seconds that have elapsed since the epoch (00:00:00 UTC on January 1, 1970) and the fractions are nanoseconds.
 
 === Format
 
@@ -57,21 +61,20 @@ If the cast is not possible, CAST raises an error and TRY_CAST return a NULL val
 == Examples
 
 ----
-CAST('yes' AS BOOLEAN)
+CAST('yes' AS BOOLEAN) result TRUE
 
 // if the cast is not possible, a NULL value is returned.
-TRY(CAST('-1234.56' AS INTEGER FORMAT '###0'))
+TRY_CAST('-1234.56' AS INTEGER FORMAT '###0'))
 
-'-1234.56'::INTEGER
+'-1234.56'::INTEGER result -1234
 
 CAST('-1234.56' AS NUMBER FORMAT '###0.00')
 
-CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss')
+CAST('24/05/2020 00:00:00' AS DATE FORMAT 'DD/MM/YYYY HH:mm:ss') result date 2020-05-24
 
 TRY_CAST(DATE(2020,5,24) AS STRING FORMAT 'yyyy-q')
+
 ----
-
-
 
 See also 
 * xref:to_binary.adoc[TO_BINARY] 

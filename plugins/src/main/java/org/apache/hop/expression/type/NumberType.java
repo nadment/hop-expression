@@ -212,7 +212,13 @@ public final class NumberType extends Type {
   }
   
   public static final BigDecimal convertToNumber(final ZonedDateTime datetime) throws ConversionException {
-    int n = datetime.getNano();
-    return new BigDecimal(datetime.toEpochSecond());
+    
+    BigDecimal result = new BigDecimal(datetime.toEpochSecond());
+    int nanos = datetime.getNano();
+    if ( nanos!=0 ) {
+      BigDecimal fraction = BigDecimal.valueOf(nanos).movePointLeft(9);
+      result = result.add(fraction).stripTrailingZeros();
+    }
+    return result;
   }  
 }
