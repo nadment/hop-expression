@@ -22,7 +22,6 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 

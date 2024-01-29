@@ -24,7 +24,7 @@ import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 /**
  * Build a timestamp from its separate year, month, day, hour, minute, second[.fractional]) fields.
@@ -115,6 +115,6 @@ public class MakeTimestampFunction extends Function {
     if (secondsToAdd != 0)
       datetime = datetime.plusSeconds(secondsToAdd);
 
-    return datetime.atZone(ZoneId.systemDefault());
+    return datetime.atZone(ZoneOffset.UTC);
   }
 }

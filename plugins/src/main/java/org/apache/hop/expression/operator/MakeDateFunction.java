@@ -23,7 +23,7 @@ import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 /**
  * Build a date from its separate year, month and day fields.
@@ -72,7 +72,7 @@ public class MakeDateFunction extends Function {
     if (daysToAdd != 0)
       date = date.plusDays(daysToAdd);
 
-    return date.atStartOfDay().atZone(ZoneId.systemDefault());
+    return date.atStartOfDay().atZone(ZoneOffset.UTC);
   }
 
 }

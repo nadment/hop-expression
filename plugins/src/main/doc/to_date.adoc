@@ -36,6 +36,7 @@ include::dateformat.adoc[]
 
 * An element in the date format model can only appear once. However, elements such as separators, padding characters can appear more than once.
 * If no format is specified, the standard format YYYY-MM-DD is used to interpret string.
+* Timezones are case sensitive, Europe/London is not the same as europe/london.
 * If single elements are omitted, then their minimum values are assumed (for example, TO_DATE('1999-12', 'YYYY-MM') is interpreted as December 1st, 1999).
 * If a match fails between a format element and the corresponding characters in the string, then expression attempts alternative format.
 [cols="<2,<5", options="header"]

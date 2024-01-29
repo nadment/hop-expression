@@ -53,7 +53,7 @@ import java.time.format.DateTimeParseException;
   public boolean isEpochDay = false;
   public boolean isDayOfYear = false;
   public boolean isTimeZoneOffset = false;
-  public ZoneId zoneId = null;
+  public ZoneId zoneId = ZoneOffset.UTC;
 
   protected boolean isAllCharParsed() {
     return index == text.length();
@@ -215,12 +215,8 @@ import java.time.format.DateTimeParseException;
     }
     LocalTime time = LocalTime.of(hour, minute, second, nano);
     LocalDateTime localDatetime = LocalDateTime.of(date, time);
-    if (zoneId == null) {
-      if (isTimeZoneOffset) {
-        zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
-      } else {
-        zoneId = ZoneId.systemDefault();
-      }
+    if (isTimeZoneOffset) {
+      zoneId = ZoneOffset.ofHoursMinutes(timeZoneHour, timeZoneMinute);
     }
     return ZonedDateTime.of(localDatetime, zoneId);
   }

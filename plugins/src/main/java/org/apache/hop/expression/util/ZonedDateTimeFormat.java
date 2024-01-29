@@ -518,6 +518,18 @@ import java.util.Locale;
     public void append(StringBuilder output, ZonedDateTime datetime) throws DateTimeException {
       output.append(zoneAbbreviationFormatter.format(datetime));
     }
+
+    @Override
+    public void parse(final DateTimeParser parser) {
+      int i = parser.index + 3;
+      if (i > parser.text.length()) {
+        i = parser.text.length();
+      }
+
+      String str = parser.text.substring(parser.index, i);
+      parser.zoneId = ZoneId.of(str, ZoneId.SHORT_IDS);
+      parser.index = i;
+    }
   }
 
   // Time zone hour [+-][0]0
@@ -798,7 +810,8 @@ import java.util.Locale;
         month++;
       }
 
-      throw new DateTimeParseException(ErrorCode.INVALID_NAME_OF_MONTH.message(), parser.text, index);
+      throw new DateTimeParseException(ErrorCode.INVALID_NAME_OF_MONTH.message(), parser.text,
+          index);
     }
   }
 
@@ -1611,8 +1624,7 @@ import java.util.Locale;
         continue;
       }
 
-      throw new IllegalArgumentException(
-          ErrorCode.INVALID_DATE_FORMAT.message(pattern, index));
+      throw new IllegalArgumentException(ErrorCode.INVALID_DATE_FORMAT.message(pattern, index));
     }
 
     if (!exactMode) {
@@ -1630,8 +1642,8 @@ import java.util.Locale;
     }
 
     if (!parser.isAllCharParsed()) {
-      throw new DateTimeParseException(
-          ErrorCode.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern), text, parser.index);
+      throw new DateTimeParseException(ErrorCode.UNPARSABLE_DATE_WITH_FORMAT.message(text, pattern),
+          text, parser.index);
     }
 
     // Build the date

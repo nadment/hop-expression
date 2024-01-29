@@ -28,7 +28,7 @@ import org.apache.hop.expression.type.Types;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
@@ -113,12 +113,12 @@ public class Identifier implements IExpression {
           Timestamp timestamp = (Timestamp) valueMeta.getNativeDataType(row[ordinal]);
           if (timestamp == null)
             return null;
-          return timestamp.toLocalDateTime().atZone(ZoneId.systemDefault());
+          return timestamp.toLocalDateTime().atZone(ZoneOffset.UTC);
         case IValueMeta.TYPE_DATE:
           Date date = valueMeta.getDate(row[ordinal]);
           if (date == null)
             return null;
-          return ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+          return ZonedDateTime.ofInstant(date.toInstant(), ZoneOffset.UTC);
         case IValueMeta.TYPE_STRING:          
           return valueMeta.getString(row[ordinal]);
         case IValueMeta.TYPE_INTEGER:
@@ -158,7 +158,7 @@ public class Identifier implements IExpression {
           if (timestamp == null) {
             return null;
           }
-          return clazz.cast(timestamp.toLocalDateTime().atZone(ZoneId.systemDefault()));
+          return clazz.cast(timestamp.toLocalDateTime().atZone(ZoneOffset.UTC));
         }
 
         case IValueMeta.TYPE_DATE: {
@@ -166,7 +166,7 @@ public class Identifier implements IExpression {
           if (date == null) {
             return null;
           }
-          return clazz.cast(date.toInstant().atZone(ZoneId.systemDefault()));
+          return clazz.cast(date.toInstant().atZone(ZoneOffset.UTC));
         }
 
         case IValueMeta.TYPE_STRING: {

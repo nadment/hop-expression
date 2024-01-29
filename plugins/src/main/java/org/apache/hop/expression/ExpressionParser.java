@@ -610,10 +610,6 @@ public class ExpressionParser {
    * The parsing is strict and requires months to be between 1 and 12, days to be less than 31, etc.
    */
   private IExpression parseLiteralDate(Token token) throws ExpressionException {
-
-    // return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
-    // Literal.of(Types.DATE), Literal.of("FXYYYY-MM-DD"));
-
     // Literal date use exact mode
     DateTimeFormat format = DateTimeFormat.of("FXYYYY-MM-DD");
     try {

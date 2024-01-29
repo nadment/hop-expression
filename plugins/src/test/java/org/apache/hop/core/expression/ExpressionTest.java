@@ -39,7 +39,6 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
-import org.apache.hop.expression.type.NumberType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
@@ -52,7 +51,7 @@ import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.util.Calendar;
@@ -340,7 +339,7 @@ public class ExpressionTest {
       if (expected instanceof LocalDate) {
         result = value.toLocalDate();
       } else if (expected instanceof ZonedDateTime) {
-        result = value.atZone(ZoneId.systemDefault());
+        result = value.atZone(ZoneOffset.UTC);
       }
     }
 

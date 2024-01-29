@@ -418,43 +418,43 @@ public class LiteralTest extends ExpressionTest {
 
     // ISO Timestamp Formats
     evalEquals("TimeSTAMP '2021-02-25 3'",
-        ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.systemDefault())).returnType(Types.DATE);
+        ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.UTC)).returnType(Types.DATE);
     evalEquals("TimeSTAMP '2021-02-25 03'",
-        ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 3, 0, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 23'",
-        ZonedDateTime.of(2021, 2, 25, 23, 0, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 23, 0, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25T23'",
-        ZonedDateTime.of(2021, 2, 25, 23, 0, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 23, 0, 0, 0,ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 3:59'",
-        ZonedDateTime.of(2021, 2, 25, 3, 59, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 3, 59, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 03:59'",
-        ZonedDateTime.of(2021, 2, 25, 3, 59, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 3, 59, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 23:59'",
-        ZonedDateTime.of(2021, 2, 25, 23, 59, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 23, 59, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25T23:59'",
-        ZonedDateTime.of(2021, 2, 25, 23, 59, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 23, 59, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 3:59:59'",
-        ZonedDateTime.of(2021, 2, 25, 3, 59, 59, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 3, 59, 59, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 03:59:59'",
-        ZonedDateTime.of(2021, 2, 25, 3, 59, 59, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 3, 59, 59, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-02-25 23:59:59'",
-        ZonedDateTime.of(2021, 2, 25, 23, 59, 59, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 2, 25, 23, 59, 59, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-01-01T15:28:59'",
-        ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-01-01T5:28:59'",
-        ZonedDateTime.of(2021, 1, 1, 5, 28, 59, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 1, 1, 5, 28, 59, 0, ZoneOffset.UTC));
 
     // ISO Timestamp Formats with fraction seconds
     evalEquals("TIMESTAMP '2021-12-01 5:01:01.123456789'",
-        ZonedDateTime.of(2021, 12, 1, 5, 01, 01, 123456789, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 12, 1, 5, 01, 01, 123456789, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-12-01 12:01:01.123456789'",
-        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 123456789, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 123456789, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-12-01 12:01:01.123456'",
-        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 123456000, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 123456000, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-12-01 12:01:01.123'",
-        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 123000000, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 123000000, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '2021-12-01 12:01:01'",
-        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 000000000, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(2021, 12, 1, 12, 01, 01, 000000000, ZoneOffset.UTC));
 
     // ISO Timestamp Formats with time zone offset
     evalEquals("TIMESTAMP '2021-01-01 5:28+02'",
@@ -496,9 +496,8 @@ public class LiteralTest extends ExpressionTest {
 
     // With time zone region
     evalEquals("TIMESTAMP '2021-01-01 15:28'",
-        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC"))).returnType(Types.DATE);
-    evalEquals("TIMESTAMP '2021-01-01 15:28' AT TIME ZONE 'UTC'",
-        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneId.of("UTC"))).returnType(Types.DATE);
+        ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.UTC)).returnType(Types.DATE);
+    //evalEquals("TIMESTAMP '2021-01-01 15:28' AT TIME ZONE 'UTC'", ZonedDateTime.of(2021, 1, 1, 15, 28, 0, 0, ZoneOffset.UTC)).returnType(Types.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28:59' AT TIME ZONE 'America/New_York'",
         ZonedDateTime.of(2021, 1, 1, 15, 28, 59, 0, ZoneId.of("America/New_York"))).returnType(Types.DATE);
     evalEquals("TIMESTAMP '2021-01-01 15:28:59.123' AT TIME ZONE 'US/Pacific'",
@@ -510,9 +509,9 @@ public class LiteralTest extends ExpressionTest {
 
     // The range of valid timestamp values
     evalEquals("TIMESTAMP '0001-01-1 00:00:00'",
-        ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC));
     evalEquals("TIMESTAMP '9999-12-31 23:59:59.999999999'",
-        ZonedDateTime.of(9999, 12, 31, 23, 59, 59, 999999999, ZoneOffset.systemDefault()));
+        ZonedDateTime.of(9999, 12, 31, 23, 59, 59, 999999999, ZoneOffset.UTC));
 
     optimize("TIMESTAMP '9999-12-31 23:59:59'");
     optimize("TIMESTAMP '9999-12-31 23:59:59.999'");

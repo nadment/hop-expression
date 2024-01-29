@@ -311,7 +311,7 @@ public class TypeTest extends ExpressionTest {
 
   @Test
   public void coerceToDate() throws Exception {    
-    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
+    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
    
     assertNull(DateType.coerce(null));
     assertEquals(date, DateType.coerce(date));
@@ -329,11 +329,11 @@ public class TypeTest extends ExpressionTest {
     assertEquals(date, type.cast(1672185600L));
     assertEquals(date, type.cast(BigDecimal.valueOf(1672185600L)));
     
-    date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
+    date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
     assertEquals(date, type.cast("2022-12-28"));
     assertEquals(date, type.cast("2022-12-28", "YYYY-MM-DD"));
     
-    ZonedDateTime timestamp = ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneId.systemDefault());
+    ZonedDateTime timestamp = ZonedDateTime.of(2022, 12, 28, 13, 32, 55, 123456789, ZoneOffset.UTC);
     assertEquals(timestamp, type.cast("2022-12-28 13:32:55.123456789", "YYYY-MM-DD HH24:MI:SS.FF9"));
     
     assertThrows(ConversionException.class, () -> type.cast(true));
@@ -556,7 +556,7 @@ public class TypeTest extends ExpressionTest {
   public void convertToDate() throws Exception {
     DateType type = Types.DATE;
     
-    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneId.systemDefault());
+    ZonedDateTime date = LocalDate.of(2022, Month.DECEMBER, 28).atStartOfDay().atZone(ZoneOffset.UTC);
     
     assertNull(type.convert(null, Long.class));
     assertNull(type.convert(null, String.class));
