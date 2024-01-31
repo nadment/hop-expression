@@ -115,7 +115,7 @@ Web Hop is not supported because expression editor use JFace.
 
 ### Manual Install
 
-1. Place the expression folder in the hop\plugins\transforms directory
+1. Unzip the plugin archive into the hop\plugins\ directory
 2. Restart Hop
 
 ### Support
