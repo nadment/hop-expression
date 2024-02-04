@@ -15,6 +15,10 @@
 package org.apache.hop.expression;
 
 import org.apache.commons.collections4.SetUtils;
+import org.apache.hop.expression.type.Interval;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
 import java.util.Set;
 
 /**
@@ -23,94 +27,275 @@ import java.util.Set;
  * A time unit can be used with functions such as {@code EXTRACT}, {@code FIRST_DAY}...
  */
 public enum TimeUnit {
-  /** The epoch. The number of seconds since 1970-01-01 00:00:00.00 */
-  EPOCH,
+  /** 
+   * The epoch. The number of seconds since 1970-01-01 00:00:00.00
+   */
+  EPOCH {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.toEpochSecond();
+    }
+  },
 
-  /** The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd. */
-  MILLENNIUM("MILLENNIUMS"),
+  /** 
+   * The millennium. The year 2000 is in the 2nd millennium, the year 2001 in the 3rd.
+   */
+  MILLENNIUM("MILLENNIUMS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return millennium(datetime.getYear());
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getYears() / 1000;
+    }
+  },
 
   /** The century. The year 2000 is in the 20th century, the year 2001 in the 21st. */
-  CENTURY,
+  CENTURY {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return century(datetime.getYear());
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getYears() / 100;
+    }
+  },
 
   /** First day of its decade. The year divided by 10. */
-  DECADE("DECADES"),
+  DECADE("DECADES") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return decade(datetime.getYear());
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getYears() / 10;
+    }
+  },
 
   /** The years */
-  YEAR("YEARS"),
+  YEAR("YEARS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getYear();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getYears();
+    }
+  },
 
   /** The years of week ISO. The ISO year starts at the first day (Monday) of week 01 */
-  ISOYEAR,
+  ISOYEAR {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(IsoFields.WEEK_BASED_YEAR);
+    }
+  },
 
   /** The number (1 - 12) of the month */
-  MONTH("MONTHS"),
+  MONTH("MONTHS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getMonthValue();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getMonths();
+    }
+  },
 
   /** The number (1 - 31) of the day */
-  DAY("DAYS","DAYOFMONTH"),
+  DAY("DAYS", "DAYOFMONTH") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getDayOfMonth();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getDays();
+    }
+  },
 
   /** A number (1 = Sunday, 2 = Monday, 7 = Saturday) indicating the day of the week */
-  DAYOFWEEK,
+  DAYOFWEEK {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      int dow = datetime.getDayOfWeek().getValue() + 1;
+      if (dow == 8)
+        dow = 1;
+      return Long.valueOf(dow);
+    }
+  },
 
   /**
    * A number (1 = Monday, 7 = Sunday) indicating the day of the week following the ISO 8601
    * standard
    */
-  ISODAYOFWEEK,
+  ISODAYOFWEEK {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getDayOfWeek().getValue();
+    }
+  },
 
   /** A number (1 - 366) indicating the day of the year */
-  DAYOFYEAR,
+  DAYOFYEAR {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getDayOfYear();
+    }
+  },
 
   /**
    * The number (1 - 54) of the week of the year.
    * Weeks begin with Sunday, and dates prior to the first Sunday of the year are in week 0.
    */
-  WEEK("WEEKS","WEEKOFYEAR"),
+  WEEK("WEEKS", "WEEKOFYEAR") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+    }
+  },
 
   /**
    * The number (1 - 53) of the week of the year ISO 8601.
    * The first week of the ISO year is the week that contains January 4.
    */
-  ISOWEEK("ISOWEEKOFYEAR"),
+  ISOWEEK("ISOWEEKOFYEAR") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+  },
 
   /** Week from the beginning of the month (0-5) */
-  WEEKOFMONTH,
+  WEEKOFMONTH {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
+    }
+  },
 
   /** Quarter. Jan-Mar = 1, Apr-Jun = 2, Jul-Sep = 3, Oct-Dec = 4. */
-  QUARTER("QUARTERS"),
-
+  QUARTER("QUARTERS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(IsoFields.QUARTER_OF_YEAR);
+    }
+  },
   /** Hour (0-23). */
-  HOUR("HOURS"),
+  HOUR("HOURS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getHour();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getHours();
+    }
+  },
 
   /** Minute (0-59). */
-  MINUTE("MINUTES"),
+  MINUTE("MINUTES") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getMinute();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getMinutes();
+    }
+  },
 
   /** Second (0-59). */
-  SECOND("SECONDS"),
+  SECOND("SECONDS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getSecond();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getSeconds();
+    }
+  },
 
   /** Millisecond. */
-  MILLISECOND("MILLISECONDS"),
+  MILLISECOND("MILLISECONDS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(ChronoField.MILLI_OF_SECOND);
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getMilliseconds();
+    }
+  },
 
   /** Microsecond. */
-  MICROSECOND("MICROSECONDS"),
+  MICROSECOND("MICROSECONDS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.get(ChronoField.MICRO_OF_SECOND);
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getMicroseconds();
+    }
+  },
 
   /** The nanosecond. */
-  NANOSECOND("NANOSECONDS"),
+  NANOSECOND("NANOSECONDS") {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getNano();
+    }
+
+    @Override
+    public long extract(final Interval interval) {
+      return interval.getSign() * interval.getNanoseconds();
+    }
+  },
 
   /** Time zone offset's hour part. */
-  TIMEZONE_HOUR,
+  TIMEZONE_HOUR {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return datetime.getOffset().getTotalSeconds() / (60 * 60);
+    }
+  },
 
   /** Time zone offset's minute part. */
-  TIMEZONE_MINUTE;
+  TIMEZONE_MINUTE {
+    @Override
+    public long extract(final ZonedDateTime datetime) {
+      return (datetime.getOffset().getTotalSeconds() / 60) % 60;
+    }
+  };
 
   private final String[] alias;
   private final Set<String> names;
-  
+
   private TimeUnit() {
     this.alias = new String[0];
     this.names = Set.of(name());
   }
 
   private TimeUnit(final String... alias) {
-    this.alias = alias;       
+    this.alias = alias;
     this.names = SetUtils.union(Set.of(name()), Set.of(alias));
   }
 
@@ -135,11 +320,31 @@ public enum TimeUnit {
 
     return null;
   }
-  
+
+  public long extract(ZonedDateTime datetime) {
+    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+  }
+
+  public long extract(Interval interval) {
+    throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, this);
+  }
+
   /**
    * Returns a list of name and alias.
    */
   public Set<String> names() {
     return names;
+  }
+
+  protected static int millennium(int year) {
+    return year > 0 ? (year + 999) / 1000 : year / 1000;
+  }
+
+  protected static int century(int year) {
+    return year > 0 ? (year + 99) / 100 : year / 100;
+  }
+
+  protected static int decade(int year) {
+    return year >= 0 ? year / 10 : (year - 9) / 10;
   }
 }

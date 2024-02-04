@@ -61,7 +61,7 @@ end
 * Logical operators `NOT` `AND` `OR`
 * Arithmetic operators `+` `-` `*` `/` `%`
 * Bitwise operators  `&` `|` `~` `^`
-* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM` `BETWEEN` 
+* Comparison operators `>` `>=` `<` `<=` `=` `!=` `<>` `BETWEEN` `IN` `IS TRUE` `IS FALSE` `IS NULL` `IS DISTINCT FROM`  
 * Concatenate operator `||`
 * Conditional operators `CASE WHEN` `COALESCE` `IF` `IFNULL` `NULLIF` `ZEROIFNULL` `NULLIFZERO` `GREATEST` `LEAST` 
 * Pattern matching operators `LIKE` `ILIKE` `SIMILAR TO`

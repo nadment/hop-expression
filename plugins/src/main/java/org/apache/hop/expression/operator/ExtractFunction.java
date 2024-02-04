@@ -18,7 +18,6 @@
 package org.apache.hop.expression.operator;
 
 import org.apache.hop.expression.Call;
-import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
@@ -35,8 +34,6 @@ import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeFamily;
 import java.io.StringWriter;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.IsoFields;
 
 /**
  * Extracts the specified time unit from a date, timestamp or interval.
@@ -61,18 +58,6 @@ public class ExtractFunction extends Function {
       return new Call(IntervalExtractFunction, call.getOperands());
     }
     return new Call(DateExtractFunction, call.getOperands());
-  }
-
-  protected static int millennium(int year) {
-    return year > 0 ? (year + 999) / 1000 : year / 1000;
-  }
-
-  protected static int century(int year) {
-    return year > 0 ? (year + 99) / 100 : year / 100;
-  }
-
-  protected static int decade(int year) {
-    return year >= 0 ? year / 10 : (year - 9) / 10;
   }
 
   @Override
@@ -111,59 +96,7 @@ public class ExtractFunction extends Function {
       if (datetime == null)
         return null;
 
-      switch (unit) {
-        case DAY:
-          return Long.valueOf(datetime.getDayOfMonth());
-        case DAYOFYEAR:
-          return Long.valueOf(datetime.getDayOfYear());
-        case DAYOFWEEK:
-          int dow = datetime.getDayOfWeek().getValue() + 1;
-          if (dow == 8)
-            dow = 1;
-          return Long.valueOf(dow);
-        case ISODAYOFWEEK:
-          return Long.valueOf(datetime.getDayOfWeek().getValue());
-        case WEEK:
-          return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_YEAR));
-        case ISOWEEK:
-          return Long.valueOf(datetime.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
-        case WEEKOFMONTH:
-          return Long.valueOf(datetime.get(ChronoField.ALIGNED_WEEK_OF_MONTH));
-        case MONTH:
-          return Long.valueOf(datetime.getMonthValue());
-        case QUARTER:
-          return Long.valueOf(datetime.get(IsoFields.QUARTER_OF_YEAR));
-        case YEAR:
-          return Long.valueOf(datetime.getYear());
-        case ISOYEAR:
-          return Long.valueOf(datetime.get(IsoFields.WEEK_BASED_YEAR));
-        case DECADE:
-          return Long.valueOf(decade(datetime.getYear()));
-        case CENTURY:
-          return Long.valueOf(century(datetime.getYear()));
-        case MILLENNIUM:
-          return Long.valueOf(millennium(datetime.getYear()));
-        case HOUR:
-          return Long.valueOf(datetime.getHour());
-        case MINUTE:
-          return Long.valueOf(datetime.getMinute());
-        case SECOND:
-          return Long.valueOf(datetime.getSecond());
-        case MILLISECOND:
-          return Long.valueOf(datetime.get(ChronoField.MILLI_OF_SECOND));
-        case MICROSECOND:
-          return Long.valueOf(datetime.get(ChronoField.MICRO_OF_SECOND));
-        case NANOSECOND:
-          return Long.valueOf(datetime.getNano());
-        case EPOCH:
-          return datetime.toEpochSecond();
-        case TIMEZONE_HOUR:
-          return Long.valueOf(datetime.getOffset().getTotalSeconds() / (60 * 60));
-        case TIMEZONE_MINUTE:
-          return Long.valueOf((datetime.getOffset().getTotalSeconds() / 60) % 60);
-        default:
-          throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
-      }
+       return unit.extract(datetime);
     }
   }
 
@@ -180,36 +113,8 @@ public class ExtractFunction extends Function {
       Interval interval = operands[1].getValue(Interval.class);
       if (interval == null)
         return null;
-
-      switch (unit) {
-        case DAY:
-          return interval.getSign() * interval.getDays();
-        case MONTH:
-          return interval.getSign() * interval.getMonths();
-        case YEAR:
-          return interval.getSign() * interval.getYears();
-        case DECADE:
-          return interval.getSign() * interval.getYears() / 10;
-        case CENTURY:
-          return interval.getSign() * interval.getYears() / 100;
-        case MILLENNIUM:
-          return interval.getSign() * interval.getYears() / 1000;
-        case HOUR:
-          return interval.getSign() * interval.getHours();
-        case MINUTE:
-          return interval.getSign() * interval.getMinutes();
-        case SECOND:
-          return interval.getSign() * interval.getSeconds();
-        case MILLISECOND:
-          return interval.getSign() * interval.getMilliseconds();
-        case MICROSECOND:
-          return interval.getSign() * interval.getMicroseconds();
-        case NANOSECOND:
-          return interval.getSign() * interval.getNanoseconds();
-        default:
-          throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT, unit);
-      }
+      
+      return unit.extract(interval);
     }
   }
-
 }
