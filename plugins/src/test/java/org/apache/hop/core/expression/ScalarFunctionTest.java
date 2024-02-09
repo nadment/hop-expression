@@ -2656,21 +2656,21 @@ public class ScalarFunctionTest extends ExpressionTest {
 
   @Test
   public void Json_Value() throws Exception {
-    // Json string type
-    evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.name')", "Smith");
-    evalEquals(
-        "Json_Value('{\"name\":\"Smith\", \"age\":29,\"address\":{\"zip\":\"12345\",\"street\":\"Blvd des capusins\"}}','$.address.zip')",
-        "12345");
-    evalEquals(
-        "Json_Value('{\"name\":\"Smith\", \"language\":[\"English\", \"French\"]}','$.language[1]')",
-        "French");
+    // dot–notation
+    evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].title')", "Sayings of the Century");
+    
+    // TODO: bracket–notation
+    //evalEquals("Json_Value(FIELD_JSON, '$['store']['book'][0]['title']')", "Sayings of the Century");
 
-    // Json numeric type
+    // boolean type
+    evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]')");
+    evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]')");
+    
+    // numeric type
     evalEquals("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.age')", 29L);
-
     evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$.a[2]')", 15L);
-
-
+    evalEquals("Json_Value(FIELD_JSON, '$.store.book[0].price')", 8.95);
+    
     // TODO: Syntax of the special characters $[01] or $[6F,FF,00,1F] in variable resolution not
     // compatible with JsonPath array
     // evalEquals("Json_Value('{\"a\":[5, 10, 15, 20]}', '$[''a''][2]')", 15L);
@@ -2678,33 +2678,55 @@ public class ScalarFunctionTest extends ExpressionTest {
     // evalEquals("Json_Value('[0, 1, 2, 3]', '$[1]')", 1L);
     // evalEquals("Json_Value('[{\"a\":100}, {\"a\":200}, {\"a\":300}]', '$[1].a')", 200L);
 
-    // Json boolean type
-    evalFalse("Json_Value('{\"a\":[true, false, true, false]}', '$.a[1]')");
-    evalTrue("Json_Value('{\"a\":[true, false, true, false]}', '$.a[2]')");
 
     // Json 'null' should return a NULL value
     evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29, \"department\":null}','$.department')");
 
-    // Json without field name quotes
+    // Support Json without field name quotes
     evalEquals("Json_Value('{name:\"Smith\", age:29}','$.name')", "Smith");
 
-
+    // Support Json function
+    evalEquals("Json_Value(FIELD_JSON, '$..book.length()')", 4L);
+    
+    // Return NULL from NULL value
     evalNull("Json_Value(NULL_STRING,'$.name')");
     evalNull("Json_Value(NULL_JSON,'$.name')");
 
-    evalFails("Json_Value('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)");
-    evalFails("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.notexist')");
+    // Return NULL if JsonPath does not match a value
+    evalNull("Json_Value(FIELD_JSON,'$.notexist')");
+    
+    evalFails("Json_Value(FIELD_JSON,NULL_STRING)");
   }
 
   @Test
   public void Json_Query() throws Exception {
+    // No Json path
     evalEquals("Json_Query('{name:\"Smith\",age:29}'::JSON)",
         JsonType.convertToJson("{name:\"Smith\",age:29}")).returnType(Types.JSON);
+    
+    // Root Json path
     evalEquals(
         "Json_Query('{Suspect:{Name:\"Smith\",Hobbies:[\"Eating\",\"Sleeping\",\"Base Jumping\"]}}'::JSON,'$.Suspect.Hobbies')",
         JsonType.convertToJson("[\"Eating\", \"Sleeping\", \"Base Jumping\"]"));
     evalEquals("Json_Query('null'::JSON,'$')", JsonType.convertToJson("null"));
 
+    // Wildcard all elements    
+    evalEquals("Json_Query(FIELD_JSON, '$.store.book[*].author')", JsonType.convertToJson("[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
+    
+    // Child property at any level deeper
+    evalEquals("Json_Query(FIELD_JSON, '$..author')", JsonType.convertToJson("[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]"));
+    
+    // Array indexes
+    evalEquals("Json_Query(FIELD_JSON, '$.store.book[2].title')", JsonType.convertToJson("\"Moby Dick\""));
+    evalEquals("Json_Query(FIELD_JSON, '$.store.book[0,1,2].title')", JsonType.convertToJson("[\"Sayings of the Century\",\"Sword of Honour\",\"Moby Dick\"]"));
+       
+    // Array slice
+    evalEquals("Json_Query(FIELD_JSON, '$.store.book[0:2].title')", JsonType.convertToJson("[\"Sayings of the Century\",\"Sword of Honour\"]"));
+       
+    // Filter predicate
+    evalEquals("Json_Query(FIELD_JSON, '$..book[?(@.isbn)].title')", JsonType.convertToJson("[\"Moby Dick\",\"The Lord of the Rings\"]"));
+    evalEquals("Json_Query(FIELD_JSON, '$..book[?(@.price<10)].price')", JsonType.convertToJson("[8.95,8.99]"));        
+    
     evalNull("Json_Query(NULL_JSON,'$')").returnType(Types.JSON);
 
     evalFails("Json_Query('{\"name\":\"Smith\", \"age\":29}',NULL_STRING)");

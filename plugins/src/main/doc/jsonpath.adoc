@@ -14,26 +14,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= JSON_VALUE
 
-Extracts scalar value from JSON object or string representing a Json.
+== JsonPath query language
 
-== Syntax
-----
-JSON_VALUE( {string | json}, path )
-----
+These are the supported operators from the JsonPath standard.
 
-== Usage
+[cols="^1,<5", options="header"]
+|===
+|Operator|Description
+|`$`|The root element 
+|`@`|The current element being processed by a filter predicate.
+|`*`|All elements regardless their names
+|`.name`|Child property with dot notation
+|`..name`|Child property at any level deeper
+|[`number`, `number`]|Array index or indexes
+|[`start`:`end`)]|Array slice operator
+|?(`expression`)|Filter expression (Expression must evaluate to a boolean value).
+|===
 
-* The path must begin with a dollar sign `$`, which represents the root. 
-* If the path does not match a value, `NULL` is returned.
-
-include::jsonpath.adoc[]
-
-== Examples
-
-----
-JSON_VALUE('{"language":["English", "French"]}','$.language[1]') >>> French
-JSON_VALUE('{"address":{"zip":"12345","city":"Brussels"}}','$.address.zip') >>> 12345
-JSON_VALUE(FIELD_JSON, '$..book.length()
-----
+NOTE: JsonPath is case-sensitive.

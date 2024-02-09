@@ -104,7 +104,7 @@ public class ExpressionTest {
     }
 
     public void returnType(Type expectedType) {
-      //assertTrue(expectedType.equalsIgnoreNullability(expression.getType()));
+      // assertTrue(expectedType.equalsIgnoreNullability(expression.getType()));
       assertEquals(expectedType.withNullability(true), expression.getType().withNullability(true));
     }
   }
@@ -184,8 +184,11 @@ public class ExpressionTest {
       row[8] = false;
       row[9] = "TEST".getBytes(Charsets.UTF_8);
       row[10] = InetAddress.getLocalHost();
+      // row[11] = JsonType.convertToJson("{\"sstudent\": [{\"id\":\"01\",name:\"Tom\",\"lastname\":
+      // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+
       row[11] = JsonType.convertToJson(
-          "{\"student\": [{\"id\":\"01\",name:\"Tom\",\"lastname\": \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
+          "{ \"store\":{ \"book\": [{ \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, {\"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, {\"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\",\"price\": 22.99 }],  \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } } }");
 
       // Null values
       row[12] = null;
@@ -402,9 +405,9 @@ public class ExpressionTest {
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "1970");
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
-    
 
-    
+    evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.notexist')");
+
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

@@ -41,6 +41,6 @@ public class MinuteFunction extends Function {
     ZonedDateTime value = operands[0].getValue(ZonedDateTime.class);
     if (value == null)
       return null;
-    return Long.valueOf(value.getMinute());
+    return Long.valueOf(value.getMinute());    
   }
 }

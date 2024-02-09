@@ -16,19 +16,25 @@ under the License.
 ////
 = JSON_QUERY
 
-Extracts a JSON fragment from a JSON object or string representing a Json.
+Extracts a JSON fragment from a JSON object by using JsonPath query language.
 
 == Syntax
 ----
-JSON_QUERY( {string | json} [, path] )
+JSON_QUERY( json [, path] )
 ----
+
+json:: JSON value or a JSON-formatted string
+
+path:: A xref:jsonpath.adoc[JsonPath] expression that identifies the data that you want to get
 
 Returns:: Json
 
 == Usage
 
+* The path must begin with a dollar sign `$`, which represents the root. 
+* If the path does not match a value, `NULL` is returned.
 
-path:: Use JSONPath query language for JSON, similar to XPath for XML. The path expression must begin with a dollar sign ($), which represents the context item. The dollar sign is followed by zero or more steps, each of which can be an object step or an array step. JSONPath expressions, including property names and values, are case-sensitive.
+include::jsonpath.adoc[]
 
 == Examples
 

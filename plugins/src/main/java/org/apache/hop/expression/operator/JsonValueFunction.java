@@ -24,6 +24,8 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.OperatorCategory;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import org.apache.hop.expression.type.TypeId;
+import java.math.BigDecimal;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -60,25 +62,36 @@ public class JsonValueFunction extends Function {
     if (path == null)
       throw new ExpressionException(ErrorCode.JSON_PATH_IS_NULL);
 
+    Object value = null;
     try {
       JsonPath jsonPath = JsonPath.compile(path);
-      JsonNode result = (JsonNode) jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+      value = jsonPath.read(jsonNode, JSONPATH_CONFIGURATION);
+      if (value instanceof JsonNode) {
+        JsonNode result = (JsonNode) value;
+        if (result.isNull())
+          return null;
+        if (result.isTextual())
+          return result.textValue();
+        if (result.isNumber())
+          return result.decimalValue();
+        if (result.isBoolean())
+          return result.booleanValue();
+        if (result.isArray())
+          throw new ExpressionException(ErrorCode.UNSUPPORTED_ARRAY_TYPE, path);
+      }
+      if (value instanceof Integer) {
+        return Long.valueOf((Integer) value);
+      }
+      if (value instanceof Double) {
+        return BigDecimal.valueOf((Double) value);
+      }
 
-      if (result.isNull())
-        return null;
-      if (result.isTextual())
-        return result.textValue();
-      if (result.isNumber())
-        return result.decimalValue();
-      if (result.isBoolean())
-        return result.booleanValue();
-      if (result.isArray())
-        throw new ExpressionException(ErrorCode.UNSUPPORTED_ARRAY_TYPE, path);
-      return result;
-    } catch (ExpressionException e) {
-      throw e;
+      return value;    
     } catch (PathNotFoundException e) {
-      throw new ExpressionException(ErrorCode.JSON_PATH_NOT_FOUND, path);
+      // Return NULL if path not found
+      return null;
+    } catch (ClassCastException e) {
+      throw new ExpressionException(ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, TypeId.ANY);
     } catch (Exception e) {
       throw new ExpressionException(ErrorCode.INVALID_JSON_PATH, path);
     }
