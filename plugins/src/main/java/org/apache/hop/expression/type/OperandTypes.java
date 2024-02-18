@@ -257,6 +257,10 @@ public final class OperandTypes {
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
 
+  public static final ISingleOperandTypeChecker ARRAY = family(TypeFamily.ARRAY);
+  public static final IOperandTypeChecker ARRAY_NUMERIC = family(TypeFamily.ARRAY, TypeFamily.NUMERIC);
+  public static final IOperandTypeChecker ARRAY_VARIADIC = repeat(OperandCountRange.between(1, -1), ARRAY);
+  
   /**
    * Operand type-checking strategy for BETWWEEN operator where operand types must allow ordered comparisons.
    */

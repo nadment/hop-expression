@@ -40,7 +40,7 @@ import java.util.Set;
 public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
-      Set.of("AND", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
+      Set.of("AND", "ARRAY", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
           "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "INTERVAL",
           "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR",
           "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
@@ -406,14 +406,26 @@ public class ExpressionParser {
   }
 
   /**
-   * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone>)
+   * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>]
    *
    */
   private IExpression parsePrimary() throws ExpressionException {
     IExpression expression = this.parseTerm();
+    
+    // Cast operator ::
     if (isThenNext(Id.CAST)) {
       IExpression type = parseLiteralDataType(next());
       return new Call(Operators.CAST, expression, type);
+    }
+    
+    // Array element at ARRAY[index]
+    if (isThenNext(Id.LBRACKET)) {
+      IExpression term = this.parseTerm();
+      Call call = new Call(getPosition(), Operators.ARRAY_ELEMENT_AT, expression, term);
+      if (isNotThenNext(Id.RBRACKET)) {
+        throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.LBRACKET);
+      }
+      return call;
     }
     if (isThenNext(Id.AT)) {
       if (isThenNext(Id.TIME) && isThenNext(Id.ZONE)) {
@@ -450,6 +462,8 @@ public class ExpressionParser {
         return parseLiteralTimeUnit(token);
       case LITERAL_DATATYPE:
         return parseLiteralDataType(token);
+      case ARRAY:
+        return parseArray(token);
       case DATE:
         token = next();
         if (token == null)
@@ -537,6 +551,36 @@ public class ExpressionParser {
     return expression;
   }
 
+  /**
+   * ARRAY[exp1, exp2...] *
+   **/
+  private IExpression parseArray(Token token) throws ExpressionException {
+    
+    List<IExpression> operands = new ArrayList<>();
+
+    if (isNotThenNext(Id.LBRACKET)) {
+      throw new ExpressionException(token.start(), ErrorCode.MISSING_LEFT_BRACKET);
+    }
+
+    
+    // Empty array
+    if (isThenNext(Id.RBRACKET)) {
+      return new Tuple(operands);
+    }
+
+    operands.add(this.parseLogicalOr());
+
+    while (isThenNext(Id.COMMA)) {
+      operands.add(this.parseLogicalOr());
+    }
+
+    if (isNotThenNext(Id.RBRACKET)) {
+      throw new ExpressionException(token.start(), ErrorCode.MISSING_RIGHT_BRACKET);
+    }
+    
+    return new Tuple(operands);
+  }
+  
   /**
    * AdditiveExpression ( || AdditiveExpression )*
    **/
@@ -1225,6 +1269,12 @@ public class ExpressionParser {
         case ')':
           return new Token(Id.RPARENTHESIS, position++);
 
+        case '[':
+          return new Token(Id.LBRACKET, position++);
+
+        case ']':
+          return new Token(Id.RBRACKET, position++);
+          
         // Single-quoted literal text.
         case '\'': {
           StringBuilder text = new StringBuilder();

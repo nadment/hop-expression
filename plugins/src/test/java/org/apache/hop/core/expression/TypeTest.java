@@ -22,6 +22,8 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.TimeUnit;
+import org.apache.hop.expression.Tuple;
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.BinaryType;
 import org.apache.hop.expression.type.BooleanType;
 import org.apache.hop.expression.type.DateType;
@@ -54,6 +56,7 @@ public class TypeTest extends ExpressionTest {
     assertFalse(TypeFamily.NUMERIC.isCoercible(null));
     assertTrue(TypeFamily.BOOLEAN.isCoercible(TypeFamily.STRING));
     assertTrue(TypeFamily.NUMERIC.isCoercible(TypeFamily.STRING));
+    assertFalse(TypeFamily.ARRAY.isCoercible(TypeFamily.NUMERIC));
   }
   
   @Test
@@ -123,6 +126,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.BINARY, TypeId.fromJavaClass(byte[].class));
     assertEquals(TypeId.JSON, TypeId.fromJavaClass(JsonNode.class));
     assertEquals(TypeId.INTEGER, TypeId.fromJavaClass(Long.class));
+    assertEquals(TypeId.ARRAY, TypeId.fromJavaClass(Tuple.class));
   }
 
   @Test
@@ -153,7 +157,8 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.STRING));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.INTERVAL));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.JSON));
-        
+    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.ARRAY));
+    
     assertTrue(TypeFamily.NUMERIC.isFamily(TypeFamily.NUMERIC));
     assertTrue(TypeFamily.BOOLEAN.isFamily(TypeFamily.BOOLEAN));
     assertTrue(TypeFamily.STRING.isFamily(TypeFamily.STRING));
@@ -222,6 +227,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals("BINARY", String.valueOf(Types.BINARY));
     assertEquals("BINARY", String.valueOf(BinaryType.of(-1)));
     assertEquals("BINARY(10)", String.valueOf(BinaryType.of(10)));
+    assertEquals("INTEGER(10)[]", String.valueOf(ArrayType.of(IntegerType.of(10))));
   }
   
   @Test

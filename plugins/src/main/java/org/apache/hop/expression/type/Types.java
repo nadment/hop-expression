@@ -41,6 +41,8 @@ public class Types {
 
   public static final UnknownType UNKNOWN = new UnknownType(true);
 
+  public static final ArrayType ARRAY = new ArrayType(UNKNOWN, true);
+  
   public static final AnyType ANY = new AnyType(true);
 
   /**
@@ -246,7 +248,7 @@ public class Types {
       list.add(operand);
     }
 
-    return new Tuple(list);
+    return new Tuple(new ArrayType(type, type.isNullable()), list);
   }
 
   public static Call cast(IExpression expression, Type type) {

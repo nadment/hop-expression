@@ -16,6 +16,7 @@
  */
 package org.apache.hop.expression.type;
 
+import org.apache.hop.expression.Tuple;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -61,12 +62,15 @@ public enum TypeId {
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
 
-  /** A interval type for years to months 
+  /** A interval type
    * TODO: add precision for nanoseconds
    */  
-  INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class);
+  INTERVAL(TypeFamily.INTERVAL, false, false, -1, -1, -1, -1, Interval.class),
   
-
+  /** A Array type */
+  ARRAY(TypeFamily.ARRAY, false, false, -1, -1, 0, 0, Tuple.class)
+  ;
+  
   protected static final Set<TypeId> STRING_TYPES = Set.of(STRING);
   protected static final Set<TypeId> BINARY_TYPES = Set.of(BINARY);
   protected static final Set<TypeId> BOOLEAN_TYPES = Set.of(BOOLEAN);

@@ -25,6 +25,7 @@ public final class OperatorCategory {
    */
   private OperatorCategory() {}
 
+  public static final String ARRAY = "i18n::Expression.Operator.Category.Array";
   public static final String STRING = "i18n::Expression.Operator.Category.String";
   public static final String JSON = "i18n::Expression.Operator.Category.Json";
   public static final String BITWISE = "i18n::Expression.Operator.Category.Bitwise";

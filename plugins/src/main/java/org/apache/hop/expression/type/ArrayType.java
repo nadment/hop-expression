@@ -19,37 +19,56 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
+import java.util.Objects;
 
-public final class UnknownType extends Type {
+public final class ArrayType extends Type {
 
-  UnknownType(boolean nullable) {
+  /**
+   * The maximum allowed cardinality of array.
+   */
+  public static final int MAX_ARRAY_CARDINALITY = Integer.MAX_VALUE;
+  
+  private final Type elementType;
+
+  /**
+   * Create an ARRAY data type with the specified element type.
+   *
+   * @param elementType
+   *            the type of elements
+   * @return ARRAY data type
+   */
+  public static ArrayType of(final Type type) {   
+    return new ArrayType(type, true);
+  }
+  
+  protected ArrayType(Type elementType, boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
+    this.elementType = Objects.requireNonNull(elementType);
     this.signature = generateSignature();
+    
+    // TODO: Protect array from array
+//    if ( elementType.is(TypeId.ARRAY)) {
+//      throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT_TYPE, elementType);
+//    }
   }
 
   @Override
-  public UnknownType withNullability(boolean nullable) {
-    return new UnknownType(nullable);
+  public ArrayType withNullability(boolean nullable) {
+    return new ArrayType(elementType, nullable);
   }
 
   @Override
   public TypeId getId() {
-    return TypeId.UNKNOWN;
+    return TypeId.ARRAY;
   }
 
   @Override
   public TypeComparability getComparability() {
-    return TypeComparability.NONE;
+    return elementType.getComparability();
   } 
   
-  @Override
-  public <T> T convert(final Object value, final Class<T> clazz) throws ConversionException {
-    if (value == null)
-      return null;
-    if (clazz.isInstance(value)) {
-      return clazz.cast(value);
-    }
-    return super.convert(value, clazz);
+  public Type getElementType() {
+    return elementType;
   }
 
   @Override
@@ -60,5 +79,13 @@ public final class UnknownType extends Type {
   @Override
   public Object cast(final Object value, final String pattern) throws ConversionException {
     throw new ConversionException(ErrorCode.INTERNAL_ERROR);
+  }
+  
+  @Override
+  protected String generateSignature() {
+    StringBuilder builder = new StringBuilder();
+    builder.append(elementType.generateSignature());
+    builder.append("[]");
+    return builder.toString();
   }
 }

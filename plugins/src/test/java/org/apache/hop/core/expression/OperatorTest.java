@@ -28,7 +28,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class OperatorTest extends ExpressionTest {
-
   @Test
   public void EqualTo() throws Exception {
     // Integer
@@ -1615,6 +1614,8 @@ public class OperatorTest extends ExpressionTest {
         "FIELD_BOOLEAN_TRUE IS DISTINCT FROM NULL_BOOLEAN");
     optimize("NOT (FIELD_STRING NOT SIMILAR TO '.*(b|d).*')","FIELD_STRING SIMILAR TO '.*(b|d).*'");
     optimize("NOT (FIELD_STRING SIMILAR TO '.*(b|d).*')","FIELD_STRING NOT SIMILAR TO '.*(b|d).*'");
+    optimize("NOT (FIELD_STRING IN ('A','B'))","FIELD_STRING NOT IN ('A','B')");
+    optimize("NOT (FIELD_STRING NOT IN ('A','B'))","FIELD_STRING IN ('A','B')");
     
     // optimize("(A IS NOT NULL OR B) AND FIELD_BOOLEAN_TRUE IS NOT NULL","FIELD_BOOLEAN_TRUE IS NOT
     // NULL");

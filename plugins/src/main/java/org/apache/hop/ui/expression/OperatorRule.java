@@ -36,7 +36,7 @@ public class OperatorRule implements IRule {
 
       // Single char operator
       if (c == '(' || c == ')' || c == ',' || c == '=' || c == '+' || c == '-' || c == '*'
-          || c == '/' || c == '%' || c == '&' || c == '~' || c == '^') {
+          || c == '/' || c == '%' || c == '&' || c == '~' || c == '^' || c == '[' || c == ']') {
         return token;
       }
 

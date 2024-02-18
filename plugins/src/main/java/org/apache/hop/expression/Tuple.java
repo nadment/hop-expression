@@ -58,13 +58,24 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     }
   }
 
+  private final Type type;
   private final IExpression[] values;
 
   public Tuple(IExpression... expressions) {
+    this(Types.ARRAY, expressions);
+  }
+  
+  public Tuple(Type type, IExpression... expressions) {
+    this.type = type;
     this.values = expressions;
   }
 
   public Tuple(Collection<IExpression> expressions) {
+    this(Types.ARRAY, expressions);
+  }
+  
+  public Tuple(Type type, Collection<IExpression> expressions) {
+    this.type = type;
     this.values = expressions.toArray(new IExpression[0]);
   }
 
@@ -75,7 +86,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
 
   @Override
   public Type getType() {
-    return Types.UNKNOWN;
+    return type;
   }
 
   @Override

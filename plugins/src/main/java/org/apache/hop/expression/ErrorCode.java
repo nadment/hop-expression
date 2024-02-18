@@ -45,7 +45,7 @@ public enum ErrorCode {
   /** Field not found ''{0}'' */
   UNRESOLVED_IDENTIFIER,
   /** Function ''{0}'' does not exist */
-  FUNCTION_DOES_NOT_EXIST,
+  FUNCTION_DOES_NOT_EXIST,  
   /** Not enough arguments to call function {0} */
   NOT_ENOUGH_ARGUMENT,
   /** Too many arguments to call function {0} */
@@ -56,10 +56,14 @@ public enum ErrorCode {
   MISSING_END_SINGLE_QUOTED_STRING,
   /** Missing end of double-quotes string */
   MISSING_END_DOUBLE_QUOTED_STRING,
-  /** Missing right parenthesis */
-  MISSING_RIGHT_PARENTHESIS,
+  /** Missing left bracket */
+  MISSING_LEFT_BRACKET,
   /** Missing left parenthesis */
   MISSING_LEFT_PARENTHESIS,
+  /** Missing right bracket */
+  MISSING_RIGHT_BRACKET,
+  /** Missing right parenthesis */
+  MISSING_RIGHT_PARENTHESIS,
   /** Unbalanced parenthesis */ 
   UNBALANCE_PARENTHESIS,
   /** Unexpected character ''{0}'' */
@@ -78,6 +82,8 @@ public enum ErrorCode {
   SCALE_OUT_OF_RANGE,
   /** The scale of {0} must be less than or equal to the precision */
   SCALE_GREATER_THAN_PRECISION,  
+  /** The index ''{0}'' is out of bounds */
+  INVALID_ARRAY_INDEX,
   /** Invalid Boolean ''{0}'' */
   INVALID_BOOLEAN,
   /** Date ''{0}'' is not recognized */

@@ -16,8 +16,10 @@
  */
 package org.apache.hop.expression;
 
+import org.apache.hop.expression.type.ArrayType;
 import org.apache.hop.expression.type.Type;
 import org.apache.hop.expression.type.TypeId;
+import org.apache.hop.expression.type.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,12 +103,17 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
 
   @Override
   public IExpression visitTuple(final Tuple tuple) {
-    List<IExpression> expressions = new ArrayList<>(tuple.size());
+    int size = tuple.size();
+    List<IExpression> expressions = new ArrayList<>(size);
+    List<Type> types = new ArrayList<>(size);
     for (IExpression expression : tuple) {
       expression = expression.accept(this);
       expressions.add(expression);
+      types.add(expression.getType());
     }
-    return new Tuple(expressions);
+    
+    Type type = Types.getLeastRestrictive(types);  
+    return new Tuple(ArrayType.of(type), expressions);
   }
 
   @Override

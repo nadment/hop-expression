@@ -74,6 +74,8 @@ public final class NumberType extends Type {
 
   NumberType(int precision, int scale, boolean nullable) {
     super(precision, scale, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
   }
 
   @Override

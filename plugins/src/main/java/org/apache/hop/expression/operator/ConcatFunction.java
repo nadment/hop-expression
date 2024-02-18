@@ -25,6 +25,7 @@ import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.Operator;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import org.apache.hop.expression.type.Type;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 public class ConcatFunction extends Function {
   public static final ConcatFunction StringConcatFunction = new StringConcatFunction();
   public static final ConcatFunction BinaryConcatFunction = new BinaryConcatFunction();
+  public static final ConcatFunction ArrayConcatFunction = new ArrayConcatFunction();
 
   // Function
   public ConcatFunction() {
@@ -154,6 +156,33 @@ public class ConcatFunction extends Function {
         }
       }
       return result;
+    }
+  }
+  
+  /**
+   * Array concatenation
+   */
+  private static final class ArrayConcatFunction extends ConcatFunction {
+    @Override
+    public Object eval(final IExpression[] operands) {
+      Tuple tuple0 = operands[0].asTuple();
+      Tuple tuple1 = operands[1].asTuple();
+      
+      int size0 = tuple0.size();
+      int size1 = tuple1.size();
+      int size = size0+size1;
+      
+      IExpression[] values = new IExpression[size];
+      int i=0;
+      for( ; i<size0; i++) {
+        values[i] = tuple0.get(i);
+      }
+      for( ; i<size1; i++) {
+        values[i] = tuple1.get(i);
+      }
+
+      
+      return new Tuple(tuple0.getType(), values);
     }
   }
 }

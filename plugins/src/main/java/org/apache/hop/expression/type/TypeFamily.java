@@ -44,6 +44,8 @@ public enum TypeFamily {
   NONE,
   //
   ANY,
+  // 
+  ARRAY,
   //
   SYMBOL;
 
@@ -82,6 +84,8 @@ public enum TypeFamily {
         return family.isFamily(JSON);
       case INTERVAL:
         return family.isFamily(INTERVAL);
+      case ARRAY:        
+        return family.isFamily(ARRAY);
       case ANY:
       case NONE:
         return true;

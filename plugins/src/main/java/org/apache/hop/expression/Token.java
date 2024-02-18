@@ -32,6 +32,8 @@ public class Token {
     CASE,
     /** Concat operator <code>||<code>. */
     CONCAT("||"),
+    /** Array of values */
+    ARRAY,
     /** Used by function CAST(value AS type) */
     AS,
     /** Used by operator AT TIME ZONE */
@@ -42,12 +44,18 @@ public class Token {
     CAST("::"),
     /** Comment */
     COMMENT,
+    /** DOT */
+    DOT("."),
     /** Comma separator */
     COMMA(","),
     /** Left parenthesis */
     LPARENTHESIS("("),
     /** Right parenthesis */
     RPARENTHESIS(")"),
+    /** Left bracket */
+    LBRACKET("]"),
+    /** Right bracket */
+    RBRACKET("["),
     /** Literal decimal number. */
     LITERAL_NUMERIC_DECIMAL,
     /** Literal hexadecimal number 0x1234567890ABCDEF */

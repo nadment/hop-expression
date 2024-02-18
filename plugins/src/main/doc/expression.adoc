@@ -72,7 +72,9 @@ false
 
 === Integer
 
-Integer literals can be either positive numbers or negative numbers with a minimum value of `-2^31` and a maximum value of `2^31-1`, but do not contain decimals. Support hexadecimal, octal, and binary notations and can have embedded underscore `_` characters to improve readability.
+Integer literals can be either positive numbers or negative numbers, but do not contain decimals.
+Integer are between -9223372036854775808 and 9223372036854775807.
+Support hexadecimal, octal, and binary notations and can have embedded underscore `_` characters to improve readability.
 
 Decimal integers are a sequence of decimal digits [0-9].
 ----
@@ -268,6 +270,7 @@ The operator precedence and associativity, highest to lowest.
 |left|()|Parenthesis
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/functions.adoc[function](args...)|Function
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[::]|Cast
+|right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[[]]|Array element selection
 |right|+, -|Positive, Negative
 |right|~|Bitwise NOT
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/multiply.adoc[*], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/divide.adoc[/], %|Multiplication, Division, Modulus

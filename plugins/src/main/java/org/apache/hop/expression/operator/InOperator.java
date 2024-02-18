@@ -110,7 +110,7 @@ public class InOperator extends Operator {
         continue;
       }
 
-      // Simplify B in (A,B,C) to B=B (only if reference is not nullable)
+      // Simplify B in (A,B,C) → B=B (only if reference is not nullable)
       if (reference.equals(expression) && !reference.getType().isNullable()) {
         return new Call(Operators.EQUAL, reference, reference);
       }
@@ -121,7 +121,7 @@ public class InOperator extends Operator {
       }
     }
 
-    // "x IN (a)" to "x = a"
+    // Simplify x IN (a) → x = a
     if (list.size() == 1) {
       return new Call(Operators.EQUAL, reference, list.get(0));
     }

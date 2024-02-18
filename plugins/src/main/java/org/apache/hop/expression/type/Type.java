@@ -20,44 +20,38 @@ import org.apache.hop.expression.ConversionException;
 import org.apache.hop.expression.ErrorCode;
 import java.util.Objects;
 
+/**
+ * Data type
+ * <p>
+ * Identity is based upon the {@link #signature} field, which each derived class
+ * should set during construction.
+ */
 public abstract class Type {
 
   public static final int SCALE_NOT_SPECIFIED = -1;
   public static final int PRECISION_NOT_SPECIFIED = -1;
-  
+
   protected final int precision;
   protected final int scale;
   protected final boolean nullable;
-  private final String signature;
+  protected String signature;
 
   protected Type(int precision, int scale, boolean nullable) {
     this.precision = precision;
     this.scale = scale;
     this.nullable = nullable;
-
-    // Generates a string representation of this type.    
-    StringBuilder builder = new StringBuilder();
-    this.generateTypeString(builder);
-    this.signature =  builder.toString();
-    
-    // Check precision and scale
-    TypeId id = getId();
-    if (id.supportsPrecision() && ( precision < id.getMinPrecision() ||  precision > id.getMaxPrecision()) ) {
-      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature,id.getMinPrecision(),id.getMaxPrecision()));
-    }
-    if (id.supportsScale() && ( scale < id.getMinScale() ||  scale > id.getMaxScale()) ) {
-      throw new IllegalArgumentException(ErrorCode.SCALE_OUT_OF_RANGE.message(signature,id.getMinScale(),id.getMaxScale()));
-    }
-    if (scale>precision ) {
-      throw new IllegalArgumentException(ErrorCode.SCALE_GREATER_THAN_PRECISION.message(signature));
-    }
   }
-  
-  
-  protected void generateTypeString(final StringBuilder builder) {
+
+  /**
+   * Generates a string representation of this type.
+   * 
+   * @return string
+   */
+  protected String generateSignature() {
+    StringBuilder builder = new StringBuilder();
     TypeId id = getId();
     builder.append(id.name());
-    if (precision != id.getMaxPrecision() || ( scale>0 && scale!=id.getDefaultScale() ) ) {
+    if (precision != id.getMaxPrecision() || (scale > 0 && scale != id.getDefaultScale())) {
       builder.append('(');
       builder.append(precision);
       if (scale > 0) {
@@ -65,9 +59,29 @@ public abstract class Type {
         builder.append(scale);
       }
       builder.append(')');
-    }    
-  } 
-  
+    }
+    return builder.toString();
+  }
+
+  /**
+   *  Check precision and scale.
+   */
+  protected void checkPrecisionAndScale() {
+    TypeId id = getId();
+    if (id.supportsPrecision()
+        && (precision < id.getMinPrecision() || precision > id.getMaxPrecision())) {
+      throw new IllegalArgumentException(ErrorCode.PRECISION_OUT_OF_RANGE.message(signature,
+          id.getMinPrecision(), id.getMaxPrecision()));
+    }
+    if (id.supportsScale() && (scale < id.getMinScale() || scale > id.getMaxScale())) {
+      throw new IllegalArgumentException(
+          ErrorCode.SCALE_OUT_OF_RANGE.message(signature, id.getMinScale(), id.getMaxScale()));
+    }
+    if (scale > precision) {
+      throw new IllegalArgumentException(ErrorCode.SCALE_GREATER_THAN_PRECISION.message(signature));
+    }
+  }
+
   /**
    * Gets the {@link TypeId} of this type.
    *
@@ -103,9 +117,9 @@ public abstract class Type {
    * Gets the {@link TypeComparability} of this type used by comparison operators.
    *
    * @return comparability, never null
-   */  
+   */
   public abstract TypeComparability getComparability();
-  
+
   /**
    * Queries whether this type allows null values.
    *
@@ -148,12 +162,21 @@ public abstract class Type {
   }
 
   /**
+   * Gets the element type if this type is a collection, otherwise null.
+   *
+   * @return type the element type
+   */
+  public Type getElementType() {
+    return null;
+  }
+
+  /**
    * Indicates whether that type are equal with each other by ignoring the nullability.
    */
   public boolean equalsIgnoreNullability(final Type type) {
-    if ( type==null )
+    if (type == null)
       return false;
-    return this.signature.equals(type.signature);  
+    return this.signature.equals(type.signature);
   }
 
   @Override
@@ -200,7 +223,7 @@ public abstract class Type {
    * @throws ConversionException if the casting fail
    */
   public abstract Object cast(final Object value, final String pattern) throws ConversionException;
-  
+
   @Override
   public String toString() {
     return signature;

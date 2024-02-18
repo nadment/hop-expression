@@ -16,6 +16,7 @@ package org.apache.hop.core.expression;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import org.apache.hop.core.row.IRowMeta;
@@ -37,9 +38,11 @@ import org.apache.hop.expression.FunctionRegistry;
 import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.RowExpressionContext;
+import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.Interval;
 import org.apache.hop.expression.type.JsonType;
 import org.apache.hop.expression.type.Type;
+import org.apache.hop.expression.type.TypeFamily;
 import org.apache.hop.expression.type.Types;
 import org.apache.hop.junit.rules.RestoreHopEnvironment;
 import org.junit.ClassRule;
@@ -406,8 +409,8 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    evalNull("Json_Value('{\"name\":\"Smith\", \"age\":29}','$.notexist')");
-
+   // optimize("ARRAY[1,2,3] || ARRAY[4,5]", "ARRAY[1,2,3,4,5]");
+    
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
     // String result = variables.resolve("$[0]['name']");

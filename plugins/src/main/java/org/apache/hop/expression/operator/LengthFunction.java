@@ -45,7 +45,7 @@ public class LengthFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
 
     Type type = call.getOperand(0).getType();
-
+    
     // Binary first
     if (type.isFamily(TypeFamily.BINARY)) {
       return new Call(BinaryLengthFunction, call.getOperands());

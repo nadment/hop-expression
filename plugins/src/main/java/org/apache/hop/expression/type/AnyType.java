@@ -27,6 +27,7 @@ public final class AnyType extends Type {
 
   AnyType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
+    this.signature = generateSignature();
   }
 
   @Override

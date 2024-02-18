@@ -31,6 +31,8 @@ import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorComparator;
 import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.operator.ConcatFunction;
+import org.apache.hop.expression.type.IntegerType;
+import org.apache.hop.expression.type.StringType;
 import org.junit.Test;
 
 public class ParserTest extends ExpressionTest { 
@@ -40,7 +42,7 @@ public class ParserTest extends ExpressionTest {
     assertTrue(ExpressionParser.isReservedWord("BETWEEN"));
     assertFalse(ExpressionParser.isReservedWord("XXX"));
     assertFalse(ExpressionParser.isReservedWord(null));
-    assertEquals(39, ExpressionParser.getReservedWords().size());
+    assertEquals(40, ExpressionParser.getReservedWords().size());
   }
   
   @Test
@@ -109,6 +111,29 @@ public class ParserTest extends ExpressionTest {
     evalTrue(" \nTrue\n\r");
   }
 
+  @Test
+  public void Array() throws Exception {
+    // Empty array
+    optimize("ARRAY[]");
+    
+    // Simple array values
+    optimize("ARRAY[1]");
+    optimize("ARRAY[1,2.5,3+2]");
+    
+    // Multidimensional array values
+    optimize("ARRAY[ARRAY[1,2], ARRAY[3,4]]");
+    
+    evalFails("ARRAY[1");
+    evalFails("ARRAY[1,");
+    evalFails("ARRAY[1,]");
+  }
+  
+  @Test
+  public void ArrayElementAt() throws Exception {    
+    evalEquals("ARRAY['A','B','C'][1]", "A").returnType(StringType.of(1));
+    evalEquals("ARRAY[1,4,8][2]", 4L).returnType(IntegerType.of(1));
+  }
+    
   @Test
   public void OperatorComparator() throws Exception {
     // Primary operator first and alias last

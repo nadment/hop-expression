@@ -30,6 +30,8 @@ public final class DateType extends Type {
 
   DateType(boolean nullable) {
     super(PRECISION_NOT_SPECIFIED, SCALE_NOT_SPECIFIED, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
   }
 
   @Override

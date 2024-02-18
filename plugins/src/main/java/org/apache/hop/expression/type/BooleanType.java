@@ -25,6 +25,7 @@ public final class BooleanType extends Type {
 
   BooleanType(boolean nullable) {
     super(1, 0, nullable);
+    this.signature = generateSignature();
   }
 
   @Override

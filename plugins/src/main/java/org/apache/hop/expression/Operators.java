@@ -15,6 +15,7 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.operator.AddOperator;
+import org.apache.hop.expression.operator.ArrayElementAtOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenOperator;
 import org.apache.hop.expression.operator.BetweenOperator.Between;
@@ -132,6 +133,11 @@ public class Operators {
   // DATE OPERATORS
   // -------------------------------------------------------------
   public static final Operator AT_TIME_ZONE = new AtTimeZoneOperator();
+
+  // -------------------------------------------------------------
+  // ARRAY OPERATORS
+  // -------------------------------------------------------------
+  public static final Operator ARRAY_ELEMENT_AT = new ArrayElementAtOperator();
 
   // -------------------------------------------------------------
   // SPECIAL OPERATORS with custom or alternative syntax, or optimized

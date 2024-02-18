@@ -48,6 +48,8 @@ public final class IntegerType extends Type {
 
   IntegerType(int precision, boolean nullable) {
     super(precision, 0, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
   }
 
   @Override

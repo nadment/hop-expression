@@ -58,6 +58,7 @@ Expression support most of the standard scalar and aggregate functions.
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolxor.adoc[BOOLXOR]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/case.adoc[CASE]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cast.adoc[CAST]
+* https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cardinality.adoc[CARDINALITY]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/cbrt.adoc[CBRT]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/ceil.adoc[CEILING]
 * https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/chr.adoc[CHR]

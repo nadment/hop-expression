@@ -17,6 +17,8 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.IExpression;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A collection of strategies for return type inference.
@@ -25,6 +27,7 @@ public final class ReturnTypes {
 
   private ReturnTypes() {
     // Utility class
+    super();
   }
 
   /**
@@ -149,6 +152,29 @@ public final class ReturnTypes {
   public static final IReturnTypeInference ARG0_MAX_PRECISION =
       new OrdinalReturnTypeInference(0).andThen(TypeTransforms.TO_MAX_PRECISION);
 
+
+  /**
+   * Type-inference strategy whereby the result type of a call is the element type of the array.
+   */
+  public static final IReturnTypeInference ARRAY_ELEMENT = call -> {
+    Type type = call.getOperand(0).getType();
+    if ( type.is(TypeId.ARRAY) ) {
+      ArrayType arrayType = (ArrayType) type;
+      return arrayType.getElementType();
+    }
+    return Types.UNKNOWN;
+  };
+
+  public static final IReturnTypeInference ARRAY = call -> {
+    List<Type> types = new ArrayList<>();
+    for (IExpression operand: call.getOperands()) {
+      types.add(operand.getType());
+    }
+    
+    Type type = Types.getLeastRestrictive(types); 
+    return ArrayType.of(type);
+  };
+  
   /**
    * Type-inference strategy whereby the result type of a call is a number with scale 0 with precision-scale 
    * and nullity than ARG0.

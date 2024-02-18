@@ -52,6 +52,8 @@ public final class StringType extends Type {
   
   /* Package */ StringType(int precision, boolean nullable) {
     super(precision, 0, nullable);
+    this.signature = generateSignature();
+    this.checkPrecisionAndScale();
   }
 
   public StringType withNullability(final boolean nullable) {

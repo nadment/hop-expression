@@ -1747,6 +1747,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalEquals("Length(BINARY '0F0FA')", 3L).returnType(Types.INTEGER);
     evalNull("Length(NULL_BINARY)");
 
+
+    
     // Implicit conversion from Boolean to String
     evalEquals("Length(true)", 4L);
     evalEquals("Length(FALSE)", 5L);
@@ -1763,6 +1765,11 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Length(Date '2023-01-01')");
   }
 
+  @Test
+  public void Cardinality() throws Exception {
+    evalEquals("Cardinality(Array[1,4,8+2])", 3L).returnType(Types.INTEGER);
+  }
+  
   @Test
   public void Left() throws Exception {
     // String
@@ -3088,8 +3095,12 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Concat()");
 
     // Mix String and Binary
-    // evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
+    //evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
 
+    // Array    
+    // evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
+    // optimize("ARRAY[1,2,3] || ARRAY[4,5]", "ARRAY[1,2,3,4,5]");
+    
     // Check operands type
     evalFails("Concat(FIELD_STRING, FIELD_DATE)");
     evalFails("Concat(FIELD_STRING, FIELD_STRING, FIELD_DATE)");
