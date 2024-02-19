@@ -180,14 +180,14 @@ public abstract class Type {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public final boolean equals(Object obj) {
     return this == obj
         || obj instanceof Type && Objects.equals(this.signature, ((Type) obj).signature)
             && nullable == ((Type) obj).nullable;
   }
 
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     return Objects.hash(signature, nullable);
   }
 
@@ -211,7 +211,9 @@ public abstract class Type {
    * @return the converted value
    * @throws ConversionException if the casting fail
    */
-  public abstract Object cast(final Object value) throws ConversionException;
+  public Object cast(final Object value) throws ConversionException {
+    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
+  }
 
   /**
    * Convert a value to the specified {@link Type} with a pattern.
@@ -222,8 +224,10 @@ public abstract class Type {
    * @return the converted value
    * @throws ConversionException if the casting fail
    */
-  public abstract Object cast(final Object value, final String pattern) throws ConversionException;
-
+  public Object cast(final Object value, final String pattern) throws ConversionException {
+    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
+  }
+  
   @Override
   public String toString() {
     return signature;

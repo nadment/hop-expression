@@ -124,8 +124,8 @@ public class LiteralTest extends ExpressionTest {
     evalFails("INTERVAL '5' MINUTE TO SECOND");
 
     optimize("INTERVAL 20 YEAR");
-    optimize("INTERVAL '20' YEAR");
-    optimize("INTERVAL '-20' YEAR");
+    optimize("INTERVAL '20' YEAR","INTERVAL 20 YEAR");
+    optimize("INTERVAL '-20' YEAR","INTERVAL -20 YEAR");
     optimize("INTERVAL -5 YEARS", "INTERVAL -5 YEAR");
     optimize("INTERVAL '-15' MONTHS", "INTERVAL '-1-3' YEAR TO MONTH");
     optimize("INTERVAL '15' MONTHS", "INTERVAL '+1-3' YEAR TO MONTH");

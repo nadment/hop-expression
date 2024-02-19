@@ -210,7 +210,10 @@ public class CaseOperator extends Operator {
     Tuple thenTuple = operands[2].asTuple();
     for (IExpression whenOperand : whenTuple) {
       writer.append(" WHEN ");
-      whenOperand.unparse(writer);
+      if ( whenOperand instanceof Tuple ) {
+        whenOperand.asTuple().unparseValues(writer);
+      }
+      else whenOperand.unparse(writer);
       writer.append(" THEN ");
       IExpression thenOperand = thenTuple.get(index++);
       thenOperand.unparse(writer);

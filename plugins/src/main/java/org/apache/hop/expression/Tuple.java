@@ -64,7 +64,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   public Tuple(IExpression... expressions) {
     this(Types.ARRAY, expressions);
   }
-  
+
   public Tuple(Type type, IExpression... expressions) {
     this.type = type;
     this.values = expressions;
@@ -73,7 +73,7 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
   public Tuple(Collection<IExpression> expressions) {
     this(Types.ARRAY, expressions);
   }
-  
+
   public Tuple(Type type, Collection<IExpression> expressions) {
     this.type = type;
     this.values = expressions.toArray(new IExpression[0]);
@@ -136,7 +136,19 @@ public final class Tuple implements IExpression, Iterable<IExpression> {
     return writer.toString();
   }
 
+  @Override
   public void unparse(StringWriter writer) {
+    writer.append("ARRAY[");
+    this.unparseValues(writer);
+    writer.append(']');
+  }
+
+  /**
+   * Format values with a comma separator <code>value1,value2,...</code>
+   * 
+   * @param writer
+   */
+  public void unparseValues(StringWriter writer) {
     boolean first = true;
     for (IExpression expression : values) {
       if (first)

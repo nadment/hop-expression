@@ -370,7 +370,7 @@ public class ExpressionTest {
     });
   }
 
-  protected IExpression optimize(String source) throws Exception {
+  protected IExpression compile(String source) throws Exception {
 
     IExpressionContext context = createExpressionContext(false);
     IExpression expression = context.createExpression(source);
@@ -385,20 +385,24 @@ public class ExpressionTest {
     return expression;
   }
 
+  protected void optimize(String source) throws Exception {
+    assertEquals(source, compile(source).toString());
+  }
+  
   protected void optimize(String source, String expected) throws Exception {
-    assertEquals(expected, optimize(source).toString());
+    assertEquals(expected, compile(source).toString());
   }
 
   protected void optimizeTrue(String source) throws Exception {
-    assertEquals("TRUE", optimize(source).toString());
+    assertEquals("TRUE", compile(source).toString());
   }
 
   protected void optimizeFalse(String source) throws Exception {
-    assertEquals("FALSE", optimize(source).toString());
+    assertEquals("FALSE", compile(source).toString());
   }
 
   protected void optimizeNull(String source) throws Exception {
-    assertEquals("NULL", optimize(source).toString());
+    assertEquals("NULL", compile(source).toString());
   }
 
   @Test
@@ -409,7 +413,8 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-   // optimize("ARRAY[1,2,3] || ARRAY[4,5]", "ARRAY[1,2,3,4,5]");
+    
+    optimize("\"CASE\"", "\"CASE\"");    
     
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();

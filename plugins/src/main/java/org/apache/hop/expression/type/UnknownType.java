@@ -18,7 +18,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
 
 public final class UnknownType extends Type {
 
@@ -50,15 +49,5 @@ public final class UnknownType extends Type {
       return clazz.cast(value);
     }
     return super.convert(value, clazz);
-  }
-
-  @Override
-  public Object cast(final Object value) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
-  }
-
-  @Override
-  public Object cast(final Object value, final String pattern) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
   }
 }

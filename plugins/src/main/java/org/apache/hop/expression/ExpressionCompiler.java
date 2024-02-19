@@ -77,14 +77,19 @@ public class ExpressionCompiler implements IExpressionVisitor<IExpression> {
       // Evaluate if constant
       if (expression.isConstant()) {
         try {
-          Object constantValue = expression.getValue();
+          Object constantValue = expression.getValue();          
           Type constantType = expression.getType();
+          
+          if (constantValue instanceof Tuple) {
+            return (Tuple) constantValue;
+          }
+          
 
           // Some operator don't known return type like JSON_VALUE.
           if (TypeId.ANY.equals(constantType.getId())) {
             return Literal.of(constantValue);
           }
-
+          else 
           // For CAST operator, it's important to return type
           if (expression.is(Operators.CAST)) {
             constantValue = constantType.cast(constantValue);

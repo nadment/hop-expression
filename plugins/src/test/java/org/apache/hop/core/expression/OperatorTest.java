@@ -1549,7 +1549,7 @@ public class OperatorTest extends ExpressionTest {
     // Alias function
     evalEquals("BIT_OR(100,2)", 102L).returnType(Types.INTEGER);
     
-    optimize("FIELD_INTEGER|4");    
+    optimize("FIELD_INTEGER|4","4|FIELD_INTEGER");    
     optimize("1|FIELD_INTEGER|4","5|FIELD_INTEGER");
     optimize("FIELD_INTEGER|0","FIELD_INTEGER");
     optimize("0|FIELD_INTEGER","FIELD_INTEGER");
@@ -1987,9 +1987,8 @@ public class OperatorTest extends ExpressionTest {
 
 
     optimize("CASE FIELD_INTEGER WHEN 40 THEN 'A' WHEN 20 THEN 'B' ELSE 'C' END");
-
     // Multi values
-    optimize("CASE FIELD_INTEGER WHEN 1, 2, 3 THEN 'A' WHEN 4, 5, 6, 7 THEN 'B' ELSE 'C' END");
+    optimize("CASE FIELD_INTEGER WHEN 1,2,3 THEN 'A' WHEN 4,5,6,7 THEN 'B' ELSE 'C' END");
   }
 }
 

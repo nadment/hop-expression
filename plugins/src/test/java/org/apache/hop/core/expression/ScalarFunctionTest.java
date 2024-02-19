@@ -2762,7 +2762,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     evalFails("Json_Object(KEY VALUE 'Smith')");
     evalFails("Json_Object(KEY 'name' VALUE 'Smith'");
 
-    optimize("JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')");
+    optimize("JSON_OBJECT(KEY 'name' VALUE 'Smith',KEY 'langue' VALUE 'english')","JSON '{\"name\":\"Smith\",\"langue\":\"english\"}'");
+    optimize("JSON_OBJECT(KEY 'name' VALUE FIELD_STRING,KEY 'langue' VALUE 'english')");
   }
 
   @Test
@@ -3098,8 +3099,8 @@ public class ScalarFunctionTest extends ExpressionTest {
     //evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
 
     // Array    
-    // evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
-    // optimize("ARRAY[1,2,3] || ARRAY[4,5]", "ARRAY[1,2,3,4,5]");
+     evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
+    optimize("ARRAY[1,2,3] || ARRAY[4,5] || ARRAY[6,7]", "ARRAY[1,2,3,4,5,6,7]");
     
     // Check operands type
     evalFails("Concat(FIELD_STRING, FIELD_DATE)");

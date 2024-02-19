@@ -46,14 +46,14 @@ public class ConcatFunction extends Function {
   // Function
   public ConcatFunction() {
     super("CONCAT", ReturnTypes.CONCAT_FUNCTION,
-        OperandTypes.STRING_VARIADIC.or(OperandTypes.BINARY_VARIADIC),
+        OperandTypes.STRING_VARIADIC.or(OperandTypes.BINARY_VARIADIC).or(OperandTypes.ARRAY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }
 
   // Operator
   public ConcatFunction(String name) {
     super("CONCAT", name, 110, true, ReturnTypes.FIRST_KNOWN,
-        OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC),
+        OperandTypes.or(OperandTypes.STRING_VARIADIC, OperandTypes.BINARY_VARIADIC, OperandTypes.ARRAY_VARIADIC),
         OperatorCategory.STRING, "/docs/concat.html");
   }
 
@@ -77,8 +77,13 @@ public class ConcatFunction extends Function {
         return operands.get(0);
       default:
         Operator operator = StringConcatFunction;
-        if (type != null && type.isFamily(TypeFamily.BINARY)) {
-          operator = BinaryConcatFunction;
+        if (type != null ) {
+          if ( type.isFamily(TypeFamily.ARRAY)) {          
+            operator = ArrayConcatFunction;
+          }
+          else if ( type.isFamily(TypeFamily.BINARY)) {          
+            operator = BinaryConcatFunction;
+          }
         }
         return new Call(operator, operands);
     }
@@ -170,17 +175,15 @@ public class ConcatFunction extends Function {
       
       int size0 = tuple0.size();
       int size1 = tuple1.size();
-      int size = size0+size1;
       
-      IExpression[] values = new IExpression[size];
+      IExpression[] values = new IExpression[size0+size1];
       int i=0;
-      for( ; i<size0; i++) {
+      for(; i<size0; i++) {
         values[i] = tuple0.get(i);
       }
-      for( ; i<size1; i++) {
-        values[i] = tuple1.get(i);
+      for(int j=0 ; j<size1; i++, j++) {
+        values[i] = tuple1.get(j);
       }
-
       
       return new Tuple(tuple0.getType(), values);
     }

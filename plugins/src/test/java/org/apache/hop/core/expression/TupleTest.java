@@ -53,7 +53,7 @@ public class TupleTest extends ExpressionTest {
     assertNotEquals(new Tuple(Literal.of("B"), Literal.of("A")),  new Tuple(Literal.of("A"), Literal.of("B")));
     assertEquals(tuple4.hashCode(), tuple4.hashCode());
     assertEquals(tuple1.hashCode(), tuple2.hashCode());    
-    assertEquals("1,0,NULL", tuple1.toString());
+    assertEquals("ARRAY[1,0,NULL]", tuple1.toString());
     
     // Not evaluable alone
     assertThrows(UnsupportedOperationException.class, () -> tuple1.getValue());

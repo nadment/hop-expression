@@ -224,21 +224,31 @@ public final class ReturnTypes {
    * returns string(7).
    */
   public static final IReturnTypeInference CONCAT_FUNCTION = call -> {
-    TypeId id = TypeId.STRING;
+    TypeId typeId = TypeId.STRING;
+    Type elementType = Types.UNKNOWN;
     int precision = 0;
 
     for (IExpression operand : call.getOperands()) {
       Type type = operand.getType();
       precision += type.getPrecision();
-
-      if (type.is(TypeId.BINARY))
-        id = TypeId.BINARY;
+      if (type.is(TypeId.ARRAY)) {
+        typeId = TypeId.ARRAY;
+        elementType = Types.getLeastRestrictive(operand.asTuple());
+      }      
+      else if (type.is(TypeId.BINARY)) {
+        typeId = TypeId.BINARY;
+      }
     }
 
-    if (precision > id.getMaxPrecision()) {
-      precision = id.getMaxPrecision();
+    if (typeId == TypeId.ARRAY) {
+      return ArrayType.of(elementType);
     }
-    if (id == TypeId.BINARY) {
+        
+    if (precision > typeId.getMaxPrecision()) {
+      precision = typeId.getMaxPrecision();
+    }
+    
+    if (typeId == TypeId.BINARY) {
       return BinaryType.of(precision);
     }
 

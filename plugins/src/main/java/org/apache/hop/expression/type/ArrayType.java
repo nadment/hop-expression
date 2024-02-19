@@ -17,8 +17,6 @@
 
 package org.apache.hop.expression.type;
 
-import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
 import java.util.Objects;
 
 public final class ArrayType extends Type {
@@ -45,11 +43,6 @@ public final class ArrayType extends Type {
     super(PRECISION_NOT_SPECIFIED, PRECISION_NOT_SPECIFIED, nullable);
     this.elementType = Objects.requireNonNull(elementType);
     this.signature = generateSignature();
-    
-    // TODO: Protect array from array
-//    if ( elementType.is(TypeId.ARRAY)) {
-//      throw new ExpressionException(ErrorCode.ILLEGAL_ARGUMENT_TYPE, elementType);
-//    }
   }
 
   @Override
@@ -66,19 +59,10 @@ public final class ArrayType extends Type {
   public TypeComparability getComparability() {
     return elementType.getComparability();
   } 
-  
+
+  @Override
   public Type getElementType() {
     return elementType;
-  }
-
-  @Override
-  public Object cast(final Object value) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
-  }
-
-  @Override
-  public Object cast(final Object value, final String pattern) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
   }
   
   @Override

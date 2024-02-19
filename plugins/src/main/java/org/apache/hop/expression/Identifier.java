@@ -319,6 +319,8 @@ public class Identifier implements IExpression {
 
   @Override
   public String toString() {
-    return this.name;
+    StringWriter writer = new StringWriter();
+    unparse(writer);
+    return writer.toString();
   }
 }

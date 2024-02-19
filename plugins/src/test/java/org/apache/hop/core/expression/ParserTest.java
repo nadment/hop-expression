@@ -118,10 +118,10 @@ public class ParserTest extends ExpressionTest {
     
     // Simple array values
     optimize("ARRAY[1]");
-    optimize("ARRAY[1,2.5,3+2]");
+    optimize("ARRAY[1,2.5,3+2]","ARRAY[1,2.5,5]");
     
     // Multidimensional array values
-    optimize("ARRAY[ARRAY[1,2], ARRAY[3,4]]");
+    optimize("ARRAY[ARRAY[1,2],ARRAY[3,4]]");
     
     evalFails("ARRAY[1");
     evalFails("ARRAY[1,");
@@ -162,14 +162,14 @@ public class ParserTest extends ExpressionTest {
 
   @Test
   public void as() throws Exception {
-    assertTrue(optimize("ABS(FIELD_INTEGER)").asCall() instanceof Call);
-    assertTrue(optimize("FIELD_INTEGER").asIdentifier() instanceof Identifier);
-    assertTrue(optimize("123").asLiteral() instanceof Literal);   
+    assertTrue(compile("ABS(FIELD_INTEGER)").asCall() instanceof Call);
+    assertTrue(compile("FIELD_INTEGER").asIdentifier() instanceof Identifier);
+    assertTrue(compile("123").asLiteral() instanceof Literal);   
         
-    assertThrows(UnsupportedOperationException.class, () -> optimize("123").asCall());
-    assertThrows(UnsupportedOperationException.class, () -> optimize("ABS(FIELD_INTEGER)").asIdentifier());
-    assertThrows(UnsupportedOperationException.class, () -> optimize("FIELD_INTEGER").asLiteral());
-    assertThrows(UnsupportedOperationException.class, () -> optimize("FIELD_INTEGER").asTuple());
+    assertThrows(UnsupportedOperationException.class, () -> compile("123").asCall());
+    assertThrows(UnsupportedOperationException.class, () -> compile("ABS(FIELD_INTEGER)").asIdentifier());
+    assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asLiteral());
+    assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asTuple());
   }
   
   @Test

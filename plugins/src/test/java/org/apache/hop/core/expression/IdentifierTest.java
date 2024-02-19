@@ -137,7 +137,7 @@ public class IdentifierTest extends ExpressionTest {
   public void write() throws Exception {
     optimize("FIELD_STRING");
     // Reserved word
-    optimize("\"CASE\"");    
+    optimize("\"CASE\"", "\"CASE\"");
     // Data type name
     optimize("\"STRING\"");
     // Time unit name

@@ -18,7 +18,6 @@
 package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.ConversionException;
-import org.apache.hop.expression.ErrorCode;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -96,15 +95,5 @@ public final class AnyType extends Type {
       }
     }
     return super.convert(value, clazz);
-  }
-
-  @Override
-  public Object cast(final Object value) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
-  }
-
-  @Override
-  public Object cast(final Object value, final String pattern) throws ConversionException {
-    throw new ConversionException(ErrorCode.INTERNAL_ERROR);
   }
 }
