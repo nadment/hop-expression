@@ -15,7 +15,6 @@
 package org.apache.hop.expression;
 
 import org.apache.hop.expression.operator.AddOperator;
-import org.apache.hop.expression.operator.ArrayElementAtOperator;
 import org.apache.hop.expression.operator.AtTimeZoneOperator;
 import org.apache.hop.expression.operator.BetweenOperator;
 import org.apache.hop.expression.operator.BetweenOperator.Between;
@@ -34,6 +33,7 @@ import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.operator.CountFunction.Count;
 import org.apache.hop.expression.operator.DivOperator;
+import org.apache.hop.expression.operator.ElementAtOperator;
 import org.apache.hop.expression.operator.EqualOperator;
 import org.apache.hop.expression.operator.ExtractFunction;
 import org.apache.hop.expression.operator.GreaterThanOperator;
@@ -137,7 +137,7 @@ public class Operators {
   // -------------------------------------------------------------
   // ARRAY OPERATORS
   // -------------------------------------------------------------
-  public static final Operator ARRAY_ELEMENT_AT = new ArrayElementAtOperator();
+  public static final Operator ELEMENT_AT = new ElementAtOperator();
 
   // -------------------------------------------------------------
   // SPECIAL OPERATORS with custom or alternative syntax, or optimized
@@ -158,7 +158,7 @@ public class Operators {
 
   /** Set of scalar operators without NOT variation (IS_NOT_TRUE, NOT_SIMILAR_TO...). */
   private static final Set<Operator> SET_OPERATORS =
-      Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, EQUAL,
+      Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, ELEMENT_AT, EQUAL,
           GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
           LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE_SEARCH, CONCAT, IN,
           IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);

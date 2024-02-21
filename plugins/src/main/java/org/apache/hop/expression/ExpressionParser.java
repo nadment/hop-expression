@@ -420,8 +420,8 @@ public class ExpressionParser {
     
     // Array element at ARRAY[index]
     if (isThenNext(Id.LBRACKET)) {
-      IExpression term = this.parseTerm();
-      Call call = new Call(getPosition(), Operators.ARRAY_ELEMENT_AT, expression, term);
+      IExpression term = this.parseBitwiseOr();
+      Call call = new Call(getPosition(), Operators.ELEMENT_AT, expression, term);
       if (isNotThenNext(Id.RBRACKET)) {
         throw new ExpressionException(getPosition(), ErrorCode.SYNTAX_ERROR_NEAR_KEYWORD, Id.LBRACKET);
       }

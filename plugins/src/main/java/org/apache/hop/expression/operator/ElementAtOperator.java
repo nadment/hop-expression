@@ -32,11 +32,11 @@ import java.io.StringWriter;
  * <br>
  * <strong>Syntax:</strong> <code>array[3]</code>
  */
-public class ArrayElementAtOperator extends Operator {
+public class ElementAtOperator extends Operator {
 
-  public ArrayElementAtOperator() {
-    super("ARRAY_ELEMENT_AT", 200, true, ReturnTypes.ARRAY_ELEMENT, OperandTypes.ARRAY_NUMERIC,
-        OperatorCategory.ARRAY, "/docs/array.html");
+  public ElementAtOperator() {
+    super("ELEMENT_AT", "[]", 200, true, ReturnTypes.ARRAY_ELEMENT, OperandTypes.ARRAY_NUMERIC,
+        OperatorCategory.ARRAY, "/docs/element_at.html");
   }
   
   @Override
@@ -47,8 +47,12 @@ public class ArrayElementAtOperator extends Operator {
       return null;
     
     int i = index.intValue();
-    if ( i<1 || i>=tuple.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
-      throw new ExpressionException(ErrorCode.INVALID_ARRAY_INDEX, i);
+    
+    if ( i<0 ) i = tuple.size()+i+1;
+    
+    
+    if ( i<1 || i>tuple.size() || i > ArrayType.MAX_ARRAY_CARDINALITY) {
+      throw new ExpressionException(ErrorCode.INVALID_ARRAY_INDEX, index);
     }
     
     return tuple.get(i-1).getValue();

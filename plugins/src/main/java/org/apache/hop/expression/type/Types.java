@@ -165,7 +165,8 @@ public class Types {
     if (type1.getId().ordinal() > type2.getId().ordinal()
         || (type1.isFamily(type2.getFamily()) && type1.getPrecision() > type2.getPrecision())) {
       return type1;
-    } else if (type1.isFamily(type2.getFamily())) {
+    } 
+    if (type1.isFamily(type2.getFamily())) {
       if (type1.getPrecision() > type2.getPrecision()
           || (type1.getPrecision() == type2.getPrecision()
               && type1.getScale() > type2.getScale())) {
@@ -175,17 +176,6 @@ public class Types {
 
     return type2;
   }
-
-  /**
-   * Find the tightest common type of two types that might be used in binary expression.
-   */
-  // public static Type getTightestCommonType(Type type1, Type type2) {
-  // if (type1 == null || type2 == null) {
-  // return null;
-  // }
-  //
-  //
-  // }
 
   /**
    * Coerce all the operands to a common {@code Type}.

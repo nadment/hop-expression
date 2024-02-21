@@ -14,19 +14,25 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 ////
-= CARDINALITY
+= Element at []
 
-Returns the number of elements of an array.
+Returns the element of an array at index.
 
 == Syntax
 ----
-CARDINALITY( array )
+array[index]
 ----
 
-Returns:: Integer between 0 and 2^31-1.
+Returns:: The result is of the type of the elements of the array
+
+
+== Usage
+
+* The array index value must be between 1 and the cardinality of the array.
+* If index is negative the function accesses elements from the last to the first
 
 == Examples
 
 ----
-CARDINALITY( ARRAY[1,4,8] ) result 3
+PHONE_NUMBERS[1]
 ----

@@ -28,6 +28,21 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class OperatorTest extends ExpressionTest {
+
+  @Test
+  public void ElementAt() throws Exception {
+    evalEquals("ARRAY[1,3,5][1]",1L);
+    evalEquals("ARRAY[1,3.5,5][3]",5L);
+    evalEquals("ARRAY['A','B',FIELD_STRING][3]","TEST");
+    
+    // Negative index
+    evalEquals("ARRAY[1,3,5][-1]",5L);
+    evalEquals("ARRAY[1,3,5][-3]",1L);   
+    
+    evalFails("ARRAY[1,3,5][0]");
+    evalFails("ARRAY[1,3,5][9]");
+  }
+  
   @Test
   public void EqualTo() throws Exception {
     // Integer
