@@ -33,6 +33,7 @@ import java.io.StringWriter;
  * Converts a value of one data type into another data type <code>::</code>
  * 
  * @see CastFunction
+ * @see TryCastFunction 
  */
 public class CastOperator extends Operator {
 
