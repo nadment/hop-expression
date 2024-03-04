@@ -30,6 +30,7 @@ import org.apache.hop.expression.Identifier;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorComparator;
 import org.apache.hop.expression.Operators;
+import org.apache.hop.expression.Tuple;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.type.IntegerType;
 import org.apache.hop.expression.type.StringType;
@@ -42,7 +43,7 @@ public class ParserTest extends ExpressionTest {
     assertTrue(ExpressionParser.isReservedWord("BETWEEN"));
     assertFalse(ExpressionParser.isReservedWord("XXX"));
     assertFalse(ExpressionParser.isReservedWord(null));
-    assertEquals(40, ExpressionParser.getReservedWords().size());
+    assertEquals(41, ExpressionParser.getReservedWords().size());
   }
   
   @Test
@@ -152,12 +153,16 @@ public class ParserTest extends ExpressionTest {
     assertTrue(Operators.CONCAT.is(FunctionRegistry.getFunction("CONCAT")));
     assertFalse(Operators.CONCAT.is(null));
     assertFalse(Operators.CONCAT.isAggregate());
+    assertTrue(Operators.CONCAT.isDeterministic());
     assertNotNull(Operators.CONCAT.getDescription());
     assertNotEquals(Operators.CONCAT, null);
     //assertNotNull(Operators.CONCAT.getDocumentation());
     assertNotNull(Operators.CONCAT.getDocumentationUrl());
     assertTrue(FunctionRegistry.getFunction("TRUNCATE").is(FunctionRegistry.getFunction("TRUNC")));
     assertTrue(FunctionRegistry.getFunction("COUNT").isAggregate());
+    
+    assertNotEquals(Operators.IN, Operators.NOT_IN);
+    assertNotEquals(Operators.SIMILAR_TO, Operators.NOT_SIMILAR_TO);
   }
 
   @Test
@@ -165,7 +170,8 @@ public class ParserTest extends ExpressionTest {
     assertTrue(compile("ABS(FIELD_INTEGER)").asCall() instanceof Call);
     assertTrue(compile("FIELD_INTEGER").asIdentifier() instanceof Identifier);
     assertTrue(compile("123").asLiteral() instanceof Literal);   
-        
+    assertTrue(compile("ARRAY[1,2,3]").asTuple() instanceof Tuple);   
+    
     assertThrows(UnsupportedOperationException.class, () -> compile("123").asCall());
     assertThrows(UnsupportedOperationException.class, () -> compile("ABS(FIELD_INTEGER)").asIdentifier());
     assertThrows(UnsupportedOperationException.class, () -> compile("FIELD_INTEGER").asLiteral());
@@ -193,10 +199,14 @@ public class ParserTest extends ExpressionTest {
     // NOT has higher precedence than AND, which has higher precedence than OR
     evalTrue("NOT false AND NOT false");
     evalTrue("NOT 5 = 5 OR NOT 'Test' = 'X' AND NOT 5 = 4");
-
+    // AND has higher precedence than XOR"
+    evalTrue("true AND false XOR true");
+    // XOR has higher precedence than OR"
+    evalTrue("false OR false XOR true");
+        
     // Equals (=) has higher precedence than NOT "NOT (1=1)"
-    evalTrue("NOT 2 = 1");
-
+    evalTrue("NOT 2 = 1"); 
+    
     // IS NULL has higher precedence than NOT
     evalFalse("NOT NULL_BOOLEAN IS NULL");
 

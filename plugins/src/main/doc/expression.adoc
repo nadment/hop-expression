@@ -277,8 +277,8 @@ The operator precedence and associativity, highest to lowest.
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/add.adoc[+], https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/subtract.adoc[-]|Addition, Subtraction
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/concat.adoc[\|\|]|Concatenation
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_and.adoc[&]|Bitwise AND
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_xor.adoc[&circ;]|Bitwise exclusive OR
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_or.adoc[\|]|Bitwise inclusive OR 
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_xor.adoc[&circ;]|Bitwise XOR (exclusive OR)
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/bit_or.adoc[\|]|Bitwise OR (inclusive OR)
 |left|
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-null.adoc[IS NULL],
 https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-true.adoc[IS TRUE],
@@ -290,7 +290,8 @@ https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/is-di
 |left|=, >, <, >=, <=, <>, != |Comparison
 |right|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolnot.adoc[NOT]|Logical negation 
 |left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/booland.adoc[AND]|Logical conjunction
-|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Logical inclusion 
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolxor.adoc[XOR]|Logical exclusive disjunction 
+|left|https://github.com/nadment/hop-expression/blob/master/plugins/src/main/doc/boolor.adoc[OR]|Logical disjunction 
 |===
 
 NOTE: An operator on higher levels is evaluated before an operator on a lower level. You can enclose an expression in parentheses to force precedence or clarify precedence, for example, (5 + 2) * 3.

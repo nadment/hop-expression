@@ -25,6 +25,7 @@ import org.apache.hop.expression.operator.BitXorFunction;
 import org.apache.hop.expression.operator.BoolAndOperator;
 import org.apache.hop.expression.operator.BoolNotOperator;
 import org.apache.hop.expression.operator.BoolOrOperator;
+import org.apache.hop.expression.operator.BoolXorOperator;
 import org.apache.hop.expression.operator.CaseOperator;
 import org.apache.hop.expression.operator.CaseOperator.When;
 import org.apache.hop.expression.operator.CastFunction;
@@ -80,6 +81,7 @@ public class Operators {
   // -------------------------------------------------------------
   public static final Operator BOOLNOT = new BoolNotOperator();
   public static final Operator BOOLOR = new BoolOrOperator();
+  public static final Operator BOOLXOR = new BoolXorOperator();
   public static final Operator BOOLAND = new BoolAndOperator();
 
   // -------------------------------------------------------------
@@ -161,7 +163,7 @@ public class Operators {
       Set.of(ADD, SUBTRACT, MULTIPLY, DIVIDE, BITAND, BITOR, BITNOT, BITXOR, CAST, MODULUS, ELEMENT_AT, EQUAL,
           GREATER_THAN, GREATER_THAN_OR_EQUAL, ILIKE, LESS_THAN, LESS_THAN_OR_EQUAL,
           LESS_THAN_OR_GREATER_THAN, NOT_EQUAL, BOOLAND, BETWEEN_ASYMMETRIC, CASE_SEARCH, CONCAT, IN,
-          IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR);
+          IS_DISTINCT_FROM, IS_NULL, SIMILAR_TO, IS_FALSE, IS_TRUE, LIKE, BOOLNOT, BOOLOR, BOOLXOR);
 
   public static Set<Operator> getOperators() {
     Set<Operator> set = new TreeSet<>(new OperatorComparator());

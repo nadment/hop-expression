@@ -43,7 +43,7 @@ public class ExpressionParser {
       Set.of("AND", "ARRAY", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
           "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "INTERVAL",
           "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR",
-          "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "ZONE");
+          "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
   public static Set<String> getReservedWords() {
     return RESERVED_WORDS;
@@ -168,17 +168,33 @@ public class ExpressionParser {
    * Parse logical OR expression (Disjunction)
    *
    * <p>
-   * LogicalAndExpression ( OR LogicalAndExpression )*
+   * LogicalXorExpression ( OR LogicalXorExpression )*
    */
   private IExpression parseLogicalOr() throws ExpressionException {
-    IExpression expression = this.parseLogicalAnd();
+    IExpression expression = this.parseLogicalXor();
     while (isThenNext(Id.OR)) {
-      expression = new Call(getPosition(), Operators.BOOLOR, expression, parseLogicalAnd());
+      expression = new Call(getPosition(), Operators.BOOLOR, expression, parseLogicalXor());
     }
 
     return expression;
   }
 
+
+  /**
+   * Parse logical XOR expression (Exclusive disjunction)
+   *
+   * <p>
+   * LogicalAndExpression ( XOR LogicalAndExpression )*
+   */
+  private IExpression parseLogicalXor() throws ExpressionException {
+    IExpression expression = this.parseLogicalAnd();
+    while (isThenNext(Id.XOR)) {
+      expression = new Call(getPosition(), Operators.BOOLXOR, expression, parseLogicalAnd());
+    }
+
+    return expression;
+  }
+  
   /**
    * Parse logical AND expression (Conjunction)
    *

@@ -1637,6 +1637,21 @@ public class OperatorTest extends ExpressionTest {
   }
 
   @Test
+  public void BoolXor() throws Exception {
+    evalFalse("true XOR true").returnType(Types.BOOLEAN);
+    evalFalse("2 XOR 3").returnType(Types.BOOLEAN);
+    evalFalse("false XOR false").returnType(Types.BOOLEAN);
+    evalFalse("0 XOR 0").returnType(Types.BOOLEAN);
+    evalTrue("true XOR false").returnType(Types.BOOLEAN);
+    evalTrue("false XOR true").returnType(Types.BOOLEAN);
+    evalNull("null XOR true");
+    evalNull("true XOR null");
+    evalNull("null XOR null");
+    evalFails(" XOR true");
+    evalFails("XOR false");
+  }
+  
+  @Test
   public void BoolOr() throws Exception {
     evalTrue("true OR true").returnType(Types.BOOLEAN);
     evalTrue("true OR false");
@@ -2006,5 +2021,6 @@ public class OperatorTest extends ExpressionTest {
     optimize("CASE FIELD_INTEGER WHEN 1,2,3 THEN 'A' WHEN 4,5,6,7 THEN 'B' ELSE 'C' END");
   }
 }
+
 
 

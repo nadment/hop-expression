@@ -57,20 +57,18 @@ public class DateTruncFunction extends Function {
         return datetime.withDayOfYear(1).minusYears(datetime.getYear() % 100);
       case DECADE:
         return datetime.withDayOfYear(1).minusYears(datetime.getYear() % 10);
-      // First day of the year
       case YEAR:
+        // First day of the year
         return datetime.withDayOfYear(1);
-      // First day of the month
       case MONTH:
+        // First day of the month
         return datetime.withDayOfMonth(1);
-      // First day of the quarter
       case QUARTER:
+        // First day of the quarter
         int month = (datetime.getMonthValue() / 3) * 3 + 1;
         return datetime.withMonth(month).withDayOfMonth(1);
-      // First day of the week (the week starts on Monday)
       case WEEK:
-        // TODO: DayOfWeek dow = DayOfWeek.of(Integer.parseInt((String)
-        // context.getAttribute("NLS_FIRST_DAY_OF_WEEK")));
+        // First day of the week (the week starts on Monday)
         return datetime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
       case DAY:
         return datetime.truncatedTo(ChronoUnit.DAYS);
