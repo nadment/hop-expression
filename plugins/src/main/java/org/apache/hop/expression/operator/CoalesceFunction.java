@@ -24,6 +24,7 @@ import org.apache.hop.expression.IExpression;
 import org.apache.hop.expression.IExpressionContext;
 import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
 import java.util.ArrayList;
@@ -31,8 +32,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The COALESCE function returns the first of its arguments that is not null. Null is returned
- * only if all arguments are null.
+ * The COALESCE function returns the first of its arguments that is not null.
+ * Null is returned only if all arguments are null.
+ * 
+ * @see {@link IfNullFunction}
  */
 @FunctionPlugin
 public class CoalesceFunction extends Function {
@@ -55,7 +58,6 @@ public class CoalesceFunction extends Function {
 
   @Override
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
-
     // Remove null and duplicate but keep order
     final List<IExpression> operands = new ArrayList<>();
     for (IExpression operand : call.getOperands()) {
@@ -63,8 +65,8 @@ public class CoalesceFunction extends Function {
         continue;
       }
 
-      // Flatten chained coalesce
-      if (operand.is(call.getOperator())) {
+      // Flatten chained COALESCE or IFNULL but keep order
+      if (operand.is(Operators.IFNULL) || operand.is(Operators.COALESCE)) {
         operands.addAll(Arrays.asList(operand.asCall().getOperands()));
       } else {
         operands.add(operand);
@@ -74,15 +76,17 @@ public class CoalesceFunction extends Function {
     switch (operands.size()) {
       case 0: // Nothing to coalesce
         return new Literal(null, call.getType());
-      case 1: // Coalesce(X) → X
+      case 1: // COALESCE(X) → X
         return operands.get(0);
+      case 2: // COALESCE(X,Y) → IFNULL(X,Y)
+        return new Call(Operators.IFNULL, operands);
       default:
         // First is literal COALESCE(1, a, b) → 1
         if (operands.get(0).isConstant()) {
           return operands.get(0);
         }
 
-        return new Call(call.getOperator(), operands);
+        return new Call(Operators.COALESCE, operands);
     }
   }
 }

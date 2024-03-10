@@ -30,6 +30,7 @@ import org.apache.hop.expression.operator.CaseOperator;
 import org.apache.hop.expression.operator.CaseOperator.When;
 import org.apache.hop.expression.operator.CastFunction;
 import org.apache.hop.expression.operator.CastOperator;
+import org.apache.hop.expression.operator.CoalesceFunction;
 import org.apache.hop.expression.operator.ConcatFunction;
 import org.apache.hop.expression.operator.CountFunction;
 import org.apache.hop.expression.operator.CountFunction.Count;
@@ -89,6 +90,7 @@ public class Operators {
   // -------------------------------------------------------------
   public static final Operator CASE_SEARCH = new CaseOperator(When.SEARCH);
   public static final Operator CASE_SIMPLE = new CaseOperator(When.SIMPLE);
+  public static final Operator COALESCE = new CoalesceFunction();
   public static final Operator IF = new IfFunction();
   public static final Operator IFNULL = new IfNullFunction();
   public static final Operator NULLIF = new NullIfFunction();

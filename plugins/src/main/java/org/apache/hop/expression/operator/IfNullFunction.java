@@ -16,15 +16,25 @@
  */
 package org.apache.hop.expression.operator;
 
+import org.apache.hop.expression.Call;
+import org.apache.hop.expression.ExpressionException;
 import org.apache.hop.expression.Function;
 import org.apache.hop.expression.FunctionPlugin;
 import org.apache.hop.expression.IExpression;
+import org.apache.hop.expression.IExpressionContext;
+import org.apache.hop.expression.Literal;
 import org.apache.hop.expression.OperatorCategory;
+import org.apache.hop.expression.Operators;
 import org.apache.hop.expression.type.OperandTypes;
 import org.apache.hop.expression.type.ReturnTypes;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The IFNULL function replace the null with value (Alias NVL).
+ * 
+ * @see {@link CoalesceFunction}
  */
 @FunctionPlugin(names = "NVL")
 public class IfNullFunction extends Function {
@@ -32,6 +42,40 @@ public class IfNullFunction extends Function {
   public IfNullFunction() {
     super("IFNULL", ReturnTypes.LEAST_RESTRICTIVE, OperandTypes.SAME_SAME, OperatorCategory.CONDITIONAL,
         "/docs/ifnull.html");
+  }
+
+  @Override
+  public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
+    // Remove null and duplicate but keep order
+    final List<IExpression> operands = new ArrayList<>();
+    for (IExpression operand : call.getOperands()) {
+      if (operand.isNull() || operands.contains(operand)) {
+        continue;
+      }
+
+      // Flatten chained COALESCE or IFNULL but keep order
+      if (operand.is(Operators.IFNULL) || operand.is(Operators.COALESCE)) {
+        operands.addAll(Arrays.asList(operand.asCall().getOperands()));
+      } else {
+        operands.add(operand);
+      }
+    }
+
+    switch (operands.size()) {
+      case 0: // Nothing to coalesce
+        return new Literal(null, call.getType());
+      case 1: // COALESCE(X) → X
+        return operands.get(0);
+      case 2: // COALESCE(X,Y) → IFNULL(X,Y)
+        return new Call(Operators.IFNULL, operands);
+      default:
+        // First is literal COALESCE(1, a, b) → 1
+        if (operands.get(0).isConstant()) {
+          return operands.get(0);
+        }
+
+        return new Call(Operators.COALESCE, operands);
+    }
   }
 
   @Override
