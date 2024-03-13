@@ -61,6 +61,7 @@ public class ConcatFunction extends Function {
   public IExpression compile(IExpressionContext context, Call call) throws ExpressionException {
     Type type = null;
     // Combine chained CONCAT operator and remove NULL
+    // This is especially useful for the || operator
     ArrayList<IExpression> operands = new ArrayList<>();
     for (IExpression operand : getChainedOperands(call, true)) {
       if (operand.isNull())

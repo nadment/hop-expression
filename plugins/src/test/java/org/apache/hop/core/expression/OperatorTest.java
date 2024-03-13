@@ -22,6 +22,7 @@ import org.apache.hop.expression.type.StringType;
 import org.apache.hop.expression.type.Types;
 import org.junit.Test;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -1189,7 +1190,10 @@ public class OperatorTest extends ExpressionTest {
     evalEquals("CAST('abcdefg' AS String)", "abcdefg");
     evalEquals("CAST('abcdefg' AS String(3))", "abc");
     evalEquals("CAST('abcdefg' AS String(20))", "abcdefg");
-
+    
+    // Inet
+    evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
+    
     // Null
     evalNull("CAST(NULL_BINARY as STRING)").returnType(Types.STRING);
     evalNull("CAST(NULL_STRING as String)").returnType(Types.STRING);
@@ -1286,6 +1290,18 @@ public class OperatorTest extends ExpressionTest {
     evalNull("CAST(NULL as INTERVAL)");
 
     evalFails("CAST(3 as INTERVAL");
+  }
+
+  @Test
+  public void CastToInet() throws Exception {
+    // String
+    evalEquals("CAST('10.10.10.1' as INET)", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
+    evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
+    
+    // Null
+    evalNull("CAST(NULL as INET)");
+    
+    evalFails("CAST('xyz' as INET");
   }
 
   @Test

@@ -39,6 +39,7 @@ import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.type.UnknownType;
 import org.junit.Test;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
@@ -109,6 +110,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.BINARY, TypeId.of("BINARY"));
     assertEquals(TypeId.JSON, TypeId.of("Json"));
     assertEquals(TypeId.INTEGER, TypeId.of("INTEGER"));
+    assertEquals(TypeId.INET, TypeId.of("INET"));
     assertNull(TypeId.of("NOP"));
   }
   
@@ -125,6 +127,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(TypeId.NUMBER, TypeId.fromJavaClass(BigDecimal.class));
     assertEquals(TypeId.BINARY, TypeId.fromJavaClass(byte[].class));
     assertEquals(TypeId.JSON, TypeId.fromJavaClass(JsonNode.class));
+    assertEquals(TypeId.INET, TypeId.fromJavaClass(InetAddress.class));
     assertEquals(TypeId.INTEGER, TypeId.fromJavaClass(Long.class));
     assertEquals(TypeId.ARRAY, TypeId.fromJavaClass(Tuple.class));
   }
@@ -157,6 +160,7 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.STRING));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.INTERVAL));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.JSON));
+    assertTrue(TypeFamily.ANY.isFamily(TypeFamily.INET));
     assertTrue(TypeFamily.ANY.isFamily(TypeFamily.ARRAY));
     
     assertTrue(TypeFamily.NUMERIC.isFamily(TypeFamily.NUMERIC));
@@ -165,6 +169,7 @@ public class TypeTest extends ExpressionTest {
     assertTrue(TypeFamily.TEMPORAL.isFamily(TypeFamily.TEMPORAL));
     assertTrue(TypeFamily.INTERVAL.isFamily(TypeFamily.INTERVAL));
     assertTrue(TypeFamily.BINARY.isFamily(TypeFamily.BINARY));
+    assertTrue(TypeFamily.INET.isFamily(TypeFamily.INET));
           
     assertTrue(Types.ANY.isFamily(TypeFamily.BINARY));
     assertTrue(Types.ANY.isFamily(TypeFamily.BOOLEAN));
@@ -206,6 +211,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals(String.class, TypeId.STRING.getJavaClass());
     assertEquals(ZonedDateTime.class, TypeId.DATE.getJavaClass());
     assertEquals(JsonNode.class, TypeId.JSON.getJavaClass());
+    assertEquals(InetAddress.class, TypeId.INET.getJavaClass());
     assertEquals(Void.class, TypeId.UNKNOWN.getJavaClass());
   }
 
@@ -214,6 +220,7 @@ public class TypeTest extends ExpressionTest {
     assertEquals("BOOLEAN", String.valueOf(Types.BOOLEAN));
     assertEquals("DATE", String.valueOf(Types.DATE));
     assertEquals("JSON", String.valueOf(Types.JSON));
+    assertEquals("INET", String.valueOf(Types.INET));
     assertEquals("INTEGER", String.valueOf(Types.INTEGER));  
     assertEquals("INTEGER", String.valueOf(IntegerType.of(-1)));
     assertEquals("INTEGER(6)", String.valueOf(IntegerType.of(6)));

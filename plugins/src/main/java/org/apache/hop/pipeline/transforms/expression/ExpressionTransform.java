@@ -28,6 +28,7 @@ import org.apache.hop.pipeline.PipelineMeta;
 import org.apache.hop.pipeline.transform.BaseTransform;
 import org.apache.hop.pipeline.transform.TransformMeta;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -183,6 +184,8 @@ public class ExpressionTransform extends BaseTransform<ExpressionMeta, Expressio
         return expression.getValue(byte[].class);
       case ValueMetaJson.TYPE_JSON:
         return expression.getValue(JsonNode.class);
+      case IValueMeta.TYPE_INET:
+        return expression.getValue(InetAddress.class);        
       default:
         throw new HopValueException(BaseMessages.getString(PKG, "ExpressionTransform.Exception.ConversionError", meta.getName(), meta.getType()));
     }

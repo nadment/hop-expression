@@ -114,6 +114,8 @@ public enum ErrorCode {
   INVALID_JSON,
   /** Invalid json path ''{0}'' */
   INVALID_JSON_PATH,
+  // Invalid internet address ''{0}'' */
+  INVALID_INET,
   /** Invalid regexp pattern ''{0}'' */
   INVALID_REGEXP_PATTERN,
   /** Invalid escape sequence ''{0}'', {1} */

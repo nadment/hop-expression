@@ -59,7 +59,7 @@ public abstract class Operator {
   private final int leftPrecedence;
 
   /**
-   * findDocumentionDescription
+   * The precedence with which this operator binds to the expression to the right. This is great than
    * the left precedence if the operator is left-associative.
    */
   private final int rightPrecedence;

@@ -25,6 +25,7 @@ import org.apache.hop.expression.type.Types;
 import org.apache.hop.expression.util.DateTimeFormat;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -111,13 +112,18 @@ public final class Literal implements IExpression {
       return new Literal(value, Types.DATE_NOT_NULL);
     }
 
-    if (value instanceof JsonNode) {
-      return new Literal(value, Types.JSON_NOT_NULL);
-    }
-
     if (value instanceof Interval) {
       return new Literal(value, Types.INTERVAL_NOT_NULL);
     }
+
+    if (value instanceof JsonNode) {
+      return new Literal(value, Types.JSON_NOT_NULL);
+    }
+    
+    if (value instanceof InetAddress) {
+      return new Literal(value, Types.INET_NOT_NULL);
+    }
+    
 
     // Special internal case TimeUnit, DataType
     return new Literal(value, Types.UNKNOWN);
@@ -312,6 +318,11 @@ public final class Literal implements IExpression {
         case JSON:
           writer.append("JSON '");
           writer.append(StringType.convertToString((JsonNode) value));
+          writer.append('\'');
+          break;
+        case INET:
+          writer.append("INET '");
+          writer.append(StringType.convertToString((InetAddress) value));
           writer.append('\'');
           break;
         case UNKNOWN:

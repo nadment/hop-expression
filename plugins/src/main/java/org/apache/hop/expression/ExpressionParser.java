@@ -41,7 +41,7 @@ public class ExpressionParser {
 
   private static final Set<String> RESERVED_WORDS =
       Set.of("AND", "ARRAY", "AS", "ASYMMETRIC", "AT", "BETWEEN", "BINARY", "CASE", "DATE", "DISTINCT",
-          "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "INTERVAL",
+          "ELSE", "END", "ESCAPE", "FALSE", "FORMAT", "FROM", "IGNORE", "ILIKE", "IN", "INET", "INTERVAL",
           "IS", "JSON", "KEY", "LIKE", "NOT", "NULL", "NULLS", "OR", "RESPECT", "RLIKE", "SIMILAR",
           "SYMMETRIC", "THEN", "TIME", "TIMESTAMP", "TO", "TRUE", "VALUE", "WHEN", "XOR", "ZONE");
 
@@ -421,6 +421,11 @@ public class ExpressionParser {
         Literal.of(Types.JSON));
   }
 
+  /** Literal Json */
+  private IExpression parseLiteralInet(Token token) throws ExpressionException {
+    return new Call(token.start(), Operators.CAST, Literal.of(token.text()),
+        Literal.of(Types.INET));
+  }
   /**
    * Cast operator <term>::<datatype> | <term> AT TIMEZONE <timezone> | <array>[<index>]
    *
@@ -495,6 +500,11 @@ public class ExpressionParser {
         if (token == null)
           break;
         return parseLiteralBinary(token);
+      case INET:
+        token = next();
+        if (token == null)
+          break;
+        return parseLiteralInet(token);
       case JSON:
         token = next();
         if (token == null)
@@ -1258,6 +1268,8 @@ public class ExpressionParser {
           return BinaryType.of(precision);
         case DATE:
           return Types.DATE;
+        case INET:
+          return Types.INET;
         case JSON:
           return Types.JSON;
         case INTERVAL:

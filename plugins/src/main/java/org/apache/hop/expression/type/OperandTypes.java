@@ -254,6 +254,8 @@ public final class OperandTypes {
   public static final IOperandTypeChecker TEMPORAL_TEXT = sequence(TEMPORAL, TEXT);
   public static final IOperandTypeChecker STRING_TEXT = sequence(STRING, TEXT);
 
+  public static final IOperandTypeChecker INET = family(TypeFamily.INET);
+  
   public static final IOperandTypeChecker JSON = family(TypeFamily.JSON);
   public static final IOperandTypeChecker JSON_STRING = family(TypeFamily.JSON, TypeFamily.STRING);
 

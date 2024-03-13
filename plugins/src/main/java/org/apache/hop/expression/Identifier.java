@@ -130,6 +130,9 @@ public class Identifier implements IExpression {
           return valueMeta.getNativeDataType(row[ordinal]);
         case IValueMeta.TYPE_BINARY:
           return valueMeta.getBinary(row[ordinal]);
+        case IValueMeta.TYPE_INET: {
+          return valueMeta.getNativeDataType(row[ordinal]);
+        }
         default:
           // Internal error
       }
@@ -209,6 +212,11 @@ public class Identifier implements IExpression {
           return type.convert(value, clazz);
         }
 
+        case IValueMeta.TYPE_INET: {
+          Object value = row[ordinal];
+          return type.convert(value, clazz);
+        }
+        
         case IValueMeta.TYPE_BINARY: {
           byte[] value = valueMeta.getBinary(row[ordinal]);
           return type.convert(value, clazz);
@@ -266,6 +274,8 @@ public class Identifier implements IExpression {
         return NumberType.of(meta.getLength(), meta.getPrecision());
       case ValueMetaJson.TYPE_JSON:
         return Types.JSON;
+      case IValueMeta.TYPE_INET:        
+        return Types.INET;
       case IValueMeta.TYPE_BINARY:
         return BinaryType.of(meta.getLength());
       default:

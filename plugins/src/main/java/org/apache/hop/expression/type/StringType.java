@@ -22,6 +22,7 @@ import org.apache.hop.expression.ErrorCode;
 import org.apache.hop.expression.util.DateTimeFormat;
 import org.apache.hop.expression.util.NumberFormat;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -96,7 +97,9 @@ public final class StringType extends Type {
     if (clazz == JsonNode.class) {
       return clazz.cast(JsonType.convertToJson((String) value));
     }
-
+    if (clazz == InetAddress.class) {
+      return clazz.cast(InetType.convertToInet((String) value));
+    }
     return super.convert(value, clazz);
   }
 
@@ -151,7 +154,10 @@ public final class StringType extends Type {
     else if (value instanceof JsonNode) {
       return convertToString((JsonNode) value);
     }
-
+    else if (value instanceof InetAddress) {
+      return convertToString((InetAddress) value);
+    }
+    
     if (result==null ) {
       throw new ConversionException(ErrorCode.CONVERSION_ERROR, TypeId.fromValue(value), value, this);
     }
@@ -208,6 +214,10 @@ public final class StringType extends Type {
 
   public static String convertToString(final ZonedDateTime value) throws ConversionException {
     return DateTimeFormat.of("YYYY-MM-DD").format(value);
+  }
+
+  public static String convertToString(final InetAddress value) throws ConversionException {
+    return value.getHostAddress();
   }
   
   /**

@@ -189,7 +189,13 @@ public class LiteralTest extends ExpressionTest {
 
     optimize("'Test ''Bla'' string'");
   }
-
+  @Test
+  public void Inet() throws Exception {
+    
+    optimize("INET '192.0.2.123'");
+    //optimize("INET '192.168.0.0/16'");
+    optimize("INET '2001:0db8:85a3:0000:0000:8a2e:0370:7334'","INET '2001:db8:85a3:0:0:8a2e:370:7334'");
+  }
 
   @Test
   public void Json() throws Exception {

@@ -21,6 +21,7 @@ import org.apache.hop.core.row.value.ValueMetaBinary;
 import org.apache.hop.core.row.value.ValueMetaBoolean;
 import org.apache.hop.core.row.value.ValueMetaDate;
 import org.apache.hop.core.row.value.ValueMetaInteger;
+import org.apache.hop.core.row.value.ValueMetaInternetAddress;
 import org.apache.hop.core.row.value.ValueMetaJson;
 import org.apache.hop.core.row.value.ValueMetaNone;
 import org.apache.hop.core.row.value.ValueMetaString;
@@ -121,10 +122,20 @@ public class Types {
   public static final IntervalType INTERVAL_NOT_NULL = new IntervalType(false);
 
   /**
+   * Default INET type.
+   */
+  public static final InetType INET = new InetType(true);
+
+  /**
+   * Default INET NOT NULL type.
+   */  
+  public static final InetType INET_NOT_NULL = new InetType(false);
+  
+  /**
    * Default JSON type.
    */
   public static final JsonType JSON = new JsonType(true);
-
+  
   /**
    * Default JSON NOT NULL type.
    */
@@ -649,6 +660,8 @@ public class Types {
         return new ValueMetaBinary(name, -1, -1);
       case JSON:
         return new ValueMetaJson(name);
+      case INET:
+        return new ValueMetaInternetAddress(name);
       case UNKNOWN:
       default:
         return new ValueMetaNone(name);
@@ -675,6 +688,8 @@ public class Types {
         return new ValueMetaDate(name);
       case JSON:
         return new ValueMetaJson(name);
+      case INET:
+        return new ValueMetaInternetAddress(name);
       case UNKNOWN:
       default:
         return new ValueMetaNone(name);

@@ -74,6 +74,8 @@ public class Token {
     BINARY,
     /** The "JSON" word for literal JSON. */
     JSON,
+    /** The "INET" word for literal INET. */
+    INET,
     /** The "INTERVAL" word for literal INTERVAL '...' YEAR TO MONTH.*/
     INTERVAL,
     /** The BETWEEN ASYMMETRIC operator */

@@ -3106,7 +3106,7 @@ public class ScalarFunctionTest extends ExpressionTest {
     //evalFails("Concat(FIELD_STRING, FIELD_BINARY)");
 
     // Array    
-     evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
+    evalEquals("CARDINALITY(ARRAY[1,2,3] || ARRAY[4,5])", 5L);
     optimize("ARRAY[1,2,3] || ARRAY[4,5] || ARRAY[6,7]", "ARRAY[1,2,3,4,5,6,7]");
     
     // Check operands type

@@ -18,6 +18,7 @@ package org.apache.hop.expression.type;
 
 import org.apache.hop.expression.Tuple;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,6 +60,9 @@ public enum TypeId {
   /** A Json type */
   JSON(TypeFamily.JSON, false, false, -1, -1, -1, -1, JsonNode.class),
 
+  /** A INET type */
+  INET(TypeFamily.INET, false, false, -1, -1, -1, -1, InetAddress.class),
+  
   /** A binary type can be images, sounds, videos, and other types of binary data */
   BINARY(TypeFamily.BINARY, true, false, 16_777_216, 1, 0, 0, byte[].class),
 
@@ -116,7 +120,7 @@ public enum TypeId {
   private final Class<?> javaClass;
 
   public static final Set<String> ALL_NAMES =
-      Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval");
+      Set.of("Binary", "Boolean", "Date", "Integer", "Number", "Json", "String", "Interval", "Inet");
 
   private TypeId(TypeFamily family, boolean supportsPrecision, boolean supportsScale, int maxPrecision, int minPrecision, int maxScale, int minScale, Class<?> javaClass) {
     this.family = family;

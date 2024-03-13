@@ -37,6 +37,8 @@ public enum TypeFamily {
   JSON,
   //
   INTERVAL,
+  //
+  INET,
   // -------------------------------------------
   // Secondary
   // -------------------------------------------
@@ -84,6 +86,8 @@ public enum TypeFamily {
         return family.isFamily(JSON);
       case INTERVAL:
         return family.isFamily(INTERVAL);
+      case INET:
+        return family.isFamily(INET);
       case ARRAY:        
         return family.isFamily(ARRAY);
       case ANY:
@@ -106,7 +110,7 @@ public enum TypeFamily {
       case BOOLEAN:
         return family.isFamily(BOOLEAN, NUMERIC, BINARY, STRING);
       case STRING:
-        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON);
+        return family.isFamily(STRING, BOOLEAN, NUMERIC, TEMPORAL, BINARY, JSON, INET);
       case TEMPORAL:
         return family.isFamily(TEMPORAL, STRING, NUMERIC);
       case NUMERIC:
@@ -117,6 +121,8 @@ public enum TypeFamily {
         return family.isFamily(JSON, STRING);
       case INTERVAL:
         return family.isFamily(INTERVAL);
+      case INET:
+        return family.isFamily(INET, STRING);        
       case ANY:
         return true;
       default:

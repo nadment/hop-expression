@@ -186,7 +186,7 @@ public class ExpressionTest {
       row[7] = true;
       row[8] = false;
       row[9] = "TEST".getBytes(Charsets.UTF_8);
-      row[10] = InetAddress.getLocalHost();
+      row[10] = InetAddress.getByName("10.10.10.1");
       // row[11] = JsonType.convertToJson("{\"sstudent\": [{\"id\":\"01\",name:\"Tom\",\"lastname\":
       // \"Price\"},{\"id\":\"02\",\"name\": \"Nick\",\"lastname\": \"Thameson\"}]}");
 
@@ -305,6 +305,13 @@ public class ExpressionTest {
     return evaluator;
   }
 
+  protected Evaluator evalEquals(IExpressionContext context, String source, InetAddress expected)
+      throws Exception {
+    Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
+    assertEquals(expected, evaluator.eval(InetAddress.class));
+    return evaluator;
+  }
+  
   protected Evaluator evalEquals(IExpressionContext context, String source, Double expected)
       throws Exception {
     Evaluator evaluator = new Evaluator(createExpressionContext(true), source);
@@ -333,6 +340,10 @@ public class ExpressionTest {
     return evalEquals(createExpressionContext(true), source, expected);
   }
 
+  protected Evaluator evalEquals(String source, InetAddress expected) throws Exception {
+    return evalEquals(createExpressionContext(true), source, expected);
+  }
+  
   protected Evaluator evalEquals(IExpressionContext context, String source, Temporal expected)
       throws Exception {
 
@@ -413,7 +424,9 @@ public class ExpressionTest {
     // evalEquals("To_Date('01/02/80','DD/MM/YY')", LocalDate.of(1980, 2, 1), context);
     // context.setVariable(ExpressionContext.EXPRESSION_TWO_DIGIT_YEAR_START, "2000");
 
-    evalEquals("ARRAY[1,3,5][-1]",5L);
+    //evalEquals("'10.10.10.1'::INET", InetAddress.getByName("10.10.10.1")).returnType(Types.INET);
+    evalEquals("CAST(FIELD_INET AS String)", "10.10.10.1");
+    
     
     // String jsonPath = "$[0]['gender']";
     // Variables variables = new Variables();
