@@ -36,7 +36,7 @@
 		<org.eclipse.osgi.version>3.18.300</org.eclipse.osgi.version>
 		<org.eclipse.core.runtime.version>3.26.100</org.eclipse.core.runtime.version>
 		<org.eclipse.text.version>3.12.300</org.eclipse.text.version>
-		<org.eclipse.jface.version>3.29.0</org.eclipse.jface.version>
+		<org.eclipse.jface.version>3.33.0</org.eclipse.jface.version>
 		<org.eclipse.jface.text.version>3.23.0</org.eclipse.jface.text.version>
 		<!-- Build dependencies -->
 		<asciidoctor.version>2.2.4</asciidoctor.version>
