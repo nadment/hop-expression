@@ -53,8 +53,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>
-				org.apache.hop</groupId>
+			<groupId>org.apache.hop</groupId>
 			<artifactId>hop-engine</artifactId>
 			<version>${hop.version}</version>
 			<scope>
